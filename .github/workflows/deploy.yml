@@ -40,8 +40,7 @@ jobs:
       with:
         host: ${{ secrets.DIGITAL_OCEAN_IP }}
         username: ${{ secrets.DIGITAL_OCEAN_USERNAME }}
-        key: ${{ secrets.DIGITAL_OCEAN_KEY }}
-        passphrase: ${{ secrets.DIGITAL_OCEAN_PASSPHRASE }}
+        password: ${{ secrets.DIGITAL_OCEAN_PASSWORD }}
         port: ${{ secrets.DIGITAL_OCEAN_PORT }}
         envs: GIT_USERNAME, GITHUB_TOKEN
         script: |

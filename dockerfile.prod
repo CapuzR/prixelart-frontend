@@ -1,0 +1,20 @@
+#produccion
+
+FROM node:15.8.0-alpine as build
+
+WORKDIR /frontend
+COPY package*.json ./
+RUN npm cache verify 
+# && npm --update-checksums
+COPY . ./
+# RUN npm install react-scripts build -g --silent
+RUN npm run build
+# CMD ["npm", "build"]
+# RUN npm && npm run build
+
+# Stage - Productio
+FROM nginx:1.17-alpine
+COPY --from=build /frontend/build /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/nginx.conf
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]

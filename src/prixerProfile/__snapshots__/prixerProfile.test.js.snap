@@ -1,0 +1,13 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<PrixerProfile /> renders correctly 1`] = `
+<main
+  className="MuiContainer-root MuiContainer-maxWidthXs"
+>
+  <CssBaseline />
+  <AppBar />
+  <UserData />
+  <PrixerOptions />
+  <Grid />
+</main>
+`;

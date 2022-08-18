@@ -1,0 +1,265 @@
+{
+    "publicPrice": {
+        "from": "$45",
+        "to": "$500"
+    },
+    "prixerPrice": {
+        "from": "$35",
+        "to": "$300"
+    },
+    "attributes": [
+        "[{ name: 'Material', values: ['Lienzo', 'Vinil']}, { name: 'Espesor', values:['3 mm', '9 mm'] }]"
+    ],
+    "variants": [
+        {
+            "_id": "_xZAAFtS-6HG2sPh9v1Wz",
+            "thumbUrl": "https://devprix.nyc3.digitaloceanspaces.com/10.%20Topotepuy-0-1.webp",
+            "active": true,
+            "name": "Lienzo en Bastidor",
+            "description": ".",
+            "category": "",
+            "considerations": ".",
+            "publicPrice": {
+                "from": "26",
+                "to": "700",
+                "equation": "23.3+0.0166*({width}*{height})-0.0000000183*({width}*{height})^2"
+            },
+            "prixerPrice": {
+                "from": "22",
+                "to": "600",
+                "equation": "23.3+0.0166*({width}*{height})-0.0000000183*({width}*{height})^2-(23.3+0.0166*({width}*{height})-0.0000000183*({width}*{height})^2)*0.15"
+            },
+            "attributes": [
+                {
+                    "name": "Material",
+                    "value": "Lienzo en bastidor"
+                },
+                {
+                    "name": "Montaje",
+                    "value": "1 pieza"
+                },
+                {
+                    "name": "Espesor",
+                    "value": "2-4 cm"
+                }
+            ]
+        },
+        {
+            "thumbUrl": "https://devprix.nyc3.digitaloceanspaces.com/10.%20Topotepuy-0-1.webp",
+            "active": false,
+            "name": "Vinil + MDF 3 mm",
+            "description": "arese",
+            "category": "",
+            "considerations": "aerfvs",
+            "publicPrice": {
+                "from": "45",
+                "to": "60",
+                "equation": "94"
+            },
+            "prixerPrice": {
+                "from": "30",
+                "to": "300",
+                "equation": "43"
+            },
+            "attributes": [
+                {
+                    "name": "Material",
+                    "value": "Vinil"
+                },
+                {
+                    "name": "Espesor",
+                    "value": "3 mm"
+                },
+                {
+                    "name": "Montaje",
+                    "value": "3 piezas"
+                }
+            ]
+        },
+        {
+            "_id": "iEUSaHybxHbnZ3qGWhwHJ",
+            "thumbUrl": "https://devprix.nyc3.digitaloceanspaces.com/10.%20Topotepuy-0-1.webp",
+            "active": false,
+            "name": "Vinil + MDF 4 cm",
+            "description": "jkdfn",
+            "category": "",
+            "considerations": "sdfvsd",
+            "publicPrice": {
+                "from": "45",
+                "to": "60",
+                "equation": "98"
+            },
+            "prixerPrice": {
+                "from": "35",
+                "to": "80",
+                "equation": "43"
+            },
+            "attributes": [
+                {
+                    "name": "Material",
+                    "value": "Vinil"
+                },
+                {
+                    "name": "Espesor",
+                    "value": "4 cm"
+                }
+            ]
+        },
+        {
+            "_id": "2Vl17yDDAPP3CpH_m7r40",
+            "thumbUrl": "https://devprix.nyc3.digitaloceanspaces.com/10.%20Topotepuy-0-1.webp",
+            "active": false,
+            "name": "Vinil + MDF 9 mm",
+            "description": "jkdfn",
+            "category": "",
+            "considerations": "sdfvsd",
+            "publicPrice": {
+                "from": "45",
+                "to": "60",
+                "equation": "65"
+            },
+            "prixerPrice": {
+                "from": "35",
+                "to": "80",
+                "equation": "43"
+            },
+            "attributes": [
+                {
+                    "name": "Material",
+                    "value": "Vinil"
+                },
+                {
+                    "name": "Espesor",
+                    "value": "2 cm"
+                }
+            ]
+        },
+        {
+            "_id": "rGawrrQ21uql3rJwlA05F",
+            "thumbUrl": "https://devprix.nyc3.digitaloceanspaces.com/10.%20Topotepuy-0-1.webp",
+            "active": false,
+            "name": "Vinil + MDF 3 mm",
+            "description": "arese",
+            "category": "",
+            "considerations": "aerfvs",
+            "publicPrice": {
+                "from": "45",
+                "to": "60",
+                "equation": "54"
+            },
+            "prixerPrice": {
+                "from": "30",
+                "to": "300",
+                "equation": "43"
+            },
+            "attributes": [
+                {
+                    "name": "Material",
+                    "value": "Vinil"
+                },
+                {
+                    "name": "Espesor",
+                    "value": "3 mm"
+                }
+            ]
+        },
+        {
+            "_id": "K4m9n5rBrJ9J7Ch90DdHN",
+            "thumbUrl": "https://devprix.nyc3.digitaloceanspaces.com/10.%20Topotepuy-0-1.webp",
+            "active": false,
+            "name": "Vinil + MDF 3 mm",
+            "description": "arese",
+            "category": "",
+            "considerations": "aerfvs",
+            "publicPrice": {
+                "from": "45",
+                "to": "60",
+                "equation": "6"
+            },
+            "prixerPrice": {
+                "from": "30",
+                "to": "300",
+                "equation": "43"
+            },
+            "attributes": [
+                {
+                    "name": "Material",
+                    "value": "Vinilox"
+                },
+                {
+                    "name": "Espesor",
+                    "value": "3 mm"
+                }
+            ]
+        },
+        {
+            "_id": "xyEZStLJi9t2_a9HLVVNw",
+            "thumbUrl": "https://devprix.nyc3.digitaloceanspaces.com/10.%20Topotepuy-0-1.webp",
+            "active": true,
+            "name": "Vinil + MDF 9 mm",
+            "description": "jkdfn",
+            "category": "",
+            "considerations": "sdfvsd",
+            "publicPrice": {
+                "from": "45",
+                "to": "60",
+                "equation": "(0.013*({width}*{height}/3)+7.79)*3"
+            },
+            "prixerPrice": {
+                "from": "35",
+                "to": "80",
+                "equation": "47"
+            },
+            "attributes": [
+                {
+                    "name": "Material",
+                    "value": "Vinil"
+                },
+                {
+                    "name": "Espesor",
+                    "value": "9 mm"
+                },
+                {
+                    "name": "Montaje",
+                    "value": "3 piezas"
+                }
+            ]
+        },
+        {
+            "_id": "kBsj2xX8tN5Xyuz7Vgo4H",
+            "thumbUrl": "https://devprix.nyc3.digitaloceanspaces.com/10.%20Topotepuy-0-1.webp",
+            "active": false,
+            "name": "asedefr",
+            "description": "sdzvb",
+            "category": "",
+            "considerations": "xdf",
+            "publicPrice": {
+                "from": "456",
+                "to": "454",
+                "equation": "43"
+            },
+            "prixerPrice": {
+                "from": "23",
+                "to": "435",
+                "equation": "34"
+            },
+            "attributes": []
+        }
+    ],
+    "_id": "60dd3622537ac73f8ce0c7fb",
+    "name": "X",
+    "description": "Decoración ideal para tu hogar que con nuestra variedad de artes se ajusta a tu estilo. Impresión en vinil laminado en MDF o lienzo ideal para decorar.",
+    "category": "Decoración",
+    "considerations": "Considerations",
+    "thumbUrl": "https://devprix.nyc3.digitaloceanspaces.com/10.%20Topotepuy-0-1.webp",
+    "__v": 61,
+    "active": true,
+    "hasSpecialVar": true,
+    "specialVars": [{
+        "name": "width",
+        "visible": "height"
+    },{
+        "name": "width",
+        "visible": "height"
+    }]
+}

@@ -38,10 +38,10 @@ jobs:
           GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        host: ${{ secrets.HOST }}
-        username: ${{ secrets.USERNAME }}
-        password: ${{ secrets.PASSWORD }}
-        port: ${{ secrets.PORT }}
+        host: ${{ secrets.DIGITAL_OCEAN_IP }}
+        username: ${{ secrets.DIGITAL_OCEAN_USERNAME }}
+        key: ${{ secrets.DIGITAL_OCEAN_KEY }}
+        port: ${{ secrets.DIGITAL_OCEAN_PORT }}
         envs: GIT_USERNAME, GITHUB_TOKEN
         script: |
           docker stop $(docker ps -a -q)

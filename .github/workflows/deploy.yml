@@ -41,7 +41,6 @@ jobs:
         host: ${{ secrets.DIGITAL_OCEAN_IP }}
         username: ${{ secrets.DIGITAL_OCEAN_USERNAME }}
         password: ${{ secrets.DIGITAL_OCEAN_PASSWORD }}
-        port: ${{ secrets.DIGITAL_OCEAN_PORT }}
         envs: GIT_USERNAME, GITHUB_TOKEN
         script: |
           docker stop $(docker ps -a -q)

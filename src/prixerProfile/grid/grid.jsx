@@ -34,16 +34,19 @@ const useStyles = makeStyles((theme) => ({
   },
   img: {
     [theme.breakpoints.down('sm')]: {
-      maxHeight: 200
+      maxHeight: 180
     },
     [theme.breakpoints.up('sm')]: {
-      maxHeight: 480
+      minHeight: 300,
+      maxHeight: 450
     },
     [theme.breakpoints.up('lg')]: {
-      maxHeight: 480
+      minHeight: 350,
+      maxHeight: 450
     },
     [theme.breakpoints.up('xl')]: {
-      maxHeight: 480
+      minHeight: 450,
+      maxHeight: 450
     }
   },
   backdrop: {
@@ -136,12 +139,13 @@ const searchPhotos = (e, queryValue) => {
           <GridListTile key={tile.artId} cols={1} onClick={(e)=>{handleFullImage(e, tile)}} className={classes.img}>
             <Img
             placeholder="/imgLoading.svg"
-            style={{ backgroundColor: "#eeeeee", height: '100%', width: '100%' }}
+            style={{ backgroundColor: "#eeeeee", height: '100%' }}
             src={tile.squareThumbUrl}
             debounce={1000}
             cache
             error='/imgError.svg'
             // srcSet={tile.smallThumbUrl + ' 600w, ' + tile.mediumThumbUrl + ' 850w, ' + tile.largeThumbUrl + ' 1300w'}
+            // sizes="(min-width: 1600px) 850px, (min-width: 960px) 450px, (min-width: 640px) 400px, 200px"
             sizes="(min-width: 1600px) 850px, (min-width: 960px) 450px, (min-width: 640px) 200px, (min-width: 375px) 80px"
             alt={tile.title}
             id={tile.artId}

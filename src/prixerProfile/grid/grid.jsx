@@ -5,15 +5,19 @@
 
 import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
+import { useTheme } from '@material-ui/core/styles';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
 import GridList from '@material-ui/core/GridList';
 import GridListTile from '@material-ui/core/GridListTile';
 import axios from 'axios';
 import { useHistory } from "react-router-dom";
-import SearchBar from '../../sharedComponents/searchBar/searchBar.jsx';
 import Backdrop from '@material-ui/core/Backdrop';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Img from "react-cool-img";
+
 import utils from '../../utils/utils';
+import SearchBar from '../../sharedComponents/searchBar/searchBar.jsx';
+
 
 
 const useStyles = makeStyles((theme) => ({
@@ -55,6 +59,8 @@ export default function Grid(props) {
   let globalParams = new URLSearchParams(window.location.search);
   const [searchValue, setSearchValue] = useState(globalParams.get('name') || null);
   const [backdrop, setBackdrop] = useState(true);
+  const theme = useTheme();
+  const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
 
   useEffect(()=> {
     if(props.prixerUsername || globalParams.get('prixer')) {
@@ -124,19 +130,19 @@ const searchPhotos = (e, queryValue) => {
           <CircularProgress color="inherit" />
         </Backdrop>
         <SearchBar searchPhotos={searchPhotos} searchValue={searchValue} setSearchValue={setSearchValue}/>
-      <GridList cellHeight={'auto'} className={classes.gridList} cols={2}>
+      <GridList cellSize={"auto"}  className={classes.gridList} cols={isDesktop ? 4 : 2 } >
          {tiles ?
          tiles.map((tile) => (
           <GridListTile key={tile.artId} cols={1} onClick={(e)=>{handleFullImage(e, tile)}} className={classes.img}>
             <Img
             placeholder="/imgLoading.svg"
-            style={{ backgroundColor: "#eeeeee", height: '100%' }}
+            style={{ backgroundColor: "#eeeeee", height: '100%', width: '100%' }}
             src={tile.squareThumbUrl}
             debounce={1000}
             cache
             error='/imgError.svg'
             // srcSet={tile.smallThumbUrl + ' 600w, ' + tile.mediumThumbUrl + ' 850w, ' + tile.largeThumbUrl + ' 1300w'}
-            sizes="(min-width: 1600px) 850px, (min-width: 960px) 450px, (min-width: 640px) 400px, 200px"
+            sizes="(min-width: 1600px) 850px, (min-width: 960px) 450px, (min-width: 640px) 200px, (min-width: 375px) 80px"
             alt={tile.title}
             id={tile.artId}
             />

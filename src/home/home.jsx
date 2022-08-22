@@ -1,5 +1,7 @@
-import React, { useState, Suspense } from 'react';
+import React, { useState, Suspense, useEffect } from 'react';
 // import AppBar from '@material-ui/core/AppBar';
+import { useTheme } from '@material-ui/core/styles';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
 import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -21,7 +23,6 @@ import InstagramIcon from '@material-ui/icons/Instagram';
 import SimpleDialog from '../sharedComponents/simpleDialog/simpleDialog';
 import FloatingAddButton from '../sharedComponents/floatingAddButton/floatingAddButton';
 import WhatsAppIcon from '@material-ui/icons/WhatsApp';
-
 import { useHistory } from "react-router-dom";
 import ArtUploader from '../sharedComponents/artUploader/artUploader';
 import utils from '../utils/utils';
@@ -37,7 +38,7 @@ function Copyright() {
       {new Date().getFullYear()}
       {'.'}
     </Typography>
-  );
+  )
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -93,6 +94,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function Home(props) {
+  const theme = useTheme();
+  const isDesktop = useMediaQuery(theme.breakpoints.up('xs'));
   const classes = useStyles();
   const prixerUsername = 'all';
   const [tabValue, setTabValue] = useState(0);
@@ -139,6 +142,7 @@ export default function Home(props) {
   //   }
   // });
 
+
   const handleGallery = (e) => {
     e.preventDefault();
     history.push({pathname:"/galeria"});
@@ -149,7 +153,6 @@ export default function Home(props) {
     history.push({pathname:"/productos"});
   };
 
-
   return (
     <React.Fragment>
       <Container component="main" maxWidth="s" className={classes.paper}>
@@ -158,8 +161,8 @@ export default function Home(props) {
           <AppBar prixerUsername={prixerUsername} />
         </Grid>
         <main>
-          <Card className={classes.card} style={{ display: 'flex', position: 'relative' }}>
-            <div className={classes.heroContent} style={{ backgroundImage: 'url(' + HeroPhoto + ')', backgroundSize: 'cover', backgroundPosition: 'right'}}>
+          <Card className={classes.card} style={{ display: 'flex', position: 'relative', width: '100vw', marginLeft: isDesktop ? '-24px' : '-15px'}}>
+            <div className={classes.heroContent} style={{ backgroundImage: 'url(' + HeroPhoto + ')', backgroundSize: 'cover', backgroundPosition: 'top', backgroundPositionY: '10%', backgroundPositionX : isDesktop ? '40%' : '0'}}>
             </div>
             <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-around', color: '#404e5c', backgroundColor: '#fff', width: '100%', minHeight: 50, bottom: 0, position: 'absolute', margin: 0, padding: 10, }}>
               <div style={{ left: 10, alignItems: 'center', width: '400px' }}>
@@ -171,7 +174,7 @@ export default function Home(props) {
                 <div>
                   <Grid item>
                     <Button variant="contained" color="white" style={{ width: 85, color: '#404e5c', fontSize: 13 }} onClick={handleGallery}>
-                      Galería
+                     Galería
                     </Button>
                   </Grid>
                 </div>

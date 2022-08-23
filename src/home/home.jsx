@@ -66,6 +66,7 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(4),
   },
   cardGrid: {
+    width: "100%",
     paddingTop: theme.spacing(4),
     paddingBottom: theme.spacing(8)
   },
@@ -197,7 +198,7 @@ export default function Home(props) {
               </div>
             </div>
           </Card>
-          <Container className={classes.cardGrid} maxWidth="md">
+          <Container className={classes.cardGrid} maxWidth="xl">
             {/* End hero unit */}
             {/* {scrolledTop ?
               <Grid container spacing={1} style={{ position: 'fixed', top: 10 }}>

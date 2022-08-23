@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme) => ({
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'left',
-      maxWidth: 960,
+      maxWidth: "90%",
       flexGrow:1
     },
     avatar: {
@@ -44,7 +44,7 @@ export default function PrixerProfile(props) {
   const prixerUsername= props.match.params.username.toLowerCase();
   
     return (
-        <Container component="main" maxWidth="s" className={classes.paper}>
+        <Container component="main" maxWidth="xl" className={classes.paper}>
             <CssBaseline />
             <Grid>
               <AppBar prixerUsername={prixerUsername}/>

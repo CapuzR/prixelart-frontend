@@ -19,6 +19,7 @@ const useStyles = makeStyles((theme) => ({
     flexWrap: 'wrap',
     justifyContent: 'space-around',
     overflow: 'hidden',
+    // maxWidth: "70%",
     backgroundColor: theme.palette.background.paper,
   },
   gridList: {
@@ -81,7 +82,7 @@ export default function PrixerGrid(props) {
     {tiles &&
     tiles.filter(tile => tile.avatar).map((tile) =>
       (
-        <Grid item key={tile._id} xs={12} sm={6} md={4}>
+        <Grid item key={tile._id} xs={3} sm={3} md={3}>
             <Card className={classes.card}>
             <CardMedia
                 alt={tile.title}

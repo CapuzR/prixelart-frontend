@@ -2,6 +2,7 @@ import React, { useState, Suspense, useEffect } from 'react';
 // import AppBar from '@material-ui/core/AppBar';
 import { useTheme } from '@material-ui/core/styles';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
+import Carousel from 'react-material-ui-carousel'
 import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -23,6 +24,9 @@ import InstagramIcon from '@material-ui/icons/Instagram';
 import SimpleDialog from '../sharedComponents/simpleDialog/simpleDialog';
 import FloatingAddButton from '../sharedComponents/floatingAddButton/floatingAddButton';
 import WhatsAppIcon from '@material-ui/icons/WhatsApp';
+import MaximizeIcon from '@material-ui/icons/Maximize';
+import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
+import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 import { useHistory } from "react-router-dom";
 import ArtUploader from '../sharedComponents/artUploader/artUploader';
 import utils from '../utils/utils';
@@ -91,12 +95,17 @@ const useStyles = makeStyles((theme) => ({
   float: {
     position:'relative',
     marginLeft:'87%'
+  },
+  CarouselContent: {
+      width: '100vw',
+      heigh: '92vh'
   }
 }));
 
 export default function Home(props) {
   const theme = useTheme();
-  const isDesktop = useMediaQuery(theme.breakpoints.up('xs'));
+  const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
+  const isDeskTop = useMediaQuery(theme.breakpoints.up('sm'));
   const classes = useStyles();
   const prixerUsername = 'all';
   const [tabValue, setTabValue] = useState(0);
@@ -107,7 +116,10 @@ export default function Home(props) {
   const history = useHistory();
   const [openArtFormDialog, setOpenArtFormDialog] = useState(false);
   const HeroPhoto = 'https://cdn.prixelart.com/HeroPhoto_60Q.webp';
-
+  const imageCarousel = ['https://miviaje.com/wp-content/uploads/2018/04/salto-del-angel-venezuela.jpg',
+                        'https://miviaje.com/wp-content/uploads/2018/06/cayo-de-agua-venezuela.jpg',
+                        'https://uploads-ssl.webflow.com/60ba4634b9ed2a66554db051/627149e039af138c33f3fa8c_puente-maracaibo.jpg'
+                        ];
   const handleChange = (event, newValue) => {
 
     if (newValue === 0) {
@@ -162,8 +174,47 @@ export default function Home(props) {
           <AppBar prixerUsername={prixerUsername} />
         </Grid>
         <main>
-          <Card className={classes.card} style={{ display: 'flex', position: 'relative', width: '100vw', marginLeft: isDesktop ? '-24px' : '-15px'}}>
-            <div className={classes.heroContent} style={{ backgroundImage: 'url(' + HeroPhoto + ')', backgroundSize: 'cover', backgroundPosition: 'top', backgroundPositionY: '10%', backgroundPositionX : isDesktop ? '40%' : '0'}}>
+          <Card className={classes.card} style={{ display: 'flex',
+           position: 'relative', 
+           width: '100vw', 
+           marginLeft: isDesktop ? '-24px' : '-16px' , 
+           marginLeft: isDeskTop ? '-24px' : '-16px',
+           height: '100vh'}}>
+            <div className={classes.CarouselContent}>
+              <Carousel 
+              fullHeightHover={false}
+              style={{marginTop: isDesktop ? '0' : '-40px'}}
+              IndicatorIcon={<MaximizeIcon/>}
+              NextIcon={<ArrowForwardIosIcon style={{fontSize: '3rem'}} />}
+              PrevIcon={<ArrowBackIosIcon style={{fontSize: '3rem'}}/>}
+              navButtonsProps={
+                {
+                  style: {
+                    backgroundColor: 'rgba(0, 0, 0, 0.1)',
+                    width: '98%',
+                    height: '100vh',
+                    marginTop: '-50vh',
+                    borderRadius: '0',
+                    marginLeft: '1px'
+                  }
+                }
+              }
+              indicatorContainerProps={
+                {
+                  style:{
+                    marginTop: isDesktop ? '-70px' : '-100px',
+                    position: 'absolute'
+                  }
+                }
+              }
+              // next={ (next, active) => console.log('after')  }
+              // prev={ (prev, active) => console.log('before') }
+              >
+                <div className={classes.heroContent} style={{ backgroundImage: 'url(' + HeroPhoto + ')', backgroundSize: 'cover', backgroundPosition: 'top', backgroundPositionY: '10%', backgroundPositionX : isDesktop ? '40%' : '0'}} ></div>
+                <div className={classes.heroContent} style={{ backgroundImage: 'url('+ imageCarousel[0] +')', backgroundSize: 'cover', backgroundPosition: 'center', backgroundPositionY: '10%'}} ></div>
+                <div className={classes.heroContent} style={{ backgroundImage: 'url('+ imageCarousel[1] +')', backgroundSize: 'cover', backgroundPosition: 'center', backgroundPositionY: '10%', backgroundPositionX : isDesktop ? '40%' : '0'}} ></div>
+                <div className={classes.heroContent} style={{ backgroundImage: 'url('+ imageCarousel[2] +')', backgroundSize: 'cover', backgroundPosition: 'center', backgroundPositionY: '10%', backgroundPositionX : isDesktop ? '40%' : '0'}} ></div>
+              </Carousel>
             </div>
             <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-around', color: '#404e5c', backgroundColor: '#fff', width: '100%', minHeight: 50, bottom: 0, position: 'absolute', margin: 0, padding: 10, }}>
               <div style={{ left: 10, alignItems: 'center', width: '400px' }}>

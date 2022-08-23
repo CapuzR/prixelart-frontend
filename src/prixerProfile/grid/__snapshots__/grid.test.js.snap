@@ -5,7 +5,7 @@ exports[`Login renders correctly 1`] = `
   className="makeStyles-root-1"
 >
   <ul
-    className="MuiGridList-root makeStyles-gridList-2"
+    className="MuiGridList makeStyles-gridList-4"
     style={
       Object {
         "margin": -2,

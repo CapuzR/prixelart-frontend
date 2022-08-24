@@ -115,11 +115,67 @@ export default function Home(props) {
   // const [scrolledTop, setScrolledTop] = useState(false);
   const history = useHistory();
   const [openArtFormDialog, setOpenArtFormDialog] = useState(false);
-  const HeroPhoto = 'https://cdn.prixelart.com/HeroPhoto_60Q.webp';
-  const imageCarousel = ['https://miviaje.com/wp-content/uploads/2018/04/salto-del-angel-venezuela.jpg',
-                        'https://miviaje.com/wp-content/uploads/2018/06/cayo-de-agua-venezuela.jpg',
-                        'https://uploads-ssl.webflow.com/60ba4634b9ed2a66554db051/627149e039af138c33f3fa8c_puente-maracaibo.jpg'
-                        ];
+  const imgsDesktop =  [
+      {
+        url: './bannerImages/desktop/Portada_de_Pagina_Web_Museo_Chuao_Espejo_PC_v3.jpg'
+      },
+      {
+        url : './bannerImages/desktop/bedroom-g9548c5f75_1920.jpg'
+      },
+      {
+        url : './bannerImages/desktop/corporate-building-with-minimalist-empty-room-2.jpg'
+      },
+      {
+        url : './bannerImages/desktop/Foto_de_Medhat_Ayad_en_Pexels_SM.jpg'
+      },
+      {
+        url : './bannerImages/desktop/Foto_de_Vecislavas_Popa_en_Pexels_lINEAL_120X40.jpg'
+      },
+      {
+        url : './bannerImages/desktop/interior_dark_blue_wall_with_yellow_sofa_and_decor_in_living_room.jpg'
+      },
+      {
+        url : './bannerImages/desktop/interior-g373dfef45_1920.jpg'
+      },
+      {
+        url : './bannerImages/desktop/Pixabay_3X2.jpg'
+      },
+      {
+        url : './bannerImages/desktop/interior-g373dfef45_1920x2.jpg'
+      },
+      {
+        url : './bannerImages/desktop/Portada_de_Pagina_Web_Museo_Chuao_Espejo_PC_v2.jpg'
+      },
+    ]
+const imgsMobile = [
+  {
+    url: './bannerImages/mobile/Portada_de_Pagina_Web_Museo_Chuao_Espejo_Telefono_V2.jpg'
+  },
+  {
+    url: './bannerImages/mobile/Foto_de_Canva_Studio_en_Pexels_16a9.jpg'
+  },
+  {
+    url: './bannerImages/mobile/Foto_de_Daria_Shevtsova_en_Pexels.jpg'
+  },
+  {
+    url: './bannerImages/mobile/Foto_de_Ivan_Samkov_en_Pexels.jpg'
+  },
+  {
+    url: './bannerImages/mobile/Foto_de_Medhat_Ayad_en_Pexels_9a16.jpg'
+  },
+  {
+    url: './bannerImages/mobile/Foto_de_Vecislavas_Popa_en_Pexels_lINEAL_120X40x2_Phone.jpg'
+  },
+  {
+    url: './bannerImages/mobile/pexels-maksim-goncharenok-4352247z2.jpg'
+  },
+  {
+    url: './bannerImages/mobile/Pixabay_3Xz2_Phone.jpg'
+  },
+  {
+    url: './bannerImages/mobile/Portada_de_Pagina_Web_Museo_Chuao_Espejo_Telefono_V1.jpg'
+  }
+]
   const handleChange = (event, newValue) => {
 
     if (newValue === 0) {
@@ -182,6 +238,9 @@ export default function Home(props) {
            height: '100vh'}}>
             <div className={classes.CarouselContent}>
               <Carousel 
+              stopAutoPlayOnHover={false}
+              animation='slide'
+              duration={400}
               fullHeightHover={false}
               style={{marginTop: isDesktop ? '0' : '-40px'}}
               IndicatorIcon={<MaximizeIcon/>}
@@ -207,14 +266,24 @@ export default function Home(props) {
                   }
                 }
               }
-              // next={ (next, active) => console.log('after')  }
-              // prev={ (prev, active) => console.log('before') }
               >
-                <div className={classes.heroContent} style={{ backgroundImage: 'url(' + HeroPhoto + ')', backgroundSize: 'cover', backgroundPosition: 'top', backgroundPositionY: '10%', backgroundPositionX : isDesktop ? '40%' : '0'}} ></div>
-                <div className={classes.heroContent} style={{ backgroundImage: 'url('+ imageCarousel[0] +')', backgroundSize: 'cover', backgroundPosition: 'center', backgroundPositionY: '10%'}} ></div>
-                <div className={classes.heroContent} style={{ backgroundImage: 'url('+ imageCarousel[1] +')', backgroundSize: 'cover', backgroundPosition: 'center', backgroundPositionY: '10%', backgroundPositionX : isDesktop ? '40%' : '0'}} ></div>
-                <div className={classes.heroContent} style={{ backgroundImage: 'url('+ imageCarousel[2] +')', backgroundSize: 'cover', backgroundPosition: 'center', backgroundPositionY: '10%', backgroundPositionX : isDesktop ? '40%' : '0'}} ></div>
-              </Carousel>
+                {
+                  isDesktop ?
+                imgsDesktop.map((img, key_id) => 
+                {
+                  return(
+                    <div className={classes.heroContent} key={key_id} style={{ backgroundImage: 'url(' + img.url + ')', backgroundSize: 'cover', backgroundPosition: 'top', backgroundPositionY: '-60px'}} ></div>
+                  )
+                })
+                 :
+                 imgsMobile.map((img, key_id) => 
+                 {
+                  return(
+                    <div className={classes.heroContent} key={key_id} style={{ backgroundImage: 'url(' + img.url + ')', backgroundSize: 'cover', backgroundPosition: 'left'}}></div>
+                  )
+                 })
+                }
+                 </Carousel>
             </div>
             <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-around', color: '#404e5c', backgroundColor: '#fff', width: '100%', minHeight: 50, bottom: 0, position: 'absolute', margin: 0, padding: 10, }}>
               <div style={{ left: 10, alignItems: 'center', width: '400px' }}>

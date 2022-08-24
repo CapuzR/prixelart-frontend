@@ -17,9 +17,11 @@ import { useHistory } from "react-router-dom";
 import MenuItem from "@material-ui/core/MenuItem";
 import InputLabel from "@material-ui/core/InputLabel";
 import Select from "@material-ui/core/Select";
-import { useState, setChecked } from "react";
+import { useState } from "react";
 import Snackbar from "@material-ui/core/Snackbar";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import { Modal } from "@material-ui/core";
+import Terms from "./Terms";
 
 function Copyright() {
   return (
@@ -81,6 +83,28 @@ const useStyles = makeStyles((theme) => ({
     },
     marginLeft: "50%",
   },
+  modal: {
+    position: "absolute",
+    width: 800,
+    maxHeight: 450,
+    overflowY: "auto",
+    backgroundColor: "white",
+    border: "2px solid #000",
+    boxShadow: theme.shadows[5],
+    padding: "16px 32px 24px",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    textAlign: "justify",
+  },
+  button: {
+    textAlign: "center",
+  },
+  root: {
+    height: 300,
+    flexGrow: 1,
+    minWidth: 300,
+  },
 }));
 
 export default function PrixerRegistration() {
@@ -96,9 +120,25 @@ export default function PrixerRegistration() {
   const [avatarObj, setAvatarObj] = useState("");
   const [buttonState, setButtonState] = useState(false);
   const [loading, setLoading] = useState(false);
+
   const handleOnChange = () => {
     setIsChecked(!isChecked);
   };
+  const styles = useStyles();
+  const [modal, setModal] = useState(false);
+  const openModal = () => {
+    setModal(!modal);
+  };
+  const body = (
+    <div className={styles.modal}>
+      <Terms />
+      <div align="center">
+        <Button variant="contained" color="primary" onClick={() => openModal()}>
+          Aceptar
+        </Button>
+      </div>
+    </div>
+  );
 
   //Error states.
   const [errorMessage, setErrorMessage] = useState();
@@ -275,19 +315,37 @@ export default function PrixerRegistration() {
             </Grid>
           </Grid>
 
-          <Grid align="center" item xs={12}>
+          <Grid
+            item
+            xs={12}
+            style={{
+              display: "flex",
+              paddingTop: "24px",
+              justifyContent: "center",
+            }}
+          >
             <FormControlLabel
+              style={{ margin: 0 }}
               control={<Checkbox />}
-              label="Acepto los Términos y condiciones."
+              label="Acepto los"
               checked={isChecked}
               onChange={handleOnChange}
             />
+            <Button
+              style={{ textTransform: "lowercase", fontSize: "1rem" }}
+              onClick={() => openModal()}
+            >
+              Términos y condiciones
+            </Button>
+            <Modal open={modal} onClose={openModal}>
+              {body}
+            </Modal>
           </Grid>
 
           <Button
             type="submit"
             fullWidth
-            disabled={!isChecked} //disabled es desactivado , isChecked inicialmente es false pero con la negación! está en true
+            disabled={!isChecked}
             variant="contained"
             color="primary"
             className={classes.submit}

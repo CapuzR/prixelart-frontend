@@ -117,63 +117,45 @@ export default function Home(props) {
   const [openArtFormDialog, setOpenArtFormDialog] = useState(false);
   const imgsDesktop =  [
       {
-        url: './bannerImages/desktop/Portada_de_Pagina_Web_Museo_Chuao_Espejo_PC_v3.jpg'
+        url: './bannerImages/Portada_de_Pagina_Web_Museo_Chuao_Espejo_PC_v2.jpg'
       },
       {
-        url : './bannerImages/desktop/bedroom-g9548c5f75_1920.jpg'
+        url : 'https://devprix.nyc3.digitaloceanspaces.com/bedroom-g9548c5f75_1920.jpg'
       },
       {
-        url : './bannerImages/desktop/corporate-building-with-minimalist-empty-room-2.jpg'
+        url : 'https://devprix.nyc3.digitaloceanspaces.com/corporate-building-with-minimalist-empty-room%202.jpg'
       },
       {
-        url : './bannerImages/desktop/Foto_de_Medhat_Ayad_en_Pexels_SM.jpg'
+        url : 'https://devprix.nyc3.digitaloceanspaces.com/Foto%20de%20Vecislavas%20Popa%20en%20Pexels_lINEAL%20120X40.2.jpg'
       },
       {
-        url : './bannerImages/desktop/Foto_de_Vecislavas_Popa_en_Pexels_lINEAL_120X40.jpg'
+        url : 'https://devprix.nyc3.digitaloceanspaces.com/interior_dark_blue_wall_with_yellow_sofa_and_decor_in_living_room.jpg'
       },
       {
-        url : './bannerImages/desktop/interior_dark_blue_wall_with_yellow_sofa_and_decor_in_living_room.jpg'
+        url : 'https://devprix.nyc3.digitaloceanspaces.com/interior-g373dfef45_1920.2.jpg'
       },
       {
-        url : './bannerImages/desktop/interior-g373dfef45_1920.jpg'
-      },
-      {
-        url : './bannerImages/desktop/Pixabay_3X2.jpg'
-      },
-      {
-        url : './bannerImages/desktop/interior-g373dfef45_1920x2.jpg'
-      },
-      {
-        url : './bannerImages/desktop/Portada_de_Pagina_Web_Museo_Chuao_Espejo_PC_v2.jpg'
-      },
+        url : 'https://devprix.nyc3.digitaloceanspaces.com/interior-g373dfef45_1920.jpg'
+      }
     ]
 const imgsMobile = [
   {
-    url: './bannerImages/mobile/Portada_de_Pagina_Web_Museo_Chuao_Espejo_Telefono_V2.jpg'
+    url: 'https://devprix.nyc3.digitaloceanspaces.com/Portada%20de%20Pagina%20Web_Museo%20Chuao%20Espejo_Telefono_V1.jpg'
   },
   {
-    url: './bannerImages/mobile/Foto_de_Canva_Studio_en_Pexels_16a9.jpg'
+    url: 'https://devprix.nyc3.digitaloceanspaces.com/Foto%20de%20Canva%20Studio%20en%20Pexels_16a9.jpg'
   },
   {
-    url: './bannerImages/mobile/Foto_de_Daria_Shevtsova_en_Pexels.jpg'
+    url: 'https://devprix.nyc3.digitaloceanspaces.com/Foto%20de%20Medhat%20Ayad%20en%20Pexels_9a16.jpg'
   },
   {
-    url: './bannerImages/mobile/Foto_de_Ivan_Samkov_en_Pexels.jpg'
+    url: 'https://devprix.nyc3.digitaloceanspaces.com/Pixabay_%203X.2%20Phone.jpg'
   },
   {
-    url: './bannerImages/mobile/Foto_de_Medhat_Ayad_en_Pexels_9a16.jpg'
+    url: 'https://devprix.nyc3.digitaloceanspaces.com/Foto%20de%20Vecislavas%20Popa%20en%20Pexels_lINEAL%20120X40.2%20%20Phone.jpg'
   },
   {
-    url: './bannerImages/mobile/Foto_de_Vecislavas_Popa_en_Pexels_lINEAL_120X40x2_Phone.jpg'
-  },
-  {
-    url: './bannerImages/mobile/pexels-maksim-goncharenok-4352247z2.jpg'
-  },
-  {
-    url: './bannerImages/mobile/Pixabay_3Xz2_Phone.jpg'
-  },
-  {
-    url: './bannerImages/mobile/Portada_de_Pagina_Web_Museo_Chuao_Espejo_Telefono_V1.jpg'
+    url: 'https://devprix.nyc3.digitaloceanspaces.com/Foto%20de%20Daria%20Shevtsova%20en%20Pexels.jpg'
   }
 ]
   const handleChange = (event, newValue) => {
@@ -240,7 +222,7 @@ const imgsMobile = [
               <Carousel 
               stopAutoPlayOnHover={false}
               animation='slide'
-              duration={400}
+              duration={500}
               fullHeightHover={false}
               style={{marginTop: isDesktop ? '0' : '-40px'}}
               IndicatorIcon={<MaximizeIcon/>}
@@ -272,7 +254,7 @@ const imgsMobile = [
                 imgsDesktop.map((img, key_id) => 
                 {
                   return(
-                    <div className={classes.heroContent} key={key_id} style={{ backgroundImage: 'url(' + img.url + ')', backgroundSize: 'cover', backgroundPosition: 'top', backgroundPositionY: '-60px'}} ></div>
+                    <div className={classes.heroContent} key={key_id} style={{ backgroundImage: 'url(' + img.url + ')', backgroundSize: 'cover', backgroundPosition: 'center'}} ></div>
                   )
                 })
                  :

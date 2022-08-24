@@ -117,7 +117,7 @@ export default function Home(props) {
   const [openArtFormDialog, setOpenArtFormDialog] = useState(false);
   const imgsDesktop =  [
       {
-        url: './bannerImages/Portada_de_Pagina_Web_Museo_Chuao_Espejo_PC_v2.jpg'
+        url: './Portada_de_Pagina_Web_Museo_Chuao_Espejo_PC_v2.jpg'
       },
       {
         url : 'https://devprix.nyc3.digitaloceanspaces.com/bedroom-g9548c5f75_1920.jpg'

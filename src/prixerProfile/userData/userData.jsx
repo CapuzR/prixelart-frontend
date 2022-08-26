@@ -20,6 +20,9 @@ import Avatar from "@material-ui/core/Avatar";
 import AddIcon from "@material-ui/icons/Add";
 import Backdrop from "@material-ui/core/Backdrop";
 import InstagramIcon from "@material-ui/icons/Instagram";
+import FacebookIcon from "@material-ui/icons/Facebook";
+import TwitterIcon from "@material-ui/icons/Twitter";
+
 const useStyles = makeStyles((theme) => ({
   loading: {
     display: "flex",
@@ -76,6 +79,8 @@ export default function UserData(props) {
   const [lastName, setLastName] = useState();
   const [specialty, setSpecialty] = useState();
   const [instagram, setInstagram] = useState();
+  const [facebook, setFacebook] = useState();
+  const [twitter, setTwitter] = useState();
   const [description, setDescription] = useState();
   const [dateOfBirth, setDateOfBirth] = useState();
   const [phone, setPhone] = useState();
@@ -103,6 +108,8 @@ export default function UserData(props) {
         setLastName(response.data.lastName);
         setSpecialty(response.data.specialty);
         setInstagram(response.data.instagram);
+        setFacebook(response.data.facebook);
+        setTwitter(response.data.twitter);
         setDescription(response.data.description);
         setDateOfBirth(response.data.dateOfBirth);
         setPhone(response.data.phone);
@@ -132,6 +139,8 @@ export default function UserData(props) {
       formData.append("lastName", lastName);
       formData.append("specialty", specialty);
       formData.append("instagram", instagram);
+      formData.append("facebook", facebook);
+      formData.append("twitter", twitter);
       formData.append("description", description);
       formData.append("dateOfBirth", dateOfBirth);
       formData.append("phone", phone);
@@ -148,6 +157,8 @@ export default function UserData(props) {
         setLastName(response.data.lastName);
         setSpecialty(response.data.specialty);
         setInstagram(response.data.instagram);
+        setFacebook(response.data.facebook);
+        setTwitter(response.data.twitter);
         setDescription(response.data.description);
         setDateOfBirth(response.data.dateOfBirth);
         setPhone(response.data.phone);
@@ -218,16 +229,51 @@ export default function UserData(props) {
                     <div
                       style={{
                         display: "flex",
-                        flexDirection: "row",
+                        flexDirection: "column",
                       }}
                     >
-                      <InstagramIcon />
-                      <a
-                        href={"https://www.instagram.com/" + instagram}
-                        style={{ textDecoration: "none", color: "#d33f49" }}
+                      <div
+                        style={{
+                          display: "flex",
+                          flexDirection: "row",
+                        }}
                       >
-                        {instagram}
-                      </a>
+                        <InstagramIcon />
+                        <a
+                          href={"https://www.instagram.com/" + instagram}
+                          style={{ textDecoration: "none", color: "#d33f49" }}
+                        >
+                          {instagram}
+                        </a>
+                      </div>
+                      <div
+                        style={{
+                          display: "flex",
+                          flexDirection: "row",
+                        }}
+                      >
+                        <FacebookIcon />
+                        <a
+                          href={"https://www.facebook.com/" + facebook}
+                          style={{ textDecoration: "none", color: "#d33f49" }}
+                        >
+                          {facebook}
+                        </a>
+                      </div>
+                      <div
+                        style={{
+                          display: "flex",
+                          flexDirection: "row",
+                        }}
+                      >
+                        <TwitterIcon />
+                        <a
+                          href={"https://www.twitter.com/" + twitter}
+                          style={{ textDecoration: "none", color: "#d33f49" }}
+                        >
+                          {twitter}
+                        </a>
+                      </div>
                     </div>
                   </Typography>
                 </Grid>

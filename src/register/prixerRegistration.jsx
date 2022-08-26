@@ -314,38 +314,9 @@ export default function PrixerRegistration() {
               />
             </Grid>
           </Grid>
-
-          <Grid
-            item
-            xs={12}
-            style={{
-              display: "flex",
-              paddingTop: "24px",
-              justifyContent: "center",
-            }}
-          >
-            <FormControlLabel
-              style={{ margin: 0 }}
-              control={<Checkbox />}
-              label="Acepto los"
-              checked={isChecked}
-              onChange={handleOnChange}
-            />
-            <Button
-              style={{ textTransform: "lowercase", fontSize: "1rem" }}
-              onClick={() => openModal()}
-            >
-              Términos y condiciones
-            </Button>
-            <Modal open={modal} onClose={openModal}>
-              {body}
-            </Modal>
-          </Grid>
-
           <Button
             type="submit"
             fullWidth
-            disabled={!isChecked}
             variant="contained"
             color="primary"
             className={classes.submit}

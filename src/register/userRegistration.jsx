@@ -26,12 +26,32 @@ import OutlinedInput from "@material-ui/core/OutlinedInput";
 import InputLabel from "@material-ui/core/InputLabel";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import FormControl from "@material-ui/core/FormControl";
+import { FormControlLabel } from "@material-ui/core";
+import Checkbox from "@material-ui/core/Checkbox";
+import Modal from "@material-ui/core/Modal";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
+import { useTheme } from "@material-ui/core/styles";
+import useMediaQuery from "@material-ui/core/useMediaQuery";
+
+import Terms from "./Terms";
 import clsx from "clsx";
 import jwt from "jwt-decode";
 
 const useStyles = makeStyles((theme) => ({
+  modal: {
+    position: "absolute",
+    maxHeight: 450,
+    overflowY: "auto",
+    backgroundColor: "white",
+    border: "2px solid #000",
+    boxShadow: theme.shadows[5],
+    padding: "16px 32px 24px",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    textAlign: "justify",
+  },
   paper: {
     marginTop: theme.spacing(8),
     display: "flex",
@@ -56,6 +76,7 @@ const useStyles = makeStyles((theme) => ({
     margin: {
       margin: theme.spacing(1),
     },
+
     withoutLabel: {
       marginTop: theme.spacing(3),
     },
@@ -75,7 +96,31 @@ export default function SignUp() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [buttonState, setButtonState] = useState(true);
+  const [isChecked, setIsChecked] = useState(false);
+  const [termsAgree, setTermsAgree] = useState(false);
+  const theme = useTheme();
 
+  const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
+
+  const handleOnChange = () => {
+    setIsChecked(!isChecked);
+    setTermsAgree(!isChecked);
+  };
+  const styles = useStyles();
+  const [modal, setModal] = useState(false);
+  const openModal = () => {
+    setModal(!modal);
+  };
+  const body = (
+    <div className={styles.modal}>
+      <Terms />
+      <div align="center">
+        <Button variant="contained" color="primary" onClick={() => openModal()}>
+          Aceptar
+        </Button>
+      </div>
+    </div>
+  );
   //Error states.
   const [usernameError, setUsernameError] = useState();
   const [emailError, setEmailError] = useState();
@@ -98,6 +143,7 @@ export default function SignUp() {
         password: password,
         firstName: firstName,
         lastName: lastName,
+        termsAgree: termsAgree,
       };
       setButtonState(true);
       axios
@@ -222,7 +268,7 @@ export default function SignUp() {
                 label="Usuario"
                 name="username"
                 autoComplete="username"
-                vallue={username}
+                value={username}
                 onChange={handleUsernameChange}
               />
             </Grid>
@@ -300,25 +346,49 @@ export default function SignUp() {
                 />
               </FormControl>
             </Grid>
-            {/* <Grid >
+            <Grid
+              item
+              xs={12}
+              style={{
+                display: "flex",
+                paddingTop: "24px",
+                justifyContent: "center",
+              }}
+            >
               <FormControlLabel
-                control={<Checkbox value="allowExtraEmails" color="primary" />}
-                label="Acepto las condiciones de uso."
+                style={{ margin: 0 }}
+                control={<Checkbox color="primary" />}
+                label="Acepto los"
+                onChange={handleOnChange}
+                value={termsAgree}
               />
-            </Grid> */}
+
+              <Button
+                style={{ textTransform: "lowercase", fontSize: "1rem" }}
+                onClick={() => openModal()}
+              >
+                Términos y condiciones
+              </Button>
+              <Modal
+                open={modal}
+                onClose={openModal}
+                width={isDesktop ? 800 : 420}
+              >
+                {body}
+              </Modal>
+            </Grid>
           </Grid>
           <Button
             type="submit"
             fullWidth
-            disabled={buttonState}
+            disabled={!isChecked}
             variant="contained"
             color="primary"
             className={classes.submit}
-            value="submit"
           >
             Registrarme
           </Button>
-          <Grid container justify="flex-end">
+          <Grid container style={{ justifyContent: "center" }}>
             <Grid item>
               <Link
                 href="#"

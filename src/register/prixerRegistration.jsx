@@ -86,6 +86,8 @@ export default function PrixerRegistration() {
   const history = useHistory();
   const [specialty, setSpecialty] = useState("Ambas");
   const [instagram, setInstagram] = useState("");
+  const [facebook, setFacebook] = useState("");
+  const [twitter, setTwitter] = useState("");
   const [dateOfBirth, setDateOfBirth] = useState();
   const [phone, setPhone] = useState("");
   const [country, setCountry] = useState("");
@@ -115,6 +117,8 @@ export default function PrixerRegistration() {
       const data = {
         specialty: specialty,
         instagram: instagram,
+        facebook: facebook,
+        twitter: twitter,
         dateOfBirth: dateOfBirth,
         phone: phone,
         country: country,
@@ -178,7 +182,7 @@ export default function PrixerRegistration() {
                 <MenuItem value="Ambas">Ambas</MenuItem>
               </Select>
             </Grid>
-            <Grid item xs={9} sm={9}>
+            <Grid item xs={5} sm={9}>
               <TextField
                 autoComplete="fname"
                 name="instagram"
@@ -192,6 +196,38 @@ export default function PrixerRegistration() {
                 autoFocus
                 onChange={(e) => {
                   setInstagram(e.target.value);
+                }}
+              />
+            </Grid>
+            <Grid item xs={6} sm={6}>
+              <TextField
+                autoComplete="fname"
+                name="facebook"
+                variant="outlined"
+                disabled={buttonState}
+                fullWidth
+                value={facebook}
+                id="facebook"
+                label="Facebook"
+                autoFocus
+                onChange={(e) => {
+                  setFacebook(e.target.value);
+                }}
+              />
+            </Grid>
+            <Grid item xs={6} sm={6}>
+              <TextField
+                autoComplete="fname"
+                name="twitter"
+                variant="outlined"
+                disabled={buttonState}
+                fullWidth
+                value={twitter}
+                id="twitter"
+                label="Twitter"
+                autoFocus
+                onChange={(e) => {
+                  setTwitter(e.target.value);
                 }}
               />
             </Grid>

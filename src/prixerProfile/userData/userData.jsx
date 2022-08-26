@@ -76,6 +76,8 @@ export default function UserData(props) {
   const [lastName, setLastName] = useState();
   const [specialty, setSpecialty] = useState();
   const [instagram, setInstagram] = useState();
+  //const [facebook, setFacebook] = useState();
+  //const [twitter, setTwitter] = useState();
   const [description, setDescription] = useState("");
   const [dateOfBirth, setDateOfBirth] = useState();
   const [phone, setPhone] = useState();
@@ -103,6 +105,8 @@ export default function UserData(props) {
         setLastName(response.data.lastName);
         setSpecialty(response.data.specialty);
         setInstagram(response.data.instagram);
+        //setFacebook(response.data.facebook);
+        //setTwitter(response.data.twitter);
         setDescription(response.data.description);
         setDateOfBirth(response.data.dateOfBirth);
         setPhone(response.data.phone);
@@ -132,6 +136,8 @@ export default function UserData(props) {
       formData.append("lastName", lastName);
       formData.append("specialty", specialty);
       formData.append("instagram", instagram);
+      //formData.append("facebook", facebook);
+      //formData.append("twitter", twitter);
       formData.append("description", description);
       formData.append("dateOfBirth", dateOfBirth);
       formData.append("phone", phone);
@@ -148,6 +154,8 @@ export default function UserData(props) {
         setLastName(response.data.lastName);
         setSpecialty(response.data.specialty);
         setInstagram(response.data.instagram);
+        //setFacebook(response.data.facebook);
+        //setTwitter(response.data.twitter);
         setDescription(response.data.description);
         setDateOfBirth(response.data.dateOfBirth);
         setPhone(response.data.phone);

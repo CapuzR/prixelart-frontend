@@ -276,11 +276,15 @@ export default function UserData(props) {
                       </div>
                     </div>
                   </Typography>
+                  <Typography
+                    variant="body1"
+                    color="textSecondary"
+                    maxWidth="60%"
+                  >
+                    {description}
+                  </Typography>
                 </Grid>
               </Grid>
-              {/* <Typography variant="body1" color="textSecondary" maxWidth="60%">
-                  {description}
-            </Typography> */}
               <Grid item>
                 {avatarObj ? (
                   <Avatar className={classes.avatar}>
@@ -380,11 +384,44 @@ export default function UserData(props) {
                       value={instagram}
                     />
                   </Grid>
+                  <Grid item xs={7}>
+                    <TextField
+                      id="facebook"
+                      variant="outlined"
+                      label="Facebook"
+                      onChange={(e) => {
+                        setFacebook(e.target.value);
+                      }}
+                      value={facebook}
+                    />
+                  </Grid>
+                  <Grid item xs={7}>
+                    <TextField
+                      id="twitter"
+                      variant="outlined"
+                      label="Twitter"
+                      onChange={(e) => {
+                        setTwitter(e.target.value);
+                      }}
+                      value={twitter}
+                    />
+                  </Grid>
                 </Grid>
               </Grid>
-              {/* <Grid item xs>
-              <TextField id='description' label="Descripción" onChange={(e)=> {setDescription(e.target.value)}} value={description} multiline/>
-            </Grid> */}
+              {
+                <Grid item xs={6}>
+                  <TextField
+                    id="description"
+                    label="Descripción"
+                    onChange={(e) => {
+                      setDescription(e.target.value);
+                    }}
+                    value={description}
+                    multiline
+                    item
+                  />
+                </Grid>
+              }
               <Grid item>
                 {avatarObj ? (
                   <Avatar className={classes.avatar}>

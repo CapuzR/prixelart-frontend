@@ -1,4 +1,6 @@
 import React from "react";
+import axios from "axios";
+import { useHistory } from "react-router-dom";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
 import CssBaseline from "@material-ui/core/CssBaseline";
@@ -8,16 +10,16 @@ import Grid from "@material-ui/core/Grid";
 import Box from "@material-ui/core/Box";
 import AddIcon from "@material-ui/icons/Add";
 import Typography from "@material-ui/core/Typography";
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles, useTheme } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
-import axios from "axios";
-import { useHistory } from "react-router-dom";
 import MenuItem from "@material-ui/core/MenuItem";
 import InputLabel from "@material-ui/core/InputLabel";
 import Select from "@material-ui/core/Select";
 import { useState } from "react";
 import Snackbar from "@material-ui/core/Snackbar";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import FormControl from "@material-ui/core/FormControl";
+import Input from "@material-ui/core/Input";
 
 function Copyright() {
   return (
@@ -79,12 +81,37 @@ const useStyles = makeStyles((theme) => ({
     },
     marginLeft: "50%",
   },
+  formControl: {
+    margin: theme.spacing(1),
+    minWidth: 120,
+    maxWidth: 300,
+  },
 }));
+
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+const MenuProps = {
+  PaperProps: {
+    style: {
+      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+      width: 250,
+    },
+  },
+};
+const specialties = ["Fotografía", "Diseño", "Artes plásticas"];
+function getStyles(specialty, theme) {
+  return {
+    fontWeight:
+      specialty.indexOf(specialty) === -1
+        ? theme.typography.fontWeightRegular
+        : theme.typography.fontWeightMedium,
+  };
+}
 
 export default function PrixerRegistration() {
   const classes = useStyles();
   const history = useHistory();
-  const [specialty, setSpecialty] = useState("Ambas");
+  //const [specialty, setSpecialty] = useState("Ambas");
   const [instagram, setInstagram] = useState("");
   const [facebook, setFacebook] = useState("");
   const [twitter, setTwitter] = useState("");
@@ -97,6 +124,8 @@ export default function PrixerRegistration() {
   const [avatarObj, setAvatarObj] = useState("");
   const [buttonState, setButtonState] = useState(false);
   const [loading, setLoading] = useState(false);
+  const theme = useTheme();
+  const [specialty, setSpecialty] = React.useState([]);
 
   //Error states.
   const [errorMessage, setErrorMessage] = useState();
@@ -148,6 +177,9 @@ export default function PrixerRegistration() {
         });
     }
   };
+  const handleChange = (event) => {
+    setSpecialty(event.target.value);
+  };
 
   return (
     <Container component="main" maxWidth="xs">
@@ -163,26 +195,52 @@ export default function PrixerRegistration() {
                 <CircularProgress />
               </div>
             )}
-            <Grid item xs={3}>
-              <InputLabel id="demo-simple-select-label">
-                Especialidad
-              </InputLabel>
-              <Select
-                labelId="specialty"
-                id="specialty"
-                label="Especialidad"
-                disabled={buttonState}
-                value={specialty}
-                onChange={(e) => {
-                  setSpecialty(e.target.value);
-                }}
-              >
-                <MenuItem value="Fotografía">Fotografía</MenuItem>
-                <MenuItem value="Diseño">Diseño</MenuItem>
-                <MenuItem value="Ambas">Ambas</MenuItem>
-              </Select>
+            <Grid item xs={6}>
+              <FormControl className={classes.formControl}>
+                <InputLabel id="demo-mutiple-name-label">
+                  Especialidad
+                </InputLabel>
+                <Select
+                  labelId="demo-mutiple-name-label"
+                  id="demo-mutiple-name"
+                  multiple
+                  value={specialty}
+                  onChange={handleChange}
+                  input={<Input />}
+                  MenuProps={MenuProps}
+                >
+                  {specialties.map((specialty) => (
+                    <MenuItem
+                      key={specialty}
+                      value={specialty}
+                      style={getStyles(specialty, theme)}
+                    >
+                      {specialty}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
             </Grid>
-            <Grid item xs={5} sm={9}>
+            <Grid item xs={6} sm={6}>
+              <TextField
+                style={{ width: "100%" }}
+                id="dateOfBirth"
+                label="Fecha de Nacimiento"
+                type="date"
+                disabled={buttonState}
+                // value={dateOfBirth}
+                format="dd-MM-yyyy"
+                defaultValue="06-07-2016"
+                className={classes.textField}
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                onChange={(e) => {
+                  setDateOfBirth(new Date(e.target.value));
+                }}
+              />
+            </Grid>
+            <Grid item xs={5} sm={6}>
               <TextField
                 autoComplete="fname"
                 name="instagram"
@@ -231,24 +289,7 @@ export default function PrixerRegistration() {
                 }}
               />
             </Grid>
-            <Grid item xs={6} sm={6}>
-              <TextField
-                id="dateOfBirth"
-                label="Fecha de Nacimiento"
-                type="date"
-                disabled={buttonState}
-                // value={dateOfBirth}
-                format="dd-MM-yyyy"
-                defaultValue="06-07-2016"
-                className={classes.textField}
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                onChange={(e) => {
-                  setDateOfBirth(new Date(e.target.value));
-                }}
-              />
-            </Grid>
+
             <Grid item xs={6}>
               <TextField
                 variant="outlined"

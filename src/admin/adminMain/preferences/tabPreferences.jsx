@@ -29,6 +29,7 @@ function TabPanel(props) {
       root: {
         flexGrow: 1,
         backgroundColor: theme.palette.background.paper,
+        'margin-left': '60px'
       },
     }));
     

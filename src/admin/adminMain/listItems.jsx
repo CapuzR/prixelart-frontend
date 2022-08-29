@@ -71,7 +71,7 @@ export default function MainListItems(props){
         <ListItemIcon>
           <BarChartIcon />
         </ListItemIcon>
-        <ListItemText primary="Parámetros" /> 
+        <ListItemText primary="Parámetros"  /> 
         {/* onClick={(e)=>{handleClick('parameters')}}  /> */}
       </ListItem>
     </div>

@@ -7,9 +7,7 @@ export default function Preferences(props)
 
     return(
     <>
-
         <SimpleTabs />
-
     </>
     )
 }

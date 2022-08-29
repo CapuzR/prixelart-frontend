@@ -56,7 +56,7 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'left',
-    // maxWidth: 850,
+    overflowX: 'none',
     flexGrow: 1,
     overflow: 'visible'
   },

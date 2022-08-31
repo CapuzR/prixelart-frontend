@@ -14,6 +14,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import Snackbar from '@material-ui/core/Snackbar';
 import axios from 'axios';
 
 const useStyle = makeStyles({
@@ -31,19 +32,64 @@ const useStyle = makeStyles({
     'flexDirection': 'row',
     'justifyContent' : 'space-between',
     'width': '37vw'
+  },
+  nameFile:{
+    'width': '300px',
+    'whiteSpace': 'nowrap',
+    'overflow': 'hidden',
+    'textOverflow': 'ellipsis',
+    'padding': '10px',
+    'fontSize': '1rem',
+    'margin': '0',
+    'background': '#cccc'
+  },
+  loaderImage: {
+    width: '50vw',
+    height: '55vh',
+    marginLeft: '220px',
+    backgroundColor: '#cccc',
+    display: 'flex',
+    justifyContent: 'center',
+    alignContent: 'center',
+    alignItems: 'center'
+  },
+  imageLoad: {
+    width: '50vw',
+    height: '55vh'
+  },
+  buttonImgLoader: {
+    color: '#ccc',
+    width: '50vw',
+    height: '55vh',
+    cursor: 'pointer',
+    display: 'flex',
+    flexDirection: 'row',
+    padding: '10px',
+    position: 'absolute',
+    justifyContent: 'flex-end'
   }
-})
+  })
 
 function CarouselAdmin(props)
 {
-  const [image, newImage] = useState({file : ''})
-  const [images, newImages] = useState({_id: '', images : []});
-  const [update, setUpdate] = useState(0);
-  const [open, setOpen] = useState(false);
-  const [Open, setOpenI] = useState(false);
-  const [create, setCreate] = useState(false)
+  const [image, newImage] = useState({file : ''})//enviar
+  const [imageLoader, setLoadImage] = useState({loader: '', filename: 'Subir imagenes'})//loader de imagenes
+  const [images, newImages] = useState({_id: '', images : []}); // lista de imagenes para renderizar
+  const [update, setUpdate] = useState(0); // modal de update
+  const [open, setOpen] = useState(false); //modal de eliminar -> confirm
+  const [Open, setOpenI] = useState(false);// Toast para imagen eliminada exitosamente
+  const [maxImage, setMaxImages] = useState(false); //Toast para maximo de 6 imagenes
+  const [create, setCreate] = useState(false) // toast para imagen creada y listada
 
   const classes = useStyle();
+
+  const maxImageOpen = () => {
+    setMaxImages(true)
+  }
+
+  const maxImageClose = () => {
+    setMaxImages(false)
+  }
 
   const createOpen = () => {
     setCreate(true)
@@ -57,6 +103,10 @@ function CarouselAdmin(props)
     setOpen(true);
   };
 
+  const handleClose = () => {
+    setOpen(false);
+  };
+
   const handleClickOpenI = () => 
   {
     setOpenI(true)
@@ -67,9 +117,6 @@ function CarouselAdmin(props)
     setOpenI(false)
   }
 
-  const handleClose = () => {
-    setOpen(false);
-  };
 
   const openUpdate = () => {
     setUpdate(true)
@@ -82,19 +129,48 @@ function CarouselAdmin(props)
 
   const handleSubmit = async (a) => 
   {
-    a.preventDefault();
-    const URI = process.env.REACT_APP_BACKEND_URL + '/admin/preferences/carousel';
-    const formData = new FormData();
-    formData.append('bannerImages', image.file)
-    let res = await axios.post(URI, formData);
-    console.log(res.data)
-    newImage({
-      file: ''
-    })
-    createOpen();
-    getImagesForTheCarousel();
+      a.preventDefault();
+      if(images.images[0].length >= 6){
+        maxImageOpen();
+        setLoadImage({
+          loader: '',
+          filename: 'Subir imagenes'
+        })
+      } else{
+      const URI = process.env.REACT_APP_BACKEND_URL + '/admin/preferences/carousel';
+      const formData = new FormData();
+      formData.append('bannerImages', image.file)
+      let res = await axios.post(URI, formData);
+      console.log(res.data)
+      newImage({
+        file: ''
+      })
+      setLoadImage({
+        loader: '',
+        filename: 'Subir imagenes'
+      })
+      createOpen();
+      getImagesForTheCarousel();
+    }
   }
 
+  const loadImage = (e) => 
+  {
+            const reader = new FileReader();
+            reader.onload = () => 
+            {
+              if(reader.readyState == 2)
+              {
+                setLoadImage({loader : reader.result})
+              }
+            }
+            reader.readAsDataURL(e.target.files[0])
+  }
+
+  const cancelUploadImage = () => 
+  {
+      setLoadImage({loader: '', filename: 'Subir imagenes'})
+  }
 
  const getImagesForTheCarousel = () =>
   {
@@ -111,21 +187,30 @@ function CarouselAdmin(props)
     <Grid onLoad={getImagesForTheCarousel()}>
     <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', color: '#bababa'}}>
     <ViewCarouselIcon />
-    <Typography style={{fontSize: '1.5rem'}}>Edit carousel</Typography>
+    <Typography style={{fontSize: '1.5rem', padding: '10px'}}>Edit carousel</Typography>
     </div>
+
+    <div className={classes.loaderImage}>
+      <Box className={classes.buttonImgLoader}>
+        {
+          imageLoader.loader ?
+          <HighlightOffOutlinedIcon style={{width: '2rem'}} onClick={cancelUploadImage}/>
+          :
+          <HighlightOffOutlinedIcon hidden/>
+        }
+        </Box>
+        <img className={classes.imageLoad} src={imageLoader.loader} ></img>
+    </div>
+
     <Box style={{display:'flex', justifyContent: 'center'}}>
         <FormControl >
           <form method="post" onSubmit={handleSubmit} encType='multipart/form-data' style={{display: 'flex', justifyContent: 'space-evenly', flexDirection: 'row',  alignItems: 'center', width: '80vw', padding: '40px'}} >
-          <Typography id='uploadImage'>Subir Imagenes</Typography>
+          <Typography className={classes.nameFile} id='uploadImage'>{imageLoader.filename}</Typography>
           <Button variant="contained" component="label">
           Upload File
           <input name="bannerImages" type="file" hidden onChange={(a) => {
             a.preventDefault();
-            const file = document.getElementById('uploadImage');
-            file ?
-            file.innerHTML = a.target.files[0].name
-            :
-            file.innerHtml = 'Subir Imagenes'
+            loadImage(a)
             newImage({
               file: a.target.files[0]
             })
@@ -135,42 +220,28 @@ function CarouselAdmin(props)
           </form> 
         </FormControl>
         {
-          image.file ?
-          <Dialog
-          open={create}
-          onClose={createClose}
-        >
-          <DialogTitle >{"Process successful"}</DialogTitle>
-          <DialogContent>
-            <DialogContentText id="alert-dialog-description">
-              Imagen creada y agregada exitosamente
-            </DialogContentText>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={createClose} color="primary" autoFocus>
-              Aceptar
-            </Button>
-          </DialogActions>
-    </Dialog>
-          :
-          <Dialog
-              open={create}
-              onClose={createClose}
-            >
-              <DialogTitle >{"Process failed"}</DialogTitle>
-              <DialogContent>
-                <DialogContentText id="alert-dialog-description">
-                  Debes agregar una imagen para colocarla en el Carrusel
-                </DialogContentText>
-              </DialogContent>
-              <DialogActions>
-                <Button onClick={createClose} color="primary" autoFocus>
-                  Aceptar
-                </Button>
-              </DialogActions>
-        </Dialog>
+          image.file != '' ?
+          <Snackbar 
+            anchorOrigin={{
+              vertical: 'top',
+              horizontal: 'right'
+            }}
+            open={create}
+            onClose={createClose}
+            autoHideDuration={3000}
+            message="Process succesful"
+            />
+            :
+            <Snackbar 
+            anchorOrigin={{
+              vertical: 'top',
+              horizontal: 'right'
+            }}
+            open={create}
+            onClose={createClose}
+            autoHideDuration={3000}
+            message="You must send a image"/>
         }
-        
     </Box>     
     <div>
       <ImageList cols={2} rowHeight={300}>
@@ -180,9 +251,10 @@ function CarouselAdmin(props)
           <ImageListItem key={key_id}>
             <Box>
               <Box className={classes.buttons}>
-                <EditIcon onClick={openUpdate} />
+                <EditIcon >
+                   <input name="newBannerImages" type="file" hidden/>
+                </EditIcon>
                 <HighlightOffOutlinedIcon onClick={handleClickOpen} /> 
-
             <Dialog
               open={open}
               onClose={handleClose}
@@ -204,70 +276,27 @@ function CarouselAdmin(props)
                     const URI = process.env.REACT_APP_BACKEND_URL + `/admin/preferences/carousel/${img._id}`;
                     let res = await axios.delete(URI);
                     getImagesForTheCarousel();
-                  handleClose();
+                    handleClose();
                   }} color="primary" autoFocus>
                   Aceptar
                 </Button>
               </DialogActions>
             </Dialog>
 
-            <Dialog
-              open={Open}
-              onClose={handleCloseI}
-              aria-labelledby="alert-dialog-title"
-              aria-describedby="alert-dialog-description"
-            >
-              <DialogTitle id="alert-dialog-title">{"Imagen borrada exitosamente"}</DialogTitle>
-              <DialogActions>
-                <Button onClick={handleCloseI} color="primary">
-                  Cancelar
-                </Button>
-                <Button onClick={handleCloseI} color="primary" autoFocus>
-                  Aceptar
-                </Button>
-              </DialogActions>
-            </Dialog>
-
-            <Dialog
-              open={update}
-              onClose={closeUpdate}
-              aria-labelledby="alert-dialog-title"
-              aria-describedby="alert-dialog-description"
-            >
-              <DialogTitle id="alert-dialog-title">{"Actualizar imagenes"}</DialogTitle>
-              <DialogContent>
-              <FormControl >
-                <form method="post" encType='multipart/form-data' >
-                <Typography id='uploadImage'>Subir Imagenes</Typography>
-                <Button variant="contained" component="label">
-                Upload File
-                <input name="bannerImages" type="file" hidden onChange={(a) => {
-                  a.preventDefault();
-                  const file = document.getElementById('uploadImage');
-                  file ?
-                  file.innerHTML = a.target.files[0].name
-                  :
-                  file.innerHtml = 'Subir Imagenes'
-                  newImage({
-                    file: a.target.files[0]
-                  })
-                }}  />
-              </Button>
-              <Button variant='outlined' color="primary" type="submit">Enviar</Button>
-                </form> 
-               </FormControl>
-              </DialogContent>
-              <DialogActions>
-                <Button onClick={closeUpdate} color="primary">
-                  Cancelar
-                </Button>
-                <Button onClick={closeUpdate} color="primary" autoFocus>
-                  Aceptar
-                </Button>
-              </DialogActions>
-            </Dialog>
+            <Snackbar 
+            anchorOrigin={{
+              vertical: 'top',
+              horizontal: 'right'
+            }}
+            open={Open}
+            onClose={handleClose}
+            autoHideDuration={3000}
+            message="Imagen borrada exitosamente"
+            />
               </Box>
-            <img  className={classes.images} src={img.carouselImages[0]} ></img>
+              <a href={img.carouselImages[0]} target='_BLANK'>
+              <img className={classes.images} title={img.carouselImages[0]} src={img.carouselImages[0]}></img>
+              </a>
             </Box>
           </ImageListItem>
           
@@ -275,12 +304,29 @@ function CarouselAdmin(props)
        )
        :
         <Typography>Que mal, parece que no tienes imagenes en el carrusel</Typography>
-          // const Max = images.images[0].lenght
-          // console.log(Max)
         }
       </ImageList>
     </div>
     </Grid>
+    <Dialog
+              open={maxImage}
+              onClose={maxImageClose}
+              aria-labelledby="alert-dialog-title"
+              aria-describedby="alert-dialog-description"
+            >
+              <DialogTitle id="alert-dialog-title">{"Limite alcanzado"}</DialogTitle>
+              <DialogContent>
+                <DialogContentText id="alert-dialog-description">
+                  Solo puedes agregar 6 imagenes al carrusel, 
+                  procura eliminar algunas imagenes o reemplazar 
+                </DialogContentText>
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={maxImageClose}>
+                  Aceptar
+                </Button>
+              </DialogActions>
+            </Dialog>
     </>
     )
 }

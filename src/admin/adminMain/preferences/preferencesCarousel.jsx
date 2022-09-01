@@ -77,14 +77,15 @@ const useStyle = makeStyles((theme) => ({
 
 function CarouselAdmin(props)
 {
-  const [image, newImage] = useState({file : ''})//enviar
+  const [image, newImage] = useState({file : '', _id: ''})//enviar
   const [imageLoader, setLoadImage] = useState({loader: '', filename: 'Subir imagenes'})//loader de imagenes
-  const [images, newImages] = useState({_id: '', images : []}); // lista de imagenes para renderizar
+  const [images, newImages] = useState({images : []}); // lista de imagenes para renderizar
   const [update, setUpdate] = useState(0); // modal de update
   const [open, setOpen] = useState(false); //modal de eliminar -> confirm
   const [Open, setOpenI] = useState(false);// Toast para imagen eliminada exitosamente
   const [maxImage, setMaxImages] = useState(false); //Toast para maximo de 6 imagenes
   const [create, setCreate] = useState(false); // toast para imagen creada y listada
+  const [createF, setCreateF] = useState(false);
   const [loading, setLoading] = useState(false); // Loading
 
   const classes = useStyle();
@@ -103,6 +104,14 @@ function CarouselAdmin(props)
 
   const createClose = () => {
     setCreate(false)
+  }
+
+  const createOpenF = () => {
+    setCreateF(true)
+  }
+
+  const createCloseF = () => {
+    setCreateF(false)
   }
 
   const handleClickOpen = () => {
@@ -133,6 +142,28 @@ function CarouselAdmin(props)
     setUpdate(false)
   }
 
+  const handleUpdate= async (x) => 
+  {
+    x.preventDefault();
+    setLoading(true)
+    const URI = process.env.REACT_APP_BACKEND_URL + '/admin/preferences/carousel/' + image._id;
+    const formData = new FormData();
+    formData.append('newBannerImages', image.file);
+    let res = await axios.put(URI, formData)
+    setLoadImage({
+      loader: '',
+      filename: 'Subir imagenes'
+    })
+    newImage({
+      _id: '',
+      file: ''
+    })
+    setLoadImage(false)
+    openUpdate();
+    getImagesForTheCarousel();
+    closeUpdate();
+  }
+
   const handleSubmit = async (a) => 
   {
       a.preventDefault();
@@ -145,18 +176,19 @@ function CarouselAdmin(props)
       } else{
         setLoading(true)
       const URI = process.env.REACT_APP_BACKEND_URL + '/admin/preferences/carousel';
-      const formData = new FormData();
-      formData.append('bannerImages', image.file)
-      let res = await axios.post(URI, formData);
+      const newFormData = new FormData();
+      newFormData.append('bannerImages', image.file)
+      let res = await axios.post(URI, newFormData);
       newImage({
+        _id: '',
         file: ''
       })
       setLoadImage({
         loader: '',
         filename: 'Subir imagenes'
       })
-      createOpen();
       setLoadImage(false)
+      createOpen();
       getImagesForTheCarousel();
     }
   }
@@ -178,12 +210,11 @@ function CarouselAdmin(props)
     setLoadImage({loader: resizedString, filename: file.name})
   }
 
-console.log(imageLoader)
 
   const cancelUploadImage = () => 
   {
       setLoadImage({loader: '', filename: 'Subir imagenes'})
-      newImage({file: ''})
+      newImage({_id: '', file: ''})
   }
 
  const getImagesForTheCarousel = () =>
@@ -197,6 +228,8 @@ console.log(imageLoader)
     .catch(err => console.error(err))
     setLoading(false)
   }
+
+  console.log(image)
 
   useEffect(()=>{ getImagesForTheCarousel() }, [])
 
@@ -225,7 +258,14 @@ console.log(imageLoader)
 
     <Box style={{display:'flex', justifyContent: 'center'}}>
         <FormControl >
-          <form method="post" onSubmit={handleSubmit} encType='multipart/form-data' style={{display: 'flex', justifyContent: 'space-evenly', flexDirection: 'row',  alignItems: 'center', width: '80vw', padding: '40px'}} >
+          <form onSubmit={(s) => {
+            if(image._id != "")
+            {
+              handleUpdate(s);
+            } else{
+              handleSubmit(s);
+            }
+          }} encType='multipart/form-data' style={{display: 'flex', justifyContent: 'space-evenly', flexDirection: 'row',  alignItems: 'center', width: '80vw', padding: '40px'}} >
           <Typography className={classes.nameFile} id='uploadImage'>{imageLoader.filename}</Typography>
           <Button variant="contained" component="label">
           Upload File
@@ -233,6 +273,7 @@ console.log(imageLoader)
             a.preventDefault();
             loadImage(a)
             newImage({
+              _id: image._id,
               file: a.target.files[0]
             })
           }}  />
@@ -241,28 +282,37 @@ console.log(imageLoader)
           </form> 
         </FormControl>
         {
-          image.file[0] ?
+        image.file ?
           <Snackbar 
-            anchorOrigin={{
-              vertical: 'top',
-              horizontal: 'right'
-            }}
-            open={create}
-            onClose={createClose}
-            autoHideDuration={3000}
-            message="Process sucessfull"
-            />
-            :
+          anchorOrigin={{
+            vertical: 'top',
+            horizontal: 'right'
+          }}
+          open={create}
+          onClose={createClose}
+          autoHideDuration={5000}
+          message="Process sucessfull"/>
+          :
             <Snackbar 
             anchorOrigin={{
               vertical: 'top',
               horizontal: 'right'
             }}
-            open={create}
-            onClose={createClose}
-            autoHideDuration={3000}
+            open={createF}
+            onClose={createCloseF}
+            autoHideDuration={5000}
             message="You must send a image"/>
-        }
+          }
+
+      <Snackbar 
+          anchorOrigin={{
+            vertical: 'top',
+            horizontal: 'right'
+          }}
+          open={update}
+          onClose={closeUpdate}
+          autoHideDuration={5000}
+          message="Process sucessfull"/>
     </Box>     
     <div>
       <ImageList cols={2} rowHeight={300}>
@@ -272,12 +322,17 @@ console.log(imageLoader)
           <ImageListItem key={key_id}>
             <Box>
               <Box className={classes.buttons}>
-              
-                <Button variant="text" style={{color: 'white'}}>
-                    <EditIcon />
-                   <input  type="file"  name="newBannerImages" encType='multipart/form-data'  hidden/>
+                <Button variant="text" style={{color: 'white'}} component='label'>
+                   <input  type="file"  name="newBannerImages" hidden onChange={(a) => {
+                  a.preventDefault();
+                  loadImage(a)
+                  newImage({
+                    _id: img._id,
+                    file: a.target.files[0]
+                  })
+                }}/>
+                   <EditIcon />
                 </Button>
-       
                 <Button variant="text" style={{color: 'white'}} onClick={handleClickOpen}>
                 <HighlightOffOutlinedIcon /> 
                 </Button>
@@ -298,14 +353,14 @@ console.log(imageLoader)
                   Cancelar
                 </Button>
                 <Button onClick={async () => {
-                    handleClickOpenI()
                     setLoading(true)
                     const URI = process.env.REACT_APP_BACKEND_URL + `/admin/preferences/carousel/${img._id}`;
                     let res = await axios.delete(URI);
                     handleClose();
                     getImagesForTheCarousel();
-                    handleCloseI(); 
-                    setLoading(false)                 
+                    handleClickOpenI()
+                    setLoading(false) 
+                    handleCloseI();                 
                   }} color="primary">
                   Aceptar
                 </Button>
@@ -319,7 +374,7 @@ console.log(imageLoader)
             }}
             open={Open}
             onClose={handleClose}
-            autoHideDuration={3000}
+            autoHideDuration={5000}
             message="Imagen borrada exitosamente"
             />
               </Box>

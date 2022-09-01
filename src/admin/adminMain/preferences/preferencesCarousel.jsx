@@ -71,14 +71,14 @@ const useStyle = makeStyles((theme) => ({
     justifyContent: 'flex-end'
   },
   backdrop: {
-    zIndex: theme.zIndex.drawer + 10,
+    zIndex: theme.zIndex.drawer + 1,
     color: theme.palette.primary.main
   }}));
 
 function CarouselAdmin(props)
 {
   const [image, newImage] = useState({file : ''})//enviar
-  const [imageLoader, setLoadImage] = useState({loader: '', filename: ''})//loader de imagenes
+  const [imageLoader, setLoadImage] = useState({loader: '', filename: 'Subir imagenes'})//loader de imagenes
   const [images, newImages] = useState({_id: '', images : []}); // lista de imagenes para renderizar
   const [update, setUpdate] = useState(0); // modal de update
   const [open, setOpen] = useState(false); //modal de eliminar -> confirm
@@ -161,19 +161,24 @@ function CarouselAdmin(props)
     }
   }
 
-  const loadImage = (e) => 
+  const convertToBase64 = (blob) => {
+    return new Promise((resolve) => {
+      var reader = new FileReader();
+      reader.onload = function () {
+        resolve(reader.result);
+      };
+      reader.readAsDataURL(blob);
+    });
+  };
+
+  const loadImage = async (e) => 
   {
-            const reader = new FileReader();
-            reader.onload = () => 
-            {
-              if(reader.readyState == 2)
-              {
-                setLoadImage({loader : reader.result, filename: imageLoader.filename})
-              } 
-            }
-            setLoadImage({ loader: imageLoader.loader, filename: e.target.files[0].name })
-            reader.readAsDataURL(e.target.files[0])
-}
+    const file = e.target.files[0];
+    const resizedString = await convertToBase64(file);
+    setLoadImage({loader: resizedString, filename: file.name})
+  }
+
+console.log(imageLoader)
 
   const cancelUploadImage = () => 
   {
@@ -198,7 +203,7 @@ function CarouselAdmin(props)
     return(
     <>
     <Backdrop className={classes.backdrop} open={loading}>
-      <CircularProgress value={loading}/>
+      <CircularProgress value={loading} style={{marginTop: '-250px'}}/>
     </Backdrop>
     <Grid>
     <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', color: '#bababa'}}>
@@ -267,12 +272,12 @@ function CarouselAdmin(props)
           <ImageListItem key={key_id}>
             <Box>
               <Box className={classes.buttons}>
-                <form encType='multipart/form-data'>
+              
                 <Button variant="text" style={{color: 'white'}}>
                     <EditIcon />
-                   <input name="newBannerImages"  hidden type="file" />
+                   <input  type="file"  name="newBannerImages" encType='multipart/form-data'  hidden/>
                 </Button>
-                </form>
+       
                 <Button variant="text" style={{color: 'white'}} onClick={handleClickOpen}>
                 <HighlightOffOutlinedIcon /> 
                 </Button>

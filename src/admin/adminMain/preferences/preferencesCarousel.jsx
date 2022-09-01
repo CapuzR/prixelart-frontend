@@ -47,7 +47,7 @@ const useStyle = makeStyles((theme) => ({
   },
   loaderImage: {
     width: '50vw',
-    height: '55vh',
+    height: '60vh',
     marginLeft: '220px',
     backgroundColor: '#cccc',
     display: 'flex',
@@ -57,7 +57,7 @@ const useStyle = makeStyles((theme) => ({
   },
   imageLoad: {
     width: '50vw',
-    height: '55vh'
+    height: '60vh'
   },
   buttonImgLoader: {
     color: '#ccc',
@@ -229,7 +229,6 @@ function CarouselAdmin(props)
     setLoading(false)
   }
 
-  console.log(image)
 
   useEffect(()=>{ getImagesForTheCarousel() }, [])
 

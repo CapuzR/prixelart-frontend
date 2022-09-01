@@ -1,33 +1,40 @@
-import React from 'react';
-import Avatar from '@material-ui/core/Avatar';
-import Button from '@material-ui/core/Button';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import TextField from '@material-ui/core/TextField';
-import Link from '@material-ui/core/Link';
-import Grid from '@material-ui/core/Grid';
-import Box from '@material-ui/core/Box';
-import AddIcon from '@material-ui/icons/Add';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
-import Container from '@material-ui/core/Container';
-import axios from 'axios';
+import React from "react";
+import Avatar from "@material-ui/core/Avatar";
+import axios from "axios";
 import { useHistory } from "react-router-dom";
-import MenuItem from '@material-ui/core/MenuItem';
-import InputLabel from '@material-ui/core/InputLabel';
-import Select from '@material-ui/core/Select';
-import { useState } from 'react';
-import Snackbar from '@material-ui/core/Snackbar';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import Button from "@material-ui/core/Button";
+import CssBaseline from "@material-ui/core/CssBaseline";
+import TextField from "@material-ui/core/TextField";
+import Link from "@material-ui/core/Link";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import Checkbox from "@material-ui/core/Checkbox";
+import Grid from "@material-ui/core/Grid";
+import Box from "@material-ui/core/Box";
+import AddIcon from "@material-ui/icons/Add";
+import Typography from "@material-ui/core/Typography";
+import { makeStyles, useTheme } from "@material-ui/core/styles";
+import Container from "@material-ui/core/Container";
+import MenuItem from "@material-ui/core/MenuItem";
+import InputLabel from "@material-ui/core/InputLabel";
+import Select from "@material-ui/core/Select";
+import { useState } from "react";
+import Snackbar from "@material-ui/core/Snackbar";
+import CircularProgress from "@material-ui/core/CircularProgress";
+import FormControl from "@material-ui/core/FormControl";
+import Input from "@material-ui/core/Input";
+import useMediaQuery from "@material-ui/core/useMediaQuery";
+
+import Terms from "./Terms";
 
 function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
-      {'Copyright © '}
+      {"Copyright © "}
       <Link color="inherit" href="https://prixelart.com/">
         prixelart.com
-      </Link>{' '}
+      </Link>{" "}
       {new Date().getFullYear()}
-      {'.'}
+      {"."}
     </Typography>
   );
 }
@@ -35,28 +42,28 @@ function Copyright() {
 const useStyles = makeStyles((theme) => ({
   paper: {
     marginTop: theme.spacing(8),
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
   },
   avatar: {
-    display: 'flex',
-    '& > *': {
+    display: "flex",
+    "& > *": {
       margin: theme.spacing(1),
     },
-    borderStyle: 'solid',
+    borderStyle: "solid",
     borderWidth: 1,
-    borderColor: '#000',
+    borderColor: "#000",
     backgroundColor: "#fff",
-    width: '160px',
-    height: '160px'
+    width: "160px",
+    height: "160px",
   },
   form: {
-    width: '100%',
+    width: "100%",
     marginTop: theme.spacing(3),
   },
   snackbar: {
-    [theme.breakpoints.down('xs')]: {
+    [theme.breakpoints.down("xs")]: {
       bottom: 90,
     },
     margin: {
@@ -66,113 +73,238 @@ const useStyles = makeStyles((theme) => ({
       marginTop: theme.spacing(3),
     },
     textField: {
-      width: '25ch',
+      width: "25ch",
     },
   },
   submit: {
     margin: theme.spacing(3, 0, 2),
   },
   loading: {
-    display: 'flex',
-    '& > * + *': {
+    display: "flex",
+    "& > * + *": {
       marginLeft: theme.spacing(0),
     },
-    marginLeft: "50%"
-  }
+    marginLeft: "50%",
+  },
+  formControl: {
+    margin: theme.spacing(1),
+    minWidth: 120,
+    maxWidth: 300,
+  },
+  modal: {
+    position: "absolute",
+    width: 800,
+    maxHeight: 450,
+    overflowY: "auto",
+    backgroundColor: "white",
+    border: "2px solid #000",
+    boxShadow: theme.shadows[5],
+    padding: "16px 32px 24px",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    textAlign: "justify",
+  },
+  button: {
+    textAlign: "center",
+  },
+  root: {
+    height: 300,
+    flexGrow: 1,
+    minWidth: 300,
+  },
 }));
-
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+const MenuProps = {
+  PaperProps: {
+    style: {
+      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+      width: 250,
+    },
+  },
+};
+const specialties = ["Fotografía", "Diseño", "Artes plásticas"];
+function getStyles(specialty, theme) {
+  return {
+    fontWeight:
+      specialty.indexOf(specialty) === -1
+        ? theme.typography.fontWeightRegular
+        : theme.typography.fontWeightMedium,
+  };
+}
 export default function PrixerRegistration() {
   const classes = useStyles();
   const history = useHistory();
-  const [specialty, setSpecialty] = useState('Ambas');
-  const [instagram, setInstagram] = useState('');
+  const [instagram, setInstagram] = useState("");
+  const [facebook, setFacebook] = useState("");
+  const [twitter, setTwitter] = useState("");
   const [dateOfBirth, setDateOfBirth] = useState();
-  const [phone, setPhone] = useState('');
-  const [country, setCountry] = useState('');
-  const [city, setCity] = useState('');
-  const [avatar, setAvatar] = useState('');
-  const [avatarObj, setAvatarObj] = useState('');
+  const [phone, setPhone] = useState("");
+  const [country, setCountry] = useState("");
+  const [city, setCity] = useState("");
+  const [description, setDescription] = useState("");
+  const [avatar, setAvatar] = useState("");
+  const [avatarObj, setAvatarObj] = useState("");
   const [buttonState, setButtonState] = useState(false);
   const [loading, setLoading] = useState(false);
-  
+  const [isChecked, setIsChecked] = React.useState(false);
+  const theme = useTheme();
+  const [specialty, setSpecialty] = React.useState([]);
+  const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
 
+  const handleOnChange = () => {
+    setIsChecked(!isChecked);
+  };
+  const styles = useStyles();
+  const [modal, setModal] = useState(false);
+  const openModal = () => {
+    setModal(!modal);
+  };
+  const body = (
+    <div className={styles.modal}>
+      <Terms />
+      <div align="center">
+        <Button variant="contained" color="primary" onClick={() => openModal()}>
+          Aceptar
+        </Button>
+      </div>
+    </div>
+  );
   //Error states.
   const [errorMessage, setErrorMessage] = useState();
   const [snackBarError, setSnackBarError] = useState(false);
 
-  const handleSubmit = async (e)=> {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if((!instagram)||(!dateOfBirth)||(!phone)||(!country)||(!city)) {
-    // ||(!avatar)) {
-      setErrorMessage('Por favor completa todos los campos requeridos.');
+    if (
+      !instagram ||
+      !dateOfBirth ||
+      !specialty ||
+      !phone ||
+      !country ||
+      !city ||
+      !description ||
+      !Checkbox
+    ) {
+      // ||(!avatar)) {
+      setErrorMessage("Por favor completa todos los campos requeridos.");
       setSnackBarError(true);
+      setIsChecked(true);
     } else {
       setLoading(true);
       setButtonState(true);
-      const base_url= process.env.REACT_APP_BACKEND_URL + "/prixer-registration";
+      const base_url =
+        process.env.REACT_APP_BACKEND_URL + "/prixer-registration";
       // const cldAvatarUrl = await uploadToCld();
-      const data= {
-          'specialty': specialty,
-          'instagram': instagram,
-          'dateOfBirth': dateOfBirth,
-          'phone': phone,
-          'country': country,
-          'city': city,
-          // 'avatar': cldAvatarUrl,
-          'username': JSON.parse(localStorage.getItem('token')).username
-          };
-      axios.post(base_url,data)
-      .then(response =>{
-        if(response.data.success === false){
+      const data = {
+        specialty: specialty,
+        instagram: instagram,
+        facebook: facebook,
+        twitter: twitter,
+        dateOfBirth: dateOfBirth,
+        phone: phone,
+        country: country,
+        city: city,
+        description: description,
+        // 'avatar': cldAvatarUrl,
+        username: JSON.parse(localStorage.getItem("token")).username,
+      };
+      axios
+        .post(base_url, data)
+        .then((response) => {
+          if (response.data.success === false) {
+            setLoading(false);
+            setButtonState(false);
+            setErrorMessage(response.data.message);
+            setSnackBarError(true);
+          } else {
+            setErrorMessage("Registro de Prixer exitoso.");
+            setSnackBarError(true);
+            history.push({ pathname: "/" + response.data.prixerData.username });
+          }
+        })
+        .catch((error) => {
           setLoading(false);
           setButtonState(false);
-          setErrorMessage(response.data.message);
-          setSnackBarError(true);
-        } else {
-          setErrorMessage('Registro de Prixer exitoso.');
-          setSnackBarError(true);
-          history.push({pathname:"/"+response.data.prixerData.username});
-        }
-      })
-      .catch(error =>{
-          setLoading(false);
-          setButtonState(false);
-          console.log(error.response)
-      })
+          console.log(error.response);
+        });
     }
-   } 
+  };
+  const handleChange = (event) => {
+    setSpecialty(event.target.value);
+  };
+  console.log(setDescription);
 
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
       <div className={classes.paper}>
         <Typography component="h1" variant="h5">
-        Comparte con tus futuros clientes
+          Comparte con tus futuros clientes
         </Typography>
         <form onSubmit={handleSubmit} className={classes.form} noValidate>
           <Grid container spacing={3}>
-            {
-            loading && 
-              <div class={classes.loading}>
+            {loading && (
+              <div className={classes.loading}>
                 <CircularProgress />
               </div>
-            }
-            <Grid item xs={3}>
-            <InputLabel id="demo-simple-select-label">Especialidad</InputLabel>
+            )}
+            <Grid item xs={6}>
+              <FormControl
+                className={classes.formControl}
+                style={{ width: "100%" }}
+              >
+                <InputLabel id="demo-mutiple-name-label">
+                  Especialidad
+                </InputLabel>
                 <Select
-                labelId="specialty"
-                id="specialty"
-                label='Especialidad'
-                disabled={buttonState}
-                value={specialty}
-                onChange={(e)=>{setSpecialty(e.target.value)}}
+                  labelId="demo-mutiple-name-label"
+                  id="demo-mutiple-name"
+                  multiple
+                  value={specialty}
+                  onChange={handleChange}
+                  input={<Input />}
+                  MenuProps={MenuProps}
                 >
-                <MenuItem value="Fotografía">Fotografía</MenuItem>
-                <MenuItem value="Diseño">Diseño</MenuItem>
-                <MenuItem value="Ambas">Ambas</MenuItem>
-                </Select>  
+                  {specialties.map((specialty) => (
+                    <MenuItem
+                      key={specialty}
+                      value={specialty}
+                      style={getStyles(specialty, theme)}
+                    >
+                      {specialty}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
             </Grid>
-            <Grid item xs={9} sm={9}>
+            <Grid
+              item
+              xs={6}
+              sm={6}
+              style={{ display: "flex", alignItems: "center" }}
+            >
+              <TextField
+                style={{
+                  width: "100%",
+                }}
+                id="dateOfBirth"
+                label="Fecha de Nacimiento"
+                type="date"
+                disabled={buttonState}
+                format="dd-MM-yyyy"
+                defaultValue="06-07-2016"
+                className={classes.textField}
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                onChange={(e) => {
+                  setDateOfBirth(new Date(e.target.value));
+                }}
+              />
+            </Grid>
+            <Grid item xs={6} sm={6}>
               <TextField
                 autoComplete="fname"
                 name="instagram"
@@ -184,25 +316,44 @@ export default function PrixerRegistration() {
                 id="instagram"
                 label="Instagram"
                 autoFocus
-                onChange={(e)=>{setInstagram(e.target.value)}}
+                onChange={(e) => {
+                  setInstagram(e.target.value);
+                }}
               />
             </Grid>
             <Grid item xs={6} sm={6}>
               <TextField
-                id="dateOfBirth"
-                label="Fecha de Nacimiento"
-                type="date"
+                autoComplete="fname"
+                name="facebook"
+                variant="outlined"
                 disabled={buttonState}
-                // value={dateOfBirth}
-                format="dd-MM-yyyy"
-                defaultValue="06-07-2016"
-                className={classes.textField}
-                InputLabelProps={{
-                  shrink: true,
+                fullWidth
+                value={facebook}
+                id="facebook"
+                label="Facebook"
+                autoFocus
+                onChange={(e) => {
+                  setFacebook(e.target.value);
                 }}
-                onChange={(e)=>{setDateOfBirth(new Date(e.target.value))}}
               />
             </Grid>
+            <Grid item xs={6} sm={6}>
+              <TextField
+                autoComplete="fname"
+                name="twitter"
+                variant="outlined"
+                disabled={buttonState}
+                fullWidth
+                value={twitter}
+                id="twitter"
+                label="Twitter"
+                autoFocus
+                onChange={(e) => {
+                  setTwitter(e.target.value);
+                }}
+              />
+            </Grid>
+
             <Grid item xs={6}>
               <TextField
                 variant="outlined"
@@ -212,7 +363,9 @@ export default function PrixerRegistration() {
                 id="phone"
                 label="Teléfono"
                 value={phone}
-                onChange={(e)=>{setPhone(e.target.value)}}
+                onChange={(e) => {
+                  setPhone(e.target.value);
+                }}
               />
             </Grid>
             <Grid item xs={6}>
@@ -227,9 +380,12 @@ export default function PrixerRegistration() {
                 type="country"
                 id="country"
                 autoComplete="current-password"
-                onChange={(e)=>{setCountry(e.target.value)}}
+                onChange={(e) => {
+                  setCountry(e.target.value);
+                }}
               />
-            </Grid><Grid item xs={6}>
+            </Grid>
+            <Grid item xs={6}>
               <TextField
                 variant="outlined"
                 disabled={buttonState}
@@ -241,20 +397,32 @@ export default function PrixerRegistration() {
                 type="city"
                 id="city"
                 autoComplete="current-password"
-                onChange={(e)=>{setCity(e.target.value)}}
+                onChange={(e) => {
+                  setCity(e.target.value);
+                }}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                variant="outlined"
+                disabled={buttonState}
+                fullWidth
+                name="description"
+                label="Descripción"
+                value={description}
+                type="description"
+                id="description"
+                autoComplete="current-password"
+                onChange={(e) => {
+                  setDescription(e.target.value);
+                }}
               />
             </Grid>
           </Grid>
-            {/* <Grid item xs={12}>
-              <FormControlLabel
-                control={<Checkbox value="allowExtraEmails" color="primary" />}
-                label="Acepto los Términos y condiciones."
-              />
-            </Grid> */}
+
           <Button
             type="submit"
             fullWidth
-            disabled={buttonState}
             variant="contained"
             color="primary"
             className={classes.submit}
@@ -268,11 +436,11 @@ export default function PrixerRegistration() {
         <Copyright />
       </Box>
       <Snackbar
-          open={snackBarError}
-          autoHideDuration={1000}
-          message={errorMessage}
-          className={classes.snackbar}
-        />
+        open={snackBarError}
+        autoHideDuration={1000}
+        message={errorMessage}
+        className={classes.snackbar}
+      />
     </Container>
   );
 }

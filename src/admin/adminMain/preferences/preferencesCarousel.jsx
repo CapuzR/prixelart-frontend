@@ -21,7 +21,8 @@ import axios from 'axios';
 
 const useStyle = makeStyles((theme) => ({
   images: {
-   'width': '510px',
+   'width': '500px',
+   height: '300px',
    'borderRadius' : '10px',
    'cursor': 'pointer'
   },
@@ -47,7 +48,7 @@ const useStyle = makeStyles((theme) => ({
   },
   loaderImage: {
     width: '50vw',
-    height: '55vh',
+    height: '60vh',
     marginLeft: '220px',
     backgroundColor: '#cccc',
     display: 'flex',
@@ -57,12 +58,12 @@ const useStyle = makeStyles((theme) => ({
   },
   imageLoad: {
     width: '50vw',
-    height: '55vh'
+    height: '60vh'
   },
   buttonImgLoader: {
     color: '#ccc',
     width: '50vw',
-    height: '55vh',
+    height: '60vh',
     cursor: 'pointer',
     display: 'flex',
     flexDirection: 'row',
@@ -142,6 +143,9 @@ function CarouselAdmin(props)
     setUpdate(false)
   }
 
+
+    // CRUD
+    //Editar imagen:
   const handleUpdate= async (x) => 
   {
     x.preventDefault();
@@ -164,6 +168,7 @@ function CarouselAdmin(props)
     closeUpdate();
   }
 
+  // Crear imagen:
   const handleSubmit = async (a) => 
   {
       a.preventDefault();
@@ -175,24 +180,36 @@ function CarouselAdmin(props)
         })
       } else{
         setLoading(true)
-      const URI = process.env.REACT_APP_BACKEND_URL + '/admin/preferences/carousel';
-      const newFormData = new FormData();
-      newFormData.append('bannerImages', image.file)
-      let res = await axios.post(URI, newFormData);
-      newImage({
-        _id: '',
-        file: ''
-      })
       setLoadImage({
         loader: '',
         filename: 'Subir imagenes'
       })
-      setLoadImage(false)
+      const URI = process.env.REACT_APP_BACKEND_URL + '/admin/preferences/carousel';
+      const newFormData = new FormData();
+      newFormData.append('bannerImages', image.file)
+      let res = await axios.post(URI, newFormData);
       createOpen();
+      newImage({
+        _id: '',
+        file: ''
+      })
+      setLoadImage(false)
       getImagesForTheCarousel();
     }
   }
 
+  const deleteImage = async (d) => {
+    d.preventDefault();
+    handleClose();
+    setLoading(true)
+    const URI = process.env.REACT_APP_BACKEND_URL + '/admin/preferences/carousel/' + image._id;
+    let res = await axios.delete(URI);
+    getImagesForTheCarousel();
+    handleClickOpenI()
+    setLoading(false) 
+    handleCloseI();                 
+  }
+  //Preview de imagen antes de enviar
   const convertToBase64 = (blob) => {
     return new Promise((resolve) => {
       var reader = new FileReader();
@@ -202,7 +219,7 @@ function CarouselAdmin(props)
       reader.readAsDataURL(blob);
     });
   };
-
+  // Actualizacion del estado para preview de imagen
   const loadImage = async (e) => 
   {
     const file = e.target.files[0];
@@ -210,13 +227,13 @@ function CarouselAdmin(props)
     setLoadImage({loader: resizedString, filename: file.name})
   }
 
-
+  //Cancelar subida de imagen
   const cancelUploadImage = () => 
   {
       setLoadImage({loader: '', filename: 'Subir imagenes'})
       newImage({_id: '', file: ''})
   }
-
+  //Tomar imagenes en array para ser listadas y renderizadas
  const getImagesForTheCarousel = () =>
   {
     setLoading(true)
@@ -228,8 +245,6 @@ function CarouselAdmin(props)
     .catch(err => console.error(err))
     setLoading(false)
   }
-
-  console.log(image)
 
   useEffect(()=>{ getImagesForTheCarousel() }, [])
 
@@ -281,8 +296,7 @@ function CarouselAdmin(props)
          <Button variant='outlined' color="primary" type="submit" >Enviar</Button>
           </form> 
         </FormControl>
-        {
-        image.file ?
+
           <Snackbar 
           anchorOrigin={{
             vertical: 'top',
@@ -292,7 +306,7 @@ function CarouselAdmin(props)
           onClose={createClose}
           autoHideDuration={5000}
           message="Process sucessfull"/>
-          :
+          
             <Snackbar 
             anchorOrigin={{
               vertical: 'top',
@@ -302,7 +316,7 @@ function CarouselAdmin(props)
             onClose={createCloseF}
             autoHideDuration={5000}
             message="You must send a image"/>
-          }
+          
 
       <Snackbar 
           anchorOrigin={{
@@ -334,7 +348,13 @@ function CarouselAdmin(props)
                    <EditIcon />
                 </Button>
                 <Button variant="text" style={{color: 'white'}} onClick={handleClickOpen}>
-                <HighlightOffOutlinedIcon /> 
+                <HighlightOffOutlinedIcon onClick={() => 
+                {
+                  newImage({
+                    _id: img._id,
+                    file: image.file
+                  })
+                }}/> 
                 </Button>
             <Dialog
               open={open}
@@ -352,16 +372,9 @@ function CarouselAdmin(props)
                 <Button onClick={handleClose} color="primary">
                   Cancelar
                 </Button>
-                <Button onClick={async () => {
-                    setLoading(true)
-                    const URI = process.env.REACT_APP_BACKEND_URL + `/admin/preferences/carousel/${img._id}`;
-                    let res = await axios.delete(URI);
-                    handleClose();
-                    getImagesForTheCarousel();
-                    handleClickOpenI()
-                    setLoading(false) 
-                    handleCloseI();                 
-                  }} color="primary">
+                <Button onClick={(d) => {
+                  deleteImage(d)
+                }} color="primary">
                   Aceptar
                 </Button>
               </DialogActions>

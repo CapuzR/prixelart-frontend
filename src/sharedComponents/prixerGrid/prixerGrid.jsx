@@ -82,7 +82,7 @@ export default function PrixerGrid(props) {
     {tiles &&
     tiles.filter(tile => tile.avatar).map((tile) =>
       (
-        <Grid item key={tile._id} xs={3} sm={3} md={3}>
+        <Grid item key={tile._id} xs={6} sm={6} md={3}>
             <Card className={classes.card}>
             <CardMedia
                 alt={tile.title}

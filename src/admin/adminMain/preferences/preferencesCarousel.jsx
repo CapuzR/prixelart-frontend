@@ -15,9 +15,11 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Snackbar from '@material-ui/core/Snackbar';
+import Backdrop from '@material-ui/core/Backdrop';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import axios from 'axios';
 
-const useStyle = makeStyles({
+const useStyle = makeStyles((theme) => ({
   images: {
    'width': '510px',
    'borderRadius' : '10px',
@@ -67,19 +69,23 @@ const useStyle = makeStyles({
     padding: '10px',
     position: 'absolute',
     justifyContent: 'flex-end'
-  }
-  })
+  },
+  backdrop: {
+    zIndex: theme.zIndex.drawer + 10,
+    color: theme.palette.primary.main
+  }}));
 
 function CarouselAdmin(props)
 {
   const [image, newImage] = useState({file : ''})//enviar
-  const [imageLoader, setLoadImage] = useState({loader: '', filename: 'Subir imagenes'})//loader de imagenes
+  const [imageLoader, setLoadImage] = useState({loader: '', filename: ''})//loader de imagenes
   const [images, newImages] = useState({_id: '', images : []}); // lista de imagenes para renderizar
   const [update, setUpdate] = useState(0); // modal de update
   const [open, setOpen] = useState(false); //modal de eliminar -> confirm
   const [Open, setOpenI] = useState(false);// Toast para imagen eliminada exitosamente
   const [maxImage, setMaxImages] = useState(false); //Toast para maximo de 6 imagenes
-  const [create, setCreate] = useState(false) // toast para imagen creada y listada
+  const [create, setCreate] = useState(false); // toast para imagen creada y listada
+  const [loading, setLoading] = useState(false); // Loading
 
   const classes = useStyle();
 
@@ -137,11 +143,11 @@ function CarouselAdmin(props)
           filename: 'Subir imagenes'
         })
       } else{
+        setLoading(true)
       const URI = process.env.REACT_APP_BACKEND_URL + '/admin/preferences/carousel';
       const formData = new FormData();
       formData.append('bannerImages', image.file)
       let res = await axios.post(URI, formData);
-      console.log(res.data)
       newImage({
         file: ''
       })
@@ -150,6 +156,7 @@ function CarouselAdmin(props)
         filename: 'Subir imagenes'
       })
       createOpen();
+      setLoadImage(false)
       getImagesForTheCarousel();
     }
   }
@@ -161,30 +168,39 @@ function CarouselAdmin(props)
             {
               if(reader.readyState == 2)
               {
-                setLoadImage({loader : reader.result})
-              }
+                setLoadImage({loader : reader.result, filename: imageLoader.filename})
+              } 
             }
+            setLoadImage({ loader: imageLoader.loader, filename: e.target.files[0].name })
             reader.readAsDataURL(e.target.files[0])
-  }
+}
 
   const cancelUploadImage = () => 
   {
       setLoadImage({loader: '', filename: 'Subir imagenes'})
+      newImage({file: ''})
   }
 
  const getImagesForTheCarousel = () =>
   {
+    setLoading(true)
     const URI = 'http://localhost:8000/admin/preferences/carousel';
     fetch(URI)
     .then(res => res.json()
     .then(data => { newImages({images: [data.imagesCarousels]})})
     .catch(err => console.error(`Your request is wrong: ${err}`)))
     .catch(err => console.error(err))
+    setLoading(false)
   }
+
+  useEffect(()=>{ getImagesForTheCarousel() }, [])
 
     return(
     <>
-    <Grid onLoad={getImagesForTheCarousel()}>
+    <Backdrop className={classes.backdrop} open={loading}>
+      <CircularProgress value={loading}/>
+    </Backdrop>
+    <Grid>
     <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', color: '#bababa'}}>
     <ViewCarouselIcon />
     <Typography style={{fontSize: '1.5rem', padding: '10px'}}>Edit carousel</Typography>
@@ -216,11 +232,11 @@ function CarouselAdmin(props)
             })
           }}  />
          </Button>
-         <Button variant='outlined' color="primary" type="submit">Enviar</Button>
+         <Button variant='outlined' color="primary" type="submit" >Enviar</Button>
           </form> 
         </FormControl>
         {
-          image.file != '' ?
+          image.file[0] ?
           <Snackbar 
             anchorOrigin={{
               vertical: 'top',
@@ -229,7 +245,7 @@ function CarouselAdmin(props)
             open={create}
             onClose={createClose}
             autoHideDuration={3000}
-            message="Process succesful"
+            message="Process sucessfull"
             />
             :
             <Snackbar 
@@ -251,10 +267,15 @@ function CarouselAdmin(props)
           <ImageListItem key={key_id}>
             <Box>
               <Box className={classes.buttons}>
-                <EditIcon >
-                   <input name="newBannerImages" type="file" hidden/>
-                </EditIcon>
-                <HighlightOffOutlinedIcon onClick={handleClickOpen} /> 
+                <form encType='multipart/form-data'>
+                <Button variant="text" style={{color: 'white'}}>
+                    <EditIcon />
+                   <input name="newBannerImages"  hidden type="file" />
+                </Button>
+                </form>
+                <Button variant="text" style={{color: 'white'}} onClick={handleClickOpen}>
+                <HighlightOffOutlinedIcon /> 
+                </Button>
             <Dialog
               open={open}
               onClose={handleClose}
@@ -272,12 +293,15 @@ function CarouselAdmin(props)
                   Cancelar
                 </Button>
                 <Button onClick={async () => {
-                  handleClickOpenI()
+                    handleClickOpenI()
+                    setLoading(true)
                     const URI = process.env.REACT_APP_BACKEND_URL + `/admin/preferences/carousel/${img._id}`;
                     let res = await axios.delete(URI);
-                    getImagesForTheCarousel();
                     handleClose();
-                  }} color="primary" autoFocus>
+                    getImagesForTheCarousel();
+                    handleCloseI(); 
+                    setLoading(false)                 
+                  }} color="primary">
                   Aceptar
                 </Button>
               </DialogActions>
@@ -306,6 +330,7 @@ function CarouselAdmin(props)
         <Typography>Que mal, parece que no tienes imagenes en el carrusel</Typography>
         }
       </ImageList>
+      
     </div>
     </Grid>
     <Dialog
@@ -330,6 +355,5 @@ function CarouselAdmin(props)
     </>
     )
 }
-
 
 export default CarouselAdmin;

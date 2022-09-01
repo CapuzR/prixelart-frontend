@@ -1,88 +1,97 @@
-import { React, useState, useEffect} from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import ViewCarouselIcon from '@material-ui/icons/ViewCarousel';
-import { Button, InputLabel, Typography } from '@material-ui/core';
-import Box from '@material-ui/core/Box';
-import Grid from '@material-ui/core/Grid';
-import { FormControl, FormGroup, FilledInput, Input, TextField} from '@material-ui/core';
-import ImageListItem from '@material-ui/core/ImageListItem';
-import ImageList from '@material-ui/core/ImageList';
-import EditIcon from '@material-ui/icons/Edit';
-import HighlightOffOutlinedIcon from '@material-ui/icons/HighlightOffOutlined';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Snackbar from '@material-ui/core/Snackbar';
-import Backdrop from '@material-ui/core/Backdrop';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import axios from 'axios';
+import { React, useState, useEffect } from "react";
+import { makeStyles } from "@material-ui/core/styles";
+import ViewCarouselIcon from "@material-ui/icons/ViewCarousel";
+import { Button, InputLabel, Typography } from "@material-ui/core";
+import Box from "@material-ui/core/Box";
+import Grid from "@material-ui/core/Grid";
+import {
+  FormControl,
+  FormGroup,
+  FilledInput,
+  Input,
+  TextField,
+} from "@material-ui/core";
+import ImageList from "@material-ui/core/ImageList";
+import ImageListItem from "@material-ui/core/ImageListItem";
+import EditIcon from "@material-ui/icons/Edit";
+import HighlightOffOutlinedIcon from "@material-ui/icons/HighlightOffOutlined";
+import Dialog from "@material-ui/core/Dialog";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogContentText from "@material-ui/core/DialogContentText";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import Snackbar from "@material-ui/core/Snackbar";
+import Backdrop from "@material-ui/core/Backdrop";
+import CircularProgress from "@material-ui/core/CircularProgress";
+import axios from "axios";
 
 const useStyle = makeStyles((theme) => ({
   images: {
-   'width': '510px',
-   'borderRadius' : '10px',
-   'cursor': 'pointer'
+    width: "510px",
+    borderRadius: "10px",
+    cursor: "pointer",
   },
   buttons: {
-    position: 'absolute',
-    'color': '#ccc',
-    'display': 'flex',
-    'cursor' : 'pointer',
-    'padding': '10px',
-    'flexDirection': 'row',
-    'justifyContent' : 'space-between',
-    'width': '37vw'
+    position: "absolute",
+    color: "#ccc",
+    display: "flex",
+    cursor: "pointer",
+    padding: "10px",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "37vw",
   },
-  nameFile:{
-    'width': '300px',
-    'whiteSpace': 'nowrap',
-    'overflow': 'hidden',
-    'textOverflow': 'ellipsis',
-    'padding': '10px',
-    'fontSize': '1rem',
-    'margin': '0',
-    'background': '#cccc'
+  nameFile: {
+    width: "300px",
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    padding: "10px",
+    fontSize: "1rem",
+    margin: "0",
+    background: "#cccc",
   },
   loaderImage: {
-    width: '50vw',
-    height: '55vh',
-    marginLeft: '220px',
-    backgroundColor: '#cccc',
-    display: 'flex',
-    justifyContent: 'center',
-    alignContent: 'center',
-    alignItems: 'center'
+    width: "50vw",
+    height: "55vh",
+    marginLeft: "220px",
+    backgroundColor: "#cccc",
+    display: "flex",
+    justifyContent: "center",
+    alignContent: "center",
+    alignItems: "center",
   },
   imageLoad: {
-    width: '50vw',
-    height: '55vh'
+    width: "50vw",
+    height: "55vh",
   },
   buttonImgLoader: {
-    color: '#ccc',
-    width: '50vw',
-    height: '55vh',
-    cursor: 'pointer',
-    display: 'flex',
-    flexDirection: 'row',
-    padding: '10px',
-    position: 'absolute',
-    justifyContent: 'flex-end'
+    color: "#ccc",
+    width: "50vw",
+    height: "55vh",
+    cursor: "pointer",
+    display: "flex",
+    flexDirection: "row",
+    padding: "10px",
+    position: "absolute",
+    justifyContent: "flex-end",
   },
   backdrop: {
     zIndex: theme.zIndex.drawer + 1,
-    color: theme.palette.primary.main
-  }}));
+    color: theme.palette.primary.main,
+  },
+}));
 
-function CarouselAdmin(props)
-{
-  const [image, newImage] = useState({file : ''})//enviar
-  const [imageLoader, setLoadImage] = useState({loader: '', filename: 'Subir imagenes'})//loader de imagenes
-  const [images, newImages] = useState({_id: '', images : []}); // lista de imagenes para renderizar
+function CarouselAdmin(props) {
+  const [image, newImage] = useState({ file: "" }); //enviar
+  const [imageLoader, setLoadImage] = useState({
+    loader: "",
+    filename: "Subir imagenes",
+  }); //loader de imagenes
+  const [images, newImages] = useState({ _id: "", images: [] }); // lista de imagenes para renderizar
   const [update, setUpdate] = useState(0); // modal de update
   const [open, setOpen] = useState(false); //modal de eliminar -> confirm
-  const [Open, setOpenI] = useState(false);// Toast para imagen eliminada exitosamente
+  const [Open, setOpenI] = useState(false); // Toast para imagen eliminada exitosamente
   const [maxImage, setMaxImages] = useState(false); //Toast para maximo de 6 imagenes
   const [create, setCreate] = useState(false); // toast para imagen creada y listada
   const [loading, setLoading] = useState(false); // Loading
@@ -90,20 +99,20 @@ function CarouselAdmin(props)
   const classes = useStyle();
 
   const maxImageOpen = () => {
-    setMaxImages(true)
-  }
+    setMaxImages(true);
+  };
 
   const maxImageClose = () => {
-    setMaxImages(false)
-  }
+    setMaxImages(false);
+  };
 
   const createOpen = () => {
-    setCreate(true)
-  }
+    setCreate(true);
+  };
 
   const createClose = () => {
-    setCreate(false)
-  }
+    setCreate(false);
+  };
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -113,53 +122,49 @@ function CarouselAdmin(props)
     setOpen(false);
   };
 
-  const handleClickOpenI = () => 
-  {
-    setOpenI(true)
-  }
+  const handleClickOpenI = () => {
+    setOpenI(true);
+  };
 
-  const handleCloseI = () => 
-  {
-    setOpenI(false)
-  }
-
+  const handleCloseI = () => {
+    setOpenI(false);
+  };
 
   const openUpdate = () => {
-    setUpdate(true)
-  }
+    setUpdate(true);
+  };
 
-  const closeUpdate = () => 
-  {
-    setUpdate(false)
-  }
+  const closeUpdate = () => {
+    setUpdate(false);
+  };
 
-  const handleSubmit = async (a) => 
-  {
-      a.preventDefault();
-      if(images.images[0].length >= 6){
-        maxImageOpen();
-        setLoadImage({
-          loader: '',
-          filename: 'Subir imagenes'
-        })
-      } else{
-        setLoading(true)
-      const URI = process.env.REACT_APP_BACKEND_URL + '/admin/preferences/carousel';
+  const handleSubmit = async (a) => {
+    a.preventDefault();
+    if (images.images[0].length >= 6) {
+      maxImageOpen();
+      setLoadImage({
+        loader: "",
+        filename: "Subir imagenes",
+      });
+    } else {
+      setLoading(true);
+      const URI =
+        process.env.REACT_APP_BACKEND_URL + "/admin/preferences/carousel";
       const formData = new FormData();
-      formData.append('bannerImages', image.file)
+      formData.append("bannerImages", image.file);
       let res = await axios.post(URI, formData);
       newImage({
-        file: ''
-      })
+        file: "",
+      });
       setLoadImage({
-        loader: '',
-        filename: 'Subir imagenes'
-      })
+        loader: "",
+        filename: "Subir imagenes",
+      });
       createOpen();
-      setLoadImage(false)
+      setLoadImage(false);
       getImagesForTheCarousel();
     }
-  }
+  };
 
   const convertToBase64 = (blob) => {
     return new Promise((resolve) => {
@@ -171,194 +176,247 @@ function CarouselAdmin(props)
     });
   };
 
-  const loadImage = async (e) => 
-  {
+  const loadImage = async (e) => {
     const file = e.target.files[0];
     const resizedString = await convertToBase64(file);
-    setLoadImage({loader: resizedString, filename: file.name})
-  }
+    setLoadImage({ loader: resizedString, filename: file.name });
+  };
 
-console.log(imageLoader)
+  console.log(imageLoader);
 
-  const cancelUploadImage = () => 
-  {
-      setLoadImage({loader: '', filename: 'Subir imagenes'})
-      newImage({file: ''})
-  }
+  const cancelUploadImage = () => {
+    setLoadImage({ loader: "", filename: "Subir imagenes" });
+    newImage({ file: "" });
+  };
 
- const getImagesForTheCarousel = () =>
-  {
-    setLoading(true)
-    const URI = 'http://localhost:8000/admin/preferences/carousel';
+  const getImagesForTheCarousel = () => {
+    setLoading(true);
+    const URI = "http://localhost:8000/admin/preferences/carousel";
     fetch(URI)
-    .then(res => res.json()
-    .then(data => { newImages({images: [data.imagesCarousels]})})
-    .catch(err => console.error(`Your request is wrong: ${err}`)))
-    .catch(err => console.error(err))
-    setLoading(false)
-  }
+      .then((res) =>
+        res
+          .json()
+          .then((data) => {
+            newImages({ images: [data.imagesCarousels] });
+          })
+          .catch((err) => console.error(`Your request is wrong: ${err}`))
+      )
+      .catch((err) => console.error(err));
+    setLoading(false);
+  };
 
-  useEffect(()=>{ getImagesForTheCarousel() }, [])
+  useEffect(() => {
+    getImagesForTheCarousel();
+  }, []);
 
-    return(
+  return (
     <>
-    <Backdrop className={classes.backdrop} open={loading}>
-      <CircularProgress value={loading} style={{marginTop: '-250px'}}/>
-    </Backdrop>
-    <Grid>
-    <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', color: '#bababa'}}>
-    <ViewCarouselIcon />
-    <Typography style={{fontSize: '1.5rem', padding: '10px'}}>Edit carousel</Typography>
-    </div>
+      <Backdrop className={classes.backdrop} open={loading}>
+        <CircularProgress value={loading} style={{ marginTop: "-250px" }} />
+      </Backdrop>
+      <Grid>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "center",
+            alignItems: "center",
+            color: "#bababa",
+          }}
+        >
+          <ViewCarouselIcon />
+          <Typography style={{ fontSize: "1.5rem", padding: "10px" }}>
+            Edit carousel
+          </Typography>
+        </div>
 
-    <div className={classes.loaderImage}>
-      <Box className={classes.buttonImgLoader}>
-        {
-          imageLoader.loader ?
-          <HighlightOffOutlinedIcon style={{width: '2rem'}} onClick={cancelUploadImage}/>
-          :
-          <HighlightOffOutlinedIcon hidden/>
-        }
+        <div className={classes.loaderImage}>
+          <Box className={classes.buttonImgLoader}>
+            {imageLoader.loader ? (
+              <HighlightOffOutlinedIcon
+                style={{ width: "2rem" }}
+                onClick={cancelUploadImage}
+              />
+            ) : (
+              <HighlightOffOutlinedIcon hidden />
+            )}
+          </Box>
+          <img className={classes.imageLoad} src={imageLoader.loader}></img>
+        </div>
+
+        <Box style={{ display: "flex", justifyContent: "center" }}>
+          <FormControl>
+            <form
+              method="post"
+              onSubmit={handleSubmit}
+              encType="multipart/form-data"
+              style={{
+                display: "flex",
+                justifyContent: "space-evenly",
+                flexDirection: "row",
+                alignItems: "center",
+                width: "80vw",
+                padding: "40px",
+              }}
+            >
+              <Typography className={classes.nameFile} id="uploadImage">
+                {imageLoader.filename}
+              </Typography>
+              <Button variant="contained" component="label">
+                Upload File
+                <input
+                  name="bannerImages"
+                  type="file"
+                  hidden
+                  onChange={(a) => {
+                    a.preventDefault();
+                    loadImage(a);
+                    newImage({
+                      file: a.target.files[0],
+                    });
+                  }}
+                />
+              </Button>
+              <Button variant="outlined" color="primary" type="submit">
+                Enviar
+              </Button>
+            </form>
+          </FormControl>
+          {image.file[0] ? (
+            <Snackbar
+              anchorOrigin={{
+                vertical: "top",
+                horizontal: "right",
+              }}
+              open={create}
+              onClose={createClose}
+              autoHideDuration={3000}
+              message="Process sucessfull"
+            />
+          ) : (
+            <Snackbar
+              anchorOrigin={{
+                vertical: "top",
+                horizontal: "right",
+              }}
+              open={create}
+              onClose={createClose}
+              autoHideDuration={3000}
+              message="You must send a image"
+            />
+          )}
         </Box>
-        <img className={classes.imageLoad} src={imageLoader.loader} ></img>
-    </div>
+        <div>
+          <ImageList cols={2} rowHeight={300}>
+            {images.images[0] ? (
+              images.images[0].map((img, key_id) => (
+                <ImageListItem key={key_id}>
+                  <Box>
+                    <Box className={classes.buttons}>
+                      <Button variant="text" style={{ color: "white" }}>
+                        <EditIcon />
+                        <input
+                          type="file"
+                          name="newBannerImages"
+                          encType="multipart/form-data"
+                          hidden
+                        />
+                      </Button>
 
-    <Box style={{display:'flex', justifyContent: 'center'}}>
-        <FormControl >
-          <form method="post" onSubmit={handleSubmit} encType='multipart/form-data' style={{display: 'flex', justifyContent: 'space-evenly', flexDirection: 'row',  alignItems: 'center', width: '80vw', padding: '40px'}} >
-          <Typography className={classes.nameFile} id='uploadImage'>{imageLoader.filename}</Typography>
-          <Button variant="contained" component="label">
-          Upload File
-          <input name="bannerImages" type="file" hidden onChange={(a) => {
-            a.preventDefault();
-            loadImage(a)
-            newImage({
-              file: a.target.files[0]
-            })
-          }}  />
-         </Button>
-         <Button variant='outlined' color="primary" type="submit" >Enviar</Button>
-          </form> 
-        </FormControl>
-        {
-          image.file[0] ?
-          <Snackbar 
-            anchorOrigin={{
-              vertical: 'top',
-              horizontal: 'right'
-            }}
-            open={create}
-            onClose={createClose}
-            autoHideDuration={3000}
-            message="Process sucessfull"
-            />
-            :
-            <Snackbar 
-            anchorOrigin={{
-              vertical: 'top',
-              horizontal: 'right'
-            }}
-            open={create}
-            onClose={createClose}
-            autoHideDuration={3000}
-            message="You must send a image"/>
-        }
-    </Box>     
-    <div>
-      <ImageList cols={2} rowHeight={300}>
-      {
-       images.images[0] ?
-       images.images[0].map((img, key_id) =>  (
-          <ImageListItem key={key_id}>
-            <Box>
-              <Box className={classes.buttons}>
-              
-                <Button variant="text" style={{color: 'white'}}>
-                    <EditIcon />
-                   <input  type="file"  name="newBannerImages" encType='multipart/form-data'  hidden/>
-                </Button>
-       
-                <Button variant="text" style={{color: 'white'}} onClick={handleClickOpen}>
-                <HighlightOffOutlinedIcon /> 
-                </Button>
-            <Dialog
-              open={open}
-              onClose={handleClose}
-              aria-labelledby="alert-dialog-title"
-              aria-describedby="alert-dialog-description"
-            >
-              <DialogTitle id="alert-dialog-title">{"Estas seguro de eliminar esta imagen del carrusel?"}</DialogTitle>
-              <DialogContent>
-                <DialogContentText id="alert-dialog-description">
-                  Esta imagen ya no se vera en el carrusel del banner principal
-                </DialogContentText>
-              </DialogContent>
-              <DialogActions>
-                <Button onClick={handleClose} color="primary">
-                  Cancelar
-                </Button>
-                <Button onClick={async () => {
-                    handleClickOpenI()
-                    setLoading(true)
-                    const URI = process.env.REACT_APP_BACKEND_URL + `/admin/preferences/carousel/${img._id}`;
-                    let res = await axios.delete(URI);
-                    handleClose();
-                    getImagesForTheCarousel();
-                    handleCloseI(); 
-                    setLoading(false)                 
-                  }} color="primary">
-                  Aceptar
-                </Button>
-              </DialogActions>
-            </Dialog>
+                      <Button
+                        variant="text"
+                        style={{ color: "white" }}
+                        onClick={handleClickOpen}
+                      >
+                        <HighlightOffOutlinedIcon />
+                      </Button>
+                      <Dialog
+                        open={open}
+                        onClose={handleClose}
+                        aria-labelledby="alert-dialog-title"
+                        aria-describedby="alert-dialog-description"
+                      >
+                        <DialogTitle id="alert-dialog-title">
+                          {"Estas seguro de eliminar esta imagen del carrusel?"}
+                        </DialogTitle>
+                        <DialogContent>
+                          <DialogContentText id="alert-dialog-description">
+                            Esta imagen ya no se vera en el carrusel del banner
+                            principal
+                          </DialogContentText>
+                        </DialogContent>
+                        <DialogActions>
+                          <Button onClick={handleClose} color="primary">
+                            Cancelar
+                          </Button>
+                          <Button
+                            onClick={async () => {
+                              handleClickOpenI();
+                              setLoading(true);
+                              const URI =
+                                process.env.REACT_APP_BACKEND_URL +
+                                `/admin/preferences/carousel/${img._id}`;
+                              let res = await axios.delete(URI);
+                              handleClose();
+                              getImagesForTheCarousel();
+                              handleCloseI();
+                              setLoading(false);
+                            }}
+                            color="primary"
+                          >
+                            Aceptar
+                          </Button>
+                        </DialogActions>
+                      </Dialog>
 
-            <Snackbar 
-            anchorOrigin={{
-              vertical: 'top',
-              horizontal: 'right'
-            }}
-            open={Open}
-            onClose={handleClose}
-            autoHideDuration={3000}
-            message="Imagen borrada exitosamente"
-            />
-              </Box>
-              <a href={img.carouselImages[0]} target='_BLANK'>
-              <img className={classes.images} title={img.carouselImages[0]} src={img.carouselImages[0]}></img>
-              </a>
-            </Box>
-          </ImageListItem>
-          
-        )
-       )
-       :
-        <Typography>Que mal, parece que no tienes imagenes en el carrusel</Typography>
-        }
-      </ImageList>
-      
-    </div>
-    </Grid>
-    <Dialog
-              open={maxImage}
-              onClose={maxImageClose}
-              aria-labelledby="alert-dialog-title"
-              aria-describedby="alert-dialog-description"
-            >
-              <DialogTitle id="alert-dialog-title">{"Limite alcanzado"}</DialogTitle>
-              <DialogContent>
-                <DialogContentText id="alert-dialog-description">
-                  Solo puedes agregar 6 imagenes al carrusel, 
-                  procura eliminar algunas imagenes o reemplazar 
-                </DialogContentText>
-              </DialogContent>
-              <DialogActions>
-                <Button onClick={maxImageClose}>
-                  Aceptar
-                </Button>
-              </DialogActions>
-            </Dialog>
+                      <Snackbar
+                        anchorOrigin={{
+                          vertical: "top",
+                          horizontal: "right",
+                        }}
+                        open={Open}
+                        onClose={handleClose}
+                        autoHideDuration={3000}
+                        message="Imagen borrada exitosamente"
+                      />
+                    </Box>
+                    <a href={img.carouselImages[0]} target="_BLANK">
+                      <img
+                        className={classes.images}
+                        title={img.carouselImages[0]}
+                        src={img.carouselImages[0]}
+                      ></img>
+                    </a>
+                  </Box>
+                </ImageListItem>
+              ))
+            ) : (
+              <Typography>
+                Que mal, parece que no tienes imagenes en el carrusel
+              </Typography>
+            )}
+          </ImageList>
+        </div>
+      </Grid>
+      <Dialog
+        open={maxImage}
+        onClose={maxImageClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">{"Limite alcanzado"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Solo puedes agregar 6 imagenes al carrusel, procura eliminar algunas
+            imagenes o reemplazar
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={maxImageClose}>Aceptar</Button>
+        </DialogActions>
+      </Dialog>
     </>
-    )
+  );
 }
 
 export default CarouselAdmin;

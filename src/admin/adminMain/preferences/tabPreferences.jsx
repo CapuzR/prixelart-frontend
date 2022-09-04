@@ -7,6 +7,7 @@ import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
 import CarouselAdmin from "./preferencesCarousel";
 import Terms from "./preferenceTerms";
+import TermsAndConditions from "./preferenceTerms";
 
 function TabPanel(props) {
   const { children, value, index } = props;
@@ -47,14 +48,14 @@ export default function SimpleTabs() {
       <AppBar position="static">
         <Tabs value={value} onChange={handleChange}>
           <Tab label="Carrusel" />
-          <Tab label="Terminos y condiciones" />
+          <Tab label="Términos y condiciones" />
         </Tabs>
       </AppBar>
       <TabPanel value={value} index={0}>
         <CarouselAdmin />
       </TabPanel>
       <TabPanel value={value} index={1}>
-        <Terms />
+        <TermsAndConditions />
       </TabPanel>
     </div>
   );

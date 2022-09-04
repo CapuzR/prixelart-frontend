@@ -6,14 +6,12 @@ import { makeStyles, useTheme } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
 import Typography from "@material-ui/core/Typography";
-import ButtonBase from "@material-ui/core/ButtonBase";
 import { useState, useEffect } from "react";
 import EditIcon from "@material-ui/icons/Edit";
 import IconButton from "@material-ui/core/IconButton";
 import TextField from "@material-ui/core/TextField";
 import axios from "axios";
 import MenuItem from "@material-ui/core/MenuItem";
-import Input from "@material-ui/core/Input";
 import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
 import Select from "@material-ui/core/Select";
@@ -160,13 +158,11 @@ export default function UserData(props) {
         setReady(true);
         setBackdrop(false);
         setPrixerExists(true);
-        console.log(response.data);
       })
       .catch((error) => {
         console.log(error);
       });
   }, [props.prixerUsername]);
-  console.log(specialtyArt);
 
   const handleProfileDataEdit = async () => {
     if (prixerDataState === "edit") {

@@ -34,7 +34,7 @@ import Modal from "@material-ui/core/Modal";
 import { useTheme } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 
-import Terms from "./Terms";
+// import Terms from "./Terms";     //Anterior Términos y condiciones
 import clsx from "clsx";
 import jwt from "jwt-decode";
 
@@ -98,6 +98,7 @@ export default function SignUp() {
   const [isChecked, setIsChecked] = useState(false);
   const [termsAgree, setTermsAgree] = useState(false);
   const theme = useTheme();
+  const [value, setValue] = useState("");
 
   const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
 
@@ -112,7 +113,8 @@ export default function SignUp() {
   };
   const body = (
     <div className={styles.modal}>
-      <Terms />
+      <div>{value}</div>
+      {/* <Terms /> */}
       <div align="center">
         <Button variant="contained" color="primary" onClick={() => openModal()}>
           Aceptar
@@ -243,7 +245,6 @@ export default function SignUp() {
   const handleMouseDownPassword = (event) => {
     event.preventDefault();
   };
-  //END Password
 
   return (
     <Container component="main" maxWidth="xs">
@@ -345,7 +346,7 @@ export default function SignUp() {
                 />
               </FormControl>
             </Grid>
-            <Grid
+            {/* <Grid
               item
               xs={12}
               style={{
@@ -375,7 +376,7 @@ export default function SignUp() {
               >
                 {body}
               </Modal>
-            </Grid>
+            </Grid> */}
           </Grid>
           <Button
             type="submit"

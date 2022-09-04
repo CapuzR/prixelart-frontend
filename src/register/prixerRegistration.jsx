@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Avatar from "@material-ui/core/Avatar";
 import axios from "axios";
 import { useHistory } from "react-router-dom";
@@ -23,8 +23,9 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import FormControl from "@material-ui/core/FormControl";
 import Input from "@material-ui/core/Input";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
+import Modal from "@material-ui/core/Modal";
 
-import Terms from "./Terms";
+import Terms from "./Terms"; //Anterior Términos y condiciones
 
 function Copyright() {
   return (
@@ -147,6 +148,8 @@ export default function PrixerRegistration() {
   const [avatar, setAvatar] = useState("");
   const [avatarObj, setAvatarObj] = useState("");
   const [buttonState, setButtonState] = useState(false);
+  const [termsAgree, setTermsAgree] = useState(false);
+  const [value, setValue] = useState("");
   const [loading, setLoading] = useState(false);
   const [isChecked, setIsChecked] = React.useState(false);
   const theme = useTheme();
@@ -163,7 +166,9 @@ export default function PrixerRegistration() {
   };
   const body = (
     <div className={styles.modal}>
-      <Terms />
+      {/* <Terms /> */}
+      <div>{value}</div>
+
       <div align="center">
         <Button variant="contained" color="primary" onClick={() => openModal()}>
           Aceptar
@@ -234,7 +239,21 @@ export default function PrixerRegistration() {
   const handleChange = (event) => {
     setSpecialty(event.target.value);
   };
-  console.log(setDescription);
+  const getTerms = () => {
+    const base_url =
+      process.env.REACT_APP_BACKEND_URL + "/termsAndConditions/read";
+    axios
+      .get(base_url)
+      .then((response) => {
+        setValue(response.data.terms.termsAndConditions);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+  useEffect(() => {
+    getTerms();
+  }, []);
 
   return (
     <Container component="main" maxWidth="xs">
@@ -419,7 +438,37 @@ export default function PrixerRegistration() {
               />
             </Grid>
           </Grid>
+          <Grid
+            item
+            xs={12}
+            style={{
+              display: "flex",
+              paddingTop: "24px",
+              justifyContent: "center",
+            }}
+          >
+            <FormControlLabel
+              style={{ margin: 0 }}
+              control={<Checkbox color="primary" />}
+              label="Acepto los"
+              onChange={handleOnChange}
+              value={termsAgree}
+            />
 
+            <Button
+              style={{ textTransform: "lowercase", fontSize: "1rem" }}
+              onClick={() => openModal()}
+            >
+              Términos y condiciones
+            </Button>
+            <Modal
+              open={modal}
+              onClose={openModal}
+              width={isDesktop ? 800 : 420}
+            >
+              {body}
+            </Modal>
+          </Grid>
           <Button
             type="submit"
             fullWidth

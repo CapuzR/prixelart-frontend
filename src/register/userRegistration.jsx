@@ -381,7 +381,6 @@ export default function SignUp() {
           <Button
             type="submit"
             fullWidth
-            disabled={!isChecked}
             variant="contained"
             color="primary"
             className={classes.submit}

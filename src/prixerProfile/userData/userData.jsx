@@ -228,7 +228,7 @@ export default function UserData(props) {
   const handleChange = (e) => {
     setSpecialtyArt(e.target.value);
   };
-
+  console.log(specialtyArt);
   return prixerExists ? (
     <div className={classes.root}>
       <Backdrop className={classes.backdrop} open={backdrop}>
@@ -255,7 +255,7 @@ export default function UserData(props) {
                 </Box>
                 <Box style={{ marginBottom: "4px" }}>
                   <Typography variant="body1">
-                    {specialtyArt.map((specialty, index) =>
+                    {specialtyArt?.map((specialty, index) =>
                       specialtyArt?.length === index + 1
                         ? specialty
                         : `${specialty}, `

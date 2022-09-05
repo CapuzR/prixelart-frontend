@@ -147,7 +147,7 @@ export default function PrixerRegistration() {
   const [description, setDescription] = useState("");
   const [avatar, setAvatar] = useState("");
   const [avatarObj, setAvatarObj] = useState("");
-  const [buttonState, setButtonState] = useState(false);
+  const [buttonState, setButtonState] = useState(true);
   const [termsAgree, setTermsAgree] = useState(false);
   const [value, setValue] = useState("");
   const [loading, setLoading] = useState(false);
@@ -311,7 +311,7 @@ export default function PrixerRegistration() {
                 id="dateOfBirth"
                 label="Fecha de Nacimiento"
                 type="date"
-                disabled={buttonState}
+                required
                 format="dd-MM-yyyy"
                 defaultValue="06-07-2016"
                 className={classes.textField}
@@ -329,7 +329,6 @@ export default function PrixerRegistration() {
                 name="instagram"
                 variant="outlined"
                 required
-                disabled={buttonState}
                 fullWidth
                 value={instagram}
                 id="instagram"
@@ -345,7 +344,6 @@ export default function PrixerRegistration() {
                 autoComplete="fname"
                 name="facebook"
                 variant="outlined"
-                disabled={buttonState}
                 fullWidth
                 value={facebook}
                 id="facebook"
@@ -361,7 +359,6 @@ export default function PrixerRegistration() {
                 autoComplete="fname"
                 name="twitter"
                 variant="outlined"
-                disabled={buttonState}
                 fullWidth
                 value={twitter}
                 id="twitter"
@@ -378,7 +375,6 @@ export default function PrixerRegistration() {
                 variant="outlined"
                 required
                 fullWidth
-                disabled={buttonState}
                 id="phone"
                 label="Teléfono"
                 value={phone}
@@ -393,7 +389,6 @@ export default function PrixerRegistration() {
                 required
                 fullWidth
                 name="country"
-                disabled={buttonState}
                 label="País"
                 value={country}
                 type="country"
@@ -407,7 +402,6 @@ export default function PrixerRegistration() {
             <Grid item xs={6}>
               <TextField
                 variant="outlined"
-                disabled={buttonState}
                 required
                 fullWidth
                 name="city"
@@ -424,7 +418,6 @@ export default function PrixerRegistration() {
             <Grid item xs={12}>
               <TextField
                 variant="outlined"
-                disabled={buttonState}
                 fullWidth
                 name="description"
                 label="Descripción"
@@ -453,6 +446,7 @@ export default function PrixerRegistration() {
               label="Acepto los"
               onChange={handleOnChange}
               value={termsAgree}
+              required
             />
 
             <Button
@@ -476,6 +470,8 @@ export default function PrixerRegistration() {
             color="primary"
             className={classes.submit}
             value="submit"
+            required
+            disabled={!isChecked}
           >
             Guardar e ir a mi perfil
           </Button>

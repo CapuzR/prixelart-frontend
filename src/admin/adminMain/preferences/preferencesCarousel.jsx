@@ -123,12 +123,12 @@ function CarouselAdmin(props)
     setOpen(false);
   };
 
-  const handleClickOpenI = () => 
+  const handleClickOpenI = () =>
   {
     setOpenI(true)
   }
 
-  const handleCloseI = () => 
+  const handleCloseI = () =>
   {
     setOpenI(false)
   }
@@ -138,7 +138,7 @@ function CarouselAdmin(props)
     setUpdate(true)
   }
 
-  const closeUpdate = () => 
+  const closeUpdate = () =>
   {
     setUpdate(false)
   }
@@ -146,7 +146,7 @@ function CarouselAdmin(props)
 
     // CRUD
     //Editar imagen:
-  const handleUpdate= async (x) => 
+  const handleUpdate= async (x) =>
   {
     x.preventDefault();
     setLoading(true)
@@ -169,7 +169,7 @@ function CarouselAdmin(props)
   }
 
   // Crear imagen:
-  const handleSubmit = async (a) => 
+  const handleSubmit = async (a) =>
   {
       a.preventDefault();
       if(images.images[0].length >= 6){
@@ -206,8 +206,8 @@ function CarouselAdmin(props)
     let res = await axios.delete(URI);
     getImagesForTheCarousel();
     handleClickOpenI()
-    setLoading(false) 
-    handleCloseI();                 
+    setLoading(false)
+    handleCloseI();
   }
   //Preview de imagen antes de enviar
   const convertToBase64 = (blob) => {
@@ -220,7 +220,7 @@ function CarouselAdmin(props)
     });
   };
   // Actualizacion del estado para preview de imagen
-  const loadImage = async (e) => 
+  const loadImage = async (e) =>
   {
     const file = e.target.files[0];
     const resizedString = await convertToBase64(file);
@@ -228,7 +228,7 @@ function CarouselAdmin(props)
   }
 
   //Cancelar subida de imagen
-  const cancelUploadImage = () => 
+  const cancelUploadImage = () =>
   {
       setLoadImage({loader: '', filename: 'Subir imagenes'})
       newImage({_id: '', file: ''})
@@ -268,7 +268,15 @@ function CarouselAdmin(props)
           <HighlightOffOutlinedIcon hidden/>
         }
         </Box>
-        <img className={classes.imageLoad} src={imageLoader.loader} ></img>
+        {imageLoader.loader && <img className={classes.imageLoad} src={imageLoader.loader} alt='+'></img>}
+        {
+          imageLoader.loader ?
+          ''
+          :
+          <h1 style={{color: '#e0e0e0'}}>1300x700px</h1>
+        }
+
+
     </div>
 
     <Box style={{display:'flex', justifyContent: 'center'}}>
@@ -294,10 +302,10 @@ function CarouselAdmin(props)
           }}  />
          </Button>
          <Button variant='outlined' color="primary" type="submit" >Enviar</Button>
-          </form> 
+          </form>
         </FormControl>
 
-          <Snackbar 
+          <Snackbar
           anchorOrigin={{
             vertical: 'top',
             horizontal: 'right'
@@ -306,8 +314,8 @@ function CarouselAdmin(props)
           onClose={createClose}
           autoHideDuration={5000}
           message="Process sucessfull"/>
-          
-            <Snackbar 
+
+            <Snackbar
             anchorOrigin={{
               vertical: 'top',
               horizontal: 'right'
@@ -316,9 +324,9 @@ function CarouselAdmin(props)
             onClose={createCloseF}
             autoHideDuration={5000}
             message="You must send a image"/>
-          
 
-      <Snackbar 
+
+      <Snackbar
           anchorOrigin={{
             vertical: 'top',
             horizontal: 'right'
@@ -327,7 +335,7 @@ function CarouselAdmin(props)
           onClose={closeUpdate}
           autoHideDuration={5000}
           message="Process sucessfull"/>
-    </Box>     
+    </Box>
     <div>
       <ImageList cols={2} rowHeight={300}>
       {
@@ -348,13 +356,13 @@ function CarouselAdmin(props)
                    <EditIcon />
                 </Button>
                 <Button variant="text" style={{color: 'white'}} onClick={handleClickOpen}>
-                <HighlightOffOutlinedIcon onClick={() => 
+                <HighlightOffOutlinedIcon onClick={() =>
                 {
                   newImage({
                     _id: img._id,
                     file: image.file
                   })
-                }}/> 
+                }}/>
                 </Button>
             <Dialog
               open={open}
@@ -380,7 +388,7 @@ function CarouselAdmin(props)
               </DialogActions>
             </Dialog>
 
-            <Snackbar 
+            <Snackbar
             anchorOrigin={{
               vertical: 'top',
               horizontal: 'right'
@@ -396,14 +404,14 @@ function CarouselAdmin(props)
               </a>
             </Box>
           </ImageListItem>
-          
+
         )
        )
        :
         <Typography>Que mal, parece que no tienes imagenes en el carrusel</Typography>
         }
       </ImageList>
-      
+
     </div>
     </Grid>
     <Dialog
@@ -415,8 +423,8 @@ function CarouselAdmin(props)
               <DialogTitle id="alert-dialog-title">{"Limite alcanzado"}</DialogTitle>
               <DialogContent>
                 <DialogContentText id="alert-dialog-description">
-                  Solo puedes agregar 6 imagenes al carrusel, 
-                  procura eliminar algunas imagenes o reemplazar 
+                  Solo puedes agregar 6 imagenes al carrusel,
+                  procura eliminar algunas imagenes o reemplazar
                 </DialogContentText>
               </DialogContent>
               <DialogActions>

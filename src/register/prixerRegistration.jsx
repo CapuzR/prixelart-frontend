@@ -94,7 +94,7 @@ const useStyles = makeStyles((theme) => ({
   },
   modal: {
     position: "absolute",
-    width: 800,
+    width: "80%",
     maxHeight: 450,
     overflowY: "auto",
     backgroundColor: "white",
@@ -154,15 +154,23 @@ export default function PrixerRegistration() {
   const [isChecked, setIsChecked] = React.useState(false);
   const theme = useTheme();
   const [specialty, setSpecialty] = React.useState([]);
-  const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
+  const [change, setChange] = useState(false);
+  const isDesktop = useMediaQuery(theme.breakpoints.up("sm"));
 
   const handleOnChange = () => {
     setIsChecked(!isChecked);
+  };
+  const setCheckedBox = () => {
+    setIsChecked(!Checkbox);
   };
   const styles = useStyles();
   const [modal, setModal] = useState(false);
   const openModal = () => {
     setModal(!modal);
+  };
+  const acceptTerms = () => {
+    setIsChecked(!isChecked);
+    openModal();
   };
   const body = (
     <div className={styles.modal}>
@@ -170,12 +178,20 @@ export default function PrixerRegistration() {
       <div>{value}</div>
 
       <div align="center">
-        <Button variant="contained" color="primary" onClick={() => openModal()}>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => {
+            setIsChecked(true);
+            setModal(false);
+          }}
+        >
           Aceptar
         </Button>
       </div>
     </div>
   );
+
   //Error states.
   const [errorMessage, setErrorMessage] = useState();
   const [snackBarError, setSnackBarError] = useState(false);
@@ -190,7 +206,7 @@ export default function PrixerRegistration() {
       !country ||
       !city ||
       !description ||
-      !Checkbox
+      !isChecked
     ) {
       // ||(!avatar)) {
       setErrorMessage("Por favor completa todos los campos requeridos.");
@@ -203,7 +219,7 @@ export default function PrixerRegistration() {
         process.env.REACT_APP_BACKEND_URL + "/prixer-registration";
       // const cldAvatarUrl = await uploadToCld();
       const data = {
-        specialty: specialty,
+        specialtyArt: specialty,
         instagram: instagram,
         facebook: facebook,
         twitter: twitter,
@@ -212,9 +228,11 @@ export default function PrixerRegistration() {
         country: country,
         city: city,
         description: description,
+        termsAgree: termsAgree,
         // 'avatar': cldAvatarUrl,
         username: JSON.parse(localStorage.getItem("token")).username,
       };
+
       axios
         .post(base_url, data)
         .then((response) => {
@@ -254,7 +272,7 @@ export default function PrixerRegistration() {
   useEffect(() => {
     getTerms();
   }, []);
-
+  console.log(isChecked);
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
@@ -438,27 +456,42 @@ export default function PrixerRegistration() {
               display: "flex",
               paddingTop: "24px",
               justifyContent: "center",
+              alignItems: "center",
             }}
           >
             <FormControlLabel
-              style={{ margin: 0 }}
-              control={<Checkbox color="primary" />}
+              style={{ margin: 0, paddingRight: 8 }}
+              control={
+                <Checkbox
+                  color="primary"
+                  value={isChecked}
+                  checked={isChecked ? true : false}
+                />
+              }
               label="Acepto los"
               onChange={handleOnChange}
-              value={termsAgree}
               required
             />
 
-            <Button
-              style={{ textTransform: "lowercase", fontSize: "1rem" }}
-              onClick={() => openModal()}
+            <a
+              style={{
+                textTransform: "lowercase",
+                fontSize: "1rem",
+                textDecoration: "underline",
+                cursor: "pointer",
+              }}
+              onClick={openModal}
             >
               Términos y condiciones
-            </Button>
+            </a>
             <Modal
               open={modal}
               onClose={openModal}
-              width={isDesktop ? 800 : 420}
+              xl={800}
+              lg={800}
+              md={480}
+              sm={360}
+              xs={360}
             >
               {body}
             </Modal>

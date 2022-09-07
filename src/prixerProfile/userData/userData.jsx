@@ -39,6 +39,7 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
     paddingTop: 73,
     width: "100%",
+    display: "grid",
   },
   paper: {
     padding: theme.spacing(2),
@@ -120,7 +121,7 @@ export default function UserData(props) {
   const [inputChange, setInputChange] = useState(false);
   const [backdrop, setBackdrop] = useState(true);
   const theme = useTheme();
-  const isDesktop = useMediaQuery(theme.breakpoints.up("sm"));
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   function getStyles(specialty, specialtyArt, theme) {
     return {
@@ -144,7 +145,7 @@ export default function UserData(props) {
         setEmail(response.data.email);
         setFirstName(response.data.firstName);
         setLastName(response.data.lastName);
-        setSpecialtyArt(response.data.specialty);
+        setSpecialtyArt(response.data.specialtyArt);
         setInstagram(response.data.instagram);
         setFacebook(response.data.facebook);
         setTwitter(response.data.twitter);
@@ -228,7 +229,6 @@ export default function UserData(props) {
   const handleChange = (e) => {
     setSpecialtyArt(e.target.value);
   };
-  console.log(specialtyArt);
   return prixerExists ? (
     <div className={classes.root}>
       <Backdrop className={classes.backdrop} open={backdrop}>
@@ -237,91 +237,8 @@ export default function UserData(props) {
       <Paper className={classes.paper}>
         {prixerDataState === "read" && (
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
-              <Box style={{ width: "100%" }}>
-                <Box style={{ textAlign: "end" }}>
-                  {JSON.parse(localStorage.getItem("token")) &&
-                    JSON.parse(localStorage.getItem("token")).username ===
-                      username && (
-                      <IconButton
-                        title="Profile Edit"
-                        color="primary"
-                        component="span"
-                        onClick={handleProfileDataEdit}
-                      >
-                        <EditIcon />
-                      </IconButton>
-                    )}
-                </Box>
-                <Box style={{ marginBottom: "4px" }}>
-                  <Typography variant="body1">
-                    {specialtyArt?.map((specialty, index) =>
-                      specialtyArt?.length === index + 1
-                        ? specialty
-                        : `${specialty}, `
-                    )}
-                  </Typography>
-                </Box>
-                <Box style={{ marginBottom: "4px" }}>
-                  <Typography variant="body1" color="textSecondary">
-                    {username}
-                  </Typography>
-                </Box>
-                <Box style={{ marginBottom: "4px" }}>
-                  <Typography>{description}</Typography>
-                </Box>
-                <Box style={{ display: "flex", alignItems: "center" }}>
-                  <InstagramIcon style={{ marginRight: "4px" }} />
-                  <a
-                    href={"https://www.instagram.com/" + instagram}
-                    style={{ textDecoration: "none", color: "#d33f49" }}
-                  >
-                    {instagram}
-                  </a>
-                </Box>
-                <Box style={{ display: "flex", alignItems: "center" }}>
-                  {facebook && (
-                    <>
-                      <FacebookIcon style={{ marginRight: "4px" }} />
-                      <a
-                        href={"https://www.facebook.com/" + facebook}
-                        style={{ textDecoration: "none", color: "#d33f49" }}
-                      >
-                        {facebook}
-                      </a>
-                    </>
-                  )}
-                </Box>
-                <Box style={{ display: "flex", alignItems: "center" }}>
-                  {twitter && (
-                    <>
-                      <TwitterIcon style={{ marginRight: "4px" }} />
-                      <a
-                        href={"https://www.twitter.com/" + twitter}
-                        style={{ textDecoration: "none", color: "#d33f49" }}
-                      >
-                        {twitter}
-                      </a>
-                    </>
-                  )}
-                </Box>
-              </Box>
-            </Grid>
-
-            <Grid
-              item
-              xs={12}
-              sm={12}
-              md={6}
-              lg={6}
-              xl={6}
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <Box>
+            <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
+              <Box style={{ marginBottom: "4px" }}>
                 {avatarObj ? (
                   <Avatar className={classes.avatar}>
                     <label htmlFor="file-input">
@@ -350,6 +267,60 @@ export default function UserData(props) {
                 )}
               </Box>
             </Grid>
+            <Grid item xs={12} sm={8} md={8} lg={8} xl={8}>
+              <Box style={{ marginBottom: "4px" }}>
+                <Typography variant="body1">
+                  {specialtyArt?.map((specialty, index) =>
+                    specialtyArt?.length === index + 1
+                      ? specialty
+                      : `${specialty}, `
+                  )}
+                </Typography>
+              </Box>
+              <Box style={{ marginBottom: "4px" }}>
+                <Typography variant="body1" color="textSecondary">
+                  {username}
+                </Typography>
+              </Box>
+              <Box style={{ marginBottom: "4px" }}>
+                <Typography>{description}</Typography>
+              </Box>
+              <Box style={{ display: "flex", alignItems: "center" }}>
+                <InstagramIcon style={{ marginRight: "4px" }} />
+                <a
+                  href={"https://www.instagram.com/" + instagram}
+                  style={{ textDecoration: "none", color: "#d33f49" }}
+                >
+                  {instagram}
+                </a>
+              </Box>
+              <Box style={{ display: "flex", alignItems: "center" }}>
+                {facebook && (
+                  <>
+                    <FacebookIcon style={{ marginRight: "4px" }} />
+                    <a
+                      href={"https://www.facebook.com/" + facebook}
+                      style={{ textDecoration: "none", color: "#d33f49" }}
+                    >
+                      {facebook}
+                    </a>
+                  </>
+                )}
+              </Box>
+              <Box style={{ display: "flex", alignItems: "center" }}>
+                {twitter && (
+                  <>
+                    <TwitterIcon style={{ marginRight: "4px" }} />
+                    <a
+                      href={"https://www.twitter.com/" + twitter}
+                      style={{ textDecoration: "none", color: "#d33f49" }}
+                    >
+                      {twitter}
+                    </a>
+                  </>
+                )}
+              </Box>
+            </Grid>
           </Grid>
         )}
         {prixerDataState === "edit" && (
@@ -369,6 +340,42 @@ export default function UserData(props) {
                         Editar
                       </Button>
                     )}
+                </Box>
+                <Box marginBottom={2}>
+                  {avatarObj ? (
+                    <Avatar className={classes.avatar}>
+                      <label htmlFor="file-input">
+                        <img
+                          src={avatarObj}
+                          alt="Prixer profile avatar"
+                          style={{ maxHeight: 200 }}
+                        />
+                      </label>
+                      <input
+                        style={{ display: "none" }}
+                        accept="image/*"
+                        id="file-input"
+                        type="file"
+                        onChange={onImageChange}
+                        required
+                      />
+                    </Avatar>
+                  ) : (
+                    <Avatar className={classes.avatar}>
+                      <label htmlFor="file-input">
+                        <AddIcon
+                          style={{ width: 60, height: 60, color: "#d33f49" }}
+                        />
+                      </label>
+                      <input
+                        style={{ display: "none" }}
+                        accept="image/*"
+                        id="file-input"
+                        type="file"
+                        onChange={onImageChange}
+                      />
+                    </Avatar>
+                  )}
                 </Box>
                 <Box style={{ marginBottom: "8px" }}>
                   <TextField
@@ -473,56 +480,6 @@ export default function UserData(props) {
                     item
                   />
                 </Box>
-              </Box>
-            </Grid>
-            <Grid
-              item
-              xs={12}
-              sm={12}
-              md={6}
-              lg={6}
-              xl={6}
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <Box>
-                {avatarObj ? (
-                  <Avatar className={classes.avatar}>
-                    <label htmlFor="file-input">
-                      <img
-                        src={avatarObj}
-                        alt="Prixer profile avatar"
-                        style={{ maxHeight: 200 }}
-                      />
-                    </label>
-                    <input
-                      style={{ display: "none" }}
-                      accept="image/*"
-                      id="file-input"
-                      type="file"
-                      onChange={onImageChange}
-                      required
-                    />
-                  </Avatar>
-                ) : (
-                  <Avatar className={classes.avatar}>
-                    <label htmlFor="file-input">
-                      <AddIcon
-                        style={{ width: 60, height: 60, color: "#d33f49" }}
-                      />
-                    </label>
-                    <input
-                      style={{ display: "none" }}
-                      accept="image/*"
-                      id="file-input"
-                      type="file"
-                      onChange={onImageChange}
-                    />
-                  </Avatar>
-                )}
               </Box>
             </Grid>
           </Grid>

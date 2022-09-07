@@ -7,6 +7,7 @@ import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import GridList from '@material-ui/core/GridList';
 import { isWidthUp } from '@material-ui/core/withWidth';
+import Carousel from 'react-material-ui-carousel'
 import Card from '@material-ui/core/Card';
 import CardActionArea from '@material-ui/core/CardActionArea';
 import CardActions from '@material-ui/core/CardActions';
@@ -17,7 +18,9 @@ import Typography from '@material-ui/core/Typography';
 import WhatsAppIcon from '@material-ui/icons/WhatsApp';
 import utils from '../utils/utils';
 import axios from 'axios';
-
+import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
+import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
+import MaximizeIcon from '@material-ui/icons/Maximize';
 
 import Grid from '@material-ui/core/Grid';
 import InputLabel from '@material-ui/core/InputLabel';
@@ -29,7 +32,7 @@ import { setProductAtts, getAttributes, getEquation } from './services.js';
 
 
 const useStyles = makeStyles((theme) => ({
-  root: {
+  root :{
     display: 'flex',
     flexWrap: 'wrap',
     overflow: 'hidden',
@@ -59,7 +62,8 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: 'space-around',
   },
   img: {
-    width: '100%'
+    width: '100%',
+    height: '100%'
   },
   backdrop: {
     zIndex: theme.zIndex.drawer + 1,
@@ -67,6 +71,10 @@ const useStyles = makeStyles((theme) => ({
   },
   form: {
     width: '100%'
+  },
+  CarouselContent: {
+      width: '100%',
+      heigh: '40vh'
   }
 }));
 
@@ -83,6 +91,15 @@ export default function ProductGrid(props) {
   const [tiles, setTiles] = useState();
   const [width, setWidth] = useState([]);
   const [height, setHeight] = useState([]);
+  const imgs =  [
+      {
+        url: 'https://devprix.nyc3.digitaloceanspaces.com/10.%20Topotepuy-0-1.webp'
+      },
+      {
+        url : 'https://devprix.nyc3.digitaloceanspaces.com/MaskArt.webp'
+      }
+    ]
+
 
   useEffect(() => {
     const base_url = process.env.REACT_APP_BACKEND_URL + "/product/read-all";
@@ -95,16 +112,49 @@ export default function ProductGrid(props) {
         setTiles(getAttributes(productsAttTemp1));
       });
   }, []);
-
   return (
     <GridList cellHeight={'auto'} className={classes.gridList} cols={getGridListCols()}>
       {tiles ?
         tiles.map((tile, iProd, productsArr) => (
           <Card className={classes.root}>
-            <CardActionArea style={{ alignContent: "space-between" }}>
-              <CardMedia>
-                <img src={tile.thumbUrl} className={classes.img} alt="product thumbnail" />
+          <CardMedia>
+              <Carousel
+                stopAutoPlayOnHover={true}
+                animation='slide'
+                duration={500}
+                fullHeightHover={true}
+                IndicatorIcon={<MaximizeIcon/>}
+                NextIcon={<ArrowForwardIosIcon />}
+                PrevIcon={<ArrowBackIosIcon />}
+                navButtonsProps={
+                  {
+                    style: {
+                      backgroundColor: 'rgba(0, 0, 0, 0)',
+                      width: '98%',
+                      height: '100vh',
+                      marginTop: '-50vh',
+                      borderRadius: '0',
+                      marginLeft: '1px'
+                    }
+                  }
+                }
+                indicatorContainerProps={
+                  {
+                    style:{
+                      position: 'absolute',
+                      marginTop: '-17px'
+                    }
+                  }
+                }>
+                {
+                imgs.map((img, key_id) =>
+                (
+                  <img key={key_id}  src={img.url} className={classes.img} alt="product"></img>
+                ))
+                }
+              </Carousel>
               </CardMedia>
+              <CardActionArea style={{ alignContent: "space-between" }}>
               <CardContent>
                 <Typography gutterBottom style={{ padding: 0, marginBotom: 12, width: 10 }} variant="h5" component="h2">
                   {tile.name}

@@ -2,6 +2,7 @@ import React, { useState, Suspense, useEffect } from 'react';
 // import AppBar from '@material-ui/core/AppBar';
 import { useTheme } from '@material-ui/core/styles';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
+import Carousel from 'react-material-ui-carousel'
 import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -23,6 +24,9 @@ import InstagramIcon from '@material-ui/icons/Instagram';
 import SimpleDialog from '../sharedComponents/simpleDialog/simpleDialog';
 import FloatingAddButton from '../sharedComponents/floatingAddButton/floatingAddButton';
 import WhatsAppIcon from '@material-ui/icons/WhatsApp';
+import MaximizeIcon from '@material-ui/icons/Maximize';
+import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
+import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 import { useHistory } from "react-router-dom";
 import ArtUploader from '../sharedComponents/artUploader/artUploader';
 import utils from '../utils/utils';
@@ -52,7 +56,7 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'left',
-    // maxWidth: 850,
+    overflowX: 'none',
     flexGrow: 1,
     overflow: 'visible'
   },
@@ -91,14 +95,20 @@ const useStyles = makeStyles((theme) => ({
   float: {
     position:'relative',
     marginLeft:'87%'
+  },
+  CarouselContent: {
+      width: '100vw',
+      heigh: '92vh'
   }
 }));
 
 export default function Home(props) {
   const theme = useTheme();
-  const isDesktop = useMediaQuery(theme.breakpoints.up('xs'));
+  const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
+  const isDeskTop = useMediaQuery(theme.breakpoints.up('sm'));
   const classes = useStyles();
   const prixerUsername = 'all';
+  const [imgsDesktop, setImgsDesktop] = useState({imgs: []})
   const [tabValue, setTabValue] = useState(0);
   const [openModal, setOpenModal] = useState(false);
   const [openPrixers, setOpenPrixers] = useState(false);
@@ -106,8 +116,49 @@ export default function Home(props) {
   // const [scrolledTop, setScrolledTop] = useState(false);
   const history = useHistory();
   const [openArtFormDialog, setOpenArtFormDialog] = useState(false);
-  const HeroPhoto = 'https://cdn.prixelart.com/HeroPhoto_60Q.webp';
-
+  // const imgsDesktop =  [
+  //     {
+  //       url: './Portada_de_Pagina_Web_Museo_Chuao_Espejo_PC_v2.jpg'
+  //     },
+  //     {
+  //       url : 'https://devprix.nyc3.digitaloceanspaces.com/bedroom-g9548c5f75_1920.jpg'
+  //     },
+  //     {
+  //       url : 'https://devprix.nyc3.digitaloceanspaces.com/corporate-building-with-minimalist-empty-room%202.jpg'
+  //     },
+  //     {
+  //       url : 'https://devprix.nyc3.digitaloceanspaces.com/Foto%20de%20Vecislavas%20Popa%20en%20Pexels_lINEAL%20120X40.2.jpg'
+  //     },
+  //     {
+  //       url : 'https://devprix.nyc3.digitaloceanspaces.com/interior_dark_blue_wall_with_yellow_sofa_and_decor_in_living_room.jpg'
+  //     },
+  //     {
+  //       url : 'https://devprix.nyc3.digitaloceanspaces.com/interior-g373dfef45_1920.2.jpg'
+  //     },
+  //     {
+  //       url : 'https://devprix.nyc3.digitaloceanspaces.com/interior-g373dfef45_1920.jpg'
+  //     }
+  //   ]
+const imgsMobile = [
+  {
+    url: 'https://devprix.nyc3.digitaloceanspaces.com/Portada%20de%20Pagina%20Web_Museo%20Chuao%20Espejo_Telefono_V1.jpg'
+  },
+  {
+    url: 'https://devprix.nyc3.digitaloceanspaces.com/Foto%20de%20Canva%20Studio%20en%20Pexels_16a9.jpg'
+  },
+  {
+    url: 'https://devprix.nyc3.digitaloceanspaces.com/Foto%20de%20Medhat%20Ayad%20en%20Pexels_9a16.jpg'
+  },
+  {
+    url: 'https://devprix.nyc3.digitaloceanspaces.com/Pixabay_%203X.2%20Phone.jpg'
+  },
+  {
+    url: 'https://devprix.nyc3.digitaloceanspaces.com/Foto%20de%20Vecislavas%20Popa%20en%20Pexels_lINEAL%20120X40.2%20%20Phone.jpg'
+  },
+  {
+    url: 'https://devprix.nyc3.digitaloceanspaces.com/Foto%20de%20Daria%20Shevtsova%20en%20Pexels.jpg'
+  }
+]
   const handleChange = (event, newValue) => {
 
     if (newValue === 0) {
@@ -143,6 +194,15 @@ export default function Home(props) {
   //   }
   // });
 
+  const getImagesForTheCarousel = () =>
+  {
+    const URI = process.env.REACT_APP_BACKEND_URL +'/admin/preferences/carousel';
+    fetch(URI)
+    .then(res => res.json()
+    .then(data => { setImgsDesktop({imgs: data.imagesCarousels})})
+    .catch(err => console.error(`Your request is wrong: ${err}`)))
+    .catch(err => console.error(err))
+  }
 
   const handleGallery = (e) => {
     e.preventDefault();
@@ -154,6 +214,11 @@ export default function Home(props) {
     history.push({pathname:"/productos"});
   };
 
+  useEffect(() => 
+  {
+    getImagesForTheCarousel();
+  }, [])
+
   return (
     <React.Fragment>
       <Container component="main" maxWidth="s" className={classes.paper}>
@@ -162,8 +227,60 @@ export default function Home(props) {
           <AppBar prixerUsername={prixerUsername} />
         </Grid>
         <main>
-          <Card className={classes.card} style={{ display: 'flex', position: 'relative', width: '100vw', marginLeft: isDesktop ? '-24px' : '-15px'}}>
-            <div className={classes.heroContent} style={{ backgroundImage: 'url(' + HeroPhoto + ')', backgroundSize: 'cover', backgroundPosition: 'top', backgroundPositionY: '10%', backgroundPositionX : isDesktop ? '40%' : '0'}}>
+          <Card className={classes.card} style={{ display: 'flex',
+           position: 'relative', 
+           width: '100vw', 
+           marginLeft: isDesktop ? '-24px' : '-16px' , 
+           marginLeft: isDeskTop ? '-24px' : '-16px',
+           height: '100vh'}}>
+            <div className={classes.CarouselContent}>
+              <Carousel 
+              stopAutoPlayOnHover={false}
+              animation='slide'
+              duration={500}
+              fullHeightHover={false}
+              style={{marginTop: isDesktop ? '0' : '-40px'}}
+              IndicatorIcon={<MaximizeIcon/>}
+              NextIcon={<ArrowForwardIosIcon style={{fontSize: '3rem'}} />}
+              PrevIcon={<ArrowBackIosIcon style={{fontSize: '3rem'}}/>}
+              navButtonsProps={
+                {
+                  style: {
+                    backgroundColor: 'rgba(0, 0, 0, 0.1)',
+                    width: '98%',
+                    height: '100vh',
+                    marginTop: '-50vh',
+                    borderRadius: '0',
+                    marginLeft: '1px'
+                  }
+                }
+              }
+              indicatorContainerProps={
+                {
+                  style:{
+                    marginTop: isDesktop ? '-70px' : '-100px',
+                    position: 'absolute'
+                  }
+                }
+              }
+              >
+                {
+                  isDesktop ?
+                imgsDesktop.imgs.map((img, key_id) => 
+                {
+                  return(
+                    <div className={classes.heroContent} key={key_id} style={{ backgroundImage: 'url(' + img.carouselImages + ')', backgroundSize: 'cover', backgroundPosition: 'top', marginTop: '-24px'}} ></div>
+                  )
+                })
+                 :
+                 imgsMobile.map((img, key_id) => 
+                 {
+                  return(
+                    <div className={classes.heroContent} key={key_id} style={{ backgroundImage: 'url(' + img.url + ')', backgroundSize: 'cover', backgroundPosition: 'left'}}></div>
+                  )
+                 })
+                }
+                 </Carousel>
             </div>
             <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-around', color: '#404e5c', backgroundColor: '#fff', width: '100%', minHeight: 50, bottom: 0, position: 'absolute', margin: 0, padding: 10, }}>
               <div style={{ left: 10, alignItems: 'center', width: '400px' }}>

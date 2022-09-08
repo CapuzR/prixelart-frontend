@@ -44,7 +44,6 @@ const useStyles = makeStyles((theme) => ({
   paper: {
     padding: theme.spacing(2),
     margin: "auto",
-    width: "100%",
   },
   image: {
     width: 128,
@@ -121,7 +120,8 @@ export default function UserData(props) {
   const [inputChange, setInputChange] = useState(false);
   const [backdrop, setBackdrop] = useState(true);
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
 
   function getStyles(specialty, specialtyArt, theme) {
     return {
@@ -234,11 +234,28 @@ export default function UserData(props) {
       <Backdrop className={classes.backdrop} open={backdrop}>
         <CircularProgress color="inherit" />
       </Backdrop>
-      <Paper className={classes.paper}>
+      <Paper
+        className={classes.paper}
+        style={{ width: isDesktop ? "50%" : "100%" }}
+      >
         {prixerDataState === "read" && (
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
-              <Box style={{ marginBottom: "4px" }}>
+            <Grid
+              item
+              xs={12}
+              sm={4}
+              md={4}
+              lg={4}
+              xl={4}
+              style={{ marginLeft: 15 }}
+            >
+              <Box
+                style={{
+                  marginBottom: "4px",
+                  display: "flex",
+                  justifyContent: "center",
+                }}
+              >
                 {avatarObj ? (
                   <Avatar className={classes.avatar}>
                     <label htmlFor="file-input">
@@ -267,8 +284,14 @@ export default function UserData(props) {
                 )}
               </Box>
             </Grid>
-            <Grid item xs={12} sm={8} md={8} lg={8} xl={8}>
-              <Box style={{ marginBottom: "4px" }}>
+            <Grid item xs={12} sm={6} md={6} lg={6} xl={6}>
+              <Box
+                display={"flex"}
+                style={{
+                  marginBottom: "4px",
+                  justifyContent: isMobile ? "center" : "flexstart",
+                }}
+              >
                 <Typography variant="body1">
                   {specialtyArt?.map((specialty, index) =>
                     specialtyArt?.length === index + 1
@@ -277,15 +300,34 @@ export default function UserData(props) {
                   )}
                 </Typography>
               </Box>
-              <Box style={{ marginBottom: "4px" }}>
+              <Box
+                display={"flex"}
+                style={{
+                  marginBottom: "4px",
+                  justifyContent: isMobile ? "center" : "flexstart",
+                }}
+              >
                 <Typography variant="body1" color="textSecondary">
                   {username}
                 </Typography>
               </Box>
-              <Box style={{ marginBottom: "4px" }}>
+              <Box
+                display={"flex"}
+                style={{
+                  marginBottom: "4px",
+                  justifyContent: isMobile ? "center" : "flexstart",
+                }}
+              >
                 <Typography>{description}</Typography>
               </Box>
-              <Box style={{ display: "flex", alignItems: "center" }}>
+              <Box
+                display={"flex"}
+                style={{
+                  marginBottom: "4px",
+                  justifyContent: isMobile ? "center" : "flexstart",
+                  alignItems: "center",
+                }}
+              >
                 <InstagramIcon style={{ marginRight: "4px" }} />
                 <a
                   href={"https://www.instagram.com/" + instagram}
@@ -294,7 +336,14 @@ export default function UserData(props) {
                   {instagram}
                 </a>
               </Box>
-              <Box style={{ display: "flex", alignItems: "center" }}>
+              <Box
+                display={"flex"}
+                style={{
+                  marginBottom: "4px",
+                  justifyContent: isMobile ? "center" : "flexstart",
+                  alignItems: "center",
+                }}
+              >
                 {facebook && (
                   <>
                     <FacebookIcon style={{ marginRight: "4px" }} />
@@ -307,7 +356,14 @@ export default function UserData(props) {
                   </>
                 )}
               </Box>
-              <Box style={{ display: "flex", alignItems: "center" }}>
+              <Box
+                display={"flex"}
+                style={{
+                  marginBottom: "4px",
+                  justifyContent: isMobile ? "center" : "flexstart",
+                  alignItems: "center",
+                }}
+              >
                 {twitter && (
                   <>
                     <TwitterIcon style={{ marginRight: "4px" }} />
@@ -341,7 +397,13 @@ export default function UserData(props) {
                       </Button>
                     )}
                 </Box>
-                <Box marginBottom={2}>
+                <Box
+                  marginBottom={2}
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                  }}
+                >
                   {avatarObj ? (
                     <Avatar className={classes.avatar}>
                       <label htmlFor="file-input">

@@ -294,7 +294,18 @@ function CarouselAdmin(props) {
               <HighlightOffOutlinedIcon hidden />
             )}
           </Box>
-          <img className={classes.imageLoad} src={imageLoader.loader}></img>
+          {imageLoader.loader && (
+            <img
+              className={classes.imageLoad}
+              src={imageLoader.loader}
+              alt="+"
+            ></img>
+          )}
+          {imageLoader.loader ? (
+            ""
+          ) : (
+            <h1 style={{ color: "#e0e0e0" }}>1300x700px</h1>
+          )}
         </div>
 
         <Box style={{ display: "flex", justifyContent: "center" }}>
@@ -341,6 +352,18 @@ function CarouselAdmin(props) {
               </Button>
             </form>
           </FormControl>
+
+          <Snackbar
+            anchorOrigin={{
+              vertical: "top",
+              horizontal: "right",
+            }}
+            open={create}
+            onClose={createClose}
+            autoHideDuration={5000}
+            message="Process sucessfull"
+          />
+
           <Snackbar
             anchorOrigin={{
               vertical: "top",
@@ -450,8 +473,8 @@ function CarouselAdmin(props) {
                           vertical: "top",
                           horizontal: "right",
                         }}
-                        open={Open}
-                        onClose={handleClose}
+                        open={update}
+                        onClose={closeUpdate}
                         autoHideDuration={5000}
                         message="Imagen borrada exitosamente"
                       />

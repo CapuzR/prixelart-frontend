@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { useTheme } from '@material-ui/core/styles';
 import { makeStyles } from '@material-ui/core/styles';
 import axios from 'axios';
 import { useHistory } from "react-router-dom";
+import useMediaQuery from '@material-ui/core/useMediaQuery';
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
@@ -58,14 +60,18 @@ const useStyles = makeStyles((theme) => ({
 
 
 export default function PrixerGrid(props) {
+  const theme = useTheme();
   const classes = useStyles();
+  const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
+  const isDeskTop = useMediaQuery(theme.breakpoints.up('sm'));
   const [tiles, setTiles] = useState([]);
   const history = useHistory();
   const [backdrop, setBackdrop] = useState(true);
 
+
   useEffect(()=> {
     const base_url= process.env.REACT_APP_BACKEND_URL + "/prixer/read-all-full";
-  
+
     axios.get(base_url)
       .then(response =>{
         setTiles(utils.shuffle(response.data.prixers));
@@ -82,7 +88,8 @@ export default function PrixerGrid(props) {
     {tiles &&
     tiles.filter(tile => tile.avatar).map((tile) =>
       (
-        <Grid item key={tile._id} xs={6} sm={6} md={3}>
+        isDesktop ?
+       <Grid item key={tile._id} xs={6} sm={6} md={3}>
             <Card className={classes.card}>
             <CardMedia
                 alt={tile.title}
@@ -106,6 +113,83 @@ export default function PrixerGrid(props) {
             </CardActions>
             </Card>
         </Grid>
+        :
+         <Grid item key={tile._id} xs={12} sm={1} md={2}>
+              <Card className={classes.card}>
+              <CardMedia
+                  alt={tile.title}
+                  height= '100'
+                  image={tile.avatar}
+                  className={classes.cardMedia}
+                  title={tile.title}
+              />
+              <CardContent className={classes.cardContent}>
+                  <Typography gutterBottom variant="h5" component="h2">
+                    {tile.firstName} {tile.lastName}
+                  </Typography>
+                  <Typography gutterBottom variant="h6" component="h6" style={{fontSize: 16}}>
+                    {tile.username} - {tile.specialty}
+                  </Typography>
+              </CardContent>
+              <CardActions>
+                  <Button size="small" color="primary" onClick={e => history.push({pathname:"/"+tile.username})}>
+                  Explorar
+                  </Button>
+              </CardActions>
+              </Card>
+          </Grid>
+          ,
+        isDeskTop ?
+        <Grid item key={tile._id} xs={6} sm={6} md={3}>
+             <Card className={classes.card}>
+             <CardMedia
+                 alt={tile.title}
+                 height= '100'
+                 image={tile.avatar}
+                 className={classes.cardMedia}
+                 title={tile.title}
+             />
+             <CardContent className={classes.cardContent}>
+                 <Typography gutterBottom variant="h5" component="h2">
+                   {tile.firstName} {tile.lastName}
+                 </Typography>
+                 <Typography gutterBottom variant="h6" component="h6" style={{fontSize: 16}}>
+                   {tile.username} - {tile.specialty}
+                 </Typography>
+             </CardContent>
+             <CardActions>
+                 <Button size="small" color="primary" onClick={e => history.push({pathname:"/"+tile.username})}>
+                 Explorar
+                 </Button>
+             </CardActions>
+             </Card>
+         </Grid>
+         :
+         <Grid item key={tile._id} xs={12} sm={1} md={6}>
+              <Card className={classes.card}>
+              <CardMedia
+                  alt={tile.title}
+                  height= '100'
+                  image={tile.avatar}
+                  className={classes.cardMedia}
+                  title={tile.title}
+              />
+              <CardContent className={classes.cardContent}>
+                  <Typography gutterBottom variant="h5" component="h2">
+                    {tile.firstName} {tile.lastName}
+                  </Typography>
+                  <Typography gutterBottom variant="h6" component="h6" style={{fontSize: 16}}>
+                    {tile.username} - {tile.specialty}
+                  </Typography>
+              </CardContent>
+              <CardActions>
+                  <Button size="small" color="primary" onClick={e => history.push({pathname:"/"+tile.username})}>
+                  Explorar
+                  </Button>
+              </CardActions>
+              </Card>
+          </Grid>
+
     ))}
       </Grid>
     </div>

@@ -13,6 +13,8 @@ import LoyaltyIcon from '@material-ui/icons/Loyalty';
 import LocalMallIcon from '@material-ui/icons/LocalMall';
 import PaymentIcon from '@material-ui/icons/Payment';
 import ReceiptIcon from '@material-ui/icons/Receipt';
+import WebAssetIcon from '@material-ui/icons/WebAsset';
+import Preferences from './preferences/Preferences';
 
 export default function MainListItems(props){
   const history = useHistory();
@@ -31,7 +33,7 @@ export default function MainListItems(props){
         <ListItemText primary="Tablero General" /> 
          {/* onClick={(e)=>{handleClick('dashboard')}} /> */}
       </ListItem>
-      <ListItem button selected={props.active === 'product'}>
+      <ListItem button selected={props.active === 'product'} >
         <ListItemIcon>
           <LocalMallIcon />
         </ListItemIcon>
@@ -69,7 +71,7 @@ export default function MainListItems(props){
         <ListItemIcon>
           <BarChartIcon />
         </ListItemIcon>
-        <ListItemText primary="Parámetros" /> 
+        <ListItemText primary="Parámetros"  /> 
         {/* onClick={(e)=>{handleClick('parameters')}}  /> */}
       </ListItem>
     </div>
@@ -81,6 +83,12 @@ export default function MainListItems(props){
           <AssignmentIcon />
         </ListItemIcon>
         <ListItemText primary="Usuarios" onClick={(e)=>{handleClick('user')}}  />
+      </ListItem>
+      <ListItem button selected={props.active === 'preferences'}>
+        <ListItemIcon>
+          <WebAssetIcon/> 
+        </ListItemIcon>
+        <ListItemText primary="Preferencias" onClick={(e)=>{handleClick('preferences')}}  />
       </ListItem>
       <ListItem button selected={props.active === 'role'} style={{color: "gray"}}>
         <ListItemIcon>

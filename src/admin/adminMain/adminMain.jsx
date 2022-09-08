@@ -24,6 +24,7 @@ import Products from './products/products';
 import Consumers from './consumers/consumers';
 import PaymentMethods from './orders/paymentMethods';
 import Orders from './orders/orders';
+import Preferences from './preferences/Preferences';
 
 function Copyright() {
   return (
@@ -203,7 +204,9 @@ export default function AdminMain(props) {
             <PaymentMethods/>
           : active === 'order' ?
             <Orders/>
-          : 
+          : active === 'preferences' ?
+            <Preferences />
+          :
             <p>POONG</p>
           }
           <Box pt={4}>

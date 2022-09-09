@@ -34,7 +34,6 @@ import Modal from "@material-ui/core/Modal";
 import { useTheme } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 
-// import Terms from "./Terms";     //Anterior Términos y condiciones
 import clsx from "clsx";
 import jwt from "jwt-decode";
 
@@ -114,7 +113,6 @@ export default function SignUp() {
   const body = (
     <div className={styles.modal}>
       <div>{value}</div>
-      {/* <Terms /> */}
       <div align="center">
         <Button variant="contained" color="primary" onClick={() => openModal()}>
           Aceptar
@@ -346,37 +344,6 @@ export default function SignUp() {
                 />
               </FormControl>
             </Grid>
-            {/* <Grid
-              item
-              xs={12}
-              style={{
-                display: "flex",
-                paddingTop: "24px",
-                justifyContent: "center",
-              }}
-            >
-              <FormControlLabel
-                style={{ margin: 0 }}
-                control={<Checkbox color="primary" />}
-                label="Acepto los"
-                onChange={handleOnChange}
-                value={termsAgree}
-              />
-
-              <Button
-                style={{ textTransform: "lowercase", fontSize: "1rem" }}
-                onClick={() => openModal()}
-              >
-                Términos y condiciones
-              </Button>
-              <Modal
-                open={modal}
-                onClose={openModal}
-                width={isDesktop ? 800 : 420}
-              >
-                {body}
-              </Modal>
-            </Grid> */}
           </Grid>
           <Button
             type="submit"

@@ -113,7 +113,7 @@ export default function UserData(props) {
   const [dateOfBirth, setDateOfBirth] = useState();
   const [phone, setPhone] = useState();
   const [country, setCountry] = useState();
-  const [city, setCity] = useState("");
+  const [city, setCity] = useState();
   const [ready, setReady] = useState(false);
   const [prixerExists, setPrixerExists] = useState(false);
   const [avatarObj, setAvatarObj] = useState("");

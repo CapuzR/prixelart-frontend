@@ -12,8 +12,20 @@ import AppBar from "@material-ui/core/AppBar";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import Button from "@material-ui/core/Button";
-import Typography from "@material-ui/core/Typography";
-import utils from "../../utils/utils";
+import FormControl from "@material-ui/core/FormControl";
+import InputLabel from "@material-ui/core/InputLabel";
+import Select from "@material-ui/core/Select";
+import MenuItem from "@material-ui/core/MenuItem";
+import Switch from "@material-ui/core/Switch";
+
+function getStyles(type, theme) {
+  return {
+    fontWeight:
+      type.indexOf(type) === -1
+        ? theme.typography.fontWeightRegular
+        : theme.typography.fontWeightMedium,
+  };
+}
 
 const useStyles = makeStyles((theme) => ({
   loading: {
@@ -38,27 +50,40 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+const MenuProps = {
+  PaperProps: {
+    style: {
+      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+      width: 250,
+    },
+  },
+};
+
 export default function Testimonials() {
   const classes = useStyles();
   const [avatar, setAvatar] = useState("");
-  const [type, setType] = useState("");
-  const [name, setName] = useState("");
+  const [type, setType] = useState();
+  const [name, setName] = useState();
+  const [value, setValue] = useState("");
+  const [footer, setFooter] = useState();
   const [tiles, setTiles] = useState([]);
   const [backdrop, setBackdrop] = useState(true);
-
+  const theme = useTheme();
+  const [state, setState] = useState({
+    checkedA: true,
+  });
   // const [value, setValue] = useState("");
-  const [footer, setFooter] = useState("");
-  const [status, setStatus] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [value, setValue] = useState("");
   const [buttonState, setButtonState] = useState(true);
   const history = useHistory();
 
   const setValueText = (event) => {
     setValue(event.target.value);
   };
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
+  const handleChange = (event) => {
+    setType(event.target.type);
   };
 
   const [errorMessage, setErrorMessage] = useState();
@@ -76,29 +101,29 @@ export default function Testimonials() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!type || !name || !value || !avatar || !footer || !status) {
-      // ||(!avatar)) {
+    if (!type || !name || !value || !avatar || !footer || !state) {
       setErrorMessage("Por favor completa todos los campos requeridos.");
       setSnackBarError(true);
+      e.preventDefault();
       // setIsChecked(true);
     } else {
       setLoading(true);
-      // setButtonState(true);
-      const base_url =
-        process.env.REACT_APP_BACKEND_URL + "/testimonial-create";
-      // const cldAvatarUrl = await uploadToCld();
+      setButtonState(true);
       const data = {
         type: type,
         name: name,
         value: value,
         avatar: avatar,
         footer: footer,
-        status: status,
+        status: state,
         // 'avatar': cldAvatarUrl,
-        name: JSON.parse(localStorage.getItem("token")).name,
+        // name: JSON.parse(localStorage.getItem("token")).name,
       };
+      const base_url =
+        process.env.REACT_APP_BACKEND_URL + "/testimonial/create";
+      // const cldAvatarUrl = await uploadToCld();
 
-      axios
+      const response = await axios
         .post(base_url, data)
         .then((response) => {
           if (response.data.success === false) {
@@ -109,17 +134,23 @@ export default function Testimonials() {
           } else {
             setErrorMessage("Creación de testimonio exitoso.");
             setSnackBarError(true);
-            history.push({
-              pathname: "/" + response.data.testimonialData.name,
-            });
+            // history.push({
+            //   pathname: "/" + response.data.testimonialData.name,
+            // });
           }
+          console.log(data);
         })
+
         .catch((error) => {
           setLoading(false);
           setButtonState(false);
           console.log(error.response);
         });
     }
+  };
+
+  const handleChangeState = (event) => {
+    setState({ ...state, [event.target.name]: event.target.checked });
   };
 
   return (
@@ -165,26 +196,69 @@ export default function Testimonials() {
                   noValidate
                   margin={6}
                 >
-                  <Grid container spacing={3}>
+                  <Grid container spacing={1} style={{ paddingBottom: "10px" }}>
                     {loading && (
                       <div className={classes.loading}>
                         <CircularProgress />
                       </div>
                     )}
-                    <Grid item xs={6} sm={6} padding={10}>
+                    <Grid item xs={6}>
                       <TextField
-                        className="input"
-                        autoComplete="fname"
-                        name="type"
                         variant="outlined"
                         required
                         fullWidth
-                        value={type}
-                        id="type"
-                        label="Type"
-                        autoFocus
+                        type="text"
+                        id="avatar"
+                        label="Avatar"
+                        value={avatar}
                         onChange={(e) => {
-                          setType(e.target.value);
+                          setAvatar(e.target.value);
+                        }}
+                      />
+                    </Grid>
+                    <Grid
+                      item
+                      xs={6}
+                      padding={10}
+                      display={"flex"}
+                      alignItems={"center"}
+                    >
+                      <InputLabel style={{ fontSize: ".85em" }}>
+                        Tipo
+                      </InputLabel>
+                      <Select
+                        style={{ width: "100%" }}
+                        labelId="tipo"
+                        id="tipo"
+                        value={type}
+                        onChange={(e) => handleChange(e)}
+                        MenuProps={MenuProps}
+                      >
+                        {["Prixer", "Compañía", "Cliente"].map((type) => (
+                          <MenuItem
+                            key={type}
+                            value={type}
+                            style={getStyles(type, theme)}
+                          >
+                            {type}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </Grid>
+
+                    <Grid item xs={12}>
+                      <TextField
+                        variant="outlined"
+                        fullWidth
+                        name="footer"
+                        label="footer"
+                        type="text"
+                        value={footer}
+                        inputProps={{ maxLenght: 300 }}
+                        id="footer"
+                        autoComplete="fname"
+                        onChange={(e) => {
+                          setFooter(e.target.value);
                         }}
                       />
                     </Grid>
@@ -194,6 +268,7 @@ export default function Testimonials() {
                         name="name"
                         variant="outlined"
                         fullWidth
+                        type="text"
                         value={name}
                         id="name"
                         label="Nombre"
@@ -203,12 +278,13 @@ export default function Testimonials() {
                         }}
                       />
                     </Grid>
-                    <Grid item xs={6} sm={6}>
+                    <Grid item xs={3}>
                       <TextField
                         autoComplete="fname"
                         name="value"
                         variant="outlined"
                         fullWidth
+                        type="text"
                         value={value}
                         id="value"
                         label="value"
@@ -218,61 +294,25 @@ export default function Testimonials() {
                         }}
                       />
                     </Grid>
-
-                    <Grid item xs={6}>
-                      <TextField
-                        variant="outlined"
-                        required
-                        fullWidth
-                        id="avatar"
-                        label="Avatar"
-                        value={avatar}
-                        onChange={(e) => {
-                          setAvatar(e.target.value);
-                        }}
-                      />
-                    </Grid>
-
-                    <Grid item xs={12}>
-                      <TextField
-                        variant="outlined"
-                        fullWidth
-                        name="footer"
-                        label="footer"
-                        value={footer}
-                        id="footer"
-                        autoComplete="fname"
-                        onChange={(e) => {
-                          setFooter(e.target.value);
-                        }}
-                      />
-                    </Grid>
-
-                    <Grid item xs={12}>
-                      <TextField
-                        variant="outlined"
-                        fullWidth
+                    <Grid item xs={3}>
+                      {/* <TextField
                         name="status"
                         label="status"
-                        value={Boolean}
                         id="status"
                         autoComplete="fname"
                         onChange={(e) => {
                           setStatus(e.target.value);
                         }}
+                      /> */}
+                      <Switch
+                        checked={state.checkedA}
+                        onChange={handleChangeState}
+                        name="checkedA"
+                        value={state}
+                        inputProps={{ "aria-label": "secondary checkbox" }}
                       />
                     </Grid>
                   </Grid>
-                  <Grid
-                    item
-                    xs={12}
-                    style={{
-                      display: "flex",
-                      paddingTop: "24px",
-                      justifyContent: "center",
-                      alignItems: "center",
-                    }}
-                  ></Grid>
                   <Button
                     type="submit"
                     fullWidth
@@ -280,7 +320,8 @@ export default function Testimonials() {
                     color="primary"
                     className={classes.submit}
                     value="submit"
-                    required
+                    paddingTop="4"
+                    onClick={handleSubmit}
                   >
                     Crear testimonio
                   </Button>

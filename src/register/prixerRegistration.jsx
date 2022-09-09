@@ -25,8 +25,6 @@ import Input from "@material-ui/core/Input";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import Modal from "@material-ui/core/Modal";
 
-import Terms from "./Terms"; //Anterior Términos y condiciones
-
 function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
@@ -160,21 +158,15 @@ export default function PrixerRegistration() {
   const handleOnChange = () => {
     setIsChecked(!isChecked);
   };
-  const setCheckedBox = () => {
-    setIsChecked(!Checkbox);
-  };
+
   const styles = useStyles();
   const [modal, setModal] = useState(false);
   const openModal = () => {
     setModal(!modal);
   };
-  const acceptTerms = () => {
-    setIsChecked(!isChecked);
-    openModal();
-  };
+
   const body = (
     <div className={styles.modal}>
-      {/* <Terms /> */}
       <div>{value}</div>
 
       <div align="center">

@@ -564,6 +564,7 @@ useEffect(()=> {
                     variant="outlined" 
                     label="Descripción del arte" 
                     value={tile.description} 
+                    inputProps={{ maxLength: 300 }}
                     onChange={(e)=> {handleArtDescriptionEdit(e, tile)}} />
                 </Grid>
                 <Grid item xs={12} sm={12}>

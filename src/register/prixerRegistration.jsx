@@ -199,13 +199,11 @@ export default function PrixerRegistration() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (
-      !instagram ||
       !dateOfBirth ||
       !specialty ||
       !phone ||
       !country ||
       !city ||
-      !description ||
       !isChecked
     ) {
       // ||(!avatar)) {
@@ -299,6 +297,7 @@ export default function PrixerRegistration() {
                   labelId="demo-mutiple-name-label"
                   id="demo-mutiple-name"
                   multiple
+                  required
                   value={specialty}
                   onChange={handleChange}
                   input={<Input />}

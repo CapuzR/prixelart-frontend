@@ -366,6 +366,7 @@ export default function UserData(props) {
                       <a
                         href={"https://www.facebook.com/" + facebook}
                         style={{ textDecoration: "none", color: "#d33f49" }}
+                        target="_blank"
                       >
                         {facebook}
                       </a>
@@ -386,6 +387,7 @@ export default function UserData(props) {
                       <a
                         href={"https://www.twitter.com/" + twitter}
                         style={{ textDecoration: "none", color: "#d33f49" }}
+                        target="_blank"
                       >
                         {twitter}
                       </a>
@@ -556,6 +558,7 @@ export default function UserData(props) {
                         setDescription(e.target.value);
                       }}
                       value={description}
+                      inputProps={{ maxLength: 300 }}
                       multiline
                       item
                     />

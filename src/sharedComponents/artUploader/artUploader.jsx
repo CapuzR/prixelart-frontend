@@ -637,6 +637,7 @@ export default function ArtUploader(props) {
                     rows={4}
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
+                    inputProps={{ maxLength: 300 }}
                   />
                 </Grid>
                 <Grid item xs={12}>

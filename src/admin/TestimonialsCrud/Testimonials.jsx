@@ -13,6 +13,8 @@ import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
+import utils from "../../utils/utils";
+
 const useStyles = makeStyles((theme) => ({
   loading: {
     display: "flex",
@@ -31,6 +33,9 @@ const useStyles = makeStyles((theme) => ({
     margin: "auto",
     width: "100%",
   },
+  input: {
+    padding: "2",
+  },
 }));
 
 export default function Testimonials() {
@@ -38,6 +43,9 @@ export default function Testimonials() {
   const [avatar, setAvatar] = useState("");
   const [type, setType] = useState("");
   const [name, setName] = useState("");
+  const [tiles, setTiles] = useState([]);
+  const [backdrop, setBackdrop] = useState(true);
+
   // const [value, setValue] = useState("");
   const [footer, setFooter] = useState("");
   const [status, setStatus] = useState(false);
@@ -55,6 +63,16 @@ export default function Testimonials() {
 
   const [errorMessage, setErrorMessage] = useState();
   const [snackBarError, setSnackBarError] = useState(false);
+
+  // useEffect(() => {
+  //   const base_url =
+  //     process.env.REACT_APP_BACKEND_URL + "/testimonial/read-all";
+
+  //   axios.get(base_url).then((response) => {
+  //     setTiles(utils.shuffle(response.data.Testimonials));
+  //     setBackdrop(false);
+  //   });
+  // }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -104,7 +122,6 @@ export default function Testimonials() {
     }
   };
 
-  const newTestimonial = () => {};
   return (
     <div className={classes.root}>
       <Backdrop className={classes.backdrop} open={loading}>
@@ -124,7 +141,12 @@ export default function Testimonials() {
           <Grid
             item
             xs={12}
-            style={{ width: "100%", padding: "24px", textAlign: "start" }}
+            style={{
+              width: "100%",
+              padding: "24px",
+              display: "flex",
+              textAlign: "start",
+            }}
           >
             <Grid
               padding={"24px"}
@@ -132,9 +154,9 @@ export default function Testimonials() {
               item
               xs={12}
               sm={12}
-              md={4}
-              lg={4}
-              xl={4}
+              md={6}
+              lg={6}
+              xl={6}
             >
               <Paper padding={"24px"} className={classes.paper}>
                 <form
@@ -151,6 +173,7 @@ export default function Testimonials() {
                     )}
                     <Grid item xs={6} sm={6} padding={10}>
                       <TextField
+                        className="input"
                         autoComplete="fname"
                         name="type"
                         variant="outlined"

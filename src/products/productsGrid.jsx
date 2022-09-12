@@ -91,14 +91,6 @@ export default function ProductGrid(props) {
   const [tiles, setTiles] = useState();
   const [width, setWidth] = useState([]);
   const [height, setHeight] = useState([]);
-  const imgs =  [
-      {
-        url: 'https://devprix.nyc3.digitaloceanspaces.com/10.%20Topotepuy-0-1.webp'
-      },
-      {
-        url : 'https://devprix.nyc3.digitaloceanspaces.com/MaskArt.webp'
-      }
-    ]
 
 
   useEffect(() => {
@@ -112,6 +104,7 @@ export default function ProductGrid(props) {
         setTiles(getAttributes(productsAttTemp1));
       });
   }, []);
+
   return (
     <GridList cellHeight={'auto'} className={classes.gridList} cols={getGridListCols()}>
       {tiles ?
@@ -147,11 +140,15 @@ export default function ProductGrid(props) {
                   }
                 }>
                 {
-                imgs.map((img, key_id) =>
+                tile.images ?
+                tile.images.map((img, key_id) =>
                 (
-                  <img key={key_id}  src={img.url} className={classes.img} alt="product"></img>
+                  <img key={key_id}  src={img} className={classes.img} alt="product"></img>
                 ))
+                  :
+                <img src={tile.thumbUrl} className={classes.img} alt="product"></img>
                 }
+
               </Carousel>
               </CardMedia>
               <CardActionArea style={{ alignContent: "space-between" }}>
@@ -165,11 +162,11 @@ export default function ProductGrid(props) {
                       JSON.parse(localStorage.getItem('token')).username) ?
                       (tile.needsEquation && tile.prixerEquation && tile.prixerEquation != 0) ?
                         "PVP: $" + Math.round(parseFloat(tile.publicEquation)) + " \n PVM: $" + Math.round(parseFloat(tile.prixerEquation)) :
-                        "PVP: $" + tile.publicPrice.from + " - " + tile.publicPrice.to + " \n PVM: $" + tile.prixerPrice.from + " - " + tile.prixerPrice.to
+                        "PVP: $" + tile.publicPrice?.from + " - " + tile.publicPrice?.to + " \n PVM: $" + tile.prixerPrice?.from + " - " + tile.prixerPrice?.to
                       :
                       (tile.needsEquation && tile.publicEquation && tile.publicEquation != 0) ?
                         "PVP: $" + Math.round(parseFloat(tile.publicEquation)) :
-                        "PVP: " + tile.publicPrice.from + " - " + tile.publicPrice.to
+                        "PVP: " + tile.publicPrice?.from + " - " + tile.publicPrice?.to
                   }
                 </Typography>
                 <Typography variant="body2" color="textSecondary" component="p">

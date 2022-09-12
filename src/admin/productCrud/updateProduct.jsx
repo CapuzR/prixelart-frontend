@@ -36,10 +36,8 @@ export default function UpdateAdmin(props) {
     const [ description, setDescription ] = useState(props.product.description);
     const [ category, setCategory ] = useState(props.product.category);
     const [ considerations, setConsiderations ] = useState(props.product.considerations);
-    // const [fixedPublicPrice, setFixedPublicPrice] = useState('');
     const [fromPublicPrice, setFromPublicPrice] = useState(props.product.publicPrice.from);
     const [ toPublicPrice, setToPublicPrice ] = useState(props.product.publicPrice.to);
-    // const [ fixedPrixerPrice, setFixedPrixerPrice ] = useState('');
     const [ fromPrixerPrice, setFromPrixerPrice ] = useState(props.product.prixerPrice.from);
     const [ toPrixerPrice, setToPrixerPrice ] = useState(props.product.prixerPrice.to);
     const [loading, setLoading] = useState(false);
@@ -47,7 +45,7 @@ export default function UpdateAdmin(props) {
     const [showVariants, setShowVariants] = useState(false);
     const [ activeVCrud, setActiveVCrud ] = useState('read');
     const [ hasSpecialVar, setHasSpecialVar ] = useState(props.product.hasSpecialVar || false);
-    
+
     const [ thumbUrl, setThumbUrl ] = useState(props.product.thumbUrl);
 
     //Error states.
@@ -57,15 +55,13 @@ export default function UpdateAdmin(props) {
 
     const handleSubmit = async (e)=> {
       e.preventDefault();
-      if(!active && 
-        !productName && 
-        !description && 
-        !category && 
-        !considerations && 
-        // !fixedPublicPrice &&
+      if(!active &&
+        !productName &&
+        !description &&
+        !category &&
+        !considerations &&
         !fromPublicPrice &&
-        !toPublicPrice && 
-        // !fixedPrixerPrice &&
+        !toPublicPrice &&
         !fromPrixerPrice &&
         !toPrixerPrice &&
         !thumbUrl){
@@ -75,7 +71,7 @@ export default function UpdateAdmin(props) {
       } else {
         setLoading(true);
         setButtonState(true);
-        
+
         const data = {
             '_id': props.product._id,
             'thumbUrl': thumbUrl,
@@ -94,7 +90,7 @@ export default function UpdateAdmin(props) {
             },
             hasSpecialVar: hasSpecialVar
         }
-        
+
         const base_url= process.env.REACT_APP_BACKEND_URL + "/product/update";
         const response = await axios.post(base_url,data);
         if(response.data.success === false){
@@ -113,7 +109,7 @@ export default function UpdateAdmin(props) {
 
     const handleVariantsClick = ()=> {
         history.push({pathname:"/admin/product/"+props.product._id+"/variant/read"});
-        setShowVariants(true); 
+        setShowVariants(true);
         props.setProductEdit(false);
     }
 
@@ -162,16 +158,16 @@ export default function UpdateAdmin(props) {
                             label="ThumbUrl"
                             name="thumbUrl"
                             autoComplete="thumbUrl"
-                            value={thumbUrl}
+                            value={thumbUrl ? thumbUrl : 'nada'}
                             onChange={(e) => {setThumbUrl(e.target.value);}}
                         />
                         </FormControl>
                     </Grid>
                     <Grid container xs={6}>
                       <Grid item xs={6}>
-                          <Checkbox 
+                          <Checkbox
                               checked={active}
-                              color="primary" 
+                              color="primary"
                               inputProps={{ 'aria-label': 'secondary checkbox' }}
                               onChange={()=>{active?setActive(false):setActive(true)}}
                           /> Habilitado / Visible
@@ -179,7 +175,7 @@ export default function UpdateAdmin(props) {
                       <Grid item xs={6}>
                           <Checkbox
                               checked={hasSpecialVar}
-                              color="primary" 
+                              color="primary"
                               inputProps={{ 'aria-label': 'secondary checkbox' }}
                               onChange={()=>{hasSpecialVar?setHasSpecialVar(false):setHasSpecialVar(true)}}
                           /> ¿Tiene variables especiales?
@@ -282,7 +278,7 @@ export default function UpdateAdmin(props) {
                         label="Desde"
                         name="fromPublicPrice"
                         autoComplete="fromPublicPrice"
-                        value={fromPublicPrice}
+                        value={fromPublicPrice ? fromPublicPrice : '$'}
                         onChange={(e) => {setFromPublicPrice(e.target.value);}}
                     />
                     </FormControl>
@@ -297,7 +293,7 @@ export default function UpdateAdmin(props) {
                         label="Hasta"
                         name="toPublicPrice"
                         autoComplete="toPublicPrice"
-                        value={toPublicPrice}
+                        value={toPublicPrice ? toPublicPrice : '$'}
                         onChange={(e) => {setToPublicPrice(e.target.value);}}
                     />
                     </FormControl>
@@ -332,7 +328,7 @@ export default function UpdateAdmin(props) {
                         label="Desde"
                         name="fromPrixerPrice"
                         autoComplete="fromPrixerPrice"
-                        value={fromPrixerPrice}
+                        value={fromPrixerPrice ? fromPrixerPrice : '$'}
                         onChange={(e) => {setFromPrixerPrice(e.target.value);}}
                     />
                     </FormControl>
@@ -347,7 +343,7 @@ export default function UpdateAdmin(props) {
                         label="Hasta"
                         name="toPrixerPrice"
                         autoComplete="toPrixerPrice"
-                        value={toPrixerPrice}
+                        value={toPrixerPrice ? toPrixerPrice : '$'}
                         onChange={(e) => {setToPrixerPrice(e.target.value);}}
                     />
                     </FormControl>

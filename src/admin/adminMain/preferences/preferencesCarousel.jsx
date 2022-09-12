@@ -275,8 +275,6 @@ function CarouselAdmin(props)
           :
           <h1 style={{color: '#e0e0e0'}}>1300x700px</h1>
         }
-
-
     </div>
 
     <Box style={{display:'flex', justifyContent: 'center'}}>

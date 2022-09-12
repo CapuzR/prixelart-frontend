@@ -17,6 +17,8 @@ import FormControl from '@material-ui/core/FormControl';
 // import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import clsx from 'clsx';
 // import validations from '../../utils/validations';
+import HighlightOffOutlinedIcon from '@material-ui/icons/HighlightOffOutlined';
+import Box from '@material-ui/core/Box';
 import Checkbox from '@material-ui/core/Checkbox';
 import Backdrop from '@material-ui/core/Backdrop';
 import { useHistory } from 'react-router-dom';
@@ -29,6 +31,35 @@ const useStyles = makeStyles((theme) => ({
     zIndex: theme.zIndex.drawer + 1,
     color: theme.palette.primary.main,
   },
+  loaderImage: {
+    width: '120%',
+    height: '30vh',
+    border: '2px',
+    borderStyle: 'groove',
+    borderColor: '#d33f49',
+    backgroundColor: '#ededed',
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center'
+  },
+  imageLoad: {
+    width: '24%',
+    height: '90%',
+    padding: '5px',
+    marginTop: '5px'
+  },
+  formHead: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignContent: 'center',
+    justifyContent: 'space-evenly',
+    alignItems: 'center'
+  },
+  buttonImgLoader: {
+    color: '#d33f49',
+    cursor: 'pointer'
+  },
 }));
 
 export default function CreateProduct() {
@@ -38,24 +69,51 @@ export default function CreateProduct() {
     const [ description, setDescription ] = useState('');
     const [ category, setCategory ] = useState('');
     const [ considerations, setConsiderations ] = useState('');
-    // const [fixedPublicPrice, setFixedPublicPrice] = useState('');
+    const [images, newImages] = useState({images : []});
     const [fromPublicPrice, setFromPublicPrice] = useState('');
     const [ toPublicPrice, setToPublicPrice ] = useState('');
-    // const [ fixedPrixerPrice, setFixedPrixerPrice ] = useState('');
     const [ fromPrixerPrice, setFromPrixerPrice ] = useState('');
     const [ toPrixerPrice, setToPrixerPrice ] = useState('');
     const [loading, setLoading] = useState(false);
     const [buttonState, setButtonState] = useState(false);
     const [ hasSpecialVar, setHasSpecialVar ] = useState(false);
     const [ specialVars, setSpecialVars ] = useState(false);
+    const [imageLoader, setLoadImage] = useState({loader: [], filename: 'Subir imagenes'})
     const history = useHistory();
-
-    const [ thumbUrl, setThumbUrl ] = useState('');
 
     //Error states.
     const [errorMessage, setErrorMessage] = useState();
     const [snackBarError, setSnackBarError] = useState(false);
 
+    //Preview de imagen antes de enviar
+    const convertToBase64 = (blob) => {
+      return new Promise((resolve) => {
+        var reader = new FileReader();
+        reader.onload = function () {
+          resolve(reader.result);
+        };
+        reader.readAsDataURL(blob);
+      });
+    };
+
+    const loadImage = async (e) =>
+    {
+      e.preventDefault();
+      const file = e.target.files[0];
+      const resizedString = await convertToBase64(file);
+      imageLoader.loader.push(resizedString)
+      images.images.push(file)
+      setLoadImage({loader: imageLoader.loader, filename: file.name})
+    }
+
+    //Cancelar subida de imagen
+    const cancelUploadImage = () =>
+    {
+        setLoadImage({loader: '', filename: 'Subir imagenes'})
+        newImages({images: []})
+    }
+
+console.log(images.images)
 
     const handleSubmit = async (e)=> {
       e.preventDefault();
@@ -70,21 +128,15 @@ export default function CreateProduct() {
         // !fixedPrixerPrice &&
         !fromPrixerPrice &&
         !toPrixerPrice &&
-        !thumbUrl){
+        !images){
         setErrorMessage('Por favor completa todos los campos requeridos.');
         setSnackBarError(true);
         e.preventDefault();
       } else {
         setLoading(true);
         setButtonState(true);
-        
+        const formData = new FormData();
         const data = {
-            'thumbUrl': thumbUrl,
-            'active' : active,
-            'name' : productName,
-            'description' : description,
-            'category' : category,
-            'considerations' : considerations,
             publicPrice: {
                 'from': fromPublicPrice,
                 'to': toPublicPrice,
@@ -93,7 +145,6 @@ export default function CreateProduct() {
                 'from': fromPrixerPrice,
                 'to': toPrixerPrice,
             },
-            hasSpecialVar: hasSpecialVar,
             specialVars: [
               {
                 'name': '',
@@ -101,9 +152,19 @@ export default function CreateProduct() {
               }
             ]
         }
-        
+        formData.append('active', active)
+        formData.append('name', productName)
+        formData.append('description', description)
+        formData.append('category', category)
+        formData.append('considerations', considerations)
+        formData.append('publicPriceFrom', data.publicPrice.from)
+        formData.append('publicPriceTo', data.publicPrice.to)
+        formData.append('prixerPriceFrom', data.prixerPrice.from)
+        formData.append('prixerPriceTo', data.prixerPrice.to)
+        formData.append('hasSpecialVar', hasSpecialVar)
+        images.images.map(file => formData.append('productImages', file))
         const base_url= process.env.REACT_APP_BACKEND_URL + "/product/create";
-        const response = await axios.post(base_url,data)
+        const response = await axios.post(base_url, formData);
         if(response.data.success === false){
           setLoading(false);
           setButtonState(false);
@@ -113,7 +174,6 @@ export default function CreateProduct() {
           setErrorMessage('Registro de producto exitoso.');
           setSnackBarError(true);
           setActive('');
-          setThumbUrl('');
           setProductName('');
           setDescription('');
           setCategory('');
@@ -137,31 +197,44 @@ export default function CreateProduct() {
         </Backdrop>
     }
       <Title>Productos</Title>
-        <form className={classes.form} noValidate onSubmit={handleSubmit}>
+        <form className={classes.form} encType="multipart/form-data" noValidate onSubmit={handleSubmit}>
             <Grid container spacing={2}>
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
-                    <Grid item xs={12} md={6}>
-                        <FormControl variant="outlined" xs={12} fullWidth={true}>
-                        <TextField
-                            variant="outlined"
-                            required
-                            fullWidth
-                            display="inline"
-                            id="thumbUrl"
-                            label="ThumbUrl"
-                            name="thumbUrl"
-                            autoComplete="thumbUrl"
-                            value={thumbUrl}
-                            onChange={(e) => {setThumbUrl(e.target.value);}}
-                        />
+                    <Grid container spacing={1} direction="row">
+                    <Grid item xs={12} className={classes.formHead}>
+                        <FormControl variant="outlined"  >
+                        <Button variant="contained" component="label">
+                        Upload File
+                        <input name="productImages" type="file" accept="image/*" hidden onChange={(a) => {
+                          a.preventDefault();
+                          loadImage(a)
+                        }}/>
+                       </Button>
                         </FormControl>
+                        <Grid item xs={6} >
+                        <div className={classes.loaderImage}>
+                            {
+                              imageLoader.loader ?
+                              imageLoader.loader.map((img, key_id) =>
+                              (
+                                <Box className={classes.buttonImgLoader}>
+                                  <HighlightOffOutlinedIcon style={{width: '1rem'}}/>
+                                </Box>,
+                                <img key={key_id} className={classes.imageLoad} src={img} alt='+'></img>
+                              ))
+                              :
+                              ''
+                            }
+                        </div>
+                        </Grid>
+                    </Grid>
                     </Grid>
                     <Grid container xs={6}>
                       <Grid item xs={6}>
-                          <Checkbox 
+                          <Checkbox
                               checked={active}
-                              color="primary" 
+                              color="primary"
                               inputProps={{ 'aria-label': 'secondary checkbox' }}
                               onChange={()=>{active?setActive(false):setActive(true)}}
                           /> Habilitado / Visible
@@ -169,7 +242,7 @@ export default function CreateProduct() {
                       <Grid item xs={6}>
                           <Checkbox
                               checked={hasSpecialVar}
-                              color="primary" 
+                              color="primary"
                               inputProps={{ 'aria-label': 'secondary checkbox' }}
                               onChange={()=>{hasSpecialVar?setHasSpecialVar(false):setHasSpecialVar(true)}}
                           /> ¿Tiene variables especiales?
@@ -182,7 +255,7 @@ export default function CreateProduct() {
                             <h3>Variables especiales</h3>
                         </Grid>
                         <>
-                        {   
+                        {
                         specialVars &&
                             specialVars.map((specialVar, i)=>(
                             <Grid container spacing={2} xs={12} style={{marginBottom: 10}}>

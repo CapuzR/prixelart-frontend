@@ -21,6 +21,7 @@ useEffect(()=> {
   const base_url= process.env.REACT_APP_BACKEND_URL + "/admin/product/read-all";
     axios.get(base_url)
     .then(response =>{
+        console.log(response.data.products)
         setRows(response.data.products);
     })
     .catch(error =>{
@@ -60,25 +61,27 @@ useEffect(()=> {
                   <EditIcon/>
                 </Fab>
               </TableCell>
-              <TableCell align="center"><img alt="thumb" src={row.thumbUrl} style={{width: 50, height: 'auto'}}/></TableCell>
+              <TableCell align="center">
+              <img src={row.thumbUrl ? row.thumbUrl : row.images[0]} width={150} alt="imageProduct"/>
+              </TableCell>
               <TableCell align="center">{row.name}</TableCell>
               <TableCell align="center">
-                <Checkbox 
+                <Checkbox
                   disabled
                   checked={row.active}
-                  color="primary" 
+                  color="primary"
                   inputProps={{ 'aria-label': 'secondary checkbox' }}
                 />
               </TableCell>
               <TableCell align="center">{row.category}</TableCell>
-              <TableCell align="center">{row.publicPrice.from}-{row.publicPrice.to}</TableCell>
-              <TableCell align="center">{row.prixerPrice.from}-{row.prixerPrice.to}</TableCell>
+              <TableCell align="center">{row.publicPrice ? row.publicPrice.from : 'd'}-{row.publicPrice ? row.publicPrice.from : 'e'}</TableCell>
+              <TableCell align="center">{row.prixerPrice ? row.prixerPrice.from : 'd'}-{row.prixerPrice ? row.prixerPrice.to : 'e'}</TableCell>
             </TableRow>
           ))
         }
         </TableBody>
       </Table>
-} 
+}
     </React.Fragment>
   );
 }

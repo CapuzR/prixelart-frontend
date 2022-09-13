@@ -17,6 +17,10 @@ import InputLabel from "@material-ui/core/InputLabel";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import Switch from "@material-ui/core/Switch";
+import Typography from "@material-ui/core/Typography";
+import Avatar from "@material-ui/core/Avatar";
+import AddIcon from "@material-ui/icons/Add";
+import useMediaQuery from "@material-ui/core/useMediaQuery";
 
 function getStyles(type, theme) {
   return {
@@ -48,6 +52,13 @@ const useStyles = makeStyles((theme) => ({
   input: {
     padding: "2",
   },
+  title: {
+    flexGrow: 1,
+  },
+  avatar: {
+    width: "60px",
+    height: "60px",
+  },
 }));
 
 const ITEM_HEIGHT = 48;
@@ -64,13 +75,16 @@ const MenuProps = {
 export default function Testimonials() {
   const classes = useStyles();
   const [avatar, setAvatar] = useState("");
-  const [type, setType] = useState();
-  const [name, setName] = useState();
+  const [type, setType] = useState("");
+  const [name, setName] = useState("");
   const [value, setValue] = useState("");
-  const [footer, setFooter] = useState();
+  const [footer, setFooter] = useState("");
   const [tiles, setTiles] = useState([]);
   const [backdrop, setBackdrop] = useState(true);
   const theme = useTheme();
+  const [avatarObj, setAvatarObj] = useState("");
+  const [profilePic, setProfilePic] = useState("");
+  const [inputChange, setInputChange] = useState(false);
   const [state, setState] = useState({
     checkedA: true,
   });
@@ -79,12 +93,24 @@ export default function Testimonials() {
   const [buttonState, setButtonState] = useState(true);
   const history = useHistory();
 
+  // class TypeOfComment {
+  //   constructor(props) {
+  //     super(props);
+  //     this.state = { value: "Client" };
+  //     this.handleChange = this.handleChange.bind(this);
+  //     this.handleSubmit = this.handleSubmit.bind(this);
+  //   }
+  // }
+
   const setValueText = (event) => {
     setValue(event.target.value);
   };
   const handleChange = (event) => {
-    setType(event.target.type);
+    setType(event.target.value);
   };
+  // const handleChange = (event) => {
+  //   this.setType({ value: event.target.type });
+  // };
 
   const [errorMessage, setErrorMessage] = useState();
   const [snackBarError, setSnackBarError] = useState(false);
@@ -116,7 +142,7 @@ export default function Testimonials() {
         avatar: avatar,
         footer: footer,
         status: state,
-        // 'avatar': cldAvatarUrl,
+        // avatar: cldAvatarUrl,
         // name: JSON.parse(localStorage.getItem("token")).name,
       };
       const base_url =
@@ -151,8 +177,44 @@ export default function Testimonials() {
 
   const handleChangeState = (event) => {
     setState({ ...state, [event.target.name]: event.target.checked });
-  };
+  }; //Switch
 
+  const onImageChange = async (e) => {
+    if (e.target.files && e.target.files[0]) {
+      setInputChange(true);
+      setAvatarObj(URL.createObjectURL(e.target.files[0]));
+      setProfilePic(e.target.files[0]);
+    } //Avatar
+  };
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
+  const handleProfileDataEdit = async () => {
+    setBackdrop(true);
+    var formData = new FormData();
+    if (inputChange) {
+      formData.append("avatar", avatar);
+    }
+    formData.append("type", type);
+    formData.append("name", name);
+    formData.append("value", value);
+    formData.append("footer", footer);
+    formData.append("state", state);
+
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/testimonial/update";
+    const response = await axios.put(base_url, formData);
+    if (response.data) {
+      setAvatar(response.data.avatar);
+      setType(response.data.type);
+      setName(response.data.name);
+      setValue(response.data.value);
+      setFooter(response.data.footer);
+      setAvatarObj(response.data.avatar);
+      setProfilePic(response.data.avatar);
+      setBackdrop(false);
+    } else {
+      setBackdrop(false);
+    }
+  };
   return (
     <div className={classes.root}>
       <Backdrop className={classes.backdrop} open={loading}>
@@ -160,142 +222,189 @@ export default function Testimonials() {
       </Backdrop>
       <Paper className={classes.paper}>
         <AppBar position="static">
-          <Tabs value={value}>
-            <Tab
-              label="Testimonios"
-              aria-selected="true"
-              style={{ display: "flex", alignContent: "center" }}
-            />
-          </Tabs>
+          <Typography
+            style={{
+              display: "flex",
+              alignContent: "center",
+              padding: "10px 40px",
+            }}
+            variant="h6"
+            className={classes.title}
+          >
+            Testimonios
+          </Typography>
         </AppBar>
-        <Grid container spacing={2}>
+
+        <Grid
+          container
+          spacing={2}
+          xs={12}
+          style={{
+            width: "100%",
+            padding: isMobile ? "18px" : "0px",
+            display: "flex",
+            textAlign: "start",
+          }}
+        >
           <Grid
+            style={{
+              padding: isMobile ? "0px" : "24px",
+              paddingBottom: "15px",
+            }}
+            className={classes.paper}
             item
             xs={12}
-            style={{
-              width: "100%",
-              padding: "24px",
-              display: "flex",
-              textAlign: "start",
-            }}
+            sm={12}
+            md={6}
+            lg={6}
+            xl={6}
           >
-            <Grid
-              padding={"24px"}
+            <Paper
+              style={{ padding: isMobile ? "8px" : "24px" }}
               className={classes.paper}
-              item
               xs={12}
               sm={12}
-              md={6}
-              lg={6}
-              xl={6}
             >
-              <Paper padding={"24px"} className={classes.paper}>
-                <form
-                  onSubmit={handleSubmit}
-                  className={classes.form}
-                  noValidate
-                  margin={6}
-                >
-                  <Grid container spacing={1} style={{ paddingBottom: "10px" }}>
-                    {loading && (
-                      <div className={classes.loading}>
-                        <CircularProgress />
-                      </div>
+              <form
+                onSubmit={handleSubmit}
+                className={classes.form}
+                // noValidate
+                margin={6}
+              >
+                <Grid container spacing={1} style={{ paddingBottom: "10px" }}>
+                  {loading && (
+                    <div className={classes.loading}>
+                      <CircularProgress />
+                    </div>
+                  )}
+                  <Box
+                    padding={"4px"}
+                    paddingRight={4}
+                    paddingLeft={2}
+                    style={{
+                      width: "30%",
+                      display: "flex",
+                      justifyContent: "center",
+                    }}
+                  >
+                    {avatarObj ? (
+                      <Avatar className={classes.avatar}>
+                        <label htmlFor="file-input">
+                          <img
+                            src={avatarObj}
+                            alt="Prixer profile avatar"
+                            style={{ maxHeight: 65 }}
+                          />
+                        </label>
+                        <input
+                          style={{ display: "none" }}
+                          accept="image/*"
+                          id="file-input"
+                          type="file"
+                          onChange={onImageChange}
+                          required
+                        />
+                      </Avatar>
+                    ) : (
+                      <Avatar className={classes.avatar}>
+                        <label htmlFor="file-input">
+                          <AddIcon
+                            style={{
+                              width: 60,
+                              height: 60,
+                              color: "#d33f49",
+                            }}
+                          />
+                        </label>
+                        <input
+                          style={{ display: "none" }}
+                          accept="image/*"
+                          id="file-input"
+                          type="file"
+                          onChange={onImageChange}
+                        />
+                      </Avatar>
                     )}
-                    <Grid item xs={6}>
-                      <TextField
-                        variant="outlined"
-                        required
-                        fullWidth
-                        type="text"
-                        id="avatar"
-                        label="Avatar"
-                        value={avatar}
-                        onChange={(e) => {
-                          setAvatar(e.target.value);
-                        }}
-                      />
-                    </Grid>
-                    <Grid
-                      item
-                      xs={6}
-                      padding={10}
-                      display={"flex"}
-                      alignItems={"center"}
+                  </Box>
+                  <Grid item xs={8} sm={8} md={8} lg={6} xl={6} padding={10}>
+                    <InputLabel style={{ fontSize: ".85em" }}>Tipo</InputLabel>
+                    <Select
+                      style={{ width: "100%" }}
+                      labelId="tipo"
+                      id="tipo"
+                      value={type}
+                      onChange={(e) => handleChange(e)}
+                      MenuProps={MenuProps}
                     >
-                      <InputLabel style={{ fontSize: ".85em" }}>
-                        Tipo
-                      </InputLabel>
-                      <Select
-                        style={{ width: "100%" }}
-                        labelId="tipo"
-                        id="tipo"
-                        value={type}
-                        onChange={(e) => handleChange(e)}
-                        MenuProps={MenuProps}
-                      >
-                        {["Prixer", "Compañía", "Cliente"].map((type) => (
-                          <MenuItem
-                            key={type}
-                            value={type}
-                            style={getStyles(type, theme)}
-                          >
-                            {type}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </Grid>
+                      {["Prixer", "Compañía", "Cliente"].map((type) => (
+                        <MenuItem
+                          key={type}
+                          value={type}
+                          style={getStyles(type, theme)}
+                        >
+                          {type}
+                        </MenuItem>
+                      ))}
+                      {/* <option value="Prixer">Prixer</option>
+                        <option value="Compañía">Compañía</option>
+                        <option selected value="Cliente">
+                          Cliente
+                        </option> */}
+                    </Select>
+                  </Grid>
 
-                    <Grid item xs={12}>
-                      <TextField
-                        variant="outlined"
-                        fullWidth
-                        name="footer"
-                        label="footer"
-                        type="text"
-                        value={footer}
-                        inputProps={{ maxLenght: 300 }}
-                        id="footer"
-                        autoComplete="fname"
-                        onChange={(e) => {
-                          setFooter(e.target.value);
-                        }}
-                      />
-                    </Grid>
-                    <Grid item xs={6} sm={6}>
-                      <TextField
-                        autoComplete="fname"
-                        name="name"
-                        variant="outlined"
-                        fullWidth
-                        type="text"
-                        value={name}
-                        id="name"
-                        label="Nombre"
-                        autoFocus
-                        onChange={(e) => {
-                          setName(e.target.value);
-                        }}
-                      />
-                    </Grid>
-                    <Grid item xs={3}>
-                      <TextField
-                        autoComplete="fname"
-                        name="value"
-                        variant="outlined"
-                        fullWidth
-                        type="text"
-                        value={value}
-                        id="value"
-                        label="value"
-                        autoFocus
-                        onChange={(e) => {
-                          setValue(e.target.value);
-                        }}
-                      />
-                    </Grid>
-                    <Grid item xs={3}>
-                      {/* <TextField
+                  <Grid item xs={12}>
+                    <TextField
+                      variant="outlined"
+                      fullWidth
+                      name="footer"
+                      label="footer"
+                      type="text"
+                      value={footer}
+                      inputProps={{ maxLenght: 300 }}
+                      id="footer"
+                      autoComplete="fname"
+                      onChange={(e) => {
+                        setFooter(e.target.value);
+                      }}
+                      multiline
+                    />
+                  </Grid>
+
+                  <Grid item xs={12} sm={12}>
+                    <TextField
+                      autoComplete="fname"
+                      name="name"
+                      variant="outlined"
+                      fullWidth
+                      type="text"
+                      value={name}
+                      id="name"
+                      label="Nombre"
+                      autoFocus
+                      onChange={(e) => {
+                        setName(e.target.value);
+                      }}
+                    />
+                  </Grid>
+                  <Grid item sm={12} md={8}>
+                    <TextField
+                      autoComplete="fname"
+                      name="value"
+                      variant="outlined"
+                      fullWidth
+                      type="text"
+                      value={value}
+                      id="value"
+                      label="value"
+                      autoFocus
+                      onChange={(e) => {
+                        setValue(e.target.value);
+                      }}
+                    />
+                  </Grid>
+                  <Grid item xs={3}>
+                    {/* <TextField
                         name="status"
                         label="status"
                         id="status"
@@ -304,40 +413,216 @@ export default function Testimonials() {
                           setStatus(e.target.value);
                         }}
                       /> */}
-                      <Switch
-                        checked={state.checkedA}
-                        onChange={handleChangeState}
-                        name="checkedA"
-                        value={state}
-                        inputProps={{ "aria-label": "secondary checkbox" }}
-                      />
-                    </Grid>
+                    <Switch
+                      color={"primary"}
+                      checked={state.checkedA}
+                      onChange={handleChangeState}
+                      name="checkedA"
+                      value={state}
+                      inputProps={{ "aria-label": "secondary checkbox" }}
+                    />
                   </Grid>
-                  <Button
-                    type="submit"
-                    fullWidth
-                    variant="contained"
-                    color="primary"
-                    className={classes.submit}
-                    value="submit"
-                    paddingTop="4"
-                    onClick={handleSubmit}
-                  >
-                    Crear testimonio
-                  </Button>
-                </form>
-              </Paper>
-            </Grid>
-            <Grid
-              padding={"24px"}
+                </Grid>
+                <Button
+                  type="submit"
+                  fullWidth
+                  variant="contained"
+                  color="primary"
+                  className={classes.submit}
+                  value="submit"
+                  paddingTop="4"
+                  onClick={handleSubmit}
+                >
+                  Crear testimonio
+                </Button>
+              </form>
+            </Paper>
+          </Grid>
+
+          <Grid
+            style={{ padding: isMobile ? "0px" : "24px" }}
+            // padding={"24px"}
+            className={classes.paper}
+            // display={"flex"}
+            item
+            xs={12}
+            sm={12}
+            md={6}
+            lg={6}
+            xl={6}
+          >
+            <Paper
+              style={{ padding: isMobile ? "4px" : "24px" }}
               className={classes.paper}
-              item
-              xs
-              sm
-              md
-              lg
-              xl
-            ></Grid>
+              xs={12}
+              sm={12}
+            >
+              <form
+                onSubmit={handleSubmit}
+                className={classes.form}
+                // noValidate
+                margin={6}
+              >
+                <Grid container spacing={1} style={{ paddingBottom: "10px" }}>
+                  {loading && (
+                    <div className={classes.loading}>
+                      <CircularProgress />
+                    </div>
+                  )}
+                  <Box marginBottom={2}>
+                    {avatarObj ? (
+                      <Avatar className={classes.avatar}>
+                        <label htmlFor="file-input">
+                          <img
+                            src={avatarObj}
+                            alt="Prixer profile avatar"
+                            style={{ maxHeight: 200 }}
+                          />
+                        </label>
+                        <input
+                          style={{ display: "none" }}
+                          accept="image/*"
+                          id="file-input"
+                          type="file"
+                          onChange={onImageChange}
+                          required
+                        />
+                      </Avatar>
+                    ) : (
+                      <Avatar className={classes.avatar}>
+                        <label htmlFor="file-input">
+                          <AddIcon
+                            style={{
+                              width: 60,
+                              height: 60,
+                              color: "#d33f49",
+                            }}
+                          />
+                        </label>
+                        <input
+                          style={{ display: "none" }}
+                          accept="image/*"
+                          id="file-input"
+                          type="file"
+                          onChange={onImageChange}
+                        />
+                      </Avatar>
+                    )}
+                  </Box>
+                  <Grid
+                    item
+                    xs={6}
+                    padding={10}
+                    display={"flex"}
+                    alignItems={"center"}
+                  >
+                    <InputLabel style={{ fontSize: ".85em" }}>Tipo</InputLabel>
+                    <Select
+                      style={{ width: "100%" }}
+                      labelId="tipo"
+                      id="tipo"
+                      value={type}
+                      onChange={(e) => handleChange(e)}
+                      MenuProps={MenuProps}
+                    >
+                      {["Prixer", "Compañía", "Cliente"].map((type) => (
+                        <MenuItem
+                          key={type}
+                          value={type}
+                          style={getStyles(type, theme)}
+                        >
+                          {type}
+                        </MenuItem>
+                      ))}
+                      {/* <option value="Prixer">Prixer</option>
+                      <option value="Compañía">Compañía</option>
+                      <option selected value="Cliente">
+                        Cliente
+                      </option> */}
+                    </Select>
+                  </Grid>
+
+                  <Grid item xs={12}>
+                    <TextField
+                      variant="outlined"
+                      fullWidth
+                      name="footer"
+                      label="footer"
+                      type="text"
+                      value={footer}
+                      inputProps={{ maxLenght: 300 }}
+                      id="footer"
+                      autoComplete="fname"
+                      onChange={(e) => {
+                        setFooter(e.target.value);
+                      }}
+                    />
+                  </Grid>
+                  <Grid item xs={6} sm={6}>
+                    <TextField
+                      autoComplete="fname"
+                      name="name"
+                      variant="outlined"
+                      fullWidth
+                      type="text"
+                      value={name}
+                      id="name"
+                      label="Nombre"
+                      autoFocus
+                      onChange={(e) => {
+                        setName(e.target.value);
+                      }}
+                    />
+                  </Grid>
+                  <Grid item xs={3}>
+                    <TextField
+                      autoComplete="fname"
+                      name="value"
+                      variant="outlined"
+                      fullWidth
+                      type="text"
+                      value={value}
+                      id="value"
+                      label="value"
+                      autoFocus
+                      onChange={(e) => {
+                        setValue(e.target.value);
+                      }}
+                    />
+                  </Grid>
+                  <Grid item xs={3}>
+                    {/* <TextField
+                      name="status"
+                      label="status"
+                      id="status"
+                      autoComplete="fname"
+                      onChange={(e) => {
+                        setStatus(e.target.value);
+                      }}
+                    /> */}
+                    <Switch
+                      checked={state.checkedA}
+                      onChange={handleChangeState}
+                      name="checkedA"
+                      value={state}
+                      inputProps={{ "aria-label": "secondary checkbox" }}
+                    />
+                  </Grid>
+                </Grid>
+                <Button
+                  type="submit"
+                  fullWidth
+                  variant="contained"
+                  color="primary"
+                  className={classes.submit}
+                  value="submit"
+                  paddingTop="4"
+                  onClick={handleSubmit}
+                >
+                  Crear testimonio
+                </Button>
+              </form>
+            </Paper>
           </Grid>
         </Grid>
       </Paper>

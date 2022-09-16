@@ -245,14 +245,14 @@ export default function CreateProduct() {
                        </Button>
                         </FormControl>
                         <Grid item xs={6} >
-                        <Grid className={classes.loaderImage} style={{ width: isDesktop ? '120%' : '95vw', marginLeft: isDesktop ? '' : '-50%', marginTop: isDesktop ? '' : '9%'}}>
+                        <Grid className={classes.loaderImage} style={{ width: isDesktop ? '120%' : '90vw', marginLeft: isDesktop ? '' : '-48%', marginTop: isDesktop ? '' : '9%'}}>
                             {
                               imageLoader.loader ?
                               imageLoader.loader.map((img, key_id) =>
                               {
                                 return(
                                   <Grid container spacing={2} direction="row">
-                                  <Grid container spacing={1} xs={10} style={{position: 'absolute', marginTop: '16px', marginLeft: '16px'}}>
+                                  <Grid container spacing={1} xs={8} style={{position: 'absolute', marginTop: '16px'}}>
                                     <Grid item xs={2}>
                                     <Button variant="text" className={classes.buttonImgLoader} style={{color: '#d33f49'}} onClick={(d) => {
                                       imageLoader.loader.splice(key_id, 1)

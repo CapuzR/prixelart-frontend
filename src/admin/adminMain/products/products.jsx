@@ -91,7 +91,7 @@ const useStyles = makeStyles((theme) => ({
       flexDirection: 'column',
     },
     fixedHeight: {
-      height: '56vw',
+      height: 'auto',
       overflow: 'none'
     },
     fab: {
@@ -142,7 +142,7 @@ export default function Products(props) {
       <Grid container spacing={3} style={{margin: isDesktop ? '12px' : ''}}>
           {/* Chart */}
           <Grid item xs={12} md={12} lg={12}>
-              <Paper className={fixedHeightPaper} style={{height: isDesktop ? '56vw' : 'auto'}}>
+              <Paper className={fixedHeightPaper} >
                 {
                   activeCrud === 'create' ?
                     <CreateProduct />

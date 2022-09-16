@@ -22,16 +22,6 @@ export default function ReadProducts(props) {
     const [rows, setRows] = useState();
     const [deleteSuccess, setDelete] = useState()
     const[deleteOpen, setDeleteOpen] = useState(false)
-    const [open, setOpen] = React.useState(false);
-
-      const handleOpen = () => {
-        setOpen(true);
-    };
-
-    const handleClose = () => {
-      setOpen(false);
-    };
-
 
     const getRows = () =>
     {

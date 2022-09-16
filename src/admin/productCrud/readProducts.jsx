@@ -12,25 +12,42 @@ import axios from 'axios';
 import Checkbox from '@material-ui/core/Checkbox';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
+import Modal from '@material-ui/core/Modal';
 import Snackbar from '@material-ui/core/Snackbar';
 import Fab from '@material-ui/core/Fab';
+import Typography from '@material-ui/core/Typography';
 
 export default function ReadProducts(props) {
     const history = useHistory();
     const [rows, setRows] = useState();
     const [deleteSuccess, setDelete] = useState()
     const[deleteOpen, setDeleteOpen] = useState(false)
+    const [open, setOpen] = React.useState(false);
 
-useEffect(()=> {
-  const base_url= process.env.REACT_APP_BACKEND_URL + "/admin/product/read-all";
-    axios.get(base_url)
-    .then(response =>{
+      const handleOpen = () => {
+        setOpen(true);
+    };
+
+    const handleClose = () => {
+      setOpen(false);
+    };
+
+
+    const getRows = () =>
+    {
+      const base_url= process.env.REACT_APP_BACKEND_URL + "/admin/product/read-all";
+      axios.get(base_url)
+      .then(response =>{
         console.log(response.data.products)
         setRows(response.data.products);
-    })
-    .catch(error =>{
+      })
+      .catch(error =>{
         console.log(error);
-    })
+      })
+}
+
+useEffect(()=> {
+  getRows()
 },[]);
 
   const handleActive = (product, action)=> {
@@ -43,13 +60,12 @@ useEffect(()=> {
     const URI = process.env.REACT_APP_BACKEND_URL + `/product/delete/${id}`
     const res = await axios.delete(URI)
     setDelete(res.data)
-    setRows(rows)
+    getRows()
     setDeleteOpen(true)
     setTimeout(()=> {
       setDeleteOpen(false)
     }, 3000)
   }
-  console.log(rows)
 
   return (
     <React.Fragment>
@@ -80,6 +96,7 @@ useEffect(()=> {
               </TableCell>
               <TableCell align="center">
               <img src={row.images[0]} width={150} alt="imageProduct"/>
+              <Typography style={{fontSize: '1rem', color: '#bdbdbd'}}>{`Cantidad de imagenes: ${row.images.length}`}</Typography>
               </TableCell>
               <TableCell align="center">{row.name}</TableCell>
               <TableCell align="center">

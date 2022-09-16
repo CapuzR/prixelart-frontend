@@ -12,6 +12,10 @@ import FormControl from '@material-ui/core/FormControl';
 import clsx from 'clsx';
 import Checkbox from '@material-ui/core/Checkbox';
 import { useHistory } from 'react-router-dom';
+import { useTheme } from '@material-ui/core/styles';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
+import HighlightOffOutlinedIcon from '@material-ui/icons/HighlightOffOutlined';
+import Box from '@material-ui/core/Box';
 import Variants from '../adminMain/products/variants';
 import Backdrop from '@material-ui/core/Backdrop';
 
@@ -26,11 +30,44 @@ const useStyles = makeStyles((theme) => ({
     zIndex: theme.zIndex.drawer + 1,
     color: theme.palette.primary.main,
   },
+  loaderImage: {
+    width: '120%',
+    border: '2px',
+    height: '30vh',
+    borderStyle: 'groove',
+    borderColor: '#d33f49',
+    backgroundColor: '#ededed',
+    display: 'flex',
+    flexDirection: 'row'
+  },
+  imageLoad: {
+    width: '100%',
+    height: '95%',
+    padding: '15px',
+    marginTop: '5px'
+  },
+  formHead: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignContent: 'center',
+    justifyContent: 'space-evenly',
+    alignItems: 'center'
+  },
+  buttonImgLoader: {
+    cursor: 'pointer',
+    padding: '5px',
+    position: 'absolute'
+  },
 }));
 
 export default function UpdateAdmin(props) {
     const classes = useStyles();
     const history = useHistory();
+    const theme = useTheme();
+    const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
+    const isDeskTop = useMediaQuery(theme.breakpoints.up('sm'));
+    const [productId, setProductId] = useState(props.product._id)
+    const [images, newImages] = useState({images: []});
     const [ active, setActive ] = useState(props.product.active);
     const [ productName, setProductName ] = useState(props.product.name);
     const [ description, setDescription ] = useState(props.product.description);
@@ -45,17 +82,52 @@ export default function UpdateAdmin(props) {
     const [showVariants, setShowVariants] = useState(false);
     const [ activeVCrud, setActiveVCrud ] = useState('read');
     const [ hasSpecialVar, setHasSpecialVar ] = useState(props.product.hasSpecialVar || false);
+    const [imageLoader, setLoadImage] = useState({loader: props.product.images, filename: 'Subir imagenes'})
 
-    const [ thumbUrl, setThumbUrl ] = useState(props.product.thumbUrl);
 
     //Error states.
     const [errorMessage, setErrorMessage] = useState();
     const [snackBarError, setSnackBarError] = useState(false);
+    const [loadOpen, setLoadOpen] = useState(false);
+    const [loaDOpen, setLoaDOpen] = useState(false);
+
+        //Preview de imagen antes de enviar
+        const convertToBase64 = (blob) => {
+          return new Promise((resolve) => {
+            var reader = new FileReader();
+            reader.onload = function () {
+              resolve(reader.result);
+            };
+            reader.readAsDataURL(blob);
+          });
+        };
+
+            const loadImage = async (e) =>
+            {
+              e.preventDefault();
+              if(imageLoader.loader.length >= 4)
+              {
+                setLoadOpen(true)
+                setTimeout(() => {
+                  setLoadOpen(false)
+                }, 3000)
+              }else{
+              const file = e.target.files[0];
+              const resizedString = await convertToBase64(file);
+              imageLoader.loader.push(resizedString)
+              images.images.push(file)
+              setLoadImage({loader: imageLoader.loader, filename: file.name})
+              }
+            }
 
 
     const handleSubmit = async (e)=> {
       e.preventDefault();
-      if(!active &&
+      if(images.images.length > 4)
+      {
+        setLoaDOpen(true)
+      }else{
+        if(!active &&
         !productName &&
         !description &&
         !category &&
@@ -64,22 +136,15 @@ export default function UpdateAdmin(props) {
         !toPublicPrice &&
         !fromPrixerPrice &&
         !toPrixerPrice &&
-        !thumbUrl){
+        !images){
         setErrorMessage('Por favor completa todos los campos requeridos.');
         setSnackBarError(true);
         e.preventDefault();
       } else {
         setLoading(true);
         setButtonState(true);
-
+        const newFormData = new FormData();
         const data = {
-            '_id': props.product._id,
-            'thumbUrl': thumbUrl,
-            'active' : active || false,
-            'name' : productName,
-            'description' : description,
-            'category' : category,
-            'considerations' : considerations,
             publicPrice: {
                 'from': fromPublicPrice,
                 'to': toPublicPrice,
@@ -88,11 +153,26 @@ export default function UpdateAdmin(props) {
                 'from': fromPrixerPrice,
                 'to': toPrixerPrice,
             },
-            hasSpecialVar: hasSpecialVar
+            specialVars: [
+              {
+                'name': '',
+                'isSpecialVarVisible': ''
+              }
+            ]
         }
-
-        const base_url= process.env.REACT_APP_BACKEND_URL + "/product/update";
-        const response = await axios.post(base_url,data);
+        newFormData.append('active', active)
+        newFormData.append('name', productName)
+        newFormData.append('description', description)
+        newFormData.append('category', category)
+        newFormData.append('considerations', considerations)
+        newFormData.append('publicPriceFrom', data.publicPrice.from)
+        newFormData.append('publicPriceTo', data.publicPrice.to)
+        newFormData.append('prixerPriceFrom', data.prixerPrice.from)
+        newFormData.append('prixerPriceTo', data.prixerPrice.to)
+        newFormData.append('hasSpecialVar', hasSpecialVar)
+        images.images.map(file => newFormData.append('newProductImages', file))
+        const base_url= process.env.REACT_APP_BACKEND_URL + `/product/update/${productId}`;
+        const response = await axios.put(base_url,newFormData);
         if(response.data.success === false){
           setLoading(false);
           setButtonState(false);
@@ -104,15 +184,16 @@ export default function UpdateAdmin(props) {
           history.push('/admin/product/read');
         }
       }
-
+      }
     }
 
     const handleVariantsClick = ()=> {
-        history.push({pathname:"/admin/product/"+props.product._id+"/variant/read"});
+        history.push({pathname:"/admin/product/"+productId+"/variant/read"});
         setShowVariants(true);
         props.setProductEdit(false);
     }
-
+    console.log(imageLoader)
+    console.log(images)
   return (
     <React.Fragment>
     {
@@ -143,27 +224,51 @@ export default function UpdateAdmin(props) {
                 <a onClick={handleVariantsClick}><h2 style={{color:"rgba(191, 191, 191, 0.5)", marginTop:0}}>Variantes</h2></a>
             </Grid>
         </Grid>
-        <form className={classes.form} noValidate onSubmit={handleSubmit}>
+        <form className={classes.form}  encType="multipart/form-data" noValidate onSubmit={handleSubmit}>
             <Grid container spacing={2}>
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
-                    <Grid item xs={12} md={6}>
-                        <FormControl variant="outlined" xs={12} fullWidth={true}>
-                        <TextField
-                            variant="outlined"
-                            required
-                            fullWidth
-                            display="inline"
-                            id="thumbUrl"
-                            label="ThumbUrl"
-                            name="thumbUrl"
-                            autoComplete="thumbUrl"
-                            value={thumbUrl ? thumbUrl : 'nada'}
-                            onChange={(e) => {setThumbUrl(e.target.value);}}
-                        />
+                    <Grid container spacing={1} direction="row">
+                    <Grid item xs={12} className={classes.formHead} style={{flexDirection: isDesktop ?  'row' : 'column'}}>
+                        <FormControl variant="outlined">
+                        <Button variant="contained" component="label">
+                          Upload File
+                        <input name="newProductImages" type="file" accept="image/*" hidden onChange={(a) => {
+                          a.preventDefault();
+                          loadImage(a)
+                        }}/>
+                       </Button>
                         </FormControl>
+                        <Grid item xs={6} >
+                        <Grid item className={classes.loaderImage}>
+                        {
+                          imageLoader.loader ?
+                          imageLoader.loader.map((img, key_id) =>
+                          {
+                            return(
+                              <Grid container spacing={2}>
+                              <Grid item xs={12} style={{position: 'absolute', marginTop: '10px', marginLeft: '9px'}}>
+                                <Button variant="text" className={classes.buttonImgLoader} style={{color: '#d33f49'}} onClick={(d) => {
+                                  imageLoader.loader.splice(key_id, 1)
+                                  images.images.splice(key_id, 1)
+                                  setLoadImage({loader: imageLoader.loader, filename: 'Subir Imagenes'})
+                                  newImages({images: images.images})
+                                }}>
+                                <HighlightOffOutlinedIcon/>
+                                </Button>
+                                </Grid>
+                                <img key={key_id} className={classes.imageLoad} src={img} alt='+'></img>
+                            </Grid>
+                          )
+                          })
+                          :
+                          ''
+                        }
+                        </Grid>
+                        </Grid>
+                        </Grid>
                     </Grid>
-                    <Grid container xs={6}>
+                    <Grid container xs={isDesktop ? 6 : 12}>
                       <Grid item xs={6}>
                           <Checkbox
                               checked={active}
@@ -360,6 +465,18 @@ export default function UpdateAdmin(props) {
           open={snackBarError}
           autoHideDuration={1000}
           message={errorMessage}
+          className={classes.snackbar}
+        />
+        <Snackbar
+          open={loadOpen}
+          autoHideDuration={1000}
+          message={'No puedes colocar mas de 4 fotos'}
+          className={classes.snackbar}
+        />
+        <Snackbar
+          open={loaDOpen}
+          autoHideDuration={1000}
+          message={'No puedes enviar mas de 4 fotos'}
           className={classes.snackbar}
         />
     </React.Fragment>

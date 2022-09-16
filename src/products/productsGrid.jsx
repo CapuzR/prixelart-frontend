@@ -92,7 +92,6 @@ export default function ProductGrid(props) {
   const [width, setWidth] = useState([]);
   const [height, setHeight] = useState([]);
 
-
   useEffect(() => {
     const base_url = process.env.REACT_APP_BACKEND_URL + "/product/read-all";
     axios.get(base_url)
@@ -110,8 +109,9 @@ export default function ProductGrid(props) {
       {tiles ?
         tiles.map((tile, iProd, productsArr) => (
           <Card className={classes.root}>
-          <CardMedia>
+          <CardMedia style={{width: '110%'}}>
               <Carousel
+                autoPlay={false}
                 stopAutoPlayOnHover={true}
                 animation='slide'
                 duration={500}
@@ -119,10 +119,16 @@ export default function ProductGrid(props) {
                 IndicatorIcon={<MaximizeIcon/>}
                 NextIcon={<ArrowForwardIosIcon />}
                 PrevIcon={<ArrowBackIosIcon />}
+                activeIndicatorIconButtonProps={{
+                  style: {
+                      color: '#d33f49'
+                  }
+                }}
                 navButtonsProps={
                   {
                     style: {
                       backgroundColor: 'rgba(0, 0, 0, 0)',
+                      color: '#d33f49',
                       width: '98%',
                       height: '100vh',
                       marginTop: '-50vh',
@@ -143,12 +149,11 @@ export default function ProductGrid(props) {
                 tile.images ?
                 tile.images.map((img, key_id) =>
                 (
-                  <img key={key_id}  src={img} className={classes.img} alt="product"></img>
+                  <img key={key_id} src={img} className={classes.img} alt="product"/>
                 ))
                   :
-                <img src={tile.thumbUrl} className={classes.img} alt="product"></img>
+                  <img src={tile.thumbUrl} alt="product"/>
                 }
-
               </Carousel>
               </CardMedia>
               <CardActionArea style={{ alignContent: "space-between" }}>

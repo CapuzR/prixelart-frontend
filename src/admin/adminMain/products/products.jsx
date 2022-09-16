@@ -3,9 +3,8 @@ import { useHistory, useLocation } from "react-router-dom";
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import clsx from 'clsx';
-
-
-
+import { useTheme } from '@material-ui/core/styles';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { makeStyles } from '@material-ui/core/styles';
 import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
@@ -72,7 +71,7 @@ const useStyles = makeStyles((theme) => ({
       }),
       width: theme.spacing(7),
       [theme.breakpoints.up('sm')]: {
-        width: theme.spacing(9),
+        width: theme.spacing(9)
       },
     },
     appBarSpacer: theme.mixins.toolbar,
@@ -92,7 +91,7 @@ const useStyles = makeStyles((theme) => ({
       flexDirection: 'column',
     },
     fixedHeight: {
-      height: 'auto',
+      height: '56vw',
       overflow: 'none'
     },
     fab: {
@@ -109,6 +108,9 @@ export default function Products(props) {
   const [ activeCrud, setActiveCrud ] = useState('read');
   const [ product, setProduct ] = useState();
   const [ productEdit, setProductEdit ] = useState(true);
+  const theme = useTheme();
+  const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
+  const isDeskTop = useMediaQuery(theme.breakpoints.up('sm'));
 
   const handleProductAction = (action)=> {
     history.push({pathname:"/admin/product/"+action});
@@ -137,10 +139,10 @@ export default function Products(props) {
           </Fab>
         </div>
       }
-      <Grid container spacing={3}>
+      <Grid container spacing={3} style={{margin: isDesktop ? '12px' : ''}}>
           {/* Chart */}
           <Grid item xs={12} md={12} lg={12}>
-              <Paper className={fixedHeightPaper}>
+              <Paper className={fixedHeightPaper} style={{height: isDesktop ? '56vw' : 'auto'}}>
                 {
                   activeCrud === 'create' ?
                     <CreateProduct />
@@ -159,4 +161,3 @@ export default function Products(props) {
     </div>
   );
 }
-    

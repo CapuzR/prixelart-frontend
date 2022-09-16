@@ -8,6 +8,9 @@ import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import Snackbar from '@material-ui/core/Snackbar';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import EditIcon from '@material-ui/icons/Edit';
+import { useTheme } from '@material-ui/core/styles';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
 // import IconButton from '@material-ui/core/IconButton';
 // import OutlinedInput from '@material-ui/core/OutlinedInput';
 // import InputLabel from '@material-ui/core/InputLabel';
@@ -33,20 +36,18 @@ const useStyles = makeStyles((theme) => ({
   },
   loaderImage: {
     width: '120%',
-    height: '30vh',
     border: '2px',
+    height: '30vh',
     borderStyle: 'groove',
     borderColor: '#d33f49',
     backgroundColor: '#ededed',
     display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center'
+    flexDirection: 'row'
   },
   imageLoad: {
-    width: '24%',
-    height: '90%',
-    padding: '5px',
+    width: '100%',
+    height: '95%',
+    padding: '15px',
     marginTop: '5px'
   },
   formHead: {
@@ -57,13 +58,23 @@ const useStyles = makeStyles((theme) => ({
     alignItems: 'center'
   },
   buttonImgLoader: {
-    color: '#d33f49',
-    cursor: 'pointer'
+    cursor: 'pointer',
+    padding: '5px',
+    position: 'absolute'
   },
+  buttonEdit: {
+    cursor: 'pointer',
+    padding: '5px',
+    marginLeft: '-10px',
+    position: 'absolute'
+  }
 }));
 
 export default function CreateProduct() {
     const classes = useStyles();
+    const theme = useTheme();
+    const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
+    const isDeskTop = useMediaQuery(theme.breakpoints.up('sm'));
     const [ active, setActive ] = useState(false);
     const [ productName, setProductName ] = useState('');
     const [ description, setDescription ] = useState('');
@@ -84,6 +95,8 @@ export default function CreateProduct() {
     //Error states.
     const [errorMessage, setErrorMessage] = useState();
     const [snackBarError, setSnackBarError] = useState(false);
+    const [loadOpen, setLoadOpen] = useState(false);
+    const [loaDOpen, setLoaDOpen] = useState(false);
 
     //Preview de imagen antes de enviar
     const convertToBase64 = (blob) => {
@@ -99,24 +112,44 @@ export default function CreateProduct() {
     const loadImage = async (e) =>
     {
       e.preventDefault();
+      if(imageLoader.loader.length > 4)
+      {
+        setLoadOpen(true)
+      }else{
       const file = e.target.files[0];
       const resizedString = await convertToBase64(file);
-      imageLoader.loader.push(resizedString)
-      images.images.push(file)
+      if(imageLoader.loader.length >= 4)
+      {
+        return null
+      } else{
+        imageLoader.loader.push(resizedString)
+        if(images.images.length >= 4)
+        {
+          return null
+        }else{
+            images.images.push(file)
+        }
+      }
       setLoadImage({loader: imageLoader.loader, filename: file.name})
     }
+  }
 
-    //Cancelar subida de imagen
-    const cancelUploadImage = () =>
-    {
-        setLoadImage({loader: '', filename: 'Subir imagenes'})
-        newImages({images: []})
-    }
-
-console.log(images.images)
+  const replaceImage = async (e, index) =>
+  {
+    e.preventDefault();
+    const file = e.target.files[0];
+    const resizedString = await convertToBase64(file);
+    imageLoader.loader[index] = resizedString
+    images.images[index] = file
+    setLoadImage({loader: imageLoader.loader, filename: file.name})
+  }
 
     const handleSubmit = async (e)=> {
       e.preventDefault();
+      if(images.images.length > 4)
+      {
+        setLoaDOpen(true)
+      }else{
       if(!active &&
         !productName &&
         !description &&
@@ -188,7 +221,7 @@ console.log(images.images)
         }
       }
     }
-
+}
   return (
     <React.Fragment>
     {
@@ -200,10 +233,9 @@ console.log(images.images)
         <form className={classes.form} encType="multipart/form-data" noValidate onSubmit={handleSubmit}>
             <Grid container spacing={2}>
                 <Grid container spacing={2}>
-                    <Grid item xs={12}>
-                    <Grid container spacing={1} direction="row">
-                    <Grid item xs={12} className={classes.formHead}>
-                        <FormControl variant="outlined"  >
+                    <Grid container spacing={2} direction="row">
+                    <Grid item xs={12} className={classes.formHead} style={{flexDirection: isDesktop ?  'row' : 'column'}}>
+                        <FormControl variant="outlined">
                         <Button variant="contained" component="label">
                         Upload File
                         <input name="productImages" type="file" accept="image/*" hidden onChange={(a) => {
@@ -213,24 +245,45 @@ console.log(images.images)
                        </Button>
                         </FormControl>
                         <Grid item xs={6} >
-                        <div className={classes.loaderImage}>
+                        <Grid className={classes.loaderImage} style={{ width: isDesktop ? '120%' : '95vw', marginLeft: isDesktop ? '' : '-50%', marginTop: isDesktop ? '' : '9%'}}>
                             {
                               imageLoader.loader ?
                               imageLoader.loader.map((img, key_id) =>
-                              (
-                                <Box className={classes.buttonImgLoader}>
-                                  <HighlightOffOutlinedIcon style={{width: '1rem'}}/>
-                                </Box>,
-                                <img key={key_id} className={classes.imageLoad} src={img} alt='+'></img>
-                              ))
+                              {
+                                return(
+                                  <Grid container spacing={2} direction="row">
+                                  <Grid container spacing={1} xs={10} style={{position: 'absolute', marginTop: '16px', marginLeft: '16px'}}>
+                                    <Grid item xs={2}>
+                                    <Button variant="text" className={classes.buttonImgLoader} style={{color: '#d33f49'}} onClick={(d) => {
+                                      imageLoader.loader.splice(key_id, 1)
+                                      images.images.splice(key_id, 1)
+                                      setLoadImage({loader: imageLoader.loader, filename: 'Subir Imagenes'})
+                                      newImages({images: images.images})
+                                    }}>
+                                    <HighlightOffOutlinedIcon/>
+                                    </Button>
+                                    </Grid>
+                                    <Grid item xs={2}>
+                                    <Button variant="text" className={classes.buttonEdit} style={{color: '#d33f49'}} component='label'>
+                                    <input name="productImages" type="file" accept="image/*" hidden onChange={(a) => {
+                                      const i = imageLoader.loader.indexOf(img)
+                                      replaceImage(a, i);
+                                    }}/>
+                                    <EditIcon/>
+                                    </Button>
+                                    </Grid>
+                                  </Grid>
+                                    <img key={key_id} className={classes.imageLoad} src={img} alt='+'></img>
+                                </Grid>
+                              )
+                              })
                               :
                               ''
                             }
-                        </div>
+                        </Grid>
                         </Grid>
                     </Grid>
-                    </Grid>
-                    <Grid container xs={6}>
+                    <Grid container xs={isDesktop ? 6 : 12} >
                       <Grid item xs={6}>
                           <Checkbox
                               checked={active}
@@ -484,6 +537,18 @@ console.log(images.images)
           open={snackBarError}
           autoHideDuration={1000}
           message={errorMessage}
+          className={classes.snackbar}
+        />
+        <Snackbar
+          open={loadOpen}
+          autoHideDuration={1000}
+          message={'No puedes colocar mas de 4 fotos'}
+          className={classes.snackbar}
+        />
+        <Snackbar
+          open={loaDOpen}
+          autoHideDuration={1000}
+          message={'No puedes enviar mas de 4 fotos'}
           className={classes.snackbar}
         />
     </React.Fragment>

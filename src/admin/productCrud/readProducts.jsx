@@ -11,11 +11,15 @@ import Title from '../adminMain/Title';
 import axios from 'axios';
 import Checkbox from '@material-ui/core/Checkbox';
 import EditIcon from '@material-ui/icons/Edit';
+import DeleteIcon from '@material-ui/icons/Delete';
+import Snackbar from '@material-ui/core/Snackbar';
 import Fab from '@material-ui/core/Fab';
 
 export default function ReadProducts(props) {
     const history = useHistory();
     const [rows, setRows] = useState();
+    const [deleteSuccess, setDelete] = useState()
+    const[deleteOpen, setDeleteOpen] = useState(false)
 
 useEffect(()=> {
   const base_url= process.env.REACT_APP_BACKEND_URL + "/admin/product/read-all";
@@ -33,6 +37,19 @@ useEffect(()=> {
     props.setProduct(product);
     history.push('/admin/product/'+action+'/'+product._id);
   }
+
+  const deleteProduct = async (id) =>
+  {
+    const URI = process.env.REACT_APP_BACKEND_URL + `/product/delete/${id}`
+    const res = await axios.delete(URI)
+    setDelete(res.data)
+    setRows(rows)
+    setDeleteOpen(true)
+    setTimeout(()=> {
+      setDeleteOpen(false)
+    }, 3000)
+  }
+  console.log(rows)
 
   return (
     <React.Fragment>
@@ -62,7 +79,7 @@ useEffect(()=> {
                 </Fab>
               </TableCell>
               <TableCell align="center">
-              <img src={row.thumbUrl ? row.thumbUrl : row.images[0]} width={150} alt="imageProduct"/>
+              <img src={row.images[0]} width={150} alt="imageProduct"/>
               </TableCell>
               <TableCell align="center">{row.name}</TableCell>
               <TableCell align="center">
@@ -74,14 +91,27 @@ useEffect(()=> {
                 />
               </TableCell>
               <TableCell align="center">{row.category}</TableCell>
-              <TableCell align="center">{row.publicPrice ? row.publicPrice.from : 'd'}-{row.publicPrice ? row.publicPrice.from : 'e'}</TableCell>
-              <TableCell align="center">{row.prixerPrice ? row.prixerPrice.from : 'd'}-{row.prixerPrice ? row.prixerPrice.to : 'e'}</TableCell>
+              <TableCell align="center">{row.publicPrice.from}-{row.publicPrice.from}</TableCell>
+              <TableCell align="center">{row.prixerPrice.from}-{row.prixerPrice.to}</TableCell>
+              <TableCell align="center">
+                <Fab color="default" style={{width: 35, height: 35}} aria-label="Delete" onClick={(e) => {
+                  e.preventDefault();
+                  deleteProduct(row._id)
+                }}>
+                  <DeleteIcon/>
+                </Fab>
+              </TableCell>
             </TableRow>
           ))
         }
         </TableBody>
       </Table>
 }
+  <Snackbar
+  open={deleteOpen}
+  autoHideDuration={1000}
+  message={deleteSuccess?.productResult}
+  />
     </React.Fragment>
   );
 }

@@ -290,7 +290,7 @@ function CarouselAdmin(props)
           <Typography className={classes.nameFile} id='uploadImage'>{imageLoader.filename}</Typography>
           <Button variant="contained" component="label">
           Upload File
-          <input name="bannerImages" type="file" hidden onChange={(a) => {
+          <input name="bannerImages" type="file" accept="image/*" hidden onChange={(a) => {
             a.preventDefault();
             loadImage(a)
             newImage({

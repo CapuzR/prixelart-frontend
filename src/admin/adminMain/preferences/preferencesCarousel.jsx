@@ -35,7 +35,7 @@ const useStyle = makeStyles((theme) => ({
     'padding': '10px',
     'flexDirection': 'row',
     'justifyContent' : 'space-between',
-    'width': '100%'
+    'width': '90%'
   },
   nameFile:{
     'width': '300px',

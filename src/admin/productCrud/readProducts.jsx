@@ -28,7 +28,6 @@ export default function ReadProducts(props) {
       const base_url= process.env.REACT_APP_BACKEND_URL + "/admin/product/read-all";
       axios.get(base_url)
       .then(response =>{
-        console.log(response.data.products)
         setRows(response.data.products);
       })
       .catch(error =>{
@@ -85,9 +84,16 @@ useEffect(()=> {
                 </Fab>
               </TableCell>
               <TableCell align="center">
+              {
+              row.thumbUrl ?
+              <img src={row.thumbUrl} alt='+' style={{width: 50, height: 'auto'}}/>
+              :
+              <>
               <img src={row.images[0]} width={150} alt="imageProduct"/>
               <Typography style={{fontSize: '1rem', color: '#bdbdbd'}}>{`Cantidad de imagenes: ${row.images.length}`}</Typography>
-              </TableCell>
+              </>
+            }
+            </TableCell>
               <TableCell align="center">{row.name}</TableCell>
               <TableCell align="center">
                 <Checkbox

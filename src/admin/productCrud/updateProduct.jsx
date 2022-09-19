@@ -84,6 +84,7 @@ export default function UpdateAdmin(props) {
     const [ hasSpecialVar, setHasSpecialVar ] = useState(props.product.hasSpecialVar || false);
     const [imageLoader, setLoadImage] = useState({loader: props.product.images, filename: 'Subir imagenes'})
 
+    const [ thumbUrl, setThumbUrl ] = useState(props.product?.thumbUrl);
 
     //Error states.
     const [errorMessage, setErrorMessage] = useState();
@@ -262,7 +263,7 @@ export default function UpdateAdmin(props) {
                           )
                           })
                           :
-                          ''
+                          <img src={thumbUrl} alt='+'/>
                         }
                         </Grid>
                         </Grid>

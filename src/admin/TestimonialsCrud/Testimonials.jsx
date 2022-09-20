@@ -52,7 +52,6 @@ const useStyles = makeStyles((theme) => ({
   paper: {
     padding: theme.spacing(2),
     margin: "15px",
-    // marginBottom: "20px",
   },
   input: {
     padding: "2",
@@ -79,14 +78,14 @@ const MenuProps = {
 
 export default function Testimonials() {
   const classes = useStyles();
-  const [testimonialDataState, setTestimonialDataState] = useState("read");
+  const [testimonialDataState, setTestimonialDataState] = useState("read"); // borrar
   const [avatar, setAvatar] = useState({ file: "", _id: "" });
   const [type, setType] = useState("");
   const [name, setName] = useState("");
   const [value, setValue] = useState("");
   const [footer, setFooter] = useState("");
   const [tiles, setTiles] = useState([]);
-  const [backdrop, setBackdrop] = useState(true);
+  const [backdrop, setBackdrop] = useState(true); // borrar
   const theme = useTheme();
   const [avatarObj, setAvatarObj] = useState("");
   const [avatarPic, setAvatarPic] = useState("");
@@ -96,12 +95,6 @@ export default function Testimonials() {
   });
   const [updateId, setUpdateId] = useState();
   const [loading, setLoading] = useState(false);
-  // const [buttonState, setButtonState] = useState(true);
-  // const history = useHistory();
-
-  // const setValueText = (event) => {
-  //   setValue(event.target.value);
-  // };
   const handleChangeType = (event) => {
     setType(event.target.value);
   };
@@ -132,8 +125,6 @@ export default function Testimonials() {
       e.preventDefault();
     } else {
       setLoading(true);
-      // setButtonState(true);
-
       const formData = new FormData();
       formData.append("avatar", avatarPic);
       formData.append("type", type);
@@ -141,7 +132,6 @@ export default function Testimonials() {
       formData.append("value", value);
       formData.append("footer", footer);
       formData.append("status", state.checkedA);
-      console.log(formData);
       const base_url =
         process.env.REACT_APP_BACKEND_URL + "/testimonial/create";
 
@@ -157,9 +147,6 @@ export default function Testimonials() {
           } else {
             setErrorMessage("Creación de testimonio exitoso.");
             setSnackBarError(true);
-            // history.push({
-            //   pathname: "/" + response.data.testimonialData.name,
-            // });
           }
         })
 
@@ -195,6 +182,7 @@ export default function Testimonials() {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const GetIdForEdit = async () => {
+    // borrar
     setUpdateId();
     handleTestimonialDataEdit();
   };
@@ -223,7 +211,6 @@ export default function Testimonials() {
     const response = await axios.put(base_url, formData, {
       "Content-Type": "multipart/form-data",
     });
-    console.log(state.checkedA);
     setName("");
     setAvatarObj("");
     setType("");
@@ -289,7 +276,6 @@ export default function Testimonials() {
                 encType="multipart/form-data"
                 onSubmit={handleSubmit}
                 className={classes.form}
-                // noValidate
                 margin={6}
               >
                 <Grid container spacing={1} style={{ paddingBottom: "10px" }}>
@@ -468,260 +454,84 @@ export default function Testimonials() {
             </Paper>
           </Grid>
 
-          {tiles.map(
-            (tile) =>
-              testimonialDataState === "read" && (
-                <Grid item xs={12} sm={12} md={6} lg={4} xl={4}>
-                  <Paper
-                    className={classes.paper}
-                    style={{
-                      padding: "15px",
-                    }}
-                  >
-                    <Grid key={tile._id} style={{ width: "100%" }}>
-                      <Grid container spacing={1}>
-                        {loading && (
-                          <div className={classes.loading}>
-                            <CircularProgress />
-                          </div>
-                        )}
-                        <Grid marginBottom={2} style={{ width: "100%" }}>
-                          <Box
-                            style={{ display: "flex", justifyContent: "end" }}
-                          >
-                            <Button
-                              onClick={() =>
-                                handleTestimonialDataEdit(tile._id)
-                              }
-                            >
-                              <EditIcon color={"secondary"} />
-                            </Button>
-                            <Button onClick={() => deleteTestimonial(tile._id)}>
-                              <DeleteIcon color={"secondary"} />
-                            </Button>
-                          </Box>
-                          <Box style={{ display: "flex", paddingLeft: "20px" }}>
-                            <Avatar
-                              className={classes.avatar}
-                              src={tile.avatar}
-                            />
-                            <Box
-                              style={{
-                                paddingLeft:
-                                  "30px" /*  Agregar padding para desktop  */,
-                              }}
-                            >
-                              <Typography>{tile.name}</Typography>
-                              <Typography variant={"p"} color={"secondary"}>
-                                {tile.type}
-                              </Typography>
-                            </Box>
-                          </Box>
-                          <Box
-                            style={{
-                              display: "flex",
-                              justifyContent: "center",
-                              paddingTop: "10px",
-                            }}
-                          >
-                            <Typography variant={"body2"}>
-                              {tile.value}
-                            </Typography>
-                          </Box>
-                          <Box
-                            style={{
-                              display: "flex",
-                              justifyContent: "center",
-                              paddingTop: "8px",
-                            }}
-                          >
-                            <Typography variant={"body2"} color="secondary">
-                              {tile.footer}
-                            </Typography>
-                          </Box>
-
-                          <Box
-                            style={{ display: "flex", justifyContent: "end" }}
-                          >
-                            {console.log(tile)}
-                            <Switch
-                              checked={tile.status}
-                              color="primary"
-                              onChange={handleChange}
-                              name="checkedA"
-                              value={tile.status}
-                              inputProps={{
-                                "aria-label": "secondary checkbox",
-                              }}
-                            />
-                          </Box>
-                        </Grid>
-                      </Grid>
-                    </Grid>
-                  </Paper>
-                </Grid>
-              ),
-            testimonialDataState === "edit" && (
-              <Grid item xs={12} sm={12} md={6} lg={4} xl={4}>
-                <Paper
-                  className={classes.paper}
-                  style={{
-                    padding: "15px",
-                  }}
-                >
-                  <Grid style={{ width: "100%" }}>
-                    <Grid container spacing={1}>
-                      {loading && (
-                        <div className={classes.loading}>
-                          <CircularProgress />
-                        </div>
-                      )}
-                      <Grid marginBottom={2} style={{ width: "100%" }}>
-                        <Box style={{ display: "flex", justifyContent: "end" }}>
-                          <Button
-                          // onClick={() => handleTestimonialDataEdit(tile._id)}
-                          >
-                            <EditIcon color={"secondary"} />
-                          </Button>
-                        </Box>
-                        <Box style={{ display: "flex", paddingLeft: "20px" }}>
-                          {avatarObj ? (
-                            <Avatar className={classes.avatar}>
-                              <label htmlFor="file-input">
-                                <img
-                                  src={avatarObj}
-                                  alt="testimonial avatar"
-                                  style={{
-                                    maxHeight: 80,
-                                  }}
-                                />
-                              </label>
-                              <input
-                                style={{ display: "none" }}
-                                accept="image/*"
-                                id="file-input"
-                                type="file"
-                                onChange={onImageChange}
-                                required
-                                name="avatar"
-                              />
-                            </Avatar>
-                          ) : (
-                            <Avatar className={classes.avatar}>
-                              <label htmlFor="file-input">
-                                <AddIcon
-                                  style={{
-                                    width: 40,
-                                    height: 40,
-                                    color: "#d33f49",
-                                  }}
-                                />
-                              </label>
-                              <input
-                                style={{ display: "none" }}
-                                accept="image/*"
-                                id="file-input"
-                                type="file"
-                                onChange={onImageChange}
-                                name="avatar"
-                              />
-                            </Avatar>
-                          )}
-                          <Box
-                            style={{
-                              paddingLeft:
-                                "30px" /*  Agregar padding para desktop  */,
-                            }}
-                          >
-                            <TextField
-                              fullWidth
-                              id="name"
-                              variant="outlined"
-                              label="Nombre"
-                              onChange={(e) => {
-                                setName(e.target.value);
-                              }}
-                              value={name}
-                            />
-                            <InputLabel style={{ fontSize: ".85em" }}>
-                              Tipo
-                            </InputLabel>
-                            <Select
-                              style={{ width: "100%" }}
-                              labelId="tipo"
-                              id="tipo"
-                              value={type}
-                              onChange={(e) => handleChangeType(e)}
-                              MenuProps={MenuProps}
-                            >
-                              {["Prixer", "Compañía", "Cliente"].map((type) => (
-                                <MenuItem
-                                  key={type}
-                                  value={type}
-                                  style={getStyles(type, theme)}
-                                >
-                                  {type}
-                                </MenuItem>
-                              ))}
-                            </Select>
-                          </Box>
-                        </Box>
+          {tiles.map((tile) => (
+            <Grid item xs={12} sm={12} md={6} lg={4} xl={4}>
+              <Paper
+                className={classes.paper}
+                style={{
+                  padding: "15px",
+                }}
+              >
+                <Grid key={tile._id} style={{ width: "100%" }}>
+                  <Grid container spacing={1}>
+                    {loading && (
+                      <div className={classes.loading}>
+                        <CircularProgress />
+                      </div>
+                    )}
+                    <Grid marginBottom={2} style={{ width: "100%" }}>
+                      <Box style={{ display: "flex", justifyContent: "end" }}>
+                        <Button
+                          onClick={() => handleTestimonialDataEdit(tile._id)}
+                        >
+                          <EditIcon color={"secondary"} />
+                        </Button>
+                        <Button onClick={() => deleteTestimonial(tile._id)}>
+                          <DeleteIcon color={"secondary"} />
+                        </Button>
+                      </Box>
+                      <Box style={{ display: "flex", paddingLeft: "20px" }}>
+                        <Avatar className={classes.avatar} src={tile.avatar} />
                         <Box
                           style={{
-                            display: "flex",
-                            justifyContent: "center",
-                            paddingTop: "10px",
+                            paddingLeft: "30px",
                           }}
                         >
-                          <TextField
-                            fullWidth
-                            id="body"
-                            variant="outlined"
-                            label="Body"
-                            onChange={(e) => {
-                              setValue(e.target.value);
-                            }}
-                            value={value}
-                          />
+                          <Typography>{tile.name}</Typography>
+                          <Typography variant={"p"} color={"secondary"}>
+                            {tile.type}
+                          </Typography>
                         </Box>
-                        <Box
-                          style={{
-                            display: "flex",
-                            justifyContent: "center",
-                            paddingTop: "8px",
-                          }}
-                        >
-                          <TextField
-                            fullWidth
-                            id="footer"
-                            variant="outlined"
-                            label="Footer"
-                            onChange={(e) => {
-                              setFooter(e.target.value);
-                            }}
-                            value={footer}
-                          />
-                        </Box>
+                      </Box>
+                      <Box
+                        style={{
+                          display: "flex",
+                          justifyContent: "center",
+                          paddingTop: "10px",
+                        }}
+                      >
+                        <Typography variant={"body2"}>{tile.value}</Typography>
+                      </Box>
+                      <Box
+                        style={{
+                          display: "flex",
+                          justifyContent: "center",
+                          paddingTop: "8px",
+                        }}
+                      >
+                        <Typography variant={"body2"} color="secondary">
+                          {tile.footer}
+                        </Typography>
+                      </Box>
 
-                        <Box style={{ display: "flex", justifyContent: "end" }}>
-                          <Switch
-                            checked={state.checkedA}
-                            color="primary"
-                            onChange={handleChange}
-                            name="checkedA"
-                            value={state}
-                            inputProps={{
-                              "aria-label": "secondary checkbox",
-                            }}
-                          />
-                        </Box>
-                      </Grid>
+                      <Box style={{ display: "flex", justifyContent: "end" }}>
+                        <Switch
+                          checked={tile.status}
+                          color="primary"
+                          onChange={handleChange}
+                          name="checkedA"
+                          value={tile.status}
+                          inputProps={{
+                            "aria-label": "secondary checkbox",
+                          }}
+                        />
+                      </Box>
                     </Grid>
                   </Grid>
-                </Paper>
-              </Grid>
-            )
-          )}
+                </Grid>
+              </Paper>
+            </Grid>
+          ))}
         </Grid>
       </Paper>
     </div>

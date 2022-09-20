@@ -1,5 +1,6 @@
 import { React, useState, useEffect } from "react";
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles, useTheme } from "@material-ui/core/styles";
+import useMediaQuery from "@material-ui/core/useMediaQuery";
 import ViewCarouselIcon from "@material-ui/icons/ViewCarousel";
 import { Button, InputLabel, Typography } from "@material-ui/core";
 import Box from "@material-ui/core/Box";
@@ -40,7 +41,7 @@ const useStyle = makeStyles((theme) => ({
     padding: "10px",
     flexDirection: "row",
     justifyContent: "space-between",
-    width: "37vw",
+    width: "90%",
   },
   nameFile: {
     width: "300px",
@@ -53,9 +54,7 @@ const useStyle = makeStyles((theme) => ({
     background: "#cccc",
   },
   loaderImage: {
-    width: "50vw",
-    height: "60vh",
-    marginLeft: "220px",
+    height: "80vh",
     backgroundColor: "#cccc",
     display: "flex",
     justifyContent: "center",
@@ -63,13 +62,13 @@ const useStyle = makeStyles((theme) => ({
     alignItems: "center",
   },
   imageLoad: {
-    width: "50vw",
-    height: "60vh",
+    width: "100%",
+    height: "100%",
   },
   buttonImgLoader: {
     color: "#ccc",
-    width: "50vw",
-    height: "60vh",
+    width: "82vw",
+    height: "80vh",
     cursor: "pointer",
     display: "flex",
     flexDirection: "row",
@@ -84,6 +83,9 @@ const useStyle = makeStyles((theme) => ({
 }));
 
 function CarouselAdmin(props) {
+  const theme = useTheme();
+  const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
+  const isDeskTop = useMediaQuery(theme.breakpoints.up("sm"));
   const [image, newImage] = useState({ file: "", _id: "" }); //enviar
   const [imageLoader, setLoadImage] = useState({
     loader: "",
@@ -189,20 +191,20 @@ function CarouselAdmin(props) {
         loader: "",
         filename: "Subir imagenes",
       });
-      const URI =
-        process.env.REACT_APP_BACKEND_URL + "/admin/preferences/carousel";
-      const newFormData = new FormData();
-      newFormData.append("bannerImages", image.file);
-      let res = await axios.post(URI, newFormData);
-      createOpen();
-      newImage({
-        _id: "",
-        file: "",
-      });
-      setLoadImage(false);
-      createOpen();
-      getImagesForTheCarousel();
     }
+    const URI =
+      process.env.REACT_APP_BACKEND_URL + "/admin/preferences/carousel";
+    const newFormData = new FormData();
+    newFormData.append("bannerImages", image.file);
+    let res = await axios.post(URI, newFormData);
+    createOpen();
+    newImage({
+      _id: "",
+      file: "",
+    });
+    setLoadImage(false);
+    createOpen();
+    getImagesForTheCarousel();
   };
 
   const deleteImage = async (d) => {
@@ -268,7 +270,7 @@ function CarouselAdmin(props) {
         <CircularProgress value={loading} style={{ marginTop: "-250px" }} />
       </Backdrop>
       <Grid>
-        <div
+        <Grid
           style={{
             display: "flex",
             flexDirection: "row",
@@ -281,9 +283,9 @@ function CarouselAdmin(props) {
           <Typography style={{ fontSize: "1.5rem", padding: "10px" }}>
             Edit carousel
           </Typography>
-        </div>
+        </Grid>
 
-        <div className={classes.loaderImage}>
+        <Grid className={classes.loaderImage}>
           <Box className={classes.buttonImgLoader}>
             {imageLoader.loader ? (
               <HighlightOffOutlinedIcon
@@ -294,8 +296,19 @@ function CarouselAdmin(props) {
               <HighlightOffOutlinedIcon hidden />
             )}
           </Box>
-          <img className={classes.imageLoad} src={imageLoader.loader}></img>
-        </div>
+          {imageLoader.loader && (
+            <img
+              className={classes.imageLoad}
+              src={imageLoader.loader}
+              alt="+"
+            ></img>
+          )}
+          {imageLoader.loader ? (
+            ""
+          ) : (
+            <h1 style={{ color: "#e0e0e0" }}>1300x700px</h1>
+          )}
+        </Grid>
 
         <Box style={{ display: "flex", justifyContent: "center" }}>
           <FormControl>
@@ -310,21 +323,33 @@ function CarouselAdmin(props) {
               encType="multipart/form-data"
               style={{
                 display: "flex",
-                justifyContent: "space-evenly",
-                flexDirection: "row",
-                alignItems: "center",
-                width: "80vw",
-                padding: "40px",
+                justifyContent: "space-between",
+                flexDirection: isDesktop ? "row" : "column",
+                alignItems: isDesktop ? "center" : "stretch",
+                padding: isDesktop ? "15px" : "20px",
+                height: isDesktop ? "" : "30vh",
+                width: isDesktop ? "150%" : "auto",
+                marginLeft: isDesktop ? "-20%" : "",
               }}
             >
-              <Typography className={classes.nameFile} id="uploadImage">
+              <Typography
+                className={classes.nameFile}
+                style={{ width: "auto" }}
+                id="uploadImage"
+              >
                 {imageLoader.filename}
               </Typography>
-              <Button variant="contained" component="label">
+              <Button
+                variant="contained"
+                style={{ width: "auto" }}
+                component="label"
+              >
                 Upload File
                 <input
                   name="bannerImages"
+                  style={{ width: "auto" }}
                   type="file"
+                  accept="image/*"
                   hidden
                   onChange={(a) => {
                     a.preventDefault();
@@ -336,11 +361,28 @@ function CarouselAdmin(props) {
                   }}
                 />
               </Button>
-              <Button variant="outlined" color="primary" type="submit">
+              <Button
+                variant="outlined"
+                style={{ width: "auto" }}
+                color="primary"
+                type="submit"
+              >
                 Enviar
               </Button>
             </form>
           </FormControl>
+
+          <Snackbar
+            anchorOrigin={{
+              vertical: "top",
+              horizontal: "right",
+            }}
+            open={create}
+            onClose={createClose}
+            autoHideDuration={5000}
+            message="Process sucessfull"
+          />
+
           <Snackbar
             anchorOrigin={{
               vertical: "top",
@@ -374,105 +416,103 @@ function CarouselAdmin(props) {
             message="Process sucessfull"
           />
         </Box>
-        <div>
-          <ImageList cols={2} rowHeight={300}>
-            {images.images[0] ? (
-              images.images[0].map((img, key_id) => (
-                <ImageListItem key={key_id}>
-                  <Box>
-                    <Box className={classes.buttons}>
-                      <Button
-                        variant="text"
-                        style={{ color: "white" }}
-                        component="label"
-                      >
-                        <input
-                          type="file"
-                          name="newBannerImages"
-                          hidden
-                          onChange={(a) => {
-                            a.preventDefault();
-                            loadImage(a);
-                            newImage({
-                              _id: img._id,
-                              file: a.target.files[0],
-                            });
-                          }}
-                        />
-                        <EditIcon />
-                      </Button>
-                      <Button
-                        variant="text"
-                        style={{ color: "white" }}
-                        onClick={handleClickOpen}
-                      >
-                        <HighlightOffOutlinedIcon
-                          onClick={() => {
-                            newImage({
-                              _id: img._id,
-                              file: image.file,
-                            });
-                          }}
-                        />
-                      </Button>
-                      <Dialog
-                        open={open}
-                        onClose={handleClose}
-                        aria-labelledby="alert-dialog-title"
-                        aria-describedby="alert-dialog-description"
-                      >
-                        <DialogTitle id="alert-dialog-title">
-                          {"Estas seguro de eliminar esta imagen del carrusel?"}
-                        </DialogTitle>
-                        <DialogContent>
-                          <DialogContentText id="alert-dialog-description">
-                            Esta imagen ya no se vera en el carrusel del banner
-                            principal
-                          </DialogContentText>
-                        </DialogContent>
-                        <DialogActions>
-                          <Button onClick={handleClose} color="primary">
-                            Cancelar
-                          </Button>
-                          <Button
-                            onClick={(d) => {
-                              deleteImage(d);
-                            }}
-                            color="primary"
-                          >
-                            Aceptar
-                          </Button>
-                        </DialogActions>
-                      </Dialog>
-
-                      <Snackbar
-                        anchorOrigin={{
-                          vertical: "top",
-                          horizontal: "right",
+        <ImageList cols={isDesktop ? 2 : 1} rowHeight={300}>
+          {images.images[0] ? (
+            images.images[0].map((img, key_id) => (
+              <ImageListItem key={key_id}>
+                <Box>
+                  <Box className={classes.buttons}>
+                    <Button
+                      variant="text"
+                      style={{ color: "white" }}
+                      component="label"
+                    >
+                      <input
+                        type="file"
+                        name="newBannerImages"
+                        hidden
+                        onChange={(a) => {
+                          a.preventDefault();
+                          loadImage(a);
+                          newImage({
+                            _id: img._id,
+                            file: a.target.files[0],
+                          });
                         }}
-                        open={Open}
-                        onClose={handleClose}
-                        autoHideDuration={5000}
-                        message="Imagen borrada exitosamente"
                       />
-                    </Box>
-                    <a href={img.carouselImages[0]} target="_BLANK">
-                      <img
-                        className={classes.images}
-                        title={img.carouselImages[0]}
-                        src={img.carouselImages[0]}
-                      ></img>
-                    </a>
+                      <EditIcon />
+                    </Button>
+                    <Button
+                      variant="text"
+                      style={{ color: "white" }}
+                      onClick={handleClickOpen}
+                    >
+                      <HighlightOffOutlinedIcon
+                        onClick={() => {
+                          newImage({
+                            _id: img._id,
+                            file: image.file,
+                          });
+                        }}
+                      />
+                    </Button>
+                    <Dialog
+                      open={open}
+                      onClose={handleClose}
+                      aria-labelledby="alert-dialog-title"
+                      aria-describedby="alert-dialog-description"
+                    >
+                      <DialogTitle id="alert-dialog-title">
+                        {"Estas seguro de eliminar esta imagen del carrusel?"}
+                      </DialogTitle>
+                      <DialogContent>
+                        <DialogContentText id="alert-dialog-description">
+                          Esta imagen ya no se vera en el carrusel del banner
+                          principal
+                        </DialogContentText>
+                      </DialogContent>
+                      <DialogActions>
+                        <Button onClick={handleClose} color="primary">
+                          Cancelar
+                        </Button>
+                        <Button
+                          onClick={(d) => {
+                            deleteImage(d);
+                          }}
+                          color="primary"
+                        >
+                          Aceptar
+                        </Button>
+                      </DialogActions>
+                    </Dialog>
+
+                    <Snackbar
+                      anchorOrigin={{
+                        vertical: "top",
+                        horizontal: "right",
+                      }}
+                      open={update}
+                      onClose={closeUpdate}
+                      autoHideDuration={5000}
+                      message="Imagen borrada exitosamente"
+                    />
                   </Box>
-                </ImageListItem>
-              ))
-            ) : (
-              <Typography>
-                Que mal, parece que no tienes imagenes en el carrusel
-              </Typography>
-            )}
-          </ImageList>
-        </div>
+                  <a href={img.carouselImages[0]} target="_BLANK">
+                    <img
+                      className={classes.images}
+                      title={img.carouselImages[0]}
+                      src={img.carouselImages[0]}
+                    ></img>
+                  </a>
+                </Box>
+              </ImageListItem>
+            ))
+          ) : (
+            <Typography>
+              Que mal, parece que no tienes imagenes en el carrusel
+            </Typography>
+          )}
+        </ImageList>
       </Grid>
       <Dialog
         open={maxImage}
@@ -494,5 +534,4 @@ function CarouselAdmin(props) {
     </>
   );
 }
-
 export default CarouselAdmin;

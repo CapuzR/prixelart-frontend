@@ -11,26 +11,49 @@ import Title from '../adminMain/Title';
 import axios from 'axios';
 import Checkbox from '@material-ui/core/Checkbox';
 import EditIcon from '@material-ui/icons/Edit';
+import DeleteIcon from '@material-ui/icons/Delete';
+import Modal from '@material-ui/core/Modal';
+import Snackbar from '@material-ui/core/Snackbar';
 import Fab from '@material-ui/core/Fab';
+import Typography from '@material-ui/core/Typography';
 
 export default function ReadProducts(props) {
     const history = useHistory();
     const [rows, setRows] = useState();
+    const [deleteSuccess, setDelete] = useState()
+    const[deleteOpen, setDeleteOpen] = useState(false)
+
+    const getRows = () =>
+    {
+      const base_url= process.env.REACT_APP_BACKEND_URL + "/admin/product/read-all";
+      axios.get(base_url)
+      .then(response =>{
+        setRows(response.data.products);
+      })
+      .catch(error =>{
+        console.log(error);
+      })
+}
 
 useEffect(()=> {
-  const base_url= process.env.REACT_APP_BACKEND_URL + "/admin/product/read-all";
-    axios.get(base_url)
-    .then(response =>{
-        setRows(response.data.products);
-    })
-    .catch(error =>{
-        console.log(error);
-    })
+  getRows()
 },[]);
 
   const handleActive = (product, action)=> {
     props.setProduct(product);
     history.push('/admin/product/'+action+'/'+product._id);
+  }
+
+  const deleteProduct = async (id) =>
+  {
+    const URI = process.env.REACT_APP_BACKEND_URL + `/product/delete/${id}`
+    const res = await axios.delete(URI)
+    setDelete(res.data)
+    getRows()
+    setDeleteOpen(true)
+    setTimeout(()=> {
+      setDeleteOpen(false)
+    }, 3000)
   }
 
   return (
@@ -60,25 +83,48 @@ useEffect(()=> {
                   <EditIcon/>
                 </Fab>
               </TableCell>
-              <TableCell align="center"><img alt="thumb" src={row.thumbUrl} style={{width: 50, height: 'auto'}}/></TableCell>
+              <TableCell align="center">
+              {
+              row.thumbUrl ?
+              <img src={row.thumbUrl} alt='+' style={{width: 50, height: 'auto'}}/>
+              :
+              <>
+              <img src={row.images[0]} width={150} alt="imageProduct"/>
+              <Typography style={{fontSize: '1rem', color: '#bdbdbd'}}>{`Cantidad de imagenes: ${row.images.length}`}</Typography>
+              </>
+            }
+            </TableCell>
               <TableCell align="center">{row.name}</TableCell>
               <TableCell align="center">
-                <Checkbox 
+                <Checkbox
                   disabled
                   checked={row.active}
-                  color="primary" 
+                  color="primary"
                   inputProps={{ 'aria-label': 'secondary checkbox' }}
                 />
               </TableCell>
               <TableCell align="center">{row.category}</TableCell>
-              <TableCell align="center">{row.publicPrice.from}-{row.publicPrice.to}</TableCell>
+              <TableCell align="center">{row.publicPrice.from}-{row.publicPrice.from}</TableCell>
               <TableCell align="center">{row.prixerPrice.from}-{row.prixerPrice.to}</TableCell>
+              <TableCell align="center">
+                <Fab color="default" style={{width: 35, height: 35}} aria-label="Delete" onClick={(e) => {
+                  e.preventDefault();
+                  deleteProduct(row._id)
+                }}>
+                  <DeleteIcon/>
+                </Fab>
+              </TableCell>
             </TableRow>
           ))
         }
         </TableBody>
       </Table>
-} 
+}
+  <Snackbar
+  open={deleteOpen}
+  autoHideDuration={1000}
+  message={deleteSuccess?.productResult}
+  />
     </React.Fragment>
   );
 }

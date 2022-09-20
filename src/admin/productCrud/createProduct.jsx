@@ -8,6 +8,9 @@ import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import Snackbar from '@material-ui/core/Snackbar';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import EditIcon from '@material-ui/icons/Edit';
+import { useTheme } from '@material-ui/core/styles';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
 // import IconButton from '@material-ui/core/IconButton';
 // import OutlinedInput from '@material-ui/core/OutlinedInput';
 // import InputLabel from '@material-ui/core/InputLabel';
@@ -17,6 +20,8 @@ import FormControl from '@material-ui/core/FormControl';
 // import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import clsx from 'clsx';
 // import validations from '../../utils/validations';
+import HighlightOffOutlinedIcon from '@material-ui/icons/HighlightOffOutlined';
+import Box from '@material-ui/core/Box';
 import Checkbox from '@material-ui/core/Checkbox';
 import Backdrop from '@material-ui/core/Backdrop';
 import { useHistory } from 'react-router-dom';
@@ -29,36 +34,122 @@ const useStyles = makeStyles((theme) => ({
     zIndex: theme.zIndex.drawer + 1,
     color: theme.palette.primary.main,
   },
+  loaderImage: {
+    width: '120%',
+    border: '2px',
+    height: '30vh',
+    borderStyle: 'groove',
+    borderColor: '#d33f49',
+    backgroundColor: '#ededed',
+    display: 'flex',
+    flexDirection: 'row'
+  },
+  imageLoad: {
+    width: '100%',
+    height: '95%',
+    padding: '15px',
+    marginTop: '5px'
+  },
+  formHead: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignContent: 'center',
+    justifyContent: 'space-evenly',
+    alignItems: 'center'
+  },
+  buttonImgLoader: {
+    cursor: 'pointer',
+    padding: '5px',
+    position: 'absolute'
+  },
+  buttonEdit: {
+    cursor: 'pointer',
+    padding: '5px',
+    marginLeft: '-10px',
+    position: 'absolute'
+  }
 }));
 
 export default function CreateProduct() {
     const classes = useStyles();
+    const theme = useTheme();
+    const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
+    const isDeskTop = useMediaQuery(theme.breakpoints.up('sm'));
     const [ active, setActive ] = useState(false);
     const [ productName, setProductName ] = useState('');
     const [ description, setDescription ] = useState('');
     const [ category, setCategory ] = useState('');
     const [ considerations, setConsiderations ] = useState('');
-    // const [fixedPublicPrice, setFixedPublicPrice] = useState('');
+    const [images, newImages] = useState({images : []});
     const [fromPublicPrice, setFromPublicPrice] = useState('');
     const [ toPublicPrice, setToPublicPrice ] = useState('');
-    // const [ fixedPrixerPrice, setFixedPrixerPrice ] = useState('');
     const [ fromPrixerPrice, setFromPrixerPrice ] = useState('');
     const [ toPrixerPrice, setToPrixerPrice ] = useState('');
     const [loading, setLoading] = useState(false);
     const [buttonState, setButtonState] = useState(false);
     const [ hasSpecialVar, setHasSpecialVar ] = useState(false);
     const [ specialVars, setSpecialVars ] = useState(false);
+    const [imageLoader, setLoadImage] = useState({loader: [], filename: 'Subir imagenes'})
     const history = useHistory();
-
-    const [ thumbUrl, setThumbUrl ] = useState('');
 
     //Error states.
     const [errorMessage, setErrorMessage] = useState();
     const [snackBarError, setSnackBarError] = useState(false);
+    const [loadOpen, setLoadOpen] = useState(false);
+    const [loaDOpen, setLoaDOpen] = useState(false);
 
+    //Preview de imagen antes de enviar
+    const convertToBase64 = (blob) => {
+      return new Promise((resolve) => {
+        var reader = new FileReader();
+        reader.onload = function () {
+          resolve(reader.result);
+        };
+        reader.readAsDataURL(blob);
+      });
+    };
+
+    const loadImage = async (e) =>
+    {
+      e.preventDefault();
+      if(imageLoader.loader.length > 4)
+      {
+        setLoadOpen(true)
+      }else{
+      const file = e.target.files[0];
+      const resizedString = await convertToBase64(file);
+      if(imageLoader.loader.length >= 4)
+      {
+        return null
+      } else{
+        imageLoader.loader.push(resizedString)
+        if(images.images.length >= 4)
+        {
+          return null
+        }else{
+            images.images.push(file)
+        }
+      }
+      setLoadImage({loader: imageLoader.loader, filename: file.name})
+    }
+  }
+
+  const replaceImage = async (e, index) =>
+  {
+    e.preventDefault();
+    const file = e.target.files[0];
+    const resizedString = await convertToBase64(file);
+    imageLoader.loader[index] = resizedString
+    images.images[index] = file
+    setLoadImage({loader: imageLoader.loader, filename: file.name})
+  }
 
     const handleSubmit = async (e)=> {
       e.preventDefault();
+      if(images.images.length > 4)
+      {
+        setLoaDOpen(true)
+      }else{
       if(!active &&
         !productName &&
         !description &&
@@ -70,21 +161,15 @@ export default function CreateProduct() {
         // !fixedPrixerPrice &&
         !fromPrixerPrice &&
         !toPrixerPrice &&
-        !thumbUrl){
+        !images){
         setErrorMessage('Por favor completa todos los campos requeridos.');
         setSnackBarError(true);
         e.preventDefault();
       } else {
         setLoading(true);
         setButtonState(true);
-        
+        const formData = new FormData();
         const data = {
-            'thumbUrl': thumbUrl,
-            'active' : active,
-            'name' : productName,
-            'description' : description,
-            'category' : category,
-            'considerations' : considerations,
             publicPrice: {
                 'from': fromPublicPrice,
                 'to': toPublicPrice,
@@ -93,7 +178,6 @@ export default function CreateProduct() {
                 'from': fromPrixerPrice,
                 'to': toPrixerPrice,
             },
-            hasSpecialVar: hasSpecialVar,
             specialVars: [
               {
                 'name': '',
@@ -101,9 +185,19 @@ export default function CreateProduct() {
               }
             ]
         }
-        
+        formData.append('active', active)
+        formData.append('name', productName)
+        formData.append('description', description)
+        formData.append('category', category)
+        formData.append('considerations', considerations)
+        formData.append('publicPriceFrom', data.publicPrice.from)
+        formData.append('publicPriceTo', data.publicPrice.to)
+        formData.append('prixerPriceFrom', data.prixerPrice.from)
+        formData.append('prixerPriceTo', data.prixerPrice.to)
+        formData.append('hasSpecialVar', hasSpecialVar)
+        images.images.map(file => formData.append('productImages', file))
         const base_url= process.env.REACT_APP_BACKEND_URL + "/product/create";
-        const response = await axios.post(base_url,data)
+        const response = await axios.post(base_url, formData);
         if(response.data.success === false){
           setLoading(false);
           setButtonState(false);
@@ -113,7 +207,6 @@ export default function CreateProduct() {
           setErrorMessage('Registro de producto exitoso.');
           setSnackBarError(true);
           setActive('');
-          setThumbUrl('');
           setProductName('');
           setDescription('');
           setCategory('');
@@ -128,7 +221,7 @@ export default function CreateProduct() {
         }
       }
     }
-
+}
   return (
     <React.Fragment>
     {
@@ -137,31 +230,64 @@ export default function CreateProduct() {
         </Backdrop>
     }
       <Title>Productos</Title>
-        <form className={classes.form} noValidate onSubmit={handleSubmit}>
+        <form className={classes.form} encType="multipart/form-data" noValidate onSubmit={handleSubmit}>
             <Grid container spacing={2}>
                 <Grid container spacing={2}>
-                    <Grid item xs={12}>
-                    <Grid item xs={12} md={6}>
-                        <FormControl variant="outlined" xs={12} fullWidth={true}>
-                        <TextField
-                            variant="outlined"
-                            required
-                            fullWidth
-                            display="inline"
-                            id="thumbUrl"
-                            label="ThumbUrl"
-                            name="thumbUrl"
-                            autoComplete="thumbUrl"
-                            value={thumbUrl}
-                            onChange={(e) => {setThumbUrl(e.target.value);}}
-                        />
+                    <Grid container spacing={2} direction="row">
+                    <Grid item xs={12} className={classes.formHead} style={{flexDirection: isDesktop ?  'row' : 'column'}}>
+                        <FormControl variant="outlined">
+                        <Button variant="contained" component="label">
+                        Upload File
+                        <input name="productImages" type="file" accept="image/*" hidden onChange={(a) => {
+                          a.preventDefault();
+                          loadImage(a)
+                        }}/>
+                       </Button>
                         </FormControl>
+                        <Grid item xs={6} >
+                        <Grid className={classes.loaderImage} style={{ width: isDesktop ? '120%' : '90vw', marginLeft: isDesktop ? '' : '-48%', marginTop: isDesktop ? '' : '9%'}}>
+                            {
+                              imageLoader.loader ?
+                              imageLoader.loader.map((img, key_id) =>
+                              {
+                                return(
+                                  <Grid container spacing={2} direction="row">
+                                  <Grid container spacing={1} xs={8} style={{position: 'absolute', marginTop: '16px'}}>
+                                    <Grid item xs={2}>
+                                    <Button variant="text" className={classes.buttonImgLoader} style={{color: '#d33f49'}} onClick={(d) => {
+                                      imageLoader.loader.splice(key_id, 1)
+                                      images.images.splice(key_id, 1)
+                                      setLoadImage({loader: imageLoader.loader, filename: 'Subir Imagenes'})
+                                      newImages({images: images.images})
+                                    }}>
+                                    <HighlightOffOutlinedIcon/>
+                                    </Button>
+                                    </Grid>
+                                    <Grid item xs={2}>
+                                    <Button variant="text" className={classes.buttonEdit} style={{color: '#d33f49'}} component='label'>
+                                    <input name="productImages" type="file" accept="image/*" hidden onChange={(a) => {
+                                      const i = imageLoader.loader.indexOf(img)
+                                      replaceImage(a, i);
+                                    }}/>
+                                    <EditIcon/>
+                                    </Button>
+                                    </Grid>
+                                  </Grid>
+                                    <img key={key_id} className={classes.imageLoad} src={img} alt='+'></img>
+                                </Grid>
+                              )
+                              })
+                              :
+                              ''
+                            }
+                        </Grid>
+                        </Grid>
                     </Grid>
-                    <Grid container xs={6}>
+                    <Grid container xs={isDesktop ? 6 : 12} >
                       <Grid item xs={6}>
-                          <Checkbox 
+                          <Checkbox
                               checked={active}
-                              color="primary" 
+                              color="primary"
                               inputProps={{ 'aria-label': 'secondary checkbox' }}
                               onChange={()=>{active?setActive(false):setActive(true)}}
                           /> Habilitado / Visible
@@ -169,7 +295,7 @@ export default function CreateProduct() {
                       <Grid item xs={6}>
                           <Checkbox
                               checked={hasSpecialVar}
-                              color="primary" 
+                              color="primary"
                               inputProps={{ 'aria-label': 'secondary checkbox' }}
                               onChange={()=>{hasSpecialVar?setHasSpecialVar(false):setHasSpecialVar(true)}}
                           /> ¿Tiene variables especiales?
@@ -182,7 +308,7 @@ export default function CreateProduct() {
                             <h3>Variables especiales</h3>
                         </Grid>
                         <>
-                        {   
+                        {
                         specialVars &&
                             specialVars.map((specialVar, i)=>(
                             <Grid container spacing={2} xs={12} style={{marginBottom: 10}}>
@@ -411,6 +537,18 @@ export default function CreateProduct() {
           open={snackBarError}
           autoHideDuration={1000}
           message={errorMessage}
+          className={classes.snackbar}
+        />
+        <Snackbar
+          open={loadOpen}
+          autoHideDuration={1000}
+          message={'No puedes colocar mas de 4 fotos'}
+          className={classes.snackbar}
+        />
+        <Snackbar
+          open={loaDOpen}
+          autoHideDuration={1000}
+          message={'No puedes enviar mas de 4 fotos'}
           className={classes.snackbar}
         />
     </React.Fragment>

@@ -7,6 +7,7 @@ import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import GridList from '@material-ui/core/GridList';
 import { isWidthUp } from '@material-ui/core/withWidth';
+import Carousel from 'react-material-ui-carousel'
 import Card from '@material-ui/core/Card';
 import CardActionArea from '@material-ui/core/CardActionArea';
 import CardActions from '@material-ui/core/CardActions';
@@ -17,7 +18,9 @@ import Typography from '@material-ui/core/Typography';
 import WhatsAppIcon from '@material-ui/icons/WhatsApp';
 import utils from '../utils/utils';
 import axios from 'axios';
-
+import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
+import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
+import MaximizeIcon from '@material-ui/icons/Maximize';
 
 import Grid from '@material-ui/core/Grid';
 import InputLabel from '@material-ui/core/InputLabel';
@@ -29,7 +32,7 @@ import { setProductAtts, getAttributes, getEquation } from './services.js';
 
 
 const useStyles = makeStyles((theme) => ({
-  root: {
+  root :{
     display: 'flex',
     flexWrap: 'wrap',
     overflow: 'hidden',
@@ -59,7 +62,8 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: 'space-around',
   },
   img: {
-    width: '100%'
+    width: '100%',
+    height: '100%'
   },
   backdrop: {
     zIndex: theme.zIndex.drawer + 1,
@@ -67,6 +71,10 @@ const useStyles = makeStyles((theme) => ({
   },
   form: {
     width: '100%'
+  },
+  CarouselContent: {
+      width: '100%',
+      heigh: '40vh'
   }
 }));
 
@@ -101,10 +109,54 @@ export default function ProductGrid(props) {
       {tiles ?
         tiles.map((tile, iProd, productsArr) => (
           <Card className={classes.root}>
-            <CardActionArea style={{ alignContent: "space-between" }}>
-              <CardMedia>
-                <img src={tile.thumbUrl} className={classes.img} alt="product thumbnail" />
+          <CardMedia style={{width: '110%'}}>
+              <Carousel
+                autoPlay={false}
+                stopAutoPlayOnHover={true}
+                animation='slide'
+                duration={500}
+                fullHeightHover={true}
+                IndicatorIcon={<MaximizeIcon/>}
+                NextIcon={<ArrowForwardIosIcon />}
+                PrevIcon={<ArrowBackIosIcon />}
+                activeIndicatorIconButtonProps={{
+                  style: {
+                      color: '#d33f49'
+                  }
+                }}
+                navButtonsProps={
+                  {
+                    style: {
+                      backgroundColor: 'rgba(0, 0, 0, 0)',
+                      color: '#d33f49',
+                      width: '98%',
+                      height: '100vh',
+                      marginTop: '-50vh',
+                      borderRadius: '0',
+                      marginLeft: '1px'
+                    }
+                  }
+                }
+                indicatorContainerProps={
+                  {
+                    style:{
+                      position: 'absolute',
+                      marginTop: '-17px'
+                    }
+                  }
+                }>
+                {
+                tile.images ?
+                tile.images.map((img, key_id) =>
+                (
+                  <img key={key_id} src={img} className={classes.img} alt="product"/>
+                ))
+                  :
+                  <img src={tile.thumbUrl} alt="product"/>
+                }
+              </Carousel>
               </CardMedia>
+              <CardActionArea style={{ alignContent: "space-between" }}>
               <CardContent>
                 <Typography gutterBottom style={{ padding: 0, marginBotom: 12, width: 10 }} variant="h5" component="h2">
                   {tile.name}
@@ -115,11 +167,11 @@ export default function ProductGrid(props) {
                       JSON.parse(localStorage.getItem('token')).username) ?
                       (tile.needsEquation && tile.prixerEquation && tile.prixerEquation != 0) ?
                         "PVP: $" + Math.round(parseFloat(tile.publicEquation)) + " \n PVM: $" + Math.round(parseFloat(tile.prixerEquation)) :
-                        "PVP: $" + tile.publicPrice.from + " - " + tile.publicPrice.to + " \n PVM: $" + tile.prixerPrice.from + " - " + tile.prixerPrice.to
+                        "PVP: $" + tile.publicPrice?.from + " - " + tile.publicPrice?.to + " \n PVM: $" + tile.prixerPrice?.from + " - " + tile.prixerPrice?.to
                       :
                       (tile.needsEquation && tile.publicEquation && tile.publicEquation != 0) ?
                         "PVP: $" + Math.round(parseFloat(tile.publicEquation)) :
-                        "PVP: " + tile.publicPrice.from + " - " + tile.publicPrice.to
+                        "PVP: " + tile.publicPrice?.from + " - " + tile.publicPrice?.to
                   }
                 </Typography>
                 <Typography variant="body2" color="textSecondary" component="p">

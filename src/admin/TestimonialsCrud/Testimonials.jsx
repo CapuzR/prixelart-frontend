@@ -179,8 +179,6 @@ export default function Testimonials() {
     readTestimonial();
   };
 
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-
   const GetIdForEdit = async () => {
     // borrar
     setUpdateId();
@@ -197,17 +195,20 @@ export default function Testimonials() {
     setFooter(response.data.footer);
     setState(response.data.status);
     setUpdateId(GetId);
+    console.log(response.data);
   };
 
   const saveChanges = async (GetId) => {
     const base_url =
       process.env.REACT_APP_BACKEND_URL + "/testimonial/update/" + GetId;
-    var formData = new FormData();
+    const formData = new FormData();
+    formData.append("avatar", avatarObj);
     formData.append("type", type);
     formData.append("name", name);
     formData.append("value", value);
     formData.append("footer", footer);
     formData.append("status", state.checkedA);
+    console.log(formData);
     const response = await axios.put(base_url, formData, {
       "Content-Type": "multipart/form-data",
     });
@@ -220,6 +221,7 @@ export default function Testimonials() {
     setUpdateId(undefined);
     readTestimonial();
   };
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   return (
     <div className={classes.root}>
@@ -417,7 +419,6 @@ export default function Testimonials() {
                     style={{
                       display: "flex",
                       alignItems: "center",
-                      // justifyContent: "end",
                     }}
                   >
                     <FormGroup row>
@@ -513,7 +514,6 @@ export default function Testimonials() {
                           {tile.footer}
                         </Typography>
                       </Box>
-
                       <Box style={{ display: "flex", justifyContent: "end" }}>
                         <Switch
                           checked={tile.status}

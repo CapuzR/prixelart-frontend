@@ -45,9 +45,9 @@ export default function MainListItems(props) {
           </ListItemIcon>
           <ListItemText
             primary="Productos"
-            // onClick={(e) => {
-            //   handleClick("product");
-            // }}
+            onClick={(e) => {
+              handleClick("product");
+            }}
           />
         </ListItem>
         <ListItem

@@ -198,11 +198,12 @@ export default function Testimonials() {
     console.log(response.data);
   };
 
-  const saveChanges = async (GetId) => {
+  const saveChanges = async (e, GetId) => {
+    e.preventDefault();
     const base_url =
       process.env.REACT_APP_BACKEND_URL + "/testimonial/update/" + GetId;
     const formData = new FormData();
-    formData.append("avatar", avatarObj);
+    formData.append("avatar", avatarPic);
     formData.append("type", type);
     formData.append("name", name);
     formData.append("value", value);
@@ -446,7 +447,9 @@ export default function Testimonials() {
                   value="submit"
                   paddingTop="4"
                   onClick={(event) =>
-                    updateId ? saveChanges(updateId) : handleSubmit(event)
+                    updateId
+                      ? saveChanges(event, updateId)
+                      : handleSubmit(event)
                   }
                 >
                   {updateId ? "Actualizar testimonio" : "Crear testimonio"}

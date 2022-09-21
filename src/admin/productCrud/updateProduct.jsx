@@ -1,5 +1,5 @@
 import React from 'react';
-import {useState, useEffect} from 'react';
+import {useState} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Title from '../adminMain/Title';
 import axios from 'axios';
@@ -15,7 +15,6 @@ import { useHistory } from 'react-router-dom';
 import { useTheme } from '@material-ui/core/styles';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import HighlightOffOutlinedIcon from '@material-ui/icons/HighlightOffOutlined';
-import EditIcon from '@material-ui/icons/Edit';
 import Box from '@material-ui/core/Box';
 import Variants from '../adminMain/products/variants';
 import Backdrop from '@material-ui/core/Backdrop';
@@ -59,12 +58,6 @@ const useStyles = makeStyles((theme) => ({
     padding: '5px',
     position: 'absolute'
   },
-buttonEdit: {
-  cursor: 'pointer',
-  padding: '5px',
-  marginLeft: '-10px',
-  position: 'absolute'
-}
 }));
 
 export default function UpdateAdmin(props) {
@@ -75,7 +68,6 @@ export default function UpdateAdmin(props) {
     const isDeskTop = useMediaQuery(theme.breakpoints.up('sm'));
     const [productId, setProductId] = useState(props.product._id)
     const [images, newImages] = useState({images: []});
-    const [imagesList, setImagesList] = useState(props.product.images)
     const [ active, setActive ] = useState(props.product.active);
     const [ productName, setProductName ] = useState(props.product.name);
     const [ description, setDescription ] = useState(props.product.description);
@@ -90,7 +82,7 @@ export default function UpdateAdmin(props) {
     const [showVariants, setShowVariants] = useState(false);
     const [ activeVCrud, setActiveVCrud ] = useState('read');
     const [ hasSpecialVar, setHasSpecialVar ] = useState(props.product.hasSpecialVar || false);
-    const [imageLoader, setLoadImage] = useState({loader: [], filename: 'Subir imagenes'})
+    const [imageLoader, setLoadImage] = useState({loader: props.product.images, filename: 'Subir imagenes'})
 
     const [ thumbUrl, setThumbUrl ] = useState(props.product?.thumbUrl);
 
@@ -99,12 +91,6 @@ export default function UpdateAdmin(props) {
     const [snackBarError, setSnackBarError] = useState(false);
     const [loadOpen, setLoadOpen] = useState(false);
     const [loaDOpen, setLoaDOpen] = useState(false);
-
-
-        useEffect(() => {
-          imagesList.map(url => imageLoader.loader.push(url))
-        }, [])
-
 
         //Preview de imagen antes de enviar
         const convertToBase64 = (blob) => {
@@ -135,15 +121,6 @@ export default function UpdateAdmin(props) {
               }
             }
 
-            const replaceImage = async (e, index) =>
-            {
-              e.preventDefault();
-              const file = e.target.files[0];
-              const resizedString = await convertToBase64(file);
-              imageLoader.loader[index] = resizedString
-              images.images[index] = file
-              setLoadImage({loader: imageLoader.loader, filename: file.name})
-            }
 
     const handleSubmit = async (e)=> {
       e.preventDefault();
@@ -194,7 +171,6 @@ export default function UpdateAdmin(props) {
         newFormData.append('prixerPriceFrom', data.prixerPrice.from)
         newFormData.append('prixerPriceTo', data.prixerPrice.to)
         newFormData.append('hasSpecialVar', hasSpecialVar)
-        imagesList.map(url => newFormData.append('images', url))
         images.images.map(file => newFormData.append('newProductImages', file))
         const base_url= process.env.REACT_APP_BACKEND_URL + `/product/update/${productId}`;
         const response = await axios.put(base_url,newFormData);
@@ -217,7 +193,8 @@ export default function UpdateAdmin(props) {
         setShowVariants(true);
         props.setProductEdit(false);
     }
-
+    console.log(imageLoader)
+    console.log(images)
   return (
     <React.Fragment>
     {
@@ -270,28 +247,16 @@ export default function UpdateAdmin(props) {
                           imageLoader.loader.map((img, key_id) =>
                           {
                             return(
-                              <Grid container spacing={1} >
-                              <Grid container spacing={1} xs={8} style={{position: 'absolute', marginTop: '16px'}}>
-                              <Grid item xs={2}>
+                              <Grid container spacing={2}>
+                              <Grid item xs={12} style={{position: 'absolute', marginTop: '10px', marginLeft: '9px'}}>
                                 <Button variant="text" className={classes.buttonImgLoader} style={{color: '#d33f49'}} onClick={(d) => {
                                   imageLoader.loader.splice(key_id, 1)
-                                  imagesList.splice(key_id, 1)
+                                  images.images.splice(key_id, 1)
                                   setLoadImage({loader: imageLoader.loader, filename: 'Subir Imagenes'})
                                   newImages({images: images.images})
                                 }}>
                                 <HighlightOffOutlinedIcon/>
                                 </Button>
-                                </Grid>
-                                <Grid item xs={2}>
-                                <Button variant="text" className={classes.buttonEdit} style={{color: '#d33f49'}} component='label'>
-                                <input name="productImages" type="file" accept="image/*" hidden onChange={(a) => {
-                                  const i = imageLoader.loader.indexOf(img)
-                                  replaceImage(a, i);
-                                  imagesList.splice(key_id, 1)
-                                }}/>
-                                <EditIcon/>
-                                </Button>
-                                </Grid>
                                 </Grid>
                                 <img key={key_id} className={classes.imageLoad} src={img} alt='+'></img>
                             </Grid>

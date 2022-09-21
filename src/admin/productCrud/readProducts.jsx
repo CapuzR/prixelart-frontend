@@ -28,7 +28,6 @@ export default function ReadProducts(props) {
       const base_url= process.env.REACT_APP_BACKEND_URL + "/admin/product/read-all";
       axios.get(base_url)
       .then(response =>{
-          console.log(response.data.products)
         setRows(response.data.products);
       })
       .catch(error =>{
@@ -39,8 +38,6 @@ export default function ReadProducts(props) {
 useEffect(()=> {
   getRows()
 },[]);
-
-
 
   const handleActive = (product, action)=> {
     props.setProduct(product);

@@ -1,134 +1,158 @@
-import React from 'react';
-import {useState} from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Title from '../adminMain/Title';
-import axios from 'axios';
-import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
-import Grid from '@material-ui/core/Grid';
-import Snackbar from '@material-ui/core/Snackbar';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import FormControl from '@material-ui/core/FormControl';
-import clsx from 'clsx';
-import Checkbox from '@material-ui/core/Checkbox';
-import { useHistory } from 'react-router-dom';
-import { useTheme } from '@material-ui/core/styles';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
-import HighlightOffOutlinedIcon from '@material-ui/icons/HighlightOffOutlined';
-import Box from '@material-ui/core/Box';
-import Variants from '../adminMain/products/variants';
-import Backdrop from '@material-ui/core/Backdrop';
+import React from "react";
+import { useState, useEffect } from "react";
+import { makeStyles } from "@material-ui/core/styles";
+import Title from "../adminMain/Title";
+import axios from "axios";
+import TextField from "@material-ui/core/TextField";
+import Button from "@material-ui/core/Button";
+import Grid from "@material-ui/core/Grid";
+import Snackbar from "@material-ui/core/Snackbar";
+import CircularProgress from "@material-ui/core/CircularProgress";
+import FormControl from "@material-ui/core/FormControl";
+import clsx from "clsx";
+import Checkbox from "@material-ui/core/Checkbox";
+import { useHistory } from "react-router-dom";
+import { useTheme } from "@material-ui/core/styles";
+import useMediaQuery from "@material-ui/core/useMediaQuery";
+import HighlightOffOutlinedIcon from "@material-ui/icons/HighlightOffOutlined";
+import EditIcon from "@material-ui/icons/Edit";
+import Box from "@material-ui/core/Box";
+import Variants from "../adminMain/products/variants";
+import Backdrop from "@material-ui/core/Backdrop";
 
 const useStyles = makeStyles((theme) => ({
   seeMore: {
     marginTop: theme.spacing(3),
   },
   form: {
-      height: 550
+    height: 550,
   },
   backdrop: {
     zIndex: theme.zIndex.drawer + 1,
     color: theme.palette.primary.main,
   },
   loaderImage: {
-    width: '120%',
-    border: '2px',
-    height: '30vh',
-    borderStyle: 'groove',
-    borderColor: '#d33f49',
-    backgroundColor: '#ededed',
-    display: 'flex',
-    flexDirection: 'row'
+    width: "120%",
+    border: "2px",
+    height: "30vh",
+    borderStyle: "groove",
+    borderColor: "#d33f49",
+    backgroundColor: "#ededed",
+    display: "flex",
+    flexDirection: "row",
   },
   imageLoad: {
-    width: '100%',
-    height: '95%',
-    padding: '15px',
-    marginTop: '5px'
+    width: "100%",
+    height: "95%",
+    padding: "15px",
+    marginTop: "5px",
   },
   formHead: {
-    display: 'flex',
-    flexDirection: 'row',
-    alignContent: 'center',
-    justifyContent: 'space-evenly',
-    alignItems: 'center'
+    display: "flex",
+    flexDirection: "row",
+    alignContent: "center",
+    justifyContent: "space-evenly",
+    alignItems: "center",
   },
   buttonImgLoader: {
-    cursor: 'pointer',
-    padding: '5px',
-    position: 'absolute'
+    cursor: "pointer",
+    padding: "5px",
+    position: "absolute",
+  },
+  buttonEdit: {
+    cursor: "pointer",
+    padding: "5px",
+    marginLeft: "-10px",
+    position: "absolute",
   },
 }));
 
 export default function UpdateAdmin(props) {
-    const classes = useStyles();
-    const history = useHistory();
-    const theme = useTheme();
-    const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
-    const isDeskTop = useMediaQuery(theme.breakpoints.up('sm'));
-    const [productId, setProductId] = useState(props.product._id)
-    const [images, newImages] = useState({images: []});
-    const [ active, setActive ] = useState(props.product.active);
-    const [ productName, setProductName ] = useState(props.product.name);
-    const [ description, setDescription ] = useState(props.product.description);
-    const [ category, setCategory ] = useState(props.product.category);
-    const [ considerations, setConsiderations ] = useState(props.product.considerations);
-    const [fromPublicPrice, setFromPublicPrice] = useState(props.product.publicPrice.from);
-    const [ toPublicPrice, setToPublicPrice ] = useState(props.product.publicPrice.to);
-    const [ fromPrixerPrice, setFromPrixerPrice ] = useState(props.product.prixerPrice.from);
-    const [ toPrixerPrice, setToPrixerPrice ] = useState(props.product.prixerPrice.to);
-    const [loading, setLoading] = useState(false);
-    const [buttonState, setButtonState] = useState(false);
-    const [showVariants, setShowVariants] = useState(false);
-    const [ activeVCrud, setActiveVCrud ] = useState('read');
-    const [ hasSpecialVar, setHasSpecialVar ] = useState(props.product.hasSpecialVar || false);
-    const [imageLoader, setLoadImage] = useState({loader: props.product.images, filename: 'Subir imagenes'})
+  const classes = useStyles();
+  const history = useHistory();
+  const theme = useTheme();
+  const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
+  const isDeskTop = useMediaQuery(theme.breakpoints.up("sm"));
+  const [productId, setProductId] = useState(props.product._id);
+  const [images, newImages] = useState({ images: [] });
+  const [imagesList, setImagesList] = useState(props.product.images);
+  const [active, setActive] = useState(props.product.active);
+  const [productName, setProductName] = useState(props.product.name);
+  const [description, setDescription] = useState(props.product.description);
+  const [category, setCategory] = useState(props.product.category);
+  const [considerations, setConsiderations] = useState(
+    props.product.considerations
+  );
+  const [fromPublicPrice, setFromPublicPrice] = useState(
+    props.product.publicPrice.from
+  );
+  const [toPublicPrice, setToPublicPrice] = useState(
+    props.product.publicPrice.to
+  );
+  const [fromPrixerPrice, setFromPrixerPrice] = useState(
+    props.product.prixerPrice.from
+  );
+  const [toPrixerPrice, setToPrixerPrice] = useState(
+    props.product.prixerPrice.to
+  );
+  const [loading, setLoading] = useState(false);
+  const [buttonState, setButtonState] = useState(false);
+  const [showVariants, setShowVariants] = useState(false);
+  const [activeVCrud, setActiveVCrud] = useState("read");
+  const [hasSpecialVar, setHasSpecialVar] = useState(
+    props.product.hasSpecialVar || false
+  );
+  const [imageLoader, setLoadImage] = useState({
+    loader: [],
+    filename: "Subir imagenes",
+  });
 
-    const [ thumbUrl, setThumbUrl ] = useState(props.product?.thumbUrl);
+  const [thumbUrl, setThumbUrl] = useState(props.product?.thumbUrl);
 
-    //Error states.
-    const [errorMessage, setErrorMessage] = useState();
-    const [snackBarError, setSnackBarError] = useState(false);
-    const [loadOpen, setLoadOpen] = useState(false);
-    const [loaDOpen, setLoaDOpen] = useState(false);
+  //Error states.
+  const [errorMessage, setErrorMessage] = useState();
+  const [snackBarError, setSnackBarError] = useState(false);
+  const [loadOpen, setLoadOpen] = useState(false);
+  const [loaDOpen, setLoaDOpen] = useState(false);
 
-        //Preview de imagen antes de enviar
-        const convertToBase64 = (blob) => {
-          return new Promise((resolve) => {
-            var reader = new FileReader();
-            reader.onload = function () {
-              resolve(reader.result);
-            };
-            reader.readAsDataURL(blob);
-          });
-        };
+  useEffect(() => {
+    imagesList.map((url) => imageLoader.loader.push(url));
+  }, []);
 
-            const loadImage = async (e) =>
-            {
-              e.preventDefault();
-              if(imageLoader.loader.length >= 4)
-              {
-                setLoadOpen(true)
-                setTimeout(() => {
-                  setLoadOpen(false)
-                }, 3000)
-              }else{
-              const file = e.target.files[0];
-              const resizedString = await convertToBase64(file);
-              imageLoader.loader.push(resizedString)
-              images.images.push(file)
-              setLoadImage({loader: imageLoader.loader, filename: file.name})
-              }
-            }
+  //Preview de imagen antes de enviar
+  const convertToBase64 = (blob) => {
+    return new Promise((resolve) => {
+      var reader = new FileReader();
+      reader.onload = function () {
+        resolve(reader.result);
+      };
+      reader.readAsDataURL(blob);
+    });
+  };
 
+  const loadImage = async (e) => {
+    e.preventDefault();
+    if (imageLoader.loader.length >= 4) {
+      setLoadOpen(true);
+      setTimeout(() => {
+        setLoadOpen(false);
+      }, 3000);
+    } else {
+      const file = e.target.files[0];
+      const resizedString = await convertToBase64(file);
+      imageLoader.loader.push(resizedString);
+      images.images.push(file);
+      setLoadImage({ loader: imageLoader.loader, filename: file.name });
+    }
+  };
 
-    const handleSubmit = async (e)=> {
-      e.preventDefault();
-      if(images.images.length > 4)
-      {
-        setLoaDOpen(true)
-      }else{
-        if(!active &&
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (images.images.length > 4) {
+      setLoaDOpen(true);
+    } else {
+      if (
+        !active &&
         !productName &&
         !description &&
         !category &&
@@ -137,8 +161,9 @@ export default function UpdateAdmin(props) {
         !toPublicPrice &&
         !fromPrixerPrice &&
         !toPrixerPrice &&
-        !images){
-        setErrorMessage('Por favor completa todos los campos requeridos.');
+        !images
+      ) {
+        setErrorMessage("Por favor completa todos los campos requeridos.");
         setSnackBarError(true);
         e.preventDefault();
       } else {
@@ -146,219 +171,313 @@ export default function UpdateAdmin(props) {
         setButtonState(true);
         const newFormData = new FormData();
         const data = {
-            publicPrice: {
-                'from': fromPublicPrice,
-                'to': toPublicPrice,
+          publicPrice: {
+            from: fromPublicPrice,
+            to: toPublicPrice,
+          },
+          prixerPrice: {
+            from: fromPrixerPrice,
+            to: toPrixerPrice,
+          },
+          specialVars: [
+            {
+              name: "",
+              isSpecialVarVisible: "",
             },
-            prixerPrice: {
-                'from': fromPrixerPrice,
-                'to': toPrixerPrice,
-            },
-            specialVars: [
-              {
-                'name': '',
-                'isSpecialVarVisible': ''
-              }
-            ]
-        }
-        newFormData.append('active', active)
-        newFormData.append('name', productName)
-        newFormData.append('description', description)
-        newFormData.append('category', category)
-        newFormData.append('considerations', considerations)
-        newFormData.append('publicPriceFrom', data.publicPrice.from)
-        newFormData.append('publicPriceTo', data.publicPrice.to)
-        newFormData.append('prixerPriceFrom', data.prixerPrice.from)
-        newFormData.append('prixerPriceTo', data.prixerPrice.to)
-        newFormData.append('hasSpecialVar', hasSpecialVar)
-        images.images.map(file => newFormData.append('newProductImages', file))
-        const base_url= process.env.REACT_APP_BACKEND_URL + `/product/update/${productId}`;
-        const response = await axios.put(base_url,newFormData);
-        if(response.data.success === false){
+          ],
+        };
+        newFormData.append("active", active);
+        newFormData.append("name", productName);
+        newFormData.append("description", description);
+        newFormData.append("category", category);
+        newFormData.append("considerations", considerations);
+        newFormData.append("publicPriceFrom", data.publicPrice.from);
+        newFormData.append("publicPriceTo", data.publicPrice.to);
+        newFormData.append("prixerPriceFrom", data.prixerPrice.from);
+        newFormData.append("prixerPriceTo", data.prixerPrice.to);
+        newFormData.append("hasSpecialVar", hasSpecialVar);
+        images.images.map((file) =>
+          newFormData.append("newProductImages", file)
+        );
+        const base_url =
+          process.env.REACT_APP_BACKEND_URL + `/product/update/${productId}`;
+        const response = await axios.put(base_url, newFormData);
+        if (response.data.success === false) {
           setLoading(false);
           setButtonState(false);
           setErrorMessage(response.data.message);
           setSnackBarError(true);
         } else {
-          setErrorMessage('Actualización de producto exitosa.');
+          setErrorMessage("Actualización de producto exitosa.");
           setSnackBarError(true);
-          history.push('/admin/product/read');
+          history.push("/admin/product/read");
         }
       }
-      }
     }
+  };
 
-    const handleVariantsClick = ()=> {
-        history.push({pathname:"/admin/product/"+productId+"/variant/read"});
-        setShowVariants(true);
-        props.setProductEdit(false);
-    }
-    console.log(imageLoader)
-    console.log(images)
+  const handleVariantsClick = () => {
+    history.push({ pathname: "/admin/product/" + productId + "/variant/read" });
+    setShowVariants(true);
+    props.setProductEdit(false);
+  };
+  console.log(imageLoader);
+  console.log(images);
   return (
     <React.Fragment>
-    {
+      {
         <Backdrop className={classes.backdrop} open={loading}>
-            <CircularProgress />
+          <CircularProgress />
         </Backdrop>
-    }
-        {
-        showVariants ?
+      }
+      {showVariants ? (
         <>
-        <Grid container justify="left">
+          <Grid container justify="left">
             <Grid item xs={2}>
-                <button href="#" onClick={()=>{setShowVariants(false); props.setProductEdit(true);}}><h2 style={{color:"rgba(191, 191, 191, 0.5)", marginTop:0}}>Productos </h2></button>
+              <button
+                href="#"
+                onClick={() => {
+                  setShowVariants(false);
+                  props.setProductEdit(true);
+                }}
+              >
+                <h2 style={{ color: "rgba(191, 191, 191, 0.5)", marginTop: 0 }}>
+                  Productos{" "}
+                </h2>
+              </button>
             </Grid>
             <Grid item xs={1}>
-                <button href="#" onClick={()=>{setShowVariants(true); setActiveVCrud('read');}}><h2 style={{color:'#d33f49', marginTop:0}}>Variantes</h2></button>
+              <button
+                href="#"
+                onClick={() => {
+                  setShowVariants(true);
+                  setActiveVCrud("read");
+                }}
+              >
+                <h2 style={{ color: "#d33f49", marginTop: 0 }}>Variantes</h2>
+              </button>
             </Grid>
-        </Grid>
-        <Variants product={props.product} activeVCrud={activeVCrud} setActiveVCrud={setActiveVCrud}/>
+          </Grid>
+          <Variants
+            product={props.product}
+            activeVCrud={activeVCrud}
+            setActiveVCrud={setActiveVCrud}
+          />
         </>
-        :
+      ) : (
         <div>
-        <Grid container justify="left">
-            <Grid item xs={2} style={{color:"rgba(191, 191, 191, 0.5)"}}>
-                <Title>Productos </Title>
+          <Grid container justify="left">
+            <Grid item xs={2} style={{ color: "rgba(191, 191, 191, 0.5)" }}>
+              <Title>Productos </Title>
             </Grid>
             <Grid item xs={1}>
-                <a onClick={handleVariantsClick}><h2 style={{color:"rgba(191, 191, 191, 0.5)", marginTop:0}}>Variantes</h2></a>
+              <a onClick={handleVariantsClick}>
+                <h2 style={{ color: "rgba(191, 191, 191, 0.5)", marginTop: 0 }}>
+                  Variantes
+                </h2>
+              </a>
             </Grid>
-        </Grid>
-        <form className={classes.form}  encType="multipart/form-data" noValidate onSubmit={handleSubmit}>
+          </Grid>
+          <form
+            className={classes.form}
+            encType="multipart/form-data"
+            noValidate
+            onSubmit={handleSubmit}
+          >
             <Grid container spacing={2}>
-                <Grid container spacing={2}>
-                    <Grid item xs={12}>
-                    <Grid container spacing={1} direction="row">
-                    <Grid item xs={12} className={classes.formHead} style={{flexDirection: isDesktop ?  'row' : 'column'}}>
-                        <FormControl variant="outlined">
+              <Grid container spacing={2}>
+                <Grid item xs={12}>
+                  <Grid container spacing={1} direction="row">
+                    <Grid
+                      item
+                      xs={12}
+                      className={classes.formHead}
+                      style={{ flexDirection: isDesktop ? "row" : "column" }}
+                    >
+                      <FormControl variant="outlined">
                         <Button variant="contained" component="label">
                           Upload File
-                        <input name="newProductImages" type="file" accept="image/*" hidden onChange={(a) => {
-                          a.preventDefault();
-                          loadImage(a)
-                        }}/>
-                       </Button>
-                        </FormControl>
-                        <Grid item xs={6} >
+                          <input
+                            name="newProductImages"
+                            type="file"
+                            accept="image/*"
+                            hidden
+                            onChange={(a) => {
+                              a.preventDefault();
+                              loadImage(a);
+                            }}
+                          />
+                        </Button>
+                      </FormControl>
+                      <Grid item xs={6}>
                         <Grid item className={classes.loaderImage}>
-                        {
-                          imageLoader.loader ?
-                          imageLoader.loader.map((img, key_id) =>
-                          {
-                            return(
-                              <Grid container spacing={2}>
-                              <Grid item xs={12} style={{position: 'absolute', marginTop: '10px', marginLeft: '9px'}}>
-                                <Button variant="text" className={classes.buttonImgLoader} style={{color: '#d33f49'}} onClick={(d) => {
-                                  imageLoader.loader.splice(key_id, 1)
-                                  images.images.splice(key_id, 1)
-                                  setLoadImage({loader: imageLoader.loader, filename: 'Subir Imagenes'})
-                                  newImages({images: images.images})
-                                }}>
-                                <HighlightOffOutlinedIcon/>
-                                </Button>
+                          {imageLoader.loader ? (
+                            imageLoader.loader.map((img, key_id) => {
+                              return (
+                                <Grid container spacing={2}>
+                                  <Grid
+                                    item
+                                    xs={12}
+                                    style={{
+                                      position: "absolute",
+                                      marginTop: "10px",
+                                      marginLeft: "9px",
+                                    }}
+                                  >
+                                    <Button
+                                      variant="text"
+                                      className={classes.buttonImgLoader}
+                                      style={{ color: "#d33f49" }}
+                                      onClick={(d) => {
+                                        imageLoader.loader.splice(key_id, 1);
+                                        images.images.splice(key_id, 1);
+                                        setLoadImage({
+                                          loader: imageLoader.loader,
+                                          filename: "Subir Imagenes",
+                                        });
+                                        newImages({ images: images.images });
+                                      }}
+                                    >
+                                      <HighlightOffOutlinedIcon />
+                                    </Button>
+                                  </Grid>
+                                  <img
+                                    key={key_id}
+                                    className={classes.imageLoad}
+                                    src={img}
+                                    alt="+"
+                                  ></img>
                                 </Grid>
-                                <img key={key_id} className={classes.imageLoad} src={img} alt='+'></img>
-                            </Grid>
-                          )
-                          })
-                          :
-                          <img src={thumbUrl} alt='+'/>
-                        }
+                              );
+                            })
+                          ) : (
+                            <img src={thumbUrl} alt="+" />
+                          )}
                         </Grid>
-                        </Grid>
-                        </Grid>
-                    </Grid>
-                    <Grid container xs={isDesktop ? 6 : 12}>
-                      <Grid item xs={6}>
-                          <Checkbox
-                              checked={active}
-                              color="primary"
-                              inputProps={{ 'aria-label': 'secondary checkbox' }}
-                              onChange={()=>{active?setActive(false):setActive(true)}}
-                          /> Habilitado / Visible
-                      </Grid>
-                      <Grid item xs={6}>
-                          <Checkbox
-                              checked={hasSpecialVar}
-                              color="primary"
-                              inputProps={{ 'aria-label': 'secondary checkbox' }}
-                              onChange={()=>{hasSpecialVar?setHasSpecialVar(false):setHasSpecialVar(true)}}
-                          /> ¿Tiene variables especiales?
                       </Grid>
                     </Grid>
+                  </Grid>
+                  <Grid container xs={isDesktop ? 6 : 12}>
+                    <Grid item xs={6}>
+                      <Checkbox
+                        checked={active}
+                        color="primary"
+                        inputProps={{ "aria-label": "secondary checkbox" }}
+                        onChange={() => {
+                          active ? setActive(false) : setActive(true);
+                        }}
+                      />{" "}
+                      Habilitado / Visible
                     </Grid>
-                    <Grid item xs={12} md={6}>
-                        <FormControl variant="outlined" xs={12} fullWidth={true}>
-                        <TextField
-                            variant="outlined"
-                            required
-                            fullWidth
-                            display="inline"
-                            id="productName"
-                            label="Nombre"
-                            name="productName"
-                            autoComplete="productName"
-                            value={productName}
-                            onChange={(e) => {setProductName(e.target.value);}}
-                        />
-                        </FormControl>
+                    <Grid item xs={6}>
+                      <Checkbox
+                        checked={hasSpecialVar}
+                        color="primary"
+                        inputProps={{ "aria-label": "secondary checkbox" }}
+                        onChange={() => {
+                          hasSpecialVar
+                            ? setHasSpecialVar(false)
+                            : setHasSpecialVar(true);
+                        }}
+                      />{" "}
+                      ¿Tiene variables especiales?
                     </Grid>
-                    <Grid item xs={12} md={6}>
-                        <FormControl className={clsx(classes.margin, classes.textField)} variant="outlined" xs={12} fullWidth={true}>
-                        <TextField
-                            variant="outlined"
-                            required
-                            display="inline"
-                            fullWidth
-                            id="category"
-                            label="Categoría"
-                            name="category"
-                            autoComplete="category"
-                            value={category}
-                            onChange={(e) => {setCategory(e.target.value);}}
-                        />
-                        </FormControl>
-                    </Grid>
-                    <Grid item xs={12} md={6}>
-                        <FormControl className={clsx(classes.margin, classes.textField)} variant="outlined" xs={12} fullWidth={true}>
-                        <TextField
-                            variant="outlined"
-                            required
-                            multiline
-                            fullWidth
-                            rows={2}
-                            id="description"
-                            label="Descripción"
-                            name="description"
-                            autoComplete="description"
-                            value={description}
-                            onChange={(e) => {setDescription(e.target.value);}}
-                        />
-                        </FormControl>
-                    </Grid>
-                    <Grid item xs={12} md={6}>
-                        <FormControl className={clsx(classes.margin, classes.textField)} variant="outlined" xs={12} fullWidth={true}>
-                        <TextField
-                            variant="outlined"
-                            required
-                            fullWidth
-                            multiline
-                            rows={2}
-                            id="considerations"
-                            label="Consideraciones"
-                            name="considerations"
-                            autoComplete="considerations"
-                            value={considerations}
-                            onChange={(e) => {setConsiderations(e.target.value);}}
-                        />
-                        </FormControl>
-                    </Grid>
+                  </Grid>
                 </Grid>
-                <Grid container style={{marginTop: 20}}>
-                    <Title>PVP</Title>
+                <Grid item xs={12} md={6}>
+                  <FormControl variant="outlined" xs={12} fullWidth={true}>
+                    <TextField
+                      variant="outlined"
+                      required
+                      fullWidth
+                      display="inline"
+                      id="productName"
+                      label="Nombre"
+                      name="productName"
+                      autoComplete="productName"
+                      value={productName}
+                      onChange={(e) => {
+                        setProductName(e.target.value);
+                      }}
+                    />
+                  </FormControl>
                 </Grid>
-                <Grid container spacing={2}>
+                <Grid item xs={12} md={6}>
+                  <FormControl
+                    className={clsx(classes.margin, classes.textField)}
+                    variant="outlined"
+                    xs={12}
+                    fullWidth={true}
+                  >
+                    <TextField
+                      variant="outlined"
+                      required
+                      display="inline"
+                      fullWidth
+                      id="category"
+                      label="Categoría"
+                      name="category"
+                      autoComplete="category"
+                      value={category}
+                      onChange={(e) => {
+                        setCategory(e.target.value);
+                      }}
+                    />
+                  </FormControl>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <FormControl
+                    className={clsx(classes.margin, classes.textField)}
+                    variant="outlined"
+                    xs={12}
+                    fullWidth={true}
+                  >
+                    <TextField
+                      variant="outlined"
+                      required
+                      multiline
+                      fullWidth
+                      rows={2}
+                      id="description"
+                      label="Descripción"
+                      name="description"
+                      autoComplete="description"
+                      value={description}
+                      onChange={(e) => {
+                        setDescription(e.target.value);
+                      }}
+                    />
+                  </FormControl>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <FormControl
+                    className={clsx(classes.margin, classes.textField)}
+                    variant="outlined"
+                    xs={12}
+                    fullWidth={true}
+                  >
+                    <TextField
+                      variant="outlined"
+                      required
+                      fullWidth
+                      multiline
+                      rows={2}
+                      id="considerations"
+                      label="Consideraciones"
+                      name="considerations"
+                      autoComplete="considerations"
+                      value={considerations}
+                      onChange={(e) => {
+                        setConsiderations(e.target.value);
+                      }}
+                    />
+                  </FormControl>
+                </Grid>
+              </Grid>
+              <Grid container style={{ marginTop: 20 }}>
+                <Title>PVP</Title>
+              </Grid>
+              <Grid container spacing={2}>
                 {/* <Grid item xs={4} md={4}>
                     <FormControl className={clsx(classes.margin, classes.textField)} variant="outlined" xs={12} fullWidth={true}>
                     <TextField
@@ -375,40 +494,54 @@ export default function UpdateAdmin(props) {
                     </FormControl>
                 </Grid> */}
                 <Grid item xs={4} md={5}>
-                    <FormControl className={clsx(classes.margin, classes.textField)} variant="outlined" xs={12} fullWidth={true}>
+                  <FormControl
+                    className={clsx(classes.margin, classes.textField)}
+                    variant="outlined"
+                    xs={12}
+                    fullWidth={true}
+                  >
                     <TextField
-                        variant="outlined"
-                        required
-                        fullWidth
-                        id="fromPublicPrice"
-                        label="Desde"
-                        name="fromPublicPrice"
-                        autoComplete="fromPublicPrice"
-                        value={fromPublicPrice ? fromPublicPrice : '$'}
-                        onChange={(e) => {setFromPublicPrice(e.target.value);}}
+                      variant="outlined"
+                      required
+                      fullWidth
+                      id="fromPublicPrice"
+                      label="Desde"
+                      name="fromPublicPrice"
+                      autoComplete="fromPublicPrice"
+                      value={fromPublicPrice ? fromPublicPrice : "$"}
+                      onChange={(e) => {
+                        setFromPublicPrice(e.target.value);
+                      }}
                     />
-                    </FormControl>
+                  </FormControl>
                 </Grid>
                 <Grid item xs={4} md={5}>
-                    <FormControl className={clsx(classes.margin, classes.textField)} variant="outlined" xs={12} fullWidth={true}>
+                  <FormControl
+                    className={clsx(classes.margin, classes.textField)}
+                    variant="outlined"
+                    xs={12}
+                    fullWidth={true}
+                  >
                     <TextField
-                        variant="outlined"
-                        required
-                        fullWidth
-                        id="toPublicPrice"
-                        label="Hasta"
-                        name="toPublicPrice"
-                        autoComplete="toPublicPrice"
-                        value={toPublicPrice ? toPublicPrice : '$'}
-                        onChange={(e) => {setToPublicPrice(e.target.value);}}
+                      variant="outlined"
+                      required
+                      fullWidth
+                      id="toPublicPrice"
+                      label="Hasta"
+                      name="toPublicPrice"
+                      autoComplete="toPublicPrice"
+                      value={toPublicPrice ? toPublicPrice : "$"}
+                      onChange={(e) => {
+                        setToPublicPrice(e.target.value);
+                      }}
                     />
-                    </FormControl>
+                  </FormControl>
                 </Grid>
-                </Grid>
-                <Grid container style={{marginTop: 20}}>
-                    <Title>PVM</Title>
-                </Grid>
-                <Grid container spacing={2}>
+              </Grid>
+              <Grid container style={{ marginTop: 20 }}>
+                <Title>PVM</Title>
+              </Grid>
+              <Grid container spacing={2}>
                 {/* <Grid item xs={4} md={4}>
                     <FormControl className={clsx(classes.margin, classes.textField)} variant="outlined" xs={12} fullWidth={true}>
                     <TextField
@@ -425,61 +558,81 @@ export default function UpdateAdmin(props) {
                     </FormControl>
                 </Grid> */}
                 <Grid item xs={4} md={5}>
-                    <FormControl className={clsx(classes.margin, classes.textField)} variant="outlined" xs={12} fullWidth={true}>
+                  <FormControl
+                    className={clsx(classes.margin, classes.textField)}
+                    variant="outlined"
+                    xs={12}
+                    fullWidth={true}
+                  >
                     <TextField
-                        variant="outlined"
-                        required
-                        fullWidth
-                        id="fromPrixerPrice"
-                        label="Desde"
-                        name="fromPrixerPrice"
-                        autoComplete="fromPrixerPrice"
-                        value={fromPrixerPrice ? fromPrixerPrice : '$'}
-                        onChange={(e) => {setFromPrixerPrice(e.target.value);}}
+                      variant="outlined"
+                      required
+                      fullWidth
+                      id="fromPrixerPrice"
+                      label="Desde"
+                      name="fromPrixerPrice"
+                      autoComplete="fromPrixerPrice"
+                      value={fromPrixerPrice ? fromPrixerPrice : "$"}
+                      onChange={(e) => {
+                        setFromPrixerPrice(e.target.value);
+                      }}
                     />
-                    </FormControl>
+                  </FormControl>
                 </Grid>
                 <Grid item xs={4} md={5}>
-                    <FormControl className={clsx(classes.margin, classes.textField)} variant="outlined" xs={12} fullWidth={true}>
+                  <FormControl
+                    className={clsx(classes.margin, classes.textField)}
+                    variant="outlined"
+                    xs={12}
+                    fullWidth={true}
+                  >
                     <TextField
-                        variant="outlined"
-                        required
-                        fullWidth
-                        id="toPrixerPrice"
-                        label="Hasta"
-                        name="toPrixerPrice"
-                        autoComplete="toPrixerPrice"
-                        value={toPrixerPrice ? toPrixerPrice : '$'}
-                        onChange={(e) => {setToPrixerPrice(e.target.value);}}
+                      variant="outlined"
+                      required
+                      fullWidth
+                      id="toPrixerPrice"
+                      label="Hasta"
+                      name="toPrixerPrice"
+                      autoComplete="toPrixerPrice"
+                      value={toPrixerPrice ? toPrixerPrice : "$"}
+                      onChange={(e) => {
+                        setToPrixerPrice(e.target.value);
+                      }}
                     />
-                    </FormControl>
+                  </FormControl>
                 </Grid>
-                </Grid>
-              <Button variant="contained" color="primary" type="submit" disabled={buttonState} style={{ marginTop: 20}}>
+              </Grid>
+              <Button
+                variant="contained"
+                color="primary"
+                type="submit"
+                disabled={buttonState}
+                style={{ marginTop: 20 }}
+              >
                 Actualizar
               </Button>
             </Grid>
-        </form>
+          </form>
         </div>
-        }
-        <Snackbar
-          open={snackBarError}
-          autoHideDuration={1000}
-          message={errorMessage}
-          className={classes.snackbar}
-        />
-        <Snackbar
-          open={loadOpen}
-          autoHideDuration={1000}
-          message={'No puedes colocar mas de 4 fotos'}
-          className={classes.snackbar}
-        />
-        <Snackbar
-          open={loaDOpen}
-          autoHideDuration={1000}
-          message={'No puedes enviar mas de 4 fotos'}
-          className={classes.snackbar}
-        />
+      )}
+      <Snackbar
+        open={snackBarError}
+        autoHideDuration={1000}
+        message={errorMessage}
+        className={classes.snackbar}
+      />
+      <Snackbar
+        open={loadOpen}
+        autoHideDuration={1000}
+        message={"No puedes colocar mas de 4 fotos"}
+        className={classes.snackbar}
+      />
+      <Snackbar
+        open={loaDOpen}
+        autoHideDuration={1000}
+        message={"No puedes enviar mas de 4 fotos"}
+        className={classes.snackbar}
+      />
     </React.Fragment>
   );
 }

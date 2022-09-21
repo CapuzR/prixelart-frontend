@@ -1,7 +1,7 @@
 import { React, useState, useEffect } from "react";
 import axios from "axios";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
-import { Backdrop } from "@material-ui/core";
+import { Backdrop, ClickAwayListener } from "@material-ui/core";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
@@ -21,6 +21,7 @@ import FormGroup from "@material-ui/core/FormGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from "@material-ui/icons/Edit";
+import Snackbar from "@material-ui/core/Snackbar";
 
 function getStyles(type, theme) {
   return {
@@ -78,14 +79,12 @@ const MenuProps = {
 
 export default function Testimonials() {
   const classes = useStyles();
-  const [testimonialDataState, setTestimonialDataState] = useState("read"); // borrar
   const [avatar, setAvatar] = useState({ file: "", _id: "" });
   const [type, setType] = useState("");
   const [name, setName] = useState("");
   const [value, setValue] = useState("");
   const [footer, setFooter] = useState("");
   const [tiles, setTiles] = useState([]);
-  const [backdrop, setBackdrop] = useState(true); // borrar
   const theme = useTheme();
   const [avatarObj, setAvatarObj] = useState("");
   const [avatarPic, setAvatarPic] = useState("");
@@ -101,6 +100,9 @@ export default function Testimonials() {
 
   const [errorMessage, setErrorMessage] = useState();
   const [snackBarError, setSnackBarError] = useState(false);
+  const closeSnackbar = () => {
+    setSnackBarError(false);
+  };
 
   const readTestimonial = async () => {
     const base_url =
@@ -109,7 +111,6 @@ export default function Testimonials() {
       .get(base_url)
       .then((response) => {
         setTiles(response.data.testimonials);
-        setBackdrop(false);
       })
       .catch((error) => console.log(error));
   };
@@ -119,10 +120,10 @@ export default function Testimonials() {
   }, []);
 
   const handleSubmit = async (e) => {
-    if (!type || !name || !value || !avatar || !footer || !state) {
+    e.preventDefault();
+    if (!type || !name || !value || !avatar || footer || !state) {
       setErrorMessage("Por favor completa todos los campos requeridos.");
       setSnackBarError(true);
-      e.preventDefault();
     } else {
       setLoading(true);
       const formData = new FormData();
@@ -155,8 +156,8 @@ export default function Testimonials() {
           console.log(error.response);
         });
       setLoading(false);
-      readTestimonial();
     }
+    readTestimonial();
   };
 
   const handleChange = (event) => {
@@ -168,7 +169,8 @@ export default function Testimonials() {
       setInputChange(true);
       setAvatarObj(URL.createObjectURL(e.target.files[0]));
       setAvatarPic(e.target.files[0]);
-    } //Avatar
+    }
+    //Avatar
   };
   const deleteTestimonial = async (DeleteId) => {
     setLoading(true);
@@ -176,14 +178,12 @@ export default function Testimonials() {
       process.env.REACT_APP_BACKEND_URL + "/testimonial/read/" + DeleteId;
     let res = await axios.delete(base_url);
     setLoading(false);
+    setErrorMessage("Testimonio eliminado exitosamente");
+    setSnackBarError(true);
+
     readTestimonial();
   };
 
-  const GetIdForEdit = async () => {
-    // borrar
-    setUpdateId();
-    handleTestimonialDataEdit();
-  };
   const handleTestimonialDataEdit = async (GetId) => {
     const base_url =
       process.env.REACT_APP_BACKEND_URL + "/testimonial/" + GetId;
@@ -195,20 +195,19 @@ export default function Testimonials() {
     setFooter(response.data.footer);
     setState(response.data.status);
     setUpdateId(GetId);
-    console.log(response.data);
   };
 
-  const saveChanges = async (GetId) => {
+  const saveChanges = async (e, GetId) => {
+    e.preventDefault();
     const base_url =
       process.env.REACT_APP_BACKEND_URL + "/testimonial/update/" + GetId;
     const formData = new FormData();
-    formData.append("avatar", avatarObj);
+    formData.append("avatar", avatarPic);
     formData.append("type", type);
     formData.append("name", name);
     formData.append("value", value);
     formData.append("footer", footer);
     formData.append("status", state.checkedA);
-    console.log(formData);
     const response = await axios.put(base_url, formData, {
       "Content-Type": "multipart/form-data",
     });
@@ -221,6 +220,7 @@ export default function Testimonials() {
     setUpdateId(undefined);
     readTestimonial();
   };
+
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   return (
@@ -446,7 +446,9 @@ export default function Testimonials() {
                   value="submit"
                   paddingTop="4"
                   onClick={(event) =>
-                    updateId ? saveChanges(updateId) : handleSubmit(event)
+                    updateId
+                      ? saveChanges(event, updateId)
+                      : handleSubmit(event)
                   }
                 >
                   {updateId ? "Actualizar testimonio" : "Crear testimonio"}
@@ -532,6 +534,13 @@ export default function Testimonials() {
               </Paper>
             </Grid>
           ))}
+          <Snackbar
+            open={snackBarError}
+            autoHideDuration={5000}
+            onClose={closeSnackbar}
+            message={errorMessage}
+            className={classes.snackbar}
+          />
         </Grid>
       </Paper>
     </div>

@@ -45,10 +45,11 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: 'row'
   },
   imageLoad: {
-    width: '100%',
-    height: '95%',
+    maxWidth: '100%',
+    maxHeight: '100%',
     padding: '15px',
-    marginTop: '5px'
+    marginTop: '5px',
+    position: 'static'
   },
   formHead: {
     display: 'flex',
@@ -273,7 +274,9 @@ export default function CreateProduct() {
                                     </Button>
                                     </Grid>
                                   </Grid>
+                                  <Grid item >
                                     <img key={key_id} className={classes.imageLoad} src={img} alt='+'></img>
+                                  </Grid>
                                 </Grid>
                               )
                               })

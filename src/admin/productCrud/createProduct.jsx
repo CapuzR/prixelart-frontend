@@ -47,9 +47,8 @@ const useStyles = makeStyles((theme) => ({
   imageLoad: {
     maxWidth: '100%',
     maxHeight: '100%',
-    padding: '15px',
-    marginTop: '5px',
-    position: 'static'
+    padding: '5px',
+    marginTop: '5px'
   },
   formHead: {
     display: 'flex',
@@ -288,8 +287,8 @@ export default function CreateProduct() {
                                     </Button>
                                     </Grid>
                                   </Grid>
-                                  <Grid item >
-                                    <img key={key_id} className={classes.imageLoad} src={img} alt='+'></img>
+                                  <Grid key={key_id} item xs={imageLoader.loader.length === 1 ? 3 : imageLoader.loader.length === 2 ? 6 : imageLoader.loader.length === 3 ? 9 : 12}>
+                                    <img  className={classes.imageLoad} src={img} alt='+'></img>
                                   </Grid>
                                 </Grid>
                               )

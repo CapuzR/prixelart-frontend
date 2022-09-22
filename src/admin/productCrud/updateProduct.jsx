@@ -163,7 +163,7 @@ export default function UpdateAdmin(props) {
     if (images.images.length > 4) {
       setLoaDOpen(true);
     } else {
-      if(images.images.length <= 0){
+      if(images.images.length <= 0 && imagesList === 0){
         setMustImages(true)
         setTimeout(() => {
           setMustImages(false)
@@ -383,12 +383,13 @@ export default function UpdateAdmin(props) {
                                       </Button>
                                     </Grid>
                                   </Grid>
+                                  <Grid item key={key_id} xs={imageLoader.loader.length === 1 ? 3 : imageLoader.loader.length === 2 ? 6 : imageLoader.loader.length === 3 ? 9 : 12}>
                                   <img
-                                    key={key_id}
                                     className={classes.imageLoad}
                                     src={img}
                                     alt="+"
                                   ></img>
+                                  </Grid>
                                 </Grid>
                               );
                             })

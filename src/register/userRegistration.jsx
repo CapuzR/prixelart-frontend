@@ -138,7 +138,7 @@ export default function SignUp() {
       const base_url = process.env.REACT_APP_BACKEND_URL + "/register";
       const data = {
         username: username,
-        email: email,
+        email: email.toLowerCase(),
         password: password,
         firstName: firstName,
         lastName: lastName,
@@ -307,7 +307,7 @@ export default function SignUp() {
                 label="Correo electrónico"
                 name="email"
                 autoComplete="email"
-                value={email}
+                value={email.toLowerCase()}
                 onChange={handleEmailChange}
               />
             </Grid>

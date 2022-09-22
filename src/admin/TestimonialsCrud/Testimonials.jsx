@@ -93,7 +93,6 @@ const MenuProps = {
 
 export default function Testimonials() {
   const classes = useStyles();
-  const [testimonialDataState, setTestimonialDataState] = useState("read"); // borrar
   const [avatar, setAvatar] = useState({ file: "", _id: "" });
   const [type, setType] = useState("");
   const [name, setName] = useState("");
@@ -197,11 +196,13 @@ export default function Testimonials() {
     readTestimonial();
   };
 
-  const GetIdForEdit = async () => {
-    // borrar
-    setUpdateId();
-    handleTestimonialDataEdit();
+  const ChangeVisibility = async (event, Id) => {
+    event.preventDefault();
+    console.log(event.target.checked);
+    handleChange(event);
+    setState({ ...state, [event.target.name]: event.target.checked });
   };
+
   const handleTestimonialDataEdit = async (GetId) => {
     const base_url =
       process.env.REACT_APP_BACKEND_URL + "/testimonial/" + GetId;
@@ -452,7 +453,7 @@ export default function Testimonials() {
                             name="checkedA"
                           />
                         }
-                      ></FormControlLabel>
+                      />
                     </FormGroup>
                   </Grid>
                 </Grid>

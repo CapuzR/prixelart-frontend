@@ -21,6 +21,7 @@ import FormGroup from "@material-ui/core/FormGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from "@material-ui/icons/Edit";
+import Snackbar from "@material-ui/core/Snackbar";
 
 function getStyles(type, theme) {
   return {
@@ -62,6 +63,20 @@ const useStyles = makeStyles((theme) => ({
   avatar: {
     width: 80,
     height: 80,
+  },
+  snackbar: {
+    [theme.breakpoints.down("xs")]: {
+      bottom: 90,
+    },
+    margin: {
+      margin: theme.spacing(1),
+    },
+    withoutLabel: {
+      marginTop: theme.spacing(3),
+    },
+    textField: {
+      width: "25ch",
+    },
   },
 }));
 
@@ -118,11 +133,11 @@ export default function Testimonials() {
     readTestimonial();
   }, []);
 
-  const handleSubmit = async (e) => {
-    if (!type || !name || !value || !avatar || !footer || !state) {
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!type || !name || !value || !avatar || footer || !state) {
       setErrorMessage("Por favor completa todos los campos requeridos.");
       setSnackBarError(true);
-      e.preventDefault();
     } else {
       setLoading(true);
       const formData = new FormData();
@@ -135,7 +150,7 @@ export default function Testimonials() {
       const base_url =
         process.env.REACT_APP_BACKEND_URL + "/testimonial/create";
 
-      const response = await axios
+      const response = axios
         .post(base_url, formData, {
           "Content-Type": "multipart/form-data",
         })
@@ -145,8 +160,10 @@ export default function Testimonials() {
             setErrorMessage(response.data.message);
             setSnackBarError(true);
           } else {
-            setErrorMessage("Creación de testimonio exitoso.");
+            setErrorMessage("Creación de testimonio exitoso");
             setSnackBarError(true);
+            setLoading(false);
+            readTestimonial();
           }
         })
 
@@ -154,8 +171,6 @@ export default function Testimonials() {
           setLoading(false);
           console.log(error.response);
         });
-      setLoading(false);
-      readTestimonial();
     }
   };
 
@@ -175,6 +190,8 @@ export default function Testimonials() {
     const base_url =
       process.env.REACT_APP_BACKEND_URL + "/testimonial/read/" + DeleteId;
     let res = await axios.delete(base_url);
+    setErrorMessage("Testimonio eliminado exitosamente");
+    setSnackBarError(true);
     setLoading(false);
     readTestimonial();
   };
@@ -220,6 +237,7 @@ export default function Testimonials() {
     setFooter("");
     setState(false);
     setUpdateId(undefined);
+    setLoading(false);
     readTestimonial();
   };
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -535,6 +553,15 @@ export default function Testimonials() {
               </Paper>
             </Grid>
           ))}
+          <Snackbar
+            open={snackBarError}
+            autoHideDuration={4000}
+            onClose={() => {
+              setSnackBarError(false);
+            }}
+            message={errorMessage}
+            className={classes.snackbar}
+          />
         </Grid>
       </Paper>
     </div>

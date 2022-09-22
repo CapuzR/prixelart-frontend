@@ -146,6 +146,17 @@ export default function UpdateAdmin(props) {
     }
   };
 
+  const replaceImage = async (e, index) => {
+    e.preventDefault();
+    const file = e.target.files[0];
+    const resizedString = await convertToBase64(file);
+    imageLoader.loader[index] = resizedString;
+    images.images[index] = file;
+    setLoadImage({ loader: imageLoader.loader, filename: file.name });
+  };
+  console.log(imageLoader);
+  console.log(images);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (images.images.length > 4) {
@@ -196,6 +207,7 @@ export default function UpdateAdmin(props) {
         newFormData.append("prixerPriceFrom", data.prixerPrice.from);
         newFormData.append("prixerPriceTo", data.prixerPrice.to);
         newFormData.append("hasSpecialVar", hasSpecialVar);
+        imagesList.map((url) => newFormData.append("images", url));
         images.images.map((file) =>
           newFormData.append("newProductImages", file)
         );
@@ -221,8 +233,7 @@ export default function UpdateAdmin(props) {
     setShowVariants(true);
     props.setProductEdit(false);
   };
-  console.log(imageLoader);
-  console.log(images);
+
   return (
     <React.Fragment>
       {
@@ -314,32 +325,56 @@ export default function UpdateAdmin(props) {
                           {imageLoader.loader ? (
                             imageLoader.loader.map((img, key_id) => {
                               return (
-                                <Grid container spacing={2}>
+                                <Grid container spacing={1}>
                                   <Grid
-                                    item
-                                    xs={12}
+                                    container
+                                    spacing={1}
+                                    xs={8}
                                     style={{
                                       position: "absolute",
-                                      marginTop: "10px",
-                                      marginLeft: "9px",
+                                      marginTop: "16px",
                                     }}
                                   >
-                                    <Button
-                                      variant="text"
-                                      className={classes.buttonImgLoader}
-                                      style={{ color: "#d33f49" }}
-                                      onClick={(d) => {
-                                        imageLoader.loader.splice(key_id, 1);
-                                        images.images.splice(key_id, 1);
-                                        setLoadImage({
-                                          loader: imageLoader.loader,
-                                          filename: "Subir Imagenes",
-                                        });
-                                        newImages({ images: images.images });
-                                      }}
-                                    >
-                                      <HighlightOffOutlinedIcon />
-                                    </Button>
+                                    <Grid item xs={2}>
+                                      <Button
+                                        variant="text"
+                                        className={classes.buttonImgLoader}
+                                        style={{ color: "#d33f49" }}
+                                        onClick={(d) => {
+                                          imageLoader.loader.splice(key_id, 1);
+                                          imagesList.splice(key_id, 1);
+                                          setLoadImage({
+                                            loader: imageLoader.loader,
+                                            filename: "Subir Imagenes",
+                                          });
+                                          newImages({ images: images.images });
+                                        }}
+                                      >
+                                        <HighlightOffOutlinedIcon />
+                                      </Button>
+                                    </Grid>
+                                    <Grid item xs={2}>
+                                      <Button
+                                        variant="text"
+                                        className={classes.buttonEdit}
+                                        style={{ color: "#d33f49" }}
+                                        component="label"
+                                      >
+                                        <input
+                                          name="productImages"
+                                          type="file"
+                                          accept="image/*"
+                                          hidden
+                                          onChange={(a) => {
+                                            const i =
+                                              imageLoader.loader.indexOf(img);
+                                            replaceImage(a, i);
+                                            imagesList.splice(key_id, 1);
+                                          }}
+                                        />
+                                        <EditIcon />
+                                      </Button>
+                                    </Grid>
                                   </Grid>
                                   <img
                                     key={key_id}

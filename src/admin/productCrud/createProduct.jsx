@@ -117,6 +117,9 @@ export default function CreateProduct() {
       if(imageLoader.loader.length > 4)
       {
         setLoadOpen(true)
+        setTimeout(() => {
+          setLoadOpen(false)
+        }, 3000)
       }else{
       const file = e.target.files[0];
       const resizedString = await convertToBase64(file);
@@ -151,6 +154,9 @@ export default function CreateProduct() {
       if(images.images.length > 4)
       {
         setLoaDOpen(true)
+        setTimeout(() => {
+          setLoaDOpen(false)
+        }, 3000)
       }else{
         if(images.images.length <= 0){
           setMustImages(true)

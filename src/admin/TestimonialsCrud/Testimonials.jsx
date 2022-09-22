@@ -147,6 +147,7 @@ export default function Testimonials() {
       formData.append("value", value);
       formData.append("footer", footer);
       formData.append("status", state.checkedA);
+
       const base_url =
         process.env.REACT_APP_BACKEND_URL + "/testimonial/create";
 
@@ -212,11 +213,11 @@ export default function Testimonials() {
     setFooter(response.data.footer);
     setState(response.data.status);
     setUpdateId(GetId);
-    console.log(response.data);
   };
 
   const saveChanges = async (e, GetId) => {
     e.preventDefault();
+    setLoading(true);
     const base_url =
       process.env.REACT_APP_BACKEND_URL + "/testimonial/update/" + GetId;
     const formData = new FormData();
@@ -226,7 +227,6 @@ export default function Testimonials() {
     formData.append("value", value);
     formData.append("footer", footer);
     formData.append("status", state.checkedA);
-    console.log(formData);
     const response = await axios.put(base_url, formData, {
       "Content-Type": "multipart/form-data",
     });
@@ -482,6 +482,7 @@ export default function Testimonials() {
                 className={classes.paper}
                 style={{
                   padding: "15px",
+                  height: 300,
                 }}
               >
                 <Grid key={tile._id} style={{ width: "100%" }}>
@@ -493,7 +494,18 @@ export default function Testimonials() {
                     )}
                     <Grid marginBottom={2} style={{ width: "100%" }}>
                       <Box style={{ display: "flex", justifyContent: "end" }}>
+                        <Switch
+                          checked={tile.status}
+                          color="primary"
+                          onChange={handleChange}
+                          name="checkedA"
+                          value={tile.status}
+                          inputProps={{
+                            "aria-label": "secondary checkbox",
+                          }}
+                        />
                         <Button
+                          style={{ marginLeft: "10px" }}
                           onClick={() => handleTestimonialDataEdit(tile._id)}
                         >
                           <EditIcon color={"secondary"} />
@@ -517,35 +529,36 @@ export default function Testimonials() {
                       </Box>
                       <Box
                         style={{
-                          display: "flex",
-                          justifyContent: "center",
                           paddingTop: "10px",
                         }}
                       >
-                        <Typography variant={"body2"}>{tile.value}</Typography>
+                        <Typography
+                          variant={"body2"}
+                          style={{
+                            display: "flex",
+                            textAlign: "center",
+                            justifyContent: "center",
+                          }}
+                        >
+                          {tile.value}
+                        </Typography>
                       </Box>
                       <Box
                         style={{
-                          display: "flex",
-                          justifyContent: "center",
                           paddingTop: "8px",
                         }}
                       >
-                        <Typography variant={"body2"} color="secondary">
+                        <Typography
+                          variant={"body2"}
+                          color="secondary"
+                          style={{
+                            display: "flex",
+                            textAlign: "center",
+                            justifyContent: "center",
+                          }}
+                        >
                           {tile.footer}
                         </Typography>
-                      </Box>
-                      <Box style={{ display: "flex", justifyContent: "end" }}>
-                        <Switch
-                          checked={tile.status}
-                          color="primary"
-                          onChange={handleChange}
-                          name="checkedA"
-                          value={tile.status}
-                          inputProps={{
-                            "aria-label": "secondary checkbox",
-                          }}
-                        />
                       </Box>
                     </Grid>
                   </Grid>

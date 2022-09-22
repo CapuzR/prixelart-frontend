@@ -98,6 +98,7 @@ export default function CreateProduct() {
     const [snackBarError, setSnackBarError] = useState(false);
     const [loadOpen, setLoadOpen] = useState(false);
     const [loaDOpen, setLoaDOpen] = useState(false);
+    const [mustImage, setMustImages] = useState(false);
 
     //Preview de imagen antes de enviar
     const convertToBase64 = (blob) => {
@@ -151,7 +152,13 @@ export default function CreateProduct() {
       {
         setLoaDOpen(true)
       }else{
-      if(!active &&
+        if(images.images.length <= 0){
+          setMustImages(true)
+          setTimeout(() => {
+            setMustImages(false)
+          }, 3000)
+        }else{
+          if(!active &&
         !productName &&
         !description &&
         !category &&
@@ -222,6 +229,7 @@ export default function CreateProduct() {
         }
       }
     }
+  }
 }
   return (
     <React.Fragment>
@@ -552,6 +560,12 @@ export default function CreateProduct() {
           open={loaDOpen}
           autoHideDuration={1000}
           message={'No puedes enviar mas de 4 fotos'}
+          className={classes.snackbar}
+        />
+        <Snackbar
+          open={mustImage}
+          autoHideDuration={1000}
+          message={'No puedes crear un producto sin foto. Agrega 1 o mas'}
           className={classes.snackbar}
         />
     </React.Fragment>

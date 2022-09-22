@@ -114,6 +114,7 @@ export default function UpdateAdmin(props) {
   const [snackBarError, setSnackBarError] = useState(false);
   const [loadOpen, setLoadOpen] = useState(false);
   const [loaDOpen, setLoaDOpen] = useState(false);
+  const [mustImage, setMustImages] = useState(false);
 
   useEffect(() => {
     imagesList.map((url) => imageLoader.loader.push(url));
@@ -162,6 +163,11 @@ export default function UpdateAdmin(props) {
     if (images.images.length > 4) {
       setLoaDOpen(true);
     } else {
+      if(images.images.length <= 0){
+        setMustImages(true)
+        setTimeout(() => {
+          setMustImages(false)
+        }, 3000)}else{
       if (
         !active &&
         !productName &&
@@ -226,7 +232,8 @@ export default function UpdateAdmin(props) {
         }
       }
     }
-  };
+  }
+};
 
   const handleVariantsClick = () => {
     history.push({ pathname: "/admin/product/" + productId + "/variant/read" });
@@ -666,6 +673,12 @@ export default function UpdateAdmin(props) {
         open={loaDOpen}
         autoHideDuration={1000}
         message={"No puedes enviar mas de 4 fotos"}
+        className={classes.snackbar}
+      />
+      <Snackbar
+        open={mustImage}
+        autoHideDuration={1000}
+        message={'No puedes actualizar un producto sin foto. Agrega 1 o mas'}
         className={classes.snackbar}
       />
     </React.Fragment>

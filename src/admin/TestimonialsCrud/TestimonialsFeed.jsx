@@ -1,7 +1,6 @@
 import { React, useState, useEffect } from "react";
 import axios from "axios";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
-import CircularProgress from "@material-ui/core/CircularProgress";
 import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
 import Box from "@material-ui/core/Box";
@@ -30,7 +29,6 @@ const useStyles = makeStyles((theme) => ({
   paper: {
     padding: theme.spacing(2),
     margin: "15px",
-    // marginBottom: "20px",
   },
   input: {
     padding: "2",
@@ -97,47 +95,52 @@ export default function TestimonialsFeed() {
                 className={classes.paper}
                 style={{
                   padding: "15px",
+                  height: 240,
                 }}
               >
                 <Grid key={tile._id} style={{ width: "100%" }}>
                   <Grid container spacing={1}>
-                    {/* {loading && (
-                  <div className={classes.loading}>
-                    <CircularProgress />
-                  </div>
-                )} */}
                     <Grid marginBottom={2} style={{ width: "100%" }}>
                       <Box style={{ display: "flex", paddingLeft: "20px" }}>
                         <Avatar className={classes.avatar} src={tile.avatar} />
                         <Box
                           style={{
-                            paddingLeft:
-                              "30px" /*  Agregar padding para desktop  */,
+                            paddingLeft: "30px",
                           }}
                         >
                           <Typography>{tile.name}</Typography>
-                          <Typography variant={"p"} color={"secondary"}>
+                          <Typography variant={"body2"} color={"secondary"}>
                             {tile.type}
                           </Typography>
                         </Box>
                       </Box>
-                      <Box
-                        style={{
-                          display: "flex",
-                          justifyContent: "center",
-                          paddingTop: "10px",
-                        }}
-                      >
-                        <Typography variant={"body2"}>{tile.value}</Typography>
+                      <Box>
+                        <Typography
+                          variant={"body2"}
+                          style={{
+                            display: "flex",
+                            textAlign: "center",
+                            justifyContent: "center",
+                            paddingTop: "10px",
+                          }}
+                        >
+                          {tile.value}
+                        </Typography>
                       </Box>
                       <Box
                         style={{
-                          display: "flex",
-                          justifyContent: "center",
                           paddingTop: "8px",
                         }}
                       >
-                        <Typography variant={"body2"} color="secondary">
+                        <Typography
+                          variant={"body2"}
+                          color="secondary"
+                          style={{
+                            display: "flex",
+                            textAlign: "center",
+                            justifyContent: "center",
+                          }}
+                        >
                           {tile.footer}
                         </Typography>
                       </Box>

@@ -22,6 +22,7 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from "@material-ui/icons/Edit";
 import Snackbar from "@material-ui/core/Snackbar";
+import IconButton from "@material-ui/core/IconButton";
 
 function getStyles(type, theme) {
   return {
@@ -93,7 +94,6 @@ const MenuProps = {
 
 export default function Testimonials() {
   const classes = useStyles();
-  const [testimonialDataState, setTestimonialDataState] = useState("read"); // borrar
   const [avatar, setAvatar] = useState({ file: "", _id: "" });
   const [type, setType] = useState("");
   const [name, setName] = useState("");
@@ -147,6 +147,7 @@ export default function Testimonials() {
       formData.append("value", value);
       formData.append("footer", footer);
       formData.append("status", state.checkedA);
+
       const base_url =
         process.env.REACT_APP_BACKEND_URL + "/testimonial/create";
 
@@ -196,11 +197,24 @@ export default function Testimonials() {
     readTestimonial();
   };
 
-  const GetIdForEdit = async () => {
-    // borrar
-    setUpdateId();
-    handleTestimonialDataEdit();
+  const ChangeVisibility = async (e, GetId) => {
+    e.preventDefault();
+    setLoading(true);
+    console.log(GetId);
+    handleChange(e);
+    const base_url =
+      process.env.REACT_APP_BACKEND_URL + "/testimonial/update-home/" + GetId;
+    const response = await axios.put(
+      base_url,
+      { status: state.checkedA },
+      {
+        "Content-Type": "multipart/form-data",
+      }
+    );
+    setLoading(false);
+    readTestimonial();
   };
+
   const handleTestimonialDataEdit = async (GetId) => {
     const base_url =
       process.env.REACT_APP_BACKEND_URL + "/testimonial/" + GetId;
@@ -212,11 +226,11 @@ export default function Testimonials() {
     setFooter(response.data.footer);
     setState(response.data.status);
     setUpdateId(GetId);
-    console.log(response.data);
   };
 
   const saveChanges = async (e, GetId) => {
     e.preventDefault();
+    setLoading(true);
     const base_url =
       process.env.REACT_APP_BACKEND_URL + "/testimonial/update/" + GetId;
     const formData = new FormData();
@@ -226,7 +240,6 @@ export default function Testimonials() {
     formData.append("value", value);
     formData.append("footer", footer);
     formData.append("status", state.checkedA);
-    console.log(formData);
     const response = await axios.put(base_url, formData, {
       "Content-Type": "multipart/form-data",
     });
@@ -452,7 +465,7 @@ export default function Testimonials() {
                             name="checkedA"
                           />
                         }
-                      ></FormControlLabel>
+                      />
                     </FormGroup>
                   </Grid>
                 </Grid>
@@ -482,6 +495,7 @@ export default function Testimonials() {
                 className={classes.paper}
                 style={{
                   padding: "15px",
+                  height: 300,
                 }}
               >
                 <Grid key={tile._id} style={{ width: "100%" }}>
@@ -493,14 +507,15 @@ export default function Testimonials() {
                     )}
                     <Grid marginBottom={2} style={{ width: "100%" }}>
                       <Box style={{ display: "flex", justifyContent: "end" }}>
-                        <Button
+                        <IconButton
+                          style={{ marginLeft: "10px" }}
                           onClick={() => handleTestimonialDataEdit(tile._id)}
                         >
                           <EditIcon color={"secondary"} />
-                        </Button>
-                        <Button onClick={() => deleteTestimonial(tile._id)}>
+                        </IconButton>
+                        <IconButton onClick={() => deleteTestimonial(tile._id)}>
                           <DeleteIcon color={"secondary"} />
-                        </Button>
+                        </IconButton>
                       </Box>
                       <Box style={{ display: "flex", paddingLeft: "20px" }}>
                         <Avatar className={classes.avatar} src={tile.avatar} />
@@ -517,29 +532,61 @@ export default function Testimonials() {
                       </Box>
                       <Box
                         style={{
-                          display: "flex",
-                          justifyContent: "center",
                           paddingTop: "10px",
                         }}
                       >
-                        <Typography variant={"body2"}>{tile.value}</Typography>
+                        <Typography
+                          variant={"body2"}
+                          style={{
+                            display: "flex",
+                            textAlign: "center",
+                            justifyContent: "center",
+                            height: "60px",
+                          }}
+                        >
+                          {tile.value}
+                        </Typography>
                       </Box>
                       <Box
                         style={{
-                          display: "flex",
-                          justifyContent: "center",
                           paddingTop: "8px",
+                          height: "35px",
                         }}
                       >
-                        <Typography variant={"body2"} color="secondary">
+                        <Typography
+                          variant={"body2"}
+                          color="secondary"
+                          style={{
+                            display: "flex",
+                            textAlign: "center",
+                            justifyContent: "center",
+                          }}
+                        >
                           {tile.footer}
                         </Typography>
                       </Box>
-                      <Box style={{ display: "flex", justifyContent: "end" }}>
+                      <Box
+                        style={{
+                          paddingTop: "10px",
+                          display: "flex",
+                          justifyContent: "end",
+                        }}
+                        label="Mostrar en la página de inicio"
+                      >
+                        <Typography
+                          color="secondary"
+                          style={{ display: "flex", alignItems: "center" }}
+                        >
+                          {" "}
+                          Mostrar en la página de inicio
+                        </Typography>
                         <Switch
                           checked={tile.status}
                           color="primary"
-                          onChange={handleChange}
+                          onChange={
+                            // handleChange
+                            (event) => ChangeVisibility(event, tile._id)
+                          }
                           name="checkedA"
                           value={tile.status}
                           inputProps={{

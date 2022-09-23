@@ -195,7 +195,7 @@ export default function CreateAdmin() {
                 label="Correo electrónico"
                 name="email"
                 autoComplete="email"
-                value={email.toLowerCase()}
+                value={email}
                 onChange={(e) => {
                   setEmail(e.target.value).toLowerCase();
                 }}

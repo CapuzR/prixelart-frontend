@@ -95,7 +95,7 @@ export default function TestimonialsFeed() {
                 className={classes.paper}
                 style={{
                   padding: "15px",
-                  height: 210,
+                  height: 240,
                 }}
               >
                 <Grid key={tile._id} style={{ width: "100%" }}>

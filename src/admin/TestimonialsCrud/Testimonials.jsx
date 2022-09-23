@@ -22,6 +22,7 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from "@material-ui/icons/Edit";
 import Snackbar from "@material-ui/core/Snackbar";
+import IconButton from "@material-ui/core/IconButton";
 
 function getStyles(type, theme) {
   return {
@@ -196,11 +197,22 @@ export default function Testimonials() {
     readTestimonial();
   };
 
-  const ChangeVisibility = async (event, Id) => {
-    event.preventDefault();
-    console.log(event.target.checked);
-    handleChange(event);
-    setState({ ...state, [event.target.name]: event.target.checked });
+  const ChangeVisibility = async (e, GetId) => {
+    e.preventDefault();
+    setLoading(true);
+    console.log(GetId);
+    handleChange(e);
+    const base_url =
+      process.env.REACT_APP_BACKEND_URL + "/testimonial/update-home/" + GetId;
+    const response = await axios.put(
+      base_url,
+      { status: state.checkedA },
+      {
+        "Content-Type": "multipart/form-data",
+      }
+    );
+    setLoading(false);
+    readTestimonial();
   };
 
   const handleTestimonialDataEdit = async (GetId) => {
@@ -495,25 +507,15 @@ export default function Testimonials() {
                     )}
                     <Grid marginBottom={2} style={{ width: "100%" }}>
                       <Box style={{ display: "flex", justifyContent: "end" }}>
-                        <Switch
-                          checked={tile.status}
-                          color="primary"
-                          onChange={handleChange}
-                          name="checkedA"
-                          value={tile.status}
-                          inputProps={{
-                            "aria-label": "secondary checkbox",
-                          }}
-                        />
-                        <Button
+                        <IconButton
                           style={{ marginLeft: "10px" }}
                           onClick={() => handleTestimonialDataEdit(tile._id)}
                         >
                           <EditIcon color={"secondary"} />
-                        </Button>
-                        <Button onClick={() => deleteTestimonial(tile._id)}>
+                        </IconButton>
+                        <IconButton onClick={() => deleteTestimonial(tile._id)}>
                           <DeleteIcon color={"secondary"} />
-                        </Button>
+                        </IconButton>
                       </Box>
                       <Box style={{ display: "flex", paddingLeft: "20px" }}>
                         <Avatar className={classes.avatar} src={tile.avatar} />
@@ -539,6 +541,7 @@ export default function Testimonials() {
                             display: "flex",
                             textAlign: "center",
                             justifyContent: "center",
+                            height: "60px",
                           }}
                         >
                           {tile.value}
@@ -547,6 +550,7 @@ export default function Testimonials() {
                       <Box
                         style={{
                           paddingTop: "8px",
+                          height: "35px",
                         }}
                       >
                         <Typography
@@ -560,6 +564,35 @@ export default function Testimonials() {
                         >
                           {tile.footer}
                         </Typography>
+                      </Box>
+                      <Box
+                        style={{
+                          paddingTop: "10px",
+                          display: "flex",
+                          justifyContent: "end",
+                        }}
+                        label="Mostrar en la página de inicio"
+                      >
+                        <Typography
+                          color="secondary"
+                          style={{ display: "flex", alignItems: "center" }}
+                        >
+                          {" "}
+                          Mostrar en la página de inicio
+                        </Typography>
+                        <Switch
+                          checked={tile.status}
+                          color="primary"
+                          onChange={
+                            // handleChange
+                            (event) => ChangeVisibility(event, tile._id)
+                          }
+                          name="checkedA"
+                          value={tile.status}
+                          inputProps={{
+                            "aria-label": "secondary checkbox",
+                          }}
+                        />
                       </Box>
                     </Grid>
                   </Grid>

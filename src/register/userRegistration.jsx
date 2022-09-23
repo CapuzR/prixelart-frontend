@@ -307,7 +307,7 @@ export default function SignUp() {
                 label="Correo electrónico"
                 name="email"
                 autoComplete="email"
-                value={email.toLowerCase()}
+                value={email}
                 onChange={handleEmailChange}
               />
             </Grid>

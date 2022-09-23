@@ -131,9 +131,12 @@ export default function UpdateAdmin(props) {
     });
   };
 
+console.log(imageLoader.loader.length >= 4)
+
+console.log(imagesList.length >= 4)
   const loadImage = async (e) => {
     e.preventDefault();
-    if (imageLoader.loader.length >= 4) {
+    if (imageLoader.loader.length >=4 || imagesList.length >= 4) {
       setLoadOpen(true);
       setTimeout(() => {
         setLoadOpen(false);
@@ -160,14 +163,15 @@ export default function UpdateAdmin(props) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (images.images.length > 4) {
+    if (images.images.length && imageLoader.loader.length && imagesList.length >= 4) {
       setLoaDOpen(true);
     } else {
-      if(images.images.length <= 0 && imagesList === 0){
+      if(images.images.length === 0 && imagesList.length === 0){
         setMustImages(true)
         setTimeout(() => {
           setMustImages(false)
-        }, 3000)}else{
+        }, 3000)}
+        else{
       if (
         !active &&
         !productName &&
@@ -213,7 +217,7 @@ export default function UpdateAdmin(props) {
         newFormData.append("prixerPriceFrom", data.prixerPrice.from);
         newFormData.append("prixerPriceTo", data.prixerPrice.to);
         newFormData.append("hasSpecialVar", hasSpecialVar);
-        imagesList.map((url) => newFormData.append("images", url));
+        imagesList.length > 0 ? imagesList.map((url) => newFormData.append("images", url)) : newFormData.append("images", imagesList);
         images.images.map((file) =>
           newFormData.append("newProductImages", file)
         );
@@ -240,6 +244,8 @@ export default function UpdateAdmin(props) {
     setShowVariants(true);
     props.setProductEdit(false);
   };
+
+  console.log(imagesList)
 
   return (
     <React.Fragment>
@@ -349,6 +355,7 @@ export default function UpdateAdmin(props) {
                                         style={{ color: "#d33f49" }}
                                         onClick={(d) => {
                                           imageLoader.loader.splice(key_id, 1);
+                                          images.images.splice(key_id, 1)
                                           imagesList.splice(key_id, 1);
                                           setLoadImage({
                                             loader: imageLoader.loader,

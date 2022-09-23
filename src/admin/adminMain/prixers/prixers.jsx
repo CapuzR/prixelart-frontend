@@ -12,6 +12,10 @@ import useMediaQuery from "@material-ui/core/useMediaQuery";
 import Snackbar from "@material-ui/core/Snackbar";
 import Backdrop from "@material-ui/core/Backdrop";
 import PrixerGrid from "../../../sharedComponents/prixerGrid/prixerGrid";
+import Card from "@material-ui/core/Card";
+import CardContent from "@material-ui/core/CardContent";
+import CardMedia from "@material-ui/core/CardMedia";
+import utils from "../../../utils/utils";
 
 const useStyles = makeStyles((theme) => ({
   loading: {
@@ -21,6 +25,20 @@ const useStyles = makeStyles((theme) => ({
     },
     marginLeft: "50vw",
     marginTop: "50vh",
+  },
+  cardMedia: {
+    paddingTop: "81.25%",
+    borderRadius: "50%",
+    margin: "28px",
+  },
+  card: {
+    height: "100%",
+    display: "flex",
+    flexDirection: "column",
+  },
+  cardContent: {
+    flexGrow: 1,
+    marginTop: -10,
   },
   paper: {
     padding: theme.spacing(2),
@@ -54,6 +72,11 @@ export default function Prixers() {
   const [tiles, setTiles] = useState([]);
   const [backdrop, setBackdrop] = useState(true); // borrar
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
+  const isDeskTop = useMediaQuery(theme.breakpoints.up("sm"));
+  const [state, setState] = useState({
+    checkedA: true,
+  });
 
   //   const readPrixers = async () => {
   //     const base_url = process.env.REACT_APP_BACKEND_URL + "/prixers/read-all";
@@ -68,6 +91,36 @@ export default function Prixers() {
   //   useEffect(() => {
   //     readPrixers();
   //   }, []);
+
+  useEffect(() => {
+    const base_url =
+      process.env.REACT_APP_BACKEND_URL + "/prixer/read-all-full";
+
+    axios.get(base_url).then((response) => {
+      setTiles(utils.shuffle(response.data.prixers));
+      setBackdrop(false);
+    });
+  }, []);
+
+  const handleChange = (event) => {
+    setState({ ...state, [event.target.name]: event.target.checked });
+  }; //Switch
+
+  const ChangeVisibility = async (e, GetId) => {
+    e.preventDefault();
+    setLoading(true);
+    handleChange(e);
+    const base_url =
+      process.env.REACT_APP_BACKEND_URL + "/prixer/update-home/" + GetId;
+    const response = await axios.put(
+      base_url,
+      { status: state.checkedA },
+      {
+        "Content-Type": "multipart/form-data",
+      }
+    );
+    setLoading(false);
+  };
 
   return (
     <div>
@@ -88,7 +141,6 @@ export default function Prixers() {
             Prixers
           </Typography>
         </AppBar>
-
         <Grid
           container
           spacing={2}
@@ -98,7 +150,120 @@ export default function Prixers() {
             textAlign: "start",
           }}
         >
-          <PrixerGrid />
+          {/* <PrixerGrid /> */}
+          {tiles &&
+            tiles
+              .filter((tile) => tile.avatar)
+              .map((tile) =>
+                isDesktop ? (
+                  <Grid item key={tile._id} xs={6} sm={6} md={3}>
+                    <Card className={classes.card}>
+                      <CardMedia
+                        alt={tile.title}
+                        height="100"
+                        width="100"
+                        image={tile.avatar}
+                        className={classes.cardMedia}
+                        title={tile.title}
+                      />
+                      <CardContent className={classes.cardContent}>
+                        {console.log(tile.prixerId)}
+
+                        <Typography gutterBottom variant="h5" component="h2">
+                          {tile.firstName} {tile.lastName}
+                        </Typography>
+                        <Typography
+                          gutterBottom
+                          variant="h6"
+                          component="h6"
+                          style={{ fontSize: 16 }}
+                        >
+                          {tile.username} - {tile.specialty}
+                        </Typography>
+                      </CardContent>
+                      <Box
+                        style={{
+                          display: "flex",
+                          justifyContent: "end",
+                        }}
+                        label="Visible"
+                      >
+                        <Typography
+                          color="secondary"
+                          style={{ display: "flex", alignItems: "center" }}
+                        >
+                          Visible
+                        </Typography>
+                        <Switch
+                          checked={tile.status}
+                          color="primary"
+                          onChange={
+                            // handleChange
+                            (event) => ChangeVisibility(event, tile.prixerId)
+                          }
+                          name="checkedA"
+                          value={tile.status}
+                          inputProps={{
+                            "aria-label": "secondary checkbox",
+                          }}
+                        />
+                      </Box>
+                    </Card>
+                  </Grid>
+                ) : (
+                  <Grid item key={tile._id} xs={12} sm={4} md={4}>
+                    <Card className={classes.card}>
+                      <CardMedia
+                        alt={tile.title}
+                        height="100"
+                        image={tile.avatar}
+                        className={classes.cardMedia}
+                        title={tile.title}
+                      />
+                      <CardContent className={classes.cardContent}>
+                        <Typography gutterBottom variant="h5" component="h2">
+                          {tile.firstName} {tile.lastName}
+                        </Typography>
+                        <Typography
+                          gutterBottom
+                          variant="h6"
+                          component="h6"
+                          style={{ fontSize: 16 }}
+                        >
+                          {tile.username} - {tile.specialty}
+                        </Typography>
+                      </CardContent>
+                      <Box
+                        style={{
+                          display: "flex",
+                          justifyContent: "end",
+                        }}
+                        label="Visible"
+                      >
+                        <Typography
+                          color="secondary"
+                          style={{ display: "flex", alignItems: "center" }}
+                        >
+                          Visible
+                        </Typography>
+                        <Switch
+                          checked={tile.status}
+                          color="primary"
+                          onChange={
+                            // handleChange
+                            (event) => ChangeVisibility(event, tile._id)
+                          }
+                          name="checkedA"
+                          value={tile.status}
+                          inputProps={{
+                            "aria-label": "secondary checkbox",
+                          }}
+                        />
+                      </Box>
+                    </Card>
+                  </Grid>
+                )
+              )}
         </Grid>
       </Paper>
     </div>

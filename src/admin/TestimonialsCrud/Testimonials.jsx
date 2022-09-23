@@ -174,6 +174,13 @@ export default function Testimonials() {
         });
     }
   };
+  const cualquierVaina = (event) => {
+    // if (updateId !== undefined) {
+    //   handleChange();
+    // } else {
+    //   setState(event);
+    // }
+  };
 
   const handleChange = (event) => {
     setState({ ...state, [event.target.name]: event.target.checked });
@@ -226,6 +233,7 @@ export default function Testimonials() {
     setFooter(response.data.footer);
     setState(response.data.status);
     setUpdateId(GetId);
+    console.log(response.data.avatar);
   };
 
   const saveChanges = async (e, GetId) => {
@@ -234,6 +242,9 @@ export default function Testimonials() {
     const base_url =
       process.env.REACT_APP_BACKEND_URL + "/testimonial/update/" + GetId;
     const formData = new FormData();
+    // if (inputChange) {
+    //   formData.append("avatar", avatarPic);
+    // }
     formData.append("avatar", avatarPic);
     formData.append("type", type);
     formData.append("name", name);
@@ -461,8 +472,15 @@ export default function Testimonials() {
                           <Switch
                             color="primary"
                             checked={state.checkedA}
+                            // onChange={(e) => {
+                            //   updateId
+                            //     ? setState(e.target.value)
+                            //     : handleChange;
+                            // }}
+                            // onChange={()=>{active?setActive(false):setActive(true)}}
                             onChange={handleChange}
                             name="checkedA"
+                            // value={state}
                           />
                         }
                       />

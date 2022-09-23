@@ -20,6 +20,7 @@ import FavoriteIcon from "@material-ui/icons/Favorite";
 import PhotoLibraryIcon from "@material-ui/icons/PhotoLibrary";
 import ArtsGrid from "../prixerProfile/grid/grid";
 import PrixersGrid from "../sharedComponents/prixerGrid/prixerGrid";
+import { InsertEmoticon } from "@material-ui/icons";
 import InstagramIcon from "@material-ui/icons/Instagram";
 import SimpleDialog from "../sharedComponents/simpleDialog/simpleDialog";
 import FloatingAddButton from "../sharedComponents/floatingAddButton/floatingAddButton";
@@ -169,6 +170,10 @@ export default function Home(props) {
       setOpenPrixers(true);
       setOpenArts(false);
     } else if (newValue === 2) {
+      setOpenModal(false);
+      setOpenPrixers(false);
+      setOpenArts(false);
+    } else if (newValue === 3) {
       setOpenModal(true);
       setOpenPrixers(false);
       setOpenArts(false);
@@ -409,6 +414,7 @@ export default function Home(props) {
                 >
                   <Tab icon={<PhotoLibraryIcon />} label="ARTES" />
                   <Tab icon={<FavoriteIcon />} label="PRIXERS" />
+                  <Tab icon={<InsertEmoticon />} label="TESTIMONIOS" />
                   <Tab icon={<PhoneIcon />} label="TE ASESORAMOS" />
                   {/* <Tab icon={<PersonPinIcon />} label="CONFÍA EN PRIX" /> */}
                 </Tabs>

@@ -9,6 +9,7 @@ import BarChartIcon from "@material-ui/icons/BarChart";
 import AssignmentIcon from "@material-ui/icons/Assignment";
 import Divider from "@material-ui/core/Divider";
 import { useHistory } from "react-router-dom";
+import PaletteIcon from "@material-ui/icons/Palette";
 import LoyaltyIcon from "@material-ui/icons/Loyalty";
 import LocalMallIcon from "@material-ui/icons/LocalMall";
 import PaymentIcon from "@material-ui/icons/Payment";
@@ -86,10 +87,10 @@ export default function MainListItems(props) {
         <ListItem
           button
           selected={props.active === "prixer"}
-          style={{ color: "gray" }}
+          // style={{ color: "gray" }}
         >
           <ListItemIcon>
-            <LoyaltyIcon />
+            <PaletteIcon />
           </ListItemIcon>
           <ListItemText
             primary="Prixers"

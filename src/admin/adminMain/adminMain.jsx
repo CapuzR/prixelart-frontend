@@ -26,6 +26,7 @@ import PaymentMethods from "./orders/paymentMethods";
 import Orders from "./orders/orders";
 import Preferences from "./preferences/Preferences";
 import Testimonials from "../TestimonialsCrud/Testimonials";
+import Prixers from "./prixers/prixers";
 
 function Copyright() {
   return (
@@ -139,6 +140,7 @@ export default function AdminMain(props) {
   };
 
   useEffect(() => {
+    console.log(location.pathname.split("/").length);
     location.pathname.split("/").length === 7
       ? setActive(
           location.pathname.split("/")[location.pathname.split("/").length - 5]
@@ -224,6 +226,8 @@ export default function AdminMain(props) {
                 <PaymentMethods />
               ) : active === "order" ? (
                 <Orders />
+              ) : active === "prixer" ? (
+                <Prixers />
               ) : active === "preferences" ? (
                 <Preferences />
               ) : active === "testimonials" ? (

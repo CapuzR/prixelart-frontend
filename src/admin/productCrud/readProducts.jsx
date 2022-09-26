@@ -43,6 +43,7 @@ export default function ReadProducts(props) {
 
   const handleActive = (product, action) => {
     props.setProduct(product);
+    localStorage.setItem('product', JSON.stringify(product));
     history.push("/admin/product/" + action + "/" + product._id);
   };
 

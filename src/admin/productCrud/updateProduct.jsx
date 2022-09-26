@@ -73,34 +73,34 @@ export default function UpdateAdmin(props) {
   const theme = useTheme();
   const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
   const isDeskTop = useMediaQuery(theme.breakpoints.up("sm"));
-  const [productId, setProductId] = useState(props.product._id);
+  const [productId, setProductId] = useState(props?.product?._id);
   const [images, newImages] = useState({ images: [] });
-  const [imagesList, setImagesList] = useState(props.product.images);
-  const [active, setActive] = useState(props.product.active);
-  const [productName, setProductName] = useState(props.product.name);
-  const [description, setDescription] = useState(props.product.description);
-  const [category, setCategory] = useState(props.product.category);
+  const [imagesList, setImagesList] = useState(props?.product?.images);
+  const [active, setActive] = useState(props?.product?.active);
+  const [productName, setProductName] = useState(props?.product?.name);
+  const [description, setDescription] = useState(props?.product?.description);
+  const [category, setCategory] = useState(props?.product?.category);
   const [considerations, setConsiderations] = useState(
-    props.product.considerations
+    props?.product?.considerations
   );
   const [fromPublicPrice, setFromPublicPrice] = useState(
-    props.product.publicPrice.from
+    props?.product?.publicPrice?.from
   );
   const [toPublicPrice, setToPublicPrice] = useState(
-    props.product.publicPrice.to
+    props?.product?.publicPrice?.to
   );
   const [fromPrixerPrice, setFromPrixerPrice] = useState(
-    props.product.prixerPrice.from
+    props?.product?.prixerPrice?.from
   );
   const [toPrixerPrice, setToPrixerPrice] = useState(
-    props.product.prixerPrice.to
+    props?.product?.prixerPrice?.to
   );
   const [loading, setLoading] = useState(false);
   const [buttonState, setButtonState] = useState(false);
   const [showVariants, setShowVariants] = useState(false);
   const [activeVCrud, setActiveVCrud] = useState("read");
   const [hasSpecialVar, setHasSpecialVar] = useState(
-    props.product.hasSpecialVar || false
+    props?.product?.hasSpecialVar || false
   );
   const [imageLoader, setLoadImage] = useState({
     loader: [],
@@ -116,8 +116,13 @@ export default function UpdateAdmin(props) {
   const [loaDOpen, setLoaDOpen] = useState(false);
   const [mustImage, setMustImages] = useState(false);
 
+  console.log(props)
+
   useEffect(() => {
-    imagesList.map((url) => imageLoader.loader.push(url));
+    imagesList?.map((url) => imageLoader.loader.push(url));
+    return () => {
+      localStorage.removeItem('product');
+    }
   }, []);
 
   //Preview de imagen antes de enviar
@@ -131,9 +136,6 @@ export default function UpdateAdmin(props) {
     });
   };
 
-console.log(imageLoader.loader.length >= 4)
-
-console.log(imagesList.length >= 4)
   const loadImage = async (e) => {
     e.preventDefault();
     if (imageLoader.loader.length >=4 || imagesList.length >= 4) {

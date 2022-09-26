@@ -106,7 +106,7 @@ export default function Products(props) {
   const location = useLocation();
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
   const [ activeCrud, setActiveCrud ] = useState('read');
-  const [ product, setProduct ] = useState();
+  const [ product, setProduct ] = useState(localStorage.getItem('product') ? JSON.parse(localStorage.getItem('product')) : undefined);
   const [ productEdit, setProductEdit ] = useState(true);
   const theme = useTheme();
   const isDesktop = useMediaQuery(theme.breakpoints.up('md'));

@@ -175,11 +175,11 @@ export default function Testimonials() {
     }
   };
   const cualquierVaina = (event) => {
-    // if (updateId !== undefined) {
-    //   handleChange();
-    // } else {
-    //   setState(event);
-    // }
+    if (updateId !== undefined) {
+      handleChange();
+    } else {
+      // setState(false);
+    }
   };
 
   const handleChange = (event) => {
@@ -207,7 +207,6 @@ export default function Testimonials() {
   const ChangeVisibility = async (e, GetId) => {
     e.preventDefault();
     setLoading(true);
-    console.log(GetId);
     handleChange(e);
     const base_url =
       process.env.REACT_APP_BACKEND_URL + "/testimonial/update-home/" + GetId;
@@ -233,7 +232,7 @@ export default function Testimonials() {
     setFooter(response.data.footer);
     setState(response.data.status);
     setUpdateId(GetId);
-    console.log(response.data.avatar);
+    console.log(response.data);
   };
 
   const saveChanges = async (e, GetId) => {
@@ -245,7 +244,7 @@ export default function Testimonials() {
     // if (inputChange) {
     //   formData.append("avatar", avatarPic);
     // }
-    formData.append("avatar", avatarPic);
+    formData.append("avatar", avatarPic || avatarObj); // ternary?
     formData.append("type", type);
     formData.append("name", name);
     formData.append("value", value);
@@ -478,7 +477,13 @@ export default function Testimonials() {
                             //     : handleChange;
                             // }}
                             // onChange={()=>{active?setActive(false):setActive(true)}}
-                            onChange={handleChange}
+                            // onChange={(e) => {
+                            //   setState(e.target.value);
+                            // }}
+                            onChange={handleChange || setState}
+                            // {(e) => {
+                            //   setState(e.target.value);
+                            // }}
                             name="checkedA"
                             // value={state}
                           />

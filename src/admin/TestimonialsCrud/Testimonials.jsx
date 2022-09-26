@@ -234,6 +234,7 @@ export default function Testimonials() {
     setUpdateId(GetId);
     console.log(response.data);
   };
+  console.log(state);
 
   const saveChanges = async (e, GetId) => {
     e.preventDefault();
@@ -249,7 +250,7 @@ export default function Testimonials() {
     formData.append("name", name);
     formData.append("value", value);
     formData.append("footer", footer);
-    formData.append("status", state.checkedA);
+    formData.append("status", state.checkedA || state);
     const response = await axios.put(base_url, formData, {
       "Content-Type": "multipart/form-data",
     });

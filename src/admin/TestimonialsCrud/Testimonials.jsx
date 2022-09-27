@@ -174,6 +174,13 @@ export default function Testimonials() {
         });
     }
   };
+  const cualquierVaina = (event) => {
+    if (updateId !== undefined) {
+      handleChange();
+    } else {
+      // setState(false);
+    }
+  };
 
   const handleChange = (event) => {
     setState({ ...state, [event.target.name]: event.target.checked });
@@ -200,7 +207,6 @@ export default function Testimonials() {
   const ChangeVisibility = async (e, GetId) => {
     e.preventDefault();
     setLoading(true);
-    console.log(GetId);
     handleChange(e);
     const base_url =
       process.env.REACT_APP_BACKEND_URL + "/testimonial/update-home/" + GetId;
@@ -226,7 +232,9 @@ export default function Testimonials() {
     setFooter(response.data.footer);
     setState(response.data.status);
     setUpdateId(GetId);
+    console.log(response.data);
   };
+  console.log(state);
 
   const saveChanges = async (e, GetId) => {
     e.preventDefault();
@@ -234,12 +242,15 @@ export default function Testimonials() {
     const base_url =
       process.env.REACT_APP_BACKEND_URL + "/testimonial/update/" + GetId;
     const formData = new FormData();
-    formData.append("avatar", avatarPic);
+    // if (inputChange) {
+    //   formData.append("avatar", avatarPic);
+    // }
+    formData.append("avatar", avatarPic || avatarObj); // ternary?
     formData.append("type", type);
     formData.append("name", name);
     formData.append("value", value);
     formData.append("footer", footer);
-    formData.append("status", state.checkedA);
+    formData.append("status", state.checkedA || state);
     const response = await axios.put(base_url, formData, {
       "Content-Type": "multipart/form-data",
     });
@@ -461,8 +472,21 @@ export default function Testimonials() {
                           <Switch
                             color="primary"
                             checked={state.checkedA}
-                            onChange={handleChange}
+                            // onChange={(e) => {
+                            //   updateId
+                            //     ? setState(e.target.value)
+                            //     : handleChange;
+                            // }}
+                            // onChange={()=>{active?setActive(false):setActive(true)}}
+                            // onChange={(e) => {
+                            //   setState(e.target.value);
+                            // }}
+                            onChange={handleChange || setState}
+                            // {(e) => {
+                            //   setState(e.target.value);
+                            // }}
                             name="checkedA"
+                            // value={state}
                           />
                         }
                       />

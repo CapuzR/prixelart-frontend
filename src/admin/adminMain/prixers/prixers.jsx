@@ -93,16 +93,20 @@ export default function Prixers() {
   //   }, []);
 
   useEffect(() => {
+    readPrixers();
+  }, []);
+
+  const readPrixers = async () => {
     const base_url =
-      process.env.REACT_APP_BACKEND_URL + "/prixer/read-all-full";
+      process.env.REACT_APP_BACKEND_URL + "/prixer/read-all-full-v2";
 
     axios.get(base_url).then((response) => {
       setTiles(utils.shuffle(response.data.prixers));
       setBackdrop(false);
     });
-  }, []);
+  };
 
-  const handleChange = (event) => {
+  const handleChange = (event, state) => {
     setState({ ...state, [event.target.name]: event.target.checked });
   }; //Switch
 
@@ -120,6 +124,7 @@ export default function Prixers() {
       }
     );
     setLoading(false);
+    // readPrixers();
   };
 
   return (
@@ -150,7 +155,6 @@ export default function Prixers() {
             textAlign: "start",
           }}
         >
-          {/* <PrixerGrid /> */}
           {tiles &&
             tiles
               .filter((tile) => tile.avatar)
@@ -167,8 +171,6 @@ export default function Prixers() {
                         title={tile.title}
                       />
                       <CardContent className={classes.cardContent}>
-                        {console.log(tile.prixerId)}
-
                         <Typography gutterBottom variant="h5" component="h2">
                           {tile.firstName} {tile.lastName}
                         </Typography>
@@ -178,7 +180,14 @@ export default function Prixers() {
                           component="h6"
                           style={{ fontSize: 16 }}
                         >
-                          {tile.username} - {tile.specialty}
+                          {tile.username} -
+                          {tile.specialty ||
+                            tile.specialtyArt?.map((specialty, index) =>
+                              tile.specialtyArt?.length === index + 1
+                                ? specialty
+                                : `${specialty}, `
+                            )}
+                          {console.log(tile)}
                         </Typography>
                       </CardContent>
                       <Box
@@ -199,7 +208,9 @@ export default function Prixers() {
                           color="primary"
                           onChange={
                             // handleChange
-                            (event) => ChangeVisibility(event, tile.prixerId)
+                            (event) =>
+                              handleChange(event, tile.state) ||
+                              ChangeVisibility(event, tile.prixerId)
                           }
                           name="checkedA"
                           value={tile.status}
@@ -251,7 +262,7 @@ export default function Prixers() {
                           color="primary"
                           onChange={
                             // handleChange
-                            (event) => ChangeVisibility(event, tile._id)
+                            (event) => ChangeVisibility(event, tile.prixerId)
                           }
                           name="checkedA"
                           value={tile.status}

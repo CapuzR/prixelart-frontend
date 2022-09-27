@@ -140,7 +140,6 @@ export default function AdminMain(props) {
   };
 
   useEffect(() => {
-    console.log(location.pathname.split("/").length);
     location.pathname.split("/").length === 7
       ? setActive(
           location.pathname.split("/")[location.pathname.split("/").length - 5]

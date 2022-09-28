@@ -7,6 +7,7 @@ import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import GridList from '@material-ui/core/GridList';
 import { isWidthUp } from '@material-ui/core/withWidth';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import Carousel from 'react-material-ui-carousel'
 import Card from '@material-ui/core/Card';
 import CardActionArea from '@material-ui/core/CardActionArea';
@@ -146,13 +147,18 @@ export default function ProductGrid(props) {
                   }
                 }>
                 {
-                tile.images ?
-                tile.images.map((img, key_id) =>
+                tile.sources.images[0].type == 'images' ?
+                tile.sources.images.map((img, key_id) =>
                 (
-                  <img key={key_id} src={img} className={classes.img} alt="product"/>
+                  img.type === 'images' ?
+                  <img key={key_id} src={img.url} className={classes.img} alt="product"/>
+                    :
+                  <div dangerouslySetInnerHTML={{__html: img.url}}>
+                  </div>
                 ))
                   :
-                  <img src={tile.thumbUrl} alt="product"/>
+                  <div dangerouslySetInnerHTML={{__html: tile.sources.images[0].url}}>
+                  </div>
                 }
               </Carousel>
               </CardMedia>

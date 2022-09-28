@@ -1,9 +1,12 @@
 import React from 'react';
-import {useState} from 'react';
+import { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Title from '../adminMain/Title';
 import axios from 'axios';
 import TextField from '@material-ui/core/TextField';
+import InputLabel from '@material-ui/core/InputLabel';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import Snackbar from '@material-ui/core/Snackbar';
@@ -11,6 +14,11 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import EditIcon from '@material-ui/icons/Edit';
 import { useTheme } from '@material-ui/core/styles';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
 // import IconButton from '@material-ui/core/IconButton';
 // import OutlinedInput from '@material-ui/core/OutlinedInput';
 // import InputLabel from '@material-ui/core/InputLabel';
@@ -81,6 +89,9 @@ export default function CreateProduct() {
     const [ category, setCategory ] = useState('');
     const [ considerations, setConsiderations ] = useState('');
     const [images, newImages] = useState({images : []});
+    const [ typeFile, setTypeFile ] =  useState('');
+    const [ videoUrl, setVideoUrl ] = useState('')
+    const [ videoPreview, setVideoPreview ] = useState('')
     const [fromPublicPrice, setFromPublicPrice] = useState('');
     const [ toPublicPrice, setToPublicPrice ] = useState('');
     const [ fromPrixerPrice, setFromPrixerPrice ] = useState('');
@@ -95,9 +106,18 @@ export default function CreateProduct() {
     //Error states.
     const [errorMessage, setErrorMessage] = useState();
     const [snackBarError, setSnackBarError] = useState(false);
+    const [open, setOpen] = useState(false);
     const [loadOpen, setLoadOpen] = useState(false);
     const [loaDOpen, setLoaDOpen] = useState(false);
     const [mustImage, setMustImages] = useState(false);
+
+  const handleClickOpen = () => {
+        setOpen(true);
+  };
+
+  const handleClose = () => {
+      setOpen(false);
+  };
 
     //Preview de imagen antes de enviar
     const convertToBase64 = (blob) => {
@@ -138,8 +158,8 @@ export default function CreateProduct() {
     }
   }
 
-  const replaceImage = async (e, index) =>
-  {
+    const replaceImage = async (e, index) =>
+    {
     e.preventDefault();
     const file = e.target.files[0];
     const resizedString = await convertToBase64(file);
@@ -148,7 +168,19 @@ export default function CreateProduct() {
     setLoadImage({loader: imageLoader.loader, filename: file.name})
   }
 
-    const handleSubmit = async (e)=> {
+
+  const modifyString = (a, sti) => {
+      const url = sti.split(' ')
+      const width = sti.replace('1350', '326').replace('494', '326');
+      const previewMp4 = sti.replace('1350', '510').replace('494', '350');
+      setVideoUrl(width)
+      setVideoPreview(previewMp4)
+      // const index = url[3].indexOf()
+      // sti.replace(index, '?controls=0\"')
+    //sti[79]
+  }
+
+  const handleSubmit = async (e)=> {
       e.preventDefault();
       if(images.images.length > 4)
       {
@@ -157,13 +189,13 @@ export default function CreateProduct() {
           setLoaDOpen(false)
         }, 3000)
       }else{
-        if(images.images.length <= 0){
+        if(images.images.length <= 0 && videoUrl == ''){
           setMustImages(true)
           setTimeout(() => {
             setMustImages(false)
           }, 3000)
         }else{
-          if(!active &&
+        if(!active &&
         !productName &&
         !description &&
         !category &&
@@ -174,7 +206,8 @@ export default function CreateProduct() {
         // !fixedPrixerPrice &&
         !fromPrixerPrice &&
         !toPrixerPrice &&
-        !images){
+        !images &&
+        !typeFile){
         setErrorMessage('Por favor completa todos los campos requeridos.');
         setSnackBarError(true);
         e.preventDefault();
@@ -208,6 +241,7 @@ export default function CreateProduct() {
         formData.append('prixerPriceFrom', data.prixerPrice.from)
         formData.append('prixerPriceTo', data.prixerPrice.to)
         formData.append('hasSpecialVar', hasSpecialVar)
+        formData.append('video', videoUrl)
         images.images.map(file => formData.append('productImages', file))
         const base_url= process.env.REACT_APP_BACKEND_URL + "/product/create";
         const response = await axios.post(base_url, formData);
@@ -236,6 +270,12 @@ export default function CreateProduct() {
     }
   }
 }
+
+const handleType = (e) => {
+  setTypeFile(e.target.value)
+}
+
+
   return (
     <React.Fragment>
     {
@@ -246,10 +286,8 @@ export default function CreateProduct() {
       <Title>Productos</Title>
         <form className={classes.form} encType="multipart/form-data" noValidate onSubmit={handleSubmit}>
             <Grid container spacing={2}>
-                <Grid container spacing={2}>
-                    <Grid container spacing={2} direction="row">
-                    <Grid item xs={12} className={classes.formHead} style={{flexDirection: isDesktop ?  'row' : 'column'}}>
-                        <FormControl variant="outlined">
+                    <Grid container spacing={2} className={classes.formHead}>
+                      <FormControl variant="outlined" style={{display: 'flex', flexDirection: 'column', height: '20%', alignItems: 'center'}}>
                         <Button variant="contained" component="label">
                         Upload File
                         <input name="productImages" type="file" accept="image/*" hidden onChange={(a) => {
@@ -257,9 +295,13 @@ export default function CreateProduct() {
                           loadImage(a)
                         }}/>
                        </Button>
-                        </FormControl>
-                        <Grid item xs={6} >
-                        <Grid className={classes.loaderImage} style={{ width: isDesktop ? '120%' : '90vw', marginLeft: isDesktop ? '' : '-48%', marginTop: isDesktop ? '' : '9%'}}>
+                       - O -
+                       <Button variant="contained" componenet="label" onClick={handleClickOpen}>
+                        Upload video
+                       </Button>
+                       </FormControl>
+                        <Grid item xs={7} >
+                        <Grid className={classes.loaderImage} style={{ width: isDesktop ? '100%' : '90vw',height: imageLoader.loader.length > 0 ? 'auto' : '30vh' , marginLeft: isDesktop ? '' : '-48%', marginTop: isDesktop ? '' : '9%'}}>
                             {
                               imageLoader.loader ?
                               imageLoader.loader.map((img, key_id) =>
@@ -287,7 +329,7 @@ export default function CreateProduct() {
                                     </Button>
                                     </Grid>
                                   </Grid>
-                                  <Grid key={key_id} item xs={imageLoader.loader.length === 1 ? 3 : imageLoader.loader.length === 2 ? 6 : imageLoader.loader.length === 3 ? 9 : 12}>
+                                  <Grid key={key_id} item xs={imageLoader.loader.length === 1 ? 6 : imageLoader.loader.length === 2 ? 6 : imageLoader.loader.length === 3 ? 9 : 12}>
                                     <img  className={classes.imageLoad} src={img} alt='+'></img>
                                   </Grid>
                                 </Grid>
@@ -298,7 +340,6 @@ export default function CreateProduct() {
                             }
                         </Grid>
                         </Grid>
-                    </Grid>
                     <Grid container xs={isDesktop ? 6 : 12} >
                       <Grid item xs={6}>
                           <Checkbox
@@ -547,8 +588,36 @@ export default function CreateProduct() {
               <Button variant="contained" color="primary" type="submit" disabled={buttonState} style={{ marginTop: 20}}>
                 Crear
               </Button>
-            </Grid>
         </form>
+      <Dialog open={open} onClose={handleClose}>
+      <DialogTitle>Youtube Url</DialogTitle>
+      <DialogContent>
+        <DialogContentText>
+          Copia y pega la url que quieres mostrar en el carrusel de imagenes
+        </DialogContentText>
+        <div id='ll'>
+        </div>
+        <TextField
+        onChange={(a)=>{
+          const div = document.getElementById('ll');
+          modifyString(a, a.target.value)
+          div.innerHTML = videoPreview;
+        }}
+          autoFocus
+          label="Url"
+          type="text"
+          fullWidth
+        />
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleClose} color="primary">
+          Cancel
+        </Button>
+        <Button onClick={handleClose} color="primary">
+          Aceptar
+        </Button>
+      </DialogActions>
+    </Dialog>
         <Snackbar
           open={snackBarError}
           autoHideDuration={1000}

@@ -4,6 +4,9 @@ import { makeStyles } from "@material-ui/core/styles";
 import Title from "../adminMain/Title";
 import axios from "axios";
 import TextField from "@material-ui/core/TextField";
+import InputLabel from '@material-ui/core/InputLabel';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
 import Button from "@material-ui/core/Button";
 import Grid from "@material-ui/core/Grid";
 import Snackbar from "@material-ui/core/Snackbar";
@@ -75,7 +78,8 @@ export default function UpdateAdmin(props) {
   const isDeskTop = useMediaQuery(theme.breakpoints.up("sm"));
   const [productId, setProductId] = useState(props?.product?._id);
   const [images, newImages] = useState({ images: [] });
-  const [imagesList, setImagesList] = useState(props?.product?.images);
+  const [ typeFile, setTypeFile ] =  useState('');
+  const [imagesList, setImagesList] = useState(props?.product?.sources.images);
   const [active, setActive] = useState(props?.product?.active);
   const [productName, setProductName] = useState(props?.product?.name);
   const [description, setDescription] = useState(props?.product?.description);
@@ -115,8 +119,6 @@ export default function UpdateAdmin(props) {
   const [loadOpen, setLoadOpen] = useState(false);
   const [loaDOpen, setLoaDOpen] = useState(false);
   const [mustImage, setMustImages] = useState(false);
-
-  console.log(props)
 
   useEffect(() => {
     imagesList?.map((url) => imageLoader.loader.push(url));
@@ -160,8 +162,6 @@ export default function UpdateAdmin(props) {
     images.images[index] = file;
     setLoadImage({ loader: imageLoader.loader, filename: file.name });
   };
-  console.log(imageLoader);
-  console.log(images);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -219,6 +219,7 @@ export default function UpdateAdmin(props) {
         newFormData.append("prixerPriceFrom", data.prixerPrice.from);
         newFormData.append("prixerPriceTo", data.prixerPrice.to);
         newFormData.append("hasSpecialVar", hasSpecialVar);
+        newFormData.append('typeFile', typeFile)
         imagesList.length > 0 ? imagesList.map((url) => newFormData.append("images", url)) : newFormData.append("images", imagesList);
         images.images.map((file) =>
           newFormData.append("newProductImages", file)
@@ -247,7 +248,9 @@ export default function UpdateAdmin(props) {
     props.setProductEdit(false);
   };
 
-  console.log(imagesList)
+  const handleType = (e) => {
+    setTypeFile(e.target.value)
+  }
 
   return (
     <React.Fragment>
@@ -335,6 +338,19 @@ export default function UpdateAdmin(props) {
                           />
                         </Button>
                       </FormControl>
+                      <FormControl style={{width: 150}}>
+                      <InputLabel>Tipo</InputLabel>
+                      <Select
+                      value={typeFile}
+                      onChange={handleType}>
+                      <MenuItem value={'url/image'}>
+                      Imagen
+                      </MenuItem>
+                      <MenuItem value={'url/video'}>
+                      Video
+                      </MenuItem>
+                      </Select>
+                       </FormControl>
                       <Grid item xs={6}>
                         <Grid item className={classes.loaderImage}>
                           {imageLoader.loader ? (

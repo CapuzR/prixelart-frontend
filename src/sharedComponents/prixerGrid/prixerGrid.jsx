@@ -100,7 +100,6 @@ export default function PrixerGrid(props) {
                         title={tile.title}
                       />
                       <CardContent className={classes.cardContent}>
-                        {console.log(tile)}
                         <Typography gutterBottom variant="h5" component="h2">
                           {tile.firstName} {tile.lastName}
                         </Typography>

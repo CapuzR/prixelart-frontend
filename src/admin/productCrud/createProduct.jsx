@@ -253,7 +253,7 @@ export default function CreateProduct() {
               item
               xs={12}
               sm={12}
-              md={12}
+              md={4}
               lg={4}
               xl={4}
               style={{
@@ -278,74 +278,79 @@ export default function CreateProduct() {
                 </Button>
               </FormControl>
             </Grid>
-            <Grid item xs={12} sm={12} md={12} lg={8} xl={8}>
-              <div style={{ display: "flex" }}>
-                {imageLoader.loader &&
-                  imageLoader.loader.map((img, key_id) => {
-                    return (
+            <Grid
+              item
+              xs={12}
+              sm={12}
+              md={8}
+              lg={8}
+              xl={8}
+              style={{ display: "flex" }}
+            >
+              {imageLoader.loader &&
+                imageLoader.loader.map((img, key_id) => {
+                  return (
+                    <div
+                      style={{
+                        width: "25%",
+                        // maxHeight: "200px",
+                        marginRight: "4px",
+                      }}
+                    >
                       <div
                         style={{
-                          width: "25%",
-                          maxHeight: "200px",
-                          marginRight: "4px",
+                          // marginBottom: "-32px",
+                          textAlign: "right",
                         }}
                       >
-                        <div
-                          style={{
-                            marginBottom: "-32px",
-                            textAlign: "right",
+                        <IconButton
+                          variant="text"
+                          className={classes.buttonImgLoader}
+                          style={{ color: "#d33f49" }}
+                          component="label"
+                        >
+                          <input
+                            name="productImages"
+                            type="file"
+                            accept="image/*"
+                            hidden
+                            onChange={(a) => {
+                              const i = imageLoader.loader.indexOf(img);
+                              replaceImage(a, i);
+                            }}
+                          />
+                          <EditIcon />
+                        </IconButton>
+                        <IconButton
+                          variant="text"
+                          className={classes.buttonImgLoader}
+                          style={{ color: "#d33f49" }}
+                          onClick={(d) => {
+                            imageLoader.loader.splice(key_id, 1);
+                            images.images.splice(key_id, 1);
+                            setLoadImage({
+                              loader: imageLoader.loader,
+                              filename: "Subir Imagenes",
+                            });
+                            newImages({ images: images.images });
                           }}
                         >
-                          <IconButton
-                            variant="text"
-                            className={classes.buttonImgLoader}
-                            style={{ color: "#d33f49" }}
-                            onClick={(d) => {
-                              imageLoader.loader.splice(key_id, 1);
-                              images.images.splice(key_id, 1);
-                              setLoadImage({
-                                loader: imageLoader.loader,
-                                filename: "Subir Imagenes",
-                              });
-                              newImages({ images: images.images });
-                            }}
-                          >
-                            <HighlightOffOutlinedIcon />
-                          </IconButton>
-
-                          <IconButton
-                            variant="text"
-                            className={classes.buttonEdit}
-                            style={{ color: "#d33f49" }}
-                            component="label"
-                          >
-                            <input
-                              name="productImages"
-                              type="file"
-                              accept="image/*"
-                              hidden
-                              onChange={(a) => {
-                                const i = imageLoader.loader.indexOf(img);
-                                replaceImage(a, i);
-                              }}
-                            />
-                            <EditIcon />
-                          </IconButton>
-                        </div>
-
-                        <img
-                          style={{
-                            width: "100%",
-                            height: "200px",
-                            objectFit: "contain",
-                          }}
-                          src={img}
-                          alt="+"
-                        ></img>
+                          <HighlightOffOutlinedIcon />
+                        </IconButton>
                       </div>
-                    );
-                  })}
-              </div>
+
+                      <img
+                        style={{
+                          width: "100%",
+                          // height: "200px",
+                          objectFit: "contain",
+                        }}
+                        src={img}
+                        alt="+"
+                      />
+                    </div>
+                  );
+                })}
             </Grid>
             <Grid container xs={isDesktop ? 6 : 12}>
               <Grid item xs={6}>

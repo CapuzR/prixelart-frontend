@@ -171,7 +171,7 @@ export default function CreateProduct() {
 
   const modifyString = (a, sti) => {
       const url = sti.split(' ')
-      const width = sti.replace('1350', '326').replace('494', '326');
+      const width = sti.replace('560', '326').replace('315', '326');
       const previewMp4 = sti.replace('1350', '510').replace('494', '350');
       setVideoUrl(width)
       setVideoPreview(previewMp4)

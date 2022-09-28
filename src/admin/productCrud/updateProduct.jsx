@@ -78,7 +78,6 @@ export default function UpdateAdmin(props) {
   const isDeskTop = useMediaQuery(theme.breakpoints.up("sm"));
   const [productId, setProductId] = useState(props?.product?._id);
   const [images, newImages] = useState({ images: [] });
-  const [ typeFile, setTypeFile ] =  useState('');
   const [imagesList, setImagesList] = useState(props?.product?.sources.images);
   const [active, setActive] = useState(props?.product?.active);
   const [productName, setProductName] = useState(props?.product?.name);
@@ -110,7 +109,7 @@ export default function UpdateAdmin(props) {
     loader: [],
     filename: "Subir imagenes",
   });
-
+  const [ videoUrl, setVideoUrl ] =useState('')
   const [thumbUrl, setThumbUrl] = useState(props.product?.thumbUrl);
 
   //Error states.
@@ -219,7 +218,6 @@ export default function UpdateAdmin(props) {
         newFormData.append("prixerPriceFrom", data.prixerPrice.from);
         newFormData.append("prixerPriceTo", data.prixerPrice.to);
         newFormData.append("hasSpecialVar", hasSpecialVar);
-        newFormData.append('typeFile', typeFile)
         imagesList.length > 0 ? imagesList.map((url) => newFormData.append("images", url)) : newFormData.append("images", imagesList);
         images.images.map((file) =>
           newFormData.append("newProductImages", file)
@@ -248,9 +246,8 @@ export default function UpdateAdmin(props) {
     props.setProductEdit(false);
   };
 
-  const handleType = (e) => {
-    setTypeFile(e.target.value)
-  }
+
+console.log(imageLoader.loader)
 
   return (
     <React.Fragment>
@@ -338,19 +335,6 @@ export default function UpdateAdmin(props) {
                           />
                         </Button>
                       </FormControl>
-                      <FormControl style={{width: 150}}>
-                      <InputLabel>Tipo</InputLabel>
-                      <Select
-                      value={typeFile}
-                      onChange={handleType}>
-                      <MenuItem value={'url/image'}>
-                      Imagen
-                      </MenuItem>
-                      <MenuItem value={'url/video'}>
-                      Video
-                      </MenuItem>
-                      </Select>
-                       </FormControl>
                       <Grid item xs={6}>
                         <Grid item className={classes.loaderImage}>
                           {imageLoader.loader ? (
@@ -409,11 +393,16 @@ export default function UpdateAdmin(props) {
                                     </Grid>
                                   </Grid>
                                   <Grid item key={key_id} xs={imageLoader.loader.length === 1 ? 3 : imageLoader.loader.length === 2 ? 6 : imageLoader.loader.length === 3 ? 9 : 12}>
-                                  <img
+                                  {
+                                    img.type === 'images' ?
+                                    <img
                                     className={classes.imageLoad}
-                                    src={img}
+                                    src={img.url}
                                     alt="+"
                                   ></img>
+                                  :
+                                  ''
+                                }
                                   </Grid>
                                 </Grid>
                               );

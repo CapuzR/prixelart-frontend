@@ -135,7 +135,7 @@ export default function Testimonials() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!type || !name || !value || !avatar || footer || !state) {
+    if (!type || !name || !value || !avatar || !state) {
       setErrorMessage("Por favor completa todos los campos requeridos.");
       setSnackBarError(true);
     } else {

@@ -105,7 +105,7 @@ export default function UserData(props) {
   const [email, setEmail] = useState();
   const [firstName, setFirstName] = useState();
   const [lastName, setLastName] = useState();
-  const [specialtyArt, setSpecialtyArt] = useState();
+  const [specialtyArt, setSpecialtyArt] = useState([]);
   const [instagram, setInstagram] = useState();
   const [facebook, setFacebook] = useState();
   const [twitter, setTwitter] = useState();
@@ -176,7 +176,7 @@ export default function UserData(props) {
       formData.append("firstName", firstName);
       formData.append("email", email);
       formData.append("lastName", lastName);
-      formData.append("specialty", specialtyArt);
+      formData.append("specialtyArt", specialtyArt);
       formData.append("instagram", instagram);
       formData.append("facebook", facebook);
       formData.append("twitter", twitter);
@@ -195,7 +195,7 @@ export default function UserData(props) {
         setEmail(response.data.email);
         setFirstName(response.data.firstName);
         setLastName(response.data.lastName);
-        setSpecialtyArt(response.data.specialty);
+        setSpecialtyArt(response.data.specialtyArt);
         setInstagram(response.data.instagram);
         setFacebook(response.data.facebook);
         setTwitter(response.data.twitter);
@@ -229,6 +229,7 @@ export default function UserData(props) {
   const handleChange = (e) => {
     setSpecialtyArt(e.target.value);
   };
+
   return prixerExists ? (
     <div className={classes.root}>
       <Backdrop className={classes.backdrop} open={backdrop}>
@@ -236,92 +237,117 @@ export default function UserData(props) {
       </Backdrop>
       <Paper className={classes.paper}>
         {prixerDataState === "read" && (
-          <Grid container spacing={2}>
-            <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
-              <Box style={{ marginBottom: "4px" }}>
-                {avatarObj ? (
-                  <Avatar className={classes.avatar}>
-                    <label htmlFor="file-input">
-                      <img
-                        src={profilePic}
-                        alt="Prixer profile avatar"
-                        style={{ maxHeight: 200 }}
-                      />
-                    </label>
-                  </Avatar>
-                ) : (
-                  JSON.parse(localStorage.getItem("token")) &&
-                  JSON.parse(localStorage.getItem("token")).username ===
-                    username && (
+          <>
+            <Box style={{ textAlign: "end", marginBottom: "4px" }}>
+              {JSON.parse(localStorage.getItem("token")) &&
+                JSON.parse(localStorage.getItem("token")).username ===
+                  username && (
+                  <IconButton
+                    color="primary"
+                    onClick={handleProfileDataEdit}
+                    variant="contained"
+                    style={{ marginBottom: "8px" }}
+                  >
+                    <EditIcon />
+                  </IconButton>
+                )}
+            </Box>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
+                <Box style={{ marginBottom: "4px" }}>
+                  {avatarObj ? (
                     <Avatar className={classes.avatar}>
                       <label htmlFor="file-input">
                         <img
-                          src="/PrixLogo.png"
+                          src={profilePic}
                           alt="Prixer profile avatar"
-                          style={{ maxHeight: 200, height: 120 }}
-                          onClick={handleProfileDataEdit}
+                          style={{ maxHeight: 200 }}
                         />
                       </label>
                     </Avatar>
-                  )
-                )}
-              </Box>
-            </Grid>
-            <Grid item xs={12} sm={8} md={8} lg={8} xl={8}>
-              <Box style={{ marginBottom: "4px" }}>
-                <Typography variant="body1">
-                  {specialtyArt?.map((specialty, index) =>
-                    specialtyArt?.length === index + 1
-                      ? specialty
-                      : `${specialty}, `
+                  ) : (
+                    JSON.parse(localStorage.getItem("token")) &&
+                    JSON.parse(localStorage.getItem("token")).username ===
+                      username && (
+                      <Avatar className={classes.avatar}>
+                        <label htmlFor="file-input">
+                          <img
+                            src="/PrixLogo.png"
+                            alt="Prixer profile avatar"
+                            style={{ maxHeight: 200, height: 120 }}
+                            onClick={handleProfileDataEdit}
+                          />
+                        </label>
+                      </Avatar>
+                    )
                   )}
-                </Typography>
-              </Box>
-              <Box style={{ marginBottom: "4px" }}>
-                <Typography variant="body1" color="textSecondary">
-                  {username}
-                </Typography>
-              </Box>
-              <Box style={{ marginBottom: "4px" }}>
-                <Typography>{description}</Typography>
-              </Box>
-              <Box style={{ display: "flex", alignItems: "center" }}>
-                <InstagramIcon style={{ marginRight: "4px" }} />
-                <a
-                  href={"https://www.instagram.com/" + instagram}
-                  style={{ textDecoration: "none", color: "#d33f49" }}
-                >
-                  {instagram}
-                </a>
-              </Box>
-              <Box style={{ display: "flex", alignItems: "center" }}>
-                {facebook && (
-                  <>
-                    <FacebookIcon style={{ marginRight: "4px" }} />
-                    <a
-                      href={"https://www.facebook.com/" + facebook}
-                      style={{ textDecoration: "none", color: "#d33f49" }}
-                    >
-                      {facebook}
-                    </a>
-                  </>
-                )}
-              </Box>
-              <Box style={{ display: "flex", alignItems: "center" }}>
-                {twitter && (
-                  <>
-                    <TwitterIcon style={{ marginRight: "4px" }} />
-                    <a
-                      href={"https://www.twitter.com/" + twitter}
-                      style={{ textDecoration: "none", color: "#d33f49" }}
-                    >
-                      {twitter}
-                    </a>
-                  </>
-                )}
-              </Box>
+                </Box>
+              </Grid>
+              <Grid item xs={12} sm={8} md={8} lg={8} xl={8}>
+                <Box style={{ marginBottom: "4px" }}>
+                  <Typography variant="h5">
+                    {firstName} {lastName}
+                  </Typography>
+                </Box>
+                <Box style={{ marginBottom: "4px" }}>
+                  <Typography variant="body1" color="textSecondary">
+                    {username}
+                  </Typography>
+                </Box>
+                <Box style={{ marginBottom: "4px" }}>
+                  <Typography variant="body1">
+                    {specialtyArt?.map((specialty, index) =>
+                      specialtyArt?.length === index + 1
+                        ? specialty
+                        : `${specialty}, `
+                    )}
+                  </Typography>
+                </Box>
+
+                <Box style={{ marginBottom: "4px" }}>
+                  <Typography>{description}</Typography>
+                </Box>
+                <Box style={{ display: "flex", alignItems: "center" }}>
+                  <InstagramIcon style={{ marginRight: "4px" }} />
+                  <a
+                    target="_blank"
+                    href={"https://www.instagram.com/" + instagram}
+                    style={{ textDecoration: "none", color: "#d33f49" }}
+                  >
+                    {instagram}
+                  </a>
+                </Box>
+                <Box style={{ display: "flex", alignItems: "center" }}>
+                  {facebook && (
+                    <>
+                      <FacebookIcon style={{ marginRight: "4px" }} />
+                      <a
+                        target="_blank"
+                        href={"https://www.facebook.com/" + facebook}
+                        style={{ textDecoration: "none", color: "#d33f49" }}
+                      >
+                        {facebook}
+                      </a>
+                    </>
+                  )}
+                </Box>
+                <Box style={{ display: "flex", alignItems: "center" }}>
+                  {twitter && (
+                    <>
+                      <TwitterIcon style={{ marginRight: "4px" }} />
+                      <a
+                        target="_blank"
+                        href={"https://www.twitter.com/" + twitter}
+                        style={{ textDecoration: "none", color: "#d33f49" }}
+                      >
+                        {twitter}
+                      </a>
+                    </>
+                  )}
+                </Box>
+              </Grid>
             </Grid>
-          </Grid>
+          </>
         )}
         {prixerDataState === "edit" && (
           <Grid container spacing={2}>
@@ -414,7 +440,7 @@ export default function UserData(props) {
                       id="demo-multiple-name"
                       multiple
                       value={specialtyArt}
-                      onChange={(e) => handleChange(e)}
+                      onChange={(e) => setSpecialtyArt(e) || handleChange(e)}
                       MenuProps={MenuProps}
                     >
                       {["Fotografía", "Diseño", "Artes plásticas"].map(

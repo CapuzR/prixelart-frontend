@@ -16,6 +16,7 @@ import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import CardMedia from "@material-ui/core/CardMedia";
 import utils from "../../../utils/utils";
+import logo from "../../../logo.svg";
 
 const useStyles = makeStyles((theme) => ({
   loading: {
@@ -98,7 +99,7 @@ export default function Prixers() {
 
   const readPrixers = async () => {
     const base_url =
-      process.env.REACT_APP_BACKEND_URL + "/prixer/read-all-full-v2";
+      process.env.REACT_APP_BACKEND_URL + "/prixer/read-all-full";
 
     axios.get(base_url).then((response) => {
       setTiles(utils.shuffle(response.data.prixers));
@@ -166,7 +167,7 @@ export default function Prixers() {
                         alt={tile.title}
                         height="100"
                         width="100"
-                        image={tile.avatar}
+                        image={tile.avatar || "/PrixLogo.png"}
                         className={classes.cardMedia}
                         title={tile.title}
                       />
@@ -227,7 +228,7 @@ export default function Prixers() {
                       <CardMedia
                         alt={tile.title}
                         height="100"
-                        image={tile.avatar}
+                        image={tile.avatar || "/PrixLogo.png"}
                         className={classes.cardMedia}
                         title={tile.title}
                       />

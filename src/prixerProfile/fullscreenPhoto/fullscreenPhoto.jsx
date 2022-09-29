@@ -69,7 +69,7 @@ export default function FullscreePhoto(props) {
   const [snackBar, setSnackBar] = useState(false);
   const [snackBarMessage, setSnackBarMessage] = useState(false);
   const [openArtFormDialog, setOpenArtFormDialog] = useState(false);
-
+  const [selectedArt, setSelectedArt] = useState(undefined);
   const handleArtEdit = (e, tile) => {
     if (artDataState === tile.artId) {
       setUpdatedTile(tile);
@@ -133,6 +133,7 @@ export default function FullscreePhoto(props) {
   };
   const handleClose = () => {
     setOpen(false);
+    setSelectedArt(undefined);
   };
 
   function tagsEdit(tempTiles, tile, e, tags) {
@@ -231,16 +232,17 @@ export default function FullscreePhoto(props) {
   //   document.body.removeChild(el);
   // }
 
-  const deleteArt = async (artId) => {
-    // alert;
-    const base_url = process.env.REACT_APP_BACKEND_URL + "/art/delete/" + artId;
+  const deleteArt = async () => {
+    const base_url =
+      process.env.REACT_APP_BACKEND_URL + "/art/delete/" + selectedArt;
     let res = await axios.delete(base_url);
-    // setErrorMessage("Arte eliminado exitosamente");
-    // setSnackBarError(true);
     handleClose();
+    setSnackBarMessage("Arte eliminado exitosamente");
+    setSnackBar(true);
+    readArt();
   };
 
-  useEffect(() => {
+  const readArt = async () => {
     if (tiles) {
       const base_url =
         process.env.REACT_APP_BACKEND_URL + "/art/read-by-prixer";
@@ -257,14 +259,17 @@ export default function FullscreePhoto(props) {
               block: "center",
             });
           } else {
-            setSnackBarMessage(
-              "Arte no encontrado, por favor inténtalo de nuevo."
-            );
-            setSnackBar(true);
+            // setSnackBarMessage(
+            //   "Arte no encontrado, por favor inténtalo de nuevo."
+            // );
+            // setSnackBar(true);
           }
         }
       });
     }
+  };
+  useEffect(() => {
+    readArt();
   }, []);
 
   useEffect(() => {
@@ -477,7 +482,7 @@ export default function FullscreePhoto(props) {
                           Editar
                         </Button>
                       )}
-                    <Button
+                    {/* <Button
                       size="small"
                       color="primary"
                       onClick={(e) => {
@@ -485,21 +490,28 @@ export default function FullscreePhoto(props) {
                       }}
                     >
                       Eliminar
-                    </Button>
-                    <Button
-                      color="primary"
-                      size="small"
-                      onClick={handleClickOpen}
-                    >
-                      Eliminar
-                      {/* onClick={(artId) => {
+                    </Button> */}
+                    {JSON.parse(localStorage.getItem("token")) &&
+                      JSON.parse(localStorage.getItem("token")).username ==
+                        tile.prixerUsername && (
+                        <Button
+                          color="primary"
+                          size="small"
+                          onClick={(e) => {
+                            handleClickOpen(e);
+                            setSelectedArt(tile.artId);
+                          }}
+                        >
+                          Eliminar
+                          {/* onClick={(artId) => {
                           deleteArt(artId)
                             newImage({
                             _id: img._id,
                             file: image.file,
                           });
                         }} */}
-                    </Button>
+                        </Button>
+                      )}
                     <Dialog
                       open={open}
                       onClose={handleClose}
@@ -516,7 +528,7 @@ export default function FullscreePhoto(props) {
                             textAlign: "center",
                           }}
                         >
-                          Este arte ya no se verá en el perfil
+                          Este arte se eliminará permanentemente
                         </DialogContentText>
                       </DialogContent>
                       <DialogActions>
@@ -524,8 +536,9 @@ export default function FullscreePhoto(props) {
                           Cancelar
                         </Button>
                         <Button
-                          onClick={(artId) => {
-                            deleteArt(artId);
+                          onClick={() => {
+                            deleteArt(selectedArt);
+                            setSelectedArt(undefined);
                           }}
                           color="primary"
                         >

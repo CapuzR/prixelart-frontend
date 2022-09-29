@@ -44,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
   paper: {
     padding: theme.spacing(2),
     margin: "auto",
-    width: "100%",
+    // width: "100%",
   },
   image: {
     width: 128,
@@ -122,6 +122,7 @@ export default function UserData(props) {
   const [backdrop, setBackdrop] = useState(true);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isDesktop = useMediaQuery(theme.breakpoints.up("lg"));
 
   function getStyles(specialty, specialtyArt, theme) {
     return {
@@ -235,7 +236,10 @@ export default function UserData(props) {
       <Backdrop className={classes.backdrop} open={backdrop}>
         <CircularProgress color="inherit" />
       </Backdrop>
-      <Paper className={classes.paper}>
+      <Paper
+        className={classes.paper}
+        style={{ width: isDesktop ? "50%" : "100%" }}
+      >
         {prixerDataState === "read" && (
           <>
             <Box style={{ textAlign: "end", marginBottom: "4px" }}>
@@ -243,58 +247,92 @@ export default function UserData(props) {
                 JSON.parse(localStorage.getItem("token")).username ===
                   username && (
                   <IconButton
+                    title="Profile Edit"
+                    component="span"
                     color="primary"
                     onClick={handleProfileDataEdit}
-                    variant="contained"
-                    style={{ marginBottom: "8px" }}
+                    // variant="contained"
+                    // style={{ marginBottom: "8px" }}
                   >
                     <EditIcon />
                   </IconButton>
                 )}
-            </Box>
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
-                <Box style={{ marginBottom: "4px" }}>
-                  {avatarObj ? (
-                    <Avatar className={classes.avatar}>
-                      <label htmlFor="file-input">
-                        <img
-                          src={profilePic}
-                          alt="Prixer profile avatar"
-                          style={{ maxHeight: 200 }}
-                        />
-                      </label>
-                    </Avatar>
-                  ) : (
-                    JSON.parse(localStorage.getItem("token")) &&
-                    JSON.parse(localStorage.getItem("token")).username ===
-                      username && (
+              <Grid container spacing={2}>
+                <Grid
+                  item
+                  xs={12}
+                  sm={4}
+                  md={4}
+                  lg={4}
+                  xl={4}
+                  // style={{ marginLeft: 15 }}
+                >
+                  <Box
+                    style={{
+                      marginBottom: "4px",
+                      display: "flex",
+                      justifyContent: "center",
+                    }}
+                  >
+                    {avatarObj ? (
                       <Avatar className={classes.avatar}>
                         <label htmlFor="file-input">
                           <img
-                            src="/PrixLogo.png"
+                            src={profilePic}
                             alt="Prixer profile avatar"
-                            style={{ maxHeight: 200, height: 120 }}
-                            onClick={handleProfileDataEdit}
+                            style={{ maxHeight: 200 }}
                           />
                         </label>
                       </Avatar>
-                    )
-                  )}
-                </Box>
-              </Grid>
-              <Grid item xs={12} sm={8} md={8} lg={8} xl={8}>
-                <Box style={{ marginBottom: "4px" }}>
-                  <Typography variant="h5">
+                    ) : (
+                      JSON.parse(localStorage.getItem("token")) &&
+                      JSON.parse(localStorage.getItem("token")).username ===
+                        username && (
+                        <Avatar className={classes.avatar}>
+                          <label htmlFor="file-input">
+                            <img
+                              src="/PrixLogo.png"
+                              alt="Prixer profile avatar"
+                              style={{ maxHeight: 200, height: 120 }}
+                              onClick={handleProfileDataEdit}
+                            />
+                          </label>
+                        </Avatar>
+                      )
+                    )}
+                  </Box>
+                </Grid>
+                <Grid item xs={12} sm={8} md={8} lg={8} xl={8}>
+                  <Box
+                    display={"flex"}
+                    style={{
+                      marginBottom: "4px",
+                      justifyContent: isMobile ? "center" : "flexstart",
+                    }}
+                  >
+                    <Typography variant="body1">
+                      {specialtyArt?.map((specialty, index) =>
+                        specialtyArt?.length === index + 1
+                          ? specialty
+                          : `${specialty}, `
+                      )}
+                    </Typography>
+                    {/* <Typography variant="h5">
                     {firstName} {lastName}
-                  </Typography>
-                </Box>
-                <Box style={{ marginBottom: "4px" }}>
-                  <Typography variant="body1" color="textSecondary">
-                    {username}
-                  </Typography>
-                </Box>
-                <Box style={{ marginBottom: "4px" }}>
+                  </Typography> */}
+                  </Box>
+                  <Box
+                    display={"flex"}
+                    style={{
+                      marginBottom: "4px",
+                      justifyContent: isMobile ? "center" : "flexstart",
+                    }}
+                  >
+                    <Typography variant="body1" color="textSecondary">
+                      {username}
+                    </Typography>
+                  </Box>
+                  {/* <Box style={{ marginBottom: "4px" }}>
                   <Typography variant="body1">
                     {specialtyArt?.map((specialty, index) =>
                       specialtyArt?.length === index + 1
@@ -302,213 +340,250 @@ export default function UserData(props) {
                         : `${specialty}, `
                     )}
                   </Typography>
-                </Box>
+                </Box> */}
 
-                <Box style={{ marginBottom: "4px" }}>
-                  <Typography>{description}</Typography>
-                </Box>
-                <Box style={{ display: "flex", alignItems: "center" }}>
-                  <InstagramIcon style={{ marginRight: "4px" }} />
-                  <a
-                    target="_blank"
-                    href={"https://www.instagram.com/" + instagram}
-                    style={{ textDecoration: "none", color: "#d33f49" }}
+                  <Box
+                    display={"flex"}
+                    style={{
+                      marginBottom: "4px",
+                      justifyContent: isMobile ? "center" : "flexstart",
+                    }}
                   >
-                    {instagram}
-                  </a>
-                </Box>
-                <Box style={{ display: "flex", alignItems: "center" }}>
-                  {facebook && (
-                    <>
-                      <FacebookIcon style={{ marginRight: "4px" }} />
-                      <a
-                        target="_blank"
-                        href={"https://www.facebook.com/" + facebook}
-                        style={{ textDecoration: "none", color: "#d33f49" }}
+                    <Typography>{description}</Typography>
+                  </Box>
+                  <Box
+                    style={{
+                      marginBottom: "4px",
+                      justifyContent: isMobile ? "center" : "flexstart",
+                      display: "flex",
+                      alignItems: "center",
+                    }}
+                  >
+                    <InstagramIcon style={{ marginRight: "4px" }} />
+                    <a
+                      target="_blank"
+                      href={"https://www.instagram.com/" + instagram}
+                      style={{ textDecoration: "none", color: "#d33f49" }}
+                    >
+                      {instagram}
+                    </a>
+                  </Box>
+                  <Box
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      marginBottom: "4px",
+                      justifyContent: isMobile ? "center" : "flexstart",
+                    }}
+                  >
+                    {facebook && (
+                      <>
+                        <FacebookIcon style={{ marginRight: "4px" }} />
+                        <a
+                          target="_blank"
+                          href={"https://www.facebook.com/" + facebook}
+                          style={{ textDecoration: "none", color: "#d33f49" }}
+                        >
+                          {facebook}
+                        </a>
+                      </>
+                    )}
+                  </Box>
+                  <Box
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      marginBottom: "4px",
+                      justifyContent: isMobile ? "center" : "flexstart",
+                    }}
+                  >
+                    {twitter && (
+                      <>
+                        <TwitterIcon style={{ marginRight: "4px" }} />
+                        <a
+                          target="_blank"
+                          href={"https://www.twitter.com/" + twitter}
+                          style={{ textDecoration: "none", color: "#d33f49" }}
+                        >
+                          {twitter}
+                        </a>
+                      </>
+                    )}
+                  </Box>
+                </Grid>
+              </Grid>
+            </Box>
+          </>
+        )}
+        {prixerDataState === "edit" && (
+          <>
+            <Box style={{ textAlign: "end", marginBottom: "4px" }}>
+              {JSON.parse(localStorage.getItem("token")) &&
+                JSON.parse(localStorage.getItem("token")).username ===
+                  username && (
+                  <Button
+                    color="primary"
+                    onClick={handleProfileDataEdit}
+                    variant="contained"
+                    style={{ marginBottom: "8px" }}
+                  >
+                    Editar
+                  </Button>
+                )}
+            </Box>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+                <Box>
+                  <Box
+                    marginBottom={2}
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                    }}
+                  >
+                    {avatarObj ? (
+                      <Avatar className={classes.avatar}>
+                        <label htmlFor="file-input">
+                          <img
+                            src={avatarObj}
+                            alt="Prixer profile avatar"
+                            style={{ maxHeight: 200 }}
+                          />
+                        </label>
+                        <input
+                          style={{ display: "none" }}
+                          accept="image/*"
+                          id="file-input"
+                          type="file"
+                          onChange={onImageChange}
+                          required
+                        />
+                      </Avatar>
+                    ) : (
+                      <Avatar className={classes.avatar}>
+                        <label htmlFor="file-input">
+                          <AddIcon
+                            style={{ width: 60, height: 60, color: "#d33f49" }}
+                          />
+                        </label>
+                        <input
+                          style={{ display: "none" }}
+                          accept="image/*"
+                          id="file-input"
+                          type="file"
+                          onChange={onImageChange}
+                        />
+                      </Avatar>
+                    )}
+                  </Box>
+                  <Box style={{ marginBottom: "8px" }}>
+                    <TextField
+                      fullWidth
+                      id="firstName"
+                      variant="outlined"
+                      label="Nombre"
+                      value={firstName}
+                      onChange={(e) => {
+                        setFirstName(e.target.value);
+                      }}
+                    />
+                  </Box>
+                  <Box style={{ marginBottom: "8px" }}>
+                    <TextField
+                      fullWidth
+                      id="lastName"
+                      variant="outlined"
+                      label="Apellido"
+                      value={lastName}
+                      onChange={(e) => {
+                        setLastName(e.target.value);
+                      }}
+                    />
+                  </Box>
+                  <Box>
+                    <FormControl
+                      className={classes.formControl}
+                      style={{ width: "100%", marginBottom: 20 }}
+                    >
+                      <InputLabel id="demo-mutiple-name-label">
+                        Especialidad
+                      </InputLabel>
+                      <Select
+                        labelId="demo-multiple-name-label"
+                        id="demo-multiple-name"
+                        multiple
+                        value={specialtyArt}
+                        onChange={(e) => setSpecialtyArt(e) || handleChange(e)}
+                        MenuProps={MenuProps}
                       >
-                        {facebook}
-                      </a>
-                    </>
-                  )}
-                </Box>
-                <Box style={{ display: "flex", alignItems: "center" }}>
-                  {twitter && (
-                    <>
-                      <TwitterIcon style={{ marginRight: "4px" }} />
-                      <a
-                        target="_blank"
-                        href={"https://www.twitter.com/" + twitter}
-                        style={{ textDecoration: "none", color: "#d33f49" }}
-                      >
-                        {twitter}
-                      </a>
-                    </>
-                  )}
+                        {["Fotografía", "Diseño", "Artes plásticas"].map(
+                          (specialty) => (
+                            <MenuItem
+                              key={specialty}
+                              value={specialty}
+                              style={getStyles(specialty, specialtyArt, theme)}
+                            >
+                              {specialty}
+                            </MenuItem>
+                          )
+                        )}
+                      </Select>
+                    </FormControl>
+                  </Box>
+                  <Box style={{ marginBottom: "8px" }}>
+                    <TextField
+                      fullWidth
+                      id="instagram"
+                      variant="outlined"
+                      label="Instagram"
+                      onChange={(e) => {
+                        setInstagram(e.target.value);
+                      }}
+                      value={instagram}
+                    />
+                  </Box>
+                  <Box style={{ marginBottom: "8px" }}>
+                    <TextField
+                      fullWidth
+                      id="facebook"
+                      variant="outlined"
+                      label="Facebook"
+                      onChange={(e) => {
+                        setFacebook(e.target.value);
+                      }}
+                      value={facebook}
+                    />
+                  </Box>
+                  <Box style={{ marginBottom: "8px" }}>
+                    <TextField
+                      fullWidth
+                      id="twitter"
+                      variant="outlined"
+                      label="Twitter"
+                      onChange={(e) => {
+                        setTwitter(e.target.value);
+                      }}
+                      value={twitter}
+                    />
+                  </Box>
+                  <Box>
+                    <TextField
+                      fullWidth
+                      id="description"
+                      label="Descripción"
+                      onChange={(e) => {
+                        setDescription(e.target.value);
+                      }}
+                      value={description}
+                      inputProps={{ maxLength: 300 }}
+                      multiline
+                      item
+                    />
+                  </Box>
                 </Box>
               </Grid>
             </Grid>
           </>
-        )}
-        {prixerDataState === "edit" && (
-          <Grid container spacing={2}>
-            <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
-              <Box>
-                <Box style={{ textAlign: "end", marginBottom: "4px" }}>
-                  {JSON.parse(localStorage.getItem("token")) &&
-                    JSON.parse(localStorage.getItem("token")).username ===
-                      username && (
-                      <Button
-                        color="primary"
-                        onClick={handleProfileDataEdit}
-                        variant="contained"
-                        style={{ marginBottom: "8px" }}
-                      >
-                        Editar
-                      </Button>
-                    )}
-                </Box>
-                <Box marginBottom={2}>
-                  {avatarObj ? (
-                    <Avatar className={classes.avatar}>
-                      <label htmlFor="file-input">
-                        <img
-                          src={avatarObj}
-                          alt="Prixer profile avatar"
-                          style={{ maxHeight: 200 }}
-                        />
-                      </label>
-                      <input
-                        style={{ display: "none" }}
-                        accept="image/*"
-                        id="file-input"
-                        type="file"
-                        onChange={onImageChange}
-                        required
-                      />
-                    </Avatar>
-                  ) : (
-                    <Avatar className={classes.avatar}>
-                      <label htmlFor="file-input">
-                        <AddIcon
-                          style={{ width: 60, height: 60, color: "#d33f49" }}
-                        />
-                      </label>
-                      <input
-                        style={{ display: "none" }}
-                        accept="image/*"
-                        id="file-input"
-                        type="file"
-                        onChange={onImageChange}
-                      />
-                    </Avatar>
-                  )}
-                </Box>
-                <Box style={{ marginBottom: "8px" }}>
-                  <TextField
-                    fullWidth
-                    id="firstName"
-                    variant="outlined"
-                    label="Nombre"
-                    value={firstName}
-                    onChange={(e) => {
-                      setFirstName(e.target.value);
-                    }}
-                  />
-                </Box>
-                <Box style={{ marginBottom: "8px" }}>
-                  <TextField
-                    fullWidth
-                    id="lastName"
-                    variant="outlined"
-                    label="Apellido"
-                    value={lastName}
-                    onChange={(e) => {
-                      setLastName(e.target.value);
-                    }}
-                  />
-                </Box>
-                <Box>
-                  <FormControl
-                    className={classes.formControl}
-                    style={{ width: "100%", marginBottom: 20 }}
-                  >
-                    <InputLabel id="demo-mutiple-name-label">
-                      Especialidad
-                    </InputLabel>
-                    <Select
-                      labelId="demo-multiple-name-label"
-                      id="demo-multiple-name"
-                      multiple
-                      value={specialtyArt}
-                      onChange={(e) => setSpecialtyArt(e) || handleChange(e)}
-                      MenuProps={MenuProps}
-                    >
-                      {["Fotografía", "Diseño", "Artes plásticas"].map(
-                        (specialty) => (
-                          <MenuItem
-                            key={specialty}
-                            value={specialty}
-                            style={getStyles(specialty, specialtyArt, theme)}
-                          >
-                            {specialty}
-                          </MenuItem>
-                        )
-                      )}
-                    </Select>
-                  </FormControl>
-                </Box>
-                <Box style={{ marginBottom: "8px" }}>
-                  <TextField
-                    fullWidth
-                    id="instagram"
-                    variant="outlined"
-                    label="Instagram"
-                    onChange={(e) => {
-                      setInstagram(e.target.value);
-                    }}
-                    value={instagram}
-                  />
-                </Box>
-                <Box style={{ marginBottom: "8px" }}>
-                  <TextField
-                    fullWidth
-                    id="facebook"
-                    variant="outlined"
-                    label="Facebook"
-                    onChange={(e) => {
-                      setFacebook(e.target.value);
-                    }}
-                    value={facebook}
-                  />
-                </Box>
-                <Box style={{ marginBottom: "8px" }}>
-                  <TextField
-                    fullWidth
-                    id="twitter"
-                    variant="outlined"
-                    label="Twitter"
-                    onChange={(e) => {
-                      setTwitter(e.target.value);
-                    }}
-                    value={twitter}
-                  />
-                </Box>
-                <Box>
-                  <TextField
-                    fullWidth
-                    id="description"
-                    label="Descripción"
-                    onChange={(e) => {
-                      setDescription(e.target.value);
-                    }}
-                    value={description}
-                    multiline
-                    item
-                  />
-                </Box>
-              </Box>
-            </Grid>
-          </Grid>
         )}
       </Paper>
     </div>

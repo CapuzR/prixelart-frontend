@@ -25,6 +25,7 @@ import TwitterIcon from "@material-ui/icons/Twitter";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import Box from "@material-ui/core/Box";
 import Button from "@material-ui/core/Button";
+import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   loading: {
@@ -121,6 +122,7 @@ export default function UserData(props) {
   const [inputChange, setInputChange] = useState(false);
   const [backdrop, setBackdrop] = useState(true);
   const theme = useTheme();
+  const history = useHistory();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isDesktop = useMediaQuery(theme.breakpoints.up("lg"));
 
@@ -142,6 +144,9 @@ export default function UserData(props) {
     axios
       .post(base_url, data)
       .then((response) => {
+        if (!response.data.status) {
+          return history.push("/");
+        }
         setUsername(response.data.username);
         setEmail(response.data.email);
         setFirstName(response.data.firstName);

@@ -85,7 +85,7 @@ export default function PrixerGrid(props) {
       <Grid container spacing={1}>
         {tiles &&
           tiles
-            .filter((tile) => tile.avatar)
+            .filter((tile) => tile.avatar) //quitar?
             .map(
               (tile) =>
                 tile.status && (

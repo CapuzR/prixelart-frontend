@@ -95,7 +95,7 @@ export default function SignUp() {
   const [showPassword, setShowPassword] = useState(false);
   const [buttonState, setButtonState] = useState(true);
   const [isChecked, setIsChecked] = useState(false);
-  const [termsAgree, setTermsAgree] = useState(false);
+  // const [termsAgree, setTermsAgree] = useState(false);
   const theme = useTheme();
   const [value, setValue] = useState("");
 
@@ -103,7 +103,7 @@ export default function SignUp() {
 
   const handleOnChange = () => {
     setIsChecked(!isChecked);
-    setTermsAgree(!isChecked);
+    // setTermsAgree(!isChecked);
   };
   const styles = useStyles();
   const [modal, setModal] = useState(false);
@@ -142,7 +142,7 @@ export default function SignUp() {
         password: password,
         firstName: firstName,
         lastName: lastName,
-        termsAgree: termsAgree,
+        // termsAgree: termsAgree,
       };
       setButtonState(true);
       axios

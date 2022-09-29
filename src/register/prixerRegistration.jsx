@@ -146,14 +146,14 @@ export default function PrixerRegistration() {
   const [avatar, setAvatar] = useState("");
   const [avatarObj, setAvatarObj] = useState("");
   const [buttonState, setButtonState] = useState(true);
-  const [termsAgree, setTermsAgree] = useState(false);
   const [value, setValue] = useState("");
   const [loading, setLoading] = useState(false);
-  const [isChecked, setIsChecked] = React.useState(false);
+  const [isChecked, setIsChecked] = useState(false);
   const theme = useTheme();
   const [specialty, setSpecialty] = React.useState([]);
   const [change, setChange] = useState(false);
   const isDesktop = useMediaQuery(theme.breakpoints.up("sm"));
+  const status = true;
 
   const handleOnChange = () => {
     setIsChecked(!isChecked);
@@ -187,18 +187,19 @@ export default function PrixerRegistration() {
   //Error states.
   const [errorMessage, setErrorMessage] = useState();
   const [snackBarError, setSnackBarError] = useState(false);
-
+  const termsAgree = isChecked;
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (
+      !specialty ||
       !instagram ||
       !dateOfBirth ||
       !specialty ||
       !phone ||
       !country ||
       !city ||
-      !description ||
-      !isChecked
+      // !description ||
+      !termsAgree
     ) {
       // ||(!avatar)) {
       setErrorMessage("Por favor completa todos los campos requeridos.");
@@ -220,7 +221,8 @@ export default function PrixerRegistration() {
         country: country,
         city: city,
         description: description,
-        termsAgree: termsAgree,
+        termsAgree: isChecked,
+        status: status,
         // 'avatar': cldAvatarUrl,
         username: JSON.parse(localStorage.getItem("token")).username,
       };
@@ -264,7 +266,7 @@ export default function PrixerRegistration() {
   useEffect(() => {
     getTerms();
   }, []);
-  console.log(isChecked);
+
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
@@ -457,7 +459,7 @@ export default function PrixerRegistration() {
                 <Checkbox
                   color="primary"
                   value={isChecked}
-                  checked={isChecked ? true : false}
+                  checked={isChecked}
                 />
               }
               label="Acepto los"

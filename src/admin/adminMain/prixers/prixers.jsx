@@ -74,37 +74,28 @@ export default function Prixers() {
   const [backdrop, setBackdrop] = useState(true); // borrar
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
-  const isDeskTop = useMediaQuery(theme.breakpoints.up("sm"));
+  // const isDeskTop = useMediaQuery(theme.breakpoints.up("sm"));
   const [state, setState] = useState({
     checkedA: true,
   });
 
-  //   const readPrixers = async () => {
-  //     const base_url = process.env.REACT_APP_BACKEND_URL + "/prixers/read-all";
-  //     const res = await axios
-  //       .get(base_url)
-  //       .then((response) => {
-  //         setTiles(response.data.prixers);
-  //         setBackdrop(false);
-  //       })
-  //       .catch((error) => console.log(error));
-  //   };
-  //   useEffect(() => {
-  //     readPrixers();
-  //   }, []);
-
-  useEffect(() => {
-    readPrixers();
+  useEffect(async () => {
+    await readPrixers();
   }, []);
 
   const readPrixers = async () => {
-    const base_url =
-      process.env.REACT_APP_BACKEND_URL + "/prixer/read-all-full";
+    try {
+      setLoading(true);
+      const base_url =
+        process.env.REACT_APP_BACKEND_URL + "/prixer/read-all-full";
 
-    axios.get(base_url).then((response) => {
+      const response = await axios.get(base_url);
       setTiles(utils.shuffle(response.data.prixers));
       setBackdrop(false);
-    });
+      setLoading(false);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const handleChange = (event, state) => {
@@ -124,8 +115,8 @@ export default function Prixers() {
         "Content-Type": "multipart/form-data",
       }
     );
+    await readPrixers();
     setLoading(false);
-    // readPrixers();
   };
 
   return (
@@ -158,7 +149,7 @@ export default function Prixers() {
         >
           {tiles &&
             tiles
-              .filter((tile) => tile.avatar)
+              // .filter((tile) => tile.avatar)
               .map((tile) =>
                 isDesktop ? (
                   <Grid item key={tile._id} xs={6} sm={6} md={3}>
@@ -188,7 +179,6 @@ export default function Prixers() {
                                 ? specialty
                                 : `${specialty}, `
                             )}
-                          {console.log(tile)}
                         </Typography>
                       </CardContent>
                       <Box

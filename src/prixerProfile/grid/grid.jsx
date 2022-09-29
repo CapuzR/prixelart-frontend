@@ -153,11 +153,14 @@ export default function Grid(props) {
         cellSize={"auto"}
         className={classes.gridList}
         cols={isDesktop ? 4 : 2}
+        style={{ margin: "0", justifyContent: "center" }}
       >
         {tiles ? (
           tiles.map((tile) => (
             <GridListTile
-              style={{ width: isDesktop ? "300px" : "50%" }}
+              style={{
+                width: isDesktop ? "300px" : "50%",
+              }}
               key={tile.artId}
               cols={1}
               onClick={(e) => {

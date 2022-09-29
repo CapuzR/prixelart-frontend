@@ -4,12 +4,13 @@ import { makeStyles } from "@material-ui/core/styles";
 import Title from "../adminMain/Title";
 import axios from "axios";
 import TextField from "@material-ui/core/TextField";
-import InputLabel from '@material-ui/core/InputLabel';
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
 import Button from "@material-ui/core/Button";
 import IconButton from "@material-ui/core/IconButton";
-
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
 import Grid from "@material-ui/core/Grid";
 import Snackbar from "@material-ui/core/Snackbar";
 import CircularProgress from "@material-ui/core/CircularProgress";
@@ -104,26 +105,48 @@ export default function UpdateAdmin(props) {
   const [hasSpecialVar, setHasSpecialVar] = useState(
     props?.product?.hasSpecialVar || false
   );
+  const [ videoUrl, setVideoUrl ] = useState('')
   const [imageLoader, setLoadImage] = useState({
     loader: [],
     filename: "Subir imagenes",
   });
-  const [ videoUrl, setVideoUrl ] =useState('')
   const [thumbUrl, setThumbUrl] = useState(props.product?.thumbUrl);
 
   //Error states.
   const [errorMessage, setErrorMessage] = useState();
   const [snackBarError, setSnackBarError] = useState(false);
+  const [open, setOpen] = useState(false);
   const [loadOpen, setLoadOpen] = useState(false);
   const [loaDOpen, setLoaDOpen] = useState(false);
   const [mustImage, setMustImages] = useState(false);
 
   useEffect(() => {
-    imagesList?.map((url) => imageLoader.loader.push(url));
+    imagesList?.map((url) => {
+      url.type === 'images' ?
+      imageLoader.loader.push(url.url)
+      :
+      setVideoUrl(url.url)
+    });
+    // props.product.sources.images.map((file) => {
+    //   file.type == 'video' ?
+    //   setVideoUrl(file.url)
+    //   :
+    //   setVideoUrl('')
+    // } )
     return () => {
       localStorage.removeItem("product");
     };
   }, []);
+
+  console.log(imagesList)
+
+  const handleClickOpen = () => {
+        setOpen(true);
+  };
+
+  const handleClose = () => {
+      setOpen(false);
+  };
 
   //Preview de imagen antes de enviar
   const convertToBase64 = (blob) => {
@@ -160,6 +183,19 @@ export default function UpdateAdmin(props) {
     images.images[index] = file;
     setLoadImage({ loader: imageLoader.loader, filename: file.name });
   };
+
+console.log(images.images)
+console.log(imageLoader)
+
+  const modifyString = (a, sti) => {
+      const url = sti.split(' ')
+      const width = sti.replace('560', '326').replace('315', '326');
+      const previewMp4 = sti.replace('1350', '510').replace('494', '350');
+      setVideoUrl(width)
+      // const index = url[3].indexOf()
+      // sti.replace(index, '?controls=0\"')
+    //sti[79]
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -222,11 +258,12 @@ export default function UpdateAdmin(props) {
           newFormData.append("prixerPriceTo", data.prixerPrice.to);
           newFormData.append("hasSpecialVar", hasSpecialVar);
           imagesList.length > 0
-            ? imagesList.map((url) => newFormData.append("images", url))
-            : newFormData.append("images", imagesList);
+            ? imagesList.map((url) => newFormData.append("images", url.url))
+            : newFormData.append("images", imagesList[0].url);
           images.images.map((file) =>
             newFormData.append("newProductImages", file)
           );
+          newFormData.append('video', videoUrl)
           const base_url =
             process.env.REACT_APP_BACKEND_URL + `/product/update/${productId}`;
           const response = await axios.put(base_url, newFormData);
@@ -250,9 +287,6 @@ export default function UpdateAdmin(props) {
     setShowVariants(true);
     props.setProductEdit(false);
   };
-
-
-console.log(imageLoader.loader)
 
   return (
     <React.Fragment>
@@ -344,6 +378,10 @@ console.log(imageLoader.loader)
                         }}
                       />
                     </Button>
+                    - O -
+                    <Button variant="contained" componenet="label" onClick={handleClickOpen}>
+                     Upload video
+                    </Button>
                   </FormControl>
                 </Grid>
                 <Grid
@@ -414,7 +452,6 @@ console.log(imageLoader.loader)
                               <HighlightOffOutlinedIcon />
                             </IconButton>
                           </div>
-
                           <img
                             style={{
                               width: "100%",
@@ -424,87 +461,12 @@ console.log(imageLoader.loader)
                             src={img}
                             alt="+"
                           />
-                        </Button>
-                      </FormControl>
-                      <Grid item xs={6}>
-                        <Grid item className={classes.loaderImage}>
-                          {imageLoader.loader ? (
-                            imageLoader.loader.map((img, key_id) => {
-                              return (
-                                <Grid container spacing={1}>
-                                  <Grid
-                                    container
-                                    spacing={1}
-                                    xs={8}
-                                    style={{
-                                      position: "absolute",
-                                      marginTop: "16px",
-                                    }}
-                                  >
-                                    <Grid item xs={2}>
-                                      <Button
-                                        variant="text"
-                                        className={classes.buttonImgLoader}
-                                        style={{ color: "#d33f49" }}
-                                        onClick={(d) => {
-                                          imageLoader.loader.splice(key_id, 1);
-                                          images.images.splice(key_id, 1)
-                                          imagesList.splice(key_id, 1);
-                                          setLoadImage({
-                                            loader: imageLoader.loader,
-                                            filename: "Subir Imagenes",
-                                          });
-                                          newImages({ images: images.images });
-                                        }}
-                                      >
-                                        <HighlightOffOutlinedIcon />
-                                      </Button>
-                                    </Grid>
-                                    <Grid item xs={2}>
-                                      <Button
-                                        variant="text"
-                                        className={classes.buttonEdit}
-                                        style={{ color: "#d33f49" }}
-                                        component="label"
-                                      >
-                                        <input
-                                          name="productImages"
-                                          type="file"
-                                          accept="image/*"
-                                          hidden
-                                          onChange={(a) => {
-                                            const i =
-                                              imageLoader.loader.indexOf(img);
-                                            replaceImage(a, i);
-                                            imagesList.splice(key_id, 1);
-                                          }}
-                                        />
-                                        <EditIcon />
-                                      </Button>
-                                    </Grid>
-                                  </Grid>
-                                  <Grid item key={key_id} xs={imageLoader.loader.length === 1 ? 3 : imageLoader.loader.length === 2 ? 6 : imageLoader.loader.length === 3 ? 9 : 12}>
-                                  {
-                                    img.type === 'images' ?
-                                    <img
-                                    className={classes.imageLoad}
-                                    src={img.url}
-                                    alt="+"
-                                  ></img>
-                                  :
-                                  ''
-                                }
-                                  </Grid>
-                                </Grid>
-                              );
-                            })
-                          ) : (
-                            <img src={thumbUrl} alt="+" />
-                          )}
-                        </Grid>
-                      </Grid>
-                    </Grid>
-                  </Grid>
+                        </div>
+                      )
+                    })
+                  }
+                </Grid>
+                <Grid item xs={12}>
                   <Grid container xs={isDesktop ? 6 : 12}>
                     <Grid item xs={6}>
                       <Checkbox
@@ -733,6 +695,34 @@ console.log(imageLoader.loader)
           </form>
         </div>
       )}
+      <Dialog open={open} onClose={handleClose}>
+      <DialogTitle>Youtube Url</DialogTitle>
+      <DialogContent>
+        <DialogContentText>
+          Copia y pega la url que quieres mostrar en el carrusel de imagenes
+        </DialogContentText>
+        <div id='ll'>
+        </div>
+        <TextField
+        onChange={(a)=>{
+          modifyString(a, a.target.value)
+        }}
+        value={videoUrl}
+          autoFocus
+          label="Url"
+          type="text"
+          fullWidth
+        />
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleClose} color="primary">
+          Cancel
+        </Button>
+        <Button onClick={handleClose} color="primary">
+          Aceptar
+        </Button>
+      </DialogActions>
+    </Dialog>
       <Snackbar
         open={snackBarError}
         autoHideDuration={1000}

@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Title from '../adminMain/Title';
 import axios from 'axios';
+import IconButton from "@material-ui/core/IconButton";
 import TextField from '@material-ui/core/TextField';
 import InputLabel from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/Select';
@@ -86,7 +87,6 @@ export default function CreateProduct() {
     const [ category, setCategory ] = useState('');
     const [ considerations, setConsiderations ] = useState('');
     const [images, newImages] = useState({images : []});
-    const [ typeFile, setTypeFile ] =  useState('');
     const [ videoUrl, setVideoUrl ] = useState('')
     const [ videoPreview, setVideoPreview ] = useState('')
     const [fromPublicPrice, setFromPublicPrice] = useState('');
@@ -160,7 +160,6 @@ export default function CreateProduct() {
     setLoadImage({ loader: imageLoader.loader, filename: file.name });
   };
 
-
   const modifyString = (a, sti) => {
       const url = sti.split(' ')
       const width = sti.replace('560', '326').replace('315', '326');
@@ -186,24 +185,7 @@ export default function CreateProduct() {
           setTimeout(() => {
             setMustImages(false)
           }, 3000)
-        }else{
-        if(!active &&
-        !productName &&
-        !description &&
-        !category &&
-        !considerations &&
-        // !fixedPublicPrice &&
-        !fromPublicPrice &&
-        !toPublicPrice &&
-        // !fixedPrixerPrice &&
-        !fromPrixerPrice &&
-        !toPrixerPrice &&
-        !images &&
-        !typeFile){
-        setErrorMessage('Por favor completa todos los campos requeridos.');
-        setSnackBarError(true);
-        e.preventDefault();
-      } else {
+        } else {
         if (
           !active &&
           !productName &&
@@ -281,10 +263,8 @@ export default function CreateProduct() {
   }
 }
 
-const handleType = (e) => {
-  setTypeFile(e.target.value)
-}
 
+  console.log(images.images)
 
   return (
     <React.Fragment>
@@ -755,6 +735,7 @@ const handleType = (e) => {
               <Button variant="contained" color="primary" type="submit" disabled={buttonState} style={{ marginTop: 20}}>
                 Crear
               </Button>
+        </Grid>
         </form>
       <Dialog open={open} onClose={handleClose}>
       <DialogTitle>Youtube Url</DialogTitle>
@@ -770,6 +751,7 @@ const handleType = (e) => {
           modifyString(a, a.target.value)
           div.innerHTML = videoPreview;
         }}
+        value={videoUrl}
           autoFocus
           label="Url"
           type="text"
@@ -810,5 +792,5 @@ const handleType = (e) => {
           className={classes.snackbar}
         />
     </React.Fragment>
-  );
+  )
 }

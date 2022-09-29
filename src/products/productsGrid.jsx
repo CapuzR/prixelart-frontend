@@ -153,12 +153,12 @@ export default function ProductGrid(props) {
                   img.type === 'images' ?
                   <img key={key_id} src={img.url} className={classes.img} alt="product"/>
                     :
-                  <div style={{width: '100%'}} dangerouslySetInnerHTML={{__html: img.url}}>
-                  </div>
+                  <span key={key_id} style={{width: '100%'}} dangerouslySetInnerHTML={{__html: img.url}}>
+                  </span>
                 ))
                   :
-                  <div style={{width: '100%'}} dangerouslySetInnerHTML={{__html: tile.sources.images[0].url}}>
-                  </div>
+                  <span style={{width: '100%'}} dangerouslySetInnerHTML={{__html: tile.sources.images[0].url}}>
+                  </span>
                 }
               </Carousel>
               </CardMedia>

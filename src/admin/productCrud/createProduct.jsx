@@ -23,16 +23,16 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 // import OutlinedInput from '@material-ui/core/OutlinedInput';
 // import InputLabel from '@material-ui/core/InputLabel';
 // import InputAdornment from '@material-ui/core/InputAdornment';
-import FormControl from '@material-ui/core/FormControl';
+import FormControl from "@material-ui/core/FormControl";
 // import Visibility from '@material-ui/icons/Visibility';
 // import VisibilityOff from '@material-ui/icons/VisibilityOff';
-import clsx from 'clsx';
+import clsx from "clsx";
 // import validations from '../../utils/validations';
-import HighlightOffOutlinedIcon from '@material-ui/icons/HighlightOffOutlined';
-import Box from '@material-ui/core/Box';
-import Checkbox from '@material-ui/core/Checkbox';
-import Backdrop from '@material-ui/core/Backdrop';
-import { useHistory } from 'react-router-dom';
+import HighlightOffOutlinedIcon from "@material-ui/icons/HighlightOffOutlined";
+import Box from "@material-ui/core/Box";
+import Checkbox from "@material-ui/core/Checkbox";
+import Backdrop from "@material-ui/core/Backdrop";
+import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   seeMore: {
@@ -43,39 +43,36 @@ const useStyles = makeStyles((theme) => ({
     color: theme.palette.primary.main,
   },
   loaderImage: {
-    width: '120%',
-    border: '2px',
-    height: '30vh',
-    borderStyle: 'groove',
-    borderColor: '#d33f49',
-    backgroundColor: '#ededed',
-    display: 'flex',
-    flexDirection: 'row'
+    width: "120%",
+    border: "2px",
+    height: "30vh",
+    borderStyle: "groove",
+    borderColor: "#d33f49",
+    backgroundColor: "#ededed",
+    display: "flex",
+    flexDirection: "row",
   },
   imageLoad: {
-    maxWidth: '100%',
-    maxHeight: '100%',
-    padding: '5px',
-    marginTop: '5px'
+    maxWidth: "100%",
+    maxHeight: "100%",
+    padding: "5px",
+    marginTop: "5px",
   },
   formHead: {
-    display: 'flex',
-    flexDirection: 'row',
-    alignContent: 'center',
-    justifyContent: 'space-evenly',
-    alignItems: 'center'
+    display: "flex",
+    flexDirection: "row",
+    alignContent: "center",
+    justifyContent: "space-evenly",
+    alignItems: "center",
   },
   buttonImgLoader: {
-    cursor: 'pointer',
-    padding: '5px',
-    position: 'absolute'
+    cursor: "pointer",
+    padding: "5px",
   },
   buttonEdit: {
-    cursor: 'pointer',
-    padding: '5px',
-    marginLeft: '-10px',
-    position: 'absolute'
-  }
+    cursor: "pointer",
+    padding: "5px",
+  },
 }));
 
 export default function CreateProduct() {
@@ -130,43 +127,38 @@ export default function CreateProduct() {
       });
     };
 
-    const loadImage = async (e) =>
-    {
-      e.preventDefault();
-      if(imageLoader.loader.length > 4)
-      {
-        setLoadOpen(true)
-        setTimeout(() => {
-          setLoadOpen(false)
-        }, 3000)
-      }else{
+  const loadImage = async (e) => {
+    e.preventDefault();
+    if (imageLoader.loader.length > 4) {
+      setLoadOpen(true);
+      setTimeout(() => {
+        setLoadOpen(false);
+      }, 3000);
+    } else {
       const file = e.target.files[0];
       const resizedString = await convertToBase64(file);
-      if(imageLoader.loader.length >= 4)
-      {
-        return null
-      } else{
-        imageLoader.loader.push(resizedString)
-        if(images.images.length >= 4)
-        {
-          return null
-        }else{
-            images.images.push(file)
+      if (imageLoader.loader.length >= 4) {
+        return null;
+      } else {
+        imageLoader.loader.push(resizedString);
+        if (images.images.length >= 4) {
+          return null;
+        } else {
+          images.images.push(file);
         }
       }
-      setLoadImage({loader: imageLoader.loader, filename: file.name})
+      setLoadImage({ loader: imageLoader.loader, filename: file.name });
     }
-  }
+  };
 
-    const replaceImage = async (e, index) =>
-    {
+  const replaceImage = async (e, index) => {
     e.preventDefault();
     const file = e.target.files[0];
     const resizedString = await convertToBase64(file);
-    imageLoader.loader[index] = resizedString
-    images.images[index] = file
-    setLoadImage({loader: imageLoader.loader, filename: file.name})
-  }
+    imageLoader.loader[index] = resizedString;
+    images.images[index] = file;
+    setLoadImage({ loader: imageLoader.loader, filename: file.name });
+  };
 
 
   const modifyString = (a, sti) => {
@@ -212,17 +204,35 @@ export default function CreateProduct() {
         setSnackBarError(true);
         e.preventDefault();
       } else {
-        setLoading(true);
-        setButtonState(true);
-        const formData = new FormData();
-        const data = {
+        if (
+          !active &&
+          !productName &&
+          !description &&
+          !category &&
+          !considerations &&
+          // !fixedPublicPrice &&
+          !fromPublicPrice &&
+          !toPublicPrice &&
+          // !fixedPrixerPrice &&
+          !fromPrixerPrice &&
+          !toPrixerPrice &&
+          !images
+        ) {
+          setErrorMessage("Por favor completa todos los campos requeridos.");
+          setSnackBarError(true);
+          e.preventDefault();
+        } else {
+          setLoading(true);
+          setButtonState(true);
+          const formData = new FormData();
+          const data = {
             publicPrice: {
-                'from': fromPublicPrice,
-                'to': toPublicPrice,
+              from: fromPublicPrice,
+              to: toPublicPrice,
             },
             prixerPrice: {
-                'from': fromPrixerPrice,
-                'to': toPrixerPrice,
+              from: fromPrixerPrice,
+              to: toPrixerPrice,
             },
             specialVars: [
               {
@@ -278,218 +288,361 @@ const handleType = (e) => {
 
   return (
     <React.Fragment>
-    {
+      {
         <Backdrop className={classes.backdrop} open={loading}>
-            <CircularProgress />
+          <CircularProgress />
         </Backdrop>
-    }
+      }
       <Title>Productos</Title>
-        <form className={classes.form} encType="multipart/form-data" noValidate onSubmit={handleSubmit}>
-            <Grid container spacing={2}>
-                    <Grid container spacing={2} className={classes.formHead}>
-                      <FormControl variant="outlined" style={{display: 'flex', flexDirection: 'column', height: '20%', alignItems: 'center'}}>
-                        <Button variant="contained" component="label">
-                        Upload File
-                        <input name="productImages" type="file" accept="image/*" hidden onChange={(a) => {
-                          a.preventDefault();
-                          loadImage(a)
-                        }}/>
-                       </Button>
-                       - O -
-                       <Button variant="contained" componenet="label" onClick={handleClickOpen}>
-                        Upload video
-                       </Button>
-                       </FormControl>
-                        <Grid item xs={7} >
-                        <Grid className={classes.loaderImage} style={{ width: isDesktop ? '100%' : '90vw',height: imageLoader.loader.length > 0 ? 'auto' : '30vh' , marginLeft: isDesktop ? '' : '-48%', marginTop: isDesktop ? '' : '9%'}}>
-                            {
-                              imageLoader.loader ?
-                              imageLoader.loader.map((img, key_id) =>
-                              {
-                                return(
-                                  <Grid container spacing={2} direction="row">
-                                  <Grid container spacing={1} xs={8} style={{position: 'absolute', marginTop: '16px'}}>
-                                    <Grid item xs={2}>
-                                    <Button variant="text" className={classes.buttonImgLoader} style={{color: '#d33f49'}} onClick={(d) => {
-                                      imageLoader.loader.splice(key_id, 1)
-                                      images.images.splice(key_id, 1)
-                                      setLoadImage({loader: imageLoader.loader, filename: 'Subir Imagenes'})
-                                      newImages({images: images.images})
-                                    }}>
-                                    <HighlightOffOutlinedIcon/>
-                                    </Button>
-                                    </Grid>
-                                    <Grid item xs={2}>
-                                    <Button variant="text" className={classes.buttonEdit} style={{color: '#d33f49'}} component='label'>
-                                    <input name="productImages" type="file" accept="image/*" hidden onChange={(a) => {
-                                      const i = imageLoader.loader.indexOf(img)
-                                      replaceImage(a, i);
-                                    }}/>
-                                    <EditIcon/>
-                                    </Button>
-                                    </Grid>
-                                  </Grid>
-                                  <Grid key={key_id} item xs={imageLoader.loader.length === 1 ? 6 : imageLoader.loader.length === 2 ? 6 : imageLoader.loader.length === 3 ? 9 : 12}>
-                                    <img  className={classes.imageLoad} src={img} alt='+'></img>
-                                  </Grid>
-                                </Grid>
-                              )
-                              })
-                              :
-                              ''
-                            }
-                        </Grid>
-                        </Grid>
-                    <Grid container xs={isDesktop ? 6 : 12} >
-                      <Grid item xs={6}>
-                          <Checkbox
-                              checked={active}
-                              color="primary"
-                              inputProps={{ 'aria-label': 'secondary checkbox' }}
-                              onChange={()=>{active?setActive(false):setActive(true)}}
-                          /> Habilitado / Visible
-                      </Grid>
-                      <Grid item xs={6}>
-                          <Checkbox
-                              checked={hasSpecialVar}
-                              color="primary"
-                              inputProps={{ 'aria-label': 'secondary checkbox' }}
-                              onChange={()=>{hasSpecialVar?setHasSpecialVar(false):setHasSpecialVar(true)}}
-                          /> ¿Tiene variables especiales?
-                      </Grid>
-                    </Grid>
-                    {
-                    hasSpecialVar &&
-                    <Grid container xs={12} spacing={2}>
-                        <Grid container style={{marginTop: 20}}>
-                            <h3>Variables especiales</h3>
-                        </Grid>
-                        <>
-                        {
-                        specialVars &&
-                            specialVars.map((specialVar, i)=>(
-                            <Grid container spacing={2} xs={12} style={{marginBottom: 10}}>
-                                <Grid item xs={12} md={5}>
-                                    <FormControl className={clsx(classes.margin, classes.textField)} variant="outlined" xs={12} fullWidth={true}>
-                                    <TextField
-                                        variant="outlined"
-                                        required
-                                        fullWidth
-                                        id={specialVar}
-                                        label="Nombre"
-                                        name="specialVar"
-                                        autoComplete="specialVar"
-                                        value={specialVar.name}
-                                        onChange={(e) => {
-                                            setSpecialVars(specialVar.slice(0,i).concat({'name': e.target.value, 'isSpecialVarVisible': specialVars.isSpecialVarVisible}).concat(specialVars.slice(i+1,)));
-                                        }}
-                                    />
-                                    </FormControl>
-                                </Grid>
-                                <Grid item xs={12} md={5}>
-                                    <FormControl className={clsx(classes.margin, classes.textField)} variant="outlined" xs={12} fullWidth={true}>
-                                    <Checkbox
-                                        variant="outlined"
-                                        required
-                                        fullWidth
-                                        id="isSpecialVarVisible"
-                                        label="Visible"
-                                        name="isSpecialVarVisible"
-                                        autoComplete="isSpecialVarVisible"
-                                        value={specialVar.isSpecialVarVisible}
-                                        onChange={(e) => {
-                                          setSpecialVars(specialVars.slice(0,i).concat({'name': specialVars.name, 'isSpecialVarVisible': e.target.value}).concat(specialVars.slice(i+1,)));
-                                        }}
-                                    />
-                                    </FormControl>
-                                </Grid>
-                                <Grid item xs={2}>
-                                <Button variant="contained" color="primary" onClick={()=>{ setSpecialVars(specialVars.slice(0, i).concat(specialVars.slice(i+1,)))}} disabled={buttonState} style={{ marginTop: 20}}>
-                                    -
-                                </Button>
-                                </Grid>
-                            </Grid>
-                            ))
-                            }
-                            <Button variant="contained" color="default" onClick={()=>{setSpecialVars(specialVars.concat({ name:'', isSpecialVarVisible:'' }))}} disabled={buttonState} style={{ marginTop: 20}}>
-                                +
-                            </Button>
-                          </>
-                    </Grid>
-                    }
-                    </Grid>
-                    <Grid item xs={12} md={6}>
-                        <FormControl variant="outlined" xs={12} fullWidth={true}>
-                        <TextField
-                            variant="outlined"
-                            required
-                            fullWidth
-                            display="inline"
-                            id="productName"
-                            label="Nombre"
-                            name="productName"
-                            autoComplete="productName"
-                            value={productName}
-                            onChange={(e) => {setProductName(e.target.value);}}
-                        />
-                        </FormControl>
-                    </Grid>
-                    <Grid item xs={12} md={6}>
-                        <FormControl className={clsx(classes.margin, classes.textField)} variant="outlined" xs={12} fullWidth={true}>
-                        <TextField
-                            variant="outlined"
-                            required
-                            display="inline"
-                            fullWidth
-                            id="category"
-                            label="Categoría"
-                            name="category"
-                            autoComplete="category"
-                            value={category}
-                            onChange={(e) => {setCategory(e.target.value);}}
-                        />
-                        </FormControl>
-                    </Grid>
-                    <Grid item xs={12} md={6}>
-                        <FormControl className={clsx(classes.margin, classes.textField)} variant="outlined" xs={12} fullWidth={true}>
-                        <TextField
-                            variant="outlined"
-                            required
-                            multiline
-                            fullWidth
-                            rows={2}
-                            id="description"
-                            label="Descripción"
-                            name="description"
-                            autoComplete="description"
-                            value={description}
-                            onChange={(e) => {setDescription(e.target.value);}}
-                        />
-                        </FormControl>
-                    </Grid>
-                    <Grid item xs={12} md={6}>
-                        <FormControl className={clsx(classes.margin, classes.textField)} variant="outlined" xs={12} fullWidth={true}>
-                        <TextField
-                            variant="outlined"
-                            required
-                            fullWidth
-                            multiline
-                            rows={2}
-                            id="considerations"
-                            label="Consideraciones"
-                            name="considerations"
-                            autoComplete="considerations"
-                            value={considerations}
-                            onChange={(e) => {setConsiderations(e.target.value);}}
-                        />
-                        </FormControl>
-                    </Grid>
+      <form
+        className={classes.form}
+        encType="multipart/form-data"
+        noValidate
+        onSubmit={handleSubmit}
+      >
+        <Grid container spacing={2}>
+          <Grid container spacing={2}>
+            <Grid
+              item
+              xs={12}
+              sm={12}
+              md={4}
+              lg={4}
+              xl={4}
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <FormControl variant="outlined">
+                <Button variant="contained" component="label">
+                  Upload File
+                  <input
+                    name="productImages"
+                    type="file"
+                    accept="image/*"
+                    hidden
+                    onChange={(a) => {
+                      a.preventDefault();
+                      loadImage(a);
+                    }}
+                  />
+                </Button>
+                - O -
+                <Button variant="contained" componenet="label" onClick={handleClickOpen}>
+                 Upload video
+                </Button>
+              </FormControl>
+            </Grid>
+            <Grid
+              item
+              xs={12}
+              sm={12}
+              md={8}
+              lg={8}
+              xl={8}
+              style={{ display: "flex" }}
+            >
+              {imageLoader.loader &&
+                imageLoader.loader.map((img, key_id) => {
+                  return (
+                    <div
+                      style={{
+                        width: "25%",
+                        // maxHeight: "200px",
+                        marginRight: "4px",
+                      }}
+                    >
+                      <div
+                        style={{
+                          // marginBottom: "-32px",
+                          textAlign: "right",
+                        }}
+                      >
+                        <IconButton
+                          variant="text"
+                          className={classes.buttonImgLoader}
+                          style={{ color: "#d33f49" }}
+                          component="label"
+                        >
+                          <input
+                            name="productImages"
+                            type="file"
+                            accept="image/*"
+                            hidden
+                            onChange={(a) => {
+                              const i = imageLoader.loader.indexOf(img);
+                              replaceImage(a, i);
+                            }}
+                          />
+                          <EditIcon />
+                        </IconButton>
+                        <IconButton
+                          variant="text"
+                          className={classes.buttonImgLoader}
+                          style={{ color: "#d33f49" }}
+                          onClick={(d) => {
+                            imageLoader.loader.splice(key_id, 1);
+                            images.images.splice(key_id, 1);
+                            setLoadImage({
+                              loader: imageLoader.loader,
+                              filename: "Subir Imagenes",
+                            });
+                            newImages({ images: images.images });
+                          }}
+                        >
+                          <HighlightOffOutlinedIcon />
+                        </IconButton>
+                      </div>
+
+                      <img
+                        style={{
+                          width: "100%",
+                          // height: "200px",
+                          objectFit: "contain",
+                        }}
+                        src={img}
+                        alt="+"
+                      />
+                    </div>
+                  );
+                })}
+            </Grid>
+            <Grid container xs={isDesktop ? 6 : 12}>
+              <Grid item xs={6}>
+                <Checkbox
+                  checked={active}
+                  color="primary"
+                  inputProps={{ "aria-label": "secondary checkbox" }}
+                  onChange={() => {
+                    active ? setActive(false) : setActive(true);
+                  }}
+                />{" "}
+                Habilitado / Visible
+              </Grid>
+              <Grid item xs={6}>
+                <Checkbox
+                  checked={hasSpecialVar}
+                  color="primary"
+                  inputProps={{ "aria-label": "secondary checkbox" }}
+                  onChange={() => {
+                    hasSpecialVar
+                      ? setHasSpecialVar(false)
+                      : setHasSpecialVar(true);
+                  }}
+                />{" "}
+                ¿Tiene variables especiales?
+              </Grid>
+            </Grid>
+            {hasSpecialVar && (
+              <Grid container xs={12} spacing={2}>
+                <Grid container style={{ marginTop: 20 }}>
+                  <h3>Variables especiales</h3>
                 </Grid>
-                <Grid container style={{marginTop: 20}}>
-                    <Title>PVP</Title>
-                </Grid>
-                <Grid container spacing={2}>
-                {/* <Grid item xs={4} md={4}>
+                <>
+                  {specialVars &&
+                    specialVars.map((specialVar, i) => (
+                      <Grid
+                        container
+                        spacing={2}
+                        xs={12}
+                        style={{ marginBottom: 10 }}
+                      >
+                        <Grid item xs={12} md={5}>
+                          <FormControl
+                            className={clsx(classes.margin, classes.textField)}
+                            variant="outlined"
+                            xs={12}
+                            fullWidth={true}
+                          >
+                            <TextField
+                              variant="outlined"
+                              required
+                              fullWidth
+                              id={specialVar}
+                              label="Nombre"
+                              name="specialVar"
+                              autoComplete="specialVar"
+                              value={specialVar.name}
+                              onChange={(e) => {
+                                setSpecialVars(
+                                  specialVar
+                                    .slice(0, i)
+                                    .concat({
+                                      name: e.target.value,
+                                      isSpecialVarVisible:
+                                        specialVars.isSpecialVarVisible,
+                                    })
+                                    .concat(specialVars.slice(i + 1))
+                                );
+                              }}
+                            />
+                          </FormControl>
+                        </Grid>
+                        <Grid item xs={12} md={5}>
+                          <FormControl
+                            className={clsx(classes.margin, classes.textField)}
+                            variant="outlined"
+                            xs={12}
+                            fullWidth={true}
+                          >
+                            <Checkbox
+                              variant="outlined"
+                              required
+                              fullWidth
+                              id="isSpecialVarVisible"
+                              label="Visible"
+                              name="isSpecialVarVisible"
+                              autoComplete="isSpecialVarVisible"
+                              value={specialVar.isSpecialVarVisible}
+                              onChange={(e) => {
+                                setSpecialVars(
+                                  specialVars
+                                    .slice(0, i)
+                                    .concat({
+                                      name: specialVars.name,
+                                      isSpecialVarVisible: e.target.value,
+                                    })
+                                    .concat(specialVars.slice(i + 1))
+                                );
+                              }}
+                            />
+                          </FormControl>
+                        </Grid>
+                        <Grid item xs={2}>
+                          <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={() => {
+                              setSpecialVars(
+                                specialVars
+                                  .slice(0, i)
+                                  .concat(specialVars.slice(i + 1))
+                              );
+                            }}
+                            disabled={buttonState}
+                            style={{ marginTop: 20 }}
+                          >
+                            -
+                          </Button>
+                        </Grid>
+                      </Grid>
+                    ))}
+                  <Button
+                    variant="contained"
+                    color="default"
+                    onClick={() => {
+                      setSpecialVars(
+                        specialVars.concat({
+                          name: "",
+                          isSpecialVarVisible: "",
+                        })
+                      );
+                    }}
+                    disabled={buttonState}
+                    style={{ marginTop: 20 }}
+                  >
+                    +
+                  </Button>
+                </>
+              </Grid>
+            )}
+            <Grid item xs={12} md={6}>
+              <FormControl variant="outlined" xs={12} fullWidth={true}>
+                <TextField
+                  variant="outlined"
+                  required
+                  fullWidth
+                  display="inline"
+                  id="productName"
+                  label="Nombre"
+                  name="productName"
+                  autoComplete="productName"
+                  value={productName}
+                  onChange={(e) => {
+                    setProductName(e.target.value);
+                  }}
+                />
+              </FormControl>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <FormControl
+                className={clsx(classes.margin, classes.textField)}
+                variant="outlined"
+                xs={12}
+                fullWidth={true}
+              >
+                <TextField
+                  variant="outlined"
+                  required
+                  display="inline"
+                  fullWidth
+                  id="category"
+                  label="Categoría"
+                  name="category"
+                  autoComplete="category"
+                  value={category}
+                  onChange={(e) => {
+                    setCategory(e.target.value);
+                  }}
+                />
+              </FormControl>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <FormControl
+                className={clsx(classes.margin, classes.textField)}
+                variant="outlined"
+                xs={12}
+                fullWidth={true}
+              >
+                <TextField
+                  variant="outlined"
+                  required
+                  multiline
+                  fullWidth
+                  rows={2}
+                  id="description"
+                  label="Descripción"
+                  name="description"
+                  autoComplete="description"
+                  value={description}
+                  onChange={(e) => {
+                    setDescription(e.target.value);
+                  }}
+                />
+              </FormControl>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <FormControl
+                className={clsx(classes.margin, classes.textField)}
+                variant="outlined"
+                xs={12}
+                fullWidth={true}
+              >
+                <TextField
+                  variant="outlined"
+                  required
+                  fullWidth
+                  multiline
+                  rows={2}
+                  id="considerations"
+                  label="Consideraciones"
+                  name="considerations"
+                  autoComplete="considerations"
+                  value={considerations}
+                  onChange={(e) => {
+                    setConsiderations(e.target.value);
+                  }}
+                />
+              </FormControl>
+            </Grid>
+          </Grid>
+          <Grid container style={{ marginTop: 20 }}>
+            <Title>PVP</Title>
+          </Grid>
+          <Grid container spacing={2}>
+            {/* <Grid item xs={4} md={4}>
                     <FormControl className={clsx(classes.margin, classes.textField)} variant="outlined" xs={12} fullWidth={true}>
                     <TextField
                         variant="outlined"
@@ -504,42 +657,56 @@ const handleType = (e) => {
                     />
                     </FormControl>
                 </Grid> */}
-                <Grid item xs={4} md={5}>
-                    <FormControl className={clsx(classes.margin, classes.textField)} variant="outlined" xs={12} fullWidth={true}>
-                    <TextField
-                        variant="outlined"
-                        required
-                        fullWidth
-                        id="fromPublicPrice"
-                        label="Desde"
-                        name="fromPublicPrice"
-                        autoComplete="fromPublicPrice"
-                        value={fromPublicPrice}
-                        onChange={(e) => {setFromPublicPrice(e.target.value);}}
-                    />
-                    </FormControl>
-                </Grid>
-                <Grid item xs={4} md={5}>
-                    <FormControl className={clsx(classes.margin, classes.textField)} variant="outlined" xs={12} fullWidth={true}>
-                    <TextField
-                        variant="outlined"
-                        required
-                        fullWidth
-                        id="toPublicPrice"
-                        label="Hasta"
-                        name="toPublicPrice"
-                        autoComplete="toPublicPrice"
-                        value={toPublicPrice}
-                        onChange={(e) => {setToPublicPrice(e.target.value);}}
-                    />
-                    </FormControl>
-                </Grid>
-                </Grid>
-                <Grid container style={{marginTop: 20}}>
-                    <Title>PVM</Title>
-                </Grid>
-                <Grid container spacing={2}>
-                {/* <Grid item xs={4} md={4}>
+            <Grid item xs={4} md={5}>
+              <FormControl
+                className={clsx(classes.margin, classes.textField)}
+                variant="outlined"
+                xs={12}
+                fullWidth={true}
+              >
+                <TextField
+                  variant="outlined"
+                  required
+                  fullWidth
+                  id="fromPublicPrice"
+                  label="Desde"
+                  name="fromPublicPrice"
+                  autoComplete="fromPublicPrice"
+                  value={fromPublicPrice}
+                  onChange={(e) => {
+                    setFromPublicPrice(e.target.value);
+                  }}
+                />
+              </FormControl>
+            </Grid>
+            <Grid item xs={4} md={5}>
+              <FormControl
+                className={clsx(classes.margin, classes.textField)}
+                variant="outlined"
+                xs={12}
+                fullWidth={true}
+              >
+                <TextField
+                  variant="outlined"
+                  required
+                  fullWidth
+                  id="toPublicPrice"
+                  label="Hasta"
+                  name="toPublicPrice"
+                  autoComplete="toPublicPrice"
+                  value={toPublicPrice}
+                  onChange={(e) => {
+                    setToPublicPrice(e.target.value);
+                  }}
+                />
+              </FormControl>
+            </Grid>
+          </Grid>
+          <Grid container style={{ marginTop: 20 }}>
+            <Title>PVM</Title>
+          </Grid>
+          <Grid container spacing={2}>
+            {/* <Grid item xs={4} md={4}>
                     <FormControl className={clsx(classes.margin, classes.textField)} variant="outlined" xs={12} fullWidth={true}>
                     <TextField
                         variant="outlined"

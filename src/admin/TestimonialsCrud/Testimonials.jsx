@@ -135,7 +135,7 @@ export default function Testimonials() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!type || !name || !value || !avatar || footer || !state) {
+    if (!type || !name || !value || !avatar || !state) {
       setErrorMessage("Por favor completa todos los campos requeridos.");
       setSnackBarError(true);
     } else {
@@ -175,11 +175,11 @@ export default function Testimonials() {
     }
   };
   const cualquierVaina = (event) => {
-    // if (updateId !== undefined) {
-    //   handleChange();
-    // } else {
-    //   setState(event);
-    // }
+    if (updateId !== undefined) {
+      handleChange();
+    } else {
+      // setState(false);
+    }
   };
 
   const handleChange = (event) => {
@@ -207,7 +207,6 @@ export default function Testimonials() {
   const ChangeVisibility = async (e, GetId) => {
     e.preventDefault();
     setLoading(true);
-    console.log(GetId);
     handleChange(e);
     const base_url =
       process.env.REACT_APP_BACKEND_URL + "/testimonial/update-home/" + GetId;
@@ -233,8 +232,9 @@ export default function Testimonials() {
     setFooter(response.data.footer);
     setState(response.data.status);
     setUpdateId(GetId);
-    console.log(response.data.avatar);
+    console.log(response.data);
   };
+  console.log(state);
 
   const saveChanges = async (e, GetId) => {
     e.preventDefault();
@@ -245,12 +245,12 @@ export default function Testimonials() {
     // if (inputChange) {
     //   formData.append("avatar", avatarPic);
     // }
-    formData.append("avatar", avatarPic);
+    formData.append("avatar", avatarPic || avatarObj); // ternary?
     formData.append("type", type);
     formData.append("name", name);
     formData.append("value", value);
     formData.append("footer", footer);
-    formData.append("status", state.checkedA);
+    formData.append("status", state.checkedA || state);
     const response = await axios.put(base_url, formData, {
       "Content-Type": "multipart/form-data",
     });
@@ -478,7 +478,13 @@ export default function Testimonials() {
                             //     : handleChange;
                             // }}
                             // onChange={()=>{active?setActive(false):setActive(true)}}
-                            onChange={handleChange}
+                            // onChange={(e) => {
+                            //   setState(e.target.value);
+                            // }}
+                            onChange={handleChange || setState}
+                            // {(e) => {
+                            //   setState(e.target.value);
+                            // }}
                             name="checkedA"
                             // value={state}
                           />

@@ -8,6 +8,8 @@ import InputLabel from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import Button from "@material-ui/core/Button";
+import IconButton from "@material-ui/core/IconButton";
+
 import Grid from "@material-ui/core/Grid";
 import Snackbar from "@material-ui/core/Snackbar";
 import CircularProgress from "@material-ui/core/CircularProgress";
@@ -60,13 +62,10 @@ const useStyles = makeStyles((theme) => ({
   buttonImgLoader: {
     cursor: "pointer",
     padding: "5px",
-    position: "absolute",
   },
   buttonEdit: {
     cursor: "pointer",
     padding: "5px",
-    marginLeft: "-10px",
-    position: "absolute",
   },
 }));
 
@@ -122,8 +121,8 @@ export default function UpdateAdmin(props) {
   useEffect(() => {
     imagesList?.map((url) => imageLoader.loader.push(url));
     return () => {
-      localStorage.removeItem('product');
-    }
+      localStorage.removeItem("product");
+    };
   }, []);
 
   //Preview de imagen antes de enviar
@@ -139,7 +138,7 @@ export default function UpdateAdmin(props) {
 
   const loadImage = async (e) => {
     e.preventDefault();
-    if (imageLoader.loader.length >=4 || imagesList.length >= 4) {
+    if (imageLoader.loader.length >= 4 || imagesList?.length >= 4) {
       setLoadOpen(true);
       setTimeout(() => {
         setLoadOpen(false);
@@ -164,81 +163,87 @@ export default function UpdateAdmin(props) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (images.images.length && imageLoader.loader.length && imagesList.length >= 4) {
+    if (
+      images.images.length &&
+      imageLoader.loader.length &&
+      imagesList.length >= 4
+    ) {
       setLoaDOpen(true);
     } else {
-      if(images.images.length === 0 && imagesList.length === 0){
-        setMustImages(true)
+      if (images.images.length === 0 && imagesList.length === 0) {
+        setMustImages(true);
         setTimeout(() => {
-          setMustImages(false)
-        }, 3000)}
-        else{
-      if (
-        !active &&
-        !productName &&
-        !description &&
-        !category &&
-        !considerations &&
-        !fromPublicPrice &&
-        !toPublicPrice &&
-        !fromPrixerPrice &&
-        !toPrixerPrice &&
-        !images
-      ) {
-        setErrorMessage("Por favor completa todos los campos requeridos.");
-        setSnackBarError(true);
-        e.preventDefault();
+          setMustImages(false);
+        }, 3000);
       } else {
-        setLoading(true);
-        setButtonState(true);
-        const newFormData = new FormData();
-        const data = {
-          publicPrice: {
-            from: fromPublicPrice,
-            to: toPublicPrice,
-          },
-          prixerPrice: {
-            from: fromPrixerPrice,
-            to: toPrixerPrice,
-          },
-          specialVars: [
-            {
-              name: "",
-              isSpecialVarVisible: "",
-            },
-          ],
-        };
-        newFormData.append("active", active);
-        newFormData.append("name", productName);
-        newFormData.append("description", description);
-        newFormData.append("category", category);
-        newFormData.append("considerations", considerations);
-        newFormData.append("publicPriceFrom", data.publicPrice.from);
-        newFormData.append("publicPriceTo", data.publicPrice.to);
-        newFormData.append("prixerPriceFrom", data.prixerPrice.from);
-        newFormData.append("prixerPriceTo", data.prixerPrice.to);
-        newFormData.append("hasSpecialVar", hasSpecialVar);
-        imagesList.length > 0 ? imagesList.map((url) => newFormData.append("images", url)) : newFormData.append("images", imagesList);
-        images.images.map((file) =>
-          newFormData.append("newProductImages", file)
-        );
-        const base_url =
-          process.env.REACT_APP_BACKEND_URL + `/product/update/${productId}`;
-        const response = await axios.put(base_url, newFormData);
-        if (response.data.success === false) {
-          setLoading(false);
-          setButtonState(false);
-          setErrorMessage(response.data.message);
+        if (
+          !active &&
+          !productName &&
+          !description &&
+          !category &&
+          !considerations &&
+          !fromPublicPrice &&
+          !toPublicPrice &&
+          !fromPrixerPrice &&
+          !toPrixerPrice &&
+          !images
+        ) {
+          setErrorMessage("Por favor completa todos los campos requeridos.");
           setSnackBarError(true);
+          e.preventDefault();
         } else {
-          setErrorMessage("Actualización de producto exitosa.");
-          setSnackBarError(true);
-          history.push("/admin/product/read");
+          setLoading(true);
+          setButtonState(true);
+          const newFormData = new FormData();
+          const data = {
+            publicPrice: {
+              from: fromPublicPrice,
+              to: toPublicPrice,
+            },
+            prixerPrice: {
+              from: fromPrixerPrice,
+              to: toPrixerPrice,
+            },
+            specialVars: [
+              {
+                name: "",
+                isSpecialVarVisible: "",
+              },
+            ],
+          };
+          newFormData.append("active", active);
+          newFormData.append("name", productName);
+          newFormData.append("description", description);
+          newFormData.append("category", category);
+          newFormData.append("considerations", considerations);
+          newFormData.append("publicPriceFrom", data.publicPrice.from);
+          newFormData.append("publicPriceTo", data.publicPrice.to);
+          newFormData.append("prixerPriceFrom", data.prixerPrice.from);
+          newFormData.append("prixerPriceTo", data.prixerPrice.to);
+          newFormData.append("hasSpecialVar", hasSpecialVar);
+          imagesList.length > 0
+            ? imagesList.map((url) => newFormData.append("images", url))
+            : newFormData.append("images", imagesList);
+          images.images.map((file) =>
+            newFormData.append("newProductImages", file)
+          );
+          const base_url =
+            process.env.REACT_APP_BACKEND_URL + `/product/update/${productId}`;
+          const response = await axios.put(base_url, newFormData);
+          if (response.data.success === false) {
+            setLoading(false);
+            setButtonState(false);
+            setErrorMessage(response.data.message);
+            setSnackBarError(true);
+          } else {
+            setErrorMessage("Actualización de producto exitosa.");
+            setSnackBarError(true);
+            history.push("/admin/product/read");
+          }
         }
       }
     }
-  }
-};
+  };
 
   const handleVariantsClick = () => {
     history.push({ pathname: "/admin/product/" + productId + "/variant/read" });
@@ -312,26 +317,112 @@ console.log(imageLoader.loader)
           >
             <Grid container spacing={2}>
               <Grid container spacing={2}>
-                <Grid item xs={12}>
-                  <Grid container spacing={1} direction="row">
-                    <Grid
-                      item
-                      xs={12}
-                      className={classes.formHead}
-                      style={{ flexDirection: isDesktop ? "row" : "column" }}
-                    >
-                      <FormControl variant="outlined">
-                        <Button variant="contained" component="label">
-                          Upload File
-                          <input
-                            name="newProductImages"
-                            type="file"
-                            accept="image/*"
-                            hidden
-                            onChange={(a) => {
-                              a.preventDefault();
-                              loadImage(a);
+                <Grid
+                  item
+                  xs={12}
+                  sm={12}
+                  md={4}
+                  lg={4}
+                  xl={4}
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <FormControl variant="outlined">
+                    <Button variant="contained" component="label">
+                      Upload File
+                      <input
+                        name="newProductImages"
+                        type="file"
+                        accept="image/*"
+                        hidden
+                        onChange={(a) => {
+                          a.preventDefault();
+                          loadImage(a);
+                        }}
+                      />
+                    </Button>
+                  </FormControl>
+                </Grid>
+                <Grid
+                  item
+                  xs={12}
+                  sm={12}
+                  md={8}
+                  lg={8}
+                  xl={8}
+                  style={{ display: "flex" }}
+                >
+                  {imageLoader.loader &&
+                    imageLoader.loader.map((img, key_id) => {
+                      return (
+                        <div
+                          style={{
+                            width: "25%",
+                            // maxHeight: "200px",
+                            marginRight: "4px",
+                            // display: "flex",
+                            flexDirection: "row",
+                          }}
+                        >
+                          <div
+                            style={{
+                              // marginBottom: "-32px",
+                              // display: "flex",
+                              textAlign: "right",
                             }}
+                          >
+                            <IconButton
+                              variant="text"
+                              className={classes.buttonImgLoader}
+                              style={{
+                                color: "#d33f49",
+                              }}
+                              component="label"
+                            >
+                              <input
+                                name="productImages"
+                                type="file"
+                                accept="image/*"
+                                hidden
+                                onChange={(a) => {
+                                  const i = imageLoader.loader.indexOf(img);
+                                  replaceImage(a, i);
+                                  imagesList.splice(key_id, 1);
+                                }}
+                              />
+                              <EditIcon />
+                            </IconButton>
+
+                            <IconButton
+                              variant="text"
+                              className={classes.buttonImgLoader}
+                              style={{ color: "#d33f49" }}
+                              onClick={(d) => {
+                                imageLoader.loader.splice(key_id, 1);
+                                images.images.splice(key_id, 1);
+                                imagesList.splice(key_id, 1);
+                                setLoadImage({
+                                  loader: imageLoader.loader,
+                                  filename: "Subir Imagenes",
+                                });
+                                newImages({ images: images.images });
+                              }}
+                            >
+                              <HighlightOffOutlinedIcon />
+                            </IconButton>
+                          </div>
+
+                          <img
+                            style={{
+                              width: "100%",
+                              // height: "200px",
+                              objectFit: "contain",
+                            }}
+                            src={img}
+                            alt="+"
                           />
                         </Button>
                       </FormControl>
@@ -535,21 +626,6 @@ console.log(imageLoader.loader)
                 <Title>PVP</Title>
               </Grid>
               <Grid container spacing={2}>
-                {/* <Grid item xs={4} md={4}>
-                    <FormControl className={clsx(classes.margin, classes.textField)} variant="outlined" xs={12} fullWidth={true}>
-                    <TextField
-                        variant="outlined"
-                        required
-                        fullWidth
-                        id="fixedPublicPrice"
-                        label="Fijo"
-                        name="fixedPublicPrice"
-                        autoComplete="fixedPublicPrice"
-                        value={fixedPublicPrice}
-                        onChange={(e) => {setFixedPublicPrice(e.target.value);}}
-                    />
-                    </FormControl>
-                </Grid> */}
                 <Grid item xs={4} md={5}>
                   <FormControl
                     className={clsx(classes.margin, classes.textField)}
@@ -599,21 +675,6 @@ console.log(imageLoader.loader)
                 <Title>PVM</Title>
               </Grid>
               <Grid container spacing={2}>
-                {/* <Grid item xs={4} md={4}>
-                    <FormControl className={clsx(classes.margin, classes.textField)} variant="outlined" xs={12} fullWidth={true}>
-                    <TextField
-                        variant="outlined"
-                        required
-                        fullWidth
-                        id="fixedPrixerPrice"
-                        label="Fijo"
-                        name="fixedPrixerPrice"
-                        autoComplete="fixedPrixerPrice"
-                        value={fixedPrixerPrice}
-                        onChange={(e) => {setFixedPrixerPrice(e.target.value);}}
-                    />
-                    </FormControl>
-                </Grid> */}
                 <Grid item xs={4} md={5}>
                   <FormControl
                     className={clsx(classes.margin, classes.textField)}
@@ -693,7 +754,7 @@ console.log(imageLoader.loader)
       <Snackbar
         open={mustImage}
         autoHideDuration={1000}
-        message={'No puedes actualizar un producto sin foto. Agrega 1 o mas'}
+        message={"No puedes actualizar un producto sin foto. Agrega 1 o mas"}
         className={classes.snackbar}
       />
     </React.Fragment>

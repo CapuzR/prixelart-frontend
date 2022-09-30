@@ -36,16 +36,20 @@ const useStyles = makeStyles((theme) => ({
     },
     [theme.breakpoints.up("sm")]: {
       minHeight: 300,
-      maxHeight: 450,
+      maxHeight: 300,
     },
     [theme.breakpoints.up("lg")]: {
-      minHeight: 350,
-      maxHeight: 450,
+      // minHeight: 300,
+      // maxHeight: 450,
+      minWidth: 300,
     },
     [theme.breakpoints.up("xl")]: {
       minHeight: 450,
       maxHeight: 450,
     },
+  },
+  imagen: {
+    objectFit: "fill",
   },
   backdrop: {
     zIndex: theme.zIndex.drawer + 1,
@@ -169,8 +173,14 @@ export default function Grid(props) {
               className={classes.img}
             >
               <Img
+                // className={classes.}
                 placeholder="/imgLoading.svg"
-                style={{ backgroundColor: "#eeeeee", height: "100%" }}
+                style={{
+                  backgroundColor: "#eeeeee",
+                  width: "300px",
+                  height: "300px",
+                  objectFit: "cover",
+                }}
                 src={tile.squareThumbUrl}
                 debounce={1000}
                 cache

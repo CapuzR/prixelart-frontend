@@ -114,6 +114,7 @@ export default function Home(props) {
   const [openModal, setOpenModal] = useState(false);
   const [openPrixers, setOpenPrixers] = useState(false);
   const [openArts, setOpenArts] = useState(true);
+  const [openTestimonials, setOpenTestimonials] = useState(false);
   // const [scrolledTop, setScrolledTop] = useState(false);
   const history = useHistory();
   const [openArtFormDialog, setOpenArtFormDialog] = useState(false);
@@ -165,18 +166,22 @@ export default function Home(props) {
       setOpenArts(true);
       setOpenModal(false);
       setOpenPrixers(false);
+      setOpenTestimonials(false);
     } else if (newValue === 1) {
       setOpenModal(false);
       setOpenPrixers(true);
       setOpenArts(false);
+      setOpenTestimonials(false);
     } else if (newValue === 2) {
       setOpenModal(false);
       setOpenPrixers(false);
       setOpenArts(false);
+      setOpenTestimonials(true);
     } else if (newValue === 3) {
       setOpenModal(true);
       setOpenPrixers(false);
       setOpenArts(false);
+      setOpenTestimonials(false);
     } else {
       setOpenModal(false);
       setOpenPrixers(false);
@@ -435,7 +440,11 @@ export default function Home(props) {
               )
               // </Suspense>
             }
-            <TestimonialsFeed />
+            {openTestimonials && (
+              // <Suspense fallback={<div>Loading...</div>}>
+              <TestimonialsFeed />
+              // </Suspense>
+            )}
           </Container>
         </main>
         {/* Footer */}

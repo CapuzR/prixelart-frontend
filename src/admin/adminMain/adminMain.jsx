@@ -26,6 +26,7 @@ import PaymentMethods from "./orders/paymentMethods";
 import Orders from "./orders/orders";
 import Preferences from "./preferences/Preferences";
 import Testimonials from "../TestimonialsCrud/Testimonials";
+import Prixers from "./prixers/prixers";
 
 function Copyright() {
   return (
@@ -224,6 +225,8 @@ export default function AdminMain(props) {
                 <PaymentMethods />
               ) : active === "order" ? (
                 <Orders />
+              ) : active === "prixer" ? (
+                <Prixers />
               ) : active === "preferences" ? (
                 <Preferences />
               ) : active === "testimonials" ? (

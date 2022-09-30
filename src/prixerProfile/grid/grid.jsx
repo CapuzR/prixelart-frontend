@@ -63,6 +63,7 @@ export default function Grid(props) {
   );
   const [backdrop, setBackdrop] = useState(true);
   const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
 
   useEffect(() => {
@@ -141,19 +142,25 @@ export default function Grid(props) {
       <Backdrop className={classes.backdrop} open={backdrop}>
         <CircularProgress color="inherit" />
       </Backdrop>
-      <SearchBar
-        searchPhotos={searchPhotos}
-        searchValue={3}
-        setSearchValue={setSearchValue}
-      />
+      <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
+        <SearchBar
+          searchPhotos={searchPhotos}
+          searchValue={3}
+          setSearchValue={setSearchValue}
+        />
+      </div>
       <GridList
         cellSize={"auto"}
         className={classes.gridList}
         cols={isDesktop ? 4 : 2}
+        style={{ margin: "0", justifyContent: "center" }}
       >
         {tiles ? (
           tiles.map((tile) => (
             <GridListTile
+              style={{
+                width: isDesktop ? "300px" : "50%",
+              }}
               key={tile.artId}
               cols={1}
               onClick={(e) => {

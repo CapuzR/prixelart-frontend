@@ -161,7 +161,7 @@ export default function UpdateAdmin(props) {
 
   const loadImage = async (e) => {
     e.preventDefault();
-    if (imageLoader.loader.length >= 4 || imagesList?.length >= 4) {
+    if (imageLoader.loader.length >= 4 || imagesList?.length >= 5) {
       setLoadOpen(true);
       setTimeout(() => {
         setLoadOpen(false);
@@ -174,6 +174,8 @@ export default function UpdateAdmin(props) {
       setLoadImage({ loader: imageLoader.loader, filename: file.name });
     }
   };
+
+console.log(videoUrl)
 
   const replaceImage = async (e, index) => {
     e.preventDefault();
@@ -202,7 +204,7 @@ console.log(imageLoader)
     if (
       images.images.length &&
       imageLoader.loader.length &&
-      imagesList.length >= 4
+      imagesList.length >= 5
     ) {
       setLoaDOpen(true);
     } else {

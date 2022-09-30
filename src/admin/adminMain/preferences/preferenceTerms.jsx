@@ -10,7 +10,10 @@ import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import { makeStyles } from "@material-ui/core/styles";
 import Snackbar from "@material-ui/core/Snackbar";
-import TextEditor from "./TextEditorDraft";
+// import TextEditor from "./TextEditorDraft";
+import { Editor } from "react-draft-wysiwyg";
+import { EditorState } from "draft-js";
+import "../../../../node_modules/react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 
 const useStyles = makeStyles((theme) => ({
   backdrop: {
@@ -34,11 +37,18 @@ const useStyles = makeStyles((theme) => ({
 export default function MultilineTextFields(props) {
   const classes = useStyles();
   const [value, setValue] = React.useState("");
+  const [editorState, setEditorState] = useState(() =>
+    EditorState.createEmpty()
+  );
 
   const handleChange = async (event) => {
     const base_url =
       process.env.REACT_APP_BACKEND_URL + "/termsAndConditions/update";
-    const response = await axios.put(base_url, { termsAndConditions: value });
+    // setValue(editorState);
+
+    const response = await axios.put(base_url, {
+      termsAndConditions: editorState,
+    });
   };
   const setValueText = (event) => {
     setValue(event.target.value);
@@ -55,7 +65,7 @@ export default function MultilineTextFields(props) {
       .catch((error) => {
         console.log(error);
       });
-  }, []);
+  }, [editorState]);
 
   const [state, setState] = React.useState({
     open: false,
@@ -104,7 +114,7 @@ export default function MultilineTextFields(props) {
                   textAlign: "justify",
                 }}
               >
-                <Box>
+                {/* <Box>
                   <TextField
                     id="outlined-multiline-static"
                     label="Multiline"
@@ -114,10 +124,22 @@ export default function MultilineTextFields(props) {
                     onChange={setValueText}
                     variant="outlined"
                   />
-                </Box>
+                </Box> */}
 
                 <Box>
-                  <TextEditor />
+                  <div
+                    style={{
+                      border: "1px solid black",
+                      padding: "2px",
+                      minHeight: "400px",
+                    }}
+                  >
+                    <Editor
+                      //   toolbarOnFocus
+                      editorState={editorState}
+                      onEditorStateChange={setEditorState}
+                    />
+                  </div>
                 </Box>
               </Box>
             </Grid>

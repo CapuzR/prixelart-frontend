@@ -23,7 +23,7 @@ export default function TextEditor() {
         }}
       >
         <Editor
-          toolbarOnFocus
+          //   toolbarOnFocus
           editorState={editorState}
           onEditorStateChange={setEditorState}
         />

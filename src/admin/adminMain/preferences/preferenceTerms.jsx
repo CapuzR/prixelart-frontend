@@ -10,6 +10,8 @@ import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import { makeStyles } from "@material-ui/core/styles";
 import Snackbar from "@material-ui/core/Snackbar";
+import TextEditor from "./TextEditorDraft";
+
 const useStyles = makeStyles((theme) => ({
   backdrop: {
     zIndex: theme.zIndex.drawer + 1,
@@ -112,6 +114,10 @@ export default function MultilineTextFields(props) {
                     onChange={setValueText}
                     variant="outlined"
                   />
+                </Box>
+
+                <Box>
+                  <TextEditor />
                 </Box>
               </Box>
             </Grid>

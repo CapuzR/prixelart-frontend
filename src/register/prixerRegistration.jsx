@@ -188,6 +188,7 @@ export default function PrixerRegistration() {
   const [errorMessage, setErrorMessage] = useState();
   const [snackBarError, setSnackBarError] = useState(false);
   const termsAgree = isChecked;
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (

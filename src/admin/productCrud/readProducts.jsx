@@ -91,24 +91,22 @@ export default function ReadProducts(props) {
                     </Fab>
                   </TableCell>
                   <TableCell align="center">
-                    {row.thumbUrl ? (
-                      <img
-                        src={row.thumbUrl}
-                        alt="+"
-                        style={{ width: 50, height: "auto" }}
-                      />
-                    ) : (
+                    {row.sources.images[0].type == 'images' ? (
                       <>
                         <img
-                          src={row.images[0]}
+                          src={row.sources.images[0].url}
                           width={150}
                           alt="imageProduct"
                         />
                         <Typography
                           style={{ fontSize: "1rem", color: "#bdbdbd" }}
-                        >{`Cantidad de imagenes: ${row.images.length}`}</Typography>
+                        >{`Cantidad de imagenes: ${row.sources.images.length}`}</Typography>
                       </>
-                    )}
+                    ) :
+                    <div>
+                    Video de Youtube
+                    </div>
+                    }
                   </TableCell>
                   <TableCell align="center">{row.name}</TableCell>
                   <TableCell align="center">

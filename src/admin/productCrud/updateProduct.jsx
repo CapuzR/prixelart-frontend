@@ -6,7 +6,11 @@ import axios from "axios";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import IconButton from "@material-ui/core/IconButton";
-
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
 import Grid from "@material-ui/core/Grid";
 import Snackbar from "@material-ui/core/Snackbar";
 import CircularProgress from "@material-ui/core/CircularProgress";
@@ -74,7 +78,7 @@ export default function UpdateAdmin(props) {
   const isDeskTop = useMediaQuery(theme.breakpoints.up("sm"));
   const [productId, setProductId] = useState(props?.product?._id);
   const [images, newImages] = useState({ images: [] });
-  const [imagesList, setImagesList] = useState(props?.product?.images);
+  const [imagesList, setImagesList] = useState(props?.product?.sources.images);
   const [active, setActive] = useState(props?.product?.active);
   const [productName, setProductName] = useState(props?.product?.name);
   const [description, setDescription] = useState(props?.product?.description);
@@ -101,28 +105,48 @@ export default function UpdateAdmin(props) {
   const [hasSpecialVar, setHasSpecialVar] = useState(
     props?.product?.hasSpecialVar || false
   );
+  const [ videoUrl, setVideoUrl ] = useState('')
   const [imageLoader, setLoadImage] = useState({
     loader: [],
     filename: "Subir imagenes",
   });
-
   const [thumbUrl, setThumbUrl] = useState(props.product?.thumbUrl);
 
   //Error states.
   const [errorMessage, setErrorMessage] = useState();
   const [snackBarError, setSnackBarError] = useState(false);
+  const [open, setOpen] = useState(false);
   const [loadOpen, setLoadOpen] = useState(false);
   const [loaDOpen, setLoaDOpen] = useState(false);
   const [mustImage, setMustImages] = useState(false);
 
-  console.log(props);
-
   useEffect(() => {
-    imagesList?.map((url) => imageLoader.loader.push(url));
+    imagesList?.map((url) => {
+      url.type === 'images' ?
+      imageLoader.loader.push(url.url)
+      :
+      setVideoUrl(url.url)
+    });
+    // props.product.sources.images.map((file) => {
+    //   file.type == 'video' ?
+    //   setVideoUrl(file.url)
+    //   :
+    //   setVideoUrl('')
+    // } )
     return () => {
       localStorage.removeItem("product");
     };
   }, []);
+
+  console.log(imagesList)
+
+  const handleClickOpen = () => {
+        setOpen(true);
+  };
+
+  const handleClose = () => {
+      setOpen(false);
+  };
 
   //Preview de imagen antes de enviar
   const convertToBase64 = (blob) => {
@@ -137,7 +161,7 @@ export default function UpdateAdmin(props) {
 
   const loadImage = async (e) => {
     e.preventDefault();
-    if (imageLoader.loader.length >= 4 || imagesList?.length >= 4) {
+    if (imageLoader.loader.length >= 4 || imagesList?.length >= 5) {
       setLoadOpen(true);
       setTimeout(() => {
         setLoadOpen(false);
@@ -151,6 +175,8 @@ export default function UpdateAdmin(props) {
     }
   };
 
+console.log(videoUrl)
+
   const replaceImage = async (e, index) => {
     e.preventDefault();
     const file = e.target.files[0];
@@ -159,16 +185,26 @@ export default function UpdateAdmin(props) {
     images.images[index] = file;
     setLoadImage({ loader: imageLoader.loader, filename: file.name });
   };
-  console.log(imageLoader);
-  console.log(images);
-  console.log(imageLoader.loader);
+
+console.log(images.images)
+console.log(imageLoader)
+
+  const modifyString = (a, sti) => {
+      const url = sti.split(' ')
+      const width = sti.replace('560', '326').replace('315', '326');
+      const previewMp4 = sti.replace('1350', '510').replace('494', '350');
+      setVideoUrl(width)
+      // const index = url[3].indexOf()
+      // sti.replace(index, '?controls=0\"')
+    //sti[79]
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (
       images.images.length &&
       imageLoader.loader.length &&
-      imagesList.length >= 4
+      imagesList.length >= 5
     ) {
       setLoaDOpen(true);
     } else {
@@ -224,11 +260,12 @@ export default function UpdateAdmin(props) {
           newFormData.append("prixerPriceTo", data.prixerPrice.to);
           newFormData.append("hasSpecialVar", hasSpecialVar);
           imagesList.length > 0
-            ? imagesList.map((url) => newFormData.append("images", url))
-            : newFormData.append("images", imagesList);
+            ? imagesList.map((url) => newFormData.append("images", url.url))
+            : newFormData.append("images", imagesList[0].url);
           images.images.map((file) =>
             newFormData.append("newProductImages", file)
           );
+          newFormData.append('video', videoUrl)
           const base_url =
             process.env.REACT_APP_BACKEND_URL + `/product/update/${productId}`;
           const response = await axios.put(base_url, newFormData);
@@ -252,8 +289,6 @@ export default function UpdateAdmin(props) {
     setShowVariants(true);
     props.setProductEdit(false);
   };
-
-  console.log(imagesList);
 
   return (
     <React.Fragment>
@@ -345,6 +380,10 @@ export default function UpdateAdmin(props) {
                         }}
                       />
                     </Button>
+                    - O -
+                    <Button variant="contained" componenet="label" onClick={handleClickOpen}>
+                     Upload video
+                    </Button>
                   </FormControl>
                 </Grid>
                 <Grid
@@ -415,7 +454,6 @@ export default function UpdateAdmin(props) {
                               <HighlightOffOutlinedIcon />
                             </IconButton>
                           </div>
-
                           <img
                             style={{
                               width: "100%",
@@ -426,8 +464,9 @@ export default function UpdateAdmin(props) {
                             alt="+"
                           />
                         </div>
-                      );
-                    })}
+                      )
+                    })
+                  }
                 </Grid>
                 <Grid item xs={12}>
                   <Grid container xs={isDesktop ? 6 : 12}>
@@ -658,6 +697,34 @@ export default function UpdateAdmin(props) {
           </form>
         </div>
       )}
+      <Dialog open={open} onClose={handleClose}>
+      <DialogTitle>Youtube Url</DialogTitle>
+      <DialogContent>
+        <DialogContentText>
+          Copia y pega la url que quieres mostrar en el carrusel de imagenes
+        </DialogContentText>
+        <div id='ll'>
+        </div>
+        <TextField
+        onChange={(a)=>{
+          modifyString(a, a.target.value)
+        }}
+        value={videoUrl}
+          autoFocus
+          label="Url"
+          type="text"
+          fullWidth
+        />
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleClose} color="primary">
+          Cancel
+        </Button>
+        <Button onClick={handleClose} color="primary">
+          Aceptar
+        </Button>
+      </DialogActions>
+    </Dialog>
       <Snackbar
         open={snackBarError}
         autoHideDuration={1000}

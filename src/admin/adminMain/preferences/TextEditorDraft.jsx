@@ -1,20 +1,44 @@
-import React, { useEffect, useState } from "react";
+import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
+
+import React, { useEffect, useState, Component } from "react";
 import { Editor } from "react-draft-wysiwyg";
 import { EditorState } from "draft-js";
-import "../../../../node_modules/react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
+import { convertFromRaw } from "draft-js";
 
-export default function TextEditor() {
-  const [editorState, setEditorState] = useState(() =>
-    EditorState.createEmpty()
-  );
-  useEffect(() => {
-    console.log(editorState);
-  }, [editorState]);
+const content = {
+  entityMap: {},
+  blocks: [
+    {
+      key: "637gr",
+      text: "Initialized from content state.",
+      type: "unstyled",
+      depth: 0,
+      inlineStyleRanges: [],
+      entityRanges: [],
+      data: {},
+    },
+  ],
+};
 
-  return (
-    <div>
-      <h1>React Editors</h1>
-      <h2>Start editing to see some magic happen!</h2>
+class TextEditor extends Component {
+  constructor(props) {
+    super(props);
+    // const contentState = convertFromRaw(content);
+    this.state = {
+      //   contentState: "qlq",
+      // ContentState JSON
+    };
+  }
+
+  onContentStateChange = (contentState) => {
+    this.setState({
+      contentState,
+    });
+  };
+
+  render() {
+    const { contentState } = this.state;
+    return (
       <div
         style={{
           border: "1px solid black",
@@ -23,11 +47,16 @@ export default function TextEditor() {
         }}
       >
         <Editor
-          //   toolbarOnFocus
-          editorState={editorState}
-          onEditorStateChange={setEditorState}
+          //   initialContentState={contentState}
+          //   editorState={contentState}
+          wrapperClassName="wrapper-class"
+          editorClassName="editor-class"
+          toolbarClassName="toolbar-class"
+          //   onContentStateChange={this.onContentStateChange}
         />
       </div>
-    </div>
-  );
+    );
+  }
 }
+
+export default TextEditor;

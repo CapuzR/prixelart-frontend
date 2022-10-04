@@ -76,13 +76,13 @@ useEffect(()=> {
                   <EditIcon/>
                 </Fab>
               </TableCell>
-              <TableCell align="center"><img src={row.thumbUrl} style={{width: 50, height: 'auto'}}/></TableCell>
+              <TableCell align="center"><img src={row.image} style={{width: 50, height: 'auto'}}/></TableCell>
               <TableCell align="center">{row.name}</TableCell>
               <TableCell align="center">
-                <Checkbox 
+                <Checkbox
                   disabled
                   checked={row.active}
-                  color="primary" 
+                  color="primary"
                   inputProps={{ 'aria-label': 'secondary checkbox' }}
                 />
               </TableCell>
@@ -94,7 +94,7 @@ useEffect(()=> {
         }
         </TableBody>
       </Table>
-} 
+}
     </React.Fragment>
   );
 }

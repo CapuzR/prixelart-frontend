@@ -11,6 +11,8 @@ import Snackbar from '@material-ui/core/Snackbar';
 import Backdrop from '@material-ui/core/Backdrop';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import IconButton from '@material-ui/core/IconButton';
+import EditIcon from '@material-ui/icons/Edit';
+import HighlightOffOutlinedIcon from "@material-ui/icons/HighlightOffOutlined";
 import OutlinedInput from '@material-ui/core/OutlinedInput';
 import InputLabel from '@material-ui/core/InputLabel';
 import InputAdornment from '@material-ui/core/InputAdornment';
@@ -50,13 +52,30 @@ export default function CreateVariant(props) {
     const [buttonState, setButtonState] = useState(false);
     const history = useHistory();
 
-    const [ thumbUrl, setThumbUrl ] = useState(props.variant && props.variant.thumbUrl || '');
-
+    const [ image , setImage ] = useState(props.variant && props.variant.images || '');
+    const [ loadeImage, setLoadImage ] = useState()
     //Error states.
     const [errorMessage, setErrorMessage] = useState();
     const [snackBarError, setSnackBarError] = useState(false);
     const [passwordError, setPasswordError] = useState();
     const [emailError, setEmailError] = useState();
+
+    const convertToBase64 = (blob) => {
+      return new Promise((resolve) => {
+        var reader = new FileReader();
+        reader.onload = function () {
+          resolve(reader.result);
+        };
+        reader.readAsDataURL(blob);
+      });
+    };
+
+    const loadImage = async (a) => {
+      const file = a.target.files[0];
+      const resizedString = await convertToBase64(file);
+      setLoadImage(resizedString);
+      setImage(file)
+    }
 
     const insertVariants = (productData, variants)=> {
         let updatedVariants = productData;
@@ -67,21 +86,23 @@ export default function CreateVariant(props) {
         return updatedVariants;
     }
 
+console.log(image)
+console.log(loadeImage)
 
     const handleSubmit = async (e)=> {
       e.preventDefault();
-      if(!active && 
-        !variantName && 
-        !description && 
-        !category && 
-        !considerations && 
+      if(!active &&
+        !variantName &&
+        !description &&
+        !category &&
+        !considerations &&
         !publicPriceEq &&
         !fromPublicPrice &&
-        !toPublicPrice && 
+        !toPublicPrice &&
         !prixerPriceEq &&
         !fromPrixerPrice &&
         !toPrixerPrice &&
-        !thumbUrl){
+        !image){
         setErrorMessage('Por favor completa todos los campos requeridos.');
         setSnackBarError(true);
         e.preventDefault();
@@ -90,10 +111,10 @@ export default function CreateVariant(props) {
         setButtonState(true);
 
         const productData = props.product;
-
+        const formData = new FormData();
         const variants = {
             '_id': props.variant && props.variant._id || nanoid(),
-            'thumbUrl': thumbUrl,
+            'image': image,
             'active' : active,
             'name' : variantName,
             'description' : description,
@@ -115,16 +136,30 @@ export default function CreateVariant(props) {
             variants.attributes.push(...attributes)
         : variants.attributes = attributes;
         let updatedWithVariants = {};
-        
+
         if(props.variant) {
             updatedWithVariants = insertVariants(productData, variants);
         } else {
             productData.variants.unshift(variants);
             updatedWithVariants = productData;
         }
-        
-        const base_url= process.env.REACT_APP_BACKEND_URL + "/product/update";
-        const response = await axios.post(base_url,updatedWithVariants)
+
+        formData.append('_id', variants._id)
+        formData.append('variantImage', variants.image)
+        formData.append('active', variants.active)
+        formData.append('name', variants.name)
+        formData.append('description', variants.description)
+        formData.append('category', variants.category)
+        formData.append('considerations', variants.considerations)
+        formData.append('publicPriceFrom', variants.publicPrice.from)
+        formData.append('publicPriceTo', variants.publicPrice.to)
+        formData.append('publicPriceEq', variants.publicPrice.equation)
+        formData.append('prixerPriceFrom', variants.prixerPrice.from)
+        formData.append('prixerPriceTo', variants.prixerPrice.to)
+        formData.append('prixerPriceEq', variants.prixerPrice.equation)
+        const base_url= process.env.REACT_APP_BACKEND_URL + "/product/create/variant/" + props.product._id;
+        await axios.put(base_url, formData)
+        const response = await axios.put(base_url, updatedWithVariants)
 
         if(response.data.success === false){
           setLoading(false);
@@ -136,7 +171,7 @@ export default function CreateVariant(props) {
           setErrorMessage('Actualización de producto exitoso.');
           setSnackBarError(true);
           setActive('');
-          setThumbUrl('');
+          setImage('');
           setVariantName('');
           setDescription('');
           setCategory('');
@@ -163,27 +198,39 @@ export default function CreateVariant(props) {
     </Backdrop>
     }
       <Title>Variantes</Title>
-        <form noValidate onSubmit={handleSubmit}>
+        <form noValidate encType="multipart/form-data" onSubmit={handleSubmit}>
             <Grid container spacing={2}>
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
                     <Grid item xs={12} md={6}>
-                        <FormControl variant="outlined" xs={12} fullWidth={true}>
-                        <TextField
-                            variant="outlined"
-                            fullWidth
-                            display="inline"
-                            id="thumbUrl"
-                            label="ThumbUrl"
-                            name="thumbUrl"
-                            product         value={thumbUrl}
-                            onChange={(e) => {setThumbUrl(e.target.value);}}
-                        />
+                        <FormControl variant="outlined" xs={12} fullWidth={true} >
+                        <Button variant="contained" component="label">
+                          Upload File
+                          <input
+                            name="variantImage"
+                            type="file"
+                            accept="image/*"
+                            hidden
+                            onChange={(a) => {
+                              a.preventDefault();
+                              loadImage(a);
+                            }}
+                          />
+                        </Button>
                         </FormControl>
+                        {
+                          image ? (
+                            <Grid item xs={12}>
+                            <img style={{width: '100%', marginTop: '10px'}} src={loadeImage} alt="variantImage" />
+                            </Grid>
+                          )
+                          :
+                          ''
+                        }
                     </Grid>
                         <Checkbox
                             checked={active}
-                            color="primary" 
+                            color="primary"
                             inputProps={{ 'aria-label': 'secondary checkbox' }}
                             onChange={()=>{active?setActive(false):setActive(true)}}
                         /> Habilitado / Visible
@@ -345,7 +392,7 @@ export default function CreateVariant(props) {
                     <Grid container style={{marginTop: 20}}>
                         <h3>Atributos</h3>
                     </Grid>
-                        {   
+                        {
                         attributes &&
                             attributes.map((att, i)=>(
                             <Grid container spacing={2} xs={12} style={{marginBottom: 10}}>

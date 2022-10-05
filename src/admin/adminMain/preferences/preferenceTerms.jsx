@@ -4,13 +4,11 @@ import axios from "axios";
 import Backdrop from "@material-ui/core/Backdrop";
 import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
-import Box from "@material-ui/core/Box";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Button from "@material-ui/core/Button";
-import TextField from "@material-ui/core/TextField";
 import { makeStyles } from "@material-ui/core/styles";
 import Snackbar from "@material-ui/core/Snackbar";
-import TextEditor from "./TextEditorDraft";
+import MDEditor from "@uiw/react-md-editor";
 
 const useStyles = makeStyles((theme) => ({
   backdrop: {
@@ -33,15 +31,14 @@ const useStyles = makeStyles((theme) => ({
 
 export default function MultilineTextFields(props) {
   const classes = useStyles();
-  const [value, setValue] = React.useState("");
+  const [value, setValue] = useState("");
 
-  const handleChange = async (event) => {
+  const handleChange = async () => {
     const base_url =
       process.env.REACT_APP_BACKEND_URL + "/termsAndConditions/update";
-    const response = await axios.put(base_url, { termsAndConditions: value });
-  };
-  const setValueText = (event) => {
-    setValue(event.target.value);
+    const response = await axios.put(base_url, {
+      termsAndConditions: value,
+    });
   };
 
   useEffect(() => {
@@ -50,7 +47,8 @@ export default function MultilineTextFields(props) {
     axios
       .get(base_url)
       .then((response) => {
-        setValue(response.data.terms.termsAndConditions);
+        const result = response.data.terms.termsAndConditions;
+        setValue(result);
       })
       .catch((error) => {
         console.log(error);
@@ -97,29 +95,26 @@ export default function MultilineTextFields(props) {
           <Grid container spacing={2}>
             {buttons}
             <Grid item xs={12}>
-              <Box
+              <div
                 style={{
                   width: "100%",
                   padding: "15px",
                   textAlign: "justify",
+                  padding: "2px",
+                  minHeight: "400px",
                 }}
+                data-color-mode="light"
               >
-                <Box>
-                  <TextField
-                    id="outlined-multiline-static"
-                    label="Multiline"
-                    multiline
-                    rows={16}
-                    value={value}
-                    onChange={setValueText}
-                    variant="outlined"
-                  />
-                </Box>
-
-                {/* <Box>
-                  <TextEditor />
-                </Box> */}
-              </Box>
+                <MDEditor
+                  value={value}
+                  onChange={setValue}
+                  style={{ minHeight: "600px", height: "600px" }}
+                />
+                <MDEditor.Markdown
+                  source={value}
+                  style={{ whiteSpace: "pre-wrap" }}
+                />
+              </div>
             </Grid>
           </Grid>
           //)

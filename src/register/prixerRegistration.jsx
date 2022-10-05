@@ -24,6 +24,8 @@ import FormControl from "@material-ui/core/FormControl";
 import Input from "@material-ui/core/Input";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import Modal from "@material-ui/core/Modal";
+import { ContentState, convertFromRaw, convertToRaw } from "draft-js";
+import MDEditor from "@uiw/react-md-editor";
 
 function Copyright() {
   return (
@@ -167,7 +169,20 @@ export default function PrixerRegistration() {
 
   const body = (
     <div className={styles.modal}>
-      <div>{value}</div>
+      <div data-color-mode="light">
+        <div
+          style={{
+            textAlign: "center",
+            marginBottom: "12px",
+            fontWeight: "bold",
+          }}
+        >
+          CONVENIO DE RELACIÓN ENTRE LOS ARTISTAS Y LA COMPAÑÍA
+        </div>
+        <div>
+          <MDEditor.Markdown source={value} style={{ textAlign: "justify" }} />
+        </div>
+      </div>
 
       <div align="center">
         <Button

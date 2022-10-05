@@ -65,24 +65,61 @@ export default function FullscreePhoto(props) {
   const [ready, setReady] = useState(false);
   const [tiles, setTiles] = useState([]);
   const [updatedTile, setUpdatedTile] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [artDataState, setArtDataState] = useState();
   const [snackBar, setSnackBar] = useState(false);
   const [snackBarMessage, setSnackBarMessage] = useState(false);
   const [openArtFormDialog, setOpenArtFormDialog] = useState(false);
   const [selectedArt, setSelectedArt] = useState(undefined);
+
+  const [title, setTitle] = useState("");
+  const [imageUrl, setImageUrl] = useState();
+  const [thumbnailUrl, setThumbnailUrl] = useState();
+  const [category, setCategory] = useState("");
+  const [description, setDescription] = useState("");
+  const [tags, setTags] = useState([""]);
+  const [publicId, setPublicId] = useState("");
+  const [originalPhotoHeight, setOriginalPhotoHeight] = useState("");
+  const [originalPhotoWidth, setOriginalPhotoWidth] = useState("");
+  const [originalPhotoIso, setOriginalPhotoIso] = useState("");
+  const [originalPhotoPpi, setOriginalPhotoPpi] = useState("");
+  const [userId, setMaxPrintHeightCm] = useState("");
+  const [license, setMaxPrintWidthCm] = useState("");
+  const [artType, setArtType] = useState("");
+  const [use, setUse] = useState("");
+  const [status, setStatus] = useState("");
+  const [prixerUsername, setPrixerUsername] = useState("");
+  const [_id, set_id] = useState("");
+  const [artId, setArtId] = useState("");
+  const [artLocation, setArtLocation] = useState("");
+
   const handleArtEdit = (e, tile) => {
-    if (artDataState === tile.artId) {
+    if (artDataState === "") {
       setUpdatedTile(tile);
       setArtDataState("");
     } else {
       setArtDataState(tile.artId);
     }
   };
+  // const handleArtEdit = async (e, GetId) => {
+  //   const base_url =
+  //     process.env.REACT_APP_BACKEND_URL + "/art/get-by-id/" + GetId;
+  //   const response = await axios.get(base_url);
+  //   setTitle(response.data.title);
+  //   setDescription(response.data.description);
+  //   setTags(response.data.tags);
+  //   setCategory(response.data.category);
+  //   setArtType(response.data.artType);
+  // };
 
   const handleArtDescriptionEdit = async (e, tile) => {
     let tempTiles = tiles;
     let result = await descriptionEdit(tempTiles, tile, e);
     setTiles(result);
+  };
+
+  const handleSetTitle = (e) => {
+    setTitle(e.target.value);
   };
 
   const handleArtTitleEdit = async (e, tile) => {
@@ -272,47 +309,36 @@ export default function FullscreePhoto(props) {
     readArt();
   }, []);
 
-  useEffect(() => {
-    if (artDataState === "") {
-      const base_url = process.env.REACT_APP_BACKEND_URL + "/art/update";
-      const data = {
-        title: updatedTile.title,
-        description: updatedTile.description,
-        tags: updatedTile.tags,
-        imageUrl: updatedTile.imageUrl,
-        thumbnailUrl: updatedTile.thumbnailUrl,
-        userId: updatedTile.userId,
-        category: updatedTile.category,
-        license: updatedTile.license,
-        use: updatedTile.use,
-        prixerUsername: updatedTile.prixerUsername,
-        status: updatedTile.status,
-        publicId: updatedTile.publicId,
-        _id: updatedTile._id,
-        artId: updatedTile.artId,
-        artType: updatedTile.artType,
-        originalPhotoWidth: updatedTile.originalPhotoWidth,
-        originalPhotoHeight: updatedTile.originalPhotoHeight,
-        originalPhotoIso: updatedTile.originalPhotoIso,
-        originalPhotoPpi: updatedTile.originalPhotoPpi,
-        artLocation: updatedTile.artLocation,
-      };
-      axios
-        .post(base_url, data)
-        .then((response) => {
-          if (response.data.data.success) {
-            setSnackBarMessage(response.data.data.artResult);
-            setSnackBar(true);
-          } else {
-            setSnackBarMessage(response.data.data.error_message);
-            setSnackBar(true);
-          }
-        })
-        .catch((error) => {
-          console.log(error.response);
-        });
-    }
-  }, [artDataState]);
+  const updateArtData = async (e, updateId) => {
+    e.preventDefault();
+    setLoading(true);
+    const base_url =
+      process.env.REACT_APP_BACKEND_URL + "/art/update/" + updateId;
+    const response = await axios.put(base_url, {
+      title: title,
+      description: description,
+      tags: tags,
+      imageUrl: imageUrl,
+      thumbnailUrl: thumbnailUrl,
+      userId: userId,
+      category: category,
+      license: license,
+      use: use,
+      prixerUsername: prixerUsername,
+      status: status,
+      publicId: publicId,
+      _id: _id,
+      artId: artId,
+      artType: artType,
+      originalPhotoWidth: originalPhotoWidth,
+      originalPhotoHeight: originalPhotoHeight,
+      originalPhotoIso: originalPhotoIso,
+      originalPhotoPpi: originalPhotoPpi,
+      artLocation: artLocation,
+    });
+    setLoading(false);
+    readArt();
+  };
 
   return !ready ? (
     <div className={classes.loading}>
@@ -476,21 +502,12 @@ export default function FullscreePhoto(props) {
                           size="small"
                           color="primary"
                           onClick={(e) => {
-                            handleArtEdit(e, tile);
+                            handleArtEdit(e, tile.artId);
                           }}
                         >
                           Editar
                         </Button>
                       )}
-                    {/* <Button
-                      size="small"
-                      color="primary"
-                      onClick={(e) => {
-                        deleteArt(e, tile.artId);
-                      }}
-                    >
-                      Eliminar
-                    </Button> */}
                     {JSON.parse(localStorage.getItem("token")) &&
                       JSON.parse(localStorage.getItem("token")).username ==
                         tile.prixerUsername && (
@@ -503,13 +520,6 @@ export default function FullscreePhoto(props) {
                           }}
                         >
                           Eliminar
-                          {/* onClick={(artId) => {
-                          deleteArt(artId)
-                            newImage({
-                            _id: img._id,
-                            file: image.file,
-                          });
-                        }} */}
                         </Button>
                       )}
                     <Dialog
@@ -519,7 +529,7 @@ export default function FullscreePhoto(props) {
                       aria-describedby="alert-dialog-description"
                     >
                       <DialogTitle id="alert-dialog-title">
-                        {"Estas seguro de eliminar este arte?"}
+                        {"¿Estás seguro de eliminar este arte?"}
                       </DialogTitle>
                       <DialogContent>
                         <DialogContentText
@@ -528,7 +538,7 @@ export default function FullscreePhoto(props) {
                             textAlign: "center",
                           }}
                         >
-                          Este arte se eliminará permanentemente
+                          Este arte se eliminará permanentemente de tu perfil.
                         </DialogContentText>
                       </DialogContent>
                       <DialogActions>
@@ -590,9 +600,10 @@ export default function FullscreePhoto(props) {
                               id="artTitle"
                               label="Titulo del arte"
                               variant="outlined"
-                              value={tile.title}
+                              value={title}
                               onChange={(e) => {
-                                handleArtTitleEdit(e, tile);
+                                setTitle(e.target.value);
+                                // handleArtTitleEdit(e, tile);
                               }}
                             />
                           </Grid>
@@ -901,7 +912,7 @@ export default function FullscreePhoto(props) {
                         size="small"
                         color="primary"
                         onClick={(e) => {
-                          handleArtEdit(e, tile);
+                          updateArtData(e, tile.artId);
                         }}
                       >
                         Guardar

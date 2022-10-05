@@ -174,13 +174,6 @@ export default function Testimonials() {
         });
     }
   };
-  const cualquierVaina = (event) => {
-    if (updateId !== undefined) {
-      handleChange();
-    } else {
-      // setState(false);
-    }
-  };
 
   const handleChange = (event) => {
     setState({ ...state, [event.target.name]: event.target.checked });
@@ -232,9 +225,7 @@ export default function Testimonials() {
     setFooter(response.data.footer);
     setState(response.data.status);
     setUpdateId(GetId);
-    console.log(response.data);
   };
-  console.log(state);
 
   const saveChanges = async (e, GetId) => {
     e.preventDefault();
@@ -242,10 +233,8 @@ export default function Testimonials() {
     const base_url =
       process.env.REACT_APP_BACKEND_URL + "/testimonial/update/" + GetId;
     const formData = new FormData();
-    // if (inputChange) {
-    //   formData.append("avatar", avatarPic);
-    // }
-    formData.append("avatar", avatarPic || avatarObj); // ternary?
+
+    formData.append("avatar", avatarPic || avatarObj);
     formData.append("type", type);
     formData.append("name", name);
     formData.append("value", value);

@@ -138,8 +138,6 @@ export default function UpdateAdmin(props) {
     };
   }, []);
 
-  console.log(imagesList)
-
   const handleClickOpen = () => {
         setOpen(true);
   };
@@ -175,8 +173,6 @@ export default function UpdateAdmin(props) {
     }
   };
 
-console.log(videoUrl)
-
   const replaceImage = async (e, index) => {
     e.preventDefault();
     const file = e.target.files[0];
@@ -185,9 +181,6 @@ console.log(videoUrl)
     images.images[index] = file;
     setLoadImage({ loader: imageLoader.loader, filename: file.name });
   };
-
-console.log(images.images)
-console.log(imageLoader)
 
   const modifyString = (a, sti) => {
       const url = sti.split(' ')

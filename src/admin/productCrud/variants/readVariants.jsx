@@ -76,7 +76,7 @@ useEffect(()=> {
                   <EditIcon/>
                 </Fab>
               </TableCell>
-              <TableCell align="center"><img src={row.image} style={{width: 50, height: 'auto'}}/></TableCell>
+              <TableCell align="center"><img src={row.variantImage} style={{width: 50, height: 'auto'}}/></TableCell>
               <TableCell align="center">{row.name}</TableCell>
               <TableCell align="center">
                 <Checkbox

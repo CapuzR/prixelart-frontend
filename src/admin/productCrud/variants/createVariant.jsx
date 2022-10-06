@@ -51,9 +51,8 @@ export default function CreateVariant(props) {
     const [loading, setLoading] = useState(false);
     const [buttonState, setButtonState] = useState(false);
     const history = useHistory();
-
-    const [ image , setImage ] = useState(props.variant && props.variant.images || '');
-    const [ loadeImage, setLoadImage ] = useState()
+    const [ image , setImage ] = useState(props.variant && props.variant.variantImage || '');
+    const [ loadeImage, setLoadImage ] = useState(props.variant && props.variant.variantImage || '')
     //Error states.
     const [errorMessage, setErrorMessage] = useState();
     const [snackBarError, setSnackBarError] = useState(false);
@@ -85,9 +84,6 @@ export default function CreateVariant(props) {
 
         return updatedVariants;
     }
-
-console.log(image)
-console.log(loadeImage)
 
     const handleSubmit = async (e)=> {
       e.preventDefault();
@@ -133,7 +129,7 @@ console.log(loadeImage)
         }
 
         variants.attributes ?
-            variants.attributes.push(...attributes)
+        variants.attributes.push(...attributes)
         : variants.attributes = attributes;
         let updatedWithVariants = {};
 
@@ -144,22 +140,38 @@ console.log(loadeImage)
             updatedWithVariants = productData;
         }
 
-        formData.append('_id', variants._id)
-        formData.append('variantImage', variants.image)
-        formData.append('active', variants.active)
-        formData.append('name', variants.name)
-        formData.append('description', variants.description)
-        formData.append('category', variants.category)
-        formData.append('considerations', variants.considerations)
-        formData.append('publicPriceFrom', variants.publicPrice.from)
-        formData.append('publicPriceTo', variants.publicPrice.to)
-        formData.append('publicPriceEq', variants.publicPrice.equation)
-        formData.append('prixerPriceFrom', variants.prixerPrice.from)
-        formData.append('prixerPriceTo', variants.prixerPrice.to)
-        formData.append('prixerPriceEq', variants.prixerPrice.equation)
-        const base_url= process.env.REACT_APP_BACKEND_URL + "/product/create/variant/" + props.product._id;
-        await axios.put(base_url, formData)
-        const response = await axios.put(base_url, updatedWithVariants)
+        console.log(updatedWithVariants)
+
+        formData.append('productActive', updatedWithVariants.active)
+        formData.append('productAttributes', updatedWithVariants.attributes)
+        formData.append('productCategory', updatedWithVariants.category)
+        formData.append('productConsiderations', updatedWithVariants.considerations)
+        formData.append('productDescription', updatedWithVariants.description)
+        formData.append('productHasSpecialVar', updatedWithVariants.hasSpecialVar)
+        formData.append('productName', updatedWithVariants.name)
+        updatedWithVariants.sources.images.map(img => formData.append('productImages', img.url))
+        formData.append('productPublicPriceFrom', updatedWithVariants.publicPrice.from)
+        formData.append('productPublicPriceTo', updatedWithVariants.publicPrice.to)
+        formData.append('productPrixerPriceFrom', updatedWithVariants.prixerPrice.from)
+        formData.append('productPrixerPriceTo', updatedWithVariants.prixerPrice.to)
+        formData.append('variant_id', variants._id)
+        formData.append('variantImage', image)
+        formData.append('variantActive', variants.active)
+        formData.append('variantName', variants.name)
+        formData.append('attributesName', attributes.name)
+        formData.append('attributesValue', attributes.value)
+        formData.append('variantDescription', variants.description)
+        formData.append('variantCategory', variants.category)
+        formData.append('variantConsiderations', variants.considerations)
+        formData.append('variantPublicPriceFrom', variants.publicPrice.from)
+        formData.append('variantPublicPriceTo', variants.publicPrice.to)
+        formData.append('variantPublicPriceEq', variants.publicPrice.equation)
+        formData.append('variantPrixerPriceFrom', variants.prixerPrice.from)
+        formData.append('variantPrixerPriceTo', variants.prixerPrice.to)
+        formData.append('variantPrixerPriceEq', variants.prixerPrice.equation)
+        const base_url= process.env.REACT_APP_BACKEND_URL + "/product/update/" + props.product._id;
+        // await axios.put(base_url, formData)
+        const response = await axios.put(base_url, formData)
 
         if(response.data.success === false){
           setLoading(false);
@@ -189,6 +201,8 @@ console.log(loadeImage)
       }
 
     }
+
+    console.log(loadeImage)
 
   return (
     <React.Fragment>

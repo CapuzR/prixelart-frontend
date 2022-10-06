@@ -143,12 +143,19 @@ export default function CreateVariant(props) {
         console.log(updatedWithVariants)
 
         formData.append('productActive', updatedWithVariants.active)
-        formData.append('productAttributes', updatedWithVariants.attributes)
         formData.append('productCategory', updatedWithVariants.category)
         formData.append('productConsiderations', updatedWithVariants.considerations)
         formData.append('productDescription', updatedWithVariants.description)
         formData.append('productHasSpecialVar', updatedWithVariants.hasSpecialVar)
         formData.append('productName', updatedWithVariants.name)
+        variants.attributes.map(obj => {
+          if(obj.name){
+          formData.append('attributesName', obj.name)
+          }
+          if(obj.value){
+          formData.append('attributesValue', obj.value)
+          }
+        })
         updatedWithVariants.sources.images.map(img => formData.append('productImages', img.url))
         formData.append('productPublicPriceFrom', updatedWithVariants.publicPrice.from)
         formData.append('productPublicPriceTo', updatedWithVariants.publicPrice.to)
@@ -158,8 +165,6 @@ export default function CreateVariant(props) {
         formData.append('variantImage', image)
         formData.append('variantActive', variants.active)
         formData.append('variantName', variants.name)
-        formData.append('attributesName', attributes.name)
-        formData.append('attributesValue', attributes.value)
         formData.append('variantDescription', variants.description)
         formData.append('variantCategory', variants.category)
         formData.append('variantConsiderations', variants.considerations)
@@ -201,8 +206,6 @@ export default function CreateVariant(props) {
       }
 
     }
-
-    console.log(loadeImage)
 
   return (
     <React.Fragment>

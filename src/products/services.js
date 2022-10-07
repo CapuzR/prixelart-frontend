@@ -26,11 +26,11 @@ export const setProductAtts = async (attValue, attributesArr, iProd, iAtt, produ
       }
     });
     const result = [...new Set(att.flatMap(({name}) => name))];
-    const res1 = [...new Set( 
-      result.map( (a)=>{ 
+    const res1 = [...new Set(
+      result.map( (a)=>{
         return  {
-          name: a, 
-          value: [...new Set(att.map(v=> { 
+          name: a,
+          value: [...new Set(att.map(v=> {
             if( ( v.name==a ) && (v.value) ) {
               return v.value;
             }
@@ -42,10 +42,11 @@ export const setProductAtts = async (attValue, attributesArr, iProd, iAtt, produ
     p.selection = [];
     p.selection.length = p.attributes.length;
 
+    console.log(result)
     return p;
   });
   return lol;
-  
+  console.log(lol)
 }
 
 export const structureEquation = (equation, i, width, height)=> {
@@ -64,7 +65,6 @@ export const structureEquation = (equation, i, width, height)=> {
 }
 
 export const getEquation = async (product, iProd, productArr, width, height)=> {
-
   if( product.selection ){
     const filteredVars = await product.variants.filter((v, i)=>{
       if( v.attributes && v.attributes.length != 0 && v.attributes.length == product.selection.length ){
@@ -73,6 +73,7 @@ export const getEquation = async (product, iProd, productArr, width, height)=> {
         return false;
       }
     });
+
     if(filteredVars.length != 0) {
       if (filteredVars[0].publicPrice.equation && filteredVars[0].prixerPrice.equation ) {
         productArr[iProd].needsEquation = true;
@@ -86,8 +87,8 @@ export const getEquation = async (product, iProd, productArr, width, height)=> {
     }
   } else {
     productArr[iProd].needsEquation = false;
-    productArr[iProd].publicEquation = ''; 
-    productArr[iProd].prixerEquation = ''; 
+    productArr[iProd].publicEquation = '';
+    productArr[iProd].prixerEquation = '';
   }
 
   return productArr;

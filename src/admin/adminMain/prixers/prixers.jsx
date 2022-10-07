@@ -99,13 +99,16 @@ export default function Prixers() {
   };
 
   const handleChange = (event, state) => {
-    setState({ ...state, [event.target.name]: event.target.checked });
+    console.log(event.target.checked);
+    setState(event.target.checked);
   }; //Switch
 
   const ChangeVisibility = async (e, GetId) => {
     e.preventDefault();
     setLoading(true);
     handleChange(e);
+    console.log(state);
+
     const base_url =
       process.env.REACT_APP_BACKEND_URL + "/prixer/update-home/" + GetId;
     const response = await axios.put(
@@ -118,7 +121,7 @@ export default function Prixers() {
     await readPrixers();
     setLoading(false);
   };
-
+  console.log(tiles);
   return (
     <div>
       <Backdrop className={classes.backdrop} open={loading}>

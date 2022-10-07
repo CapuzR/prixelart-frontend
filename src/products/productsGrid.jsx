@@ -90,6 +90,8 @@ const getGridListCols = () => {
 export default function ProductGrid(props) {
   const classes = useStyles();
   const [tiles, setTiles] = useState();
+  const [ imagesVariants, setImagesVariants ] = useState()
+  const [ imagesProducts, setImagesProducts ] = useState()
   const [width, setWidth] = useState([]);
   const [height, setHeight] = useState([]);
 
@@ -99,11 +101,18 @@ export default function ProductGrid(props) {
       .then(async (response) => {
         let productsAttTemp1 = response.data.products
         await productsAttTemp1.map(async (p, iProd, pArr) => {
+          setImagesProducts(p.sources.images)
+          p.variants.map(variant => {
+            setImagesVariants(variant.variantImage)
+          })
           productsAttTemp1 = await getEquation(p, iProd, pArr);
         });
         setTiles(getAttributes(productsAttTemp1));
       });
   }, []);
+
+console.log(tiles)
+console.log(imagesVariants)
 
   return (
     <GridList cellHeight={'auto'} className={classes.gridList} cols={getGridListCols()}>
@@ -147,7 +156,15 @@ export default function ProductGrid(props) {
                   }
                 }>
                 {
-                tile.sources.images[0].type == 'images' ?
+                tile.needsEquation ?
+                imagesVariants.map((img, key_id) => (
+                  img.type === 'images' ?
+                  <img key={key_id} src={img.url} className={classes.img} alt="variant"/>
+                  :
+                  <span key={key_id} style={{width: '100%'}} dangerouslySetInnerHTML={{__html: img.url}}>
+                  </span>
+                ))
+                :
                 tile.sources.images.map((img, key_id) =>
                 (
                   img.type === 'images' ?
@@ -156,9 +173,6 @@ export default function ProductGrid(props) {
                   <span key={key_id} style={{width: '100%'}} dangerouslySetInnerHTML={{__html: img.url}}>
                   </span>
                 ))
-                  :
-                  <span style={{width: '100%'}} dangerouslySetInnerHTML={{__html: tile.sources.images[0].url}}>
-                  </span>
                 }
               </Carousel>
               </CardMedia>
@@ -286,7 +300,6 @@ export default function ProductGrid(props) {
                         onChange={
                           async (e) => {
                             const pAtts = await setProductAtts(e.target.value, attributesArr, iProd, iAtt, productsArr, width, height);
-
                             if (pAtts) {
                               setTiles(pAtts.pAtt ? [...pAtts.pAtt] : [...pAtts.att]);
                             }

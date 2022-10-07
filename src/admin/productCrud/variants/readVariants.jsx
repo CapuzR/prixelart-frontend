@@ -71,12 +71,13 @@ useEffect(()=> {
         rows &&
           rows.map((row) => (
             <TableRow key={row._id}>
+            {console.log(row)}
               <TableCell align="center">
                 <Fab color="default" style={{width: 35, height: 35}} aria-label="edit" onClick={(e)=>{handleActive(row, 'update')}}>
                   <EditIcon/>
                 </Fab>
               </TableCell>
-              <TableCell align="center"><img src={row.variantImage} style={{width: 50, height: 'auto'}}/></TableCell>
+              <TableCell align="center"><img src={row.variantImage[0].url} style={{width: 50, height: 'auto'}}/></TableCell>
               <TableCell align="center">{row.name}</TableCell>
               <TableCell align="center">
                 <Checkbox

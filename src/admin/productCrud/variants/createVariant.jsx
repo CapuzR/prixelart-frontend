@@ -1,5 +1,5 @@
 import React from 'react';
-import {useState} from 'react';
+import { useState, useEffect } from 'react';
 import { useHistory } from "react-router-dom";
 import { makeStyles } from '@material-ui/core/styles';
 import Title from '../../adminMain/Title';
@@ -21,6 +21,11 @@ import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import clsx from 'clsx';
 import Checkbox from '@material-ui/core/Checkbox';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
 import { nanoid } from 'nanoid';
 
 const useStyles = makeStyles((theme) => ({
@@ -51,13 +56,35 @@ export default function CreateVariant(props) {
     const [loading, setLoading] = useState(false);
     const [buttonState, setButtonState] = useState(false);
     const history = useHistory();
-    const [ image , setImage ] = useState(props.variant && props.variant.variantImage || '');
-    const [ loadeImage, setLoadImage ] = useState(props.variant && props.variant.variantImage || '')
+    const [ image , setImage ] = useState(props.variant && props.variant.variantImage || []);
+    const [ newFile, setNewFile ] =  useState();
+    const [ videoUrl, setVideoUrl ] = useState('')
+    const [ videoPreview, setVideoPreview ] = useState('')
+    const [ loadeImage, setLoadImage ] = useState({ loader: [] }) //props.variant && props.variant.variantImage ||
     //Error states.
     const [errorMessage, setErrorMessage] = useState();
+    const [open, setOpen] = useState(false);
+      const [loadOpen, setLoadOpen] = useState(false);
     const [snackBarError, setSnackBarError] = useState(false);
     const [passwordError, setPasswordError] = useState();
     const [emailError, setEmailError] = useState();
+
+    useEffect(() => {
+      image?.map((url) => {
+        url.type === 'images' ?
+        loadeImage.loader.push(url.url)
+        :
+        setVideoUrl(url.url)
+    })
+  }, [])
+
+    const handleClickOpen = () => {
+          setOpen(true);
+    };
+
+    const handleClose = () => {
+        setOpen(false);
+    };
 
     const convertToBase64 = (blob) => {
       return new Promise((resolve) => {
@@ -69,11 +96,42 @@ export default function CreateVariant(props) {
       });
     };
 
-    const loadImage = async (a) => {
-      const file = a.target.files[0];
+    const replaceImage = async (e, index) => {
+      e.preventDefault();
+      const file = e.target.files[0];
       const resizedString = await convertToBase64(file);
-      setLoadImage(resizedString);
-      setImage(file)
+      loadeImage.loader[index] = resizedString;
+      image[index] = file;
+      setImage(image)
+      setLoadImage({loader: loadeImage.loader})
+    };
+
+    const loadImage = async (e) => {
+      e.preventDefault();
+      if (loadeImage.loader.length >= 4 || image?.length >= 5) {
+        setLoadOpen(true);
+        setTimeout(() => {
+          setLoadOpen(false);
+        }, 3000);
+      } else {
+        const file = e.target.files[0];
+        const resizedString = await convertToBase64(file);
+        loadeImage.loader.push(resizedString);
+        image.push(file);
+        setImage(image)
+        setLoadImage({loader: loadeImage.loader})
+      }
+    };
+
+    const modifyString = (a, sti) => {
+        const url = sti.split(' ')
+        const width = sti.replace('560', '326').replace('315', '326');
+        const previewMp4 = sti.replace('1350', '510').replace('494', '350');
+        setVideoUrl(width)
+        setVideoPreview(previewMp4)
+        // const index = url[3].indexOf()
+        // sti.replace(index, '?controls=0\"')
+      //sti[79]
     }
 
     const insertVariants = (productData, variants)=> {
@@ -131,7 +189,7 @@ export default function CreateVariant(props) {
         variants.attributes ?
         variants.attributes.push(...attributes)
         : variants.attributes = attributes;
-        let updatedWithVariants = {};
+        let updatedWithVariants = {}
 
         if(props.variant) {
             updatedWithVariants = insertVariants(productData, variants);
@@ -139,8 +197,6 @@ export default function CreateVariant(props) {
             productData.variants.unshift(variants);
             updatedWithVariants = productData;
         }
-
-        console.log(updatedWithVariants)
 
         formData.append('productActive', updatedWithVariants.active)
         formData.append('productCategory', updatedWithVariants.category)
@@ -162,7 +218,14 @@ export default function CreateVariant(props) {
         formData.append('productPrixerPriceFrom', updatedWithVariants.prixerPrice.from)
         formData.append('productPrixerPriceTo', updatedWithVariants.prixerPrice.to)
         formData.append('variant_id', variants._id)
-        formData.append('variantImage', image)
+        formData.append('video', videoUrl)
+        image.map(file => {
+          if(typeof file === 'object'){
+              formData.append('variantImage', file)
+          }else{
+            formData.append('images', file.url)
+          }
+        })
         formData.append('variantActive', variants.active)
         formData.append('variantName', variants.name)
         formData.append('variantDescription', variants.description)
@@ -207,6 +270,7 @@ export default function CreateVariant(props) {
 
     }
 
+
   return (
     <React.Fragment>
     {
@@ -218,33 +282,110 @@ export default function CreateVariant(props) {
         <form noValidate encType="multipart/form-data" onSubmit={handleSubmit}>
             <Grid container spacing={2}>
                 <Grid container spacing={2}>
-                    <Grid item xs={12}>
-                    <Grid item xs={12} md={6}>
-                        <FormControl variant="outlined" xs={12} fullWidth={true} >
-                        <Button variant="contained" component="label">
-                          Upload File
-                          <input
-                            name="variantImage"
-                            type="file"
-                            accept="image/*"
-                            hidden
-                            onChange={(a) => {
-                              a.preventDefault();
-                              loadImage(a);
+                <Grid container spacing={2}>
+                  <Grid
+                    item
+                    xs={12}
+                    sm={12}
+                    md={4}
+                    lg={4}
+                    xl={4}
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                  >
+                    <FormControl variant="outlined">
+                      <Button variant="contained" component="label">
+                        Upload File
+                        <input
+                          name="productImages"
+                          type="file"
+                          accept="image/*"
+                          hidden
+                          onChange={(a) => {
+                            loadImage(a);
+                          }}
+                        />
+                      </Button>
+                          - O -
+                      <Button variant="contained" componenet="label" onClick={handleClickOpen}>
+                       Upload video
+                      </Button>
+                    </FormControl>
+                  </Grid>
+                  <Grid
+                    item
+                    xs={12}
+                    sm={12}
+                    md={8}
+                    lg={8}
+                    xl={8}
+                    style={{ display: "flex" }}
+                  >
+                    {loadeImage.loader &&
+                      loadeImage.loader.map((img, key_id) => {
+                        return (
+                          <div
+                            style={{
+                              width: "25%",
+                              // maxHeight: "200px",
+                              marginRight: "4px",
                             }}
-                          />
-                        </Button>
-                        </FormControl>
-                        {
-                          image ? (
-                            <Grid item xs={12}>
-                            <img style={{width: '100%', marginTop: '10px'}} src={loadeImage} alt="variantImage" />
-                            </Grid>
-                          )
-                          :
-                          ''
-                        }
-                    </Grid>
+                          >
+                            <div
+                              style={{
+                                // marginBottom: "-32px",
+                                textAlign: "right",
+                              }}
+                            >
+                              <IconButton
+                                variant="text"
+                                className={classes.buttonImgLoader}
+                                style={{ color: "#d33f49" }}
+                                component="label"
+                              >
+                                <input
+                                  name="productImages"
+                                  type="file"
+                                  accept="image/*"
+                                  hidden
+                                  onChange={(a) => {
+                                    const i = loadeImage.loader.indexOf(img);
+                                    replaceImage(a, i);
+                                  }}
+                                />
+                                <EditIcon />
+                              </IconButton>
+                              <IconButton
+                                variant="text"
+                                className={classes.buttonImgLoader}
+                                style={{ color: "#d33f49" }}
+                                onClick={(d) => {
+                                  loadeImage.loader.splice(key_id, 1);
+                                  image.splice(key_id, 1);
+                                    setImage(image)
+                                    setLoadImage({loader: loadeImage.loader})
+                                }}
+                              >
+                                <HighlightOffOutlinedIcon />
+                              </IconButton>
+                            </div>
+
+                            <img
+                              style={{
+                                width: "100%",
+                                // height: "200px",
+                                objectFit: "contain",
+                              }}
+                              src={img}
+                              alt="+"
+                            />
+                          </div>
+                        );
+                      })}
+                  </Grid>
                         <Checkbox
                             checked={active}
                             color="primary"
@@ -466,12 +607,48 @@ export default function CreateVariant(props) {
                 </Button>
             </Grid>
         </form>
+        <Dialog open={open} onClose={handleClose}>
+        <DialogTitle>Youtube Url</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Copia y pega la url que quieres mostrar en el carrusel de imagenes
+          </DialogContentText>
+          <div id='ll'>
+          </div>
+          <TextField
+          onChange={(a)=>{
+            const div = document.getElementById('ll');
+            modifyString(a, a.target.value)
+            div.innerHTML = videoPreview;
+          }}
+          value={videoUrl}
+            autoFocus
+            label="Url"
+            type="text"
+            fullWidth
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleClose} color="primary">
+            Aceptar
+          </Button>
+        </DialogActions>
+      </Dialog>
         <Snackbar
           open={snackBarError}
           autoHideDuration={1000}
           message={errorMessage}
           className={classes.snackbar}
         />
+        <Snackbar
+          open={loadOpen}
+          autoHideDuration={1000}
+          message={"No puedes colocar mas de 4 fotos"}
+          className={classes.snackbar}
+        />
     </React.Fragment>
-  );
+  )
 }

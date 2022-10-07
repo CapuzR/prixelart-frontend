@@ -71,55 +71,32 @@ export default function FullscreePhoto(props) {
   const [snackBarMessage, setSnackBarMessage] = useState(false);
   const [openArtFormDialog, setOpenArtFormDialog] = useState(false);
   const [selectedArt, setSelectedArt] = useState(undefined);
-
-  const [title, setTitle] = useState("");
-  const [imageUrl, setImageUrl] = useState();
-  const [thumbnailUrl, setThumbnailUrl] = useState();
-  const [category, setCategory] = useState("");
-  const [description, setDescription] = useState("");
-  const [tags, setTags] = useState([""]);
-  const [publicId, setPublicId] = useState("");
-  const [originalPhotoHeight, setOriginalPhotoHeight] = useState("");
-  const [originalPhotoWidth, setOriginalPhotoWidth] = useState("");
-  const [originalPhotoIso, setOriginalPhotoIso] = useState("");
-  const [originalPhotoPpi, setOriginalPhotoPpi] = useState("");
-  const [userId, setMaxPrintHeightCm] = useState("");
-  const [license, setMaxPrintWidthCm] = useState("");
-  const [artType, setArtType] = useState("");
-  const [use, setUse] = useState("");
-  const [status, setStatus] = useState("");
-  const [prixerUsername, setPrixerUsername] = useState("");
-  const [_id, set_id] = useState("");
-  const [artId, setArtId] = useState("");
-  const [artLocation, setArtLocation] = useState("");
+  const [open, setOpen] = useState(false);
+  const [newTag, setNewTag] = useState("");
 
   const handleArtEdit = (e, tile) => {
-    if (artDataState === "") {
-      setUpdatedTile(tile);
-      setArtDataState("");
+    setLoading(true);
+    if (artDataState === tile.artId) {
+      if (updatedTile.title !== "" && updatedTile.description !== "") {
+        setUpdatedTile(tile);
+        console.log(updatedTile);
+        setArtDataState("");
+        setSnackBarMessage("Arte actualizado correctamente");
+        setSnackBar(true);
+      } else {
+        setSnackBarMessage("Por favor llena los campos requeridos");
+        setSnackBar(true);
+      }
     } else {
       setArtDataState(tile.artId);
     }
+    setLoading(false);
   };
-  // const handleArtEdit = async (e, GetId) => {
-  //   const base_url =
-  //     process.env.REACT_APP_BACKEND_URL + "/art/get-by-id/" + GetId;
-  //   const response = await axios.get(base_url);
-  //   setTitle(response.data.title);
-  //   setDescription(response.data.description);
-  //   setTags(response.data.tags);
-  //   setCategory(response.data.category);
-  //   setArtType(response.data.artType);
-  // };
 
   const handleArtDescriptionEdit = async (e, tile) => {
     let tempTiles = tiles;
     let result = await descriptionEdit(tempTiles, tile, e);
     setTiles(result);
-  };
-
-  const handleSetTitle = (e) => {
-    setTitle(e.target.value);
   };
 
   const handleArtTitleEdit = async (e, tile) => {
@@ -164,7 +141,6 @@ export default function FullscreePhoto(props) {
     setTiles(result);
   };
 
-  const [open, setOpen] = useState(false);
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -175,6 +151,7 @@ export default function FullscreePhoto(props) {
 
   function tagsEdit(tempTiles, tile, e, tags) {
     return tempTiles.map((item) => {
+      // const result = newTag.trim().split(/\s+/);
       if (item.artId === tile.artId) {
         item.tags = tags;
       }
@@ -280,13 +257,14 @@ export default function FullscreePhoto(props) {
   };
 
   const readArt = async () => {
+    setLoading(true);
     if (tiles) {
       const base_url =
         process.env.REACT_APP_BACKEND_URL + "/art/read-by-prixer";
       const data = {
         username: props.match.params.username,
       };
-      axios.post(base_url, data).then((response) => {
+      let res = await axios.post(base_url, data).then((response) => {
         if (tiles.length !== response.data.arts.length) {
           setTiles(response.data.arts);
           setReady(true);
@@ -304,41 +282,46 @@ export default function FullscreePhoto(props) {
         }
       });
     }
+    setLoading(false);
   };
   useEffect(() => {
     readArt();
   }, []);
 
-  const updateArtData = async (e, updateId) => {
-    e.preventDefault();
+  useEffect(() => {
     setLoading(true);
-    const base_url =
-      process.env.REACT_APP_BACKEND_URL + "/art/update/" + updateId;
-    const response = await axios.put(base_url, {
-      title: title,
-      description: description,
-      tags: tags,
-      imageUrl: imageUrl,
-      thumbnailUrl: thumbnailUrl,
-      userId: userId,
-      category: category,
-      license: license,
-      use: use,
-      prixerUsername: prixerUsername,
-      status: status,
-      publicId: publicId,
-      _id: _id,
-      artId: artId,
-      artType: artType,
-      originalPhotoWidth: originalPhotoWidth,
-      originalPhotoHeight: originalPhotoHeight,
-      originalPhotoIso: originalPhotoIso,
-      originalPhotoPpi: originalPhotoPpi,
-      artLocation: artLocation,
-    });
+    if (artDataState === "") {
+      const base_url =
+        process.env.REACT_APP_BACKEND_URL + "/art/update/" + selectedArt;
+      const data = {
+        title: updatedTile.title,
+        description: updatedTile.description,
+        tags: updatedTile.tags,
+        category: updatedTile.category,
+        artId: updatedTile.artId,
+        artType: updatedTile.artType,
+        artLocation: updatedTile.artLocation,
+      };
+      axios
+        .put(base_url, data)
+        .then((response) => {
+          if (response.data.data.success == true) {
+            setSnackBarMessage(response.data.data.success);
+            setSnackBar(true);
+            setSelectedArt(undefined);
+          } else {
+            setSnackBarMessage(response.data.data.error_message);
+            setSnackBar(true);
+            setSelectedArt(undefined);
+          }
+        })
+        .catch((error) => {
+          // console.log(error);
+          setSelectedArt(undefined);
+        });
+    }
     setLoading(false);
-    readArt();
-  };
+  }, [artDataState]);
 
   return !ready ? (
     <div className={classes.loading}>
@@ -357,11 +340,11 @@ export default function FullscreePhoto(props) {
                 <Card style={{ marginTop: 35 }}>
                   <CardActionArea>
                     {/* <CardMedia
-                component="img"
-                alt="Contemplative Reptile"
-                image={tile.imageUrl}
-                title="Contemplative Reptile"
-                /> */}
+                    component="img"
+                    alt="Contemplative Reptile"
+                    image={tile.imageUrl}
+                    title="Contemplative Reptile"
+                    /> */}
                     <Img
                       placeholder="/imgLoading.svg"
                       style={{ backgroundColor: "#eeeeee", width: "100%" }}
@@ -502,7 +485,8 @@ export default function FullscreePhoto(props) {
                           size="small"
                           color="primary"
                           onClick={(e) => {
-                            handleArtEdit(e, tile.artId);
+                            handleArtEdit(e, tile);
+                            setSelectedArt(tile.artId);
                           }}
                         >
                           Editar
@@ -550,7 +534,11 @@ export default function FullscreePhoto(props) {
                             deleteArt(selectedArt);
                             setSelectedArt(undefined);
                           }}
-                          color="primary"
+                          background="primary"
+                          style={{
+                            color: "white",
+                            backgroundColor: "#d33f49",
+                          }}
                         >
                           Aceptar
                         </Button>
@@ -597,13 +585,14 @@ export default function FullscreePhoto(props) {
                           <Grid item xs>
                             <TextField
                               fullWidth
+                              required
                               id="artTitle"
                               label="Titulo del arte"
                               variant="outlined"
-                              value={title}
+                              value={tile.title}
                               onChange={(e) => {
-                                setTitle(e.target.value);
-                                // handleArtTitleEdit(e, tile);
+                                // setTitle(e.target.value);
+                                handleArtTitleEdit(e, tile);
                               }}
                             />
                           </Grid>
@@ -850,16 +839,18 @@ export default function FullscreePhoto(props) {
                               multiline
                               rows={2}
                               fullWidth
+                              required
                               id="artDescription"
                               variant="outlined"
                               label="Descripción del arte"
                               value={tile.description}
                               onChange={(e) => {
                                 handleArtDescriptionEdit(e, tile);
+                                console.log(e.target.value);
                               }}
                             />
                           </Grid>
-                          <Grid item xs={12} sm={12}>
+                          {/* <Grid item xs={12} sm={12}>
                             <Autocomplete
                               multiple
                               freeSolo
@@ -867,8 +858,8 @@ export default function FullscreePhoto(props) {
                               options={[]}
                               defaultValue={[]}
                               value={tile.tags}
-                              onChange={(e, tags, reason) => {
-                                handleArtTagsEdit(e, tile, tags);
+                              onChange={( tags, reason) => {
+                                handleArtTagsEdit( tile, tags);
                               }}
                               renderInput={(params) => (
                                 <TextField
@@ -878,14 +869,18 @@ export default function FullscreePhoto(props) {
                                       handleArtTagsEdit(e, tile);
                                     }
                                   }}
+                                  onChange={(e) => {
+                                    handleArtTagsEdit(e, tile);
+                                    // setNewTag(e.target.value);
+                                  }}
                                   variant="outlined"
                                   label="Etiquetas"
                                   placeholder="tags"
                                 />
                               )}
                             />
-                          </Grid>
-                          <Grid item xs={12} style={{ paddingTop: 15 }}>
+                          </Grid> */}
+                          <Grid item xs={12}>
                             <TextField
                               variant="outlined"
                               fullWidth
@@ -912,7 +907,8 @@ export default function FullscreePhoto(props) {
                         size="small"
                         color="primary"
                         onClick={(e) => {
-                          updateArtData(e, tile.artId);
+                          // updateArtData(e, tile.artId);
+                          handleArtEdit(e, tile);
                         }}
                       >
                         Guardar

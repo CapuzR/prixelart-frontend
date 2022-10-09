@@ -223,7 +223,7 @@ export default function Testimonials() {
     setType(response.data.type);
     setValue(response.data.value);
     setFooter(response.data.footer);
-    setState(response.data.status);
+    setState({checkedA : response.data.status});
     setUpdateId(GetId);
   };
 
@@ -470,7 +470,7 @@ export default function Testimonials() {
                             // onChange={(e) => {
                             //   setState(e.target.value);
                             // }}
-                            onChange={handleChange || setState}
+                            onChange={(e)=>{handleChange(e)}}
                             // {(e) => {
                             //   setState(e.target.value);
                             // }}

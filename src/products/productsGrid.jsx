@@ -90,7 +90,7 @@ const getGridListCols = () => {
 export default function ProductGrid(props) {
   const classes = useStyles();
   const [tiles, setTiles] = useState();
-  const [ imagesVariants, setImagesVariants ] = useState()
+  const [ imagesVariants, setImagesVariants ] = useState([])
   const [ imagesProducts, setImagesProducts ] = useState()
   const [width, setWidth] = useState([]);
   const [height, setHeight] = useState([]);
@@ -101,9 +101,8 @@ export default function ProductGrid(props) {
       .then(async (response) => {
         let productsAttTemp1 = response.data.products
         await productsAttTemp1.map(async (p, iProd, pArr) => {
-          setImagesProducts(p.sources.images)
           p.variants.map(variant => {
-            setImagesVariants(variant.variantImage)
+            imagesVariants.push(variant.variantImage)
           })
           productsAttTemp1 = await getEquation(p, iProd, pArr);
         });
@@ -157,7 +156,7 @@ console.log(imagesVariants)
                 }>
                 {
                 tile.needsEquation ?
-                imagesVariants.map((img, key_id) => (
+                tile.variants[0].variantImage.map((img, key_id) => (
                   img.type === 'images' ?
                   <img key={key_id} src={img.url} className={classes.img} alt="variant"/>
                   :

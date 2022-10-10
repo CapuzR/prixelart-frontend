@@ -143,7 +143,7 @@ export default function CreateVariant(props) {
         return updatedVariants;
     }
 
-    const handleSubmit = async (e)=> {
+    const handleSubmit = async (e) => {
       e.preventDefault();
       if(!active &&
         !variantName &&
@@ -220,8 +220,9 @@ export default function CreateVariant(props) {
         formData.append('variant_id', variants._id)
         formData.append('video', videoUrl)
         image.map(file => {
-          if(typeof file === 'object'){
-              formData.append('variantImage', file)
+          console.log(typeof file)
+          if(typeof file !== 'object'){
+              formData.append('variantImage', file.url)
           }else{
             formData.append('images', file.url)
           }
@@ -267,7 +268,6 @@ export default function CreateVariant(props) {
           history.push({pathname:"/admin/product/read"});
         }
       }
-
     }
 
 

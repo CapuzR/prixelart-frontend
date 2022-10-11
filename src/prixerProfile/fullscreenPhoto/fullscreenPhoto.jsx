@@ -233,7 +233,8 @@ export default function FullscreePhoto(props) {
   };
 
   const navigateToPrixer = (e, prixerUsername) => {
-    // history.push({pathname:'/'+ prixerUsername});
+    e.preventDefault();
+    history.push({pathname:'/'+ prixerUsername});
   };
 
   // const copyCodeToClipboard = (e, tile) => {
@@ -363,6 +364,7 @@ export default function FullscreePhoto(props) {
                       alt={tile.title}
                       id={tile.artId}
                     />
+                    </CardActionArea>
                     <CardContent>
                       <Grid
                         item
@@ -381,7 +383,8 @@ export default function FullscreePhoto(props) {
                         >
                           ID: {tile.artId}
                         </Typography>
-                        <div onClick={navigateToPrixer(tile.prixerUsername)}>
+                        {console.log(tile.prixerUsername)}
+                        <Button size="small" variant="outlined" onClick={e=> navigateToPrixer(e, tile.prixerUsername)}>
                           <Typography
                             gutterBottom
                             variant="h7"
@@ -396,7 +399,7 @@ export default function FullscreePhoto(props) {
                           >
                             Prixer: {tile.prixerUsername}
                           </Typography>
-                        </div>
+                        </Button>
                       </Grid>
                       <Grid
                         item
@@ -463,7 +466,6 @@ export default function FullscreePhoto(props) {
                         </Typography>
                       )}
                     </CardContent>
-                  </CardActionArea>
                   <CardActions>
                     {/* <Button size="small" color="primary">
                   Comparte

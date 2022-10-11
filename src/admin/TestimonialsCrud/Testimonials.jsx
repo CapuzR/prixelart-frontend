@@ -163,6 +163,13 @@ export default function Testimonials() {
           } else {
             setErrorMessage("Creación de testimonio exitoso");
             setSnackBarError(true);
+            setName("");
+            setAvatarObj("");
+            setType("");
+            setValue("");
+            setFooter("");
+            setState({ checkedA: false });
+            setUpdateId(undefined);
             setLoading(false);
             readTestimonial();
           }
@@ -203,15 +210,16 @@ export default function Testimonials() {
     handleChange(e);
     const base_url =
       process.env.REACT_APP_BACKEND_URL + "/testimonial/update-home/" + GetId;
+    console.log(e.target);
     const response = await axios.put(
       base_url,
-      { status: state.checkedA },
+      { status: e.target.checked },
       {
         "Content-Type": "multipart/form-data",
       }
     );
-    setLoading(false);
     readTestimonial();
+    setLoading(false);
   };
 
   const handleTestimonialDataEdit = async (GetId) => {
@@ -223,7 +231,7 @@ export default function Testimonials() {
     setType(response.data.type);
     setValue(response.data.value);
     setFooter(response.data.footer);
-    setState(response.data.status);
+    setState({ checkedA: response.data.status });
     setUpdateId(GetId);
   };
 
@@ -233,13 +241,12 @@ export default function Testimonials() {
     const base_url =
       process.env.REACT_APP_BACKEND_URL + "/testimonial/update/" + GetId;
     const formData = new FormData();
-
     formData.append("avatar", avatarPic || avatarObj);
     formData.append("type", type);
     formData.append("name", name);
     formData.append("value", value);
     formData.append("footer", footer);
-    formData.append("status", state.checkedA || state);
+    formData.append("status", state.checkedA);
     const response = await axios.put(base_url, formData, {
       "Content-Type": "multipart/form-data",
     });
@@ -248,7 +255,7 @@ export default function Testimonials() {
     setType("");
     setValue("");
     setFooter("");
-    setState(false);
+    setState({ checkedA: false });
     setUpdateId(undefined);
     setLoading(false);
     readTestimonial();
@@ -461,21 +468,10 @@ export default function Testimonials() {
                           <Switch
                             color="primary"
                             checked={state.checkedA}
-                            // onChange={(e) => {
-                            //   updateId
-                            //     ? setState(e.target.value)
-                            //     : handleChange;
-                            // }}
-                            // onChange={()=>{active?setActive(false):setActive(true)}}
-                            // onChange={(e) => {
-                            //   setState(e.target.value);
-                            // }}
-                            onChange={handleChange || setState}
-                            // {(e) => {
-                            //   setState(e.target.value);
-                            // }}
+                            onChange={(e) => {
+                              handleChange(e);
+                            }}
                             name="checkedA"
-                            // value={state}
                           />
                         }
                       />
@@ -601,7 +597,7 @@ export default function Testimonials() {
                             (event) => ChangeVisibility(event, tile._id)
                           }
                           name="checkedA"
-                          value={tile.status}
+                          // value={tile.status}
                           inputProps={{
                             "aria-label": "secondary checkbox",
                           }}

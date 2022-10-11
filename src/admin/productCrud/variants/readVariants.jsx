@@ -116,7 +116,8 @@ export default function ReadVariants(props) {
                     {row.prixerPrice.from}-{row.prixerPrice.to}
                   </TableCell>
                 </TableRow>
-              ))}
+              ))
+              }
       </TableBody>
       </Table>
     </React.Fragment>

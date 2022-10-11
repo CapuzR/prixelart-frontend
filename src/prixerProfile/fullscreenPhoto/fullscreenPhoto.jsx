@@ -79,7 +79,6 @@ export default function FullscreePhoto(props) {
     if (artDataState === tile.artId) {
       if (updatedTile.title !== "" && updatedTile.description !== "") {
         setUpdatedTile(tile);
-        console.log(updatedTile);
         setArtDataState("");
         setSnackBarMessage("Arte actualizado correctamente");
         setSnackBar(true);
@@ -846,7 +845,6 @@ export default function FullscreePhoto(props) {
                               value={tile.description}
                               onChange={(e) => {
                                 handleArtDescriptionEdit(e, tile);
-                                console.log(e.target.value);
                               }}
                             />
                           </Grid>

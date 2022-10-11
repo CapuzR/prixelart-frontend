@@ -65,19 +65,6 @@ export default function ReadVariants(props) {
 
   return (
     <React.Fragment>
-<<<<<<< HEAD
-      {rows && (
-        <Table size="small" style={{ overflow: "auto" }}>
-          <TableHead>
-            <TableRow>
-              <TableCell align="center"></TableCell>
-              <TableCell align="center">Imagen</TableCell>
-              <TableCell align="center">Nombre</TableCell>
-              <TableCell align="center">Activo</TableCell>
-              <TableCell align="center">Descripción</TableCell>
-              <TableCell align="center">PVP desde-hasta</TableCell>
-              <TableCell align="center">PVM desde-hasta</TableCell>
-=======
         {
         rows &&
       <Table size="small" style={{overflow: 'auto'}}>
@@ -96,35 +83,12 @@ export default function ReadVariants(props) {
         {
         rows &&
           rows.map((row) => (
-            <TableRow key={row._id}>
-            {console.log(row)}
-              <TableCell align="center">
-                <Fab color="default" style={{width: 35, height: 35}} aria-label="edit" onClick={(e)=>{handleActive(row, 'update')}}>
-                  <EditIcon/>
-                </Fab>
-              </TableCell>
-              <TableCell align="center"><img src={row?.variantImage[0]?.url} style={{width: 50, height: 'auto'}}/></TableCell>
-              <TableCell align="center">{row.name}</TableCell>
-              <TableCell align="center">
-                <Checkbox
-                  disabled
-                  checked={row.active}
-                  color="primary"
-                  inputProps={{ 'aria-label': 'secondary checkbox' }}
-                />
-              </TableCell>
-              <TableCell align="center">{row.description}</TableCell>
-              <TableCell align="center">{row.publicPrice.from}-{row.publicPrice.to}</TableCell>
-              <TableCell align="center">{row.prixerPrice.from}-{row.prixerPrice.to}</TableCell>
->>>>>>> Products-126
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {rows &&
-              rows.map((row) => (
-                <TableRow key={row._id}>
-                  {console.log(row)}
-                  <TableCell align="center">
+          <TableRow key={row._id}>
+            <TableBody>
+              {rows &&
+                rows.map((row) => (
+                  <TableRow key={row._id}>
+                    <TableCell align="center">
                     <Fab
                       color="default"
                       style={{ width: 35, height: 35 }}

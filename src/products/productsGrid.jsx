@@ -89,26 +89,13 @@ const getGridListCols = () => {
 export default function ProductGrid(props) {
   const classes = useStyles();
   const [tiles, setTiles] = useState();
-<<<<<<< HEAD
-  const [imagesVariants, setImagesVariants] = useState();
-  const [imagesProducts, setImagesProducts] = useState();
-=======
   const [ imagesVariants, setImagesVariants ] = useState([])
   const [ imagesProducts, setImagesProducts ] = useState()
->>>>>>> Products-126
   const [width, setWidth] = useState([]);
   const [height, setHeight] = useState([]);
 
   useEffect(() => {
     const base_url = process.env.REACT_APP_BACKEND_URL + "/product/read-all";
-<<<<<<< HEAD
-    axios.get(base_url).then(async (response) => {
-      let productsAttTemp1 = response.data.products;
-      await productsAttTemp1.map(async (p, iProd, pArr) => {
-        setImagesProducts(p.sources.images);
-        p.variants?.map((variant) => {
-          setImagesVariants(variant.variantImage);
-=======
     axios.get(base_url)
       .then(async (response) => {
         let productsAttTemp1 = response.data.products
@@ -117,7 +104,6 @@ export default function ProductGrid(props) {
             imagesVariants.push(variant.variantImage)
           })
           productsAttTemp1 = await getEquation(p, iProd, pArr);
->>>>>>> Products-126
         });
         productsAttTemp1 = await getEquation(p, iProd, pArr);
       });
@@ -152,59 +138,6 @@ export default function ProductGrid(props) {
                     color: "#d33f49",
                   },
                 }}
-<<<<<<< HEAD
-                navButtonsProps={{
-                  style: {
-                    backgroundColor: "rgba(0, 0, 0, 0)",
-                    color: "#d33f49",
-                    width: "98%",
-                    height: "100vh",
-                    marginTop: "-50vh",
-                    borderRadius: "0",
-                    marginLeft: "1px",
-                  },
-                }}
-                indicatorContainerProps={{
-                  style: {
-                    position: "absolute",
-                    marginTop: "-17px",
-                  },
-                }}
-              >
-                {tile.needsEquation
-                  ? imagesVariants.map((img, key_id) =>
-                      img.type === "images" ? (
-                        <img
-                          key={key_id}
-                          src={img.url}
-                          className={classes.img}
-                          alt="variant"
-                        />
-                      ) : (
-                        <span
-                          key={key_id}
-                          style={{ width: "100%" }}
-                          dangerouslySetInnerHTML={{ __html: img.url }}
-                        ></span>
-                      )
-                    )
-                  : tile.sources.images.map((img, key_id) =>
-                      img.type === "images" ? (
-                        <img
-                          key={key_id}
-                          src={img.url}
-                          className={classes.img}
-                          alt="product"
-                        />
-                      ) : (
-                        <span
-                          key={key_id}
-                          style={{ width: "100%" }}
-                          dangerouslySetInnerHTML={{ __html: img.url }}
-                        ></span>
-                      )
-                    )}
-=======
                 navButtonsProps={
                   {
                     style: {
@@ -251,7 +184,6 @@ export default function ProductGrid(props) {
                 :
                 <img src={tile.thumbUrl} className={classes.img} alt="product"/>
                 }
->>>>>>> Products-126
               </Carousel>
             </CardMedia>
             <CardActionArea style={{ alignContent: "space-between" }}>

@@ -125,6 +125,7 @@ export default function UserData(props) {
   const history = useHistory();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isDesktop = useMediaQuery(theme.breakpoints.up("lg"));
+  const [prixer, setPrixer] = useState();
 
   function getStyles(specialty, specialtyArt, theme) {
     return {
@@ -162,6 +163,7 @@ export default function UserData(props) {
         setCity(response.data.city);
         setAvatarObj(response.data.avatar);
         setProfilePic(response.data.avatar);
+        setPrixer(response.data);
         setReady(true);
         setBackdrop(false);
         setPrixerExists(true);
@@ -170,14 +172,11 @@ export default function UserData(props) {
         console.log(error);
       });
   }, [props.prixerUsername]);
-
   const handleProfileDataEdit = async () => {
     if (prixerDataState === "edit") {
       setBackdrop(true);
       var formData = new FormData();
-      if (inputChange) {
-        formData.append("avatar", profilePic);
-      }
+      formData.append("avatar", profilePic || avatarObj);
       formData.append("username", username);
       formData.append("firstName", firstName);
       formData.append("email", email);

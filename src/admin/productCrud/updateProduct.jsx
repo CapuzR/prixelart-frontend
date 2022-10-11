@@ -78,6 +78,7 @@ export default function UpdateAdmin(props) {
   const isDeskTop = useMediaQuery(theme.breakpoints.up("sm"));
   const [productId, setProductId] = useState(props?.product?._id);
   const [images, newImages] = useState({ images: [] });
+  const [thumbUrl, setThumbUrl] = useState(props.product?.thumbUrl);
   const [imagesList, setImagesList] = useState(props?.product?.sources.images);
   const [active, setActive] = useState(props?.product?.active);
   const [productName, setProductName] = useState(props?.product?.name);
@@ -110,7 +111,7 @@ export default function UpdateAdmin(props) {
     loader: [],
     filename: "Subir imagenes",
   });
-  const [thumbUrl, setThumbUrl] = useState(props.product?.thumbUrl);
+
 
   //Error states.
   const [errorMessage, setErrorMessage] = useState();
@@ -122,11 +123,19 @@ export default function UpdateAdmin(props) {
 
   useEffect(() => {
     imagesList?.map((url) => {
-      url.type === 'images' ?
+      url?.type === 'images' ?
       imageLoader.loader.push(url.url)
       :
       setVideoUrl(url.url)
     });
+
+    const indexImage = imagesList.indexOf(thumbUrl);
+    if(indexImage === -1){
+    }else{
+      console.log(indexImage)
+      imagesList.push(thumbUrl);
+      imageLoader.loader.push(thumbUrl);
+    }
     // props.product.sources.images.map((file) => {
     //   file.type == 'video' ?
     //   setVideoUrl(file.url)
@@ -191,6 +200,8 @@ export default function UpdateAdmin(props) {
       // sti.replace(index, '?controls=0\"')
     //sti[79]
   }
+  console.log(imagesList)
+  console.log(thumbUrl)
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -252,9 +263,9 @@ export default function UpdateAdmin(props) {
           newFormData.append("prixerPriceFrom", data.prixerPrice.from);
           newFormData.append("prixerPriceTo", data.prixerPrice.to);
           newFormData.append("hasSpecialVar", hasSpecialVar);
-          imagesList.length > 0
+          imagesList.length > 1
             ? imagesList.map((url) => newFormData.append("images", url.url))
-            : newFormData.append("images", imagesList[0].url);
+            : imagesList.map((url) => newFormData.append("images", url))
           images.images.map((file) =>
             newFormData.append("newProductImages", file)
           );

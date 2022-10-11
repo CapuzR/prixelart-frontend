@@ -68,6 +68,7 @@ export default function CreateVariant(props) {
     const [snackBarError, setSnackBarError] = useState(false);
     const [passwordError, setPasswordError] = useState();
     const [emailError, setEmailError] = useState();
+    const [mustImage, setMustImages] = useState(false);
 
     useEffect(() => {
       image?.map((url) => {
@@ -145,6 +146,12 @@ export default function CreateVariant(props) {
 
     const handleSubmit = async (e) => {
       e.preventDefault();
+      if (image.length === 0) {
+        setMustImages(true);
+        setTimeout(() => {
+          setMustImages(false);
+        }, 3000);
+      }else{
       if(!active &&
         !variantName &&
         !description &&
@@ -220,10 +227,10 @@ export default function CreateVariant(props) {
         formData.append('variant_id', variants._id)
         formData.append('video', videoUrl)
         image.map(file => {
-          console.log(typeof file)
-          if(typeof file !== 'object'){
-              formData.append('variantImage', file.url)
-          }else{
+          if(file.url === undefined){
+              formData.append('variantImage', file)
+          }
+          if(typeof file.url === 'string'){
             formData.append('images', file.url)
           }
         })
@@ -269,6 +276,7 @@ export default function CreateVariant(props) {
         }
       }
     }
+}
 
 
   return (
@@ -647,6 +655,12 @@ export default function CreateVariant(props) {
           open={loadOpen}
           autoHideDuration={1000}
           message={"No puedes colocar mas de 4 fotos"}
+          className={classes.snackbar}
+        />
+        <Snackbar
+          open={mustImage}
+          autoHideDuration={1000}
+          message={"No puedes actualizar un variant sin foto. Agrega 1 o mas"}
           className={classes.snackbar}
         />
     </React.Fragment>

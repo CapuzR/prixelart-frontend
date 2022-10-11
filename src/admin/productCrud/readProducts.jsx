@@ -92,7 +92,8 @@ export default function ReadProducts(props) {
                     </Fab>
                   </TableCell>
                   <TableCell align="center">
-                    {row.sources.images[0].type == 'images' ? (
+                    {
+                      row.sources.images[0]?.type == 'images' ? (
                       <>
                         <img
                           src={row.sources.images[0].url}
@@ -104,9 +105,11 @@ export default function ReadProducts(props) {
                         >{`Cantidad de imagenes: ${row.sources.images.length}`}</Typography>
                       </>
                     ) :
-                    <div>
-                    Video de Youtube
-                    </div>
+                    <img
+                      src={row.thumbUrl}
+                      width={150}
+                      alt="imageProduct"
+                    />
                     }
                   </TableCell>
                   <TableCell align="center">{row.name}</TableCell>

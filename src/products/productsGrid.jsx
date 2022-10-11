@@ -105,8 +105,6 @@ export default function ProductGrid(props) {
           })
           productsAttTemp1 = await getEquation(p, iProd, pArr);
         });
-        productsAttTemp1 = await getEquation(p, iProd, pArr);
-      });
       setTiles(getAttributes(productsAttTemp1));
     });
   }, []);

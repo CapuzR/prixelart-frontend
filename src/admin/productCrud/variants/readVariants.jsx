@@ -65,8 +65,6 @@ export default function ReadVariants(props) {
 
   return (
     <React.Fragment>
-        {
-        rows &&
       <Table size="small" style={{overflow: 'auto'}}>
         <TableHead>
           <TableRow>
@@ -80,11 +78,6 @@ export default function ReadVariants(props) {
           </TableRow>
         </TableHead>
         <TableBody>
-        {
-        rows &&
-          rows.map((row) => (
-          <TableRow key={row._id}>
-            <TableBody>
               {rows &&
                 rows.map((row) => (
                   <TableRow key={row._id}>
@@ -124,9 +117,8 @@ export default function ReadVariants(props) {
                   </TableCell>
                 </TableRow>
               ))}
-          </TableBody>
-        </Table>
-      )}
+      </TableBody>
+      </Table>
     </React.Fragment>
   );
 }

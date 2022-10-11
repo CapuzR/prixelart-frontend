@@ -163,6 +163,13 @@ export default function Testimonials() {
           } else {
             setErrorMessage("Creación de testimonio exitoso");
             setSnackBarError(true);
+            setName("");
+            setAvatarObj("");
+            setType("");
+            setValue("");
+            setFooter("");
+            setState({ checkedA: false });
+            setUpdateId(undefined);
             setLoading(false);
             readTestimonial();
           }
@@ -203,7 +210,7 @@ export default function Testimonials() {
     handleChange(e);
     const base_url =
       process.env.REACT_APP_BACKEND_URL + "/testimonial/update-home/" + GetId;
-      console.log(e.target);
+    console.log(e.target);
     const response = await axios.put(
       base_url,
       { status: e.target.checked },
@@ -224,7 +231,7 @@ export default function Testimonials() {
     setType(response.data.type);
     setValue(response.data.value);
     setFooter(response.data.footer);
-    setState({checkedA : response.data.status});
+    setState({ checkedA: response.data.status });
     setUpdateId(GetId);
   };
 
@@ -248,7 +255,7 @@ export default function Testimonials() {
     setType("");
     setValue("");
     setFooter("");
-    setState({checkedA : false});
+    setState({ checkedA: false });
     setUpdateId(undefined);
     setLoading(false);
     readTestimonial();
@@ -461,7 +468,9 @@ export default function Testimonials() {
                           <Switch
                             color="primary"
                             checked={state.checkedA}
-                            onChange={(e)=>{handleChange(e)}}
+                            onChange={(e) => {
+                              handleChange(e);
+                            }}
                             name="checkedA"
                           />
                         }

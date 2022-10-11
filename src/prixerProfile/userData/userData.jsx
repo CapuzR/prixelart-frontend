@@ -176,7 +176,7 @@ export default function UserData(props) {
       setBackdrop(true);
       var formData = new FormData();
       if (inputChange) {
-        formData.append("avatar", profilePic);
+        formData.append("avatar", profilePic || avatarObj); //
       }
       formData.append("username", username);
       formData.append("firstName", firstName);
@@ -191,7 +191,7 @@ export default function UserData(props) {
       formData.append("phone", phone);
       formData.append("country", country);
       formData.append("city", city);
-
+      console.log(formData);
       const base_url = process.env.REACT_APP_BACKEND_URL + "/prixer/update";
       const response = await axios.post(base_url, formData, {
         "Content-Type": "multipart/form-data",

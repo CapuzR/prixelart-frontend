@@ -90,6 +90,7 @@ export default function Prixers() {
         process.env.REACT_APP_BACKEND_URL + "/prixer/read-all-full";
 
       const response = await axios.get(base_url);
+      console.log(response);
       setTiles(utils.shuffle(response.data.prixers));
       setBackdrop(false);
       setLoading(false);
@@ -98,30 +99,32 @@ export default function Prixers() {
     }
   };
 
-  const handleChange = (event, state) => {
-    console.log(event.target.checked);
-    setState(event.target.checked);
+  console.log("estado", tiles);
+  const handleChange = (event) => {
+    console.log("cambio", event.target);
+    setState({ ...state, [event.target.name]: event.target.checked });
   }; //Switch
 
   const ChangeVisibility = async (e, GetId) => {
     e.preventDefault();
     setLoading(true);
-    handleChange(e);
-    console.log(state);
+    setState({ ...state, [e.target.name]: e.target.checked });
+    console.log("estado2", e.target.value);
 
     const base_url =
       process.env.REACT_APP_BACKEND_URL + "/prixer/update-home/" + GetId;
     const response = await axios.put(
       base_url,
-      { status: state.checkedA },
+      { status: e.target.value === "false" ? true : false },
       {
         "Content-Type": "multipart/form-data",
       }
     );
     await readPrixers();
+    // console.log(response);
     setLoading(false);
   };
-  console.log(tiles);
+
   return (
     <div>
       <Backdrop className={classes.backdrop} open={loading}>
@@ -259,6 +262,8 @@ export default function Prixers() {
                             (event) => ChangeVisibility(event, tile.prixerId)
                           }
                           name="checkedA"
+                          // defaultValue={tile.status}
+                          // defaultChecked={tile.status}
                           value={tile.status}
                           inputProps={{
                             "aria-label": "secondary checkbox",

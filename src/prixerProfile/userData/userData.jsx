@@ -192,7 +192,6 @@ export default function UserData(props) {
       formData.append("phone", phone);
       formData.append("country", country);
       formData.append("city", city);
-      console.log(formData);
       const base_url = process.env.REACT_APP_BACKEND_URL + "/prixer/update";
       const response = await axios.post(base_url, formData, {
         "Content-Type": "multipart/form-data",

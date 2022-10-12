@@ -82,6 +82,7 @@ export default function UpdateAdmin(props) {
   const [imagesList, setImagesList] = useState(props?.product?.sources.images);
   const [active, setActive] = useState(props?.product?.active);
   const [productName, setProductName] = useState(props?.product?.name);
+  const [variants, setVariants ] = useState(props?.product?.variants)
   const [description, setDescription] = useState(props?.product?.description);
   const [category, setCategory] = useState(props?.product?.category);
   const [considerations, setConsiderations] = useState(
@@ -258,6 +259,7 @@ export default function UpdateAdmin(props) {
           newFormData.append("name", productName);
           newFormData.append("description", description);
           newFormData.append("category", category);
+          newFormData.append('variants', JSON.stringify(variants))
           newFormData.append("considerations", considerations);
           newFormData.append("publicPriceFrom", data.publicPrice.from);
           newFormData.append("publicPriceTo", data.publicPrice.to);

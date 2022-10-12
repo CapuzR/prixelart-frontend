@@ -109,8 +109,6 @@ export default function ProductGrid(props) {
     });
   }, []);
 
-  console.log(tiles);
-  console.log(imagesVariants);
 
   return (
     <GridList
@@ -170,6 +168,7 @@ export default function ProductGrid(props) {
                 :
                 <img src={tile.thumbUrl} className={classes.img} alt="product"/>
                 :
+                tile.sources &&
                 tile.sources.images.length > 0 ?
                 tile.sources.images.map((img, key_id) =>
                 (

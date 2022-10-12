@@ -90,7 +90,6 @@ export default function Prixers() {
         process.env.REACT_APP_BACKEND_URL + "/prixer/read-all-full";
 
       const response = await axios.get(base_url);
-      console.log(response);
       setTiles(utils.shuffle(response.data.prixers));
       setBackdrop(false);
       setLoading(false);
@@ -99,9 +98,7 @@ export default function Prixers() {
     }
   };
 
-  console.log("estado", tiles);
   const handleChange = (event) => {
-    console.log("cambio", event.target);
     setState({ ...state, [event.target.name]: event.target.checked });
   }; //Switch
 
@@ -109,13 +106,15 @@ export default function Prixers() {
     e.preventDefault();
     setLoading(true);
     setState({ ...state, [e.target.name]: e.target.checked });
-    console.log("estado2", e.target.value);
 
     const base_url =
       process.env.REACT_APP_BACKEND_URL + "/prixer/update-home/" + GetId;
     const response = await axios.put(
       base_url,
-      { status: e.target.value === "false" ? true : false },
+      {
+        status:
+          e.target.value === "false" || e.target.value === "" ? true : false,
+      },
       {
         "Content-Type": "multipart/form-data",
       }

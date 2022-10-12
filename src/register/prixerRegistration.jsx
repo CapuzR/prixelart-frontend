@@ -145,8 +145,8 @@ export default function PrixerRegistration() {
   const [country, setCountry] = useState("");
   const [city, setCity] = useState("");
   const [description, setDescription] = useState("");
-  const [avatar, setAvatar] = useState("");
   const [avatarObj, setAvatarObj] = useState("");
+  const [avatarPic, setAvatarPic] = useState("");
   const [buttonState, setButtonState] = useState(true);
   const [value, setValue] = useState("");
   const [loading, setLoading] = useState(false);
@@ -154,6 +154,8 @@ export default function PrixerRegistration() {
   const theme = useTheme();
   const [specialty, setSpecialty] = React.useState([]);
   const [change, setChange] = useState(false);
+  const [inputChange, setInputChange] = useState(false);
+
   const isDesktop = useMediaQuery(theme.breakpoints.up("sm"));
   const status = true;
 
@@ -216,8 +218,8 @@ export default function PrixerRegistration() {
       !city ||
       // !description ||
       !termsAgree
+      // || !avatar
     ) {
-      // ||(!avatar)) {
       setErrorMessage("Por favor completa todos los campos requeridos.");
       setSnackBarError(true);
       setIsChecked(true);
@@ -226,7 +228,6 @@ export default function PrixerRegistration() {
       setButtonState(true);
       const base_url =
         process.env.REACT_APP_BACKEND_URL + "/prixer-registration";
-      // const cldAvatarUrl = await uploadToCld();
       const data = {
         specialtyArt: specialty,
         instagram: instagram,
@@ -239,7 +240,7 @@ export default function PrixerRegistration() {
         description: description,
         termsAgree: isChecked,
         status: status,
-        // 'avatar': cldAvatarUrl,
+        avatar: avatarPic,
         username: JSON.parse(localStorage.getItem("token")).username,
       };
 
@@ -267,6 +268,15 @@ export default function PrixerRegistration() {
   const handleChange = (event) => {
     setSpecialty(event.target.value);
   };
+
+  const onImageChange = async (e) => {
+    if (e.target.files && e.target.files[0]) {
+      setInputChange(true);
+      setAvatarObj(URL.createObjectURL(e.target.files[0]));
+      setAvatarPic(e.target.files[0]);
+    }
+  };
+
   const getTerms = () => {
     const base_url =
       process.env.REACT_APP_BACKEND_URL + "/termsAndConditions/read";
@@ -291,12 +301,56 @@ export default function PrixerRegistration() {
           Comparte con tus futuros clientes
         </Typography>
         <form onSubmit={handleSubmit} className={classes.form} noValidate>
-          <Grid container spacing={3}>
+          <Grid
+            container
+            spacing={3}
+            style={{ display: "flex", justifyContent: "center" }}
+          >
             {loading && (
               <div className={classes.loading}>
                 <CircularProgress />
               </div>
             )}
+            <Grid
+              item
+              xs={8}
+              style={{ display: "flex", justifyContent: "center" }}
+            >
+              {avatarObj ? (
+                <Avatar className={classes.avatar}>
+                  <label htmlFor="file-input">
+                    <img
+                      src={avatarObj}
+                      alt="Prixer profile avatar"
+                      style={{ maxHeight: 200 }}
+                    />
+                  </label>
+                  <input
+                    style={{ display: "none" }}
+                    accept="image/*"
+                    id="file-input"
+                    type="file"
+                    onChange={onImageChange}
+                    required
+                  />
+                </Avatar>
+              ) : (
+                <Avatar className={classes.avatar}>
+                  <label htmlFor="file-input">
+                    <AddIcon
+                      style={{ width: 60, height: 60, color: "#d33f49" }}
+                    />
+                  </label>
+                  <input
+                    style={{ display: "none" }}
+                    accept="image/*"
+                    id="file-input"
+                    type="file"
+                    onChange={onImageChange}
+                  />
+                </Avatar>
+              )}
+            </Grid>
             <Grid item xs={6}>
               <FormControl
                 className={classes.formControl}

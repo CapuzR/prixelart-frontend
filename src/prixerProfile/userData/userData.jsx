@@ -172,6 +172,7 @@ export default function UserData(props) {
         console.log(error);
       });
   }, [props.prixerUsername]);
+
   const handleProfileDataEdit = async () => {
     if (prixerDataState === "edit") {
       setBackdrop(true);

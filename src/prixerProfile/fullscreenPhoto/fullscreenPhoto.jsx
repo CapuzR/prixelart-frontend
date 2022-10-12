@@ -79,7 +79,6 @@ export default function FullscreePhoto(props) {
     if (artDataState === tile.artId) {
       if (updatedTile.title !== "" && updatedTile.description !== "") {
         setUpdatedTile(tile);
-        console.log(updatedTile);
         setArtDataState("");
         setSnackBarMessage("Arte actualizado correctamente");
         setSnackBar(true);
@@ -235,7 +234,7 @@ export default function FullscreePhoto(props) {
 
   const navigateToPrixer = (e, prixerUsername) => {
     e.preventDefault();
-    history.push({pathname:'/'+ prixerUsername});
+    history.push({ pathname: "/" + prixerUsername });
   };
 
   // const copyCodeToClipboard = (e, tile) => {
@@ -365,108 +364,113 @@ export default function FullscreePhoto(props) {
                       alt={tile.title}
                       id={tile.artId}
                     />
-                    </CardActionArea>
-                    <CardContent>
-                      <Grid
-                        item
-                        container
-                        xs={12}
-                        sm={12}
-                        style={{ whiteSpace: "nowrap", padding: 0, margin: 0 }}
-                        justify="space-between"
+                  </CardActionArea>
+                  <CardContent>
+                    <Grid
+                      item
+                      container
+                      xs={12}
+                      sm={12}
+                      style={{ whiteSpace: "nowrap", padding: 0, margin: 0 }}
+                      justify="space-between"
+                    >
+                      <Typography
+                        style={{
+                          display: "inline-block",
+                          fontSize: "0.8em",
+                          paddingLeft: 0,
+                        }}
+                      >
+                        ID: {tile.artId}
+                      </Typography>
+                      <Button
+                        size="small"
+                        variant="outlined"
+                        onClick={(e) =>
+                          navigateToPrixer(e, tile.prixerUsername)
+                        }
                       >
                         <Typography
+                          gutterBottom
+                          variant="h7"
+                          component="h2"
                           style={{
                             display: "inline-block",
-                            fontSize: "0.8em",
-                            paddingLeft: 0,
+                            right: 0,
+                            textAlign: "right",
+                            margin: 0,
+                            fontSize: 12,
                           }}
                         >
-                          ID: {tile.artId}
+                          Prixer: {tile.prixerUsername}
                         </Typography>
-                        {console.log(tile.prixerUsername)}
-                        <Button size="small" variant="outlined" onClick={e=> navigateToPrixer(e, tile.prixerUsername)}>
-                          <Typography
-                            gutterBottom
-                            variant="h7"
-                            component="h2"
-                            style={{
-                              display: "inline-block",
-                              right: 0,
-                              textAlign: "right",
-                              margin: 0,
-                              fontSize: 12,
-                            }}
-                          >
-                            Prixer: {tile.prixerUsername}
-                          </Typography>
-                        </Button>
-                      </Grid>
+                      </Button>
+                    </Grid>
+                    <Grid
+                      item
+                      container
+                      xs={12}
+                      sm={12}
+                      justify="space-between"
+                      style={{ textAlign: "left", padding: 0, margin: 0 }}
+                    >
                       <Grid
                         item
-                        container
-                        xs={12}
-                        sm={12}
-                        justify="space-between"
+                        xs={6}
+                        sm={6}
                         style={{ textAlign: "left", padding: 0, margin: 0 }}
                       >
-                        <Grid
-                          item
-                          xs={6}
-                          sm={6}
-                          style={{ textAlign: "left", padding: 0, margin: 0 }}
+                        <Typography
+                          gutterBottom
+                          variant="h5"
+                          component="h2"
+                          style={{ margin: 0 }}
                         >
-                          <Typography
-                            gutterBottom
-                            variant="h5"
-                            component="h2"
-                            style={{ margin: 0 }}
-                          >
-                            {tile.title}
-                          </Typography>
-                        </Grid>
+                          {tile.title}
+                        </Typography>
                       </Grid>
-                      <Grid
-                        item
-                        container
-                        xs={12}
-                        sm={12}
-                        style={{ textAlign: "left", padding: 0, margin: 0 }}
-                      >
-                        {tile.artLocation && (
-                          <Typography
-                            style={{
-                              fontSize: "0.8em",
-                              paddingBottom: 10,
-                              paddingLeft: 3,
-                            }}
-                          >
-                            Ubicación: {tile.artLocation}
-                          </Typography>
-                        )}
-                      </Grid>
+                    </Grid>
+                    <Grid
+                      item
+                      container
+                      xs={12}
+                      sm={12}
+                      style={{ textAlign: "left", padding: 0, margin: 0 }}
+                    >
+                      {tile.artLocation && (
+                        <Typography
+                          style={{
+                            fontSize: "0.8em",
+                            paddingBottom: 10,
+                            paddingLeft: 3,
+                          }}
+                        >
+                          Ubicación: {tile.artLocation}
+                        </Typography>
+                      )}
+                    </Grid>
+                    <Typography
+                      variant="body2"
+                      color="textSecondary"
+                      component="p"
+                      style={{
+                        whiteSpace: "pre-line",
+                        fontSize: "1.1em",
+                        marginBottom: 10,
+                      }}
+                    >
+                      {tile.description}
+                    </Typography>
+                    {tile.originalPhotoHeight && tile.originalPhotoWidth && (
                       <Typography
                         variant="body2"
                         color="textSecondary"
                         component="p"
-                        style={{
-                          whiteSpace: "pre-line",
-                          fontSize: "1.1em",
-                          marginBottom: 10,
-                        }}
                       >
-                        {tile.description}
+                        Máximo para impresión: {maxPrintValues(tile)}
                       </Typography>
-                      {tile.originalPhotoHeight && tile.originalPhotoWidth && (
-                        <Typography
-                          variant="body2"
-                          color="textSecondary"
-                          component="p"
-                        >
-                          Máximo para impresión: {maxPrintValues(tile)}
-                        </Typography>
-                      )}
-                    </CardContent>
+                    )}
+                  </CardContent>
                   <CardActions>
                     {/* <Button size="small" color="primary">
                   Comparte
@@ -848,7 +852,6 @@ export default function FullscreePhoto(props) {
                               value={tile.description}
                               onChange={(e) => {
                                 handleArtDescriptionEdit(e, tile);
-                                console.log(e.target.value);
                               }}
                             />
                           </Grid>

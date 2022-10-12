@@ -125,6 +125,7 @@ export default function UserData(props) {
   const history = useHistory();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isDesktop = useMediaQuery(theme.breakpoints.up("lg"));
+  const [prixer, setPrixer] = useState();
 
   function getStyles(specialty, specialtyArt, theme) {
     return {
@@ -162,6 +163,7 @@ export default function UserData(props) {
         setCity(response.data.city);
         setAvatarObj(response.data.avatar);
         setProfilePic(response.data.avatar);
+        setPrixer(response.data);
         setReady(true);
         setBackdrop(false);
         setPrixerExists(true);
@@ -170,7 +172,6 @@ export default function UserData(props) {
         console.log(error);
       });
   }, [props.prixerUsername]);
-
   const handleProfileDataEdit = async () => {
     if (prixerDataState === "edit") {
       setBackdrop(true);
@@ -191,7 +192,6 @@ export default function UserData(props) {
       formData.append("phone", phone);
       formData.append("country", country);
       formData.append("city", city);
-      console.log(formData);
       const base_url = process.env.REACT_APP_BACKEND_URL + "/prixer/update";
       const response = await axios.post(base_url, formData, {
         "Content-Type": "multipart/form-data",

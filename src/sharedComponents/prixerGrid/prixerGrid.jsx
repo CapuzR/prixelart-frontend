@@ -88,7 +88,7 @@ export default function PrixerGrid(props) {
             .filter((tile) => tile.avatar) //quitar?
             .map(
               (tile) =>
-                tile.status !== false && (
+                tile.status && (
                   // isDesktop ? (
                   <Grid item key={tile._id} xs={6} sm={6} md={3}>
                     <Card className={classes.card}>

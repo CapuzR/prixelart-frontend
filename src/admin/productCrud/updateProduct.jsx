@@ -129,13 +129,14 @@ export default function UpdateAdmin(props) {
       setVideoUrl(url.url)
     });
 
-    const indexImage = imagesList.indexOf(thumbUrl);
+    const indexImage = imagesList === [] ? imagesList.indexOf(thumbUrl) : undefined
+
     if(indexImage === -1){
-    }else{
       console.log(indexImage)
-      imagesList.push(thumbUrl);
-      imageLoader.loader.push(thumbUrl);
+      imagesList.push(thumbUrl)
+      imageLoader.loader.push(thumbUrl)
     }
+
     // props.product.sources.images.map((file) => {
     //   file.type == 'video' ?
     //   setVideoUrl(file.url)
@@ -293,6 +294,7 @@ export default function UpdateAdmin(props) {
     setShowVariants(true);
     props.setProductEdit(false);
   };
+
 
   return (
     <React.Fragment>

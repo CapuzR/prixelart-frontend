@@ -10,6 +10,7 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Title from "../../adminMain/Title";
 import axios from "axios";
+import DeleteIcon from "@material-ui/icons/Delete";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Backdrop from "@material-ui/core/Backdrop";
 import Checkbox from "@material-ui/core/Checkbox";
@@ -27,6 +28,7 @@ export default function ReadVariants(props) {
   const classes = useStyles();
   const history = useHistory();
   const [rows, setRows] = useState();
+  const [deleteOpen, setDeleteOpen] = useState(false);
   const base_url = process.env.REACT_APP_BACKEND_URL + "/product/read";
 
   useEffect(() => {
@@ -78,7 +80,8 @@ export default function ReadVariants(props) {
           </TableRow>
         </TableHead>
         <TableBody>
-              {rows &&
+              {
+                rows &&
                 rows.map((row) => (
                   <TableRow key={row._id}>
                     <TableCell align="center">
@@ -94,10 +97,18 @@ export default function ReadVariants(props) {
                     </Fab>
                   </TableCell>
                   <TableCell align="center">
+                  {
+                    row.variantImage ?
                     <img
                       src={row.variantImage[0]?.url}
                       style={{ width: 50, height: "auto" }}
                     />
+                    :
+                    <img
+                      src={row.thumbUrl}
+                      style={{ width: 50, height: "auto" }}
+                    />
+                  }
                   </TableCell>
                   <TableCell align="center">{row.name}</TableCell>
                   <TableCell align="center">
@@ -115,7 +126,7 @@ export default function ReadVariants(props) {
                   <TableCell align="center">
                     {row.prixerPrice.from}-{row.prixerPrice.to}
                   </TableCell>
-                </TableRow>
+                  </TableRow>
               ))
               }
       </TableBody>

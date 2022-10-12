@@ -77,6 +77,7 @@ export default function CreateVariant(props) {
         :
         setVideoUrl(url.url)
     })
+
   }, [])
 
     const handleClickOpen = () => {
@@ -220,6 +221,7 @@ export default function CreateVariant(props) {
           }
         })
         updatedWithVariants.sources.images.map(img => formData.append('productImages', img.url))
+        formData.append('variants', JSON.stringify(updatedWithVariants.variants))
         formData.append('productPublicPriceFrom', updatedWithVariants.publicPrice.from)
         formData.append('productPublicPriceTo', updatedWithVariants.publicPrice.to)
         formData.append('productPrixerPriceFrom', updatedWithVariants.prixerPrice.from)
@@ -227,6 +229,7 @@ export default function CreateVariant(props) {
         formData.append('variant_id', variants._id)
         formData.append('video', videoUrl)
         image.map(file => {
+          console.log(file)
           if(file.url === undefined){
               formData.append('variantImage', file)
           }

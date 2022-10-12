@@ -90,7 +90,7 @@ export default function Prixers() {
         process.env.REACT_APP_BACKEND_URL + "/prixer/read-all-full";
 
       const response = await axios.get(base_url);
-      setTiles(utils.shuffle(response.data.prixers));
+      setTiles(response.data.prixers);
       setBackdrop(false);
       setLoading(false);
     } catch (error) {

@@ -206,7 +206,6 @@ export default function PrixerRegistration() {
   const [errorMessage, setErrorMessage] = useState();
   const [snackBarError, setSnackBarError] = useState(false);
   const termsAgree = isChecked;
-  console.log(avatarPic);
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (
@@ -248,22 +247,21 @@ export default function PrixerRegistration() {
 
       const base_url =
         process.env.REACT_APP_BACKEND_URL + "/prixer-registration";
-      const data = {
-        specialtyArt: specialty,
-        instagram: instagram,
-        facebook: facebook,
-        twitter: twitter,
-        dateOfBirth: dateOfBirth,
-        phone: phone,
-        country: country,
-        city: city,
-        description: description,
-        termsAgree: isChecked,
-        status: status,
-        avatar: avatarPic,
-        username: JSON.parse(localStorage.getItem("token")).username,
-      };
-      console.log(avatar);
+      // const data = {
+      //   specialtyArt: specialty,
+      //   instagram: instagram,
+      //   facebook: facebook,
+      //   twitter: twitter,
+      //   dateOfBirth: dateOfBirth,
+      //   phone: phone,
+      //   country: country,
+      //   city: city,
+      //   description: description,
+      //   termsAgree: isChecked,
+      //   status: status,
+      //   avatar: avatarPic,
+      //   username: JSON.parse(localStorage.getItem("token")).username,
+      // };
 
       axios
         .post(base_url, formData, {

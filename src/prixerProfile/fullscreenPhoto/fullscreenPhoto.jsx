@@ -524,7 +524,7 @@ export default function FullscreePhoto(props) {
                           Editar
                         </Button>
                       )}
-                    {JSON.parse(localStorage.getItem("token")) &&
+                    {/* {JSON.parse(localStorage.getItem("token")) &&
                       JSON.parse(localStorage.getItem("token")).username ==
                         tile.prixerUsername && (
                         <Button
@@ -537,7 +537,7 @@ export default function FullscreePhoto(props) {
                         >
                           Ocultar
                         </Button>
-                      )}
+                      )} */}
                     <Dialog
                       open={openV}
                       onClose={handleCloseVisible}

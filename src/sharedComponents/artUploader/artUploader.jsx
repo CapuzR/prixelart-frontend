@@ -209,7 +209,7 @@ export default function ArtUploader(props) {
     size: 0,
   });
   const [disabledReason, setDisabledReason] = useState("");
-  const [visible, setVisible] = (useState = useState(true));
+  const [visible, setVisible] = useState(true);
   //Error states.
   const [errorMessage, setErrorMessage] = useState();
   const [snackBarAction, setSnackBarAction] = useState();

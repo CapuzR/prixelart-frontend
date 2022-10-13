@@ -236,7 +236,6 @@ export default function UserData(props) {
   const handleChange = (e) => {
     setSpecialtyArt(e.target.value);
   };
-
   return prixerExists ? (
     <div className={classes.root}>
       <Backdrop className={classes.backdrop} open={backdrop}>

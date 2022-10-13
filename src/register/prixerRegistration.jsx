@@ -145,6 +145,7 @@ export default function PrixerRegistration() {
   const [country, setCountry] = useState("");
   const [city, setCity] = useState("");
   const [description, setDescription] = useState("");
+  const [avatar, setAvatar] = useState({ file: "", _id: "" });
   const [avatarObj, setAvatarObj] = useState("");
   const [avatarPic, setAvatarPic] = useState("");
   const [buttonState, setButtonState] = useState(true);
@@ -205,7 +206,7 @@ export default function PrixerRegistration() {
   const [errorMessage, setErrorMessage] = useState();
   const [snackBarError, setSnackBarError] = useState(false);
   const termsAgree = isChecked;
-
+  console.log(avatarPic);
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (
@@ -226,6 +227,25 @@ export default function PrixerRegistration() {
     } else {
       setLoading(true);
       setButtonState(true);
+
+      const formData = new FormData();
+      formData.append("specialtyArt", specialty);
+      formData.append("instagram", instagram);
+      formData.append("facebook", facebook);
+      formData.append("twitter", twitter);
+      formData.append("dateOfBirth", dateOfBirth);
+      formData.append("phone", phone);
+      formData.append("country", country);
+      formData.append("city", city);
+      formData.append("description", description);
+      formData.append("termsAgree", isChecked);
+      formData.append("status", status);
+      formData.append("avatar", avatarPic);
+      formData.append(
+        "username",
+        JSON.parse(localStorage.getItem("token")).username
+      );
+
       const base_url =
         process.env.REACT_APP_BACKEND_URL + "/prixer-registration";
       const data = {
@@ -243,9 +263,12 @@ export default function PrixerRegistration() {
         avatar: avatarPic,
         username: JSON.parse(localStorage.getItem("token")).username,
       };
+      console.log(avatar);
 
       axios
-        .post(base_url, data)
+        .post(base_url, formData, {
+          "Content-Type": "multipart/form-data",
+        })
         .then((response) => {
           if (response.data.success === false) {
             setLoading(false);
@@ -265,6 +288,7 @@ export default function PrixerRegistration() {
         });
     }
   };
+
   const handleChange = (event) => {
     setSpecialty(event.target.value);
   };

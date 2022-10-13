@@ -178,7 +178,7 @@ export default function UserData(props) {
       setBackdrop(true);
       var formData = new FormData();
       if (inputChange) {
-        formData.append("avatar", profilePic || avatarObj); //
+        formData.append("avatar", profilePic || avatarObj);
       }
       formData.append("username", username);
       formData.append("firstName", firstName);

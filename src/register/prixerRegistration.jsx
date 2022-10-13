@@ -497,7 +497,6 @@ export default function PrixerRegistration() {
                 value={country}
                 type="country"
                 id="country"
-                autoComplete="current-password"
                 onChange={(e) => {
                   setCountry(e.target.value);
                 }}
@@ -513,7 +512,6 @@ export default function PrixerRegistration() {
                 value={city}
                 type="city"
                 id="city"
-                autoComplete="current-password"
                 onChange={(e) => {
                   setCity(e.target.value);
                 }}
@@ -528,7 +526,6 @@ export default function PrixerRegistration() {
                 value={description}
                 type="description"
                 id="description"
-                autoComplete="current-password"
                 onChange={(e) => {
                   setDescription(e.target.value);
                 }}

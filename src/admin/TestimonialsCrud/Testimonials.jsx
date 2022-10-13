@@ -247,7 +247,6 @@ export default function Testimonials() {
     formData.append("value", value);
     formData.append("footer", footer);
     formData.append("status", state.checkedA);
-    console.log(formData.avatar);
 
     const response = await axios.put(base_url, formData, {
       "Content-Type": "multipart/form-data",

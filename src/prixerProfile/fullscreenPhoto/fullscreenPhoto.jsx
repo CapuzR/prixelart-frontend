@@ -72,7 +72,9 @@ export default function FullscreePhoto(props) {
   const [openArtFormDialog, setOpenArtFormDialog] = useState(false);
   const [selectedArt, setSelectedArt] = useState(undefined);
   const [open, setOpen] = useState(false);
-  const [newTag, setNewTag] = useState("");
+  const [openV, setOpenV] = useState(false);
+  const [disabledReason, setDisabledReason] = useState("");
+  const [visible, setVisible] = useState(true);
 
   const handleArtEdit = (e, tile) => {
     setLoading(true);
@@ -143,8 +145,15 @@ export default function FullscreePhoto(props) {
   const handleClickOpen = () => {
     setOpen(true);
   };
+  const handleClickVisible = () => {
+    setOpenV(true);
+  };
   const handleClose = () => {
     setOpen(false);
+    setSelectedArt(undefined);
+  };
+  const handleCloseVisible = () => {
+    setOpenV(false);
     setSelectedArt(undefined);
   };
 
@@ -253,6 +262,23 @@ export default function FullscreePhoto(props) {
     handleClose();
     setSnackBarMessage("Arte eliminado exitosamente");
     setSnackBar(true);
+    readArt();
+  };
+
+  const setVisibleArt = async () => {
+    setLoading(true);
+    const base_url =
+      process.env.REACT_APP_BACKEND_URL + "/art/disable/" + selectedArt;
+
+    const formData = new FormData();
+    formData.append("disabledReason", disabledReason);
+    formData.append("visible", visible);
+
+    const response = await axios.put(base_url, formData);
+    handleClose();
+    setSnackBarMessage("Arte modificado exitosamente");
+    setSnackBar(true);
+    setLoading(false);
     readArt();
   };
 
@@ -505,6 +531,85 @@ export default function FullscreePhoto(props) {
                           color="primary"
                           size="small"
                           onClick={(e) => {
+                            handleClickVisible(e);
+                            setSelectedArt(tile.artId);
+                          }}
+                        >
+                          Ocultar
+                        </Button>
+                      )}
+                    <Dialog
+                      open={openV}
+                      onClose={handleCloseVisible}
+                      aria-labelledby="alert-dialog-title"
+                      aria-describedby="alert-dialog-description"
+                    >
+                      <DialogTitle id="alert-dialog-title">
+                        {"¿Estás seguro de ocultar este arte?"}
+                      </DialogTitle>
+                      <DialogContent>
+                        <DialogContentText
+                          id="alert-dialog-description"
+                          style={{
+                            textAlign: "center",
+                          }}
+                        >
+                          Este arte ya no será visible en tu perfil y la página
+                          de inicio.
+                        </DialogContentText>
+                      </DialogContent>
+                      <Grid
+                        item
+                        xs
+                        style={{
+                          display: "flex",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <TextField
+                          style={{ width: "95%", marginBottom: "5px" }}
+                          fullWidth
+                          multiline
+                          required
+                          rows={2.5}
+                          autoFocus
+                          inputProps={{ maxLength: 160 }}
+                          id="disableReason"
+                          label="¿Por qué quieres ocultar este arte?"
+                          variant="outlined"
+                          value={tile.disabledReason}
+                          onChange={(e) => {
+                            setDisabledReason(e.target.value);
+                            // handleArtTitleEdit(e, tile);
+                          }}
+                        />
+                      </Grid>
+                      <DialogActions>
+                        <Button onClick={handleCloseVisible} color="primary">
+                          Cancelar
+                        </Button>
+                        <Button
+                          onClick={() => {
+                            setVisibleArt(selectedArt);
+                            setSelectedArt(undefined);
+                          }}
+                          background="primary"
+                          style={{
+                            color: "white",
+                            backgroundColor: "#d33f49",
+                          }}
+                        >
+                          Aceptar
+                        </Button>
+                      </DialogActions>
+                    </Dialog>
+                    {JSON.parse(localStorage.getItem("token")) &&
+                      JSON.parse(localStorage.getItem("token")).username ==
+                        tile.prixerUsername && (
+                        <Button
+                          color="primary"
+                          size="small"
+                          onClick={(e) => {
                             handleClickOpen(e);
                             setSelectedArt(tile.artId);
                           }}
@@ -550,6 +655,7 @@ export default function FullscreePhoto(props) {
                         </Button>
                       </DialogActions>
                     </Dialog>
+
                     {/* <Button size="small" color="primary" onClick={(e)=>{copyCodeToClipboard(e, tile)}}>
                   <FileCopyIcon/>
                 </Button> */}

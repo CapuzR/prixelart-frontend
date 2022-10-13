@@ -314,40 +314,73 @@ export default function FullscreePhoto(props) {
     readArt();
   }, []);
 
-  useEffect(() => {
+  const updateArtData = (e, tile) => {
     setLoading(true);
-    if (artDataState === "") {
-      const base_url =
-        process.env.REACT_APP_BACKEND_URL + "/art/update/" + selectedArt;
-      const data = {
-        title: updatedTile.title,
-        description: updatedTile.description,
-        tags: updatedTile.tags,
-        category: updatedTile.category,
-        artId: updatedTile.artId,
-        artType: updatedTile.artType,
-        artLocation: updatedTile.artLocation,
-      };
-      axios
-        .put(base_url, data)
-        .then((response) => {
-          if (response.data.data.success == true) {
-            setSnackBarMessage(response.data.data.success);
-            setSnackBar(true);
-            setSelectedArt(undefined);
-          } else {
-            setSnackBarMessage(response.data.data.error_message);
-            setSnackBar(true);
-            setSelectedArt(undefined);
-          }
-        })
-        .catch((error) => {
-          // console.log(error);
+    const base_url =
+      process.env.REACT_APP_BACKEND_URL + "/art/update/" + selectedArt;
+    const data = {
+      title: tile.title,
+      description: tile.description,
+      tags: tile.tags,
+      category: tile.category,
+      artId: tile.artId,
+      artType: tile.artType,
+      artLocation: tile.artLocation,
+    };
+    axios
+      .put(base_url, data)
+      .then((response) => {
+        if (response.data.data.success == true) {
+          setSnackBarMessage(response.data.data.success);
+          setSnackBar(true);
           setSelectedArt(undefined);
-        });
-    }
+        } else {
+          setSnackBarMessage(response.data.data.error_message);
+          setSnackBar(true);
+          setSelectedArt(undefined);
+        }
+      })
+      .catch((error) => {
+        // console.log(error);
+        setSelectedArt(undefined);
+      });
     setLoading(false);
-  }, [artDataState]);
+  };
+
+  // useEffect(() => {
+  //   setLoading(true);
+  //   if (artDataState === "") {
+  //     const base_url =
+  //       process.env.REACT_APP_BACKEND_URL + "/art/update/" + selectedArt;
+  //     const data = {
+  //       title: updatedTile.title,
+  //       description: updatedTile.description,
+  //       tags: updatedTile.tags,
+  //       category: updatedTile.category,
+  //       artId: updatedTile.artId,
+  //       artType: updatedTile.artType,
+  //       artLocation: updatedTile.artLocation,
+  //     };
+  //     axios
+  //       .put(base_url, data)
+  //       .then((response) => {
+  //         if (response.data.data.success == true) {
+  //           setSnackBarMessage(response.data.data.success);
+  //           setSnackBar(true);
+  //           setSelectedArt(undefined);
+  //         } else {
+  //           setSnackBarMessage(response.data.data.error_message);
+  //           setSnackBar(true);
+  //           setSelectedArt(undefined);
+  //         }
+  //       })
+  //       .catch((error) => {
+  //         // console.log(error);
+  //         setSelectedArt(undefined);
+  //       });
+  //   }
+  //   setLoading(false);
+  // }, [artDataState]);
 
   return !ready ? (
     <div className={classes.loading}>
@@ -1018,7 +1051,7 @@ export default function FullscreePhoto(props) {
                         size="small"
                         color="primary"
                         onClick={(e) => {
-                          // updateArtData(e, tile.artId);
+                          updateArtData(e, tile);
                           handleArtEdit(e, tile);
                         }}
                       >

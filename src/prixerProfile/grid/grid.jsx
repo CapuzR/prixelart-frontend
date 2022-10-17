@@ -18,6 +18,15 @@ import utils from "../../utils/utils";
 import SearchBar from "../../sharedComponents/searchBar/searchBar.jsx";
 
 const useStyles = makeStyles((theme) => ({
+  gridItem: {
+    float: "left",
+    width: "80px",
+    height: "60px",
+    border: "2px",
+  },
+  gridItemWidth2: { width: "160px" },
+  gridItemHeight2: { height: "140px" },
+
   root: {
     display: "flex",
     flexWrap: "wrap",
@@ -141,6 +150,11 @@ export default function Grid(props) {
     e.preventDefault();
   };
 
+  const msnry = new Masonry(".grid", {
+    columnWidth: 200,
+    itemSelector: ".grid-item",
+  });
+
   return (
     <>
       <div className={classes.root}>
@@ -156,43 +170,6 @@ export default function Grid(props) {
             setSearchValue={setSearchValue}
           />
         </div>
-        {/* <GridList
-        cellSize={"auto"}
-        className={classes.gridList}
-        cols={isDesktop ? 4 : 2}
-        style={{ margin: "0", justifyContent: "center" }}
-      > */}
-        {/* <GridListTile 
-            //   style={{
-            //     width: isDesktop ? "300px" : "50%",
-            //   }}
-            //   key={tile.artId}
-            //   cols={1}
-            //   onClick={(e) => {
-            //     handleFullImage(e, tile);
-            //   }}
-            //   className={classes.img}
-            // >
-            //   <Img
-            //     // className={classes.}
-            //     placeholder="/imgLoading.svg"
-            //     style={{
-            //       backgroundColor: "#eeeeee",
-            //       width: "300px",
-            //       height: "300px",
-            //       objectFit: "cover",
-            //     }}
-            //     src={tile.squareThumbUrl}
-            //     debounce={1000}
-            //     cache
-            //     error="/imgError.svg"
-            //     // srcSet={tile.smallThumbUrl + ' 600w, ' + tile.mediumThumbUrl + ' 850w, ' + tile.largeThumbUrl + ' 1300w'}
-            //     // sizes="(min-width: 1600px) 850px, (min-width: 960px) 450px, (min-width: 640px) 400px, 200px"
-            //     sizes="(min-width: 1600px) 850px, (min-width: 960px) 450px, (min-width: 640px) 200px, (min-width: 375px) 80px"
-            //     alt={tile.title}
-            //     id={tile.artId}
-            //   />
-            // </GridListTile>*/}
       </div>
       <ResponsiveMasonry
         columnsCountBreakPoints={{ 350: 1, 750: 2, 900: 3, 1080: 4 }}
@@ -229,7 +206,6 @@ export default function Grid(props) {
           )}
         </Masonry>
       </ResponsiveMasonry>
-      {/* </GridList> */}
     </>
   );
 }

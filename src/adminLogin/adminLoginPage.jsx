@@ -129,7 +129,7 @@ export default function Login() {
 
   useEffect(()=> {
     const base_url= process.env.REACT_APP_BACKEND_URL + "/art/random";
-  
+
      axios.get(base_url)
       .then(response =>{
         if(response.data.arts){

@@ -30,6 +30,7 @@ import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
+import Switch from '@material-ui/core/Switch';
 
 const useStyles = makeStyles((theme) => ({
   loading: {
@@ -524,20 +525,20 @@ export default function FullscreePhoto(props) {
                           Editar
                         </Button>
                       )}
-                    {/* {JSON.parse(localStorage.getItem("token")) &&
-                      JSON.parse(localStorage.getItem("token")).username ==
-                        tile.prixerUsername && (
-                        <Button
-                          color="primary"
-                          size="small"
-                          onClick={(e) => {
-                            handleClickVisible(e);
-                            setSelectedArt(tile.artId);
-                          }}
-                        >
-                          Ocultar
-                        </Button>
-                      )} */}
+                      {JSON.parse(localStorage.getItem("token")) &&
+                       JSON.parse(localStorage.getItem("token")).username ==
+                         tile.prixerUsername && (
+                         <Switch
+                           color="primary"
+                           size="small"
+                           onClick={(e) => {
+                             handleClickVisible(e);
+                             setSelectedArt(tile.artId);
+                           }}
+                         >
+                           Ocultar
+                         </Switch>
+                       )}
                     <Dialog
                       open={openV}
                       onClose={handleCloseVisible}

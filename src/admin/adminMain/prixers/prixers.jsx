@@ -79,10 +79,6 @@ export default function Prixers() {
     checkedA: true,
   });
 
-  useEffect(async () => {
-    await readPrixers();
-  }, []);
-
   const readPrixers = async () => {
     try {
       setLoading(true);
@@ -97,6 +93,8 @@ export default function Prixers() {
       console.log(error);
     }
   };
+
+
 
   const handleChange = (event) => {
     setState({ ...state, [event.target.name]: event.target.checked });
@@ -123,6 +121,12 @@ export default function Prixers() {
     // console.log(response);
     setLoading(false);
   };
+
+  console.log(tiles)
+
+  useEffect(() => {
+    readPrixers();
+  }, []);
 
   return (
     <div>
@@ -155,10 +159,10 @@ export default function Prixers() {
           {tiles &&
             tiles
               // .filter((tile) => tile.avatar)
-              .map((tile) =>
+              .map((tile, key_id) =>
                 isDesktop ? (
-                  <Grid item key={tile._id} xs={6} sm={6} md={3}>
-                    <Card className={classes.card}>
+                  <Grid item  xs={6} sm={6} md={3}>
+                    <Card key={tile._id} className={classes.card}>
                       <CardMedia
                         alt={tile.title}
                         height="100"
@@ -218,8 +222,8 @@ export default function Prixers() {
                     </Card>
                   </Grid>
                 ) : (
-                  <Grid item key={tile._id} xs={12} sm={4} md={4}>
-                    <Card className={classes.card}>
+                  <Grid item  xs={12} sm={4} md={4}>
+                    <Card key={tile._id} className={classes.card}>
                       <CardMedia
                         alt={tile.title}
                         height="100"

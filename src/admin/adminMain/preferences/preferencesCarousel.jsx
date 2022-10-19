@@ -246,7 +246,7 @@ function CarouselAdmin(props) {
   //Tomar imagenes en array para ser listadas y renderizadas
   const getImagesForTheCarousel = () => {
     setLoading(true);
-    const URI = "http://localhost:8000/admin/preferences/carousel";
+    const URI = process.env.REACT_APP_BACKEND_URL + "/admin/preferences/carousel";
     fetch(URI)
       .then((res) =>
         res

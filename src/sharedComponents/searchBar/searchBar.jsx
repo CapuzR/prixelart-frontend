@@ -30,7 +30,9 @@ const useStyles = makeStyles((theme) => ({
 export default function CustomizedInputBase(props) {
   const classes = useStyles();
   let params = new URLSearchParams(window.location.search);
-  const [queryValue, setQueryValue] = useState(params.get("name"));
+  const [queryValue, setQueryValue] = useState(
+    params.get("name", "description", "tags")
+  );
   return (
     <Paper component="form" className={classes.root}>
       <IconButton className={classes.iconButton} aria-label="menu">

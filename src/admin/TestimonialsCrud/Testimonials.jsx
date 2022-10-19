@@ -425,7 +425,7 @@ export default function Testimonials() {
                       fullWidth
                       type="text"
                       value={value}
-                      inputProps={{ maxLenght: 160 }}
+                      inputProps={{ maxLength: 160 }}
                       id="value"
                       label="Body"
                       autoFocus
@@ -444,7 +444,7 @@ export default function Testimonials() {
                       label="Footer"
                       type="text"
                       value={footer}
-                      inputProps={{ maxLenght: 60 }}
+                      inputProps={{ maxLength: 60 }}
                       id="footer"
                       autoComplete="fname"
                       onChange={(e) => {

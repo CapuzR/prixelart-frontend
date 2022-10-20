@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles, withStyles } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
 import CardActionArea from "@material-ui/core/CardActionArea";
 import CardActions from "@material-ui/core/CardActions";
@@ -22,6 +22,7 @@ import WhatsAppIcon from "@material-ui/icons/WhatsApp";
 import utils from "../../utils/utils";
 import MenuItem from "@material-ui/core/MenuItem";
 import FormControl from "@material-ui/core/FormControl";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
 import InputLabel from "@material-ui/core/InputLabel";
 import Select from "@material-ui/core/Select";
 import Img from "react-cool-img";
@@ -31,6 +32,60 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import Switch from '@material-ui/core/Switch';
+import Paper from '@material-ui/core/Paper'
+
+const IOSSwitch = withStyles((theme) => ({
+  root: {
+    width: 42,
+    height: 26,
+    padding: 0,
+    margin: theme.spacing(1),
+  },
+  switchBase: {
+    padding: 1,
+    '&$checked': {
+      transform: 'translateX(16px)',
+      color: theme.palette.common.white,
+      '& + $track': {
+        backgroundColor: 'primary',
+        opacity: 1,
+        border: 'none',
+      },
+    },
+    '&$focusVisible $thumb': {
+      color: '#52d869',
+      border: '6px solid #fff',
+    },
+  },
+  thumb: {
+    width: 24,
+    height: 24,
+  },
+  track: {
+    borderRadius: 26 / 2,
+    border: `1px solid ${theme.palette.grey[400]}`,
+    backgroundColor: theme.palette.grey[400],
+    opacity: 1,
+    transition: theme.transitions.create(['background-color', 'border']),
+  },
+  checked: {},
+  focusVisible: {},
+}))(({ classes, ...props }) => {
+  return (
+    <Switch
+      focusVisibleClassName={classes.focusVisible}
+      disableRipple
+      classes={{
+        root: classes.root,
+        switchBase: classes.switchBase,
+        thumb: classes.thumb,
+        track: classes.track,
+        checked: classes.checked,
+      }}
+      {...props}
+    />
+  );
+});
 
 const useStyles = makeStyles((theme) => ({
   loading: {
@@ -74,8 +129,9 @@ export default function FullscreePhoto(props) {
   const [selectedArt, setSelectedArt] = useState(undefined);
   const [open, setOpen] = useState(false);
   const [openV, setOpenV] = useState(false);
-  const [disabledReason, setDisabledReason] = useState("");
+  const [disabledReason, setDisabledReason] = useState('');
   const [visible, setVisible] = useState(true);
+  const [checked, setChecked ] = useState(true);
 
   const handleArtEdit = (e, tile) => {
     setLoading(true);
@@ -266,22 +322,23 @@ export default function FullscreePhoto(props) {
     readArt();
   };
 
-  const setVisibleArt = async () => {
+  const setVisibleArt = async (art, id, event) => {
     setLoading(true);
-    const base_url =
-      process.env.REACT_APP_BACKEND_URL + "/art/disable/" + selectedArt;
-
-    const formData = new FormData();
-    formData.append("disabledReason", disabledReason);
-    formData.append("visible", visible);
-
-    const response = await axios.put(base_url, formData);
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/art/disable/" + id;
+    art.visible = visible;
+    art.disabledReason = disabledReason;
+    const response = await axios.put(base_url, art);
     handleClose();
     setSnackBarMessage("Arte modificado exitosamente");
     setSnackBar(true);
     setLoading(false);
+    setDisabledReason('')
     readArt();
   };
+
+  const getChecked = () => {
+    setChecked(check => !check)
+  }
 
   const readArt = async () => {
     setLoading(true);
@@ -350,6 +407,10 @@ export default function FullscreePhoto(props) {
     setLoading(false);
   }, [artDataState]);
 
+
+console.log(tiles)
+console.log(selectedArt)
+
   return !ready ? (
     <div className={classes.loading}>
       <CircularProgress />
@@ -364,8 +425,10 @@ export default function FullscreePhoto(props) {
           tiles.map((tile) =>
             artDataState !== tile.artId ? (
               <div id={tile.artId} key={tile.artId}>
+              {
+                tile.visible === true ?
                 <Card style={{ marginTop: 35 }}>
-                  <CardActionArea>
+                  <CardActionArea disabled>
                     {/* <CardMedia
                     component="img"
                     alt="Contemplative Reptile"
@@ -511,7 +574,7 @@ export default function FullscreePhoto(props) {
                     >
                       <WhatsAppIcon /> Escríbenos
                     </Button>
-                    {JSON.parse(localStorage.getItem("token")) &&
+                    {JSON.parse(localStorage.getItem('token')) &&
                       JSON.parse(localStorage.getItem("token")).username ==
                         tile.prixerUsername && (
                         <Button
@@ -525,22 +588,23 @@ export default function FullscreePhoto(props) {
                           Editar
                         </Button>
                       )}
-                      {JSON.parse(localStorage.getItem("token")) &&
-                       JSON.parse(localStorage.getItem("token")).username ==
-                         tile.prixerUsername && (
-                         <Switch
+                      {JSON.parse(localStorage.getItem('adminToken')) &&
+                           <IOSSwitch
                            color="primary"
-                           size="small"
-                           onClick={(e) => {
-                             handleClickVisible(e);
-                             setSelectedArt(tile.artId);
-                           }}
-                         >
-                           Ocultar
-                         </Switch>
-                       )}
+                           size="normal"
+                           checked={tile.visible}
+                           onChange={(e) => {
+                            setSelectedArt(tile.artId);
+                             if(e.target.checked === false){
+                               handleClickVisible(e)
+                               setVisible(e.target.checked)
+                             } else{
+                               setVisible(e.target.checked)
+                             }
+                           }}/>
+                       }
                     <Dialog
-                      open={openV}
+                      open={selectedArt === tile.artId}
                       onClose={handleCloseVisible}
                       aria-labelledby="alert-dialog-title"
                       aria-describedby="alert-dialog-description"
@@ -572,13 +636,9 @@ export default function FullscreePhoto(props) {
                           fullWidth
                           multiline
                           required
-                          rows={2.5}
-                          autoFocus
-                          inputProps={{ maxLength: 160 }}
                           id="disableReason"
                           label="¿Por qué quieres ocultar este arte?"
                           variant="outlined"
-                          value={tile.disabledReason}
                           onChange={(e) => {
                             setDisabledReason(e.target.value);
                             // handleArtTitleEdit(e, tile);
@@ -590,9 +650,10 @@ export default function FullscreePhoto(props) {
                           Cancelar
                         </Button>
                         <Button
-                          onClick={() => {
-                            setVisibleArt(selectedArt);
-                            setSelectedArt(undefined);
+                          onClick={(e) => {
+                            setVisibleArt(tile,selectedArt, e);
+                            setSelectedArt(undefined)
+                            handleCloseVisible()
                           }}
                           background="primary"
                           style={{
@@ -662,17 +723,236 @@ export default function FullscreePhoto(props) {
                 </Button> */}
                   </CardActions>
                 </Card>
+                :
+                JSON.parse(localStorage.getItem("adminToken")) &&
+                <Card style={{ marginTop: 35}}>
+                  <CardActionArea disabled>
+                    <Img
+                      placeholder="/imgLoading.svg"
+                      style={{ backgroundColor: "#eeeeee", width: "100%" }}
+                      src={tile.largeThumbUrl || tile.thumbnailUrl}
+                      debounce={1000} // Default is 300 (ms)
+                      cache
+                      error="/imgError.svg"
+                      srcSet={
+                        tile.smallThumbUrl +
+                        " 600w, " +
+                        tile.mediumThumbUrl +
+                        " 850w, " +
+                        tile.largeThumbUrl +
+                        " 1300w"
+                      }
+                      sizes="(min-width: 960px) 1300px, (min-width: 640px) 850px, 600px"
+                      alt={tile.title}
+                      id={tile.artId}
+                    />
+                  </CardActionArea>
+                  <CardContent>
+                    <Grid
+                      item
+                      container
+                      xs={12}
+                      sm={12}
+                      style={{ whiteSpace: "nowrap", padding: 0, margin: 0 }}
+                      justify="space-between"
+                    >
+                      <Typography
+                        style={{
+                          display: "inline-block",
+                          fontSize: "0.8em",
+                          paddingLeft: 0,
+                        }}
+                      >
+                        ID: {tile.artId}
+                      </Typography>
+                      <Button
+                        size="small"
+                        variant="outlined"
+                        onClick={(e) =>
+                          navigateToPrixer(e, tile.prixerUsername)
+                        }
+                      >
+                        <Typography
+                          gutterBottom
+                          variant="h7"
+                          component="h2"
+                          style={{
+                            display: "inline-block",
+                            right: 0,
+                            textAlign: "right",
+                            margin: 0,
+                            fontSize: 12,
+                          }}
+                        >
+                          Prixer: {tile.prixerUsername}
+                        </Typography>
+                      </Button>
+                    </Grid>
+                    <Grid
+                      item
+                      container
+                      xs={12}
+                      sm={12}
+                      justify="space-between"
+                      style={{ textAlign: "left", padding: 0, margin: 0 }}
+                    >
+                      <Grid
+                        item
+                        xs={6}
+                        sm={6}
+                        style={{ textAlign: "left", padding: 0, margin: 0 }}
+                      >
+                        <Typography
+                          gutterBottom
+                          variant="h5"
+                          component="h2"
+                          style={{ margin: 0 }}
+                        >
+                          {tile.title}
+                        </Typography>
+                      </Grid>
+                    </Grid>
+                    <Grid
+                      item
+                      container
+                      xs={12}
+                      sm={12}
+                      style={{ textAlign: "left", padding: 0, margin: 0 }}
+                    >
+                      {tile.artLocation && (
+                        <Typography
+                          style={{
+                            fontSize: "0.8em",
+                            paddingBottom: 10,
+                            paddingLeft: 3,
+                          }}
+                        >
+                          Ubicación: {tile.artLocation}
+                        </Typography>
+                      )}
+                    </Grid>
+                    <Typography
+                      variant="body2"
+                      color="textSecondary"
+                      component="p"
+                      style={{
+                        whiteSpace: "pre-line",
+                        fontSize: "1.1em",
+                        marginBottom: 10,
+                      }}
+                    >
+                      {tile.description}
+                    </Typography>
+                    {tile.originalPhotoHeight && tile.originalPhotoWidth && (
+                      <Typography
+                        variant="body2"
+                        color="textSecondary"
+                        component="p"
+                      >
+                        Máximo para impresión: {maxPrintValues(tile)}
+                      </Typography>
+                    )}
+                  </CardContent>
+                  <CardActions>
+                    {/* <Button size="small" color="primary">
+                  Comparte
+                </Button> */}
+                    <Button
+                      size="small"
+                      color="primary"
+                      onClick={(e) => {
+                        window.open(utils.generateWaMessage(tile), "_blank");
+                      }}
+                    >
+                      <WhatsAppIcon /> Escríbenos
+                    </Button>
+                      {JSON.parse(localStorage.getItem('adminToken')) &&
+                         <IOSSwitch
+                           color="primary"
+                           size="normal"
+                           checked={tile.visible}
+                           onChange={(e) => {
+                             if(e.target.checked === false){
+                               handleClickVisible(e)
+                               setVisible(e.target.checked)
+                               setSelectedArt(tile.artId);
+                             } else{
+                               setVisible(e.target.checked)
+                               setSelectedArt(tile.artId)
+                             }
+                           }}>
+                         </IOSSwitch>
+                       }
+                    {JSON.parse(localStorage.getItem("token")) &&
+                      JSON.parse(localStorage.getItem("token")).username ==
+                        tile.prixerUsername && (
+                        <Button
+                          color="primary"
+                          size="small"
+                          onClick={(e) => {
+                            handleClickOpen(e);
+                            setSelectedArt(tile.artId);
+                          }}
+                        >
+                          Eliminar
+                        </Button>
+                      )}
+                    <Dialog
+                      open={open}
+                      onClose={handleClose}
+                      aria-labelledby="alert-dialog-title"
+                      aria-describedby="alert-dialog-description"
+                    >
+                      <DialogTitle id="alert-dialog-title">
+                        {"¿Estás seguro de eliminar este arte?"}
+                      </DialogTitle>
+                      <DialogContent>
+                        <DialogContentText
+                          id="alert-dialog-description"
+                          style={{
+                            textAlign: "center",
+                          }}
+                        >
+                          Este arte se eliminará permanentemente de tu perfil.
+                        </DialogContentText>
+                      </DialogContent>
+                      <DialogActions>
+                        <Button onClick={handleClose} color="primary">
+                          Cancelar
+                        </Button>
+                        <Button
+                          onClick={() => {
+                            deleteArt(selectedArt);
+                            setSelectedArt(undefined);
+                          }}
+                          background="primary"
+                          style={{
+                            color: "white",
+                            backgroundColor: "#d33f49",
+                          }}
+                        >
+                          Aceptar
+                        </Button>
+                      </DialogActions>
+                    </Dialog>
+
+                    {/* <Button size="small" color="primary" onClick={(e)=>{copyCodeToClipboard(e, tile)}}>
+                  <FileCopyIcon/>
+                </Button> */}
+                  </CardActions>
+                </Card>
+              }
               </div>
             ) : (
               <Card id={tile.artId} key={tile.artId}>
                 <CardActionArea>
                   {/* <CardMedia
-          component="img"
-          alt="img"
-          image={tile.imageUrl}
-          title="img"
-          /> */}
-                  <Img
+                    component="img"
+                    alt="img"
+                    image={tile.imageUrl}
+                    title="img"
+                    /> */}
+                    <Img
                     placeholder="/imgLoading.svg"
                     style={{ backgroundColor: "#eeeeee", height: "100%" }}
                     src={tile.largeThumbUrl || tile.thumbnailUrl}

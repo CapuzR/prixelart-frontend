@@ -206,7 +206,7 @@ export default function Home(props) {
   };
 
   useEffect(() => {
-    getImagesForTheCarousel();
+    getImagesForTheCarousel()
   }, []);
 
   return (

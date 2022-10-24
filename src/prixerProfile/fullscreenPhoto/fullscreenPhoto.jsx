@@ -324,6 +324,17 @@ export default function FullscreePhoto(props) {
 
   const setVisibleArt = async (art, id, event) => {
     setLoading(true);
+    if(event.target.checked === true){
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/art/disable/" + id;
+    art.visible = visible;
+    const response = await axios.put(base_url, art);
+    setSnackBarMessage("Arte modificado exitosamente");
+    setSnackBar(true);
+    setLoading(false);
+    setDisabledReason('')
+    setSelectedArt(undefined)
+    readArt();
+    }else{
     const base_url = process.env.REACT_APP_BACKEND_URL + "/art/disable/" + id;
     art.visible = visible;
     art.disabledReason = disabledReason;
@@ -334,6 +345,7 @@ export default function FullscreePhoto(props) {
     setLoading(false);
     setDisabledReason('')
     readArt();
+    }
   };
 
   const getChecked = () => {
@@ -596,9 +608,10 @@ console.log(selectedArt)
                            onChange={(e) => {
                             setSelectedArt(tile.artId);
                              if(e.target.checked === false){
-                               handleClickVisible(e)
+                              handleClickVisible();
                                setVisible(e.target.checked)
                              } else{
+                              setVisibleArt(tile, tile.artId, e)
                                setVisible(e.target.checked)
                              }
                            }}/>
@@ -870,18 +883,24 @@ console.log(selectedArt)
                          <IOSSwitch
                            color="primary"
                            size="normal"
-                           checked={tile.visible}
                            onChange={(e) => {
                              if(e.target.checked === false){
-                               handleClickVisible(e)
+                               handleClickVisible();
                                setVisible(e.target.checked)
                                setSelectedArt(tile.artId);
-                             } else{
+                             }else{
                                setVisible(e.target.checked)
                                setSelectedArt(tile.artId)
+                               setVisibleArt(tile, tile.artId, e)
                              }
                            }}>
                          </IOSSwitch>
+                       }
+                      {JSON.parse(localStorage.getItem('adminToken')) &&
+                        tile.visible  ?
+                        <TextField type="number" variant="outlined" placeholder="Points"/>
+                        :
+                        <TextField type="number" variant="outlined" placeholder="Points" disabled/>
                        }
                     {JSON.parse(localStorage.getItem("token")) &&
                       JSON.parse(localStorage.getItem("token")).username ==

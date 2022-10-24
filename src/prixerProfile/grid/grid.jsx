@@ -175,6 +175,16 @@ export default function Grid(props) {
 
   const setVisibleArt = async (art, id, event) => {
     setLoading(true);
+    if(event.target.checked === true){
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/art/disable/" + id;
+    art.visible = visible;
+    const response = await axios.put(base_url, art);
+    setSnackBarMessage("Arte modificado exitosamente");
+    setSnackBar(true);
+    setLoading(false);
+    setDisabledReason('')
+    setSelectedArt(undefined)
+    }else{
     const base_url = process.env.REACT_APP_BACKEND_URL + "/art/disable/" + id;
     art.visible = visible;
     art.disabledReason = disabledReason;
@@ -184,6 +194,7 @@ export default function Grid(props) {
     setSnackBar(true);
     setLoading(false);
     setDisabledReason('')
+    }
   };
 
   const getChecked = () => {
@@ -354,19 +365,22 @@ console.log(selectedArt)
                 id={tile.artId}
                 key={tile.artId}
               />
-              {JSON.parse(localStorage.getItem('adminToken')) && <IOSSwitch
+              {JSON.parse(localStorage.getItem('adminToken')) && 
+               <IOSSwitch
                color="primary"
                size="normal"
                checked={tile.visible}
                onChange={(e) => {
                 setSelectedArt(tile.artId);
                  if(e.target.checked === false){
-                   handleClickVisible(e)
+                  handleClickVisible()
                    setVisible(e.target.checked)
                  } else{
+                  setVisibleArt(tile, tile.artId, e)
                    setVisible(e.target.checked)
                  }
-             }}/>}
+               }}/>
+             }
              <Dialog
                open={selectedArt === tile.artId}
                onClose={handleCloseVisible}
@@ -460,16 +474,17 @@ console.log(selectedArt)
                    <IOSSwitch
                    color="primary"
                    size="normal"
-                   checked={tile.visible}
                    onChange={(e) => {
-                    setSelectedArt(tile.artId);
                      if(e.target.checked === false){
-                       handleClickVisible(e)
                        setVisible(e.target.checked)
-                     } else{
+                       setSelectedArt(tile.artId);
+                     }else{
                        setVisible(e.target.checked)
+                       setSelectedArt(tile.artId)
+                       setVisibleArt(tile, tile.artId, e)
                      }
-                   }}/>
+                   }}>
+                 </IOSSwitch>
                }
             </div>
             ))

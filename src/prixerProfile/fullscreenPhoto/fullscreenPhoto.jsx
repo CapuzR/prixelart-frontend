@@ -132,6 +132,11 @@ export default function FullscreePhoto(props) {
   const [disabledReason, setDisabledReason] = useState('');
   const [visible, setVisible] = useState(true);
   const [checked, setChecked ] = useState(true);
+  let [ points, setPoints ] = useState(50)
+  const propsRank = {
+    min: 0,
+    max: 100
+  }
 
   const handleArtEdit = (e, tile) => {
     setLoading(true);
@@ -348,6 +353,20 @@ export default function FullscreePhoto(props) {
     }
   };
 
+  const rankArt = async (art, id, event) => {
+    setLoading(true);
+    const URI = process.env.REACT_APP_BACKEND_URL + '/art/rank/' + id;
+    art.points = parseInt(points);
+    const response = await axios.put(URI, art);
+    setSnackBarMessage('Puntuación agregada exitosamente');
+    setInterval(() => {
+      setLoading(false)
+    }, 3000)
+    setSnackBar(true)
+    setSelectedArt(undefined)
+    readArt();
+  }
+
   const getChecked = () => {
     setChecked(check => !check)
   }
@@ -447,6 +466,7 @@ console.log(selectedArt)
                     image={tile.imageUrl}
                     title="Contemplative Reptile"
                     /> */}
+
                     <Img
                       placeholder="/imgLoading.svg"
                       style={{ backgroundColor: "#eeeeee", width: "100%" }}
@@ -485,6 +505,8 @@ console.log(selectedArt)
                       >
                         ID: {tile.artId}
                       </Typography>
+                      <Grid container spacing={1} style={{flexWrap:'nowrap', alignItems:"center", justifyContent:"flex-end", marginBottom: '-35px'}}>
+                        <Grid item>
                       <Button
                         size="small"
                         variant="outlined"
@@ -507,6 +529,22 @@ console.log(selectedArt)
                           Prixer: {tile.prixerUsername}
                         </Typography>
                       </Button>
+                      </Grid>
+                          <Grid item>
+                          {JSON.parse(localStorage.getItem('adminToken')) && 
+                    <Button size="small" color="primary" variant="contained"  disabled>
+                    <Typography>Puntos: {tile.points}</Typography>
+                    </Button>
+                    }
+                    {JSON.parse(localStorage.getItem('token')) &&
+                      JSON.parse(localStorage.getItem("token")).username ==
+                        tile.prixerUsername &&
+                        <Button size='small' color="contained" variant="outlined"  style={{ color: 'primary'}}>
+                        <Typography>Puntos: {tile.points}</Typography>
+                        </Button>
+                    }
+                          </Grid>
+                         </Grid>
                     </Grid>
                     <Grid
                       item
@@ -616,6 +654,29 @@ console.log(selectedArt)
                              }
                            }}/>
                        }
+                     {JSON.parse(localStorage.getItem('adminToken')) &&
+                     <FormControl>
+                      <Grid container spacing={0.5} flexWrap='nowrap' justifyContent='center' alignItems="center" flexDirection='row'>
+                        <Grid item xs={8}>
+                        <TextField
+                         type="number" 
+                         variant="outlined" 
+                         placeholder="Points"
+                         inputProps={propsRank}
+                         onChange={(e) => {
+                          setPoints(e.target.value)
+                         }}/>
+                         </Grid>
+                         <Grid item xs={3}>
+                         <Button color="primary" variant="outlined" onClick={(e) => {
+                          rankArt(tile, tile.artId, e)
+                         }}>
+                          Enviar
+                         </Button>
+                         </Grid>
+                         </Grid>
+                      </FormControl>
+                      }
                     <Dialog
                       open={selectedArt === tile.artId}
                       onClose={handleCloseVisible}
@@ -890,17 +951,10 @@ console.log(selectedArt)
                                setSelectedArt(tile.artId);
                              }else{
                                setVisible(e.target.checked)
-                               setSelectedArt(tile.artId)
                                setVisibleArt(tile, tile.artId, e)
                              }
                            }}>
                          </IOSSwitch>
-                       }
-                      {JSON.parse(localStorage.getItem('adminToken')) &&
-                        tile.visible  ?
-                        <TextField type="number" variant="outlined" placeholder="Points"/>
-                        :
-                        <TextField type="number" variant="outlined" placeholder="Points" disabled/>
                        }
                     {JSON.parse(localStorage.getItem("token")) &&
                       JSON.parse(localStorage.getItem("token")).username ==

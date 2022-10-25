@@ -211,7 +211,7 @@ export default function Grid(props) {
           username: props.prixerUsername || globalParams.get("prixer"),
         };
         axios.get(base_url, { params }).then((response) => {
-          setTiles(utils.shuffle(response.data.arts));
+          setTiles(response.data.arts);
           response.data.arts.map(bool => visibles.push({
               id: bool.artId,
               visible: bool.visible
@@ -225,7 +225,7 @@ export default function Grid(props) {
           username: props.prixerUsername || globalParams.get("prixer"),
         };
         axios.post(base_url, body).then((response) => {
-          setTiles(utils.shuffle(response.data.arts));
+          setTiles(response.data.arts);
           setBackdrop(false);
         });
       }
@@ -235,13 +235,13 @@ export default function Grid(props) {
         text: searchValue,
       };
       axios.get(base_url, { params }).then((response) => {
-        setTiles(utils.shuffle(response.data.arts));
+        setTiles(response.data.arts);
         setBackdrop(false);
       });
     } else {
       const base_url = process.env.REACT_APP_BACKEND_URL + "/art/read-all";
       axios.get(base_url).then((response) => {
-        setTiles(utils.shuffle(response.data.arts));
+        setTiles(response.data.arts);
         setBackdrop(false);
       });
     }

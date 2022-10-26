@@ -338,7 +338,6 @@ export default function FullscreePhoto(props) {
     setLoading(false);
     setDisabledReason('')
     setSelectedArt(undefined)
-    readArt();
     }else{
     const base_url = process.env.REACT_APP_BACKEND_URL + "/art/disable/" + id;
     art.visible = visible;
@@ -349,8 +348,8 @@ export default function FullscreePhoto(props) {
     setSnackBar(true);
     setLoading(false);
     setDisabledReason('')
-    readArt();
     }
+    readArt();
   };
 
   const rankArt = async (art, id, event) => {

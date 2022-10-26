@@ -22,6 +22,7 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import Switch from '@material-ui/core/Switch';
+import Typography from "@material-ui/core/Typography";
 import utils from "../../utils/utils";
 import SearchBar from "../../sharedComponents/searchBar/searchBar.jsx";
 import IconButton from '@material-ui/core/IconButton';
@@ -342,6 +343,22 @@ console.log(selectedArt)
             tiles.map((tile) => (
               tile.visible ?
               <div>
+          {JSON.parse(localStorage.getItem('adminToken')) && 
+              tile.visible ?
+                <Button size="small" color="primary" variant="contained" style={{position: 'absolute', marginTop: '10px', marginLeft: '10px', color: '#fff'}}  disabled>
+                <Typography style={{opacity: 0.5, fontSize: '0.8rem', fontWeight: 100}}>Puntos: {tile.points}</Typography>
+                </Button>
+                :
+                ''
+                }
+                {JSON.parse(localStorage.getItem('token')) &&
+                tile.visible ?
+                    <Button size='small' color="contained" variant="outlined"  style={{ color: 'primary'}}>
+                    <Typography style={{opacity: 0.5, fontSize: '0.8rem', fontWeight: 100}}>Puntos: {tile.points}</Typography>
+                    </Button>
+                    :
+                    ''
+                  }
               <Img
                 onClick={(e) => {
                   handleFullImage(e, tile);
@@ -371,9 +388,9 @@ console.log(selectedArt)
                size="normal"
                checked={tile.visible}
                onChange={(e) => {
-                setSelectedArt(tile.artId);
                  if(e.target.checked === false){
                   handleClickVisible()
+                  setSelectedArt(tile.artId);
                    setVisible(e.target.checked)
                  } else{
                   setVisibleArt(tile, tile.artId, e)
@@ -414,7 +431,7 @@ console.log(selectedArt)
                    fullWidth
                    multiline
                    required
-                   id="disableReason"
+                   id="disabledReason"
                    label="¿Por qué quieres ocultar este arte?"
                    variant="outlined"
                    onChange={(e) => {
@@ -480,7 +497,6 @@ console.log(selectedArt)
                        setSelectedArt(tile.artId);
                      }else{
                        setVisible(e.target.checked)
-                       setSelectedArt(tile.artId)
                        setVisibleArt(tile, tile.artId, e)
                      }
                    }}>

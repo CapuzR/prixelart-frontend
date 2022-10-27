@@ -221,7 +221,7 @@ export default function Grid(props) {
           username: props.prixerUsername || globalParams.get("prixer"),
         };
         axios.get(base_url, { params }).then((response) => {
-          setTiles(response.data.arts);
+          setTiles(utils.shuffle(response.data.arts));
           response.data.arts.map((bool) =>
             visibles.push({
               id: bool.artId,
@@ -237,7 +237,7 @@ export default function Grid(props) {
           username: props.prixerUsername || globalParams.get("prixer"),
         };
         axios.post(base_url, body).then((response) => {
-          setTiles(response.data.arts);
+          setTiles(utils.shuffle(response.data.arts));
           setBackdrop(false);
         });
       }
@@ -247,7 +247,7 @@ export default function Grid(props) {
         text: searchValue,
       };
       axios.get(base_url, { params }).then((response) => {
-        setTiles(response.data.arts);
+        setTiles(utils.shuffle(response.data.arts));
         setBackdrop(false);
       });
     } else {
@@ -258,10 +258,6 @@ export default function Grid(props) {
       });
     }
   }, [searchValue]);
-
-  console.log(tiles);
-  console.log(visibles);
-  console.log(selectedArt);
 
   const handleFullImage = (e, tile) => {
     history.push({
@@ -312,43 +308,6 @@ export default function Grid(props) {
             setSearchValue={setSearchValue}
           />
         </div>
-        {/* <GridList
-        cellSize={"auto"}
-        className={classes.gridList}
-        cols={isDesktop ? 4 : 2}
-        style={{ margin: "0", justifyContent: "center" }}
-      > */}
-        {/* <GridListTile
-            //   style={{
-            //     width: isDesktop ? "300px" : "50%",
-            //   }}
-            //   key={tile.artId}
-            //   cols={1}
-            //   onClick={(e) => {
-            //     handleFullImage(e, tile);
-            //   }}
-            //   className={classes.img}
-            // >
-            //   <Img
-            //     // className={classes.}
-            //     placeholder="/imgLoading.svg"
-            //     style={{
-            //       backgroundColor: "#eeeeee",
-            //       width: "300px",
-            //       height: "300px",
-            //       objectFit: "cover",
-            //     }}
-            //     src={tile.squareThumbUrl}
-            //     debounce={1000}
-            //     cache
-            //     error="/imgError.svg"
-            //     // srcSet={tile.smallThumbUrl + ' 600w, ' + tile.mediumThumbUrl + ' 850w, ' + tile.largeThumbUrl + ' 1300w'}
-            //     // sizes="(min-width: 1600px) 850px, (min-width: 960px) 450px, (min-width: 640px) 400px, 200px"
-            //     sizes="(min-width: 1600px) 850px, (min-width: 960px) 450px, (min-width: 640px) 200px, (min-width: 375px) 80px"
-            //     alt={tile.title}
-            //     id={tile.artId}
-            //   />
-            // </GridListTile>*/}
       </div>
       <ResponsiveMasonry
         columnsCountBreakPoints={{ 350: 1, 750: 2, 900: 3, 1080: 4 }}
@@ -371,26 +330,6 @@ export default function Grid(props) {
                         color: "#fff",
                       }}
                       disabled
-                    >
-                      <Typography
-                        style={{
-                          opacity: 0.5,
-                          fontSize: "0.8rem",
-                          fontWeight: 100,
-                        }}
-                      >
-                        Puntos: {tile.points}
-                      </Typography>
-                    </Button>
-                  ) : (
-                    ""
-                  )}
-                  {JSON.parse(localStorage.getItem("token")) && tile.visible ? (
-                    <Button
-                      size="small"
-                      color="contained"
-                      variant="outlined"
-                      style={{ color: "primary" }}
                     >
                       <Typography
                         style={{
@@ -465,7 +404,7 @@ export default function Grid(props) {
                         inicio.
                       </DialogContentText>
                     </DialogContent>
-                    <Grid
+                    <div
                       item
                       xs={12}
                       style={{
@@ -483,10 +422,9 @@ export default function Grid(props) {
                         variant="outlined"
                         onChange={(e) => {
                           setDisabledReason(e.target.value);
-                          // handleArtTitleEdit(e, tile);
                         }}
                       />
-                    </Grid>
+                    </div>
                     <DialogActions>
                       <Button onClick={handleCloseVisible} color="primary">
                         Cancelar

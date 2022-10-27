@@ -104,6 +104,7 @@ const categories = [
   "Café",
   "Carros",
   "Ciudades",
+  "Comida",
   "Edificios",
   "Fauna",
   "Flora",
@@ -187,7 +188,7 @@ export default function ArtUploader(props) {
   const [thumbnailUrl, setThumbnailUrl] = useState();
   const [category, setCategory] = useState("");
   const [description, setDescription] = useState("");
-  const [tags, setTags] = useState(["foto", "arte", "espacio"]);
+  const [tags, setTags] = useState(["foto", "arte"]);
   const [newTag, setNewTag] = useState("");
   const [publicId, setPublicId] = useState("");
   const [originalPhotoHeight, setOriginalPhotoHeight] = useState("");

@@ -30,6 +30,7 @@
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.1",
     "recharts": "^2.0.9",
+    "remove-accents": "^0.4.3",
     "watchpack": "^2.4.0"
   },
   "scripts": {

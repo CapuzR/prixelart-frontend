@@ -2,22 +2,99 @@
 //[]      16. Filtros para las búsquedas (Por etiqueta).
 
 import React, { useState, useEffect } from "react";
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles, withStyles } from "@material-ui/core/styles";
 import { useTheme } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import GridList from "@material-ui/core/GridList";
 import GridListTile from "@material-ui/core/GridListTile";
 import axios from "axios";
 import { useHistory } from "react-router-dom";
+import TextField from "@material-ui/core/TextField";
+import Snackbar from "@material-ui/core/Snackbar";
+import Button from "@material-ui/core/Button";
 import Backdrop from "@material-ui/core/Backdrop";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Img from "react-cool-img";
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
-
+import Dialog from "@material-ui/core/Dialog";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogContentText from "@material-ui/core/DialogContentText";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import Switch from "@material-ui/core/Switch";
+import Typography from "@material-ui/core/Typography";
 import utils from "../../utils/utils";
 import SearchBar from "../../sharedComponents/searchBar/searchBar.jsx";
+import IconButton from "@material-ui/core/IconButton";
+import Menu from "@material-ui/core/Menu";
+import MenuItem from "@material-ui/core/MenuItem";
+import MoreVertIcon from "@material-ui/icons/MoreVert";
+
+const IOSSwitch = withStyles((theme) => ({
+  root: {
+    width: 42,
+    height: 26,
+    padding: 0,
+    margin: theme.spacing(1),
+    position: "absolute",
+    marginLeft: "-8vh",
+  },
+  switchBase: {
+    padding: 1,
+    "&$checked": {
+      transform: "translateX(16px)",
+      color: theme.palette.common.white,
+      "& + $track": {
+        backgroundColor: "primary",
+        opacity: 1,
+        border: "none",
+      },
+    },
+    "&$focusVisible $thumb": {
+      color: "#52d869",
+      border: "6px solid #fff",
+    },
+  },
+  thumb: {
+    width: 24,
+    height: 24,
+  },
+  track: {
+    borderRadius: 26 / 2,
+    border: `1px solid ${theme.palette.grey[400]}`,
+    backgroundColor: theme.palette.grey[400],
+    opacity: 1,
+    transition: theme.transitions.create(["background-color", "border"]),
+  },
+  checked: {},
+  focusVisible: {},
+}))(({ classes, ...props }) => {
+  return (
+    <Switch
+      focusVisibleClassName={classes.focusVisible}
+      disableRipple
+      classes={{
+        root: classes.root,
+        switchBase: classes.switchBase,
+        thumb: classes.thumb,
+        track: classes.track,
+        checked: classes.checked,
+      }}
+      {...props}
+    />
+  );
+});
 
 const useStyles = makeStyles((theme) => ({
+  gridItem: {
+    float: "left",
+    width: "80px",
+    height: "60px",
+    border: "2px",
+  },
+  gridItemWidth2: { width: "160px" },
+  gridItemHeight2: { height: "140px" },
+
   root: {
     display: "flex",
     flexWrap: "wrap",
@@ -69,6 +146,70 @@ export default function Grid(props) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
+  const [snackBar, setSnackBar] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [snackBarMessage, setSnackBarMessage] = useState(false);
+  const [openArtFormDialog, setOpenArtFormDialog] = useState(false);
+  const [selectedArt, setSelectedArt] = useState(undefined);
+  const [open, setOpen] = useState(false);
+  const [anchor, setAnchor] = useState(null);
+  const [openV, setOpenV] = useState(false);
+  const [disabledReason, setDisabledReason] = useState("");
+  const [visible, setVisible] = useState(true);
+  const [visibles, setVisibles] = useState([]);
+  const [checked, setChecked] = useState(true);
+
+  const openMenu = () => {
+    setAnchor(true);
+  };
+
+  const closeMenu = () => {
+    setAnchor(false);
+  };
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+  const handleClickVisible = () => {
+    setOpenV(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+    setSelectedArt(undefined);
+  };
+  const handleCloseVisible = () => {
+    setOpenV(false);
+    setSelectedArt(undefined);
+  };
+
+  const setVisibleArt = async (art, id, event) => {
+    setLoading(true);
+    if (event.target.checked === true) {
+      const base_url = process.env.REACT_APP_BACKEND_URL + "/art/disable/" + id;
+      art.visible = visible;
+      const response = await axios.put(base_url, art);
+      setSnackBarMessage("Arte modificado exitosamente");
+      setSnackBar(true);
+      setLoading(false);
+      setDisabledReason("");
+      setSelectedArt(undefined);
+    } else {
+      const base_url = process.env.REACT_APP_BACKEND_URL + "/art/disable/" + id;
+      art.visible = visible;
+      art.disabledReason = disabledReason;
+      const response = await axios.put(base_url, art);
+      handleClose();
+      setSnackBarMessage("Arte modificado exitosamente");
+      setSnackBar(true);
+      setLoading(false);
+      setDisabledReason("");
+    }
+  };
+
+  const getChecked = () => {
+    setChecked((check) => !check);
+  };
 
   useEffect(() => {
     if (props.prixerUsername || globalParams.get("prixer")) {
@@ -81,6 +222,12 @@ export default function Grid(props) {
         };
         axios.get(base_url, { params }).then((response) => {
           setTiles(utils.shuffle(response.data.arts));
+          response.data.arts.map((bool) =>
+            visibles.push({
+              id: bool.artId,
+              visible: bool.visible,
+            })
+          );
           setBackdrop(false);
         });
       } else {
@@ -106,7 +253,7 @@ export default function Grid(props) {
     } else {
       const base_url = process.env.REACT_APP_BACKEND_URL + "/art/read-all";
       axios.get(base_url).then((response) => {
-        setTiles(utils.shuffle(response.data.arts));
+        setTiles(response.data.arts);
         setBackdrop(false);
       });
     }
@@ -141,6 +288,11 @@ export default function Grid(props) {
     e.preventDefault();
   };
 
+  const msnry = new Masonry(".grid", {
+    columnWidth: 200,
+    itemSelector: ".grid-item",
+  });
+
   return (
     <>
       <div className={classes.root}>
@@ -156,80 +308,194 @@ export default function Grid(props) {
             setSearchValue={setSearchValue}
           />
         </div>
-        {/* <GridList
-        cellSize={"auto"}
-        className={classes.gridList}
-        cols={isDesktop ? 4 : 2}
-        style={{ margin: "0", justifyContent: "center" }}
-      > */}
-        {/* <GridListTile 
-            //   style={{
-            //     width: isDesktop ? "300px" : "50%",
-            //   }}
-            //   key={tile.artId}
-            //   cols={1}
-            //   onClick={(e) => {
-            //     handleFullImage(e, tile);
-            //   }}
-            //   className={classes.img}
-            // >
-            //   <Img
-            //     // className={classes.}
-            //     placeholder="/imgLoading.svg"
-            //     style={{
-            //       backgroundColor: "#eeeeee",
-            //       width: "300px",
-            //       height: "300px",
-            //       objectFit: "cover",
-            //     }}
-            //     src={tile.squareThumbUrl}
-            //     debounce={1000}
-            //     cache
-            //     error="/imgError.svg"
-            //     // srcSet={tile.smallThumbUrl + ' 600w, ' + tile.mediumThumbUrl + ' 850w, ' + tile.largeThumbUrl + ' 1300w'}
-            //     // sizes="(min-width: 1600px) 850px, (min-width: 960px) 450px, (min-width: 640px) 400px, 200px"
-            //     sizes="(min-width: 1600px) 850px, (min-width: 960px) 450px, (min-width: 640px) 200px, (min-width: 375px) 80px"
-            //     alt={tile.title}
-            //     id={tile.artId}
-            //   />
-            // </GridListTile>*/}
       </div>
       <ResponsiveMasonry
         columnsCountBreakPoints={{ 350: 1, 750: 2, 900: 3, 1080: 4 }}
       >
         <Masonry style={{ columnGap: "7px" }}>
           {tiles ? (
-            tiles.map((tile) => (
-              <Img
-                onClick={(e) => {
-                  handleFullImage(e, tile);
-                }}
-                placeholder="/imgLoading.svg"
-                style={{
-                  backgroundColor: "#eeeeee",
-                  width: "100%",
-                  marginBottom: "7px",
-                  borderRadius: "4px",
-                  // objectFit: "cover",
-                }}
-                src={tile.smallThumbUrl}
-                debounce={1000}
-                cache
-                error="/imgError.svg"
-                // srcSet={tile.smallThumbUrl + ' 600w, ' + tile.mediumThumbUrl + ' 850w, ' + tile.largeThumbUrl + ' 1300w'}
-                // sizes="(min-width: 1600px) 850px, (min-width: 960px) 450px, (min-width: 640px) 400px, 200px"
-                // sizes="(min-width: 1600px) 850px, (min-width: 960px) 450px, (min-width: 640px) 200px, (min-width: 375px) 80px"
-                alt={tile.title}
-                id={tile.artId}
-                key={tile.artId}
-              />
-            ))
+            tiles.map((tile) =>
+              tile.visible ? (
+                <div>
+                  {JSON.parse(localStorage.getItem("adminToken")) &&
+                  tile.visible ? (
+                    <Button
+                      size="small"
+                      color="primary"
+                      variant="contained"
+                      style={{
+                        position: "absolute",
+                        marginTop: "10px",
+                        marginLeft: "10px",
+                        color: "#fff",
+                      }}
+                      disabled
+                    >
+                      <Typography
+                        style={{
+                          opacity: 0.5,
+                          fontSize: "0.8rem",
+                          fontWeight: 100,
+                        }}
+                      >
+                        Puntos: {tile.points}
+                      </Typography>
+                    </Button>
+                  ) : (
+                    ""
+                  )}
+                  <Img
+                    onClick={(e) => {
+                      handleFullImage(e, tile);
+                    }}
+                    placeholder="/imgLoading.svg"
+                    style={{
+                      backgroundColor: "#eeeeee",
+                      width: "100%",
+                      marginBottom: "7px",
+                      borderRadius: "4px",
+                      // objectFit: "cover",
+                    }}
+                    src={tile.squareThumbUrl}
+                    debounce={1000}
+                    cache
+                    error="/imgError.svg"
+                    // srcSet={tile.smallThumbUrl + ' 600w, ' + tile.mediumThumbUrl + ' 850w, ' + tile.largeThumbUrl + ' 1300w'}
+                    // sizes="(min-width: 1600px) 850px, (min-width: 960px) 450px, (min-width: 640px) 400px, 200px"
+                    // sizes="(min-width: 1600px) 850px, (min-width: 960px) 450px, (min-width: 640px) 200px, (min-width: 375px) 80px"
+                    alt={tile.title}
+                    id={tile.artId}
+                    key={tile.artId}
+                  />
+                  {JSON.parse(localStorage.getItem("adminToken")) && (
+                    <IOSSwitch
+                      color="primary"
+                      size="normal"
+                      checked={tile.visible}
+                      onChange={(e) => {
+                        if (e.target.checked === false) {
+                          handleClickVisible();
+                          setSelectedArt(tile.artId);
+                          setVisible(e.target.checked);
+                        } else {
+                          setVisibleArt(tile, tile.artId, e);
+                          setVisible(e.target.checked);
+                        }
+                      }}
+                    />
+                  )}
+                  <Dialog
+                    open={selectedArt === tile.artId}
+                    onClose={handleCloseVisible}
+                    aria-labelledby="alert-dialog-title"
+                    aria-describedby="alert-dialog-description"
+                  >
+                    <DialogTitle id="alert-dialog-title">
+                      {"¿Estás seguro de ocultar este arte?"}
+                    </DialogTitle>
+                    <DialogContent>
+                      <DialogContentText
+                        id="alert-dialog-description"
+                        style={{
+                          textAlign: "center",
+                        }}
+                      >
+                        Este arte ya no será visible en tu perfil y la página de
+                        inicio.
+                      </DialogContentText>
+                    </DialogContent>
+                    <div
+                      item
+                      xs={12}
+                      style={{
+                        display: "flex",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <TextField
+                        style={{ width: "95%", marginBottom: "5px" }}
+                        fullWidth
+                        multiline
+                        required
+                        id="disabledReason"
+                        label="¿Por qué quieres ocultar este arte?"
+                        variant="outlined"
+                        onChange={(e) => {
+                          setDisabledReason(e.target.value);
+                        }}
+                      />
+                    </div>
+                    <DialogActions>
+                      <Button onClick={handleCloseVisible} color="primary">
+                        Cancelar
+                      </Button>
+                      <Button
+                        onClick={(e) => {
+                          setVisibleArt(tile, selectedArt, e);
+                          setSelectedArt(undefined);
+                          handleCloseVisible();
+                        }}
+                        background="primary"
+                        style={{
+                          color: "white",
+                          backgroundColor: "#d33f49",
+                        }}
+                      >
+                        Aceptar
+                      </Button>
+                    </DialogActions>
+                  </Dialog>
+                </div>
+              ) : (
+                JSON.parse(localStorage.getItem("adminToken")) && (
+                  <div>
+                    <Img
+                      onClick={(e) => {
+                        handleFullImage(e, tile);
+                      }}
+                      placeholder="/imgLoading.svg"
+                      style={{
+                        backgroundColor: "#eeeeee",
+                        width: "100%",
+                        marginBottom: "7px",
+                        borderRadius: "4px",
+                        // objectFit: "cover",
+                      }}
+                      src={tile.squareThumbUrl}
+                      debounce={1000}
+                      cache
+                      error="/imgError.svg"
+                      // srcSet={tile.smallThumbUrl + ' 600w, ' + tile.mediumThumbUrl + ' 850w, ' + tile.largeThumbUrl + ' 1300w'}
+                      // sizes="(min-width: 1600px) 850px, (min-width: 960px) 450px, (min-width: 640px) 400px, 200px"
+                      // sizes="(min-width: 1600px) 850px, (min-width: 960px) 450px, (min-width: 640px) 200px, (min-width: 375px) 80px"
+                      alt={tile.title}
+                      id={tile.artId}
+                      key={tile.artId}
+                    />
+                    {JSON.parse(localStorage.getItem("adminToken")) && (
+                      <IOSSwitch
+                        color="primary"
+                        size="normal"
+                        onChange={(e) => {
+                          if (e.target.checked === false) {
+                            setVisible(e.target.checked);
+                            setSelectedArt(tile.artId);
+                          } else {
+                            setVisible(e.target.checked);
+                            setVisibleArt(tile, tile.artId, e);
+                          }
+                        }}
+                      ></IOSSwitch>
+                    )}
+                  </div>
+                )
+              )
+            )
           ) : (
             <h1>Pronto encontrarás todo el arte que buscas.</h1>
           )}
         </Masonry>
       </ResponsiveMasonry>
-      {/* </GridList> */}
     </>
   );
 }

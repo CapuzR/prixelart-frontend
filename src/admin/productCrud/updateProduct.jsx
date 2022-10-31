@@ -123,14 +123,13 @@ export default function UpdateAdmin(props) {
   const [mustImage, setMustImages] = useState(false);
 
   useEffect(() => {
+    const indexImage = imagesList === [] ? imagesList.indexOf(thumbUrl) : undefined
     imagesList?.map((url) => {
       url?.type === 'images' ?
       imageLoader.loader.push(url.url)
       :
       setVideoUrl(url.url)
     });
-
-    const indexImage = imagesList === [] ? imagesList.indexOf(thumbUrl) : undefined
 
     if(indexImage === -1){
       console.log(indexImage)
@@ -148,6 +147,8 @@ export default function UpdateAdmin(props) {
       localStorage.removeItem("product");
     };
   }, []);
+
+  console.log(imagesList === [] ? imagesList.indexOf(thumbUrl) : undefined)
 
   const handleClickOpen = () => {
         setOpen(true);

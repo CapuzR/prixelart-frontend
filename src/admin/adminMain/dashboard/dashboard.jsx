@@ -85,7 +85,7 @@ const useStyles = makeStyles((theme) => ({
       flexDirection: 'column',
     },
     fixedHeight: {
-      height: 240,
+      height: 'auto',
     },
   }));
 
@@ -112,8 +112,7 @@ export default function Dashboard() {
                 <Paper className={classes.paper}>
                     <Orders />
                 </Paper>
-            </Grid> 
+            </Grid>
         </Grid>
     );
 }
-    

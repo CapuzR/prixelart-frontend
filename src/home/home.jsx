@@ -118,29 +118,6 @@ export default function Home(props) {
   // const [scrolledTop, setScrolledTop] = useState(false);
   const history = useHistory();
   const [openArtFormDialog, setOpenArtFormDialog] = useState(false);
-  // const imgsDesktop =  [
-  //     {
-  //       url: './Portada_de_Pagina_Web_Museo_Chuao_Espejo_PC_v2.jpg'
-  //     },
-  //     {
-  //       url : 'https://devprix.nyc3.digitaloceanspaces.com/bedroom-g9548c5f75_1920.jpg'
-  //     },
-  //     {
-  //       url : 'https://devprix.nyc3.digitaloceanspaces.com/corporate-building-with-minimalist-empty-room%202.jpg'
-  //     },
-  //     {
-  //       url : 'https://devprix.nyc3.digitaloceanspaces.com/Foto%20de%20Vecislavas%20Popa%20en%20Pexels_lINEAL%20120X40.2.jpg'
-  //     },
-  //     {
-  //       url : 'https://devprix.nyc3.digitaloceanspaces.com/interior_dark_blue_wall_with_yellow_sofa_and_decor_in_living_room.jpg'
-  //     },
-  //     {
-  //       url : 'https://devprix.nyc3.digitaloceanspaces.com/interior-g373dfef45_1920.2.jpg'
-  //     },
-  //     {
-  //       url : 'https://devprix.nyc3.digitaloceanspaces.com/interior-g373dfef45_1920.jpg'
-  //     }
-  //   ]
   const imgsMobile = [
     {
       url: "https://devprix.nyc3.digitaloceanspaces.com/Portada%20de%20Pagina%20Web_Museo%20Chuao%20Espejo_Telefono_V1.jpg",
@@ -229,7 +206,7 @@ export default function Home(props) {
   };
 
   useEffect(() => {
-    getImagesForTheCarousel();
+    getImagesForTheCarousel()
   }, []);
 
   return (

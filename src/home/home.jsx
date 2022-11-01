@@ -49,6 +49,7 @@ function Copyright() {
 const useStyles = makeStyles((theme) => ({
   iconTabs: {
     flexGrow: 1,
+    width: "100%",
     maxWidth: 666,
     margin: "auto",
     marginBottom: 50,
@@ -107,6 +108,7 @@ export default function Home(props) {
   const theme = useTheme();
   const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
   const isDeskTop = useMediaQuery(theme.breakpoints.up("sm"));
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const classes = useStyles();
   const prixerUsername = "all";
   const [imgsDesktop, setImgsDesktop] = useState({ imgs: [] });
@@ -206,16 +208,15 @@ export default function Home(props) {
   };
 
   useEffect(() => {
-    getImagesForTheCarousel()
+    getImagesForTheCarousel();
   }, []);
 
   return (
     <React.Fragment>
+      <AppBar prixerUsername={prixerUsername} />
       <Container component="main" maxWidth="s" className={classes.paper}>
         <CssBaseline />
-        <Grid>
-          <AppBar prixerUsername={prixerUsername} />
-        </Grid>
+
         <main>
           <Card
             className={classes.card}
@@ -315,7 +316,7 @@ export default function Home(props) {
                   Encuentra el <strong>cuadro</strong> ideal para ti.
                 </Typography>
               </div>
-              <div
+              {/* <div
                 style={{
                   display: "flex",
                   height: "100%",
@@ -361,29 +362,10 @@ export default function Home(props) {
                     </Button>
                   </Grid>
                 </div>
-              </div>
+              </div> */}
             </div>
           </Card>
           <Container className={classes.cardGrid} maxWidth="xl">
-            {/* End hero unit */}
-            {/* {scrolledTop ?
-              <Grid container spacing={1} style={{ position: 'fixed', top: 10 }}>
-                <Paper square className={classes.iconTabs}>
-                  <Tabs
-                    value={tabValue}
-                    onChange={handleChange}
-                    variant="fullWidth"
-                    indicatorColor="primary"
-                    textColor="secondary"
-                    aria-label="icon label tabs example"
-                  >
-                    <Tab icon={<PhotoLibraryIcon />} label="ARTES" />
-                    <Tab icon={<FavoriteIcon />} label="PRIXERS" />
-                    <Tab icon={<PhoneIcon />} label="TE ASESORAMOS" />
-                  </Tabs>
-                </Paper>
-              </Grid>
-              : */}
             <Grid container spacing={1}>
               <Paper square className={classes.iconTabs}>
                 <Tabs
@@ -394,11 +376,26 @@ export default function Home(props) {
                   textColor="secondary"
                   aria-label="icon label tabs example"
                 >
-                  <Tab icon={<PhotoLibraryIcon />} label="ARTES" />
-                  <Tab icon={<FavoriteIcon />} label="PRIXERS" />
-                  <Tab icon={<InsertEmoticon />} label="TESTIMONIOS" />
-                  <Tab icon={<PhoneIcon />} label="TE ASESORAMOS" />
-                  {/* <Tab icon={<PersonPinIcon />} label="CONFÍA EN PRIX" /> */}
+                  <Tab
+                    icon={<PhotoLibraryIcon />}
+                    label="ARTES"
+                    style={{ fontSize: isMobile ? "0.62rem" : "0.875rem" }}
+                  />
+                  <Tab
+                    icon={<FavoriteIcon />}
+                    label="PRIXERS"
+                    style={{ fontSize: isMobile ? "0.62rem" : "0.875rem" }}
+                  />
+                  <Tab
+                    icon={<InsertEmoticon />}
+                    label="TESTIMONIOS"
+                    style={{ fontSize: isMobile ? "0.62rem" : "0.875rem" }}
+                  />
+                  <Tab
+                    icon={<PhoneIcon />}
+                    label="TE ASESORAMOS"
+                    style={{ fontSize: isMobile ? "0.62rem" : "0.875rem" }}
+                  />
                 </Tabs>
               </Paper>
             </Grid>

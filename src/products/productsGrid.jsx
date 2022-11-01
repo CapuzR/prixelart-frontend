@@ -89,26 +89,24 @@ const getGridListCols = () => {
 export default function ProductGrid(props) {
   const classes = useStyles();
   const [tiles, setTiles] = useState();
-  const [ imagesVariants, setImagesVariants ] = useState([])
-  const [ imagesProducts, setImagesProducts ] = useState()
+  const [imagesVariants, setImagesVariants] = useState([]);
+  const [imagesProducts, setImagesProducts] = useState();
   const [width, setWidth] = useState([]);
   const [height, setHeight] = useState([]);
 
   useEffect(() => {
     const base_url = process.env.REACT_APP_BACKEND_URL + "/product/read-all";
-    axios.get(base_url)
-      .then(async (response) => {
-        let productsAttTemp1 = response.data.products
-        await productsAttTemp1.map(async (p, iProd, pArr) => {
-          p.variants.map(variant => {
-            imagesVariants.push(variant.variantImage)
-          })
-          productsAttTemp1 = await getEquation(p, iProd, pArr);
+    axios.get(base_url).then(async (response) => {
+      let productsAttTemp1 = response.data.products;
+      await productsAttTemp1.map(async (p, iProd, pArr) => {
+        p.variants.map((variant) => {
+          imagesVariants.push(variant.variantImage);
         });
+        productsAttTemp1 = await getEquation(p, iProd, pArr);
+      });
       setTiles(getAttributes(productsAttTemp1));
     });
   }, []);
-
 
   return (
     <GridList
@@ -134,53 +132,73 @@ export default function ProductGrid(props) {
                     color: "#d33f49",
                   },
                 }}
-                navButtonsProps={
-                  {
-                    style: {
-                      backgroundColor: 'rgba(0, 0, 0, 0)',
-                      color: '#d33f49',
-                      width: '98%',
-                      height: '100vh',
-                      marginTop: '-50vh',
-                      borderRadius: '0',
-                      marginLeft: '1px'
-                    }
-                  }
-                }
-                indicatorContainerProps={
-                  {
-                    style:{
-                      position: 'absolute',
-                      marginTop: '-17px'
-                    }
-                  }
-                }>
-                {
-                tile.needsEquation ?
-                tile.variants[0].variantImage ?
-                tile.variants[0].variantImage.map((img, key_id) => (
-                  img.type === 'images' ?
-                  <img key={key_id} src={img.url} className={classes.img} alt="variant"/>
-                  :
-                  <span key={key_id} style={{width: '100%'}} dangerouslySetInnerHTML={{__html: img.url}}>
-                  </span>
-                ))
-                :
-                <img src={tile.thumbUrl} className={classes.img} alt="product"/>
-                :
-                tile.sources &&
-                tile.sources.images.length > 0 ?
-                tile.sources.images.map((img, key_id) =>
-                (
-                  img.type === 'images' ?
-                  <img key={key_id} src={img.url} className={classes.img} alt="product"/>
-                    :
-                  <span key={key_id} style={{width: '100%'}} dangerouslySetInnerHTML={{__html: img.url}}>
-                  </span>
-                ))
-                :
-                <img src={tile.thumbUrl} className={classes.img} alt="product"/>
-                }
+                navButtonsProps={{
+                  style: {
+                    backgroundColor: "rgba(0, 0, 0, 0)",
+                    color: "#d33f49",
+                    width: "98%",
+                    height: "100vh",
+                    marginTop: "-50vh",
+                    borderRadius: "0",
+                    marginLeft: "1px",
+                  },
+                }}
+                indicatorContainerProps={{
+                  style: {
+                    position: "absolute",
+                    marginTop: "-17px",
+                  },
+                }}
+              >
+                {tile.needsEquation ? (
+                  tile.variants[0].variantImage ? (
+                    tile.variants[0].variantImage.map((img, key_id) =>
+                      img.type === "images" ? (
+                        <img
+                          key={key_id}
+                          src={img.url}
+                          className={classes.img}
+                          alt="variant"
+                        />
+                      ) : (
+                        <span
+                          key={key_id}
+                          style={{ width: "100%" }}
+                          dangerouslySetInnerHTML={{ __html: img.url }}
+                        ></span>
+                      )
+                    )
+                  ) : (
+                    <img
+                      src={tile.thumbUrl}
+                      className={classes.img}
+                      alt="product"
+                    />
+                  )
+                ) : tile.sources && tile.sources.images.length > 0 ? (
+                  tile.sources.images.map((img, key_id) =>
+                    img.type === "images" ? (
+                      <img
+                        key={key_id}
+                        src={img.url}
+                        className={classes.img}
+                        alt="product"
+                      />
+                    ) : (
+                      <span
+                        key={key_id}
+                        style={{ width: "100%" }}
+                        dangerouslySetInnerHTML={{ __html: img.url }}
+                      ></span>
+                    )
+                  )
+                ) : (
+                  <img
+                    src={tile.thumbUrl}
+                    className={classes.img}
+                    alt="product"
+                  />
+                )}
               </Carousel>
             </CardMedia>
             <CardActionArea style={{ alignContent: "space-between" }}>

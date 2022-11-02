@@ -123,7 +123,11 @@ export default function UpdateAdmin(props) {
   const [mustImage, setMustImages] = useState(false);
 
   useEffect(() => {
-    const indexImage = imagesList === [] ? imagesList.indexOf(thumbUrl) : undefined
+
+    const indexImage = imagesList.length < 1 ? imagesList.indexOf(thumbUrl) : undefined
+
+    console.log(indexImage)
+
     imagesList?.map((url) => {
       url?.type === 'images' ?
       imageLoader.loader.push(url.url)
@@ -131,24 +135,19 @@ export default function UpdateAdmin(props) {
       setVideoUrl(url.url)
     });
 
+    
     if(indexImage === -1){
       console.log(indexImage)
       imagesList.push(thumbUrl)
       imageLoader.loader.push(thumbUrl)
-    }
+    } 
 
-    // props.product.sources.images.map((file) => {
-    //   file.type == 'video' ?
-    //   setVideoUrl(file.url)
-    //   :
-    //   setVideoUrl('')
-    // } )
     return () => {
       localStorage.removeItem("product");
     };
   }, []);
 
-  console.log(imagesList === [] ? imagesList.indexOf(thumbUrl) : undefined)
+  console.log(imagesList)
 
   const handleClickOpen = () => {
         setOpen(true);
@@ -203,8 +202,8 @@ export default function UpdateAdmin(props) {
       // sti.replace(index, '?controls=0\"')
     //sti[79]
   }
-  console.log(imagesList)
-  console.log(thumbUrl)
+  
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -256,6 +255,10 @@ export default function UpdateAdmin(props) {
               },
             ],
           };
+
+        const currentVideo = imagesList?.find(result => result.type === 'video');
+        const indexVideo = imagesList.indexOf(currentVideo);
+
           newFormData.append("active", active);
           newFormData.append("name", productName);
           newFormData.append("description", description);
@@ -268,8 +271,18 @@ export default function UpdateAdmin(props) {
           newFormData.append("prixerPriceTo", data.prixerPrice.to);
           newFormData.append("hasSpecialVar", hasSpecialVar);
           imagesList.length > 1
-            ? imagesList.map((url) => newFormData.append("images", url.url))
-            : imagesList.map((url) => newFormData.append("images", url))
+            ? imagesList.map((url) => {
+              if(videoUrl === ''){
+                imagesList.splice(indexVideo, 1)
+              } 
+              newFormData.append("images", url.url)
+            })
+            : imagesList.map((url) => {
+              if(videoUrl === ''){
+                imagesList.splice(indexVideo, 1)
+              } 
+              newFormData.append("images", url)
+            })
           images.images.map((file) =>
             newFormData.append("newProductImages", file)
           );
@@ -716,9 +729,9 @@ export default function UpdateAdmin(props) {
         </div>
         <TextField
         onChange={(a)=>{
-          modifyString(a, a.target.value)
+            modifyString(a, a.target.value)
         }}
-        value={videoUrl}
+          value={videoUrl}
           autoFocus
           label="Url"
           type="text"

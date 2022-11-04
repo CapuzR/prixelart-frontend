@@ -109,7 +109,8 @@ export default function Home(props) {
   const isDeskTop = useMediaQuery(theme.breakpoints.up("sm"));
   const classes = useStyles();
   const prixerUsername = "all";
-  const [imgsDesktop, setImgsDesktop] = useState({ imgs: [] });
+  const [imagesDesktop, newImagesDesktop] = useState({ images: [] });
+  const [imagesMobile, newImagesMobile] = useState({ images: [] });
   const [tabValue, setTabValue] = useState(0);
   const [openModal, setOpenModal] = useState(false);
   const [openPrixers, setOpenPrixers] = useState(false);
@@ -188,7 +189,11 @@ export default function Home(props) {
         res
           .json()
           .then((data) => {
-            setImgsDesktop({ imgs: data.imagesCarousels });
+            const imagesDesktop = data.imagesCarousels.filter(result => result.images.type === 'desktop')
+            const imagesMobile = data.imagesCarousels.filter(result => result.images.type === 'mobile')
+            newImagesDesktop({images: imagesDesktop})
+            newImagesMobile({images: imagesMobile})
+
           })
           .catch((err) => console.error(`Your request is wrong: ${err}`))
       )
@@ -256,33 +261,33 @@ export default function Home(props) {
                 }}
               >
                 {isDesktop
-                  ? imgsDesktop.imgs.map((img, key_id) => {
-                      return (
+                  ? imagesDesktop.images.map((img, key_id) => (
+                        img.images.type === 'desktop' &&
                         <div
                           className={classes.heroContent}
                           key={key_id}
                           style={{
-                            backgroundImage: "url(" + img.carouselImages + ")",
+                            backgroundImage: "url(" + img.images.url + ")",
                             backgroundSize: "cover",
                             backgroundPosition: "top",
                             marginTop: "-24px",
                           }}
                         ></div>
-                      );
-                    })
-                  : imgsMobile.map((img, key_id) => {
-                      return (
+                        
+                  ))
+                  : imagesMobile.images.map((img, key_id) => (
+                        img.images.type === 'mobile' &&
                         <div
                           className={classes.heroContent}
                           key={key_id}
                           style={{
-                            backgroundImage: "url(" + img.url + ")",
+                            backgroundImage: "url(" + img.images.url + ")",
                             backgroundSize: "cover",
                             backgroundPosition: "left",
                           }}
                         ></div>
-                      );
-                    })}
+                    ))
+                    }
               </Carousel>
             </div>
             <div

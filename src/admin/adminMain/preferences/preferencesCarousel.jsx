@@ -12,6 +12,7 @@ import {
   Input,
   TextField,
 } from "@material-ui/core";
+import Tooltip from '@material-ui/core/Tooltip';
 import ImageListItem from "@material-ui/core/ImageListItem";
 import ImageList from "@material-ui/core/ImageList";
 import EditIcon from "@material-ui/icons/Edit";
@@ -25,6 +26,9 @@ import Snackbar from "@material-ui/core/Snackbar";
 import Backdrop from "@material-ui/core/Backdrop";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import axios from "axios";
+import AppBar from "@material-ui/core/AppBar";
+import Tabs from "@material-ui/core/Tabs";
+import Tab from "@material-ui/core/Tab";
 
 const useStyle = makeStyles((theme) => ({
   images: {
@@ -64,23 +68,41 @@ const useStyle = makeStyles((theme) => ({
   imageLoad: {
     width: "100%",
     height: "100%",
+    objectFit: 'contain' 
   },
   buttonImgLoader: {
-    color: "#ccc",
-    width: "82vw",
-    height: "80vh",
+    color: "#d33f49",
     cursor: "pointer",
-    display: "flex",
-    flexDirection: "row",
-    padding: "10px",
     position: "absolute",
-    justifyContent: "flex-end",
   },
   backdrop: {
     zIndex: theme.zIndex.drawer + 1,
     color: theme.palette.primary.main,
   },
+  tab: {
+    flexGrow: 1,
+    backgroundColor: 'transparent',
+  },
 }));
+
+function TabPanel(props) {
+  const { children, value, index } = props;
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`simple-tabpanel-${index}`}
+      aria-labelledby={`simple-tab-${index}`}
+    >
+      {value === index && (
+        <Box p={3}>
+          <Typography>{children}</Typography>
+        </Box>
+      )}
+    </div>
+  );
+}
+
 
 function CarouselAdmin(props) {
   const theme = useTheme();
@@ -91,6 +113,8 @@ function CarouselAdmin(props) {
     loader: "",
     filename: "Subir imagenes",
   }); //loader de imagenes
+  const [ type, setType ] = useState('');
+  const [value, setValue] = useState(0);
   const [images, newImages] = useState({ images: [] }); // lista de imagenes para renderizar
   const [update, setUpdate] = useState(0); // modal de update
   const [open, setOpen] = useState(false); //modal de eliminar -> confirm
@@ -101,6 +125,10 @@ function CarouselAdmin(props) {
   const [loading, setLoading] = useState(false); // Loading
 
   const classes = useStyle();
+
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+  };
 
   const maxImageOpen = () => {
     setMaxImages(true);
@@ -150,6 +178,7 @@ function CarouselAdmin(props) {
     setUpdate(false);
   };
 
+
   // CRUD
   //Editar imagen:
   const handleUpdate = async (x) => {
@@ -160,12 +189,16 @@ function CarouselAdmin(props) {
       "/admin/preferences/carousel/" +
       image._id;
     const formData = new FormData();
-    formData.append("newBannerImages", image.file);
+    type === 'bannerImagesDesktop' ?
+    formData.append("bannerImagesDesktop", image.file)
+    :
+    formData.append("bannerImagesMobile", image.file)
     let res = await axios.put(URI, formData);
     setLoadImage({
       loader: "",
       filename: "Subir imagenes",
     });
+    setType('')
     newImage({
       _id: "",
       file: "",
@@ -195,9 +228,13 @@ function CarouselAdmin(props) {
     const URI =
       process.env.REACT_APP_BACKEND_URL + "/admin/preferences/carousel";
     const newFormData = new FormData();
-    newFormData.append("bannerImages", image.file);
+    type === 'bannerImagesDesktop' ?
+    newFormData.append("bannerImagesDesktop", image.file)
+    :
+    newFormData.append("bannerImagesMobile", image.file)
     let res = await axios.post(URI, newFormData);
     createOpen();
+    setType('')
     newImage({
       _id: "",
       file: "",
@@ -233,6 +270,7 @@ function CarouselAdmin(props) {
   };
   // Actualizacion del estado para preview de imagen
   const loadImage = async (e) => {
+    setType(e.target.name)
     const file = e.target.files[0];
     const resizedString = await convertToBase64(file);
     setLoadImage({ loader: resizedString, filename: file.name });
@@ -252,7 +290,8 @@ function CarouselAdmin(props) {
         res
           .json()
           .then((data) => {
-            newImages({ images: [data.imagesCarousels] });
+           newImages({images: data.imagesCarousels})
+            
           })
           .catch((err) => console.error(`Your request is wrong: ${err}`))
       )
@@ -262,7 +301,7 @@ function CarouselAdmin(props) {
 
   useEffect(() => {
     getImagesForTheCarousel();
-  }, []);
+  }, []); 
 
   return (
     <>
@@ -284,37 +323,38 @@ function CarouselAdmin(props) {
             Edit carousel
           </Typography>
         </Grid>
-
-        <Grid className={classes.loaderImage}>
-          <Box className={classes.buttonImgLoader}>
-            {imageLoader.loader ? (
+        <Grid>
+          
+          {imageLoader.loader && (
+            <div style={{height: '80vh'}}>
+            <Tooltip className={classes.buttonImgLoader}>
               <HighlightOffOutlinedIcon
                 style={{ width: "2rem" }}
                 onClick={cancelUploadImage}
               />
-            ) : (
-              <HighlightOffOutlinedIcon hidden />
-            )}
-          </Box>
-          {imageLoader.loader && (
+          </Tooltip>
             <img
               className={classes.imageLoad}
               src={imageLoader.loader}
               alt="+"
             ></img>
-          )}
-          {imageLoader.loader ? (
-            ""
-          ) : (
-            <h1 style={{ color: "#e0e0e0" }}>1300x700px</h1>
+            </div>
           )}
         </Grid>
+        <div className={classes.tab}>
+      <AppBar position="static" style={{backgroundColor: 'transparent', color: '#d33f49', fontWeight: 400, boxShadow:'none'}}>
+        <Tabs value={value} onChange={handleChange}>
+          <Tab label="Desktop" />
+          <Tab label="Mobile" />
+        </Tabs>
+      </AppBar>
+      <TabPanel value={value} index={0}>
 
-        <Box style={{ display: "flex", justifyContent: "center" }}>
+      <Box style={{ display: "flex", justifyContent: "center" }}>
           <FormControl>
             <form
               onSubmit={(s) => {
-                if (image._id != "") {
+                if (image._id !== "") {
                   handleUpdate(s);
                 } else {
                   handleSubmit(s);
@@ -346,7 +386,7 @@ function CarouselAdmin(props) {
               >
                 Upload File
                 <input
-                  name="bannerImages"
+                  name="bannerImagesDesktop"
                   style={{ width: "auto" }}
                   type="file"
                   accept="image/*"
@@ -416,9 +456,11 @@ function CarouselAdmin(props) {
             message="Process sucessfull"
           />
         </Box>
-        <ImageList cols={isDesktop ? 2 : 1} rowHeight={300}>
-          {images.images[0] ? (
-            images.images[0].map((img, key_id) => (
+
+      <ImageList cols={isDesktop ? 2 : 1} rowHeight={300}>
+          {images.images ? (
+            images.images.map((img, key_id) => (
+              img.images.type === 'desktop' &&
               <ImageListItem key={key_id}>
                 <Box>
                   <Box className={classes.buttons}>
@@ -429,7 +471,7 @@ function CarouselAdmin(props) {
                     >
                       <input
                         type="file"
-                        name="newBannerImages"
+                        name="bannerImagesDesktop"
                         hidden
                         onChange={(a) => {
                           a.preventDefault();
@@ -497,11 +539,11 @@ function CarouselAdmin(props) {
                       message="Imagen borrada exitosamente"
                     />
                   </Box>
-                  <a href={img.carouselImages[0]} target="_BLANK">
+                  <a href={img.images.url} target="_BLANK">
                     <img
                       className={classes.images}
-                      title={img.carouselImages[0]}
-                      src={img.carouselImages[0]}
+                      title={img.images.url}
+                      src={img.images.url}
                     ></img>
                   </a>
                 </Box>
@@ -513,6 +555,219 @@ function CarouselAdmin(props) {
             </Typography>
           )}
         </ImageList>
+      </TabPanel>
+      <TabPanel value={value} index={1}>
+       
+      <Box style={{ display: "flex", justifyContent: "center" }}>
+          <FormControl>
+            <form
+              onSubmit={(s) => {
+                if (image._id != "") {
+                  handleUpdate(s);
+                } else {
+                  handleSubmit(s);
+                }
+              }}
+              encType="multipart/form-data"
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                flexDirection: isDesktop ? "row" : "column",
+                alignItems: isDesktop ? "center" : "stretch",
+                padding: isDesktop ? "15px" : "20px",
+                height: isDesktop ? "" : "30vh",
+                width: isDesktop ? "150%" : "auto",
+                marginLeft: isDesktop ? "-20%" : "",
+              }}
+            >
+              <Typography
+                className={classes.nameFile}
+                style={{ width: "auto" }}
+                id="uploadImage"
+              >
+                {imageLoader.filename}
+              </Typography>
+              <Button
+                variant="contained"
+                style={{ width: "auto" }}
+                component="label"
+              >
+                Upload File
+                <input
+                  name="bannerImagesMobile"
+                  style={{ width: "auto" }}
+                  type="file"
+                  accept="image/*"
+                  hidden
+                  onChange={(a) => {
+                    a.preventDefault();
+                    loadImage(a);
+                    newImage({
+                      _id: image._id,
+                      file: a.target.files[0],
+                    });
+                  }}
+                />
+              </Button>
+              <Button
+                variant="outlined"
+                style={{ width: "auto" }}
+                color="primary"
+                type="submit"
+              >
+                Enviar
+              </Button>
+            </form>
+          </FormControl>
+
+          <Snackbar
+            anchorOrigin={{
+              vertical: "top",
+              horizontal: "right",
+            }}
+            open={create}
+            onClose={createClose}
+            autoHideDuration={5000}
+            message="Process sucessfull"
+          />
+
+          <Snackbar
+            anchorOrigin={{
+              vertical: "top",
+              horizontal: "right",
+            }}
+            open={create}
+            onClose={createClose}
+            autoHideDuration={5000}
+            message="Process sucessfull"
+          />
+
+          <Snackbar
+            anchorOrigin={{
+              vertical: "top",
+              horizontal: "right",
+            }}
+            open={createF}
+            onClose={createCloseF}
+            autoHideDuration={5000}
+            message="You must send a image"
+          />
+
+          <Snackbar
+            anchorOrigin={{
+              vertical: "top",
+              horizontal: "right",
+            }}
+            open={update}
+            onClose={closeUpdate}
+            autoHideDuration={5000}
+            message="Process sucessfull"
+          />
+        </Box>
+
+      <ImageList cols={isDesktop ? 2 : 1} rowHeight={300}>
+          {images.images ? (
+            images.images.map((img, key_id) => (
+              img.images.type === 'mobile' &&
+              <ImageListItem key={key_id} style={{height: '', width: ''}}>
+                <Box>
+                  <Box className={classes.buttons} style={{width: ''}}>
+                    <Button
+                      variant="text"
+                      style={{ color: "white" }}
+                      component="label"
+                    >
+                      <input
+                        type="file"
+                        name="bannerImagesMobile"
+                        hidden
+                        onChange={(a) => {
+                          a.preventDefault();
+                          loadImage(a);
+                          newImage({
+                            _id: img._id,
+                            file: a.target.files[0],
+                          });
+                        }}
+                      />
+                      <EditIcon />
+                    </Button>
+                    <Button
+                      variant="text"
+                      style={{ color: "white" }}
+                      onClick={handleClickOpen}
+                    >
+                      <HighlightOffOutlinedIcon
+                        onClick={() => {
+                          newImage({
+                            _id: img._id,
+                            file: image.file,
+                          });
+                        }}
+                      />
+                    </Button>
+                    <Dialog
+                      open={open}
+                      onClose={handleClose}
+                      aria-labelledby="alert-dialog-title"
+                      aria-describedby="alert-dialog-description"
+                    >
+                      <DialogTitle id="alert-dialog-title">
+                        {"Estas seguro de eliminar esta imagen del carrusel?"}
+                      </DialogTitle>
+                      <DialogContent>
+                        <DialogContentText id="alert-dialog-description">
+                          Esta imagen ya no se vera en el carrusel del banner
+                          principal
+                        </DialogContentText>
+                      </DialogContent>
+                      <DialogActions>
+                        <Button onClick={handleClose} color="primary">
+                          Cancelar
+                        </Button>
+                        <Button
+                          onClick={(d) => {
+                            deleteImage(d);
+                          }}
+                          color="primary"
+                        >
+                          Aceptar
+                        </Button>
+                      </DialogActions>
+                    </Dialog>
+
+                    <Snackbar
+                      anchorOrigin={{
+                        vertical: "top",
+                        horizontal: "right",
+                      }}
+                      open={update}
+                      onClose={closeUpdate}
+                      autoHideDuration={5000}
+                      message="Imagen borrada exitosamente"
+                    />
+                  </Box>
+                  <a href={img.images.url} target="_BLANK">
+                    <img
+                    style={{height: '80vh', width: '25vw'}}
+                      className={classes.images}
+                      title={img.images.url}
+                      src={img.images.url}
+                    ></img>
+                  </a>
+                </Box>
+              </ImageListItem>
+            ))
+          ) : (
+            <Typography>
+              Que mal, parece que no tienes imagenes en el carrusel
+            </Typography>
+          )}
+        </ImageList>
+
+      </TabPanel>
+    </div>
+        
       </Grid>
       <Dialog
         open={maxImage}

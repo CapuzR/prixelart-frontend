@@ -593,12 +593,10 @@ export default function Testimonials() {
                         <Switch
                           checked={tile.status}
                           color="primary"
-                          onChange={
-                            // handleChange
-                            (event) => ChangeVisibility(event, tile._id)
+                          onChange={(event) =>
+                            ChangeVisibility(event, tile._id)
                           }
                           name="checkedA"
-                          // value={tile.status}
                           inputProps={{
                             "aria-label": "secondary checkbox",
                           }}

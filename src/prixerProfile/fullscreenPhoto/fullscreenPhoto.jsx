@@ -32,7 +32,7 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import Switch from "@material-ui/core/Switch";
-import Paper from "@material-ui/core/Paper";
+import Chip from "@material-ui/core/Chip";
 
 const IOSSwitch = withStyles((theme) => ({
   root: {
@@ -132,6 +132,7 @@ export default function FullscreePhoto(props) {
   const [visible, setVisible] = useState(true);
   const [checked, setChecked] = useState(true);
   let [points, setPoints] = useState(50);
+  const [newTag, setNewTag] = useState([]);
   const propsRank = {
     min: 0,
     max: 100,
@@ -190,9 +191,11 @@ export default function FullscreePhoto(props) {
     let result = await originalPhotoIsoEdit(tempTiles, tile, e);
     setTiles(result);
   };
+  console.log(tiles);
 
   const handleArtTagsEdit = async (e, tile, tags) => {
     let tempTiles = tiles;
+    setNewTag = tile.tags;
     let result = await tagsEdit(tempTiles, tile, e, tags);
     setTiles(result);
   };
@@ -217,16 +220,19 @@ export default function FullscreePhoto(props) {
     setOpenV(false);
     setSelectedArt(undefined);
   };
-
   function tagsEdit(tempTiles, tile, e, tags) {
+    console.log(tempTiles);
     return tempTiles.map((item) => {
-      // const result = newTag.trim().split(/\s+/);
+      const result = tags.trim().split(/\s+/);
       if (item.artId === tile.artId) {
         item.tags = tags;
       }
+      console.log(result);
       return item;
     });
   }
+  // let newTagV = newTag.split(", ");
+  // console.log(newTagV);
 
   function locationEdit(tempTiles, tile, e) {
     return tempTiles.map((item) => {
@@ -1054,254 +1060,250 @@ export default function FullscreePhoto(props) {
                 </div>
               ) : (
                 <Card id={tile.artId} key={tile.artId}>
-                  <CardActionArea>
-                    {/* <CardMedia
+                  {/* <CardMedia
                     component="img"
                     alt="img"
                     image={tile.imageUrl}
                     title="img"
                     /> */}
-                    <Img
-                      placeholder="/imgLoading.svg"
-                      style={{ backgroundColor: "#eeeeee", height: "100%" }}
-                      src={tile.largeThumbUrl || tile.thumbnailUrl}
-                      debounce={1000} // Default is 300 (ms)
-                      cache
-                      error="/imgError.svg"
-                      srcSet={
-                        tile.smallThumbUrl +
-                        " 600w, " +
-                        tile.mediumThumbUrl +
-                        " 850w, " +
-                        tile.largeThumbUrl +
-                        " 1300w"
-                      }
-                      sizes="(min-width: 960px) 1300px, (min-width: 640px) 850px, 600px"
-                      alt={tile.title}
-                      id={tile.artId}
-                    />
-                    <CardContent>
-                      <Grid item xs={12} container>
-                        <Grid item xs container direction="column">
+                  <Img
+                    placeholder="/imgLoading.svg"
+                    style={{ backgroundColor: "#eeeeee", height: "100%" }}
+                    src={tile.largeThumbUrl || tile.thumbnailUrl}
+                    debounce={1000} // Default is 300 (ms)
+                    cache
+                    error="/imgError.svg"
+                    srcSet={
+                      tile.smallThumbUrl +
+                      " 600w, " +
+                      tile.mediumThumbUrl +
+                      " 850w, " +
+                      tile.largeThumbUrl +
+                      " 1300w"
+                    }
+                    sizes="(min-width: 960px) 1300px, (min-width: 640px) 850px, 600px"
+                    alt={tile.title}
+                    id={tile.artId}
+                  />
+                  <CardContent>
+                    <Grid item xs={12} container>
+                      <Grid item xs container direction="column">
+                        <Grid item xs>
                           <Grid item xs>
-                            <Grid item xs>
-                              <TextField
-                                fullWidth
-                                required
-                                id="artTitle"
-                                label="Titulo del arte"
-                                variant="outlined"
-                                value={tile.title}
-                                onChange={(e) => {
-                                  // setTitle(e.target.value);
-                                  handleArtTitleEdit(e, tile);
-                                }}
-                              />
-                            </Grid>
-                            {tile.artType === "Foto" && (
-                              <React.Fragment>
+                            <TextField
+                              fullWidth
+                              required
+                              id="artTitle"
+                              label="Titulo del arte"
+                              variant="outlined"
+                              value={tile.title}
+                              onChange={(e) => {
+                                // setTitle(e.target.value);
+                                handleArtTitleEdit(e, tile);
+                              }}
+                            />
+                          </Grid>
+                          {tile.artType === "Foto" && (
+                            <React.Fragment>
+                              <Grid
+                                item
+                                container
+                                xs={12}
+                                style={{ paddingTop: 15, paddingBottom: 15 }}
+                              >
                                 <Grid
                                   item
-                                  container
                                   xs={12}
-                                  style={{ paddingTop: 15, paddingBottom: 15 }}
+                                  sm={12}
+                                  style={{ textAlign: "left" }}
                                 >
-                                  <Grid
-                                    item
-                                    xs={12}
-                                    sm={12}
-                                    style={{ textAlign: "left" }}
+                                  <Typography
+                                    style={{
+                                      whiteSpace: "pre-line",
+                                      fontSize: "1.3em",
+                                    }}
                                   >
-                                    <Typography
-                                      style={{
-                                        whiteSpace: "pre-line",
-                                        fontSize: "1.3em",
-                                      }}
-                                    >
-                                      {" "}
-                                      Medida del archivo original{" "}
-                                    </Typography>
-                                  </Grid>
-                                  {tile.originalPhotoWidth &&
-                                    tile.originalPhotoHeight && (
-                                      <Grid
-                                        item
-                                        container
-                                        xs={12}
-                                        sm={12}
-                                        style={{ paddingTop: 15 }}
-                                        justify="space-between"
-                                      >
-                                        <Grid item xs={5} sm={5}>
-                                          <TextField
-                                            variant="outlined"
-                                            fullWidth
-                                            id="originalPhotoWidth"
-                                            label="Ancho"
-                                            type="number"
-                                            name="originalPhotoWidth"
-                                            autoComplete="originalPhotoWidth"
-                                            value={tile.originalPhotoWidth}
-                                            onChange={(e) => {
-                                              handleOriginalPhotoWidth(e, tile);
-                                              if (e.target.value < 2000) {
-                                                setSnackBarMessage(
-                                                  "La foto original debe tener un ancho mayor a 2.000 px."
-                                                );
-                                                setSnackBar(true);
-                                              }
-                                            }}
-                                          />
-                                        </Grid>
-                                        <Typography style={{ paddingTop: 13 }}>
-                                          {" "}
-                                          x{" "}
-                                        </Typography>
-                                        <Grid item xs={5} sm={5}>
-                                          <TextField
-                                            variant="outlined"
-                                            fullWidth
-                                            type="number"
-                                            id="originalPhotoHeight"
-                                            label="Alto"
-                                            name="originalPhotoHeight"
-                                            autoComplete="originalPhotoHeight"
-                                            value={tile.originalPhotoHeight}
-                                            onChange={(e) => {
-                                              handleOriginalPhotoHeight(
-                                                e,
-                                                tile
-                                              );
-                                              if (e.target.value < 2000) {
-                                                setSnackBarMessage(
-                                                  "La foto original debe tener un alto mayor a 2.000 px."
-                                                );
-                                                setSnackBar(true);
-                                              }
-                                            }}
-                                          />
-                                        </Grid>
-                                        <Typography
-                                          style={{
-                                            paddingTop: 13,
-                                            paddingLeft: 2,
-                                          }}
-                                        >
-                                          {" "}
-                                          px{" "}
-                                        </Typography>
-                                      </Grid>
-                                    )}
-                                  <Grid
-                                    item
-                                    container
-                                    xs={12}
-                                    sm={12}
-                                    style={{ paddingTop: 15 }}
-                                    justify="space-between"
-                                  >
-                                    <Grid item xs={5} sm={5}>
-                                      <TextField
-                                        variant="outlined"
-                                        fullWidth
-                                        type="number"
-                                        id="originalPhotoPpi"
-                                        label="PPI"
-                                        name="originalPhotoPpi"
-                                        autoComplete="originalPhotoPpi"
-                                        value={tile.originalPhotoPpi}
-                                        onChange={(e) => {
-                                          handleOriginalPhotoPpi(e, tile);
-                                          if (e.target.value < 100) {
-                                            setSnackBarMessage(
-                                              "La foto original debe ser mayor a 100 ppi."
-                                            );
-                                            setSnackBar(true);
-                                          }
-                                        }}
-                                      />
-                                    </Grid>
+                                    {" "}
+                                    Medida del archivo original{" "}
+                                  </Typography>
+                                </Grid>
+                                {tile.originalPhotoWidth &&
+                                  tile.originalPhotoHeight && (
                                     <Grid
                                       item
-                                      xs={5}
-                                      sm={6}
-                                      style={{ paddingLeft: 0 }}
+                                      container
+                                      xs={12}
+                                      sm={12}
+                                      style={{ paddingTop: 15 }}
+                                      justify="space-between"
                                     >
-                                      <FormControl
-                                        variant="outlined"
-                                        style={{ width: "100%" }}
-                                      >
-                                        <InputLabel
-                                          id="originalPhotoIsoLabel"
-                                          style={{ width: "100%" }}
-                                        >
-                                          ISO
-                                        </InputLabel>
-                                        <Select
-                                          labelId="originalPhotoIsoLabel"
-                                          id="originalPhotoIso"
-                                          value={tile.originalPhotoIso}
+                                      <Grid item xs={5} sm={5}>
+                                        <TextField
+                                          variant="outlined"
+                                          fullWidth
+                                          id="originalPhotoWidth"
+                                          label="Ancho"
+                                          type="number"
+                                          name="originalPhotoWidth"
+                                          autoComplete="originalPhotoWidth"
+                                          value={tile.originalPhotoWidth}
                                           onChange={(e) => {
-                                            handleOriginalPhotoIso(e, tile);
+                                            handleOriginalPhotoWidth(e, tile);
+                                            if (e.target.value < 2000) {
+                                              setSnackBarMessage(
+                                                "La foto original debe tener un ancho mayor a 2.000 px."
+                                              );
+                                              setSnackBar(true);
+                                            }
                                           }}
-                                          label="originalPhotoIso"
-                                        >
-                                          <MenuItem value="">
-                                            <em></em>
-                                          </MenuItem>
-                                          {photoIsos.map((n) => (
-                                            <MenuItem key={n} value={n}>
-                                              {n}
-                                            </MenuItem>
-                                          ))}
-                                        </Select>
-                                      </FormControl>
+                                        />
+                                      </Grid>
+                                      <Typography style={{ paddingTop: 13 }}>
+                                        {" "}
+                                        x{" "}
+                                      </Typography>
+                                      <Grid item xs={5} sm={5}>
+                                        <TextField
+                                          variant="outlined"
+                                          fullWidth
+                                          type="number"
+                                          id="originalPhotoHeight"
+                                          label="Alto"
+                                          name="originalPhotoHeight"
+                                          autoComplete="originalPhotoHeight"
+                                          value={tile.originalPhotoHeight}
+                                          onChange={(e) => {
+                                            handleOriginalPhotoHeight(e, tile);
+                                            if (e.target.value < 2000) {
+                                              setSnackBarMessage(
+                                                "La foto original debe tener un alto mayor a 2.000 px."
+                                              );
+                                              setSnackBar(true);
+                                            }
+                                          }}
+                                        />
+                                      </Grid>
+                                      <Typography
+                                        style={{
+                                          paddingTop: 13,
+                                          paddingLeft: 2,
+                                        }}
+                                      >
+                                        {" "}
+                                        px{" "}
+                                      </Typography>
                                     </Grid>
-                                  </Grid>
-                                </Grid>
+                                  )}
                                 <Grid
                                   item
                                   container
                                   xs={12}
+                                  sm={12}
+                                  style={{ paddingTop: 15 }}
                                   justify="space-between"
                                 >
-                                  <Grid
-                                    item
-                                    xs={12}
-                                    sm={12}
-                                    style={{ textAlign: "left" }}
-                                  >
-                                    <Typography
-                                      style={{
-                                        whiteSpace: "pre-line",
-                                        fontSize: "1.3em",
+                                  <Grid item xs={5} sm={5}>
+                                    <TextField
+                                      variant="outlined"
+                                      fullWidth
+                                      type="number"
+                                      id="originalPhotoPpi"
+                                      label="PPI"
+                                      name="originalPhotoPpi"
+                                      autoComplete="originalPhotoPpi"
+                                      value={tile.originalPhotoPpi}
+                                      onChange={(e) => {
+                                        handleOriginalPhotoPpi(e, tile);
+                                        if (e.target.value < 100) {
+                                          setSnackBarMessage(
+                                            "La foto original debe ser mayor a 100 ppi."
+                                          );
+                                          setSnackBar(true);
+                                        }
                                       }}
-                                    >
-                                      {" "}
-                                      Medida máxima para impresión:
-                                    </Typography>
+                                    />
                                   </Grid>
                                   <Grid
                                     item
-                                    xs={12}
-                                    sm={12}
-                                    style={{ textAlign: "left" }}
+                                    xs={5}
+                                    sm={6}
+                                    style={{ paddingLeft: 0 }}
                                   >
-                                    <Typography
-                                      style={{
-                                        whiteSpace: "pre-line",
-                                        fontSize: "1.3em",
-                                      }}
+                                    <FormControl
+                                      variant="outlined"
+                                      style={{ width: "100%" }}
                                     >
-                                      {" "}
-                                      {maxPrintValues(tile)}{" "}
-                                    </Typography>
+                                      <InputLabel
+                                        id="originalPhotoIsoLabel"
+                                        style={{ width: "100%" }}
+                                      >
+                                        ISO
+                                      </InputLabel>
+                                      <Select
+                                        labelId="originalPhotoIsoLabel"
+                                        id="originalPhotoIso"
+                                        value={tile.originalPhotoIso}
+                                        onChange={(e) => {
+                                          handleOriginalPhotoIso(e, tile);
+                                        }}
+                                        label="originalPhotoIso"
+                                      >
+                                        <MenuItem value="">
+                                          <em></em>
+                                        </MenuItem>
+                                        {photoIsos.map((n) => (
+                                          <MenuItem key={n} value={n}>
+                                            {n}
+                                          </MenuItem>
+                                        ))}
+                                      </Select>
+                                    </FormControl>
                                   </Grid>
                                 </Grid>
-                                <Grid item container xs={12}></Grid>
-                              </React.Fragment>
-                            )}
-                            {/* <Grid item container xs={12} style={{marginBottom: 15}}>
+                              </Grid>
+                              <Grid
+                                item
+                                container
+                                xs={12}
+                                justify="space-between"
+                              >
+                                <Grid
+                                  item
+                                  xs={12}
+                                  sm={12}
+                                  style={{ textAlign: "left" }}
+                                >
+                                  <Typography
+                                    style={{
+                                      whiteSpace: "pre-line",
+                                      fontSize: "1.3em",
+                                    }}
+                                  >
+                                    {" "}
+                                    Medida máxima para impresión:
+                                  </Typography>
+                                </Grid>
+                                <Grid
+                                  item
+                                  xs={12}
+                                  sm={12}
+                                  style={{ textAlign: "left" }}
+                                >
+                                  <Typography
+                                    style={{
+                                      whiteSpace: "pre-line",
+                                      fontSize: "1.3em",
+                                    }}
+                                  >
+                                    {" "}
+                                    {maxPrintValues(tile)}{" "}
+                                  </Typography>
+                                </Grid>
+                              </Grid>
+                              <Grid item container xs={12}></Grid>
+                            </React.Fragment>
+                          )}
+                          {/* <Grid item container xs={12} style={{marginBottom: 15}}>
                   <Grid item xs={4} sm={4}>
                     <Typography style={{whiteSpace: 'pre-line', padding: 15, fontSize: '0.7em'}}> Máximo para <br/> impresión (cm) </Typography>
                   </Grid>
@@ -1335,72 +1337,118 @@ export default function FullscreePhoto(props) {
                     </Grid>
                   </Grid>
                 </Grid> */}
-                            <Grid
-                              item
-                              xs
-                              style={{ marginBottom: 20, marginTop: 20 }}
-                            >
-                              <TextField
-                                multiline
-                                rows={2}
-                                fullWidth
-                                required
-                                id="artDescription"
-                                variant="outlined"
-                                label="Descripción del arte"
-                                value={tile.description}
-                                onChange={(e) => {
-                                  handleArtDescriptionEdit(e, tile);
-                                }}
+                          <Grid
+                            item
+                            xs
+                            style={{ marginBottom: 20, marginTop: 20 }}
+                          >
+                            <TextField
+                              multiline
+                              rows={2}
+                              fullWidth
+                              required
+                              id="artDescription"
+                              variant="outlined"
+                              label="Descripción del arte"
+                              value={tile.description}
+                              onChange={(e) => {
+                                handleArtDescriptionEdit(e, tile);
+                              }}
+                            />
+                          </Grid>
+                          {/* <Grid item xs={12} sm={12}>
+                              <Autocomplete
+                                multiple
+                                id="tags-filled"
+                                options={tile.tags.map((option) => option)}
+                                defaultValue={tile.tags}
+                                freeSolo
+                                renderTags={(value, getTagProps) =>
+                                  value.map(
+                                    (option, index) => (
+                                      <Chip
+                                        variant="outlined"
+                                        label={option}
+                                        {...getTagProps({ index })}
+                                      />
+                                    ),
+                                    { ...handleArtTagsEdit(value) }
+                                  )
+                                }
+                                renderInput={(params) => (
+                                  <TextField
+                                    {...params}
+                                    variant="outlined"
+                                    label="Etiquetas"
+                                  />
+                                )}
                               />
-                            </Grid>
-                            {/* <Grid item xs={12} sm={12}>
+                            </Grid> */}
+                          <Grid
+                            item
+                            xs={12}
+                            sm={12}
+                            style={{ marginBottom: 20, marginTop: 20 }}
+                          >
                             <Autocomplete
                               multiple
                               freeSolo
                               id="tags-outlined"
-                              options={[]}
-                              defaultValue={[]}
+                              options={tile.tags.map((tag) => tag)}
                               value={tile.tags}
-                              onChange={( tags, reason) => {
-                                handleArtTagsEdit( tile, tags);
-                              }}
+                              renderTags={(value, getTagProps) =>
+                                value.map((option, index) => (
+                                  <Chip
+                                    onDelete={() => {
+                                      const newTiles = [...tiles];
+                                      newTiles.find(
+                                        (item) => item.artId === tile.artId
+                                      ).tags = tile.tags.filter(
+                                        (tag) => tag !== option
+                                      );
+                                      setTiles(newTiles);
+                                    }}
+                                    variant="outlined"
+                                    label={option}
+                                  />
+                                ))
+                              }
                               renderInput={(params) => (
                                 <TextField
                                   {...params}
-                                  onKeyDown={(e) => {
-                                    if (e.key === 13 && e.target.value) {
-                                      handleArtTagsEdit(e, tile);
-                                    }
-                                  }}
-                                  onChange={(e) => {
-                                    handleArtTagsEdit(e, tile);
-                                    // setNewTag(e.target.value);
-                                  }}
                                   variant="outlined"
                                   label="Etiquetas"
-                                  placeholder="tags"
+                                  onKeyDown={(e) => {
+                                    if (e.key === "Enter" && e.target.value) {
+                                      const newTiles = [...tiles];
+                                      newTiles
+                                        .find(
+                                          (item) => item.artId === tile.artId
+                                        )
+                                        .tags.push(e.target.value);
+                                      setTiles(newTiles);
+                                    }
+                                  }}
                                 />
                               )}
                             />
-                          </Grid> */}
-                            <Grid item xs={12}>
-                              <TextField
-                                variant="outlined"
-                                fullWidth
-                                id="artLocation"
-                                label="Ubicación"
-                                name="artLocation"
-                                autoComplete="artLocation"
-                                value={tile.artLocation}
-                                onChange={(e) => handleArtLocationEdit(e, tile)}
-                              />
-                            </Grid>
+                          </Grid>
+                          <Grid item xs={12}>
+                            <TextField
+                              variant="outlined"
+                              fullWidth
+                              id="artLocation"
+                              label="Ubicación"
+                              name="artLocation"
+                              autoComplete="artLocation"
+                              value={tile.artLocation}
+                              onChange={(e) => handleArtLocationEdit(e, tile)}
+                            />
                           </Grid>
                         </Grid>
                       </Grid>
-                    </CardContent>
-                  </CardActionArea>
+                    </Grid>
+                  </CardContent>
                   <CardActions>
                     {/* <Button size="small" color="primary">
                 Comparte

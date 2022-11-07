@@ -119,12 +119,21 @@ function CarouselAdmin(props) {
   const [update, setUpdate] = useState(0); // modal de update
   const [open, setOpen] = useState(false); //modal de eliminar -> confirm
   const [Open, setOpenI] = useState(false); // Toast para imagen eliminada exitosamente
+  const [withoutImage, setWithoutImage] = useState(false)
   const [maxImage, setMaxImages] = useState(false); //Toast para maximo de 6 imagenes
   const [create, setCreate] = useState(false); // toast para imagen creada y listada
   const [createF, setCreateF] = useState(false);
   const [loading, setLoading] = useState(false); // Loading
 
   const classes = useStyle();
+
+  const openWithoutImage = () => {
+    setWithoutImage(true)
+  }
+
+  const closeWithoutImage = () => {
+    setWithoutImage(false)
+  }
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -178,6 +187,7 @@ function CarouselAdmin(props) {
     setUpdate(false);
   };
 
+  console.log(images.images)
 
   // CRUD
   //Editar imagen:
@@ -212,19 +222,21 @@ function CarouselAdmin(props) {
   // Crear imagen:
   const handleSubmit = async (a) => {
     a.preventDefault();
-    if (images.images[0].length >= 6) {
+    const imagesDesktop = images.images.filter(obj => obj.images.type === 'desktop')
+    const imagesMobile = images.images.filter(obj => obj.images.type === 'mobile')
+    if (imagesDesktop.length + imagesMobile.length === 12 || imagesDesktop.length === 6 && imagesMobile.length === 6 ) {
       maxImageOpen();
       setLoadImage({
         loader: "",
         filename: "Subir imagenes",
       });
-    } else {
+    }else {
       setLoading(true);
       setLoadImage({
         loader: "",
         filename: "Subir imagenes",
       });
-    }
+    
     const URI =
       process.env.REACT_APP_BACKEND_URL + "/admin/preferences/carousel";
     const newFormData = new FormData();
@@ -242,10 +254,16 @@ function CarouselAdmin(props) {
     setLoadImage(false);
     createOpen();
     getImagesForTheCarousel();
+    }
   };
 
   const deleteImage = async (d) => {
     d.preventDefault();
+    const imagesDesktop = images.images.filter(obj => obj.images.type === 'desktop')
+    const imagesMobile = images.images.filter(obj => obj.images.type === 'mobile')
+    if(imagesDesktop.length + imagesMobile.length === 2){
+      openWithoutImage();
+    } else{
     handleClose();
     setLoading(true);
     const URI =
@@ -257,6 +275,7 @@ function CarouselAdmin(props) {
     handleClickOpenI();
     setLoading(false);
     handleCloseI();
+    }
   };
   //Preview de imagen antes de enviar
   const convertToBase64 = (blob) => {
@@ -505,11 +524,11 @@ function CarouselAdmin(props) {
                       aria-describedby="alert-dialog-description"
                     >
                       <DialogTitle id="alert-dialog-title">
-                        {"Estas seguro de eliminar esta imagen del carrusel?"}
+                        {"¿Estás seguro de eliminar esta imagen del carrusel?"}
                       </DialogTitle>
                       <DialogContent>
                         <DialogContentText id="alert-dialog-description">
-                          Esta imagen ya no se vera en el carrusel del banner
+                          Ésta imagen ya no se verá en el carrusel del banner
                           principal
                         </DialogContentText>
                       </DialogContent>
@@ -713,11 +732,11 @@ function CarouselAdmin(props) {
                       aria-describedby="alert-dialog-description"
                     >
                       <DialogTitle id="alert-dialog-title">
-                        {"Estas seguro de eliminar esta imagen del carrusel?"}
+                        {"¿Estás seguro de eliminar esta imagen del carrusel?"}
                       </DialogTitle>
                       <DialogContent>
                         <DialogContentText id="alert-dialog-description">
-                          Esta imagen ya no se vera en el carrusel del banner
+                          Ésta imagen ya no se verá en el carrusel del banner
                           principal
                         </DialogContentText>
                       </DialogContent>
@@ -784,6 +803,23 @@ function CarouselAdmin(props) {
         </DialogContent>
         <DialogActions>
           <Button onClick={maxImageClose}>Aceptar</Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog
+        open={withoutImage}
+        onClose={closeWithoutImage}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">{"⚠ Alerta ⚠"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            No puedes dejar el carrusel sin imágenes 😢 
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={closeWithoutImage}>Aceptar</Button>
         </DialogActions>
       </Dialog>
     </>

@@ -29,6 +29,7 @@ import FormControl from "@material-ui/core/FormControl";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import TextField from "@material-ui/core/TextField";
+import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
 import { setProductAtts, getAttributes, getEquation } from "./services.js";
 
 const useStyles = makeStyles((theme) => ({
@@ -118,7 +119,7 @@ export default function ProductGrid(props) {
     >
       {tiles ? (
         tiles.map((tile, iProd, productsArr) => (
-          <Card className={classes.root}>
+          <Card className={classes.root} style={{height: '100%'}}>
             <CardMedia style={{ width: "110%" }}>
               <Carousel
                 autoPlay={false}

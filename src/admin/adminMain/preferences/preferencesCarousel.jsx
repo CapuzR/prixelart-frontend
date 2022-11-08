@@ -257,8 +257,8 @@ function CarouselAdmin(props) {
 
   const deleteImage = async (d) => {
     d.preventDefault();
-    const imagesDesktop = images.images.filter(obj => obj.images.type === 'desktop')
-    const imagesMobile = images.images.filter(obj => obj.images.type === 'mobile')
+    const imagesDesktop = images.images.filter(obj => obj?.images?.type === 'desktop')
+    const imagesMobile = images.images.filter(obj => obj?.images?.type === 'mobile')
     if(imagesDesktop.length + imagesMobile.length === 2){
       openWithoutImage();
     } else{
@@ -307,7 +307,7 @@ function CarouselAdmin(props) {
         res
           .json()
           .then((data) => {
-           newImages({images: data.imagesCarousels === undefined ? data.carouselsImages : data.imagesCarousels})
+           newImages({images: data.imagesCarousels})
             console.log(data)
           })
           .catch((err) => console.error(`Your request is wrong: ${err}`))
@@ -479,9 +479,10 @@ function CarouselAdmin(props) {
       <ImageList cols={isDesktop ? 2 : 1} rowHeight={300}>
           {images.images ? (
             images.images.map((img, key_id) => (
-              img?.images &&
-              img.images?.type ===  'desktop' ?
+              img.images ?
+              img.images.type ===  'desktop' &&
               <ImageListItem key={key_id}>
+                
                 <Box>
                   <Box className={classes.buttons}>
                     <Button

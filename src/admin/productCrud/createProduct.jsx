@@ -390,8 +390,8 @@ export default function CreateProduct() {
                   );
                 })}
             </Grid>
-            <Grid container xs={isDesktop ? 6 : 12}>
-              <Grid item xs={6}>
+            <Grid container xs={isDesktop ? 12 : 12}>
+              <Grid item xs={12} md={6}>
                 <Checkbox
                   checked={active}
                   color="primary"
@@ -402,7 +402,7 @@ export default function CreateProduct() {
                 />{" "}
                 Habilitado / Visible
               </Grid>
-              <Grid item xs={6}>
+              <Grid item xs={12} md={6}>
                 <Checkbox
                   checked={hasSpecialVar}
                   color="primary"
@@ -577,6 +577,7 @@ export default function CreateProduct() {
                 xs={12}
                 fullWidth={true}
               >
+                <InputLabel style={{marginTop: '-5%'}}>Descripción</InputLabel>
                 <MDEditor
                 value={description}
                 onChange={setDescription}

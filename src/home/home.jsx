@@ -189,7 +189,7 @@ export default function Home(props) {
         res
           .json()
           .then((data) => {
-            const imagesDesktop =  data.imagesCarousels.filter(result => result.images?.type === 'desktop');
+            const imagesDesktop =  data.imagesCarousels.filter(result => result.images?.type === 'desktop' || result.carouselImages);
             const imagesMobile =  data.imagesCarousels.filter(result => result.images?.type === 'mobile');
             newImagesDesktop({images: imagesDesktop.length > 0 ? imagesDesktop : data.imagesCarousels })
             newImagesMobile({images: imagesMobile.length > 0 ? imagesMobile : imgsMobile})
@@ -278,7 +278,7 @@ export default function Home(props) {
                           className={classes.heroContent}
                           key={key_id}
                           style={{
-                            backgroundImage: "url(" + img.carouselImages[0] + ")",
+                            backgroundImage: "url(" + img.carouselImages + ")",
                             backgroundSize: "cover",
                             backgroundPosition: "top",
                             marginTop: "-24px",

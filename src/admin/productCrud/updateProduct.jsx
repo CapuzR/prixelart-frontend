@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Title from "../adminMain/Title";
 import axios from "axios";
+import InputLabel from '@material-ui/core/InputLabel';
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import IconButton from "@material-ui/core/IconButton";
@@ -127,7 +128,7 @@ export default function UpdateAdmin(props) {
 
     const indexImage = imagesList.length < 1 ? imagesList.indexOf(thumbUrl) : undefined
 
-    console.log(indexImage)
+ 
 
     imagesList?.map((url) => {
       url?.type === 'images' ?
@@ -138,7 +139,7 @@ export default function UpdateAdmin(props) {
 
     
     if(indexImage === -1){
-      console.log(indexImage)
+
       imagesList.push(thumbUrl)
       imageLoader.loader.push(thumbUrl)
     } 
@@ -148,7 +149,6 @@ export default function UpdateAdmin(props) {
     };
   }, []);
 
-  console.log(imagesList)
 
   const handleClickOpen = () => {
         setOpen(true);
@@ -282,11 +282,11 @@ export default function UpdateAdmin(props) {
               if(videoUrl === ''){
                 imagesList.splice(indexVideo, 1)
               } 
-              newFormData.append("images", url)
+              newFormData.append("images", url.url)
             })
-          images.images.map((file) =>
+          images.images.map((file) =>{
             newFormData.append("newProductImages", file)
-          );
+        });
           newFormData.append('video', videoUrl)
           const base_url =
             process.env.REACT_APP_BACKEND_URL + `/product/update/${productId}`;
@@ -492,8 +492,8 @@ export default function UpdateAdmin(props) {
                   }
                 </Grid>
                 <Grid item xs={12}>
-                  <Grid container xs={isDesktop ? 6 : 12}>
-                    <Grid item xs={6}>
+                  <Grid container xs={isDesktop ? 12 : 12}>
+                    <Grid item xs={12} md={6}>
                       <Checkbox
                         checked={active}
                         color="primary"
@@ -504,7 +504,7 @@ export default function UpdateAdmin(props) {
                       />{" "}
                       Habilitado / Visible
                     </Grid>
-                    <Grid item xs={6}>
+                    <Grid item xs={12} md={6}>
                       <Checkbox
                         checked={hasSpecialVar}
                         color="primary"
@@ -567,6 +567,7 @@ export default function UpdateAdmin(props) {
                     xs={12}
                     fullWidth={true}
                   >
+                    <InputLabel style={{marginTop: '-5%'}}>Descripción</InputLabel>
                 <MDEditor
                 value={description}
                 onChange={setDescription}

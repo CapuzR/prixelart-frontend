@@ -87,12 +87,13 @@ const useStyles = makeStyles((theme) => ({
     paper: {
       padding: theme.spacing(2),
       display: 'flex',
-      overflow: 'none',
+      overflow: 'hidden',
       flexDirection: 'column',
+      height:'auto',
     },
     fixedHeight: {
       height: 'auto',
-      overflow: 'none'
+      overflow: 'hidden'
     },
     fab: {
       right: 0,
@@ -149,7 +150,7 @@ export default function Products(props) {
                   : activeCrud === 'read' ?
                     <ReadProducts setProduct={setProduct}/>
                   : activeCrud === 'update' ?
-                    <div style={{height: '115vh'}}>
+                    <div style={{height: '155vh'}}>
                       <UpdateProduct product={product} setProductEdit={setProductEdit}/>
                     </div>
                   :

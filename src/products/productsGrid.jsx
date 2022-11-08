@@ -22,7 +22,7 @@ import axios from "axios";
 import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
 import ArrowForwardIosIcon from "@material-ui/icons/ArrowForwardIos";
 import MaximizeIcon from "@material-ui/icons/Maximize";
-
+import MDEditor from "@uiw/react-md-editor";
 import Grid from "@material-ui/core/Grid";
 import InputLabel from "@material-ui/core/InputLabel";
 import FormControl from "@material-ui/core/FormControl";
@@ -225,9 +225,12 @@ export default function ProductGrid(props) {
                       " - " +
                       tile.publicPrice?.to}
                 </Typography>
-                <Typography variant="body2" color="textSecondary" component="p">
+                {/* <Typography variant="body2" color="textSecondary" component="p">
                   {tile.description}
-                </Typography>
+                </Typography> */}
+                <MDEditor.Markdown 
+                source={tile.description}
+                style={{ whiteSpace: 'pre-wrap' }}/>
               </CardContent>
             </CardActionArea>
             {tile.hasSpecialVar && (

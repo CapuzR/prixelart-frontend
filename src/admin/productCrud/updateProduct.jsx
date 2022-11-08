@@ -23,6 +23,7 @@ import useMediaQuery from "@material-ui/core/useMediaQuery";
 import HighlightOffOutlinedIcon from "@material-ui/icons/HighlightOffOutlined";
 import EditIcon from "@material-ui/icons/Edit";
 import Box from "@material-ui/core/Box";
+import MDEditor from "@uiw/react-md-editor";
 import Variants from "../adminMain/products/variants";
 import Backdrop from "@material-ui/core/Backdrop";
 
@@ -566,21 +567,12 @@ export default function UpdateAdmin(props) {
                     xs={12}
                     fullWidth={true}
                   >
-                    <TextField
-                      variant="outlined"
-                      required
-                      multiline
-                      fullWidth
-                      rows={2}
-                      id="description"
-                      label="Descripción"
-                      name="description"
-                      autoComplete="description"
-                      value={description}
-                      onChange={(e) => {
-                        setDescription(e.target.value);
-                      }}
-                    />
+                <MDEditor
+                value={description}
+                onChange={setDescription}
+                preview='edit'
+                hideToolbar={false}
+                 />
                   </FormControl>
                 </Grid>
                 <Grid item xs={12} md={6}>

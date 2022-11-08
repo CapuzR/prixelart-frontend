@@ -189,11 +189,10 @@ export default function Home(props) {
         res
           .json()
           .then((data) => {
-            const imagesDesktop = data.imagesCarousels.filter(result => result.images.type === 'desktop')
-            const imagesMobile = data.imagesCarousels.filter(result => result.images.type === 'mobile')
-            newImagesDesktop({images: imagesDesktop})
-            newImagesMobile({images: imagesMobile})
-
+            const imagesDesktop =  data.imagesCarousels.filter(result => result.images?.type === 'desktop');
+            const imagesMobile =  data.imagesCarousels.filter(result => result.images?.type === 'mobile');
+            newImagesDesktop({images: imagesDesktop.length > 0 ? imagesDesktop : data.imagesCarousels })
+            newImagesMobile({images: imagesMobile.length > 0 ? imagesMobile : imgsMobile})
           })
           .catch((err) => console.error(`Your request is wrong: ${err}`))
       )
@@ -262,7 +261,8 @@ export default function Home(props) {
               >
                 {isDesktop
                   ? imagesDesktop.images.map((img, key_id) => (
-                        img.images.type === 'desktop' &&
+                        img.images?.type !== undefined && 
+                        img.images?.type ==='desktop' ?
                         <div
                           className={classes.heroContent}
                           key={key_id}
@@ -273,10 +273,21 @@ export default function Home(props) {
                             marginTop: "-24px",
                           }}
                         ></div>
-                        
+                        :
+                        <div
+                          className={classes.heroContent}
+                          key={key_id}
+                          style={{
+                            backgroundImage: "url(" + img.carouselImages[0] + ")",
+                            backgroundSize: "cover",
+                            backgroundPosition: "top",
+                            marginTop: "-24px",
+                          }}
+                        ></div>
                   ))
                   : imagesMobile.images.map((img, key_id) => (
-                        img.images.type === 'mobile' &&
+                    img.images?.type !== undefined && 
+                    img.images?.type ==='mobile' ?
                         <div
                           className={classes.heroContent}
                           key={key_id}
@@ -284,6 +295,17 @@ export default function Home(props) {
                             backgroundImage: "url(" + img.images.url + ")",
                             backgroundSize: "cover",
                             backgroundPosition: "left",
+                          }}
+                        ></div>
+                        :
+                          <div
+                          className={classes.heroContent}
+                          key={key_id}
+                          style={{
+                            backgroundImage: "url(" + img.url + ")",
+                            backgroundSize: "cover",
+                            backgroundPosition: "top",
+                            marginTop: "-24px",
                           }}
                         ></div>
                     ))

@@ -187,8 +187,6 @@ function CarouselAdmin(props) {
     setUpdate(false);
   };
 
-  console.log(images.images)
-
   // CRUD
   //Editar imagen:
   const handleUpdate = async (x) => {
@@ -222,8 +220,8 @@ function CarouselAdmin(props) {
   // Crear imagen:
   const handleSubmit = async (a) => {
     a.preventDefault();
-    const imagesDesktop = images.images.filter(obj => obj.images.type === 'desktop')
-    const imagesMobile = images.images.filter(obj => obj.images.type === 'mobile')
+    const imagesDesktop = images.images.filter(obj => obj.images?.type === 'desktop')
+    const imagesMobile = images.images.filter(obj => obj.images?.type === 'mobile')
     if (imagesDesktop.length + imagesMobile.length === 12 || imagesDesktop.length === 6 && imagesMobile.length === 6 ) {
       maxImageOpen();
       setLoadImage({
@@ -309,8 +307,8 @@ function CarouselAdmin(props) {
         res
           .json()
           .then((data) => {
-           newImages({images: data.imagesCarousels})
-            
+           newImages({images: data.imagesCarousels === undefined ? data.carouselsImages : data.imagesCarousels})
+            console.log(data)
           })
           .catch((err) => console.error(`Your request is wrong: ${err}`))
       )
@@ -321,6 +319,8 @@ function CarouselAdmin(props) {
   useEffect(() => {
     getImagesForTheCarousel();
   }, []); 
+
+  console.log(images)
 
   return (
     <>
@@ -479,7 +479,8 @@ function CarouselAdmin(props) {
       <ImageList cols={isDesktop ? 2 : 1} rowHeight={300}>
           {images.images ? (
             images.images.map((img, key_id) => (
-              img.images.type === 'desktop' &&
+              img?.images &&
+              img.images?.type ===  'desktop' ?
               <ImageListItem key={key_id}>
                 <Box>
                   <Box className={classes.buttons}>
@@ -563,6 +564,94 @@ function CarouselAdmin(props) {
                       className={classes.images}
                       title={img.images.url}
                       src={img.images.url}
+                    ></img>
+                  </a>
+                </Box>
+              </ImageListItem>
+              :
+              <ImageListItem key={key_id}>
+                <Box>
+                  <Box className={classes.buttons}>
+                    <Button
+                      variant="text"
+                      style={{ color: "white" }}
+                      component="label"
+                    >
+                      <input
+                        type="file"
+                        name="bannerImagesDesktop"
+                        hidden
+                        onChange={(a) => {
+                          a.preventDefault();
+                          loadImage(a);
+                          newImage({
+                            _id: img._id,
+                            file: a.target.files[0],
+                          });
+                        }}
+                      />
+                      <EditIcon />
+                    </Button>
+                    <Button
+                      variant="text"
+                      style={{ color: "white" }}
+                      onClick={handleClickOpen}
+                    >
+                      <HighlightOffOutlinedIcon
+                        onClick={() => {
+                          newImage({
+                            _id: img._id,
+                            file: image.file,
+                          });
+                        }}
+                      />
+                    </Button>
+                    <Dialog
+                      open={open}
+                      onClose={handleClose}
+                      aria-labelledby="alert-dialog-title"
+                      aria-describedby="alert-dialog-description"
+                    >
+                      <DialogTitle id="alert-dialog-title">
+                        {"¿Estás seguro de eliminar esta imagen del carrusel?"}
+                      </DialogTitle>
+                      <DialogContent>
+                        <DialogContentText id="alert-dialog-description">
+                          Ésta imagen ya no se verá en el carrusel del banner
+                          principal
+                        </DialogContentText>
+                      </DialogContent>
+                      <DialogActions>
+                        <Button onClick={handleClose} color="primary">
+                          Cancelar
+                        </Button>
+                        <Button
+                          onClick={(d) => {
+                            deleteImage(d);
+                          }}
+                          color="primary"
+                        >
+                          Aceptar
+                        </Button>
+                      </DialogActions>
+                    </Dialog>
+
+                    <Snackbar
+                      anchorOrigin={{
+                        vertical: "top",
+                        horizontal: "right",
+                      }}
+                      open={update}
+                      onClose={closeUpdate}
+                      autoHideDuration={5000}
+                      message="Imagen borrada exitosamente"
+                    />
+                  </Box>
+                  <a href={img?.carouselImages} target="_BLANK">
+                    <img
+                      className={classes.images}
+                      title={img?.carouselImages}
+                      src={img?.carouselImages}
                     ></img>
                   </a>
                 </Box>
@@ -687,7 +776,7 @@ function CarouselAdmin(props) {
       <ImageList cols={isDesktop ? 2 : 1} rowHeight={300}>
           {images.images ? (
             images.images.map((img, key_id) => (
-              img.images.type === 'mobile' &&
+              img.images?.type ===  'mobile' &&
               <ImageListItem key={key_id} style={{height: '', width: ''}}>
                 <Box>
                   <Box className={classes.buttons} style={{width: ''}}>

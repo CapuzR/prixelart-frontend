@@ -33,6 +33,7 @@ import HighlightOffOutlinedIcon from "@material-ui/icons/HighlightOffOutlined";
 import Box from "@material-ui/core/Box";
 import Checkbox from "@material-ui/core/Checkbox";
 import Backdrop from "@material-ui/core/Backdrop";
+import MDEditor from "@uiw/react-md-editor";
 import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
@@ -576,21 +577,12 @@ export default function CreateProduct() {
                 xs={12}
                 fullWidth={true}
               >
-                <TextField
-                  variant="outlined"
-                  required
-                  multiline
-                  fullWidth
-                  rows={2}
-                  id="description"
-                  label="Descripción"
-                  name="description"
-                  autoComplete="description"
-                  value={description}
-                  onChange={(e) => {
-                    setDescription(e.target.value);
-                  }}
-                />
+                <MDEditor
+                value={description}
+                onChange={setDescription}
+                preview='edit'
+                hideToolbar={false}
+                 />
               </FormControl>
             </Grid>
             <Grid item xs={12} md={6}>

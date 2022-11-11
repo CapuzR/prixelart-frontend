@@ -128,8 +128,6 @@ export default function UpdateAdmin(props) {
 
     const indexImage = imagesList.length < 1 ? imagesList.indexOf(thumbUrl) : undefined
 
- 
-
     imagesList?.map((url) => {
       url?.type === 'images' ?
       imageLoader.loader.push(url.url)
@@ -139,7 +137,6 @@ export default function UpdateAdmin(props) {
 
     
     if(indexImage === -1){
-
       imagesList.push(thumbUrl)
       imageLoader.loader.push(thumbUrl)
     } 
@@ -257,9 +254,12 @@ export default function UpdateAdmin(props) {
             ],
           };
 
-        const currentVideo = imagesList?.find(result => result.type === 'video');
+        const currentVideo = 
+        typeof imagesList.find(result => result.type === 'video') === 'object' ?
+        imagesList.find(result => result.type === 'video') 
+        :
+        false;
         const indexVideo = imagesList.indexOf(currentVideo);
-
           newFormData.append("active", active);
           newFormData.append("name", productName);
           newFormData.append("description", description);
@@ -273,13 +273,13 @@ export default function UpdateAdmin(props) {
           newFormData.append("hasSpecialVar", hasSpecialVar);
           imagesList.length > 1
             ? imagesList.map((url) => {
-              if(videoUrl === ''){
+              if(videoUrl === '' && currentVideo !== false){
                 imagesList.splice(indexVideo, 1)
               } 
               newFormData.append("images", url.url)
             })
             : imagesList.map((url) => {
-              if(videoUrl === ''){
+              if(videoUrl === ''  && currentVideo !== false){
                 imagesList.splice(indexVideo, 1)
               } 
               newFormData.append("images", url.url)

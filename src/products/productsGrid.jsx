@@ -117,7 +117,7 @@ export default function ProductGrid(props) {
     >
       {tiles ? (
         tiles.map((tile, iProd, productsArr) => (
-          <Card className={classes.root} style={{height: '100%'}}>
+          <Card className={classes.root} style={{ height: "100%" }}>
             <CardMedia style={{ width: "110%" }}>
               <Carousel
                 autoPlay={false}
@@ -203,7 +203,7 @@ export default function ProductGrid(props) {
               </Carousel>
             </CardMedia>
             <CardActionArea style={{ alignContent: "space-between" }}>
-              <CardContent>
+              <CardContent data-color-mode="light">
                 <Typography
                   gutterBottom
                   style={{ padding: 0, marginBotom: 12, width: 10 }}
@@ -247,9 +247,10 @@ export default function ProductGrid(props) {
                 {/* <Typography variant="body2" color="textSecondary" component="p">
                   {tile.description}
                 </Typography> */}
-                <MDEditor.Markdown 
-                source={tile.description}
-                style={{ whiteSpace: 'pre-wrap' }}/>
+                <MDEditor.Markdown
+                  source={tile.description}
+                  style={{ whiteSpace: "pre-wrap" }}
+                />
               </CardContent>
             </CardActionArea>
             {tile.hasSpecialVar && (

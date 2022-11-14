@@ -1,18 +1,26 @@
-import React from "react";
-import { makeStyles } from "@material-ui/core/styles";
+import React, { useState } from "react";
+import { makeStyles, useTheme } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
 import InputBase from "@material-ui/core/InputBase";
 import IconButton from "@material-ui/core/IconButton";
-import MenuIcon from "@material-ui/icons/Menu";
+import Typography from "@material-ui/core/Typography";
+import TextField from "@material-ui/core/TextField";
+import Autocomplete from "@material-ui/lab/Autocomplete";
 import SearchIcon from "@material-ui/icons/Search";
-import { useState } from "react";
+import clsx from "clsx";
+import Input from "@material-ui/core/Input";
+import InputLabel from "@material-ui/core/InputLabel";
+import MenuItem from "@material-ui/core/MenuItem";
+import FormControl from "@material-ui/core/FormControl";
+import Select from "@material-ui/core/Select";
 
 const useStyles = makeStyles((theme) => ({
   root: {
     padding: "2px 4px",
     display: "flex",
+    // flexDirection: "column",
     alignItems: "center",
-    width: 400,
+    width: 600,
   },
   input: {
     marginLeft: theme.spacing(1),
@@ -21,46 +29,112 @@ const useStyles = makeStyles((theme) => ({
   iconButton: {
     padding: 10,
   },
-  divider: {
-    height: 28,
-    margin: 4,
+  formControl: {
+    margin: theme.spacing(1),
+    minWidth: 150,
+    width: 400,
   },
 }));
-
 export default function CustomizedInputBase(props) {
   const classes = useStyles();
   let params = new URLSearchParams(window.location.search);
+  const theme = useTheme();
   const [queryValue, setQueryValue] = useState(
-    params.get("name", "description", "tags")
+    params.get("name", "description", "tags", "categories")
   );
+  const [categories, setCategories] = useState("");
+  const categoriesList = [
+    "Abstracto",
+    "Animales",
+    "Arquitectura",
+    "Atardecer",
+    "Cacao",
+    "Café",
+    "Carros",
+    "Ciudades",
+    "Comida",
+    "Edificios",
+    "Fauna",
+    "Flora",
+    "Lanchas, barcos o yates",
+    "Montañas",
+    "Naturaleza",
+    "Navidad",
+    "Playas",
+    "Puentes",
+    "Surrealista",
+    "Transportes",
+    "Vehículos",
+  ];
+
+  const ITEM_HEIGHT = 48;
+  const ITEM_PADDING_TOP = 8;
+  const MenuProps = {
+    PaperProps: {
+      style: {
+        maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+        width: 250,
+      },
+    },
+  };
+
+  function getStyles(categorie, categories, theme) {
+    return {
+      fontWeight:
+        categories.indexOf(categorie) === -1
+          ? theme.typography.fontWeightRegular
+          : theme.typography.fontWeightMedium,
+    };
+  }
+
+  const handleChange = (event) => {
+    setCategories(event);
+  };
+
   return (
     <Paper component="form" className={classes.root}>
-      <IconButton className={classes.iconButton} aria-label="menu">
-        <MenuIcon />
-      </IconButton>
-      <InputBase
-        className={classes.input}
-        placeholder="Search your favorite"
-        inputProps={{ "aria-label": "search your favorite" }}
-        value={queryValue}
-        onChange={(e) => {
-          setQueryValue(e.target.value);
-        }}
-      />
-      <IconButton
-        type="submit"
-        className={classes.iconButton}
-        aria-label="search"
-        onClick={(e) => {
-          props.searchPhotos(e, queryValue);
-        }}
-      >
-        <SearchIcon />
-      </IconButton>
-      {/* <Divider className={classes.divider} orientation="vertical" />
-      <IconButton color="primary" className={classes.iconButton} aria-label="directions">
-        <DirectionsIcon />
-      </IconButton> */}
+      <div style={{ display: "flex" }}>
+        <IconButton
+          type="submit"
+          className={classes.iconButton}
+          aria-label="search"
+          onClick={(e) => {
+            props.searchPhotos(e, queryValue);
+          }}
+        >
+          <SearchIcon />
+        </IconButton>
+        <InputBase
+          className={classes.input}
+          placeholder="Busca tu arte favorito"
+          inputProps={{ "aria-label": "Busca tu arte favorito" }}
+          value={queryValue}
+          onChange={(e) => {
+            setQueryValue(e.target.value);
+          }}
+        />
+      </div>
+      {/* <FormControl className={classes.formControl}>
+        <InputLabel>Categoría</InputLabel>
+        <Select
+          value={categories}
+          onChange={(e) => {
+            handleChange(e.target.value);
+          }}
+          input={<Input />}
+          MenuProps={MenuProps}
+        >
+          {categoriesList.map((categorie) => (
+            <MenuItem
+              key={categorie}
+              value={categorie}
+              style={getStyles(categorie, categories, theme)}
+            >
+              {categorie}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl> */}
     </Paper>
   );
 }

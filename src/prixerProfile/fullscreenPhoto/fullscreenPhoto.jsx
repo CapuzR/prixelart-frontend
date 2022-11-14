@@ -371,9 +371,9 @@ export default function FullscreePhoto(props) {
     readArt();
   };
 
-  const getChecked = () => {
-    setChecked((check) => !check);
-  };
+  // const getChecked = () => {
+  //   setChecked((check) => !check);
+  // };
 
   const readArt = async () => {
     setLoading(true);
@@ -383,7 +383,7 @@ export default function FullscreePhoto(props) {
       const data = {
         username: props.match.params.username,
       };
-      let res = await axios.post(base_url, data).then((response) => {
+      await axios.post(base_url, data).then((response) => {
         if (tiles.length !== response.data.arts.length) {
           setTiles(response.data.arts);
           setReady(true);
@@ -393,10 +393,10 @@ export default function FullscreePhoto(props) {
               block: "center",
             });
           } else {
-            // setSnackBarMessage(
-            //   "Arte no encontrado, por favor inténtalo de nuevo."
-            // );
-            // setSnackBar(true);
+            setSnackBarMessage(
+              "Arte no encontrado, por favor inténtalo de nuevo."
+            );
+            setSnackBar(true);
           }
         }
       });

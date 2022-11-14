@@ -39,6 +39,24 @@ export default function MultilineTextFields(props) {
     const response = await axios.put(base_url, {
       termsAndConditions: value,
     });
+    // changeTermsAgree();
+  };
+
+  const changeTermsAgree = async () => {
+    const base_url =
+      process.env.REACT_APP_BACKEND_URL + "/prixer/read-all-full";
+    let prixersIds = [];
+    const response = await axios.get(base_url).then((response) => {
+      for (const { prixerId: prixerId } of response.data.prixers) {
+        prixersIds.push(prixerId);
+      }
+    });
+    const base_url2 =
+      process.env.REACT_APP_BACKEND_URL +
+      "/prixer/update-home/updateTermsAgree" +
+      prixersIds;
+    const response2 = await axios.put(base_url2, { termsAgree: false });
+    console.log(response2.data);
   };
 
   useEffect(() => {

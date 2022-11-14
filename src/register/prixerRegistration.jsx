@@ -24,7 +24,6 @@ import FormControl from "@material-ui/core/FormControl";
 import Input from "@material-ui/core/Input";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import Modal from "@material-ui/core/Modal";
-import { ContentState, convertFromRaw, convertToRaw } from "draft-js";
 import MDEditor from "@uiw/react-md-editor";
 
 function Copyright() {
@@ -98,7 +97,6 @@ const useStyles = makeStyles((theme) => ({
     maxHeight: 450,
     overflowY: "auto",
     backgroundColor: "white",
-    border: "2px solid #000",
     boxShadow: theme.shadows[5],
     padding: "16px 32px 24px",
     top: "50%",
@@ -216,9 +214,7 @@ export default function PrixerRegistration() {
       !phone ||
       !country ||
       !city ||
-      // !description ||
       !termsAgree
-      // || !avatar
     ) {
       setErrorMessage("Por favor completa todos los campos requeridos.");
       setSnackBarError(true);
@@ -247,22 +243,6 @@ export default function PrixerRegistration() {
 
       const base_url =
         process.env.REACT_APP_BACKEND_URL + "/prixer-registration";
-      // const data = {
-      //   specialtyArt: specialty,
-      //   instagram: instagram,
-      //   facebook: facebook,
-      //   twitter: twitter,
-      //   dateOfBirth: dateOfBirth,
-      //   phone: phone,
-      //   country: country,
-      //   city: city,
-      //   description: description,
-      //   termsAgree: isChecked,
-      //   status: status,
-      //   avatar: avatarPic,
-      //   username: JSON.parse(localStorage.getItem("token")).username,
-      // };
-
       axios
         .post(base_url, formData, {
           "Content-Type": "multipart/form-data",

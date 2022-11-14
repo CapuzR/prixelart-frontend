@@ -5,12 +5,9 @@ import React, { useState, useEffect } from "react";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 import { useTheme } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
-import GridList from "@material-ui/core/GridList";
-import GridListTile from "@material-ui/core/GridListTile";
 import axios from "axios";
 import { useHistory } from "react-router-dom";
 import TextField from "@material-ui/core/TextField";
-import Snackbar from "@material-ui/core/Snackbar";
 import Button from "@material-ui/core/Button";
 import Backdrop from "@material-ui/core/Backdrop";
 import CircularProgress from "@material-ui/core/CircularProgress";
@@ -28,7 +25,6 @@ import SearchBar from "../../sharedComponents/searchBar/searchBar.jsx";
 import IconButton from "@material-ui/core/IconButton";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
-import MoreVertIcon from "@material-ui/icons/MoreVert";
 
 const IOSSwitch = withStyles((theme) => ({
   root: {
@@ -86,15 +82,6 @@ const IOSSwitch = withStyles((theme) => ({
 });
 
 const useStyles = makeStyles((theme) => ({
-  gridItem: {
-    float: "left",
-    width: "80px",
-    height: "60px",
-    border: "2px",
-  },
-  gridItemWidth2: { width: "160px" },
-  gridItemHeight2: { height: "140px" },
-
   root: {
     display: "flex",
     flexWrap: "wrap",
@@ -102,10 +89,6 @@ const useStyles = makeStyles((theme) => ({
     overflow: "hidden",
     backgroundColor: theme.palette.background.paper,
     marginBottom: "20px",
-  },
-  gridList: {
-    // maxWidth: 850,
-    paddingTop: 15,
   },
   img: {
     [theme.breakpoints.down("sm")]: {
@@ -144,32 +127,18 @@ export default function Grid(props) {
   );
   const [backdrop, setBackdrop] = useState(true);
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
+  // const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  // const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
   const [snackBar, setSnackBar] = useState(false);
   const [loading, setLoading] = useState(false);
   const [snackBarMessage, setSnackBarMessage] = useState(false);
-  const [openArtFormDialog, setOpenArtFormDialog] = useState(false);
   const [selectedArt, setSelectedArt] = useState(undefined);
   const [open, setOpen] = useState(false);
-  const [anchor, setAnchor] = useState(null);
   const [openV, setOpenV] = useState(false);
   const [disabledReason, setDisabledReason] = useState("");
   const [visible, setVisible] = useState(true);
   const [visibles, setVisibles] = useState([]);
-  const [checked, setChecked] = useState(true);
 
-  const openMenu = () => {
-    setAnchor(true);
-  };
-
-  const closeMenu = () => {
-    setAnchor(false);
-  };
-
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
   const handleClickVisible = () => {
     setOpenV(true);
   };
@@ -205,10 +174,6 @@ export default function Grid(props) {
       setLoading(false);
       setDisabledReason("");
     }
-  };
-
-  const getChecked = () => {
-    setChecked((check) => !check);
   };
 
   useEffect(() => {
@@ -265,7 +230,7 @@ export default function Grid(props) {
     });
   };
 
-  const searchPhotos = (e, queryValue) => {
+  const searchPhotos = (e, queryValue, categories) => {
     setSearchValue(queryValue);
     if (props.prixerUsername || globalParams.get("prixer")) {
       if (globalParams.get("prixer")) {
@@ -292,7 +257,6 @@ export default function Grid(props) {
     columnWidth: 200,
     itemSelector: ".grid-item",
   });
-
   return (
     <>
       <div className={classes.root}>

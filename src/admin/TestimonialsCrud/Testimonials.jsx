@@ -23,6 +23,7 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from "@material-ui/icons/Edit";
 import Snackbar from "@material-ui/core/Snackbar";
 import IconButton from "@material-ui/core/IconButton";
+// import { Draggable } from "@shopify/draggable";
 
 function getStyles(type, theme) {
   return {
@@ -210,7 +211,6 @@ export default function Testimonials() {
     handleChange(e);
     const base_url =
       process.env.REACT_APP_BACKEND_URL + "/testimonial/update-home/" + GetId;
-    console.log(e.target);
     const response = await axios.put(
       base_url,
       { status: e.target.checked },
@@ -263,6 +263,10 @@ export default function Testimonials() {
   };
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
+  // const draggable = new Draggable(document.querySelectorAll("ul"), {
+  //   draggable: "li",
+  // });
+
   return (
     <div className={classes.root}>
       <Backdrop className={classes.backdrop} open={loading}>
@@ -292,6 +296,7 @@ export default function Testimonials() {
             padding: isMobile ? "0px" : "18px",
             display: "flex",
             textAlign: "start",
+            justifyContent: "center",
           }}
         >
           <Grid
@@ -320,7 +325,15 @@ export default function Testimonials() {
                 className={classes.form}
                 margin={6}
               >
-                <Grid container spacing={1} style={{ paddingBottom: "10px" }}>
+                <Grid
+                  container
+                  spacing={1}
+                  style={{
+                    paddingBottom: "10px",
+                    display: "flex",
+                    justifyContent: "center",
+                  }}
+                >
                   {loading && (
                     <div className={classes.loading}>
                       <CircularProgress />

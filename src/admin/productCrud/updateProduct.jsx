@@ -3,15 +3,15 @@ import { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Title from "../adminMain/Title";
 import axios from "axios";
-import InputLabel from '@material-ui/core/InputLabel';
+import InputLabel from "@material-ui/core/InputLabel";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import IconButton from "@material-ui/core/IconButton";
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
+import Dialog from "@material-ui/core/Dialog";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogContentText from "@material-ui/core/DialogContentText";
+import DialogTitle from "@material-ui/core/DialogTitle";
 import Grid from "@material-ui/core/Grid";
 import Snackbar from "@material-ui/core/Snackbar";
 import CircularProgress from "@material-ui/core/CircularProgress";
@@ -84,7 +84,7 @@ export default function UpdateAdmin(props) {
   const [imagesList, setImagesList] = useState(props?.product?.sources.images);
   const [active, setActive] = useState(props?.product?.active);
   const [productName, setProductName] = useState(props?.product?.name);
-  const [variants, setVariants ] = useState(props?.product?.variants)
+  const [variants, setVariants] = useState(props?.product?.variants);
   const [description, setDescription] = useState(props?.product?.description);
   const [category, setCategory] = useState(props?.product?.category);
   const [considerations, setConsiderations] = useState(
@@ -109,12 +109,11 @@ export default function UpdateAdmin(props) {
   const [hasSpecialVar, setHasSpecialVar] = useState(
     props?.product?.hasSpecialVar || false
   );
-  const [ videoUrl, setVideoUrl ] = useState('')
+  const [videoUrl, setVideoUrl] = useState("");
   const [imageLoader, setLoadImage] = useState({
     loader: [],
     filename: "Subir imagenes",
   });
-
 
   //Error states.
   const [errorMessage, setErrorMessage] = useState();
@@ -125,34 +124,31 @@ export default function UpdateAdmin(props) {
   const [mustImage, setMustImages] = useState(false);
 
   useEffect(() => {
-
-    const indexImage = imagesList.length < 1 ? imagesList.indexOf(thumbUrl) : undefined
+    const indexImage =
+      imagesList.length < 1 ? imagesList.indexOf(thumbUrl) : undefined;
 
     imagesList?.map((url) => {
-      url?.type === 'images' ?
-      imageLoader.loader.push(url.url)
-      :
-      setVideoUrl(url.url)
+      url?.type === "images"
+        ? imageLoader.loader.push(url.url)
+        : setVideoUrl(url.url);
     });
 
-    
-    if(indexImage === -1){
-      imagesList.push(thumbUrl)
-      imageLoader.loader.push(thumbUrl)
-    } 
+    if (indexImage === -1) {
+      imagesList.push(thumbUrl);
+      imageLoader.loader.push(thumbUrl);
+    }
 
     return () => {
       localStorage.removeItem("product");
     };
   }, []);
 
-
   const handleClickOpen = () => {
-        setOpen(true);
+    setOpen(true);
   };
 
   const handleClose = () => {
-      setOpen(false);
+    setOpen(false);
   };
 
   //Preview de imagen antes de enviar
@@ -192,16 +188,14 @@ export default function UpdateAdmin(props) {
   };
 
   const modifyString = (a, sti) => {
-      const url = sti.split(' ')
-      const width = sti.replace('560', '326').replace('315', '326');
-      const previewMp4 = sti.replace('1350', '510').replace('494', '350');
-      setVideoUrl(width)
-      // const index = url[3].indexOf()
-      // sti.replace(index, '?controls=0\"')
+    const url = sti.split(" ");
+    const width = sti.replace("560", "326").replace("315", "326");
+    const previewMp4 = sti.replace("1350", "510").replace("494", "350");
+    setVideoUrl(width);
+    // const index = url[3].indexOf()
+    // sti.replace(index, '?controls=0\"')
     //sti[79]
-  }
-  
-
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -254,17 +248,17 @@ export default function UpdateAdmin(props) {
             ],
           };
 
-        const currentVideo = 
-        typeof imagesList.find(result => result.type === 'video') === 'object' ?
-        imagesList.find(result => result.type === 'video') 
-        :
-        false;
-        const indexVideo = imagesList.indexOf(currentVideo);
+          const currentVideo =
+            typeof imagesList.find((result) => result.type === "video") ===
+            "object"
+              ? imagesList.find((result) => result.type === "video")
+              : false;
+          const indexVideo = imagesList.indexOf(currentVideo);
           newFormData.append("active", active);
           newFormData.append("name", productName);
           newFormData.append("description", description);
           newFormData.append("category", category);
-          newFormData.append('variants', JSON.stringify(variants))
+          newFormData.append("variants", JSON.stringify(variants));
           newFormData.append("considerations", considerations);
           newFormData.append("publicPriceFrom", data.publicPrice.from);
           newFormData.append("publicPriceTo", data.publicPrice.to);
@@ -273,21 +267,21 @@ export default function UpdateAdmin(props) {
           newFormData.append("hasSpecialVar", hasSpecialVar);
           imagesList.length > 1
             ? imagesList.map((url) => {
-              if(videoUrl === '' && currentVideo !== false){
-                imagesList.splice(indexVideo, 1)
-              } 
-              newFormData.append("images", url.url)
-            })
+                if (videoUrl === "" && currentVideo !== false) {
+                  imagesList.splice(indexVideo, 1);
+                }
+                newFormData.append("images", url.url);
+              })
             : imagesList.map((url) => {
-              if(videoUrl === ''  && currentVideo !== false){
-                imagesList.splice(indexVideo, 1)
-              } 
-              newFormData.append("images", url.url)
-            })
-          images.images.map((file) =>{
-            newFormData.append("newProductImages", file)
-        });
-          newFormData.append('video', videoUrl)
+                if (videoUrl === "" && currentVideo !== false) {
+                  imagesList.splice(indexVideo, 1);
+                }
+                newFormData.append("images", url.url);
+              });
+          images.images.map((file) => {
+            newFormData.append("newProductImages", file);
+          });
+          newFormData.append("video", videoUrl);
           const base_url =
             process.env.REACT_APP_BACKEND_URL + `/product/update/${productId}`;
           const response = await axios.put(base_url, newFormData);
@@ -311,7 +305,6 @@ export default function UpdateAdmin(props) {
     setShowVariants(true);
     props.setProductEdit(false);
   };
-
 
   return (
     <React.Fragment>
@@ -404,8 +397,12 @@ export default function UpdateAdmin(props) {
                       />
                     </Button>
                     - O -
-                    <Button variant="contained" componenet="label" onClick={handleClickOpen}>
-                     Upload video
+                    <Button
+                      variant="contained"
+                      componenet="label"
+                      onClick={handleClickOpen}
+                    >
+                      Upload video
                     </Button>
                   </FormControl>
                 </Grid>
@@ -487,9 +484,8 @@ export default function UpdateAdmin(props) {
                             alt="+"
                           />
                         </div>
-                      )
-                    })
-                  }
+                      );
+                    })}
                 </Grid>
                 <Grid item xs={12}>
                   <Grid container xs={isDesktop ? 12 : 12}>
@@ -563,17 +559,20 @@ export default function UpdateAdmin(props) {
                 <Grid item xs={12} md={6}>
                   <FormControl
                     className={clsx(classes.margin, classes.textField)}
+                    data-color-mode="light"
                     variant="outlined"
                     xs={12}
                     fullWidth={true}
                   >
-                    <InputLabel style={{marginTop: '-5%'}}>Descripción</InputLabel>
-                <MDEditor
-                value={description}
-                onChange={setDescription}
-                preview='edit'
-                hideToolbar={false}
-                 />
+                    <InputLabel style={{ marginTop: "-5%" }}>
+                      Descripción
+                    </InputLabel>
+                    <MDEditor
+                      value={description}
+                      onChange={setDescription}
+                      preview="edit"
+                      hideToolbar={false}
+                    />
                   </FormControl>
                 </Grid>
                 <Grid item xs={12} md={6}>
@@ -713,33 +712,32 @@ export default function UpdateAdmin(props) {
         </div>
       )}
       <Dialog open={open} onClose={handleClose}>
-      <DialogTitle>Youtube Url</DialogTitle>
-      <DialogContent>
-        <DialogContentText>
-          Copia y pega la url que quieres mostrar en el carrusel de imagenes
-        </DialogContentText>
-        <div id='ll'>
-        </div>
-        <TextField
-        onChange={(a)=>{
-            modifyString(a, a.target.value)
-        }}
-          value={videoUrl}
-          autoFocus
-          label="Url"
-          type="text"
-          fullWidth
-        />
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={handleClose} color="primary">
-          Cancel
-        </Button>
-        <Button onClick={handleClose} color="primary">
-          Aceptar
-        </Button>
-      </DialogActions>
-    </Dialog>
+        <DialogTitle>Youtube Url</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Copia y pega la url que quieres mostrar en el carrusel de imagenes
+          </DialogContentText>
+          <div id="ll"></div>
+          <TextField
+            onChange={(a) => {
+              modifyString(a, a.target.value);
+            }}
+            value={videoUrl}
+            autoFocus
+            label="Url"
+            type="text"
+            fullWidth
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleClose} color="primary">
+            Aceptar
+          </Button>
+        </DialogActions>
+      </Dialog>
       <Snackbar
         open={snackBarError}
         autoHideDuration={1000}

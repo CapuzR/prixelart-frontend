@@ -1,5 +1,4 @@
-import React, { useState, Suspense, useEffect } from "react";
-// import AppBar from '@material-ui/core/AppBar';
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useTheme } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
@@ -26,18 +25,17 @@ import SimpleDialog from "../sharedComponents/simpleDialog/simpleDialog";
 import FloatingAddButton from "../sharedComponents/floatingAddButton/floatingAddButton";
 import Modal from "@material-ui/core/Modal";
 import Button from "@material-ui/core/Button";
+import MDEditor from "@uiw/react-md-editor";
 
 import WhatsAppIcon from "@material-ui/icons/WhatsApp";
 import MaximizeIcon from "@material-ui/icons/Maximize";
 import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
 import ArrowForwardIosIcon from "@material-ui/icons/ArrowForwardIos";
 
-import { useHistory } from "react-router-dom";
+// import { useHistory } from "react-router-dom";
 import ArtUploader from "../sharedComponents/artUploader/artUploader";
-import utils from "../utils/utils";
+// import utils from "../utils/utils";
 import TestimonialsFeed from "../admin/TestimonialsCrud/TestimonialsFeed";
-
-import MDEditor from "@uiw/react-md-editor";
 
 function Copyright() {
   return (
@@ -56,7 +54,7 @@ const useStyles = makeStyles((theme) => ({
   iconTabs: {
     flexGrow: 1,
     width: "100%",
-    maxWidth: 666,
+    maxWidth: 800,
     margin: "auto",
     marginBottom: 50,
   },
@@ -137,6 +135,7 @@ export default function Home(props) {
   const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
   const isDeskTop = useMediaQuery(theme.breakpoints.up("sm"));
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  // const isPhone5 =
   const classes = useStyles();
   const prixerUsername = "all";
   const [imagesDesktop, newImagesDesktop] = useState({ images: [] });
@@ -147,9 +146,9 @@ export default function Home(props) {
   const [openArts, setOpenArts] = useState(true);
   const [openTestimonials, setOpenTestimonials] = useState(false);
   // const [scrolledTop, setScrolledTop] = useState(false);
-  const history = useHistory();
+  // const history = useHistory();
   const [openArtFormDialog, setOpenArtFormDialog] = useState(false);
-  const rootRef = React.useRef(null);
+  // const rootRef = React.useRef(null);
   const [termsAgreeVar, setTermsAgreeVar] = useState(true);
   const [value, setValue] = useState("");
 
@@ -214,34 +213,6 @@ export default function Home(props) {
         console.log(error);
       });
   };
-
-  const getImagesForTheCarousel = () => {
-    const URI =
-      process.env.REACT_APP_BACKEND_URL + "/admin/preferences/carousel";
-    fetch(URI)
-      .then((res) =>
-        res
-          .json()
-          .then((data) => {
-            const imagesDesktop =  data.imagesCarousels.filter(result => result.images?.type === 'desktop' || result.carouselImages);
-            const imagesMobile =  data.imagesCarousels.filter(result => result.images?.type === 'mobile');
-            newImagesDesktop({images: imagesDesktop.length > 0 ? imagesDesktop : data.imagesCarousels })
-            newImagesMobile({images: imagesMobile.length > 0 ? imagesMobile : imgsMobile})
-          })
-          .catch((err) => console.error(`Your request is wrong: ${err}`))
-      )
-      .catch((err) => console.error(err));
-  };
-
-  const TermsAgreeModal = () => {
-    const GetId = JSON.parse(localStorage.getItem("token")).username;
-    const base_url = process.env.REACT_APP_BACKEND_URL + "/prixer/get/" + GetId;
-    axios.get(base_url).then((response) => {
-      setTermsAgreeVar(response.data.termsAgree);
-      getTerms();
-    });
-  };
-
   const handleSubmit = async (e, Id) => {
     e.preventDefault();
     const formData = new FormData();
@@ -264,6 +235,43 @@ export default function Home(props) {
       .then((response) => {
         setTermsAgreeVar(true);
       });
+  };
+
+  const getImagesForTheCarousel = () => {
+    const URI =
+      process.env.REACT_APP_BACKEND_URL + "/admin/preferences/carousel";
+    fetch(URI)
+      .then((res) =>
+        res
+          .json()
+          .then((data) => {
+            const imagesDesktop = data.imagesCarousels.filter(
+              (result) =>
+                result.images?.type === "desktop" || result.carouselImages
+            );
+            const imagesMobile = data.imagesCarousels.filter(
+              (result) => result.images?.type === "mobile"
+            );
+            newImagesDesktop({
+              images:
+                imagesDesktop.length > 0 ? imagesDesktop : data.imagesCarousels,
+            });
+            newImagesMobile({
+              images: imagesMobile.length > 0 ? imagesMobile : imgsMobile,
+            });
+          })
+          .catch((err) => console.error(`Your request is wrong: ${err}`))
+      )
+      .catch((err) => console.error(err));
+  };
+
+  const TermsAgreeModal = () => {
+    const GetId = JSON.parse(localStorage.getItem("token")).username;
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/prixer/get/" + GetId;
+    axios.get(base_url).then((response) => {
+      setTermsAgreeVar(response.data.termsAgree);
+      getTerms();
+    });
   };
 
   useEffect(() => {
@@ -319,9 +327,9 @@ export default function Home(props) {
                 }}
               >
                 {isDesktop
-                  ? imagesDesktop.images.map((img, key_id) => (
-                        img.images?.type !== undefined && 
-                        img.images?.type ==='desktop' ?
+                  ? imagesDesktop.images.map((img, key_id) =>
+                      img.images?.type !== undefined &&
+                      img.images?.type === "desktop" ? (
                         <div
                           className={classes.heroContent}
                           key={key_id}
@@ -332,7 +340,7 @@ export default function Home(props) {
                             marginTop: "-24px",
                           }}
                         ></div>
-                        :
+                      ) : (
                         <div
                           className={classes.heroContent}
                           key={key_id}
@@ -343,10 +351,11 @@ export default function Home(props) {
                             marginTop: "-24px",
                           }}
                         ></div>
-                  ))
-                  : imagesMobile.images.map((img, key_id) => (
-                    img.images?.type !== undefined && 
-                    img.images?.type ==='mobile' ?
+                      )
+                    )
+                  : imagesMobile.images.map((img, key_id) =>
+                      img.images?.type !== undefined &&
+                      img.images?.type === "mobile" ? (
                         <div
                           className={classes.heroContent}
                           key={key_id}
@@ -356,8 +365,8 @@ export default function Home(props) {
                             backgroundPosition: "left",
                           }}
                         ></div>
-                        :
-                          <div
+                      ) : (
+                        <div
                           className={classes.heroContent}
                           key={key_id}
                           style={{
@@ -367,8 +376,8 @@ export default function Home(props) {
                             marginTop: "-24px",
                           }}
                         ></div>
-                    ))
-                    }
+                      )
+                    )}
               </Carousel>
             </div>
             <div
@@ -405,34 +414,54 @@ export default function Home(props) {
           </Card>
           <Container className={classes.cardGrid} maxWidth="xl">
             <Grid container spacing={1}>
-              <Paper square className={classes.iconTabs}>
+              <Paper
+                square
+                className={classes.iconTabs}
+                style={{
+                  display: isMobile ? "grid" : "flex",
+                  gridTemplateColumns: isMobile ? "50%, 2fr" : "",
+                  // flexDirection: isMobile ? "column" : "row",
+                  justifyContent: "center",
+                }}
+              >
                 <Tabs
                   value={tabValue}
                   onChange={handleChange}
                   variant="fullWidth"
                   indicatorColor="primary"
                   textColor="secondary"
-                  aria-label="icon label tabs example"
                 >
                   <Tab
                     icon={<PhotoLibraryIcon />}
                     label="ARTES"
-                    style={{ fontSize: isMobile ? "0.62rem" : "0.875rem" }}
+                    style={{
+                      fontSize: isMobile ? "0.62rem" : "0.875rem",
+                      width: "25%",
+                    }}
                   />
                   <Tab
                     icon={<FavoriteIcon />}
                     label="PRIXERS"
-                    style={{ fontSize: isMobile ? "0.62rem" : "0.875rem" }}
+                    style={{
+                      fontSize: isMobile ? "0.62rem" : "0.875rem",
+                      width: "25%",
+                    }}
                   />
                   <Tab
                     icon={<InsertEmoticon />}
                     label="TESTIMONIOS"
-                    style={{ fontSize: isMobile ? "0.62rem" : "0.875rem" }}
+                    style={{
+                      fontSize: isMobile ? "0.62rem" : "0.875rem",
+                      width: "25%",
+                    }}
                   />
                   <Tab
                     icon={<PhoneIcon />}
                     label="TE ASESORAMOS"
-                    style={{ fontSize: isMobile ? "0.62rem" : "0.875rem" }}
+                    style={{
+                      fontSize: isMobile ? "0.62rem" : "0.875rem",
+                      width: "25%",
+                    }}
                   />
                 </Tabs>
               </Paper>
@@ -529,7 +558,7 @@ export default function Home(props) {
               >
                 CONVENIO DE RELACIÓN ENTRE LOS ARTISTAS Y LA COMPAÑÍA
               </div>
-              <div>
+              <div data-color-mode="light">
                 <MDEditor.Markdown
                   source={value}
                   style={{ textAlign: "justify" }}

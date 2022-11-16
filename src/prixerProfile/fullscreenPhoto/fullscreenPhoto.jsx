@@ -5,7 +5,6 @@ import Card from "@material-ui/core/Card";
 import CardActionArea from "@material-ui/core/CardActionArea";
 import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
-import CardMedia from "@material-ui/core/CardMedia";
 import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
 import axios from "axios";
@@ -22,7 +21,6 @@ import WhatsAppIcon from "@material-ui/icons/WhatsApp";
 import utils from "../../utils/utils";
 import MenuItem from "@material-ui/core/MenuItem";
 import FormControl from "@material-ui/core/FormControl";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
 import InputLabel from "@material-ui/core/InputLabel";
 import Select from "@material-ui/core/Select";
 import Img from "react-cool-img";
@@ -33,6 +31,8 @@ import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import Switch from "@material-ui/core/Switch";
 import Chip from "@material-ui/core/Chip";
+import Modal from "@material-ui/core/Modal";
+import MDEditor from "@uiw/react-md-editor";
 
 const IOSSwitch = withStyles((theme) => ({
   root: {
@@ -110,6 +110,19 @@ const useStyles = makeStyles((theme) => ({
     position: "relative",
     marginLeft: "87%",
   },
+  paper2: {
+    position: "absolute",
+    width: "80%",
+    maxHeight: 450,
+    overflowY: "auto",
+    backgroundColor: "white",
+    boxShadow: theme.shadows[5],
+    padding: "16px 32px 24px",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    textAlign: "justify",
+  },
 }));
 
 const photoIsos = ["100", "200", "400"];
@@ -126,13 +139,15 @@ export default function FullscreePhoto(props) {
   const [snackBarMessage, setSnackBarMessage] = useState(false);
   const [openArtFormDialog, setOpenArtFormDialog] = useState(false);
   const [selectedArt, setSelectedArt] = useState(undefined);
+  const [hiddenArt, setHiddenArt] = useState(undefined);
   const [open, setOpen] = useState(false);
   const [openV, setOpenV] = useState(false);
   const [disabledReason, setDisabledReason] = useState("");
   const [visible, setVisible] = useState(true);
-  const [checked, setChecked] = useState(true);
   let [points, setPoints] = useState(50);
-  const [newTag, setNewTag] = useState([]);
+  const [termsAgreeVar, setTermsAgreeVar] = useState(true);
+  const [value, setValue] = useState("");
+
   const propsRank = {
     min: 0,
     max: 100,
@@ -191,14 +206,13 @@ export default function FullscreePhoto(props) {
     let result = await originalPhotoIsoEdit(tempTiles, tile, e);
     setTiles(result);
   };
-  console.log(tiles);
 
-  const handleArtTagsEdit = async (e, tile, tags) => {
-    let tempTiles = tiles;
-    setNewTag = tile.tags;
-    let result = await tagsEdit(tempTiles, tile, e, tags);
-    setTiles(result);
-  };
+  // const handleArtTagsEdit = async (e, tile, tags) => {
+  //   let tempTiles = tiles;
+  //   setNewTag = tile.tags;
+  //   let result = await tagsEdit(tempTiles, tile, e, tags);
+  //   setTiles(result);
+  // };
 
   const handleArtLocationEdit = async (e, tile) => {
     let tempTiles = tiles;
@@ -218,7 +232,7 @@ export default function FullscreePhoto(props) {
   };
   const handleCloseVisible = () => {
     setOpenV(false);
-    setSelectedArt(undefined);
+    setHiddenArt(undefined);
   };
   function tagsEdit(tempTiles, tile, e, tags) {
     console.log(tempTiles);
@@ -231,8 +245,6 @@ export default function FullscreePhoto(props) {
       return item;
     });
   }
-  // let newTagV = newTag.split(", ");
-  // console.log(newTagV);
 
   function locationEdit(tempTiles, tile, e) {
     return tempTiles.map((item) => {
@@ -342,7 +354,7 @@ export default function FullscreePhoto(props) {
       setSnackBar(true);
       setLoading(false);
       setDisabledReason("");
-      setSelectedArt(undefined);
+      setHiddenArt(undefined);
     } else {
       const base_url = process.env.REACT_APP_BACKEND_URL + "/art/disable/" + id;
       art.visible = visible;
@@ -441,6 +453,57 @@ export default function FullscreePhoto(props) {
     }
     setLoading(false);
   }, [artDataState]);
+
+  const getTerms = () => {
+    const base_url =
+      process.env.REACT_APP_BACKEND_URL + "/termsAndConditions/read";
+    axios
+      .get(base_url)
+      .then((response) => {
+        setValue(response.data.terms.termsAndConditions);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+  const handleSubmit = async (e, Id) => {
+    e.preventDefault();
+    const formData = new FormData();
+    const termsAgree = true;
+    formData.append("termsAgree", termsAgree);
+    // formData.append(
+    //   "username",
+    //   JSON.parse(localStorage.getItem("token")).username
+    // );
+    const base_url =
+      process.env.REACT_APP_BACKEND_URL + "/prixer/update-terms/" + Id;
+    const response = await axios
+      .put(
+        base_url,
+        { termsAgree: true },
+        {
+          "Content-Type": "multipart/form-data",
+        }
+      )
+      .then((response) => {
+        setTermsAgreeVar(true);
+      });
+  };
+
+  const TermsAgreeModal = () => {
+    const GetId = JSON.parse(localStorage.getItem("token")).username;
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/prixer/get/" + GetId;
+    axios.get(base_url).then((response) => {
+      setTermsAgreeVar(response.data.termsAgree);
+      getTerms();
+    });
+  };
+
+  useEffect(() => {
+    {
+      JSON.parse(localStorage.getItem("token")) && TermsAgreeModal();
+    }
+  }, []);
 
   return !ready ? (
     <div className={classes.loading}>
@@ -653,7 +716,7 @@ export default function FullscreePhoto(props) {
                             size="normal"
                             checked={tile.visible}
                             onChange={(e) => {
-                              setSelectedArt(tile.artId);
+                              setHiddenArt(tile.artId);
                               if (e.target.checked === false) {
                                 handleClickVisible();
                                 setVisible(e.target.checked);
@@ -665,105 +728,105 @@ export default function FullscreePhoto(props) {
                           />
                         )}
                         {JSON.parse(localStorage.getItem("adminToken")) && (
-                          <FormControl>
-                            <Grid
-                              container
-                              spacing={0.5}
-                              flexWrap="nowrap"
-                              justifyContent="center"
-                              alignItems="center"
-                              flexDirection="row"
+                          <>
+                            <FormControl>
+                              <Grid
+                                container
+                                spacing={0.5}
+                                flexWrap="nowrap"
+                                justifyContent="center"
+                                alignItems="center"
+                                flexDirection="row"
+                              >
+                                <Grid item xs={8}>
+                                  <TextField
+                                    type="number"
+                                    variant="outlined"
+                                    placeholder="Points"
+                                    inputProps={propsRank}
+                                    onChange={(e) => {
+                                      setPoints(e.target.value);
+                                    }}
+                                  />
+                                </Grid>
+                                <Grid item xs={3}>
+                                  <Button
+                                    color="primary"
+                                    variant="outlined"
+                                    onClick={(e) => {
+                                      rankArt(tile, tile.artId, e);
+                                    }}
+                                  >
+                                    Enviar
+                                  </Button>
+                                </Grid>
+                              </Grid>
+                            </FormControl>
+                            <Dialog
+                              open={hiddenArt === tile.artId}
+                              onClose={handleCloseVisible}
                             >
-                              <Grid item xs={8}>
+                              <DialogTitle>
+                                {"¿Estás seguro de ocultar este arte?"}
+                              </DialogTitle>
+                              <DialogContent>
+                                <DialogContentText
+                                  style={{
+                                    textAlign: "center",
+                                  }}
+                                >
+                                  Este arte ya no será visible en este perfil y
+                                  la página de inicio.
+                                </DialogContentText>
+                              </DialogContent>
+                              <Grid
+                                item
+                                xs
+                                style={{
+                                  display: "flex",
+                                  justifyContent: "center",
+                                }}
+                              >
                                 <TextField
-                                  type="number"
+                                  style={{ width: "95%", marginBottom: "5px" }}
+                                  fullWidth
+                                  multiline
+                                  required
+                                  id="disableReason"
+                                  label="¿Por qué quieres ocultar este arte?"
                                   variant="outlined"
-                                  placeholder="Points"
-                                  inputProps={propsRank}
                                   onChange={(e) => {
-                                    setPoints(e.target.value);
+                                    setDisabledReason(e.target.value);
+                                    // handleArtTitleEdit(e, tile);
                                   }}
                                 />
                               </Grid>
-                              <Grid item xs={3}>
+                              <DialogActions>
                                 <Button
+                                  onClick={handleCloseVisible}
                                   color="primary"
-                                  variant="outlined"
+                                >
+                                  Cancelar
+                                </Button>
+                                <Button
                                   onClick={(e) => {
-                                    rankArt(tile, tile.artId, e);
+                                    setVisibleArt(tile, selectedArt, e);
+                                    setHiddenArt(undefined);
+                                    handleCloseVisible();
+                                  }}
+                                  background="primary"
+                                  style={{
+                                    color: "white",
+                                    backgroundColor: "#d33f49",
                                   }}
                                 >
-                                  Enviar
+                                  Aceptar
                                 </Button>
-                              </Grid>
-                            </Grid>
-                          </FormControl>
+                              </DialogActions>
+                            </Dialog>
+                          </>
                         )}
-                        <Dialog
-                          open={selectedArt === tile.artId}
-                          onClose={handleCloseVisible}
-                          aria-labelledby="alert-dialog-title"
-                          aria-describedby="alert-dialog-description"
-                        >
-                          <DialogTitle id="alert-dialog-title">
-                            {"¿Estás seguro de ocultar este arte?"}
-                          </DialogTitle>
-                          <DialogContent>
-                            <DialogContentText
-                              id="alert-dialog-description"
-                              style={{
-                                textAlign: "center",
-                              }}
-                            >
-                              Este arte ya no será visible en tu perfil y la
-                              página de inicio.
-                            </DialogContentText>
-                          </DialogContent>
-                          <Grid
-                            item
-                            xs
-                            style={{
-                              display: "flex",
-                              justifyContent: "center",
-                            }}
-                          >
-                            <TextField
-                              style={{ width: "95%", marginBottom: "5px" }}
-                              fullWidth
-                              multiline
-                              required
-                              id="disableReason"
-                              label="¿Por qué quieres ocultar este arte?"
-                              variant="outlined"
-                              onChange={(e) => {
-                                setDisabledReason(e.target.value);
-                                // handleArtTitleEdit(e, tile);
-                              }}
-                            />
-                          </Grid>
-                          <DialogActions>
-                            <Button
-                              onClick={handleCloseVisible}
-                              color="primary"
-                            >
-                              Cancelar
-                            </Button>
-                            <Button
-                              onClick={(e) => {
-                                setVisibleArt(tile, selectedArt, e);
-                                setSelectedArt(undefined);
-                                handleCloseVisible();
-                              }}
-                              background="primary"
-                              style={{
-                                color: "white",
-                                backgroundColor: "#d33f49",
-                              }}
-                            >
-                              Aceptar
-                            </Button>
-                          </DialogActions>
-                        </Dialog>
+
                         {JSON.parse(localStorage.getItem("token")) &&
                           JSON.parse(localStorage.getItem("token")).username ==
                             tile.prixerUsername && (
@@ -988,7 +1051,7 @@ export default function FullscreePhoto(props) {
                                 if (e.target.checked === false) {
                                   handleClickVisible();
                                   setVisible(e.target.checked);
-                                  setSelectedArt(tile.artId);
+                                  setHiddenArt(tile.artId);
                                 } else {
                                   setVisible(e.target.checked);
                                   setVisibleArt(tile, tile.artId, e);
@@ -1049,10 +1112,6 @@ export default function FullscreePhoto(props) {
                               </Button>
                             </DialogActions>
                           </Dialog>
-
-                          {/* <Button size="small" color="primary" onClick={(e)=>{copyCodeToClipboard(e, tile)}}>
-                  <FileCopyIcon/>
-                </Button> */}
                         </CardActions>
                       </Card>
                     )
@@ -1060,12 +1119,6 @@ export default function FullscreePhoto(props) {
                 </div>
               ) : (
                 <Card id={tile.artId} key={tile.artId}>
-                  {/* <CardMedia
-                    component="img"
-                    alt="img"
-                    image={tile.imageUrl}
-                    title="img"
-                    /> */}
                   <Img
                     placeholder="/imgLoading.svg"
                     style={{ backgroundColor: "#eeeeee", height: "100%" }}
@@ -1495,6 +1548,59 @@ export default function FullscreePhoto(props) {
             onClose={() => setSnackBar(false)}
           />
         </div>
+        <Modal
+          xl={800}
+          lg={800}
+          md={480}
+          sm={360}
+          xs={360}
+          open={termsAgreeVar === false}
+          onClose={termsAgreeVar === true}
+        >
+          <div className={classes.paper2}>
+            <h2 style={{ textAlign: "center", fontWeight: "Normal" }}>
+              Hemos actualizado nuestros términos y condiciones y queremos que
+              estés al tanto.
+            </h2>
+            <div>
+              <div data-color-mode="light">
+                <div
+                  style={{
+                    textAlign: "center",
+                    marginBottom: "12px",
+                    fontWeight: "bold",
+                    fontSize: "1.2rem",
+                  }}
+                >
+                  CONVENIO DE RELACIÓN ENTRE LOS ARTISTAS Y LA COMPAÑÍA
+                </div>
+                <div data-color-mode="light">
+                  <MDEditor.Markdown
+                    source={value}
+                    style={{ textAlign: "justify" }}
+                  />
+                </div>
+              </div>
+            </div>
+            <div style={{ justifyContent: "center", display: "flex" }}>
+              <Button
+                onClick={(e) => {
+                  handleSubmit(
+                    e,
+                    JSON.parse(localStorage.getItem("token")).username
+                  );
+                }}
+                type="submit"
+                variant="contained"
+                color="primary"
+                className={classes.submit}
+                required
+              >
+                Acepto los nuevos términos y condiciones
+              </Button>
+            </div>
+          </div>
+        </Modal>
       </Container>
     </>
   );

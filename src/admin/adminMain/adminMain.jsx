@@ -127,7 +127,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function AdminMain(props) {
   const classes = useStyles();
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
   const [active, setActive] = useState("user");
   const location = useLocation();
   const history = useHistory();

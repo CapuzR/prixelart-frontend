@@ -1,25 +1,25 @@
-import React from 'react';
-import { useState, useEffect } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Title from '../adminMain/Title';
-import axios from 'axios';
+import React from "react";
+import { useState, useEffect } from "react";
+import { makeStyles } from "@material-ui/core/styles";
+import Title from "../adminMain/Title";
+import axios from "axios";
 import IconButton from "@material-ui/core/IconButton";
-import TextField from '@material-ui/core/TextField';
-import InputLabel from '@material-ui/core/InputLabel';
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
-import Button from '@material-ui/core/Button';
-import Grid from '@material-ui/core/Grid';
-import Snackbar from '@material-ui/core/Snackbar';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import EditIcon from '@material-ui/icons/Edit';
-import { useTheme } from '@material-ui/core/styles';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
+import TextField from "@material-ui/core/TextField";
+import InputLabel from "@material-ui/core/InputLabel";
+import Select from "@material-ui/core/Select";
+import MenuItem from "@material-ui/core/MenuItem";
+import Button from "@material-ui/core/Button";
+import Grid from "@material-ui/core/Grid";
+import Snackbar from "@material-ui/core/Snackbar";
+import CircularProgress from "@material-ui/core/CircularProgress";
+import EditIcon from "@material-ui/icons/Edit";
+import { useTheme } from "@material-ui/core/styles";
+import useMediaQuery from "@material-ui/core/useMediaQuery";
+import Dialog from "@material-ui/core/Dialog";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogContentText from "@material-ui/core/DialogContentText";
+import DialogTitle from "@material-ui/core/DialogTitle";
 // import IconButton from '@material-ui/core/IconButton';
 // import OutlinedInput from '@material-ui/core/OutlinedInput';
 // import InputLabel from '@material-ui/core/InputLabel';
@@ -33,6 +33,7 @@ import HighlightOffOutlinedIcon from "@material-ui/icons/HighlightOffOutlined";
 import Box from "@material-ui/core/Box";
 import Checkbox from "@material-ui/core/Checkbox";
 import Backdrop from "@material-ui/core/Backdrop";
+import MDEditor from "@uiw/react-md-editor";
 import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
@@ -77,55 +78,58 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function CreateProduct() {
-    const classes = useStyles();
-    const theme = useTheme();
-    const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
-    const isDeskTop = useMediaQuery(theme.breakpoints.up('sm'));
-    const [ active, setActive ] = useState(false);
-    const [ productName, setProductName ] = useState('');
-    const [ description, setDescription ] = useState('');
-    const [ category, setCategory ] = useState('');
-    const [ considerations, setConsiderations ] = useState('');
-    const [images, newImages] = useState({images : []});
-    const [ videoUrl, setVideoUrl ] = useState('')
-    const [ videoPreview, setVideoPreview ] = useState('')
-    const [fromPublicPrice, setFromPublicPrice] = useState('');
-    const [ toPublicPrice, setToPublicPrice ] = useState('');
-    const [ fromPrixerPrice, setFromPrixerPrice ] = useState('');
-    const [ toPrixerPrice, setToPrixerPrice ] = useState('');
-    const [loading, setLoading] = useState(false);
-    const [buttonState, setButtonState] = useState(false);
-    const [ hasSpecialVar, setHasSpecialVar ] = useState(false);
-    const [ specialVars, setSpecialVars ] = useState(false);
-    const [imageLoader, setLoadImage] = useState({loader: [], filename: 'Subir imagenes'})
-    const history = useHistory();
+  const classes = useStyles();
+  const theme = useTheme();
+  const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
+  const isDeskTop = useMediaQuery(theme.breakpoints.up("sm"));
+  const [active, setActive] = useState(false);
+  const [productName, setProductName] = useState("");
+  const [description, setDescription] = useState("");
+  const [category, setCategory] = useState("");
+  const [considerations, setConsiderations] = useState("");
+  const [images, newImages] = useState({ images: [] });
+  const [videoUrl, setVideoUrl] = useState("");
+  const [videoPreview, setVideoPreview] = useState("");
+  const [fromPublicPrice, setFromPublicPrice] = useState("");
+  const [toPublicPrice, setToPublicPrice] = useState("");
+  const [fromPrixerPrice, setFromPrixerPrice] = useState("");
+  const [toPrixerPrice, setToPrixerPrice] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [buttonState, setButtonState] = useState(false);
+  const [hasSpecialVar, setHasSpecialVar] = useState(false);
+  const [specialVars, setSpecialVars] = useState(false);
+  const [imageLoader, setLoadImage] = useState({
+    loader: [],
+    filename: "Subir imagenes",
+  });
+  const history = useHistory();
 
-    //Error states.
-    const [errorMessage, setErrorMessage] = useState();
-    const [snackBarError, setSnackBarError] = useState(false);
-    const [open, setOpen] = useState(false);
-    const [loadOpen, setLoadOpen] = useState(false);
-    const [loaDOpen, setLoaDOpen] = useState(false);
-    const [mustImage, setMustImages] = useState(false);
+  //Error states.
+  const [errorMessage, setErrorMessage] = useState();
+  const [snackBarError, setSnackBarError] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [loadOpen, setLoadOpen] = useState(false);
+  const [loaDOpen, setLoaDOpen] = useState(false);
+  const [mustImage, setMustImages] = useState(false);
 
   const handleClickOpen = () => {
-        setOpen(true);
+    setOpen(true);
   };
 
   const handleClose = () => {
-      setOpen(false);
+    setOpen(false);
   };
 
-    //Preview de imagen antes de enviar
-    const convertToBase64 = (blob) => {
-      return new Promise((resolve) => {
-        var reader = new FileReader();
-        reader.onload = function () {
-          resolve(reader.result);
-        };
-        reader.readAsDataURL(blob);
-      });
-    };
+  //Preview de imagen antes de enviar
+  const convertToBase64 = (blob) => {
+    return new Promise((resolve) => {
+      var reader = new FileReader();
+      reader.onload = function () {
+        resolve(reader.result);
+      };
+      reader.readAsDataURL(blob);
+    });
+  };
 
   const loadImage = async (e) => {
     e.preventDefault();
@@ -161,31 +165,30 @@ export default function CreateProduct() {
   };
 
   const modifyString = (a, sti) => {
-      const url = sti.split(' ')
-      const width = sti.replace('560', '326').replace('315', '326');
-      const previewMp4 = sti.replace('1350', '510').replace('494', '350');
-      setVideoUrl(width)
-      setVideoPreview(previewMp4)
-      // const index = url[3].indexOf()
-      // sti.replace(index, '?controls=0\"')
+    const url = sti.split(" ");
+    const width = sti.replace("560", "326").replace("315", "326");
+    const previewMp4 = sti.replace("1350", "510").replace("494", "350");
+    setVideoUrl(width);
+    setVideoPreview(previewMp4);
+    // const index = url[3].indexOf()
+    // sti.replace(index, '?controls=0\"')
     //sti[79]
-  }
+  };
 
-  const handleSubmit = async (e)=> {
-      e.preventDefault();
-      if(images.images.length > 4)
-      {
-        setLoaDOpen(true)
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (images.images.length > 4) {
+      setLoaDOpen(true);
+      setTimeout(() => {
+        setLoaDOpen(false);
+      }, 3000);
+    } else {
+      if (images.images.length <= 0 && videoUrl == "") {
+        setMustImages(true);
         setTimeout(() => {
-          setLoaDOpen(false)
-        }, 3000)
-      }else{
-        if(images.images.length <= 0 && videoUrl == ''){
-          setMustImages(true)
-          setTimeout(() => {
-            setMustImages(false)
-          }, 3000)
-        } else {
+          setMustImages(false);
+        }, 3000);
+      } else {
         if (
           !active &&
           !productName &&
@@ -218,53 +221,53 @@ export default function CreateProduct() {
             },
             specialVars: [
               {
-                'name': '',
-                'isSpecialVarVisible': ''
-              }
-            ]
-        }
-        formData.append('active', active)
-        formData.append('name', productName)
-        formData.append('description', description)
-        formData.append('category', category)
-        formData.append('considerations', considerations)
-        formData.append('publicPriceFrom', data.publicPrice.from)
-        formData.append('publicPriceTo', data.publicPrice.to)
-        formData.append('prixerPriceFrom', data.prixerPrice.from)
-        formData.append('prixerPriceTo', data.prixerPrice.to)
-        formData.append('hasSpecialVar', hasSpecialVar)
-        formData.append('video', videoUrl)
-        images.images.map(file => formData.append('productImages', file))
-        const base_url= process.env.REACT_APP_BACKEND_URL + "/product/create";
-        const response = await axios.post(base_url, formData);
-        if(response.data.success === false){
-          setLoading(false);
-          setButtonState(false);
-          setErrorMessage(response.data.message);
-          setSnackBarError(true);
-        } else {
-          setErrorMessage('Registro de producto exitoso.');
-          setSnackBarError(true);
-          setActive('');
-          setProductName('');
-          setDescription('');
-          setCategory('');
-          setConsiderations('');
-        //   setFixedPublicPrice('');
-          setFromPublicPrice('');
-          setToPublicPrice('');
-        //   setFixedPrixerPrice('');
-          setFromPrixerPrice('');
-          setToPrixerPrice('');
-          history.push('/admin/product/read');
+                name: "",
+                isSpecialVarVisible: "",
+              },
+            ],
+          };
+          formData.append("active", active);
+          formData.append("name", productName);
+          formData.append("description", description);
+          formData.append("category", category);
+          formData.append("considerations", considerations);
+          formData.append("publicPriceFrom", data.publicPrice.from);
+          formData.append("publicPriceTo", data.publicPrice.to);
+          formData.append("prixerPriceFrom", data.prixerPrice.from);
+          formData.append("prixerPriceTo", data.prixerPrice.to);
+          formData.append("hasSpecialVar", hasSpecialVar);
+          formData.append("video", videoUrl);
+          images.images.map((file) => formData.append("productImages", file));
+          const base_url =
+            process.env.REACT_APP_BACKEND_URL + "/product/create";
+          const response = await axios.post(base_url, formData);
+          if (response.data.success === false) {
+            setLoading(false);
+            setButtonState(false);
+            setErrorMessage(response.data.message);
+            setSnackBarError(true);
+          } else {
+            setErrorMessage("Registro de producto exitoso.");
+            setSnackBarError(true);
+            setActive("");
+            setProductName("");
+            setDescription("");
+            setCategory("");
+            setConsiderations("");
+            //   setFixedPublicPrice('');
+            setFromPublicPrice("");
+            setToPublicPrice("");
+            //   setFixedPrixerPrice('');
+            setFromPrixerPrice("");
+            setToPrixerPrice("");
+            history.push("/admin/product/read");
+          }
         }
       }
     }
-  }
-}
+  };
 
-
-  console.log(images.images)
+  console.log(images.images);
 
   return (
     <React.Fragment>
@@ -310,8 +313,12 @@ export default function CreateProduct() {
                   />
                 </Button>
                 - O -
-                <Button variant="contained" componenet="label" onClick={handleClickOpen}>
-                 Upload video
+                <Button
+                  variant="contained"
+                  componenet="label"
+                  onClick={handleClickOpen}
+                >
+                  Upload video
                 </Button>
               </FormControl>
             </Grid>
@@ -389,8 +396,8 @@ export default function CreateProduct() {
                   );
                 })}
             </Grid>
-            <Grid container xs={isDesktop ? 6 : 12}>
-              <Grid item xs={6}>
+            <Grid container xs={isDesktop ? 12 : 12}>
+              <Grid item xs={12} md={6}>
                 <Checkbox
                   checked={active}
                   color="primary"
@@ -401,7 +408,7 @@ export default function CreateProduct() {
                 />{" "}
                 Habilitado / Visible
               </Grid>
-              <Grid item xs={6}>
+              <Grid item xs={12} md={6}>
                 <Checkbox
                   checked={hasSpecialVar}
                   color="primary"
@@ -572,24 +579,19 @@ export default function CreateProduct() {
             <Grid item xs={12} md={6}>
               <FormControl
                 className={clsx(classes.margin, classes.textField)}
+                data-color-mode="light"
                 variant="outlined"
                 xs={12}
                 fullWidth={true}
               >
-                <TextField
-                  variant="outlined"
-                  required
-                  multiline
-                  fullWidth
-                  rows={2}
-                  id="description"
-                  label="Descripción"
-                  name="description"
-                  autoComplete="description"
+                <InputLabel style={{ marginTop: "-5%" }}>
+                  Descripción
+                </InputLabel>
+                <MDEditor
                   value={description}
-                  onChange={(e) => {
-                    setDescription(e.target.value);
-                  }}
+                  onChange={setDescription}
+                  preview="edit"
+                  hideToolbar={false}
                 />
               </FormControl>
             </Grid>
@@ -701,96 +703,115 @@ export default function CreateProduct() {
                     />
                     </FormControl>
                 </Grid> */}
-                <Grid item xs={4} md={5}>
-                    <FormControl className={clsx(classes.margin, classes.textField)} variant="outlined" xs={12} fullWidth={true}>
-                    <TextField
-                        variant="outlined"
-                        required
-                        fullWidth
-                        id="fromPrixerPrice"
-                        label="Desde"
-                        name="fromPrixerPrice"
-                        autoComplete="fromPrixerPrice"
-                        value={fromPrixerPrice}
-                        onChange={(e) => {setFromPrixerPrice(e.target.value);}}
-                    />
-                    </FormControl>
-                </Grid>
-                <Grid item xs={4} md={5}>
-                    <FormControl className={clsx(classes.margin, classes.textField)} variant="outlined" xs={12} fullWidth={true}>
-                    <TextField
-                        variant="outlined"
-                        required
-                        fullWidth
-                        id="toPrixerPrice"
-                        label="Hasta"
-                        name="toPrixerPrice"
-                        autoComplete="toPrixerPrice"
-                        value={toPrixerPrice}
-                        onChange={(e) => {setToPrixerPrice(e.target.value);}}
-                    />
-                    </FormControl>
-                </Grid>
-                </Grid>
-              <Button variant="contained" color="primary" type="submit" disabled={buttonState} style={{ marginTop: 20}}>
-                Crear
-              </Button>
+            <Grid item xs={4} md={5}>
+              <FormControl
+                className={clsx(classes.margin, classes.textField)}
+                variant="outlined"
+                xs={12}
+                fullWidth={true}
+              >
+                <TextField
+                  variant="outlined"
+                  required
+                  fullWidth
+                  id="fromPrixerPrice"
+                  label="Desde"
+                  name="fromPrixerPrice"
+                  autoComplete="fromPrixerPrice"
+                  value={fromPrixerPrice}
+                  onChange={(e) => {
+                    setFromPrixerPrice(e.target.value);
+                  }}
+                />
+              </FormControl>
+            </Grid>
+            <Grid item xs={4} md={5}>
+              <FormControl
+                className={clsx(classes.margin, classes.textField)}
+                variant="outlined"
+                xs={12}
+                fullWidth={true}
+              >
+                <TextField
+                  variant="outlined"
+                  required
+                  fullWidth
+                  id="toPrixerPrice"
+                  label="Hasta"
+                  name="toPrixerPrice"
+                  autoComplete="toPrixerPrice"
+                  value={toPrixerPrice}
+                  onChange={(e) => {
+                    setToPrixerPrice(e.target.value);
+                  }}
+                />
+              </FormControl>
+            </Grid>
+          </Grid>
+          <Button
+            variant="contained"
+            color="primary"
+            type="submit"
+            disabled={buttonState}
+            style={{ marginTop: 20 }}
+          >
+            Crear
+          </Button>
         </Grid>
-        </form>
+      </form>
       <Dialog open={open} onClose={handleClose}>
-      <DialogTitle>Youtube Url</DialogTitle>
-      <DialogContent>
-        <DialogContentText>
-          Copia y pega la url que quieres mostrar en el carrusel de imagenes
-        </DialogContentText>
-        <div id='ll'>
-        </div>
-        <TextField
-        onChange={(a)=>{
-          const div = document.getElementById('ll');
-          modifyString(a, a.target.value)
-          div.innerHTML = videoPreview;
-        }}
-        value={videoUrl}
-          autoFocus
-          label="Url"
-          type="text"
-          fullWidth
-        />
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={handleClose} color="primary">
-          Cancel
-        </Button>
-        <Button onClick={handleClose} color="primary">
-          Aceptar
-        </Button>
-      </DialogActions>
-    </Dialog>
-        <Snackbar
-          open={snackBarError}
-          autoHideDuration={1000}
-          message={errorMessage}
-          className={classes.snackbar}
-        />
-        <Snackbar
-          open={loadOpen}
-          autoHideDuration={1000}
-          message={'No puedes colocar mas de 4 fotos'}
-          className={classes.snackbar}
-        />
-        <Snackbar
-          open={loaDOpen}
-          autoHideDuration={1000}
-          message={'No puedes enviar mas de 4 fotos'}
-          className={classes.snackbar}
-        />
-        <Snackbar
-          open={mustImage}
-          autoHideDuration={1000}
-          message={'No puedes crear un producto sin foto. Agrega 1 o mas'}
-          className={classes.snackbar}
-        />
+        <DialogTitle>Youtube Url</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Copia y pega la url que quieres mostrar en el carrusel de imagenes
+          </DialogContentText>
+          <div id="ll"></div>
+          <TextField
+            onChange={(a) => {
+              const div = document.getElementById("ll");
+              modifyString(a, a.target.value);
+              div.innerHTML = videoPreview;
+            }}
+            value={videoUrl}
+            autoFocus
+            label="Url"
+            type="text"
+            fullWidth
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleClose} color="primary">
+            Aceptar
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <Snackbar
+        open={snackBarError}
+        autoHideDuration={1000}
+        message={errorMessage}
+        className={classes.snackbar}
+      />
+      <Snackbar
+        open={loadOpen}
+        autoHideDuration={1000}
+        message={"No puedes colocar mas de 4 fotos"}
+        className={classes.snackbar}
+      />
+      <Snackbar
+        open={loaDOpen}
+        autoHideDuration={1000}
+        message={"No puedes enviar mas de 4 fotos"}
+        className={classes.snackbar}
+      />
+      <Snackbar
+        open={mustImage}
+        autoHideDuration={1000}
+        message={"No puedes crear un producto sin foto. Agrega 1 o mas"}
+        className={classes.snackbar}
+      />
     </React.Fragment>
-  )
+  );
 }

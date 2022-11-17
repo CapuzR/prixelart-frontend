@@ -1,9 +1,8 @@
-import React, { useState, Suspense, useEffect } from "react";
-// import AppBar from '@material-ui/core/AppBar';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import { useTheme } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import Carousel from "react-material-ui-carousel";
-import Button from "@material-ui/core/Button";
 import Card from "@material-ui/core/Card";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Grid from "@material-ui/core/Grid";
@@ -24,13 +23,18 @@ import { InsertEmoticon } from "@material-ui/icons";
 import InstagramIcon from "@material-ui/icons/Instagram";
 import SimpleDialog from "../sharedComponents/simpleDialog/simpleDialog";
 import FloatingAddButton from "../sharedComponents/floatingAddButton/floatingAddButton";
+import Modal from "@material-ui/core/Modal";
+import Button from "@material-ui/core/Button";
+import MDEditor from "@uiw/react-md-editor";
+
 import WhatsAppIcon from "@material-ui/icons/WhatsApp";
 import MaximizeIcon from "@material-ui/icons/Maximize";
 import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
 import ArrowForwardIosIcon from "@material-ui/icons/ArrowForwardIos";
-import { useHistory } from "react-router-dom";
+
+// import { useHistory } from "react-router-dom";
 import ArtUploader from "../sharedComponents/artUploader/artUploader";
-import utils from "../utils/utils";
+// import utils from "../utils/utils";
 import TestimonialsFeed from "../admin/TestimonialsCrud/TestimonialsFeed";
 
 function Copyright() {
@@ -49,7 +53,8 @@ function Copyright() {
 const useStyles = makeStyles((theme) => ({
   iconTabs: {
     flexGrow: 1,
-    maxWidth: 666,
+    width: "100%",
+    maxWidth: 800,
     margin: "auto",
     marginBottom: 50,
   },
@@ -60,6 +65,19 @@ const useStyles = makeStyles((theme) => ({
     overflowX: "none",
     flexGrow: 1,
     overflow: "visible",
+  },
+  paper2: {
+    position: "absolute",
+    width: "80%",
+    maxHeight: 450,
+    overflowY: "auto",
+    backgroundColor: "white",
+    boxShadow: theme.shadows[5],
+    padding: "16px 32px 24px",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    textAlign: "justify",
   },
   icon: {
     marginRight: theme.spacing(2),
@@ -101,23 +119,39 @@ const useStyles = makeStyles((theme) => ({
     width: "100vw",
     heigh: "92vh",
   },
+  modal: {
+    display: "flex",
+    padding: theme.spacing(1),
+    alignItems: "center",
+    justifyContent: "center",
+    overflowY: "auto",
+    width: "80%",
+    maxHeight: 450,
+  },
 }));
 
 export default function Home(props) {
   const theme = useTheme();
   const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
   const isDeskTop = useMediaQuery(theme.breakpoints.up("sm"));
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  // const isPhone5 =
   const classes = useStyles();
   const prixerUsername = "all";
-  const [imgsDesktop, setImgsDesktop] = useState({ imgs: [] });
+  const [imagesDesktop, newImagesDesktop] = useState({ images: [] });
+  const [imagesMobile, newImagesMobile] = useState({ images: [] });
   const [tabValue, setTabValue] = useState(0);
   const [openModal, setOpenModal] = useState(false);
   const [openPrixers, setOpenPrixers] = useState(false);
   const [openArts, setOpenArts] = useState(true);
   const [openTestimonials, setOpenTestimonials] = useState(false);
   // const [scrolledTop, setScrolledTop] = useState(false);
-  const history = useHistory();
+  // const history = useHistory();
   const [openArtFormDialog, setOpenArtFormDialog] = useState(false);
+  // const rootRef = React.useRef(null);
+  const [termsAgreeVar, setTermsAgreeVar] = useState(true);
+  const [value, setValue] = useState("");
+
   const imgsMobile = [
     {
       url: "https://devprix.nyc3.digitaloceanspaces.com/Portada%20de%20Pagina%20Web_Museo%20Chuao%20Espejo_Telefono_V1.jpg",
@@ -167,18 +201,41 @@ export default function Home(props) {
     setTabValue(newValue);
   };
 
-  // useEffect(() => {
-  //   if (prixerUsername == 'all') {
-  //     const base_url = process.env.REACT_APP_BACKEND_URL + "/art/random";
-
-  //     axios.get(base_url)
-  //       .then(response => {
-  //         // if (tiles.length != response.data.arts.length) {
-  //           setTiles(response.data.arts);
-  //         // }
-  //       });
-  //   }
-  // });
+  const getTerms = () => {
+    const base_url =
+      process.env.REACT_APP_BACKEND_URL + "/termsAndConditions/read";
+    axios
+      .get(base_url)
+      .then((response) => {
+        setValue(response.data.terms.termsAndConditions);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+  const handleSubmit = async (e, Id) => {
+    e.preventDefault();
+    const formData = new FormData();
+    const termsAgree = true;
+    formData.append("termsAgree", termsAgree);
+    // formData.append(
+    //   "username",
+    //   JSON.parse(localStorage.getItem("token")).username
+    // );
+    const base_url =
+      process.env.REACT_APP_BACKEND_URL + "/prixer/update-terms/" + Id;
+    const response = await axios
+      .put(
+        base_url,
+        { termsAgree: true },
+        {
+          "Content-Type": "multipart/form-data",
+        }
+      )
+      .then((response) => {
+        setTermsAgreeVar(true);
+      });
+  };
 
   const getImagesForTheCarousel = () => {
     const URI =
@@ -188,34 +245,48 @@ export default function Home(props) {
         res
           .json()
           .then((data) => {
-            setImgsDesktop({ imgs: data.imagesCarousels });
+            const imagesDesktop = data.imagesCarousels.filter(
+              (result) =>
+                result.images?.type === "desktop" || result.carouselImages
+            );
+            const imagesMobile = data.imagesCarousels.filter(
+              (result) => result.images?.type === "mobile"
+            );
+            newImagesDesktop({
+              images:
+                imagesDesktop.length > 0 ? imagesDesktop : data.imagesCarousels,
+            });
+            newImagesMobile({
+              images: imagesMobile.length > 0 ? imagesMobile : imgsMobile,
+            });
           })
           .catch((err) => console.error(`Your request is wrong: ${err}`))
       )
       .catch((err) => console.error(err));
   };
 
-  const handleGallery = (e) => {
-    e.preventDefault();
-    history.push({ pathname: "/galeria" });
-  };
-
-  const handleProductCatalog = (e) => {
-    e.preventDefault();
-    history.push({ pathname: "/productos" });
+  const TermsAgreeModal = () => {
+    const GetId = JSON.parse(localStorage.getItem("token")).username;
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/prixer/get/" + GetId;
+    axios.get(base_url).then((response) => {
+      setTermsAgreeVar(response.data.termsAgree);
+      getTerms();
+    });
   };
 
   useEffect(() => {
-    getImagesForTheCarousel()
+    getImagesForTheCarousel();
+    {
+      JSON.parse(localStorage.getItem("token")) && TermsAgreeModal();
+    }
   }, []);
 
   return (
     <React.Fragment>
+      <AppBar prixerUsername={prixerUsername} />
       <Container component="main" maxWidth="s" className={classes.paper}>
         <CssBaseline />
-        <Grid>
-          <AppBar prixerUsername={prixerUsername} />
-        </Grid>
+
         <main>
           <Card
             className={classes.card}
@@ -256,8 +327,20 @@ export default function Home(props) {
                 }}
               >
                 {isDesktop
-                  ? imgsDesktop.imgs.map((img, key_id) => {
-                      return (
+                  ? imagesDesktop.images.map((img, key_id) =>
+                      img.images?.type !== undefined &&
+                      img.images?.type === "desktop" ? (
+                        <div
+                          className={classes.heroContent}
+                          key={key_id}
+                          style={{
+                            backgroundImage: "url(" + img.images.url + ")",
+                            backgroundSize: "cover",
+                            backgroundPosition: "top",
+                            marginTop: "-24px",
+                          }}
+                        ></div>
+                      ) : (
                         <div
                           className={classes.heroContent}
                           key={key_id}
@@ -268,21 +351,33 @@ export default function Home(props) {
                             marginTop: "-24px",
                           }}
                         ></div>
-                      );
-                    })
-                  : imgsMobile.map((img, key_id) => {
-                      return (
+                      )
+                    )
+                  : imagesMobile.images.map((img, key_id) =>
+                      img.images?.type !== undefined &&
+                      img.images?.type === "mobile" ? (
+                        <div
+                          className={classes.heroContent}
+                          key={key_id}
+                          style={{
+                            backgroundImage: "url(" + img.images.url + ")",
+                            backgroundSize: "cover",
+                            backgroundPosition: "left",
+                          }}
+                        ></div>
+                      ) : (
                         <div
                           className={classes.heroContent}
                           key={key_id}
                           style={{
                             backgroundImage: "url(" + img.url + ")",
                             backgroundSize: "cover",
-                            backgroundPosition: "left",
+                            backgroundPosition: "top",
+                            marginTop: "-24px",
                           }}
                         ></div>
-                      );
-                    })}
+                      )
+                    )}
               </Carousel>
             </div>
             <div
@@ -315,90 +410,59 @@ export default function Home(props) {
                   Encuentra el <strong>cuadro</strong> ideal para ti.
                 </Typography>
               </div>
-              <div
-                style={{
-                  display: "flex",
-                  height: "100%",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                }}
-              >
-                <div>
-                  <Grid item>
-                    <Button
-                      variant="contained"
-                      color="white"
-                      style={{ width: 85, color: "#404e5c", fontSize: 13 }}
-                      onClick={handleGallery}
-                    >
-                      Galería
-                    </Button>
-                  </Grid>
-                </div>
-                <div>
-                  <Grid item style={{ marginLeft: 10 }}>
-                    <Button
-                      variant="contained"
-                      color="white"
-                      style={{ width: 85, color: "#404e5c", fontSize: 13 }}
-                      onClick={handleProductCatalog}
-                    >
-                      Productos
-                    </Button>
-                  </Grid>
-                </div>
-                <div>
-                  <Grid item style={{ marginLeft: 10 }}>
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      style={{ width: 105, color: "#ffffff", fontSize: 13 }}
-                      onClick={(e) => {
-                        window.open(utils.generateWaMessage(), "_blank");
-                      }}
-                    >
-                      <WhatsAppIcon /> Whatsapp
-                    </Button>
-                  </Grid>
-                </div>
-              </div>
             </div>
           </Card>
           <Container className={classes.cardGrid} maxWidth="xl">
-            {/* End hero unit */}
-            {/* {scrolledTop ?
-              <Grid container spacing={1} style={{ position: 'fixed', top: 10 }}>
-                <Paper square className={classes.iconTabs}>
-                  <Tabs
-                    value={tabValue}
-                    onChange={handleChange}
-                    variant="fullWidth"
-                    indicatorColor="primary"
-                    textColor="secondary"
-                    aria-label="icon label tabs example"
-                  >
-                    <Tab icon={<PhotoLibraryIcon />} label="ARTES" />
-                    <Tab icon={<FavoriteIcon />} label="PRIXERS" />
-                    <Tab icon={<PhoneIcon />} label="TE ASESORAMOS" />
-                  </Tabs>
-                </Paper>
-              </Grid>
-              : */}
             <Grid container spacing={1}>
-              <Paper square className={classes.iconTabs}>
+              <Paper
+                square
+                className={classes.iconTabs}
+                style={{
+                  display: isMobile ? "grid" : "flex",
+                  gridTemplateColumns: isMobile ? "50%, 2fr" : "",
+                  // flexDirection: isMobile ? "column" : "row",
+                  justifyContent: "center",
+                }}
+              >
                 <Tabs
                   value={tabValue}
                   onChange={handleChange}
                   variant="fullWidth"
                   indicatorColor="primary"
                   textColor="secondary"
-                  aria-label="icon label tabs example"
                 >
-                  <Tab icon={<PhotoLibraryIcon />} label="ARTES" />
-                  <Tab icon={<FavoriteIcon />} label="PRIXERS" />
-                  <Tab icon={<InsertEmoticon />} label="TESTIMONIOS" />
-                  <Tab icon={<PhoneIcon />} label="TE ASESORAMOS" />
-                  {/* <Tab icon={<PersonPinIcon />} label="CONFÍA EN PRIX" /> */}
+                  <Tab
+                    icon={<PhotoLibraryIcon />}
+                    label="ARTES"
+                    style={{
+                      fontSize: isMobile ? "0.62rem" : "0.875rem",
+                      width: "25%",
+                    }}
+                  />
+                  <Tab
+                    icon={<FavoriteIcon />}
+                    label="PRIXERS"
+                    style={{
+                      fontSize: isMobile ? "0.62rem" : "0.875rem",
+                      width: "25%",
+                    }}
+                  />
+                  <Tab
+                    icon={<InsertEmoticon />}
+                    label="TESTIMONIOS"
+                    style={{
+                      fontSize: isMobile ? "0.62rem" : "0.875rem",
+                      width: "25%",
+                    }}
+                  />
+                  <Tab
+                    icon={<PhoneIcon />}
+                    label="TE ASESORAMOS"
+                    style={{
+                      fontSize: isMobile ? "0.62rem" : "0.875rem",
+                      width: "25%",
+                    }}
+                  />
                 </Tabs>
               </Paper>
             </Grid>
@@ -468,6 +532,59 @@ export default function Home(props) {
           setOpen={setOpenModal}
         />
       )}
+      <Modal
+        xl={800}
+        lg={800}
+        md={480}
+        sm={360}
+        xs={360}
+        open={termsAgreeVar === false}
+        onClose={termsAgreeVar === true}
+      >
+        <div className={classes.paper2}>
+          <h2 style={{ textAlign: "center", fontWeight: "Normal" }}>
+            Hemos actualizado nuestros términos y condiciones y queremos que
+            estés al tanto.
+          </h2>
+          <div>
+            <div data-color-mode="light">
+              <div
+                style={{
+                  textAlign: "center",
+                  marginBottom: "12px",
+                  fontWeight: "bold",
+                  fontSize: "1.2rem",
+                }}
+              >
+                CONVENIO DE RELACIÓN ENTRE LOS ARTISTAS Y LA COMPAÑÍA
+              </div>
+              <div data-color-mode="light">
+                <MDEditor.Markdown
+                  source={value}
+                  style={{ textAlign: "justify" }}
+                />
+              </div>
+            </div>
+          </div>
+          <div style={{ justifyContent: "center", display: "flex" }}>
+            <Button
+              onClick={(e) => {
+                handleSubmit(
+                  e,
+                  JSON.parse(localStorage.getItem("token")).username
+                );
+              }}
+              type="submit"
+              variant="contained"
+              color="primary"
+              className={classes.submit}
+              required
+            >
+              Acepto los nuevos términos y condiciones
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </React.Fragment>
   );
 }

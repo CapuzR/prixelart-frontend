@@ -94,8 +94,6 @@ export default function Prixers() {
     }
   };
 
-
-
   const handleChange = (event) => {
     setState({ ...state, [event.target.name]: event.target.checked });
   }; //Switch
@@ -121,8 +119,6 @@ export default function Prixers() {
     // console.log(response);
     setLoading(false);
   };
-
-  console.log(tiles)
 
   useEffect(() => {
     readPrixers();
@@ -161,7 +157,7 @@ export default function Prixers() {
               // .filter((tile) => tile.avatar)
               .map((tile, key_id) =>
                 isDesktop ? (
-                  <Grid item  xs={6} sm={6} md={3}>
+                  <Grid item xs={6} sm={6} md={3}>
                     <Card key={tile._id} className={classes.card}>
                       <CardMedia
                         alt={tile.title}
@@ -222,7 +218,7 @@ export default function Prixers() {
                     </Card>
                   </Grid>
                 ) : (
-                  <Grid item  xs={12} sm={4} md={4}>
+                  <Grid item xs={12} sm={4} md={4}>
                     <Card key={tile._id} className={classes.card}>
                       <CardMedia
                         alt={tile.title}

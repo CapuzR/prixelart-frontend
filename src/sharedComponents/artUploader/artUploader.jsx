@@ -33,6 +33,7 @@ import FormControl from "@material-ui/core/FormControl";
 import TextField from "@material-ui/core/TextField";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Paper from "@material-ui/core/Paper";
+import Chip from "@material-ui/core/Chip";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 
 const useStyles = makeStyles((theme) => ({
@@ -189,7 +190,7 @@ export default function ArtUploader(props) {
   const [category, setCategory] = useState("");
   const [description, setDescription] = useState("");
   const [tags, setTags] = useState(["foto", "arte"]);
-  const [newTag, setNewTag] = useState("");
+  const preTags = ["arte", "prixelart"];
   const [publicId, setPublicId] = useState("");
   const [originalPhotoHeight, setOriginalPhotoHeight] = useState("");
   const [originalPhotoWidth, setOriginalPhotoWidth] = useState("");
@@ -215,6 +216,7 @@ export default function ArtUploader(props) {
   const [errorMessage, setErrorMessage] = useState();
   const [snackBarAction, setSnackBarAction] = useState();
   const [snackBarError, setSnackBarError] = useState(false);
+  console.log(tags);
 
   useEffect(() => {
     if (artType === "Foto") {
@@ -226,7 +228,6 @@ export default function ArtUploader(props) {
     originalPhotoPpi,
     originalPhotoIso,
   ]);
-
   const handleArtTypeChange = (e) => {
     if (!e.target.value) {
       setRequiredPhoto(false);
@@ -843,30 +844,27 @@ export default function ArtUploader(props) {
                 <Grid item xs={12} sm={12}>
                   <Autocomplete
                     multiple
+                    id="tags-filled"
+                    options={preTags.map((option) => option)}
+                    defaultValue={preTags}
                     freeSolo
-                    id="tags-outlined"
-                    options={[]}
-                    defaultValue={[]}
-                    value={tags}
-                    // onChange={(e, newval, reason) => {
-                    //   setTags(newval);
-                    // }}
-                    onChange={(e) => {
-                      setTags(tags.push(newTag));
-                    }}
+                    renderTags={(value, getTagProps) =>
+                      value.map(
+                        (option, index) => (
+                          <Chip
+                            variant="outlined"
+                            label={option}
+                            {...getTagProps({ index })}
+                          />
+                        ),
+                        { ...setTags(value) }
+                      )
+                    }
                     renderInput={(params) => (
                       <TextField
-                        required
                         {...params}
-                        // onKeyDown={(e) => {
-                        //   if (e.key === 13 && e.target.value) {
-                        //     setTags(tags.concat(e.target.value));
-                        //   }
-                        // }}
-                        onChange={(e) => setNewTag(e.target.value)}
                         variant="outlined"
                         label="Etiquetas"
-                        placeholder="Etiquetas"
                       />
                     )}
                   />

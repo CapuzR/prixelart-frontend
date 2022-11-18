@@ -49,9 +49,7 @@ export default function ProductsCatalog(props) {
         <Grid style={{ marginTop: 80 }}>
           <h1>Productos Prix</h1>
         </Grid>
-        <GridList style={{ overflow: "hidden" }}>
-          <ProductsGrid prixerUsername={null} />
-        </GridList>
+        <ProductsGrid prixerUsername={null} />
         {openArtFormDialog && (
           <ArtUploader
             openArtFormDialog={openArtFormDialog}

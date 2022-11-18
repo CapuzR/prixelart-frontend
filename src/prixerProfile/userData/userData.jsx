@@ -73,9 +73,8 @@ const useStyles = makeStyles((theme) => ({
   },
   avatar: {
     display: "flex",
-    "& > *": {
-      margin: theme.spacing(1),
-    },
+    "& > *": {},
+    objectFit: "cover",
     borderStyle: "solid",
     borderWidth: 1,
     borderColor: "#000",
@@ -256,7 +255,7 @@ export default function UserData(props) {
                     component="span"
                     color="primary"
                     onClick={handleProfileDataEdit}
-                    // variant="contained"
+                    variant="contained"
                     // style={{ marginBottom: "8px" }}
                   >
                     <EditIcon />
@@ -280,15 +279,11 @@ export default function UserData(props) {
                     }}
                   >
                     {avatarObj ? (
-                      <Avatar className={classes.avatar}>
-                        <label htmlFor="file-input">
-                          <img
-                            src={profilePic}
-                            alt="Prixer profile avatar"
-                            style={{ maxHeight: 200 }}
-                          />
-                        </label>
-                      </Avatar>
+                      <Avatar
+                        className={classes.avatar}
+                        src={profilePic}
+                        alt="Prixer profile avatar"
+                      />
                     ) : (
                       JSON.parse(localStorage.getItem("token")) &&
                       JSON.parse(localStorage.getItem("token")).username ===

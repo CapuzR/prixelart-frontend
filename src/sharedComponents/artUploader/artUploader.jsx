@@ -216,7 +216,6 @@ export default function ArtUploader(props) {
   const [errorMessage, setErrorMessage] = useState();
   const [snackBarAction, setSnackBarAction] = useState();
   const [snackBarError, setSnackBarError] = useState(false);
-  console.log(tags);
 
   useEffect(() => {
     if (artType === "Foto") {
@@ -228,6 +227,7 @@ export default function ArtUploader(props) {
     originalPhotoPpi,
     originalPhotoIso,
   ]);
+
   const handleArtTypeChange = (e) => {
     if (!e.target.value) {
       setRequiredPhoto(false);
@@ -510,7 +510,6 @@ export default function ArtUploader(props) {
     formData.append("imageUrl", artUrl);
     formData.append("disabledReason", disabledReason);
     formData.append("visible", visible);
-
     const base_url = process.env.REACT_APP_BACKEND_URL + "/art/create";
     const data = await axios.post(base_url, formData, {
       "Content-Type": "multipart/form-data",

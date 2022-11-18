@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import clsx from "clsx";
 
@@ -8,7 +8,6 @@ import { makeStyles, useTheme } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import IconButton from "@material-ui/core/IconButton";
-import Typography from "@material-ui/core/Typography";
 import AccountCircle from "@material-ui/icons/AccountCircle";
 import MenuItem from "@material-ui/core/MenuItem";
 import Menu from "@material-ui/core/Menu";
@@ -16,24 +15,13 @@ import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import utils from "../../utils/utils";
-
 import Drawer from "@material-ui/core/Drawer";
-import CssBaseline from "@material-ui/core/CssBaseline";
-import List from "@material-ui/core/List";
 import Divider from "@material-ui/core/Divider";
 import MenuIcon from "@material-ui/icons/Menu";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
-import ListItemText from "@material-ui/core/ListItemText";
-import InboxIcon from "@material-ui/icons/MoveToInbox";
-import MailIcon from "@material-ui/icons/Mail";
-
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import logo from "./Logotipo_Prixelart_H#2.png";
-import { Button } from "@material-ui/core";
-// import createBreakpoints from "@material-ui/core/styles/createBreakpoints";
 
 const drawerWidth = 240;
 
@@ -130,7 +118,7 @@ export default function MenuAppBar(props) {
   const open = Boolean(anchorEl);
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const [open2, setOpen] = React.useState(false);
-
+  const [avatar, setAvatar] = useState("");
   const handleMenu = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -191,6 +179,21 @@ export default function MenuAppBar(props) {
 
   const handleDrawerClose = () => {
     setOpen(false);
+  };
+
+  useEffect(() => {
+    getPrixerAvatar();
+  }, []);
+
+  const getPrixerAvatar = async () => {
+    if (JSON.parse(localStorage.getItem("token"))) {
+      const user = JSON.parse(localStorage.getItem("token")).username;
+      const base_url =
+        process.env.REACT_APP_BACKEND_URL + "/prixer/get/" + user;
+      await axios.get(base_url).then((response) => {
+        setAvatar(response.data.avatar);
+      });
+    }
   };
 
   return (
@@ -286,6 +289,16 @@ export default function MenuAppBar(props) {
             {JSON.parse(localStorage.getItem("token")) &&
             JSON.parse(localStorage.getItem("token")).username ? (
               <Tabs display="flex" orientation="vertical">
+                {/* <img
+                  src={avatar}
+                  style={{
+                    height: 40,
+                    width: 40,
+                    borderRadius: "50%",
+                    objectFit: "cover",
+                  }}
+                /> */}
+
                 <Tab
                   className={classes.button}
                   onClick={handleMyAccount}
@@ -354,13 +367,6 @@ export default function MenuAppBar(props) {
                 aria-haspopup="true"
                 onClick={handleBack}
                 color="inherit"
-                style={{
-                  // position: "fixed",
-                  // zIndex: 10,
-                  // marginLeft: "213px",
-                  color: "#fff",
-                  // backgroundColor: "#d33f49",
-                }}
               >
                 <ArrowBackIcon edge="end" />
               </IconButton>
@@ -370,8 +376,21 @@ export default function MenuAppBar(props) {
                 aria-haspopup="true"
                 onClick={handleMenu}
                 color="inherit"
+                size="medium"
               >
-                <AccountCircle />
+                {JSON.parse(localStorage.getItem("token")) ? (
+                  <img
+                    src={avatar}
+                    style={{
+                      height: 40,
+                      width: 40,
+                      borderRadius: "50%",
+                      objectFit: "cover",
+                    }}
+                  />
+                ) : (
+                  <AccountCircle />
+                )}
               </IconButton>
               {JSON.parse(localStorage.getItem("token")) &&
               JSON.parse(localStorage.getItem("token")).username ? (

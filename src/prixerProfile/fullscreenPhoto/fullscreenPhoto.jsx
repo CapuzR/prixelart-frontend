@@ -1545,7 +1545,7 @@ export default function FullscreePhoto(props) {
                           size="small"
                           color="primary"
                           onClick={(e) => {
-                            // updateArtData(e, tile.artId);
+                            updateArtData(e, tile);
                             handleArtEdit(e, tile);
                           }}
                         >

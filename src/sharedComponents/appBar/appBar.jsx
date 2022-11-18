@@ -182,12 +182,19 @@ export default function MenuAppBar(props) {
   };
 
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem("token")).username;
-    const base_url = process.env.REACT_APP_BACKEND_URL + "/prixer/get/" + user;
-    axios.get(base_url).then((response) => {
-      setAvatar(response.data.avatar);
-    });
-  });
+    getPrixerAvatar();
+  }, []);
+
+  const getPrixerAvatar = async () => {
+    if (JSON.parse(localStorage.getItem("token"))) {
+      const user = JSON.parse(localStorage.getItem("token")).username;
+      const base_url =
+        process.env.REACT_APP_BACKEND_URL + "/prixer/get/" + user;
+      await axios.get(base_url).then((response) => {
+        setAvatar(response.data.avatar);
+      });
+    }
+  };
 
   return (
     <div className={classes.root}>

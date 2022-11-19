@@ -320,7 +320,7 @@ export default function Grid(props) {
                       borderRadius: "4px",
                       // objectFit: "cover",
                     }}
-                    src={tile.squareThumbUrl}
+                    src={tile.smallThumbUrl}
                     debounce={1000}
                     cache
                     error="/imgError.svg"

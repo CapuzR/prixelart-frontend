@@ -138,7 +138,7 @@ export default function ProductGrid(props) {
                   {tile.needsEquation ? (
                     tile.variants[0].variantImage ? (
                       tile.variants[0].variantImage.map((img, key_id) =>
-                        img.type === "images" ? (
+                        img.type && img.type === "images" ? (
                           <img
                             key={key_id}
                             src={img.url}
@@ -162,7 +162,7 @@ export default function ProductGrid(props) {
                     )
                   ) : tile.sources && tile.sources.images.length > 0 ? (
                     tile.sources.images.map((img, key_id) =>
-                      img.type === "images" ? (
+                      img.type && img.type === "images" ? (
                         <img
                           key={key_id}
                           src={img.url}

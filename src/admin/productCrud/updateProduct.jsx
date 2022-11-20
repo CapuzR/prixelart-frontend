@@ -129,8 +129,8 @@ export default function UpdateAdmin(props) {
 
     imagesList?.map((url) => {
       url?.type === "images"
-        ? imageLoader.loader.push(url.url)
-        : setVideoUrl(url.url);
+        ? imageLoader.loader.push(url && url.url)
+        : setVideoUrl(url && url.url);
     });
 
     if (indexImage === -1) {
@@ -188,13 +188,8 @@ export default function UpdateAdmin(props) {
   };
 
   const modifyString = (a, sti) => {
-    const url = sti.split(" ");
     const width = sti.replace("560", "326").replace("315", "326");
-    const previewMp4 = sti.replace("1350", "510").replace("494", "350");
     setVideoUrl(width);
-    // const index = url[3].indexOf()
-    // sti.replace(index, '?controls=0\"')
-    //sti[79]
   };
 
   const handleSubmit = async (e) => {
@@ -270,13 +265,13 @@ export default function UpdateAdmin(props) {
                 if (videoUrl === "" && currentVideo !== false) {
                   imagesList.splice(indexVideo, 1);
                 }
-                newFormData.append("images", url.url);
+                newFormData.append("images", url && url.url);
               })
             : imagesList.map((url) => {
                 if (videoUrl === "" && currentVideo !== false) {
                   imagesList.splice(indexVideo, 1);
                 }
-                newFormData.append("images", url.url);
+                newFormData.append("images", url && url.url);
               });
           images.images.map((file) => {
             newFormData.append("newProductImages", file);

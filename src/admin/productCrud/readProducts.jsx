@@ -29,7 +29,6 @@ export default function ReadProducts(props) {
     axios
       .get(base_url)
       .then((response) => {
-        console.log(response.data.products);
         setRows(response.data.products);
       })
       .catch((error) => {
@@ -92,7 +91,6 @@ export default function ReadProducts(props) {
                     </Fab>
                   </TableCell>
                   <TableCell align="center">
-                    {console.log("row", row)}
                     {
                       row.sources &&
                       row.sources.images &&

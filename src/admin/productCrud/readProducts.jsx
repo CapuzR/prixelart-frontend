@@ -92,6 +92,7 @@ export default function ReadProducts(props) {
                     </Fab>
                   </TableCell>
                   <TableCell align="center">
+                    {console.log("row", row)}
                     {
                       row &&
                       row.sources &&

@@ -7,6 +7,7 @@ import Box from "@material-ui/core/Box";
 import Typography from "@material-ui/core/Typography";
 import Avatar from "@material-ui/core/Avatar";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
+import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
 
 const useStyles = makeStyles((theme) => ({
   cardMedia: {
@@ -77,80 +78,89 @@ export default function TestimonialsFeed() {
 
   return (
     <Grid
-      container
+      // container
       spacing={2}
       xs={12}
       style={{
         width: "100%",
         padding: isMobile ? "0px" : "18px",
-        display: "flex",
-        textAlign: "start",
+        // display: "flex",
+        // textAlign: "start",
       }}
     >
-      {tiles.map(
-        (tile) =>
-          tile.status && (
-            <Grid item xs={12} sm={12} md={6} lg={4} xl={4}>
-              <Paper
-                className={classes.paper}
-                style={{
-                  padding: "15px",
-                  height: 240,
-                }}
-              >
-                <Grid key={tile._id} style={{ width: "100%" }}>
-                  <Grid container spacing={1}>
-                    <Grid marginBottom={2} style={{ width: "100%" }}>
-                      <Box style={{ display: "flex", paddingLeft: "20px" }}>
-                        <Avatar className={classes.avatar} src={tile.avatar} />
-                        <Box
-                          style={{
-                            paddingLeft: "30px",
-                          }}
-                        >
-                          <Typography>{tile.name}</Typography>
-                          <Typography variant={"body2"} color={"secondary"}>
-                            {tile.type}
-                          </Typography>
-                        </Box>
-                      </Box>
-                      <Box>
-                        <Typography
-                          variant={"body2"}
-                          style={{
-                            display: "flex",
-                            textAlign: "center",
-                            justifyContent: "center",
-                            paddingTop: "10px",
-                          }}
-                        >
-                          {tile.value}
-                        </Typography>
-                      </Box>
-                      <Box
-                        style={{
-                          paddingTop: "8px",
-                        }}
-                      >
-                        <Typography
-                          variant={"body2"}
-                          color="secondary"
-                          style={{
-                            display: "flex",
-                            textAlign: "center",
-                            justifyContent: "center",
-                          }}
-                        >
-                          {tile.footer}
-                        </Typography>
-                      </Box>
+      <ResponsiveMasonry columnsCountBreakPoints={{ 350: 1, 750: 2, 900: 3 }}>
+        <Masonry style={{ columnGap: "7px" }}>
+          {tiles.map(
+            (tile) =>
+              tile.status && (
+                <Grid item>
+                  <Paper
+                    className={classes.paper}
+                    style={
+                      {
+                        // padding: "15px",
+                        // height: 240,
+                      }
+                    }
+                  >
+                    <Grid key={tile._id} style={{ width: "100%" }}>
+                      <Grid container spacing={1}>
+                        <Grid marginBottom={2} style={{ width: "100%" }}>
+                          <Box style={{ display: "flex", paddingLeft: "20px" }}>
+                            <Avatar
+                              className={classes.avatar}
+                              src={tile.avatar}
+                            />
+                            <Box
+                              style={{
+                                paddingLeft: "30px",
+                              }}
+                            >
+                              <Typography>{tile.name}</Typography>
+                              <Typography variant={"body2"} color={"secondary"}>
+                                {tile.type}
+                              </Typography>
+                            </Box>
+                          </Box>
+                          <Box>
+                            <Typography
+                              variant={"body2"}
+                              style={{
+                                display: "flex",
+                                textAlign: "center",
+                                justifyContent: "center",
+                                paddingTop: "10px",
+                              }}
+                            >
+                              {tile.value}
+                            </Typography>
+                          </Box>
+                          <Box
+                            style={{
+                              paddingTop: "8px",
+                            }}
+                          >
+                            <Typography
+                              variant={"body2"}
+                              color="secondary"
+                              style={{
+                                display: "flex",
+                                textAlign: "center",
+                                justifyContent: "center",
+                              }}
+                            >
+                              {tile.footer}
+                            </Typography>
+                          </Box>
+                        </Grid>
+                      </Grid>
                     </Grid>
-                  </Grid>
+                  </Paper>
                 </Grid>
-              </Paper>
-            </Grid>
-          )
-      )}
+              )
+          )}
+        </Masonry>
+      </ResponsiveMasonry>
     </Grid>
   );
 }

@@ -22,9 +22,6 @@ import Switch from "@material-ui/core/Switch";
 import Typography from "@material-ui/core/Typography";
 import utils from "../../utils/utils";
 import SearchBar from "../../sharedComponents/searchBar/searchBar.jsx";
-import IconButton from "@material-ui/core/IconButton";
-import Menu from "@material-ui/core/Menu";
-import MenuItem from "@material-ui/core/MenuItem";
 
 const IOSSwitch = withStyles((theme) => ({
   root: {

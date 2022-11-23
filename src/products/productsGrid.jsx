@@ -160,7 +160,7 @@ export default function ProductGrid(props) {
                         alt="product"
                       />
                     )
-                  ) : tile.sources && tile.sources.images.length > 0 ? (
+                  ) : tile.sources && tile.sources.images?.length > 0 ? (
                     tile.sources.images.map((img, key_id) =>
                       img.type === "images" ? (
                         <img

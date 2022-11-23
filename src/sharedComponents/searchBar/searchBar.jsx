@@ -40,7 +40,7 @@ export default function CustomizedInputBase(props) {
   let params = new URLSearchParams(window.location.search);
   const theme = useTheme();
 
-  const [categories, setCategories] = useState("");
+  const [categories, setCategories] = useState([]);
   const categoriesList = [
     "Abstracto",
     "Animales",
@@ -120,6 +120,7 @@ export default function CustomizedInputBase(props) {
         <InputLabel>Categoría</InputLabel>
         <Select
           value={categories}
+          multiple
           onChange={(e) => {
             handleChange(e.target.value);
           }}

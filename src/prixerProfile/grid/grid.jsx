@@ -122,6 +122,9 @@ export default function Grid(props) {
   const [searchValue, setSearchValue] = useState(
     globalParams.get("name") || null
   );
+  const [categoryValue, setCategoryValue] = useState(
+    globalParams.get("categorie") || null
+  );
   const [backdrop, setBackdrop] = useState(true);
   const theme = useTheme();
   // const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -203,10 +206,31 @@ export default function Grid(props) {
           setBackdrop(false);
         });
       }
+    } else if (searchValue && categoryValue) {
+      const base_url =
+        process.env.REACT_APP_BACKEND_URL + "/art/read-by-query-and-category";
+      const params = {
+        text: searchValue,
+        category: categoryValue,
+      };
+      axios.get(base_url, { params }).then((response) => {
+        setTiles(utils.shuffle(response.data.arts));
+        setBackdrop(false);
+      });
     } else if (searchValue) {
       const base_url = process.env.REACT_APP_BACKEND_URL + "/art/read-by-query";
       const params = {
         text: searchValue,
+      };
+      axios.get(base_url, { params }).then((response) => {
+        setTiles(utils.shuffle(response.data.arts));
+        setBackdrop(false);
+      });
+    } else if (categoryValue) {
+      const base_url =
+        process.env.REACT_APP_BACKEND_URL + "/art/read-by-category";
+      const params = {
+        category: categoryValue,
       };
       axios.get(base_url, { params }).then((response) => {
         setTiles(utils.shuffle(response.data.arts));
@@ -219,7 +243,7 @@ export default function Grid(props) {
         setBackdrop(false);
       });
     }
-  }, [searchValue]);
+  }, [searchValue, categoryValue]);
 
   const handleFullImage = (e, tile) => {
     history.push({
@@ -229,6 +253,7 @@ export default function Grid(props) {
 
   const searchPhotos = (e, queryValue, categories) => {
     setSearchValue(queryValue);
+    setCategoryValue(categories);
     if (props.prixerUsername || globalParams.get("prixer")) {
       if (globalParams.get("prixer")) {
         history.push({
@@ -245,7 +270,14 @@ export default function Grid(props) {
         });
       }
     } else {
-      history.push({ pathname: "/galeria/s?name=" + queryValue });
+      if (categories !== "") {
+        history.push({
+          pathname:
+            "/galeria/s?categorie=" + categories + "&name=" + queryValue,
+        });
+      } else {
+        history.push({ pathname: "/galeria/s?name=" + queryValue });
+      }
     }
     e.preventDefault();
   };

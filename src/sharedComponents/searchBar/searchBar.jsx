@@ -20,7 +20,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     // flexDirection: "column",
     alignItems: "center",
-    width: 600,
+    width: 450,
   },
   input: {
     marginLeft: theme.spacing(1),
@@ -31,17 +31,15 @@ const useStyles = makeStyles((theme) => ({
   },
   formControl: {
     margin: theme.spacing(1),
-    minWidth: 150,
-    width: 400,
+    minWidth: 100,
+    width: "30%",
   },
 }));
 export default function CustomizedInputBase(props) {
   const classes = useStyles();
   let params = new URLSearchParams(window.location.search);
   const theme = useTheme();
-  const [queryValue, setQueryValue] = useState(
-    params.get("name", "description", "tags", "categories")
-  );
+
   const [categories, setCategories] = useState("");
   const categoriesList = [
     "Abstracto",
@@ -91,15 +89,19 @@ export default function CustomizedInputBase(props) {
     setCategories(event);
   };
 
+  const [queryValue, setQueryValue] = useState(
+    params.get("name", "description", "tags", "categories")
+  );
+
   return (
     <Paper component="form" className={classes.root}>
-      <div style={{ display: "flex" }}>
+      <div style={{ display: "flex", width: "70%" }}>
         <IconButton
           type="submit"
           className={classes.iconButton}
           aria-label="search"
           onClick={(e) => {
-            props.searchPhotos(e, queryValue);
+            props.searchPhotos(e, queryValue, categories);
           }}
         >
           <SearchIcon />
@@ -114,7 +116,7 @@ export default function CustomizedInputBase(props) {
           }}
         />
       </div>
-      {/* <FormControl className={classes.formControl}>
+      <FormControl className={classes.formControl}>
         <InputLabel>Categoría</InputLabel>
         <Select
           value={categories}
@@ -134,7 +136,7 @@ export default function CustomizedInputBase(props) {
             </MenuItem>
           ))}
         </Select>
-      </FormControl> */}
+      </FormControl>
     </Paper>
   );
 }

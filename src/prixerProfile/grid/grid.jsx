@@ -138,6 +138,7 @@ export default function Grid(props) {
   const [disabledReason, setDisabledReason] = useState("");
   const [visible, setVisible] = useState(true);
   const [visibles, setVisibles] = useState([]);
+  const [artTagsI, setArtTagsI] = useState([]);
 
   const handleClickVisible = () => {
     setOpenV(true);
@@ -240,10 +241,21 @@ export default function Grid(props) {
       const base_url = process.env.REACT_APP_BACKEND_URL + "/art/read-all";
       axios.get(base_url).then((response) => {
         setTiles(response.data.arts);
+        // getTags(response);
         setBackdrop(false);
       });
     }
   }, [searchValue, categoryValue]);
+
+  const getTags = (response) => {
+    const readedArts = response.data.arts;
+    const filter = readedArts.filter((arts) => {
+      const artTags = arts.tags[0];
+      let collection = [].push(artTags);
+      return collection;
+    });
+    console.log(filter);
+  };
 
   const handleFullImage = (e, tile) => {
     history.push({

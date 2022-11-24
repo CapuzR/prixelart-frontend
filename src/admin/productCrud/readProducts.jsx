@@ -93,7 +93,7 @@ export default function ReadProducts(props) {
                   </TableCell>
                   <TableCell align="center">
                     {
-                      row.sources.images[0]?.type == 'images' ? (
+                      row?.sources?.images?.type == 'images' ? (
                       <>
                         <img
                           src={row.sources.images[0].url}

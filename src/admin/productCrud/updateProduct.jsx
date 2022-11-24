@@ -143,6 +143,8 @@ export default function UpdateAdmin(props) {
     };
   }, []);
 
+  console.log(imagesList)
+
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -271,16 +273,21 @@ export default function UpdateAdmin(props) {
                   imagesList.splice(indexVideo, 1);
                 }
                 newFormData.append("images", url.url);
+                console.log(url)
               })
             : imagesList.map((url) => {
                 if (videoUrl === "" && currentVideo !== false) {
                   imagesList.splice(indexVideo, 1);
                 }
-                newFormData.append("images", url.url);
+                newFormData.append("images", url);
+                console.log(url)
               });
-          images.images.map((file) => {
-            newFormData.append("newProductImages", file);
-          });
+              if(images.images){
+                images.images.map((file) => {
+                  newFormData.append("newProductImages", file);
+                  console.log(file)
+                })
+              }
           newFormData.append("video", videoUrl);
           const base_url =
             process.env.REACT_APP_BACKEND_URL + `/product/update/${productId}`;

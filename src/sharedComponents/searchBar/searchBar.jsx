@@ -32,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
   formControl: {
     margin: theme.spacing(1),
     minWidth: 100,
-    width: "30%",
+    width: "40%",
   },
 }));
 export default function CustomizedInputBase(props) {
@@ -95,7 +95,7 @@ export default function CustomizedInputBase(props) {
 
   return (
     <Paper component="form" className={classes.root}>
-      <div style={{ display: "flex", width: "70%" }}>
+      <div style={{ display: "flex", width: "60%" }}>
         <IconButton
           type="submit"
           className={classes.iconButton}

@@ -270,7 +270,11 @@ export default function Grid(props) {
         });
       }
     } else {
-      if (categories !== "") {
+      if (queryValue == null) {
+        history.push({
+          pathname: "/galeria/s?categorie=" + categories,
+        });
+      } else if (categories !== "") {
         history.push({
           pathname:
             "/galeria/s?categorie=" + categories + "&name=" + queryValue,

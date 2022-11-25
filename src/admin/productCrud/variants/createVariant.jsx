@@ -229,7 +229,6 @@ export default function CreateVariant(props) {
         formData.append('variant_id', variants._id)
         formData.append('video', videoUrl)
         image.map(file => {
-          console.log(file)
           if(file.url === undefined){
               formData.append('variantImage', file)
           }

@@ -9,6 +9,8 @@ import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
 import CheckCircleOutlineIcon from "@material-ui/icons/CheckCircleOutline";
 import Tooltip from "@material-ui/core/Tooltip";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import Checkbox from "@material-ui/core/Checkbox";
 import { Typography } from "@material-ui/core";
 import IconButton from "@material-ui/core/IconButton";
 import getCroppedImg from "../../utils/cropImage";
@@ -19,7 +21,7 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
     width: "100%",
     margin: "auto",
-    marginBottom: 50,
+    marginBottom: 10,
   },
   root: {
     display: "flex",
@@ -32,7 +34,6 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "column",
     alignItems: "left",
-    // maxWidth: 850,
     flexGrow: 1,
     overflow: "visible",
   },
@@ -64,7 +65,9 @@ export default function AspectRatioSelector(props) {
   const [tabValue, setTabValue] = useState(1);
   const croppedArtTemp = croppedArt;
   const [croppedAreaPixels, setCroppedAreaPixels] = useState();
-
+  const [state, setState] = React.useState({
+    checkedA: false,
+  });
   //Error states.
   const [errorMessage, setErrorMessage] = useState();
   const [snackBarAction, setSnackBarAction] = useState();
@@ -101,34 +104,40 @@ export default function AspectRatioSelector(props) {
     [croppedAreaPixels]
   );
 
+  const handleChangeCheck = (event) => {
+    setState({ ...state, [event.target.name]: event.target.checked });
+  };
+
   return (
     <div className={classes.root}>
-      {tabValue === 0 ? (
-        <Grid
-          item
-          xs={12}
-          sm={12}
-          md={12}
-          style={{
-            position: "relative",
-            height: 300,
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-          }}
-        >
-          <label htmlFor="inputfile" style={{ cursor: "pointer" }}>
-            <Tooltip
-              title={
-                "Carga tu arte con un mínimo de 1080px tanto de ancho como de alto. Tu Arte debe pesar máximo 5Mb y estar en formato .jpeg o .png"
-              }
-            >
-              <img className={classes.img} alt="Uploaded" src={art} />
-            </Tooltip>
-          </label>
-        </Grid>
+      {tabValue === 0 || state.checkedA === false ? (
+        <>
+          <Grid
+            item
+            xs={12}
+            sm={12}
+            md={12}
+            style={{
+              position: "relative",
+              height: 300,
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+            }}
+          >
+            <label htmlFor="inputfile" style={{ cursor: "pointer" }}>
+              <Tooltip
+                title={
+                  "Carga tu arte con un mínimo de 1080px tanto de ancho como de alto. Tu Arte debe pesar máximo 5Mb y estar en formato .jpeg o .png"
+                }
+              >
+                <img className={classes.img} alt="Uploaded" src={art} />
+              </Tooltip>
+            </label>
+          </Grid>
+        </>
       ) : (
-        croppedArt &&
+        state.checkedA === true &&
         croppedArt.map(
           (ar, index) =>
             ar.id === tabValue && (
@@ -231,34 +240,58 @@ export default function AspectRatioSelector(props) {
             )
         )
       )}
-      {/* <Grid xs={12} sm={12} md={12}><Typography>Selecciona cómo quieres recomendar el arte a tus clientes:</Typography></Grid> */}
-      <Grid xs={12} sm={12} md={12} style={{ maxHeight: 80 }}>
+
+      <Grid xs={12} sm={12} md={12}>
         <Paper square className={classes.iconTabs}>
-          <Tabs
-            value={tabValue}
-            onChange={handleChange}
-            // variant="fullWidth"
-            indicatorColor="primary"
-            textColor="secondary"
-            variant="scrollable"
-            scrollButtons="auto"
-          >
-            <Tab
-              className={classes.tab}
-              icon={<PhotoLibraryIcon />}
-              label="Original"
-            />
-            {croppedArt &&
-              croppedArt.map((ar) => (
-                <Tab
-                  className={classes.tab}
-                  icon={<PhotoLibraryIcon />}
-                  label={ar.name}
-                  id={ar.id}
-                />
-              ))}
-          </Tabs>
+          {state.checkedA === true && (
+            <Tabs
+              value={tabValue}
+              onChange={handleChange}
+              indicatorColor="primary"
+              textColor="secondary"
+              variant="scrollable"
+              scrollButtons="auto"
+            >
+              <Tab
+                className={classes.tab}
+                icon={<PhotoLibraryIcon />}
+                label="Original"
+              />
+
+              {state.checkedA === true &&
+                croppedArt.map((ar) => (
+                  <Tab
+                    className={classes.tab}
+                    icon={<PhotoLibraryIcon />}
+                    label={ar.name}
+                    id={ar.id}
+                  />
+                ))}
+            </Tabs>
+          )}
         </Paper>
+        <Grid
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <FormControlLabel
+            name="checkedA"
+            style={{ marginRight: "0px" }}
+            control={
+              <Checkbox
+                color={"primary"}
+                checked={state.checkedA}
+                onChange={handleChangeCheck}
+              />
+            }
+          />
+          <Typography style={{ color: "gray", fontSize: "0.875rem" }}>
+            Quiero seleccionar los cortes de mi arte.
+          </Typography>
+        </Grid>
       </Grid>
     </div>
   );

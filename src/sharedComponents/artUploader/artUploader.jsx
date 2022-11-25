@@ -569,7 +569,7 @@ export default function ArtUploader(props) {
                       hover: { background: "#000000" },
                     }}
                   >
-                    <div style={{ padding: "5%", maxHeight: 410 }}>
+                    <div style={{ padding: "5%" }}>
                       <input
                         type="file"
                         id="inputfile"

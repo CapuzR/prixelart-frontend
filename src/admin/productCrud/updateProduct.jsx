@@ -143,8 +143,6 @@ export default function UpdateAdmin(props) {
     };
   }, []);
 
-  console.log(imagesList)
-
   const handleClickOpen = () => {
     setOpen(true);
   };

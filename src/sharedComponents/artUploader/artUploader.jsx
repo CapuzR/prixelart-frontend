@@ -346,43 +346,43 @@ export default function ArtUploader(props) {
 
   const handleSubmit = async () => {
     try {
-      const [pendingCrops, isCrops] = allCrops();
-      if (!isCrops) {
-        setErrorMessage(
-          "Por favor realiza los " +
-            pendingCrops +
-            " recortes restantes de tu arte antes de continuar."
-        );
-        if (pendingCrops == 1) {
-          setErrorMessage(
-            "Tu arte está casi listo, solo falta realizar " +
-              pendingCrops +
-              " recorte para continuar."
-          );
-        }
-        setSnackBarError(true);
-      } else {
-        if (title && description && category && tags) {
-          if (
-            artType === "Diseño" ||
-            (originalPhotoWidth &&
-              originalPhotoHeight &&
-              originalPhotoPpi &&
-              originalPhotoIso)
-          ) {
-            setBackdrop(true);
-            await newArtPost();
-          } else {
-            setErrorMessage(
-              "Por favor indica ancho, alto, PPI e ISO de la foto. "
-            );
-            setSnackBarError(true);
-          }
+      // const [pendingCrops, isCrops] = allCrops();
+      // if (!isCrops) {
+      //   setErrorMessage(
+      //     "Por favor realiza los " +
+      //       pendingCrops +
+      //       " recortes restantes de tu arte antes de continuar."
+      //   );
+      //   if (pendingCrops == 1) {
+      //     setErrorMessage(
+      //       "Tu arte está casi listo, solo falta realizar " +
+      //         pendingCrops +
+      //         " recorte para continuar."
+      //     );
+      //   }
+      //   setSnackBarError(true);
+      // } else {
+      if (title && description && category && tags) {
+        if (
+          artType === "Diseño" ||
+          (originalPhotoWidth &&
+            originalPhotoHeight &&
+            originalPhotoPpi &&
+            originalPhotoIso)
+        ) {
+          setBackdrop(true);
+          await newArtPost();
         } else {
-          setErrorMessage("Por favor completa el todos los campos.");
+          setErrorMessage(
+            "Por favor indica ancho, alto, PPI e ISO de la foto. "
+          );
           setSnackBarError(true);
         }
+      } else {
+        setErrorMessage("Por favor completa el todos los campos.");
+        setSnackBarError(true);
       }
+      // }
     } catch (err) {
       console.log(err);
       setBackdrop(false);

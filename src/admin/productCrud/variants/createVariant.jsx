@@ -71,7 +71,7 @@ export default function CreateVariant(props) {
     const [mustImage, setMustImages] = useState(false);
 
     useEffect(() => {
-      image?.map((url) => {
+      image.map((url) => {
         url.type === 'images' ?
         loadeImage.loader.push(url.url)
         :

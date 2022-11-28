@@ -378,6 +378,7 @@ export default function Testimonials() {
                               width: 40,
                               height: 40,
                               color: "#d33f49",
+                              objectFit: "cover",
                             }}
                           />
                         </label>
@@ -438,7 +439,7 @@ export default function Testimonials() {
                       fullWidth
                       type="text"
                       value={value}
-                      inputProps={{ maxLength: 160 }}
+                      // inputProps={{ maxLength: 160 }}
                       id="value"
                       label="Body"
                       autoFocus
@@ -518,7 +519,7 @@ export default function Testimonials() {
                 className={classes.paper}
                 style={{
                   padding: "15px",
-                  height: 300,
+                  // height: 300,
                 }}
               >
                 <Grid key={tile._id} style={{ width: "100%" }}>
@@ -564,7 +565,7 @@ export default function Testimonials() {
                             display: "flex",
                             textAlign: "center",
                             justifyContent: "center",
-                            height: "60px",
+                            // height: "60px",
                           }}
                         >
                           {tile.value}

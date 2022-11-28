@@ -257,6 +257,26 @@ export default function MenuAppBar(props) {
             <Divider />
 
             <Divider />
+            {JSON.parse(localStorage.getItem("token")) && (
+              <div
+                style={{
+                  display: "flex",
+                  alignContent: "center",
+                  justifyContent: "center",
+                  margin: "30px 0px",
+                }}
+              >
+                <img
+                  src={avatar}
+                  style={{
+                    height: 180,
+                    width: 180,
+                    borderRadius: "50%",
+                    objectFit: "cover",
+                  }}
+                />
+              </div>
+            )}
             <Tabs display="flex" orientation="vertical">
               <Tab
                 className={classes.button}
@@ -289,16 +309,6 @@ export default function MenuAppBar(props) {
             {JSON.parse(localStorage.getItem("token")) &&
             JSON.parse(localStorage.getItem("token")).username ? (
               <Tabs display="flex" orientation="vertical">
-                {/* <img
-                  src={avatar}
-                  style={{
-                    height: 40,
-                    width: 40,
-                    borderRadius: "50%",
-                    objectFit: "cover",
-                  }}
-                /> */}
-
                 <Tab
                   className={classes.button}
                   onClick={handleMyAccount}

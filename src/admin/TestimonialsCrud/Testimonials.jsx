@@ -125,9 +125,14 @@ export default function Testimonials() {
     const res = await axios
       .get(base_url)
       .then((response) => {
-        let responsev2 = response.data.testimonials.sort(function (a, b) {
+        const responsev2 = response.data.testimonials.sort(function (a, b) {
           return a.position - b.position;
         });
+        console.log(responsev2);
+        for (const { name: n, position: p } of responsev2) {
+          console.log(n + ", " + p);
+        }
+
         setTiles(responsev2);
         setBackdrop(false);
       })

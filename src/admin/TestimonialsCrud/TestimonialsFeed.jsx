@@ -65,7 +65,10 @@ export default function TestimonialsFeed() {
     const res = await axios
       .get(base_url)
       .then((response) => {
-        setTiles(response.data.testimonials);
+        let responsev2 = response.data.testimonials.sort(function (a, b) {
+          return a.position - b.position;
+        });
+        setTiles(responsev2);
       })
       .catch((error) => console.log(error));
   };

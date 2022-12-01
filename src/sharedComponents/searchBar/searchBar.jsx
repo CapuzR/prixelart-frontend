@@ -3,11 +3,7 @@ import { makeStyles, useTheme } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
 import InputBase from "@material-ui/core/InputBase";
 import IconButton from "@material-ui/core/IconButton";
-import Typography from "@material-ui/core/Typography";
-import TextField from "@material-ui/core/TextField";
-import Autocomplete from "@material-ui/lab/Autocomplete";
 import SearchIcon from "@material-ui/icons/Search";
-import clsx from "clsx";
 import Input from "@material-ui/core/Input";
 import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
@@ -18,7 +14,6 @@ const useStyles = makeStyles((theme) => ({
   root: {
     padding: "2px 4px",
     display: "flex",
-    // flexDirection: "column",
     alignItems: "center",
     width: 450,
   },

@@ -71,7 +71,7 @@ export default function CreateVariant(props) {
     const [mustImage, setMustImages] = useState(false);
 
     useEffect(() => {
-      image?.map((url) => {
+      image.map((url) => {
         url.type === 'images' ?
         loadeImage.loader.push(url.url)
         :
@@ -229,7 +229,6 @@ export default function CreateVariant(props) {
         formData.append('variant_id', variants._id)
         formData.append('video', videoUrl)
         image.map(file => {
-          console.log(file)
           if(file.url === undefined){
               formData.append('variantImage', file)
           }

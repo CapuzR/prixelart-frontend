@@ -23,7 +23,7 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from "@material-ui/icons/Edit";
 import Snackbar from "@material-ui/core/Snackbar";
 import IconButton from "@material-ui/core/IconButton";
-// import { Draggable } from "@shopify/draggable";
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
 function getStyles(type, theme) {
   return {
@@ -114,6 +114,7 @@ export default function Testimonials() {
   const handleChangeType = (event) => {
     setType(event.target.value);
   };
+  // const [position, setPosition] = useState(tiles);
 
   const [errorMessage, setErrorMessage] = useState();
   const [snackBarError, setSnackBarError] = useState(false);
@@ -124,7 +125,15 @@ export default function Testimonials() {
     const res = await axios
       .get(base_url)
       .then((response) => {
-        setTiles(response.data.testimonials);
+        const responsev2 = response.data.testimonials.sort(function (a, b) {
+          return a.position - b.position;
+        });
+        console.log(responsev2);
+        for (const { name: n, position: p } of responsev2) {
+          console.log(n + ", " + p);
+        }
+
+        setTiles(responsev2);
         setBackdrop(false);
       })
       .catch((error) => console.log(error));
@@ -222,6 +231,24 @@ export default function Testimonials() {
     setLoading(false);
   };
 
+  const ChangePosition = async (index, GetId) => {
+    // e.preventDefault();
+    setLoading(true);
+    const base_url =
+      process.env.REACT_APP_BACKEND_URL +
+      "/testimonial/update-position/" +
+      GetId;
+    const response = await axios.put(
+      base_url,
+      { position: index },
+      {
+        "Content-Type": "multipart/form-data",
+      }
+    );
+    readTestimonial();
+    setLoading(false);
+  };
+
   const handleTestimonialDataEdit = async (GetId) => {
     const base_url =
       process.env.REACT_APP_BACKEND_URL + "/testimonial/" + GetId;
@@ -263,9 +290,12 @@ export default function Testimonials() {
   };
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-  // const draggable = new Draggable(document.querySelectorAll("ul"), {
-  //   draggable: "li",
-  // });
+  const reorder = (list, startIndex, endIndex) => {
+    const result = [...list];
+    const [removed] = result.splice(startIndex, 1);
+    result.splice(endIndex, 0, removed);
+    return result;
+  };
 
   return (
     <div className={classes.root}>
@@ -378,6 +408,7 @@ export default function Testimonials() {
                               width: 40,
                               height: 40,
                               color: "#d33f49",
+                              objectFit: "cover",
                             }}
                           />
                         </label>
@@ -438,7 +469,7 @@ export default function Testimonials() {
                       fullWidth
                       type="text"
                       value={value}
-                      inputProps={{ maxLength: 160 }}
+                      // inputProps={{ maxLength: 160 }}
                       id="value"
                       label="Body"
                       autoFocus
@@ -512,115 +543,191 @@ export default function Testimonials() {
             </Paper>
           </Grid>
 
-          {tiles.map((tile) => (
-            <Grid item xs={12} sm={12} md={6} lg={4} xl={4}>
-              <Paper
-                className={classes.paper}
-                style={{
-                  padding: "15px",
-                  height: 300,
-                }}
-              >
-                <Grid key={tile._id} style={{ width: "100%" }}>
-                  <Grid container spacing={1}>
-                    {loading && (
-                      <div className={classes.loading}>
-                        <CircularProgress />
-                      </div>
-                    )}
-                    <Grid marginBottom={2} style={{ width: "100%" }}>
-                      <Box style={{ display: "flex", justifyContent: "end" }}>
-                        <IconButton
-                          style={{ marginLeft: "10px" }}
-                          onClick={() => handleTestimonialDataEdit(tile._id)}
+          <DragDropContext
+            onDragEnd={(result) => {
+              const { source, destination, draggableId } = result;
+              if (!destination) {
+                return;
+              }
+              if (
+                source.index === destination.index &&
+                source.droppableId === destination.droppableId
+              ) {
+                return;
+              }
+              setTiles((tiles) =>
+                reorder(tiles, source.index, destination.index)
+              );
+              ChangePosition(destination.index, draggableId);
+            }}
+          >
+            <Grid
+              container
+              style={{ display: "flex", justifyContent: "center" }}
+            >
+              <Grid item xs={12} sm={8}>
+                <Droppable droppableId="testimonials">
+                  {(droppableProvided) => (
+                    <div
+                      {...droppableProvided.droppableProps}
+                      ref={droppableProvided.innerRef}
+                    >
+                      {tiles.map((tile, index) => (
+                        <Draggable
+                          key={tile._id}
+                          draggableId={tile._id}
+                          index={index}
                         >
-                          <EditIcon color={"secondary"} />
-                        </IconButton>
-                        <IconButton onClick={() => deleteTestimonial(tile._id)}>
-                          <DeleteIcon color={"secondary"} />
-                        </IconButton>
-                      </Box>
-                      <Box style={{ display: "flex", paddingLeft: "20px" }}>
-                        <Avatar className={classes.avatar} src={tile.avatar} />
-                        <Box
-                          style={{
-                            paddingLeft: "30px",
-                          }}
-                        >
-                          <Typography>{tile.name}</Typography>
-                          <Typography variant={"p"} color={"secondary"}>
-                            {tile.type}
-                          </Typography>
-                        </Box>
-                      </Box>
-                      <Box
-                        style={{
-                          paddingTop: "10px",
-                        }}
-                      >
-                        <Typography
-                          variant={"body2"}
-                          style={{
-                            display: "flex",
-                            textAlign: "center",
-                            justifyContent: "center",
-                            height: "60px",
-                          }}
-                        >
-                          {tile.value}
-                        </Typography>
-                      </Box>
-                      <Box
-                        style={{
-                          paddingTop: "8px",
-                          height: "35px",
-                        }}
-                      >
-                        <Typography
-                          variant={"body2"}
-                          color="secondary"
-                          style={{
-                            display: "flex",
-                            textAlign: "center",
-                            justifyContent: "center",
-                          }}
-                        >
-                          {tile.footer}
-                        </Typography>
-                      </Box>
-                      <Box
-                        style={{
-                          paddingTop: "10px",
-                          display: "flex",
-                          justifyContent: "end",
-                        }}
-                        label="Mostrar en la página de inicio"
-                      >
-                        <Typography
-                          color="secondary"
-                          style={{ display: "flex", alignItems: "center" }}
-                        >
-                          {" "}
-                          Mostrar en la página de inicio
-                        </Typography>
-                        <Switch
-                          checked={tile.status}
-                          color="primary"
-                          onChange={(event) =>
-                            ChangeVisibility(event, tile._id)
-                          }
-                          name="checkedA"
-                          inputProps={{
-                            "aria-label": "secondary checkbox",
-                          }}
-                        />
-                      </Box>
-                    </Grid>
-                  </Grid>
-                </Grid>
-              </Paper>
+                          {(draggableProvided) => (
+                            <Grid
+                              item
+                              {...draggableProvided.draggableProps}
+                              ref={draggableProvided.innerRef}
+                              {...draggableProvided.dragHandleProps}
+                            >
+                              <Paper
+                                className={classes.paper}
+                                style={{
+                                  padding: "15px",
+                                }}
+                              >
+                                <Grid key={tile._id} style={{ width: "100%" }}>
+                                  <Grid container spacing={1}>
+                                    {loading && (
+                                      <div className={classes.loading}>
+                                        <CircularProgress />
+                                      </div>
+                                    )}
+                                    <Grid
+                                      marginBottom={2}
+                                      style={{ width: "100%" }}
+                                    >
+                                      <Box
+                                        style={{
+                                          display: "flex",
+                                          justifyContent: "end",
+                                        }}
+                                      >
+                                        <IconButton
+                                          style={{ marginLeft: "10px" }}
+                                          onClick={() =>
+                                            handleTestimonialDataEdit(tile._id)
+                                          }
+                                        >
+                                          <EditIcon color={"secondary"} />
+                                        </IconButton>
+                                        <IconButton
+                                          onClick={() =>
+                                            deleteTestimonial(tile._id)
+                                          }
+                                        >
+                                          <DeleteIcon color={"secondary"} />
+                                        </IconButton>
+                                      </Box>
+                                      <Box
+                                        style={{
+                                          display: "flex",
+                                          paddingLeft: "20px",
+                                        }}
+                                      >
+                                        <Avatar
+                                          className={classes.avatar}
+                                          src={tile.avatar}
+                                        />
+                                        <Box
+                                          style={{
+                                            paddingLeft: "30px",
+                                          }}
+                                        >
+                                          <Typography>{tile.name}</Typography>
+                                          <Typography
+                                            variant={"p"}
+                                            color={"secondary"}
+                                          >
+                                            {tile.type}
+                                          </Typography>
+                                        </Box>
+                                      </Box>
+                                      <Box
+                                        style={{
+                                          paddingTop: "10px",
+                                        }}
+                                      >
+                                        <Typography
+                                          variant={"body2"}
+                                          style={{
+                                            display: "flex",
+                                            textAlign: "center",
+                                            justifyContent: "center",
+                                            // height: "60px",
+                                          }}
+                                        >
+                                          {tile.value}
+                                        </Typography>
+                                      </Box>
+                                      <Box
+                                        style={{
+                                          paddingTop: "8px",
+                                          height: "35px",
+                                        }}
+                                      >
+                                        <Typography
+                                          variant={"body2"}
+                                          color="secondary"
+                                          style={{
+                                            display: "flex",
+                                            textAlign: "center",
+                                            justifyContent: "center",
+                                          }}
+                                        >
+                                          {tile.footer}
+                                        </Typography>
+                                      </Box>
+                                      <Box
+                                        style={{
+                                          paddingTop: "10px",
+                                          display: "flex",
+                                          justifyContent: "end",
+                                        }}
+                                        label="Mostrar en la página de inicio"
+                                      >
+                                        <Typography
+                                          color="secondary"
+                                          style={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                          }}
+                                        >
+                                          {" "}
+                                          Mostrar en la página de inicio
+                                        </Typography>
+                                        <Switch
+                                          checked={tile.status}
+                                          color="primary"
+                                          onChange={(event) =>
+                                            ChangeVisibility(event, tile._id)
+                                          }
+                                          name="checkedA"
+                                          inputProps={{
+                                            "aria-label": "secondary checkbox",
+                                          }}
+                                        />
+                                      </Box>
+                                    </Grid>
+                                  </Grid>
+                                </Grid>
+                              </Paper>
+                            </Grid>
+                          )}
+                        </Draggable>
+                      ))}
+                      {droppableProvided.placeholder}
+                    </div>
+                  )}
+                </Droppable>
+              </Grid>
             </Grid>
-          ))}
+          </DragDropContext>
           <Snackbar
             open={snackBarError}
             autoHideDuration={4000}

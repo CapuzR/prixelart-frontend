@@ -22,9 +22,6 @@ import Switch from "@material-ui/core/Switch";
 import Typography from "@material-ui/core/Typography";
 import utils from "../../utils/utils";
 import SearchBar from "../../sharedComponents/searchBar/searchBar.jsx";
-import IconButton from "@material-ui/core/IconButton";
-import Menu from "@material-ui/core/Menu";
-import MenuItem from "@material-ui/core/MenuItem";
 
 const IOSSwitch = withStyles((theme) => ({
   root: {
@@ -125,6 +122,9 @@ export default function Grid(props) {
   const [searchValue, setSearchValue] = useState(
     globalParams.get("name") || null
   );
+  const [categoryValue, setCategoryValue] = useState(
+    globalParams.get("categorie") || null
+  );
   const [backdrop, setBackdrop] = useState(true);
   const theme = useTheme();
   // const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -138,6 +138,7 @@ export default function Grid(props) {
   const [disabledReason, setDisabledReason] = useState("");
   const [visible, setVisible] = useState(true);
   const [visibles, setVisibles] = useState([]);
+  const [artTagsI, setArtTagsI] = useState([]);
 
   const handleClickVisible = () => {
     setOpenV(true);
@@ -206,6 +207,17 @@ export default function Grid(props) {
           setBackdrop(false);
         });
       }
+    } else if (searchValue && categoryValue) {
+      const base_url =
+        process.env.REACT_APP_BACKEND_URL + "/art/read-by-query-and-category";
+      const params = {
+        text: searchValue,
+        category: categoryValue,
+      };
+      axios.get(base_url, { params }).then((response) => {
+        setTiles(utils.shuffle(response.data.arts));
+        setBackdrop(false);
+      });
     } else if (searchValue) {
       const base_url = process.env.REACT_APP_BACKEND_URL + "/art/read-by-query";
       const params = {
@@ -215,14 +227,35 @@ export default function Grid(props) {
         setTiles(utils.shuffle(response.data.arts));
         setBackdrop(false);
       });
+    } else if (categoryValue) {
+      const base_url =
+        process.env.REACT_APP_BACKEND_URL + "/art/read-by-category";
+      const params = {
+        category: categoryValue,
+      };
+      axios.get(base_url, { params }).then((response) => {
+        setTiles(utils.shuffle(response.data.arts));
+        setBackdrop(false);
+      });
     } else {
       const base_url = process.env.REACT_APP_BACKEND_URL + "/art/read-all";
       axios.get(base_url).then((response) => {
         setTiles(response.data.arts);
+        // getTags(response);
         setBackdrop(false);
       });
     }
-  }, [searchValue]);
+  }, [searchValue, categoryValue]);
+
+  const getTags = (response) => {
+    const readedArts = response.data.arts;
+    const filter = readedArts.filter((arts) => {
+      const artTags = arts.tags[0];
+      let collection = [].push(artTags);
+      return collection;
+    });
+    console.log(filter);
+  };
 
   const handleFullImage = (e, tile) => {
     history.push({
@@ -232,6 +265,7 @@ export default function Grid(props) {
 
   const searchPhotos = (e, queryValue, categories) => {
     setSearchValue(queryValue);
+    setCategoryValue(categories);
     if (props.prixerUsername || globalParams.get("prixer")) {
       if (globalParams.get("prixer")) {
         history.push({
@@ -248,7 +282,18 @@ export default function Grid(props) {
         });
       }
     } else {
-      history.push({ pathname: "/galeria/s?name=" + queryValue });
+      if (queryValue == null) {
+        history.push({
+          pathname: "/galeria/s?categorie=" + categories,
+        });
+      } else if (categories !== "") {
+        history.push({
+          pathname:
+            "/galeria/s?categorie=" + categories + "&name=" + queryValue,
+        });
+      } else {
+        history.push({ pathname: "/galeria/s?name=" + queryValue });
+      }
     }
     e.preventDefault();
   };

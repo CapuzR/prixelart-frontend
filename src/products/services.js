@@ -55,7 +55,6 @@ export const getAttributes = (products) => {
     return p;
   });
   return lol;
-  console.log(lol);
 };
 
 export const structureEquation = (equation, i, width, height) => {

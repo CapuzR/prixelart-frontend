@@ -3,11 +3,7 @@ import { makeStyles, useTheme } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
 import InputBase from "@material-ui/core/InputBase";
 import IconButton from "@material-ui/core/IconButton";
-import Typography from "@material-ui/core/Typography";
-import TextField from "@material-ui/core/TextField";
-import Autocomplete from "@material-ui/lab/Autocomplete";
 import SearchIcon from "@material-ui/icons/Search";
-import clsx from "clsx";
 import Input from "@material-ui/core/Input";
 import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
@@ -18,9 +14,8 @@ const useStyles = makeStyles((theme) => ({
   root: {
     padding: "2px 4px",
     display: "flex",
-    // flexDirection: "column",
     alignItems: "center",
-    width: 600,
+    width: 450,
   },
   input: {
     marginLeft: theme.spacing(1),
@@ -31,18 +26,16 @@ const useStyles = makeStyles((theme) => ({
   },
   formControl: {
     margin: theme.spacing(1),
-    minWidth: 150,
-    width: 400,
+    minWidth: 100,
+    width: "40%",
   },
 }));
 export default function CustomizedInputBase(props) {
   const classes = useStyles();
   let params = new URLSearchParams(window.location.search);
   const theme = useTheme();
-  const [queryValue, setQueryValue] = useState(
-    params.get("name", "description", "tags", "categories")
-  );
-  const [categories, setCategories] = useState("");
+
+  const [categories, setCategories] = useState([]);
   const categoriesList = [
     "Abstracto",
     "Animales",
@@ -91,15 +84,19 @@ export default function CustomizedInputBase(props) {
     setCategories(event);
   };
 
+  const [queryValue, setQueryValue] = useState(
+    params.get("name", "description", "tags", "categories")
+  );
+
   return (
     <Paper component="form" className={classes.root}>
-      <div style={{ display: "flex" }}>
+      <div style={{ display: "flex", width: "60%" }}>
         <IconButton
           type="submit"
           className={classes.iconButton}
           aria-label="search"
           onClick={(e) => {
-            props.searchPhotos(e, queryValue);
+            props.searchPhotos(e, queryValue, categories);
           }}
         >
           <SearchIcon />
@@ -114,10 +111,11 @@ export default function CustomizedInputBase(props) {
           }}
         />
       </div>
-      {/* <FormControl className={classes.formControl}>
+      <FormControl className={classes.formControl}>
         <InputLabel>Categoría</InputLabel>
         <Select
           value={categories}
+          multiple
           onChange={(e) => {
             handleChange(e.target.value);
           }}
@@ -134,7 +132,7 @@ export default function CustomizedInputBase(props) {
             </MenuItem>
           ))}
         </Select>
-      </FormControl> */}
+      </FormControl>
     </Paper>
   );
 }

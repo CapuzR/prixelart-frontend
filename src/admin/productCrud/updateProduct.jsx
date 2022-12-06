@@ -244,11 +244,9 @@ export default function UpdateAdmin(props) {
           };
 
           const currentVideo =
-            typeof imagesList.find((result) => result.type === "video") ===
-            "object"
-              ? imagesList.find((result) => result.type === "video")
-              : false;
-          const indexVideo = imagesList.indexOf(currentVideo);
+            typeof imagesList.find((result) => result.type === "video") === "object" ? 
+            imagesList.find((result) => result.type === "video") : null;
+
           newFormData.append("active", active);
           newFormData.append("name", productName);
           newFormData.append("description", description);
@@ -262,20 +260,25 @@ export default function UpdateAdmin(props) {
           newFormData.append("hasSpecialVar", hasSpecialVar);
           imagesList.length > 1
             ? imagesList.map((url) => {
-                if (videoUrl === "" && currentVideo !== false) {
+              const indexVideo = imagesList.indexOf(currentVideo);
+                if (videoUrl === "" && currentVideo !== null) {
                   imagesList.splice(indexVideo, 1);
                 }
                 newFormData.append("images", url && url.url);
               })
             : imagesList.map((url) => {
-                if (videoUrl === "" && currentVideo !== false) {
+               const indexVideo = imagesList.indexOf(currentVideo);
+                if (videoUrl === "" && currentVideo !== null) {
                   imagesList.splice(indexVideo, 1);
                 }
                 newFormData.append("images", url && url.url);
               });
-          images.images.map((file) => {
-            newFormData.append("newProductImages", file);
-          });
+              if(images.images){
+                images.images.map((file) => {
+                  newFormData.append("newProductImages", file);
+                  console.log(file)
+                })
+              }
           newFormData.append("video", videoUrl);
           const base_url =
             process.env.REACT_APP_BACKEND_URL + `/product/update/${productId}`;

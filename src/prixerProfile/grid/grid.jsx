@@ -254,7 +254,6 @@ export default function Grid(props) {
       let collection = [].push(artTags);
       return collection;
     });
-    console.log(filter);
   };
 
   const handleFullImage = (e, tile) => {

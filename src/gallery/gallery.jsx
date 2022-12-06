@@ -64,6 +64,10 @@ export default function Gallery(props) {
     {
       JSON.parse(localStorage.getItem("token")) && TermsAgreeModal();
     }
+
+    return () => {
+      localStorage.removeItem("filterCategorie");
+    };
   }, []);
 
   const getTerms = () => {

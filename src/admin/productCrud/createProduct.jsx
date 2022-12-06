@@ -267,8 +267,6 @@ export default function CreateProduct() {
     }
   };
 
-  console.log(images.images);
-
   return (
     <React.Fragment>
       {

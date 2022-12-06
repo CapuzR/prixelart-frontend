@@ -190,7 +190,7 @@ export default function ArtUploader(props) {
   const [category, setCategory] = useState("");
   const [description, setDescription] = useState("");
   const [tags, setTags] = useState(["foto", "arte"]);
-  const preTags = ["arte", "prixelart"];
+  const preTags = ["arte"];
   const [publicId, setPublicId] = useState("");
   const [originalPhotoHeight, setOriginalPhotoHeight] = useState("");
   const [originalPhotoWidth, setOriginalPhotoWidth] = useState("");

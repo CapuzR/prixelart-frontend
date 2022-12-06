@@ -42,7 +42,7 @@ export default function ReadProducts(props) {
 
   const handleActive = (product, action) => {
     props.setProduct(product);
-    localStorage.setItem('product', JSON.stringify(product));
+    localStorage.setItem("product", JSON.stringify(product));
     history.push("/admin/product/" + action + "/" + product._id);
   };
 
@@ -56,7 +56,6 @@ export default function ReadProducts(props) {
       setDeleteOpen(false);
     }, 3000);
   };
-
 
   return (
     <React.Fragment>
@@ -91,25 +90,20 @@ export default function ReadProducts(props) {
                     </Fab>
                   </TableCell>
                   <TableCell align="center">
-                    {
-                      row.sources.images !== [] ? (
-                      <>
-                        <img
-                          src={row.sources.images[0].url}
-                          width={150}
-                          alt="imageProduct"
-                        />
+                    <>
+                      <img
+                        src={row.thumbUrl || row.sources.images[0].url}
+                        width={150}
+                        alt="imageProduct"
+                      />
+                      {row.sources.images !== null ? (
                         <Typography
                           style={{ fontSize: "1rem", color: "#bdbdbd" }}
                         >{`Cantidad de imagenes: ${row.sources.images.length}`}</Typography>
-                      </>
-                    ) :
-                    <img
-                      src={row.thumbUrl}
-                      width={150}
-                      alt="imageProduct"
-                    />
-                    }
+                      ) : (
+                        ""
+                      )}
+                    </>
                   </TableCell>
                   <TableCell align="center">{row.name}</TableCell>
                   <TableCell align="center">

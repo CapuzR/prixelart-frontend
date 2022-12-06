@@ -239,7 +239,7 @@ export default function ProductGrid(props) {
                           ></span>
                         )
                       ))
-                    ) : (
+                    : (
                       <img
                         src={tile.thumbUrl}
                         className={classes.img}

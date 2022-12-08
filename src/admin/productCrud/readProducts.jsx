@@ -30,6 +30,7 @@ export default function ReadProducts(props) {
       .get(base_url)
       .then((response) => {
         setRows(response.data.products);
+        console.log(response.data.products);
       })
       .catch((error) => {
         console.log(error);
@@ -90,20 +91,24 @@ export default function ReadProducts(props) {
                     </Fab>
                   </TableCell>
                   <TableCell align="center">
-                    <>
-                      <img
-                        src={row.thumbUrl || row.sources.images[0].url}
-                        width={150}
-                        alt="imageProduct"
-                      />
-                      {row.sources.images !== null ? (
+                    {
+                      row.sources.images.length > 0 ? (
+                      <>
+                        <img
+                          src={row.sources.images[0]?.url}
+                          width={150}
+                          alt="imageProduct"
+                        />
                         <Typography
                           style={{ fontSize: "1rem", color: "#bdbdbd" }}
                         >{`Cantidad de imagenes: ${row.sources.images.length}`}</Typography>
+                      </>
                       ) : (
-                        ""
+                        <img 
+                        src={row.thumbUrl}
+                        alt='prix-product'/>
                       )}
-                    </>
+
                   </TableCell>
                   <TableCell align="center">{row.name}</TableCell>
                   <TableCell align="center">

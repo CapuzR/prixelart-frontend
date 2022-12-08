@@ -106,7 +106,8 @@ export default function ReadProducts(props) {
                       ) : (
                         <img 
                         src={row.thumbUrl}
-                        alt='prix-product'/>
+                        alt='prix-product'
+                        width={150}/>
                       )}
 
                   </TableCell>

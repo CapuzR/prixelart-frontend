@@ -35,22 +35,10 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function useQuery() {
-  const { search } = useLocation();
-
-  return React.useMemo(() => new URLSearchParams(search), [search]);
-}
-
 export default function CustomizedInputBase(props) {
   const classes = useStyles();
   let params = new URLSearchParams(window.location.search);
   const theme = useTheme();
-
-  const [categories, setCategories] = useState(
-    localStorage.getItem("filterCategorie")
-      ? JSON.parse(localStorage.getItem("filterCategorie"))
-      : []
-  );
   const categoriesList = [
     "Abstracto",
     "Animales",
@@ -74,10 +62,6 @@ export default function CustomizedInputBase(props) {
     "Transportes",
     "Vehículos",
   ];
-
-  const [isShowFilter, setIsShowFilter] = useState(
-    localStorage.getItem("filterCategorie") ? true : false
-  );
   const ITEM_HEIGHT = 48;
   const ITEM_PADDING_TOP = 8;
   const MenuProps = {
@@ -88,36 +72,38 @@ export default function CustomizedInputBase(props) {
       },
     },
   };
-  console.log(categories);
+
+  const [categories, setCategories] = useState(
+    // localStorage.getItem("filterCategory")
+    //   ? JSON.parse(localStorage.getItem("filterCategory"))
+    //   : []
+    params.get("category")
+  );
+  const [queryValue, setQueryValue] = useState(params.get("name"));
+
+  const [isShowFilter, setIsShowFilter] = useState(
+    params.get("category") ? true : false
+  );
+
   useEffect(() => {
-    if (!localStorage.getItem("filterCategorie")) {
+    if (!localStorage.getItem("filterCategory")) {
       setCategories([]);
       setIsShowFilter(false);
     }
   }, []);
 
-  function getStyles(categorie, categories, theme) {
+  function getStyles(category, categories, theme) {
     return {
       fontWeight:
-        categories.indexOf(categorie) === -1
+        categories.indexOf(category) === -1
           ? theme.typography.fontWeightRegular
           : theme.typography.fontWeightMedium,
     };
   }
 
-  const handleChange = (event) => {
-    setCategories(event);
-  };
-
-  const [queryValue, setQueryValue] = useState(
-    params.get("name", "description", "tags", "categories")
-  );
-
-  // useEffect(() => {
-  //   if () {
-  //     setIsShowFilter(true);
-  //   }
-  // }, []);
+  // const handleChange = (event) => {
+  //   setCategories(event);
+  // };
 
   return (
     <div>
@@ -130,7 +116,7 @@ export default function CustomizedInputBase(props) {
             onClick={(e) => {
               props.searchPhotos(e, queryValue, categories);
               localStorage.setItem(
-                "filterCategorie",
+                "filterCategory",
                 JSON.stringify(categories)
               );
             }}
@@ -163,20 +149,23 @@ export default function CustomizedInputBase(props) {
           <InputLabel>Categoría</InputLabel>
           <Select
             value={categories}
-            multiple
             onChange={(e) => {
-              handleChange(e.target.value);
+              setCategories(e.target.value);
+              props.searchPhotos(e, queryValue, e.target.value);
             }}
             input={<Input />}
             MenuProps={MenuProps}
           >
-            {categoriesList.map((categorie) => (
+            <MenuItem value="">
+              <em>Ninguno</em>
+            </MenuItem>
+            {categoriesList.map((category) => (
               <MenuItem
-                key={categorie}
-                value={categorie}
-                style={getStyles(categorie, categories, theme)}
+                key={category}
+                value={category}
+                // style={getStyles(category, categories, theme)}
               >
-                {categorie}
+                {category}
               </MenuItem>
             ))}
           </Select>

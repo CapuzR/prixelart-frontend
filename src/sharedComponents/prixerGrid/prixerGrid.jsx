@@ -72,7 +72,6 @@ export default function PrixerGrid(props) {
       process.env.REACT_APP_BACKEND_URL + "/prixer/read-all-full-v2";
 
     axios.get(base_url).then((response) => {
-      console.log(response.data.prixers);
       setTiles(utils.shuffle(response.data.prixers));
       setBackdrop(false);
     });

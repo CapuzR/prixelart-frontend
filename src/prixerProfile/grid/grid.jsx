@@ -176,20 +176,19 @@ export default function Grid(props) {
 
   useEffect(() => {
     if (props.prixerUsername || globalParams.get("prixer")) {
-      // if (searchValue && categoryValue !== "") {
-      //   const base_url =
-      //     process.env.REACT_APP_BACKEND_URL +
-      //     "/art/read-by-username-query-and-category";
-      //   const params = {
-      //     text: searchValue,
-      //     category: categoryValue,
-      //   };
-      //   axios.get(base_url, { params }).then((response) => {
-      //     setTiles(utils.shuffle(response.data.arts));
-      //     setBackdrop(false);
-      //   });
-      // } else
-       if (searchValue) {
+      if (searchValue && categoryValue) {
+        const base_url =
+          process.env.REACT_APP_BACKEND_URL +
+          "/art/read-by-username-query-and-category";
+        const params = {
+          text: searchValue,
+          category: categoryValue,
+        };
+        axios.get(base_url, { params }).then((response) => {
+          setTiles(utils.shuffle(response.data.arts));
+          setBackdrop(false);
+        });
+      } else if (searchValue) {
         const base_url =
           process.env.REACT_APP_BACKEND_URL + "/art/read-by-username-and-query";
         const params = {
@@ -212,6 +211,7 @@ export default function Grid(props) {
           "/art/read-by-username-and-category";
         const params = {
           category: categoryValue,
+          username: props.prixerUsername || globalParams.get("prixer"),
         };
         axios.get(base_url, { params }).then((response) => {
           setTiles(utils.shuffle(response.data.arts));
@@ -228,7 +228,7 @@ export default function Grid(props) {
           setBackdrop(false);
         });
       }
-    } else if (searchValue && categoryValue !== "") {
+    } else if (searchValue && categoryValue) {
       const base_url =
         process.env.REACT_APP_BACKEND_URL + "/art/read-by-query-and-category";
       const params = {

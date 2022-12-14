@@ -94,51 +94,48 @@ export default function ProductGrid(props) {
 
   useEffect(() => {
     const base_url = process.env.REACT_APP_BACKEND_URL + "/product/read-all";
-    axios.get(base_url).then(
-      async (response) => {
-        let productsAttTemp1 = response.data.products;
-        await productsAttTemp1.map(async (p, iProd, pArr) => {
-          p.variants.map((variant) => {
-            imagesVariants.push(variant.variantImage);
-          });
-          productsAttTemp1 = await getEquation(p, iProd, pArr);
+    axios.get(base_url).then(async (response) => {
+      let productsAttTemp1 = response.data.products;
+      await productsAttTemp1.map(async (p, iProd, pArr) => {
+        p.variants.map((variant) => {
+          imagesVariants.push(variant.variantImage);
         });
-        if (order === "") {
-          setTiles(getAttributes(productsAttTemp1));
-        } else if (order === "A-Z") {
-          let products = productsAttTemp1.sort(function (a, b) {
-            if (a.name.toLowerCase() > b.name.toLowerCase()) {
-              return 1;
-            }
-            if (a.name.toLowerCase() < b.name.toLowerCase()) {
-              return -1;
-            }
-            return 0;
-          });
-          setTiles(getAttributes(products));
-        } else if (order === "Z-A") {
-          let products = productsAttTemp1.sort(function (a, b) {
-            if (a.name.toLowerCase() < b.name.toLowerCase()) {
-              return 1;
-            }
-            if (a.name.toLowerCase() > b.name.toLowerCase()) {
-              return -1;
-            }
-            return 0;
-          });
-          setTiles(getAttributes(products));
-        } else if (order === "Price") {
-          let products = productsAttTemp1.sort(function (a, b) {
-            let aPrice = a.publicPrice.from.replace(/[$]/gi, "");
-            let bPrice = b.publicPrice.from.replace(/[$]/gi, "");
-            return aPrice - bPrice;
-          });
-          setTiles(getAttributes(products));
-        }
-      },
-      [order]
-    );
-  });
+        productsAttTemp1 = await getEquation(p, iProd, pArr);
+      });
+      if (order === "") {
+        setTiles(getAttributes(productsAttTemp1));
+      } else if (order === "A-Z") {
+        let products = productsAttTemp1.sort(function (a, b) {
+          if (a.name.toLowerCase() > b.name.toLowerCase()) {
+            return 1;
+          }
+          if (a.name.toLowerCase() < b.name.toLowerCase()) {
+            return -1;
+          }
+          return 0;
+        });
+        setTiles(getAttributes(products));
+      } else if (order === "Z-A") {
+        let products = productsAttTemp1.sort(function (a, b) {
+          if (a.name.toLowerCase() < b.name.toLowerCase()) {
+            return 1;
+          }
+          if (a.name.toLowerCase() > b.name.toLowerCase()) {
+            return -1;
+          }
+          return 0;
+        });
+        setTiles(getAttributes(products));
+      } else if (order === "Price") {
+        let products = productsAttTemp1.sort(function (a, b) {
+          let aPrice = a.publicPrice.from.replace(/[$]/gi, "");
+          let bPrice = b.publicPrice.from.replace(/[$]/gi, "");
+          return aPrice - bPrice;
+        });
+        setTiles(getAttributes(products));
+      }
+    });
+  }, [order]);
 
   return (
     <>
@@ -236,7 +233,7 @@ export default function ProductGrid(props) {
                             key={key_id}
                             style={{ width: "100%" }}
                             dangerouslySetInnerHTML={{ __html: img.url }}
-                          ></span>
+                          />
                         )
                       ))
                     : (
@@ -290,9 +287,6 @@ export default function ProductGrid(props) {
                           " - " +
                           tile.publicPrice?.to}
                     </Typography>
-                    {/* <Typography variant="body2" color="textSecondary" component="p">
-                  {tile.description}
-                </Typography> */}
                     <MDEditor.Markdown
                       source={tile.description}
                       style={{ whiteSpace: "pre-wrap" }}
@@ -302,7 +296,6 @@ export default function ProductGrid(props) {
                 {tile.hasSpecialVar && (
                   <>
                     <CardActions style={{ width: "25%" }}>
-                      {/* <Grid container xs={12} md={12} spacing={2}> */}
                       <Grid item xs={12} md={12}>
                         <FormControl
                           variant="outlined"

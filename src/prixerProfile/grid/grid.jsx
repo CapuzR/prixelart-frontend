@@ -123,12 +123,10 @@ export default function Grid(props) {
     globalParams.get("name") || null
   );
   const [categoryValue, setCategoryValue] = useState(
-    globalParams.get("categorie") || null
+    globalParams.get("category") || null
   );
   const [backdrop, setBackdrop] = useState(true);
   const theme = useTheme();
-  // const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  // const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
   const [snackBar, setSnackBar] = useState(false);
   const [loading, setLoading] = useState(false);
   const [snackBarMessage, setSnackBarMessage] = useState(false);
@@ -138,7 +136,6 @@ export default function Grid(props) {
   const [disabledReason, setDisabledReason] = useState("");
   const [visible, setVisible] = useState(true);
   const [visibles, setVisibles] = useState([]);
-  const [artTagsI, setArtTagsI] = useState([]);
 
   const handleClickVisible = () => {
     setOpenV(true);
@@ -179,21 +176,45 @@ export default function Grid(props) {
 
   useEffect(() => {
     if (props.prixerUsername || globalParams.get("prixer")) {
-      if (searchValue) {
+      if (searchValue && categoryValue) {
         const base_url =
-          process.env.REACT_APP_BACKEND_URL + "/art/read-by-username-by-query";
+          process.env.REACT_APP_BACKEND_URL +
+          "/art/read-by-username-query-and-category";
+        const params = {
+          text: searchValue,
+          category: categoryValue,
+        };
+        axios.get(base_url, { params }).then((response) => {
+          setTiles(utils.shuffle(response.data.arts));
+          setBackdrop(false);
+        });
+      } else if (searchValue) {
+        const base_url =
+          process.env.REACT_APP_BACKEND_URL + "/art/read-by-username-and-query";
         const params = {
           text: searchValue,
           username: props.prixerUsername || globalParams.get("prixer"),
         };
         axios.get(base_url, { params }).then((response) => {
           setTiles(utils.shuffle(response.data.arts));
-          response.data.arts.map((bool) =>
-            visibles.push({
-              id: bool.artId,
-              visible: bool.visible,
-            })
-          );
+          // response.data.arts.map((bool) =>
+          //   visibles.push({
+          //     id: bool.artId,
+          //     visible: bool.visible,
+          //   })
+          // );
+          setBackdrop(false);
+        });
+      } else if (categoryValue) {
+        const base_url =
+          process.env.REACT_APP_BACKEND_URL +
+          "/art/read-by-username-and-category";
+        const params = {
+          category: categoryValue,
+          username: props.prixerUsername || globalParams.get("prixer"),
+        };
+        axios.get(base_url, { params }).then((response) => {
+          setTiles(utils.shuffle(response.data.arts));
           setBackdrop(false);
         });
       } else {
@@ -247,16 +268,6 @@ export default function Grid(props) {
     }
   }, [searchValue, categoryValue]);
 
-  const getTags = (response) => {
-    const readedArts = response.data.arts;
-    const filter = readedArts.filter((arts) => {
-      const artTags = arts.tags[0];
-      let collection = [].push(artTags);
-      return collection;
-    });
-    console.log(filter);
-  };
-
   const handleFullImage = (e, tile) => {
     history.push({
       pathname: "/" + tile.prixerUsername + "/art/" + e.target.id,
@@ -266,12 +277,32 @@ export default function Grid(props) {
   const searchPhotos = (e, queryValue, categories) => {
     setSearchValue(queryValue);
     setCategoryValue(categories);
+    e.preventDefault();
     if (props.prixerUsername || globalParams.get("prixer")) {
-      if (globalParams.get("prixer")) {
+      //
+      if (queryValue !== null && categories !== null) {
         history.push({
           pathname:
             "/galeria/s?prixer=" +
-            globalParams.get("prixer") +
+            (props.prixerUsername || globalParams.get("prixer")) +
+            "&category=" +
+            categories +
+            "&name=" +
+            queryValue,
+        });
+      } else if ((categories !== [] && queryValue === null) || "") {
+        history.push({
+          pathname:
+            "/galeria/s?prixer=" +
+            (props.prixerUsername || globalParams.get("prixer")) +
+            "&category=" +
+            categories,
+        });
+      } else if (queryValue) {
+        history.push({
+          pathname:
+            "/galeria/s?prixer=" +
+            (props.prixerUsername || globalParams.get("prixer")) +
             "&name=" +
             queryValue,
         });
@@ -282,20 +313,24 @@ export default function Grid(props) {
         });
       }
     } else {
-      if (queryValue == null) {
+      if (queryValue !== null && categories !== null) {
         history.push({
-          pathname: "/galeria/s?categorie=" + categories,
+          pathname: "/galeria/s?category=" + categories + "&name=" + queryValue,
         });
-      } else if (categories !== "") {
+      } else if ((categories !== [] && queryValue === null) || "") {
         history.push({
-          pathname:
-            "/galeria/s?categorie=" + categories + "&name=" + queryValue,
+          pathname: "/galeria/s?category=" + categories,
+        });
+      } else if (queryValue) {
+        history.push({
+          pathname: "/galeria/s?name=" + queryValue,
         });
       } else {
-        history.push({ pathname: "/galeria/s?name=" + queryValue });
+        history.push({
+          pathname: "/galeria/",
+        });
       }
     }
-    e.preventDefault();
   };
 
   const msnry = new Masonry(".grid", {

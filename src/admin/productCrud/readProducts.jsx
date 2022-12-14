@@ -30,6 +30,7 @@ export default function ReadProducts(props) {
       .get(base_url)
       .then((response) => {
         setRows(response.data.products);
+        console.log(response.data.products);
       })
       .catch((error) => {
         console.log(error);
@@ -42,7 +43,7 @@ export default function ReadProducts(props) {
 
   const handleActive = (product, action) => {
     props.setProduct(product);
-    localStorage.setItem('product', JSON.stringify(product));
+    localStorage.setItem("product", JSON.stringify(product));
     history.push("/admin/product/" + action + "/" + product._id);
   };
 
@@ -56,7 +57,6 @@ export default function ReadProducts(props) {
       setDeleteOpen(false);
     }, 3000);
   };
-
 
   return (
     <React.Fragment>
@@ -92,10 +92,10 @@ export default function ReadProducts(props) {
                   </TableCell>
                   <TableCell align="center">
                     {
-                      row.sources.images !== [] ? (
+                      row.sources.images.length > 0 ? (
                       <>
                         <img
-                          src={row.sources.images[0].url}
+                          src={row.sources.images[0]?.url}
                           width={150}
                           alt="imageProduct"
                         />
@@ -103,13 +103,13 @@ export default function ReadProducts(props) {
                           style={{ fontSize: "1rem", color: "#bdbdbd" }}
                         >{`Cantidad de imagenes: ${row.sources.images.length}`}</Typography>
                       </>
-                    ) :
-                    <img
-                      src={row.thumbUrl}
-                      width={150}
-                      alt="imageProduct"
-                    />
-                    }
+                      ) : (
+                        <img 
+                        src={row.thumbUrl}
+                        alt='prix-product'
+                        width={150}/>
+                      )}
+
                   </TableCell>
                   <TableCell align="center">{row.name}</TableCell>
                   <TableCell align="center">

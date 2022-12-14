@@ -9,6 +9,10 @@ import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
 import FormControl from "@material-ui/core/FormControl";
 import Select from "@material-ui/core/Select";
+import FilterListIcon from "@material-ui/icons/FilterList";
+import Tooltip from "@material-ui/core/Tooltip";
+import { useLocation } from "react-router-dom";
+import { useEffect } from "react";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -25,17 +29,16 @@ const useStyles = makeStyles((theme) => ({
     padding: 10,
   },
   formControl: {
-    margin: theme.spacing(1),
     minWidth: 100,
-    width: "40%",
+    width: "100%",
+    marginTop: "12px",
   },
 }));
+
 export default function CustomizedInputBase(props) {
   const classes = useStyles();
   let params = new URLSearchParams(window.location.search);
   const theme = useTheme();
-
-  const [categories, setCategories] = useState([]);
   const categoriesList = [
     "Abstracto",
     "Animales",
@@ -59,7 +62,6 @@ export default function CustomizedInputBase(props) {
     "Transportes",
     "Vehículos",
   ];
-
   const ITEM_HEIGHT = 48;
   const ITEM_PADDING_TOP = 8;
   const MenuProps = {
@@ -71,68 +73,104 @@ export default function CustomizedInputBase(props) {
     },
   };
 
-  function getStyles(categorie, categories, theme) {
+  const [categories, setCategories] = useState(
+    // localStorage.getItem("filterCategory")
+    //   ? JSON.parse(localStorage.getItem("filterCategory"))
+    //   : []
+    params.get("category")
+  );
+  const [queryValue, setQueryValue] = useState(params.get("name"));
+
+  const [isShowFilter, setIsShowFilter] = useState(
+    params.get("category") ? true : false
+  );
+
+  useEffect(() => {
+    if (!localStorage.getItem("filterCategory")) {
+      setCategories([]);
+      setIsShowFilter(false);
+    }
+  }, []);
+
+  function getStyles(category, categories, theme) {
     return {
       fontWeight:
-        categories.indexOf(categorie) === -1
+        categories.indexOf(category) === -1
           ? theme.typography.fontWeightRegular
           : theme.typography.fontWeightMedium,
     };
   }
 
-  const handleChange = (event) => {
-    setCategories(event);
-  };
-
-  const [queryValue, setQueryValue] = useState(
-    params.get("name", "description", "tags", "categories")
-  );
+  // const handleChange = (event) => {
+  //   setCategories(event);
+  // };
 
   return (
-    <Paper component="form" className={classes.root}>
-      <div style={{ display: "flex", width: "60%" }}>
-        <IconButton
-          type="submit"
-          className={classes.iconButton}
-          aria-label="search"
-          onClick={(e) => {
-            props.searchPhotos(e, queryValue, categories);
-          }}
-        >
-          <SearchIcon />
-        </IconButton>
-        <InputBase
-          className={classes.input}
-          placeholder="Busca tu arte favorito"
-          inputProps={{ "aria-label": "Busca tu arte favorito" }}
-          value={queryValue}
-          onChange={(e) => {
-            setQueryValue(e.target.value);
-          }}
-        />
-      </div>
-      <FormControl className={classes.formControl}>
-        <InputLabel>Categoría</InputLabel>
-        <Select
-          value={categories}
-          multiple
-          onChange={(e) => {
-            handleChange(e.target.value);
-          }}
-          input={<Input />}
-          MenuProps={MenuProps}
-        >
-          {categoriesList.map((categorie) => (
-            <MenuItem
-              key={categorie}
-              value={categorie}
-              style={getStyles(categorie, categories, theme)}
+    <div>
+      <Paper component="form" className={classes.root}>
+        <div style={{ display: "flex", width: "100%", alignItems: "center" }}>
+          <IconButton
+            type="submit"
+            className={classes.iconButton}
+            aria-label="search"
+            onClick={(e) => {
+              props.searchPhotos(e, queryValue, categories);
+              localStorage.setItem(
+                "filterCategory",
+                JSON.stringify(categories)
+              );
+            }}
+          >
+            <SearchIcon />
+          </IconButton>
+          <InputBase
+            className={classes.input}
+            placeholder="Busca tu arte favorito"
+            inputProps={{ "aria-label": "Busca tu arte favorito" }}
+            value={queryValue}
+            onChange={(e) => {
+              setQueryValue(e.target.value);
+            }}
+          />
+          <Tooltip title={"Aplicar filtro"}>
+            <IconButton
+              className={classes.iconButton}
+              onClick={() => {
+                setIsShowFilter(!isShowFilter);
+              }}
             >
-              {categorie}
+              <FilterListIcon />
+            </IconButton>
+          </Tooltip>
+        </div>
+      </Paper>
+      {isShowFilter && (
+        <FormControl className={classes.formControl}>
+          <InputLabel>Categoría</InputLabel>
+          <Select
+            value={categories}
+            onChange={(e) => {
+              setCategories(e.target.value);
+              props.searchPhotos(e, queryValue, e.target.value);
+            }}
+            input={<Input />}
+            MenuProps={MenuProps}
+          >
+            <MenuItem value="">
+              <em>Ninguno</em>
             </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
-    </Paper>
+            {categoriesList.map((category) => (
+              <MenuItem
+                key={category}
+                value={category}
+                // style={getStyles(category, categories, theme)}
+              >
+                {category}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      )}
+    </div>
   );
 }

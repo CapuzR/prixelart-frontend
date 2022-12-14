@@ -245,7 +245,7 @@ export default function UpdateAdmin(props) {
 
           const currentVideo =
             typeof imagesList.find((result) => result.type === "video") === "object" ? 
-            imagesList.find((result) => result.type === "video") : null;
+            imagesList.find((result) => result.type === "video") : '';
 
           newFormData.append("active", active);
           newFormData.append("name", productName);
@@ -261,17 +261,23 @@ export default function UpdateAdmin(props) {
           imagesList.length > 1
             ? imagesList.map((url) => {
               const indexVideo = imagesList.indexOf(currentVideo);
-                if (videoUrl === "" && currentVideo !== null) {
+                if (videoUrl === "" && currentVideo !== '') {
                   imagesList.splice(indexVideo, 1);
                 }
                 newFormData.append("images", url && url.url);
               })
             : imagesList.map((url) => {
                const indexVideo = imagesList.indexOf(currentVideo);
-                if (videoUrl === "" && currentVideo !== null) {
+                if (videoUrl === "" && currentVideo !== '') {
                   imagesList.splice(indexVideo, 1);
                 }
-                newFormData.append("images", url && url.url);
+                if(typeof url === 'string'){
+                  newFormData.append("images", url);
+                }
+                if(typeof url === 'object'){
+                  newFormData.append("images", url.url);
+                }
+
               });
               if(images.images){
                 images.images.map((file) => {

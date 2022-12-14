@@ -134,7 +134,7 @@ export default function Products(props) {
   const [productEdit, setProductEdit] = useState(true);
   const theme = useTheme();
   const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
-  const isDeskTop = useMediaQuery(theme.breakpoints.up("sm"));
+  // const isDeskTop = useMediaQuery(theme.breakpoints.up("sm"));
   const [termsAgreeVar, setTermsAgreeVar] = useState(true);
   const [value, setValue] = useState("");
 

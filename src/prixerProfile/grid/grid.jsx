@@ -22,6 +22,10 @@ import Switch from "@material-ui/core/Switch";
 import Typography from "@material-ui/core/Typography";
 import utils from "../../utils/utils";
 import SearchBar from "../../sharedComponents/searchBar/searchBar.jsx";
+import IconButton from "@material-ui/core/IconButton";
+import Tooltip from "@material-ui/core/Tooltip";
+
+import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
 
 const IOSSwitch = withStyles((theme) => ({
   root: {
@@ -388,6 +392,21 @@ export default function Grid(props) {
                   ) : (
                     ""
                   )}
+                  <Tooltip title="Agregar al carrito">
+                    <IconButton
+                      size="small"
+                      color="primary"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        // props.setSelectedProduct(tile);
+                        props.setSelectedArt(tile);
+                        props.setIsOpenAssociateProduct(true);
+                      }}
+                      style={{ position: "absolute", padding: "8px" }}
+                    >
+                      <ShoppingCartIcon />
+                    </IconButton>
+                  </Tooltip>
                   <Img
                     onClick={(e) => {
                       handleFullImage(e, tile);

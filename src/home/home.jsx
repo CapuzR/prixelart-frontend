@@ -113,7 +113,7 @@ const useStyles = makeStyles((theme) => ({
   },
   float: {
     position: "relative",
-    marginLeft: "87%",
+    marginLeft: "95%",
   },
   CarouselContent: {
     width: "100vw",

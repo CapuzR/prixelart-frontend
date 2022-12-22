@@ -9,6 +9,15 @@ import { makeStyles } from "@material-ui/core/styles";
 import { useState } from "react";
 import ArtUploader from "../sharedComponents/artUploader/artUploader";
 
+import Dialog from "@material-ui/core/Dialog";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogContentText from "@material-ui/core/DialogContentText";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import DialogActions from "@material-ui/core/DialogActions";
+import Button from "@material-ui/core/Button";
+import Img from "react-cool-img";
+import { useHistory } from "react-router-dom";
+
 const useStyles = makeStyles((theme) => ({
   paper: {
     overflow: "hidden",
@@ -30,15 +39,37 @@ const useStyles = makeStyles((theme) => ({
   },
   float: {
     position: "relative",
-    marginLeft: "87%",
+    marginLeft: "95%",
+  },
+  img: {
+    [theme.breakpoints.down("sm")]: {
+      maxHeight: 200,
+      width: "100%",
+    },
+    [theme.breakpoints.up("sm")]: {
+      maxHeight: 480,
+      width: "100%",
+    },
+    [theme.breakpoints.up("lg")]: {
+      maxHeight: 480,
+      width: "100%",
+    },
+    [theme.breakpoints.up("xl")]: {
+      maxHeight: 480,
+      width: "100%",
+    },
+    "&:hover": {
+      cursor: "pointer",
+    },
   },
 }));
 
 export default function ProductsCatalog(props) {
   const [openArtFormDialog, setOpenArtFormDialog] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(undefined);
   const prixerUsername = "all";
   const classes = useStyles();
-
+  const history = useHistory();
   return (
     <>
       <AppBar prixerUsername={prixerUsername} />
@@ -48,7 +79,13 @@ export default function ProductsCatalog(props) {
         <Grid style={{ marginTop: 80 }}>
           <h1>Productos Prix</h1>
         </Grid>
-        <ProductsGrid prixerUsername={null} />
+        <ProductsGrid
+          prixerUsername={null}
+          buyState={props.buyState}
+          addItemToBuyState={props.addItemToBuyState}
+          setSelectedProduct={setSelectedProduct}
+          setIsOpenAssociateArt={props.setIsOpenAssociateArt}
+        />
         {openArtFormDialog && (
           <ArtUploader
             openArtFormDialog={openArtFormDialog}
@@ -61,6 +98,130 @@ export default function ProductsCatalog(props) {
               <FloatingAddButton setOpenArtFormDialog={setOpenArtFormDialog} />
             </Grid>
           )}
+        <Dialog
+          open={props.isOpenAssociateArt}
+          keepMounted
+          fullWidth
+          onClose={() => props.setIsOpenAssociateArt(false)}
+          aria-labelledby="alert-dialog-slide-title"
+          aria-describedby="alert-dialog-slide-description"
+        >
+          <DialogTitle id="alert-dialog-slide-title">
+            {"Asocia el producto a un arte dentro de tu carrito de compras"}
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-slide-description">
+              {!props.selectedArtToAssociate?.previous &&
+                props.buyState.length > 0 &&
+                props.buyState.find((buy) => buy.art !== undefined) && (
+                  <strong>
+                    Puedes asociar el produto a un arte de tu carrito de compras
+                    o agregarlo y asociarlo mas tarde.
+                  </strong>
+                )}
+              <div style={{ display: "flex" }}>
+                {props.selectedArtToAssociate?.previous ? (
+                  "¿Deseas asociar este producto al item seleccionado previamente en el carrito?"
+                ) : props.buyState.length > 0 &&
+                  props.buyState.find((buy) => buy.art !== undefined) ? (
+                  props.buyState.map((buy, index) => {
+                    return (
+                      <div
+                        style={{
+                          display: "flex",
+                        }}
+                      >
+                        {buy.art && (
+                          <div
+                            onClick={() => {
+                              props.setSelectedArtToAssociate({
+                                index,
+                                item: buy.art,
+                              });
+                            }}
+                          >
+                            <Img
+                              placeholder="/imgLoading.svg"
+                              style={{
+                                backgroundColor: "#eeeeee",
+                                // maxWidth: 200,
+                                maxHeight: 200,
+                                borderRadius: 10,
+                                marginRight: 10,
+                                opacity:
+                                  props.selectedArtToAssociate?.index === index
+                                    ? "1"
+                                    : "0.6",
+                              }}
+                              src={buy.art ? buy.art.squareThumbUrl : ""}
+                              debounce={1000}
+                              cache
+                              error="/imgError.svg"
+                              alt={buy.art && buy.art.title}
+                              id={buy.art && buy.art.artId}
+                            />
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })
+                ) : (
+                  <strong>
+                    Parece que no tienes ningún arte dentro del carrito de
+                    compras, aún así, puedes agregar este producto y asociarlo
+                    más tarde.
+                  </strong>
+                )}
+              </div>
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button
+              onClick={() => {
+                props.selectedArtToAssociate?.previous &&
+                  props.setSelectedArtToAssociate(undefined);
+                props.setIsOpenAssociateArt(false);
+              }}
+              color="primary"
+            >
+              {props.selectedArtToAssociate?.previous ? "No" : "Cerrar"}
+            </Button>
+            {props.buyState.length > 0 &&
+              props.buyState.find((buy) => buy.art !== undefined) && (
+                <Button
+                  disabled={!props.selectedArtToAssociate}
+                  onClick={() => {
+                    props.AssociateProduct({
+                      index: props.selectedArtToAssociate.index,
+                      item: selectedProduct,
+                      type: "product",
+                    });
+                    setSelectedProduct(undefined);
+                    props.setSelectedArtToAssociate(undefined);
+                    props.setIsOpenAssociateArt(false);
+                    history.push({ pathname: "/" });
+                  }}
+                  color="primary"
+                >
+                  {props.selectedArtToAssociate?.previous ? "Sí" : "Asociar"}
+                </Button>
+              )}
+            {!props.selectedArtToAssociate?.previous && (
+              <Button
+                onClick={() => {
+                  props.addItemToBuyState({
+                    type: "product",
+                    item: selectedProduct,
+                  });
+                  setSelectedProduct(undefined);
+                }}
+                color="primary"
+              >
+                Agregar como nuevo
+              </Button>
+            )}
+          </DialogActions>
+        </Dialog>
       </Container>
     </>
   );

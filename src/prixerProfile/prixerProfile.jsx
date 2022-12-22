@@ -36,7 +36,7 @@ const useStyles = makeStyles((theme) => ({
   },
   float: {
     position: "relative",
-    marginLeft: "87%",
+    marginLeft: "95%",
   },
   paper2: {
     position: "absolute",

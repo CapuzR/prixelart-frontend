@@ -172,6 +172,11 @@ export default function MenuAppBar(props) {
     history.push({ pathname: "/productos" });
   };
 
+  const handleShoppingCart = (e) => {
+    e.preventDefault();
+    history.push({ pathname: "/shopping" });
+  };
+
   const handleDrawerOpen = () => {
     setOpen(true);
   };
@@ -289,6 +294,11 @@ export default function MenuAppBar(props) {
               />
               <Tab
                 className={classes.button}
+                label="Compras"
+                onClick={handleShoppingCart}
+              />
+              <Tab
+                className={classes.button}
                 onClick={(e) => {
                   window.open(utils.generateWaMessage(), "_blank");
                 }}
@@ -355,11 +365,17 @@ export default function MenuAppBar(props) {
               />
               <Tab
                 className={classes.button}
+                label="Compras"
+                onClick={handleShoppingCart}
+              />
+              <Tab
+                className={classes.button}
                 onClick={(e) => {
                   window.open(utils.generateWaMessage(), "_blank");
                 }}
                 label="Contáctanos"
               />
+
               <Tab
                 className={classes.button}
                 onClick={(e) => {

@@ -29,6 +29,7 @@ import MenuItem from "@material-ui/core/MenuItem";
 import TextField from "@material-ui/core/TextField";
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
 import { setProductAtts, getAttributes, getEquation } from "./services.js";
+import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -70,14 +71,6 @@ const useStyles = makeStyles((theme) => ({
     heigh: "40vh",
   },
 }));
-
-const getGridListCols = () => {
-  if (isWidthUp("md", 200)) {
-    return 4;
-  }
-
-  return 1;
-};
 
 export default function ProductGrid(props) {
   const classes = useStyles();
@@ -136,6 +129,12 @@ export default function ProductGrid(props) {
       }
     });
   }, [order]);
+
+  const addingToCart = (e, tile) => {
+    e.preventDefault();
+    props.setSelectedProduct(tile);
+    props.setIsOpenAssociateArt(true);
+  };
 
   return (
     <>
@@ -245,54 +244,57 @@ export default function ProductGrid(props) {
                     )}
                   </Carousel>
                 </CardMedia>
-                <CardActionArea style={{ alignContent: "space-between" }}>
-                  <CardContent data-color-mode="light">
-                    <Typography
-                      gutterBottom
-                      style={{ padding: 0, marginBotom: 12, width: 10 }}
-                      variant="h5"
-                      component="h2"
-                    >
-                      {tile.name}
-                    </Typography>
-                    <Typography
-                      gutterBottom
-                      style={{ fontSize: 15, padding: 0, marginBottom: 15 }}
-                      variant="h5"
-                      component="h2"
-                    >
-                      {JSON.parse(localStorage.getItem("token")) &&
-                      JSON.parse(localStorage.getItem("token")).username
-                        ? tile.needsEquation &&
-                          tile.prixerEquation &&
-                          tile.prixerEquation != 0
-                          ? "PVP: $" +
-                            Math.round(parseFloat(tile.publicEquation)) +
-                            " \n PVM: $" +
-                            Math.round(parseFloat(tile.prixerEquation))
-                          : "PVP: $" +
-                            tile.publicPrice?.from +
-                            " - " +
-                            tile.publicPrice?.to +
-                            " \n PVM: $" +
-                            tile.prixerPrice?.from +
-                            " - " +
-                            tile.prixerPrice?.to
-                        : tile.needsEquation &&
-                          tile.publicEquation &&
-                          tile.publicEquation != 0
-                        ? "PVP: $" + Math.round(parseFloat(tile.publicEquation))
-                        : "PVP: " +
+                {/* <CardActionArea style={{ alignContent: "space-between" }}> */}
+                <CardContent
+                  data-color-mode="light"
+                  style={{ alignContent: "space-between" }}
+                >
+                  <Typography
+                    gutterBottom
+                    style={{ padding: 0, marginBotom: 12, width: 10 }}
+                    variant="h5"
+                    component="h2"
+                  >
+                    {tile.name}
+                  </Typography>
+                  <Typography
+                    gutterBottom
+                    style={{ fontSize: 15, padding: 0, marginBottom: 15 }}
+                    variant="h5"
+                    component="h2"
+                  >
+                    {JSON.parse(localStorage.getItem("token")) &&
+                    JSON.parse(localStorage.getItem("token")).username
+                      ? tile.needsEquation &&
+                        tile.prixerEquation &&
+                        tile.prixerEquation != 0
+                        ? "PVP: $" +
+                          Math.round(parseFloat(tile.publicEquation)) +
+                          " \n PVM: $" +
+                          Math.round(parseFloat(tile.prixerEquation))
+                        : "PVP: $" +
                           tile.publicPrice?.from +
                           " - " +
-                          tile.publicPrice?.to}
-                    </Typography>
-                    <MDEditor.Markdown
-                      source={tile.description}
-                      style={{ whiteSpace: "pre-wrap" }}
-                    />
-                  </CardContent>
-                </CardActionArea>
+                          tile.publicPrice?.to +
+                          " \n PVM: $" +
+                          tile.prixerPrice?.from +
+                          " - " +
+                          tile.prixerPrice?.to
+                      : tile.needsEquation &&
+                        tile.publicEquation &&
+                        tile.publicEquation != 0
+                      ? "PVP: $" + Math.round(parseFloat(tile.publicEquation))
+                      : "PVP: " +
+                        tile.publicPrice?.from +
+                        " - " +
+                        tile.publicPrice?.to}
+                  </Typography>
+                  <MDEditor.Markdown
+                    source={tile.description}
+                    style={{ whiteSpace: "pre-wrap" }}
+                  />
+                </CardContent>
+                {/* </CardActionArea> */}
                 {tile.hasSpecialVar && (
                   <>
                     <CardActions style={{ width: "25%" }}>
@@ -500,6 +502,26 @@ export default function ProductGrid(props) {
                       }
                     })}
                 </CardActions>
+                <Grid
+                  item
+                  xs={12}
+                  sm={12}
+                  md={12}
+                  lg={12}
+                  xl={12}
+                  style={{ display: "flex", justifyContent: "center" }}
+                >
+                  <Button
+                    size="small"
+                    color="primary"
+                    onClick={(e) => {
+                      addingToCart(e, tile);
+                    }}
+                  >
+                    <ShoppingCartIcon />
+                    Agregar
+                  </Button>
+                </Grid>
               </Card>
             ))
           ) : (

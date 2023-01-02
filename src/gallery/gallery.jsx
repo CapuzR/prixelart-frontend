@@ -20,6 +20,7 @@ import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogActions from "@material-ui/core/DialogActions";
 import Img from "react-cool-img";
+import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -64,6 +65,7 @@ export default function Gallery(props) {
   const [termsAgreeVar, setTermsAgreeVar] = useState(true);
   const [value, setValue] = useState("");
   const [selectedArt, setSelectedArt] = useState(undefined);
+  const history = useHistory();
 
   const classes = useStyles();
 
@@ -144,6 +146,7 @@ export default function Gallery(props) {
         <Grid>
           <ArtsGrid
             prixerUsername={null}
+            buyState={props.buyState}
             addItemToBuyState={props.addItemToBuyState}
             setIsOpenAssociateProduct={props.setIsOpenAssociateProduct}
             setSelectedArt={setSelectedArt}
@@ -323,6 +326,7 @@ export default function Gallery(props) {
                     props.setSelectedProductToAssociate(undefined);
                     setSelectedArt(undefined);
                     props.setIsOpenAssociateProduct(false);
+                    history.push({ pathname: "/" });
                   }}
                   color="primary"
                 >

@@ -135,6 +135,8 @@ export default function Grid(props) {
   const [loading, setLoading] = useState(false);
   const [snackBarMessage, setSnackBarMessage] = useState(false);
   const [selectedArt, setSelectedArt] = useState(undefined);
+  const [isOpenAssociateProduct, setIsOpenAssociateProduct] = useState(false);
+
   const [open, setOpen] = useState(false);
   const [openV, setOpenV] = useState(false);
   const [disabledReason, setDisabledReason] = useState("");
@@ -337,6 +339,13 @@ export default function Grid(props) {
     }
   };
 
+  const addingToCart = (e, tile) => {
+    e.preventDefault();
+    // props.setSelectedProduct(tile);
+    props.setSelectedArt(tile);
+    props.setIsOpenAssociateProduct(true);
+  };
+
   const msnry = new Masonry(".grid", {
     columnWidth: 200,
     itemSelector: ".grid-item",
@@ -397,10 +406,7 @@ export default function Grid(props) {
                       size="small"
                       color="primary"
                       onClick={(e) => {
-                        e.preventDefault();
-                        // props.setSelectedProduct(tile);
-                        props.setSelectedArt(tile);
-                        props.setIsOpenAssociateProduct(true);
+                        addingToCart(e, tile);
                       }}
                       style={{ position: "absolute", padding: "8px" }}
                     >

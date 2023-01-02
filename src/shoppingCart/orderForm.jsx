@@ -46,7 +46,11 @@ function OrderForm(props) {
       (item) =>
         item.product &&
         item.art &&
-        prices.push(item.product.publicEquation * item.quantity)
+        prices.push(
+          (item.product.publicEquation ||
+            item.product.publicPrice.from.replace(/[$]/gi, "")) *
+            (item.quantity || 1)
+        )
     );
     let total = prices.reduce(function (a, b) {
       return a + b;
@@ -66,17 +70,6 @@ function OrderForm(props) {
   const getIvaCost = (state) => {
     let iva = getTotalPrice(state) * 0.16;
     return iva;
-    // let prices = [];
-    // state.map(
-    //   (item) =>
-    //     item.product &&
-    //     item.art &&
-    //     prices.push(item.product.publicEquation * 0.16)
-    // );
-    // let total = prices.reduce(function (a, b) {
-    //   return a + b;
-    // });
-    // return total;
   };
 
   return (
@@ -146,8 +139,11 @@ function OrderForm(props) {
                                             }}
                                           >
                                             {`Precio: $${
-                                              item.product.publicEquation *
-                                              (item.quantity || 1)
+                                              (item.product.publicEquation ||
+                                                item.product.publicPrice.from.replace(
+                                                  /[$]/gi,
+                                                  ""
+                                                )) * (item.quantity || 1)
                                             }`}
                                           </div>
                                         </Grid>
@@ -214,13 +210,15 @@ function OrderForm(props) {
                               props.setOrderPaymentMethod(event.target.value)
                             }
                           >
-                            <MenuItem value={"PM"}>Pago Movil</MenuItem>
-                            <MenuItem value={"TRANSFER"}>
-                              Transferencia
+                            <MenuItem value={"Pago móvil"}>Pago Movil</MenuItem>
+                            <MenuItem value={"Transferecian en Bolívares"}>
+                              Transferencia en Bs
                             </MenuItem>
-                            <MenuItem value={"PANAMA"}>Banco Panamá</MenuItem>
-                            <MenuItem value={"ZELLE"}>Zelle</MenuItem>
-                            <MenuItem value={"USD"}>
+                            <MenuItem value={"Banco Panamá"}>
+                              Banco Panamá
+                            </MenuItem>
+                            <MenuItem value={"Zelle"}>Zelle</MenuItem>
+                            <MenuItem value={"USD efectivo"}>
                               Efectivo en dólares
                             </MenuItem>
                           </Select>

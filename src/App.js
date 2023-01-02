@@ -31,7 +31,6 @@ function App() {
   const [selectedProductToAssociate, setSelectedProductToAssociate] =
     useState(undefined);
   const [valuesConsumerForm, setValuesConsumerForm] = useState();
-  const [valuesOrderForm, setValuesOrderForm] = useState();
 
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("");
@@ -66,17 +65,19 @@ function App() {
     setOpen(true);
     setMessage(
       input.type === "product"
-        ? "Producto agregado al carrito correctamente"
-        : "Arte agregado al carrito correctamente"
+        ? "Producto agregado al carrito correctamente, selecciona un arte que desees asociar."
+        : "Arte agregado al carrito correctamente, selecciona un producto que desees asociar."
     );
   }
   function AssociateProduct(input) {
     const newState = [...buyState];
     if (input.type === "product") {
       newState[input.index].product = input.item;
+      newState[input.index].quantity = 1;
       setBuyState(newState);
     } else {
       newState[input.index].art = input.item;
+      newState[input.index].quantity = 1;
       setBuyState(newState);
     }
     setBuyState(newState);
@@ -84,8 +85,8 @@ function App() {
     setOpen(true);
     setMessage(
       input.type === "product"
-        ? "Producto asociado correctamente"
-        : "Arte asociado correctamente"
+        ? "Producto asociado correctamente."
+        : "Arte asociado correctamente."
     );
   }
 
@@ -230,13 +231,16 @@ function App() {
         <Route path="/shopping">
           <ShoppingPage
             buyState={buyState}
+            setBuyState={setBuyState}
             deleteItemInBuyState={deleteItemInBuyState}
             deleteProductInItem={deleteProductInItem}
             setSelectedArtToAssociate={setSelectedArtToAssociate}
             changeQuantity={changeQuantity}
             valuesConsumerForm={valuesConsumerForm}
             setValuesConsumerForm={setValuesConsumerForm}
-            // onCreateConsumer={props.onCreateConsumer}
+            setOpen={setOpen}
+            setMessage={setMessage}
+            // onCreateConsumer={onCreateConsumer}
             // isProcessed={isProcessed}
             // step={step}
           />
@@ -269,7 +273,17 @@ function App() {
         </Route>
 
         <Route path="/">
-          <Home deleteItemInBuyState={deleteItemInBuyState} />
+          <Home
+            deleteItemInBuyState={deleteItemInBuyState}
+            component={Home}
+            buyState={buyState}
+            addItemToBuyState={addItemToBuyState}
+            isOpenAssociateProduct={isOpenAssociateProduct}
+            setIsOpenAssociateProduct={setIsOpenAssociateProduct}
+            setSelectedProductToAssociate={setSelectedProductToAssociate}
+            selectedProductToAssociate={selectedProductToAssociate}
+            AssociateProduct={AssociateProduct}
+          />
         </Route>
         <Route component={Home} />
       </Switch>

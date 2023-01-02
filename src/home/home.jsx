@@ -25,6 +25,14 @@ import SimpleDialog from "../sharedComponents/simpleDialog/simpleDialog";
 import FloatingAddButton from "../sharedComponents/floatingAddButton/floatingAddButton";
 import Modal from "@material-ui/core/Modal";
 import Button from "@material-ui/core/Button";
+import Dialog from "@material-ui/core/Dialog";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogContentText from "@material-ui/core/DialogContentText";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import DialogActions from "@material-ui/core/DialogActions";
+import Img from "react-cool-img";
+import { useHistory } from "react-router-dom";
+
 import MDEditor from "@uiw/react-md-editor";
 
 import WhatsAppIcon from "@material-ui/icons/WhatsApp";
@@ -145,12 +153,15 @@ export default function Home(props) {
   const [openPrixers, setOpenPrixers] = useState(false);
   const [openArts, setOpenArts] = useState(true);
   const [openTestimonials, setOpenTestimonials] = useState(false);
+  const [selectedArt, setSelectedArt] = useState(undefined);
+
   // const [scrolledTop, setScrolledTop] = useState(false);
   // const history = useHistory();
   const [openArtFormDialog, setOpenArtFormDialog] = useState(false);
   // const rootRef = React.useRef(null);
   const [termsAgreeVar, setTermsAgreeVar] = useState(true);
   const [value, setValue] = useState("");
+  const history = useHistory();
 
   const imgsMobile = [
     {
@@ -470,7 +481,13 @@ export default function Home(props) {
             {
               openArts && (
                 // <Suspense fallback={<div>Loading...</div>}>
-                <ArtsGrid prixerUsername={null} />
+                <ArtsGrid
+                  prixerUsername={null}
+                  buyState={props.buyState}
+                  addItemToBuyState={props.addItemToBuyState}
+                  setIsOpenAssociateProduct={props.setIsOpenAssociateProduct}
+                  setSelectedArt={setSelectedArt}
+                />
               )
               // </Suspense>
             }
@@ -585,6 +602,140 @@ export default function Home(props) {
           </div>
         </div>
       </Modal>
+      <Dialog
+        open={props.isOpenAssociateProduct}
+        keepMounted
+        fullWidth
+        onClose={() => props.setIsOpenAssociateProduct(false)}
+        aria-labelledby="alert-dialog-slide-title"
+        aria-describedby="alert-dialog-slide-description"
+      >
+        <DialogTitle id="alert-dialog-slide-title">
+          {"Asocia el arte a un producto dentro de tu carrito de compras"}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-slide-description">
+            {!props.selectedProductToAssociate?.previous &&
+              props.buyState.length > 0 &&
+              props.buyState.find((buy) => buy.product !== undefined) && (
+                <strong>
+                  Puedes asociar el arte a un producto de tu carrito de compras
+                  o agregarlo y asociarlo mas tarde.
+                </strong>
+              )}
+            <div style={{ display: "flex" }}>
+              {props.selectedProductToAssociate?.previous ? (
+                "¿Deseas asociar este producto al item seleccionado previamente en el carrito?"
+              ) : props.buyState.length > 0 &&
+                props.buyState.find((buy) => buy.product !== undefined) ? (
+                props.buyState.map((buy, index) => {
+                  return (
+                    <div
+                      style={{
+                        display: "flex",
+                        width: "180px",
+                      }}
+                    >
+                      {buy.product && (
+                        <div
+                          key={index}
+                          style={{
+                            marginBottom: "32px",
+                            height: "180px",
+                            width: "180px",
+                          }}
+                          onClick={() =>
+                            props.setSelectedProductToAssociate({
+                              index,
+                              item: buy.product,
+                            })
+                          }
+                        >
+                          <Img
+                            placeholder="/imgLoading.svg"
+                            style={{
+                              backgroundColor: "#eeeeee",
+                              height: "180px",
+                              width: "180px",
+                              opacity:
+                                props.selectedProductToAssociate?.index ===
+                                index
+                                  ? "1"
+                                  : "0.6",
+                            }}
+                            src={buy.product ? buy.product.thumbUrl : ""}
+                            debounce={1000}
+                            cache
+                            error="/imgError.svg"
+                            // srcSet={tile.smallThumbUrl + ' 600w, ' + tile.mediumThumbUrl + ' 850w, ' + tile.largeThumbUrl + ' 1300w'}
+                            sizes="(min-width: 1600px) 850px, (min-width: 960px) 450px, (min-width: 640px) 400px, 200px"
+                            alt={buy.product && buy.product.name}
+                            id={index}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  );
+                })
+              ) : (
+                <strong>
+                  Parece que no tienes ningun producto dentro del carrito de
+                  compras, aun asi, puedes agregar este producto y asociarlo más
+                  tarde.
+                </strong>
+              )}
+            </div>
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => {
+              !props.selectedProductToAssociate?.previous &&
+                props.setSelectedProductToAssociate(undefined);
+              props.setIsOpenAssociateProduct(false);
+            }}
+            color="primary"
+          >
+            {props.selectedProductToAssociate?.previous ? "No" : "Cerrar"}
+          </Button>
+          {props.buyState.length > 0 &&
+            props.buyState.find((buy) => buy.product !== undefined) && (
+              <Button
+                disabled={!props.selectedProductToAssociate}
+                onClick={() => {
+                  props.AssociateProduct({
+                    index: props.selectedProductToAssociate.index,
+                    item: selectedArt,
+                    type: "art",
+                  });
+                  props.setSelectedProductToAssociate(undefined);
+                  setSelectedArt(undefined);
+                  props.setIsOpenAssociateProduct(false);
+                  history.push({ pathname: "/" });
+                }}
+                color="primary"
+              >
+                {props.selectedProductToAssociate?.previous ? "Sí" : "Asociar"}
+              </Button>
+            )}
+          {!props.selectedProductToAssociate?.previous && (
+            <Button
+              onClick={() => {
+                props.addItemToBuyState({
+                  type: "art",
+                  item: selectedArt,
+                });
+
+                setSelectedArt(undefined);
+                history.push({ pathname: "/productos" });
+              }}
+              color="primary"
+            >
+              Agregar como nuevo
+            </Button>
+          )}
+        </DialogActions>
+      </Dialog>{" "}
     </React.Fragment>
   );
 }

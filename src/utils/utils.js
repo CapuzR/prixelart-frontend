@@ -63,16 +63,16 @@ const generateWaBuyMessage = (buy) => {
     "Hola, quiero conocer el proceso para continuar con la compra de los items que seleccioné: " +
     buy.map(
       (item, index) =>
+        item.art &&
+        item.product &&
         "*Item " +
-        `${index + 1}*
-          Arte:
-          ${item.art.title} 
-          Producto:
-          ${item.product.name}
+          `${index + 1}*
+          Arte: ${item.art.title} 
+          Producto: ${item.product.name}
           ${item.product.attributes.map((a, i) => {
             return "- " + a.name + ": " + item.product.selection[i];
           })}
-          Prixer: ${item.art.prixerUsername} `
+          Prixer: ${item.art.prixerUsername}`
     );
 
   const url = "https://wa.me/" + waNumber + "?text=" + message;

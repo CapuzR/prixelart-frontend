@@ -76,13 +76,18 @@ export default function MainListItems(props) {
         <ListItem
           button
           selected={props.active === "order"}
-          style={{ color: "gray" }}
+          // style={{ color: "gray" }}
         >
           <ListItemIcon>
             <ReceiptIcon />
           </ListItemIcon>
-          <ListItemText primary="Pedidos" />
-          {/* <ListItemText primary="Pedidos" onClick={(e)=>{handleClick('order')}}  /> */}
+          <ListItemText
+            primary="Pedidos"
+            onClick={(e) => {
+              handleClick("order");
+            }}
+          />
+          {/* <ListItemText primary="Pedidos"  /> */}
         </ListItem>
         <ListItem
           button

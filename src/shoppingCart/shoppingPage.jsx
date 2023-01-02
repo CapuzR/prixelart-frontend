@@ -28,6 +28,7 @@ import WhatsAppIcon from "@material-ui/icons/WhatsApp";
 import ConsumerForm from "./consumerForm";
 import OrderForm from "./orderForm";
 import CartReview from "./cartReview";
+import { nanoid } from "nanoid";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -60,6 +61,8 @@ export default function ShoppingPage(props) {
   const isIphone = useMediaQuery(theme.breakpoints.down("xs"));
   const [orderPaymentMethod, setOrderPaymentMethod] = useState(undefined);
   const [activeStep, setActiveStep] = React.useState(0);
+  const [valuesOrderForm, setValuesOrderForm] = useState();
+
   const steps = [`Tus datos`, `Orden de compra`];
   // const [openCheckoutDialog, setOpenCheckoutDialog] = useState(false); //probando
 
@@ -91,10 +94,10 @@ export default function ShoppingPage(props) {
   //   const formData = new FormData();
   //   const termsAgree = true;
   //   formData.append("termsAgree", termsAgree);
-  //   // formData.append(
-  //   //   "username",
-  //   //   JSON.parse(localStorage.getItem("token")).username
-  //   // );
+  //   formData.append(
+  //     "username",
+  //     JSON.parse(localStorage.getItem("token")).username
+  //   );
   //   const base_url =
   //     process.env.REACT_APP_BACKEND_URL + "/prixer/update-terms/" + Id;
   //   const response = await axios
@@ -109,6 +112,7 @@ export default function ShoppingPage(props) {
   //       setTermsAgreeVar(true);
   //     });
   // };
+
   // const TermsAgreeModal = () => {
   //   const GetId = JSON.parse(localStorage.getItem("token")).username;
   //   const base_url = process.env.REACT_APP_BACKEND_URL + "/prixer/get/" + GetId;
@@ -125,8 +129,110 @@ export default function ShoppingPage(props) {
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
   };
-  const createOrder = () => {
-    window.open(utils.generateWaBuyMessage(props.buyState), "_blank");
+  const getTotalPrice = (state) => {
+    let prices = [];
+    state.map(
+      (item) =>
+        item.product &&
+        item.art &&
+        prices.push(
+          (item.product.publicEquation ||
+            item.product.publicPrice.from.replace(/[$]/gi, "")) *
+            (item.quantity || 1)
+        )
+    );
+    let total = prices.reduce(function (a, b) {
+      return a + b;
+    });
+    return total;
+  };
+
+  const createOrder = async () => {
+    if (orderPaymentMethod) {
+      let orderLines = [];
+
+      props.buyState.map((s) => {
+        s.product &&
+          s.art &&
+          orderLines.push({
+            product: s.product,
+            art: s.art,
+            quantity: s.quantity,
+          });
+      });
+      window.open(utils.generateWaBuyMessage(orderLines), "_blank");
+
+      const consumer = await axios.post(
+        process.env.REACT_APP_BACKEND_URL + "/consumer/create",
+        {
+          active: true,
+          contactedBy: {
+            username: "web",
+            id: 1,
+            phone: "",
+            email: "hola@prixelart.com",
+          },
+          consumerType: "Particular",
+          firstname: props.valuesConsumerForm?.name,
+          lastname: props.valuesConsumerForm?.lastName,
+          username: props.valuesConsumerForm?.username,
+          ci: props.valuesConsumerForm?.ci,
+          phone: props.valuesConsumerForm?.phone,
+          email: props.valuesConsumerForm?.email,
+          address: props.valuesConsumerForm?.address,
+          billingAddress:
+            props.valuesConsumerForm?.billingAddress ||
+            props.valuesConsumerForm?.address,
+          shippingAddress:
+            props.valuesConsumerForm?.shippingAddress ||
+            props.valuesConsumerForm?.address,
+        }
+      );
+
+      const base_url = process.env.REACT_APP_BACKEND_URL + "/order/create";
+      let input = {
+        orderId: nanoid(6),
+        firstname: consumer.data.newConsumer.firstname,
+        lastname: consumer.data.newConsumer.lastname,
+        ci: consumer.data.newConsumer.ci,
+        requests: orderLines,
+        email: consumer.data.newConsumer.email,
+        phone: consumer.data.newConsumer.phone,
+        billingAddress: consumer.data.newConsumer.billingAddress,
+        shippingAddress: consumer.data.newConsumer.shippingAddress,
+        tax: getTotalPrice(props.buyState) * 0.16,
+        subtotal: getTotalPrice(props.buyState),
+        total:
+          getTotalPrice(props.buyState) + getTotalPrice(props.buyState) * 0.16,
+        createdOn: new Date(),
+        createdBy: consumer.data.newConsumer,
+        orderType: "Particular",
+        // consumerId: consumer.data.newConsumer._id,
+        status: "Procesando",
+
+        // orderData: orderHeader,
+        orderPaymentMethod: orderPaymentMethod,
+      };
+      const order = await axios.post(base_url, input).then(() => {
+        console.log("Orden generada correctamente. Por favor, revisa tu email");
+      });
+      props.setOpen(true);
+      props.setMessage(
+        "¡Gracias por tu compra! te redireccionaremos a Whatsapp para ser atendido por nuestro departamento de ventas."
+      );
+
+      closeOp();
+    } else {
+      props.setOpen(true);
+      props.setMessage("Por favor selecciona una forma de pago.");
+    }
+  };
+
+  const closeOp = async () => {
+    props.setValuesConsumerForm(undefined);
+    localStorage.removeItem("buyState");
+    props.setBuyState([localStorage.removeItem("buyState")]);
+    history.push({ pathname: "/" });
   };
   return (
     <>
@@ -181,6 +287,7 @@ export default function ShoppingPage(props) {
                   ) : (
                     <OrderForm
                       valuesConsumer={props.valuesConsumerForm}
+                      setValuesConsumer={props.setValues}
                       onCreateConsumer={props.onCreateConsumer}
                       buyState={props.buyState}
                       orderPaymentMethod={orderPaymentMethod}
@@ -205,9 +312,21 @@ export default function ShoppingPage(props) {
                   <Button
                     variant="contained"
                     color="primary"
-                    disabled={props.buyState.length === 0}
-                    onClick={handleNext}
-                    className={classes.button}
+                    disabled={
+                      !props.valuesConsumerForm ||
+                      !props.valuesConsumerForm.name ||
+                      !props.valuesConsumerForm.lastName ||
+                      !props.valuesConsumerForm.username ||
+                      !props.valuesConsumerForm.ci ||
+                      !props.valuesConsumerForm.phone ||
+                      !props.valuesConsumerForm.email ||
+                      !props.valuesConsumerForm.address
+                      // !orderPaymentMethod
+                      // !props.valuesConsumerForm.billingAddress
+                    }
+                    onClick={
+                      activeStep === steps.length - 1 ? createOrder : handleNext
+                    }
                   >
                     {activeStep === steps.length - 1 ? "Ordenar" : "Siguiente"}
                   </Button>
@@ -216,9 +335,12 @@ export default function ShoppingPage(props) {
             </Grid>
           </Grid>
         ) : (
-          <strong>
-            Actualmente no tienes ningun producto dentro del carrito de compra
-          </strong>
+          <div style={{ marginTop: 100 }}>
+            <Typography variant={"h6"} align={"Center"}>
+              Actualmente no tienes ningun producto dentro del carrito de
+              compra.
+            </Typography>
+          </div>
         )}
       </Container>
     </>

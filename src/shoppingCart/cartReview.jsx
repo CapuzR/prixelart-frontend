@@ -407,53 +407,57 @@ export default function CartReview(props) {
                       </Button>
                     )}
                   </div>
-                  <Grid
-                    item
-                    xs={12}
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "end",
-                    }}
-                  >
-                    <div style={{ paddingBottom: 5 }}>
-                      <strong>Precio:</strong>
-                      {`$${
-                        buy.product.publicEquation ||
-                        buy.product.publicPrice.from
-                      }`}
-                    </div>
-                    <div
+                  {buy.product ? (
+                    <Grid
+                      item
+                      xs={12}
                       style={{
                         display: "flex",
-                        alignItems: "center",
+                        justifyContent: "space-between",
+                        alignItems: "end",
                       }}
                     >
-                      <strong>Cantidad: </strong>
-                      <input
+                      <div style={{ paddingBottom: 5 }}>
+                        <strong>Precio:</strong>
+                        {`$${
+                          buy.product?.publicEquation ||
+                          buy.product?.publicPrice.from.replace(/[$]/gi, "")
+                        }`}
+                      </div>
+                      <div
                         style={{
-                          width: 80,
-                          padding: "10px",
-                          borderRadius: 4,
+                          display: "flex",
+                          alignItems: "center",
                         }}
-                        type="number"
-                        defaultValue={1}
-                        value={buy.quantity}
-                        min="1"
-                        InputLabelProps={{
-                          shrink: true,
-                        }}
-                        onChange={(e) => {
-                          props.changeQuantity({
-                            index,
-                            art: buy.art,
-                            product: buy.product,
-                            quantity: e.target.value,
-                          });
-                        }}
-                      />
-                    </div>
-                  </Grid>
+                      >
+                        <strong>Cantidad: </strong>
+                        <input
+                          style={{
+                            width: 80,
+                            padding: "10px",
+                            borderRadius: 4,
+                          }}
+                          type="number"
+                          defaultValue={1}
+                          value={buy.quantity}
+                          min="1"
+                          InputLabelProps={{
+                            shrink: true,
+                          }}
+                          onChange={(e) => {
+                            props.changeQuantity({
+                              index,
+                              art: buy.art,
+                              product: buy.product,
+                              quantity: e.target.value,
+                            });
+                          }}
+                        />
+                      </div>
+                    </Grid>
+                  ) : (
+                    ""
+                  )}
                 </Grid>
                 {!isMobile && (
                   <Tooltip

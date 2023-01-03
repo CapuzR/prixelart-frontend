@@ -289,7 +289,7 @@ function App() {
       </Switch>
       <Snackbar
         open={open}
-        autoHideDuration={3000}
+        autoHideDuration={5000}
         message={message}
         onClose={() => setOpen(false)}
       />

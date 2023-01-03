@@ -214,6 +214,7 @@ export default function ProductsCatalog(props) {
                     item: selectedProduct,
                   });
                   setSelectedProduct(undefined);
+                  history.push({ pathname: "/galeria" });
                 }}
                 color="primary"
               >

@@ -25,8 +25,7 @@ import SearchBar from "../../sharedComponents/searchBar/searchBar.jsx";
 import IconButton from "@material-ui/core/IconButton";
 import Tooltip from "@material-ui/core/Tooltip";
 
-import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
-
+import AddShoppingCartIcon from "@material-ui/icons/AddShoppingCart";
 const IOSSwitch = withStyles((theme) => ({
   root: {
     width: 42,
@@ -135,8 +134,6 @@ export default function Grid(props) {
   const [loading, setLoading] = useState(false);
   const [snackBarMessage, setSnackBarMessage] = useState(false);
   const [selectedArt, setSelectedArt] = useState(undefined);
-  const [isOpenAssociateProduct, setIsOpenAssociateProduct] = useState(false);
-
   const [open, setOpen] = useState(false);
   const [openV, setOpenV] = useState(false);
   const [disabledReason, setDisabledReason] = useState("");
@@ -341,7 +338,6 @@ export default function Grid(props) {
 
   const addingToCart = (e, tile) => {
     e.preventDefault();
-    // props.setSelectedProduct(tile);
     props.setSelectedArt(tile);
     props.setIsOpenAssociateProduct(true);
   };
@@ -410,7 +406,7 @@ export default function Grid(props) {
                       }}
                       style={{ position: "absolute", padding: "8px" }}
                     >
-                      <ShoppingCartIcon />
+                      <AddShoppingCartIcon />
                     </IconButton>
                   </Tooltip>
                   <Img

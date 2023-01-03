@@ -8,12 +8,15 @@ import ShoppingCartOutlinedIcon from "@material-ui/icons/ShoppingCartOutlined";
 const useStyles = makeStyles((theme) => ({
   root: {
     "& > *": {
-      // margin: theme.spacing(1),
-      margin: 0,
+      margin: theme.spacing(1),
+      // marginRight: theme.spacing(1),
+
+      // margin: 0,
       top: "auto",
-      // marginLeft:333,
+      // marginLeft: 333,
       bottom: 20,
       left: "auto",
+      // paddingRight: "5",
       position: "fixed",
     },
   },
@@ -49,19 +52,36 @@ const useStyles = makeStyles((theme) => ({
 export default function FloatingAddButton(props) {
   const classes = useStyles();
 
-  const handleClick = () => {
+  const openArtDialog = () => {
     props.setOpenArtFormDialog(true);
+  };
+
+  const openShoppingCart = () => {
+    props.setOpenShoppingCart(true);
   };
 
   return (
     <div className={classes.root}>
-      <Fab color="primary" aria-label="add" onClick={handleClick}>
-        <AddPhotoAlternateIcon />
-      </Fab>
+      {JSON.parse(localStorage.getItem("token")) &&
+        JSON.parse(localStorage.getItem("token")).username && (
+          <Fab
+            color="primary"
+            aria-label="add"
+            onClick={openArtDialog}
+            style={{ bottom: 90, right: 10 }}
+          >
+            <AddPhotoAlternateIcon />
+          </Fab>
+        )}
 
-      {/* <Fab color="primary" aria-label="add" onClick={handleClick}>
+      <Fab
+        color="primary"
+        aria-label="add"
+        onClick={openShoppingCart}
+        style={{ right: 10 }}
+      >
         <ShoppingCartOutlinedIcon />
-      </Fab> */}
+      </Fab>
     </div>
   );
 }

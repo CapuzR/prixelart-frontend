@@ -1,0 +1,31 @@
+{
+  "short_name": "Prixelart",
+  "name": "Prixelart",
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#ffffff",
+  "icons": [
+    {
+      "src": "/images/favicon.png",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/png"
+    },
+    {
+      "src": "/images/apple-touch-icon-72x72.png",
+      "sizes": "72x72"
+    },
+    {
+      "src": "/images/apple-touch-icon-120x120.png",
+      "sizes": "120x120"
+    },
+    {
+      "src": "/images/apple-touch-icon-144x144.png",
+      "sizes": "144x144"
+    },
+    {
+      "src": "/images/apple-touch-icon-180x180.png",
+      "sizes": "180x180"
+    }
+  ]
+}

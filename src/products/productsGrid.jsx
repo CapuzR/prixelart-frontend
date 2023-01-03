@@ -29,7 +29,8 @@ import MenuItem from "@material-ui/core/MenuItem";
 import TextField from "@material-ui/core/TextField";
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
 import { setProductAtts, getAttributes, getEquation } from "./services.js";
-import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
+import AddShoppingCartIcon from "@material-ui/icons/ShoppingCart";
+import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -80,6 +81,7 @@ export default function ProductGrid(props) {
   const [width, setWidth] = useState([]);
   const [height, setHeight] = useState([]);
   const [order, setOrder] = useState("");
+  const history = useHistory();
 
   const handleChange = (event) => {
     setOrder(event.target.value);
@@ -518,7 +520,7 @@ export default function ProductGrid(props) {
                       addingToCart(e, tile);
                     }}
                   >
-                    <ShoppingCartIcon />
+                    <AddShoppingCartIcon />
                     Agregar
                   </Button>
                 </Grid>

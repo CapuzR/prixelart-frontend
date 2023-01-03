@@ -342,8 +342,8 @@ export default function Gallery(props) {
                     type: "art",
                     item: selectedArt,
                   });
-
                   setSelectedArt(undefined);
+                  history.push({ pathname: "/productos" });
                 }}
                 color="primary"
               >

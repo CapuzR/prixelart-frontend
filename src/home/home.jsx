@@ -44,6 +44,7 @@ import ArrowForwardIosIcon from "@material-ui/icons/ArrowForwardIos";
 import ArtUploader from "../sharedComponents/artUploader/artUploader";
 // import utils from "../utils/utils";
 import TestimonialsFeed from "../admin/TestimonialsCrud/TestimonialsFeed";
+import CartReview from "../shoppingCart/cartReview";
 
 function Copyright() {
   return (
@@ -156,8 +157,8 @@ export default function Home(props) {
   const [selectedArt, setSelectedArt] = useState(undefined);
 
   // const [scrolledTop, setScrolledTop] = useState(false);
-  // const history = useHistory();
   const [openArtFormDialog, setOpenArtFormDialog] = useState(false);
+  const [openShoppingCart, setOpenShoppingCart] = useState(false);
   // const rootRef = React.useRef(null);
   const [termsAgreeVar, setTermsAgreeVar] = useState(true);
   const [value, setValue] = useState("");
@@ -534,12 +535,73 @@ export default function Home(props) {
           setOpenArtFormDialog={setOpenArtFormDialog}
         />
       )}
-      {JSON.parse(localStorage.getItem("token")) &&
-        JSON.parse(localStorage.getItem("token")).username && (
-          <Grid className={classes.float}>
-            <FloatingAddButton setOpenArtFormDialog={setOpenArtFormDialog} />
-          </Grid>
+
+      <Dialog
+        maxWidth={"lg"}
+        open={openShoppingCart}
+        style={{
+          width: isDeskTop ? 850 : "100%",
+          margin: isDesktop ? "auto" : 0,
+        }}
+      >
+        {props.buyState.length > 0 ? (
+          <div
+            style={{
+              marginLeft: 15,
+              marginRight: 15,
+              marginTop: -60,
+            }}
+          >
+            <CartReview
+              buyState={props.buyState}
+              changeQuantity={props.changeQuantity}
+              deleteItemInBuyState={props.deleteItemInBuyState}
+              deleteProductInItem={props.deleteProductInItem}
+              setSelectedArtToAssociate={props.setSelectedArtToAssociate}
+            />
+          </div>
+        ) : (
+          <div style={{ margin: "90px 10px 40px 10px" }}>
+            <Typography variant={"h6"} align={"Center"} justify={"center"}>
+              Actualmente no tienes ningun producto dentro del carrito de
+              compra.
+            </Typography>
+          </div>
         )}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-around",
+            marginBottom: 20,
+          }}
+        >
+          <Button
+            onClick={() => {
+              setOpenShoppingCart(false);
+            }}
+            color="primary"
+          >
+            Cerrar
+          </Button>
+          {props.buyState.length > 0 && (
+            <Button
+              onClick={() => {
+                history.push({ pathname: "/shopping" });
+              }}
+              color="primary"
+            >
+              Comprar
+            </Button>
+          )}
+        </div>
+      </Dialog>
+
+      <Grid className={classes.float}>
+        <FloatingAddButton
+          setOpenArtFormDialog={setOpenArtFormDialog}
+          setOpenShoppingCart={setOpenShoppingCart}
+        />
+      </Grid>
       {openModal && (
         <SimpleDialog
           arts={openArts}
@@ -711,7 +773,6 @@ export default function Home(props) {
                   props.setSelectedProductToAssociate(undefined);
                   setSelectedArt(undefined);
                   props.setIsOpenAssociateProduct(false);
-                  history.push({ pathname: "/" });
                 }}
                 color="primary"
               >
@@ -735,7 +796,7 @@ export default function Home(props) {
             </Button>
           )}
         </DialogActions>
-      </Dialog>{" "}
+      </Dialog>
     </React.Fragment>
   );
 }

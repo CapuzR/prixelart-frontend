@@ -24,7 +24,8 @@ import TextField from "@material-ui/core/TextField";
 import IconButton from "@material-ui/core/IconButton";
 import { Typography } from "@material-ui/core";
 import WhatsAppIcon from "@material-ui/icons/WhatsApp";
-
+import { Backdrop } from "@material-ui/core";
+import CircularProgress from "@material-ui/core/CircularProgress";
 import ConsumerForm from "./consumerForm";
 import OrderForm from "./orderForm";
 import CartReview from "./cartReview";
@@ -50,6 +51,10 @@ const useStyles = makeStyles((theme) => ({
       margin: theme.spacing(1),
     },
   },
+  backdrop: {
+    zIndex: theme.zIndex.drawer + 1,
+    color: theme.palette.primary.main,
+  },
 }));
 
 export default function ShoppingPage(props) {
@@ -61,7 +66,8 @@ export default function ShoppingPage(props) {
   const isIphone = useMediaQuery(theme.breakpoints.down("xs"));
   const [orderPaymentMethod, setOrderPaymentMethod] = useState(undefined);
   const [activeStep, setActiveStep] = React.useState(0);
-  const [valuesOrderForm, setValuesOrderForm] = useState();
+  // const [valuesOrderForm, setValuesOrderForm] = useState();
+  const [loading, setLoading] = useState(false);
 
   const steps = [`Tus datos`, `Orden de compra`];
   // const [openCheckoutDialog, setOpenCheckoutDialog] = useState(false); //probando
@@ -149,6 +155,12 @@ export default function ShoppingPage(props) {
 
   const createOrder = async () => {
     if (orderPaymentMethod) {
+      setLoading(true);
+      props.setOpen(true);
+      props.setMessage(
+        "¡Gracias por tu compra! te redireccionaremos a Whatsapp para ser atendido por nuestro departamento de ventas."
+      );
+
       let orderLines = [];
 
       props.buyState.map((s) => {
@@ -160,7 +172,6 @@ export default function ShoppingPage(props) {
             quantity: s.quantity,
           });
       });
-      window.open(utils.generateWaBuyMessage(orderLines), "_blank");
 
       const consumer = await axios.post(
         process.env.REACT_APP_BACKEND_URL + "/consumer/create",
@@ -188,6 +199,7 @@ export default function ShoppingPage(props) {
             props.valuesConsumerForm?.address,
         }
       );
+      window.open(utils.generateWaBuyMessage(orderLines), "_blank");
 
       const base_url = process.env.REACT_APP_BACKEND_URL + "/order/create";
       let input = {
@@ -209,33 +221,27 @@ export default function ShoppingPage(props) {
         orderType: "Particular",
         // consumerId: consumer.data.newConsumer._id,
         status: "Procesando",
-
-        // orderData: orderHeader,
         orderPaymentMethod: orderPaymentMethod,
       };
       const order = await axios.post(base_url, input).then(() => {
         console.log("Orden generada correctamente. Por favor, revisa tu email");
       });
-      props.setOpen(true);
-      props.setMessage(
-        "¡Gracias por tu compra! te redireccionaremos a Whatsapp para ser atendido por nuestro departamento de ventas."
-      );
-
-      closeOp();
+      history.push({ pathname: "/" });
+      props.setValuesConsumerForm(undefined);
+      localStorage.removeItem("buyState");
+      props.setBuyState([]);
+      setLoading(false);
     } else {
       props.setOpen(true);
       props.setMessage("Por favor selecciona una forma de pago.");
     }
   };
 
-  const closeOp = async () => {
-    props.setValuesConsumerForm(undefined);
-    localStorage.removeItem("buyState");
-    props.setBuyState([localStorage.removeItem("buyState")]);
-    history.push({ pathname: "/" });
-  };
   return (
     <>
+      <Backdrop className={classes.backdrop} open={loading}>
+        <CircularProgress />
+      </Backdrop>
       <AppBar prixerUsername={prixerUsername} />
       <Container component="main" maxWidth="s" className={classes.paper}>
         <CssBaseline />
@@ -245,18 +251,21 @@ export default function ShoppingPage(props) {
             spacing={2}
             style={{ justifyContent: "space-between" }}
           >
-            <CartReview
-              buyState={props.buyState}
-              changeQuantity={props.changeQuantity}
-              deleteItemInBuyState={props.deleteItemInBuyState}
-              deleteProductInItem={props.deleteProductInItem}
-              setSelectedArtToAssociate={props.setSelectedArtToAssociate}
-            />
+            <Grid item xs={12} sm={12} md={6} lg={7} xl={7}>
+              <CartReview
+                buyState={props.buyState}
+                changeQuantity={props.changeQuantity}
+                deleteItemInBuyState={props.deleteItemInBuyState}
+                deleteProductInItem={props.deleteProductInItem}
+                setSelectedArtToAssociate={props.setSelectedArtToAssociate}
+              />
+            </Grid>
+
             <Grid item xs={12} sm={12} md={6} lg={5} xl={6}>
               <Paper
                 style={{
                   padding: "10px 10px 0px 10px",
-                  marginTop: "2px",
+                  marginTop: "150px",
                   // height: "500px",
                   // display: "flex",
                   width: "100%",

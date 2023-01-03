@@ -1,18 +1,13 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useHistory, useLocation } from "react-router-dom";
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
 import clsx from "clsx";
-import orderServices from "./orderServices";
 import { useTheme } from "@material-ui/core/styles";
 import Checkbox from "@material-ui/core/Checkbox";
 import { makeStyles } from "@material-ui/core/styles";
 import Fab from "@material-ui/core/Fab";
 import AddIcon from "@material-ui/icons/Add";
-import ViewListIcon from "@material-ui/icons/ViewList";
-import CreateOrder from "../../orderCrud/createOrder/createOrder";
-import UpdateOrder from "../../orderCrud/updateOrder";
 import Title from "../Title";
 import {
   TableCell,
@@ -31,10 +26,9 @@ import MenuItem from "@material-ui/core/MenuItem";
 import Select from "@material-ui/core/Select";
 import EditIcon from "@material-ui/icons/Edit";
 import DeleteIcon from "@material-ui/icons/Delete";
-import { RowingRounded } from "@material-ui/icons";
-
-// import DisableOrder from '../../orderCrud/disableOrder';
-// import ReadOrders from '../../orderCrud/readOrders';
+import RefreshIcon from "@material-ui/icons/Refresh";
+import { Backdrop } from "@material-ui/core";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 const drawerWidth = 240;
 
@@ -43,7 +37,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
   },
   toolbar: {
-    paddingRight: 24, // keep right padding when drawer closed
+    paddingRight: 24,
   },
   toolbarIcon: {
     display: "flex",
@@ -138,6 +132,10 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "row",
   },
+  backdrop: {
+    zIndex: theme.zIndex.drawer + 1,
+    color: theme.palette.primary.main,
+  },
 }));
 
 function Orders() {
@@ -152,6 +150,7 @@ function Orders() {
   const [isShowDetails, setIsShowDetails] = useState(false);
   const [rows, setRows] = useState();
   const [modalContent, setModalContent] = useState();
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     readOrders();
@@ -186,10 +185,32 @@ function Orders() {
 
   return (
     <div style={{ position: "relative" }}>
+      <Backdrop
+        className={classes.backdrop}
+        open={loading}
+        transitionDuration={3000}
+      >
+        <CircularProgress />
+      </Backdrop>
       <Grid container spacing={3} style={{ margin: isDesktop ? "12px" : "" }}>
         <Grid item xs={12} md={12} lg={12}>
           <Paper className={fixedHeightPaper}>
-            <Title>Órdenes</Title>
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <Title>Órdenes</Title>
+              <Fab
+                color="primary"
+                size="small"
+                aria-label="edit"
+                onClick={() => {
+                  setLoading(true);
+                  readOrders();
+                  setLoading(false);
+                }}
+              >
+                <RefreshIcon />
+              </Fab>
+            </div>
+
             {rows && (
               <Table>
                 <TableHead>

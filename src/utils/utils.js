@@ -57,8 +57,8 @@ const generateArtMessage = (tile, type) => {
 };
 
 const generateWaBuyMessage = (buy) => {
-  //   const waNumber = "584126377748";
-  const waNumber = "584149153069";
+  const waNumber = "584126377748";
+  // const waNumber = "584149153069";
   const message =
     "Hola, quiero conocer el proceso para continuar con la compra de los items que seleccioné: " +
     buy.map(
@@ -67,12 +67,14 @@ const generateWaBuyMessage = (buy) => {
         item.product &&
         "*Item " +
           `${index + 1}*
-          Arte: ${item.art.title} 
-          Producto: ${item.product.name}
-          ${item.product.attributes.map((a, i) => {
-            return "- " + a.name + ": " + item.product.selection[i];
-          })}
-          Prixer: ${item.art.prixerUsername}`
+          Arte: ${item.art.title} del Prixer: ${
+            item.art.prixerUsername
+          }, Producto: ${item.product.name}, ${item.product.attributes.map(
+            (a, i) => {
+              return "- " + a.name + ": " + item.product.selection[i];
+            }
+          )}, Cantidad: ${item.quantity}
+          `
     );
 
   const url = "https://wa.me/" + waNumber + "?text=" + message;

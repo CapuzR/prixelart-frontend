@@ -29,7 +29,7 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import RefreshIcon from "@material-ui/icons/Refresh";
 import { Backdrop } from "@material-ui/core";
 import CircularProgress from "@material-ui/core/CircularProgress";
-
+import FormControl from "@material-ui/core/FormControl";
 const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
@@ -151,7 +151,6 @@ function Orders() {
   const [rows, setRows] = useState();
   const [modalContent, setModalContent] = useState();
   const [loading, setLoading] = useState(false);
-
   useEffect(() => {
     readOrders();
   }, []);
@@ -267,22 +266,29 @@ function Orders() {
 
                           <TableCell align="center">${row.total}</TableCell>
                           <TableCell align="center">
-                            <Select
-                              value={row.status}
-                              onChange={(e) => {
-                                // setStatus(e.target.value);
-                                handleChangeStatus(row.orderId, e.target.value);
-                              }}
-                            >
-                              <MenuItem value={"Procesando"}>
-                                Procesando
-                              </MenuItem>
+                            <FormControl disabled={row.status !== "Procesando"}>
+                              <Select
+                                SelectClassKey
+                                value={row.status}
+                                onChange={(e) => {
+                                  handleChangeStatus(
+                                    row.orderId,
+                                    e.target.value
+                                  );
+                                }}
+                              >
+                                <MenuItem value={"Procesando"}>
+                                  Procesando
+                                </MenuItem>
 
-                              <MenuItem value={"Cancelada"}>Cancelada</MenuItem>
-                              <MenuItem value={"Completada"}>
-                                Completada
-                              </MenuItem>
-                            </Select>
+                                <MenuItem value={"Cancelada"}>
+                                  Cancelada
+                                </MenuItem>
+                                <MenuItem value={"Completada"}>
+                                  Completada
+                                </MenuItem>
+                              </Select>
+                            </FormControl>
                             {/* <Fab
                               color="default"
                               style={{ width: 35, height: 35 }}

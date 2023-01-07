@@ -17,6 +17,8 @@ import PasswordChange from "./prixerProfile/passwordChange/passwordChange";
 import ForgotPassword from "./prixerProfile/passwordReset/forgotPassword";
 import ResetPassword from "./prixerProfile/passwordReset/passwordReset";
 import Snackbar from "@material-ui/core/Snackbar";
+import Orders from "./admin/adminMain/orders/orders";
+import OrderForm from "./shoppingCart/orderForm";
 
 function App() {
   const [buyState, setBuyState] = useState(
@@ -154,7 +156,21 @@ function App() {
         </Route>
 
         <Route path="/admin">
-          <AdminMain />
+          <AdminMain
+            buyState={buyState}
+            setBuyState={setBuyState}
+            deleteItemInBuyState={deleteItemInBuyState}
+            deleteProductInItem={deleteProductInItem}
+            setSelectedArtToAssociate={setSelectedArtToAssociate}
+            // setSelectedProduct={setSelectedProduct}
+            AssociateProduct={AssociateProduct}
+            changeQuantity={changeQuantity}
+            valuesConsumerForm={valuesConsumerForm}
+            setValuesConsumerForm={setValuesConsumerForm}
+            setOpen={setOpen}
+            setMessage={setMessage}
+            addItemToBuyState={addItemToBuyState}
+          />
         </Route>
 
         <Route path="/admin/user/create">

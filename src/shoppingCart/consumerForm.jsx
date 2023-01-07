@@ -129,6 +129,7 @@ function ConsumerForm(props) {
                 className={classes.gridInput}
               >
                 <TextField
+                  variant="outlined"
                   id="standard-name"
                   label="Nombre"
                   fullWidth
@@ -150,6 +151,7 @@ function ConsumerForm(props) {
                 className={classes.gridInput}
               >
                 <TextField
+                  variant="outlined"
                   id="standard-name"
                   label="Apellido"
                   fullWidth
@@ -174,6 +176,7 @@ function ConsumerForm(props) {
                 className={classes.gridInput}
               >
                 <TextField
+                  variant="outlined"
                   className={classes.textField}
                   id="standard-name"
                   label="Usuario"
@@ -203,6 +206,7 @@ function ConsumerForm(props) {
                 className={classes.gridInput}
               >
                 <TextField
+                  variant="outlined"
                   id="standard-name"
                   label="Cédula o RIF"
                   fullWidth
@@ -225,6 +229,7 @@ function ConsumerForm(props) {
                 className={classes.gridInput}
               >
                 <TextField
+                  variant="outlined"
                   id="standard-name"
                   label="Telefono"
                   fullWidth
@@ -255,6 +260,7 @@ function ConsumerForm(props) {
                 className={classes.gridInput}
               >
                 <TextField
+                  variant="outlined"
                   id="standard-name"
                   label="Correo"
                   fullWidth
@@ -284,6 +290,7 @@ function ConsumerForm(props) {
                 className={classes.gridInput}
               >
                 <TextField
+                  variant="outlined"
                   id="standard-name"
                   fullWidth
                   label="Dirección de envio"
@@ -357,6 +364,7 @@ function ConsumerForm(props) {
                 className={classes.gridInput}
               >
                 <TextField
+                  variant="outlined"
                   id="standard-name"
                   label="Nombre"
                   fullWidth
@@ -388,6 +396,7 @@ function ConsumerForm(props) {
                 className={classes.gridInput}
               >
                 <TextField
+                  variant="outlined"
                   id="standard-name"
                   label="Apellido"
                   fullWidth
@@ -419,6 +428,7 @@ function ConsumerForm(props) {
                 className={classes.gridInput}
               >
                 <TextField
+                  variant="outlined"
                   id="standard-name"
                   label="Telefono"
                   fullWidth
@@ -465,6 +475,7 @@ function ConsumerForm(props) {
                 className={classes.gridInput}
               >
                 <TextField
+                  variant="outlined"
                   id="standard-name"
                   fullWidth
                   label="Dirección de envio"
@@ -559,13 +570,14 @@ function ConsumerForm(props) {
               </Grid>
               <Grid
                 item
-                lg={6}
-                md={6}
+                lg={4}
+                md={4}
                 sm={4}
                 xs={12}
                 className={classes.gridInput}
               >
                 <TextField
+                  variant="outlined"
                   id="standard-name"
                   label="Nombre"
                   fullWidth
@@ -594,13 +606,14 @@ function ConsumerForm(props) {
               </Grid>
               <Grid
                 item
-                lg={6}
-                md={6}
+                lg={4}
+                md={4}
                 sm={4}
                 xs={12}
                 className={classes.gridInput}
               >
                 <TextField
+                  variant="outlined"
                   id="standard-name"
                   label="Apellido"
                   fullWidth
@@ -636,6 +649,7 @@ function ConsumerForm(props) {
                 className={classes.gridInput}
               >
                 <TextField
+                  variant="outlined"
                   id="standard-name"
                   label="Telefono"
                   fullWidth
@@ -691,6 +705,7 @@ function ConsumerForm(props) {
                 className={classes.gridInput}
               >
                 <TextField
+                  variant="outlined"
                   id="standard-name"
                   fullWidth
                   label="Dirección de facturación"

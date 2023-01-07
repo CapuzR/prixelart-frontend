@@ -1,14 +1,11 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import AppBar from "../sharedComponents/appBar/appBar";
-import FloatingAddButton from "../sharedComponents/floatingAddButton/floatingAddButton";
-import ArtUploader from "../sharedComponents/artUploader/artUploader";
 import Button from "@material-ui/core/Button";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import utils from "../utils/utils";
 
 import Grid from "@material-ui/core/Grid";
-import Tooltip from "@material-ui/core/Tooltip";
 import Paper from "@material-ui/core/Paper";
 import AddIcon from "@material-ui/icons/Add";
 import DeleteIcon from "@material-ui/icons/Delete";
@@ -66,11 +63,8 @@ export default function ShoppingPage(props) {
   const isIphone = useMediaQuery(theme.breakpoints.down("xs"));
   const [orderPaymentMethod, setOrderPaymentMethod] = useState(undefined);
   const [activeStep, setActiveStep] = React.useState(0);
-  // const [valuesOrderForm, setValuesOrderForm] = useState();
   const [loading, setLoading] = useState(false);
-
   const steps = [`Tus datos`, `Orden de compra`];
-  // const [openCheckoutDialog, setOpenCheckoutDialog] = useState(false); //probando
 
   // useEffect(() => {
   //   {
@@ -135,6 +129,7 @@ export default function ShoppingPage(props) {
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
   };
+
   const getTotalPrice = (state) => {
     let prices = [];
     state.map(
@@ -261,7 +256,7 @@ export default function ShoppingPage(props) {
               />
             </Grid>
 
-            <Grid item xs={12} sm={12} md={6} lg={5} xl={6}>
+            <Grid item xs={12} sm={12} md={6} lg={5} xl={5}>
               <Paper
                 style={{
                   padding: "10px 10px 0px 10px",

@@ -131,6 +131,7 @@ export default function AdminMain(props) {
   const [active, setActive] = useState("user");
   const location = useLocation();
   const history = useHistory();
+  // const [selectedProduct, setSelectedProduct] = useState(undefined);
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -224,7 +225,17 @@ export default function AdminMain(props) {
               ) : active === "payment-method" ? (
                 <PaymentMethods />
               ) : active === "order" ? (
-                <Orders />
+                <Orders
+                  buyState={props.buyState}
+                  changeQuantity={props.changeQuantity}
+                  deleteItemInBuyState={props.deleteItemInBuyState}
+                  deleteProductInItem={props.deleteProductInItem}
+                  setSelectedArtToAssociate={props.setSelectedArtToAssociate}
+                  addItemToBuyState={props.addItemToBuyState}
+                  AssociateProduct={props.AssociateProduct}
+
+                  // setSelectedProduct={setSelectedProduct}
+                />
               ) : active === "prixer" ? (
                 <Prixers />
               ) : active === "preferences" ? (

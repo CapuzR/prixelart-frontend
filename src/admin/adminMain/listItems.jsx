@@ -87,7 +87,6 @@ export default function MainListItems(props) {
               handleClick("order");
             }}
           />
-          {/* <ListItemText primary="Pedidos"  /> */}
         </ListItem>
         <ListItem
           button

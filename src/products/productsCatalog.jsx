@@ -199,7 +199,9 @@ export default function ProductsCatalog(props) {
                     setSelectedProduct(undefined);
                     props.setSelectedArtToAssociate(undefined);
                     props.setIsOpenAssociateArt(false);
-                    history.push({ pathname: "/" });
+                    localStorage.getItem("adminToken")
+                      ? history.push({ pathname: "/admin/order/read" })
+                      : history.push({ pathname: "/" });
                   }}
                   color="primary"
                 >

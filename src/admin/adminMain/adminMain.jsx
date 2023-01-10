@@ -155,6 +155,10 @@ export default function AdminMain(props) {
         );
   }, [location.pathname]);
 
+  useEffect(() => {
+    setOpen(false);
+  }, [active]);
+
   return (
     <div className={classes.root}>
       {JSON.parse(localStorage.getItem("adminToken")) ? (
@@ -227,14 +231,20 @@ export default function AdminMain(props) {
               ) : active === "order" ? (
                 <Orders
                   buyState={props.buyState}
+                  setBuyState={props.setBuyState}
                   changeQuantity={props.changeQuantity}
                   deleteItemInBuyState={props.deleteItemInBuyState}
                   deleteProductInItem={props.deleteProductInItem}
                   setSelectedArtToAssociate={props.setSelectedArtToAssociate}
+                  setSelectedProductToAssociate={
+                    props.setSelectedProductToAssociate
+                  }
+                  setValues={props.setValuesConsumerForm}
+                  values={props.valuesConsumerForm}
                   addItemToBuyState={props.addItemToBuyState}
                   AssociateProduct={props.AssociateProduct}
-
-                  // setSelectedProduct={setSelectedProduct}
+                  valuesConsumer={props.valuesConsumerForm}
+                  setValuesConsumer={props.setValues}
                 />
               ) : active === "prixer" ? (
                 <Prixers />

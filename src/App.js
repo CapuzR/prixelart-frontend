@@ -162,7 +162,9 @@ function App() {
             deleteItemInBuyState={deleteItemInBuyState}
             deleteProductInItem={deleteProductInItem}
             setSelectedArtToAssociate={setSelectedArtToAssociate}
-            // setSelectedProduct={setSelectedProduct}
+            setSelectedProductToAssociate={setSelectedProductToAssociate}
+            setValues={setValuesConsumerForm}
+            values={valuesConsumerForm}
             AssociateProduct={AssociateProduct}
             changeQuantity={changeQuantity}
             valuesConsumerForm={valuesConsumerForm}
@@ -256,9 +258,6 @@ function App() {
             setValuesConsumerForm={setValuesConsumerForm}
             setOpen={setOpen}
             setMessage={setMessage}
-            // onCreateConsumer={onCreateConsumer}
-            // isProcessed={isProcessed}
-            // step={step}
           />
         </Route>
 

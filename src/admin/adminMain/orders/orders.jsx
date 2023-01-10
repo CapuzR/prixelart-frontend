@@ -45,8 +45,14 @@ import BusinessIcon from "@material-ui/icons/Business";
 import Img from "react-cool-img";
 import Tooltip from "@material-ui/core/Tooltip";
 import { getAttributes, getEquation } from "../../../products/services";
+import List from "@material-ui/core/List";
+import ListItem from "@material-ui/core/ListItem";
+import ListItemText from "@material-ui/core/ListItemText";
+import Collapse from "@material-ui/core/Collapse";
+import Divider from "@material-ui/core/Divider";
+import OutlinedInput from "@material-ui/core/OutlinedInput";
+
 import ConsumerForm from "../../../shoppingCart/consumerForm";
-import OrderForm from "../../../shoppingCart/orderForm";
 import OrderBasicInfo from "../../orderCrud/createOrder/orderBasicInfo";
 import OrderDetails from "../../orderCrud/createOrder/orderDetails";
 import Autocomplete from "@material-ui/lab/Autocomplete";
@@ -203,6 +209,7 @@ export default function Orders(props) {
   const [billingShDataCheck, setBillingShDataCheck] = useState(false);
   const [activeStep, setActiveStep] = React.useState(0);
   const [productList, setProductList] = useState([]);
+  const [artList, setArtList] = useState([]);
   const [orderPaymentMethod, setOrderPaymentMethod] = useState(undefined);
   const steps = [`Datos del comprador`, `Productos`, `Orden de compra`];
   const [imagesVariants, setImagesVariants] = useState([]);
@@ -237,6 +244,20 @@ export default function Orders(props) {
         console.log(error);
       });
     setLoading(false);
+  };
+
+  const getTotalCombinedItems = (state) => {
+    const totalNotCompleted = state.filter(
+      (item) => !item.art || !item.product
+    );
+    return {
+      totalNotCompleted,
+    };
+  };
+
+  const getIvaCost = (state) => {
+    let iva = getTotalPrice(state) * 0.16;
+    return iva;
   };
 
   const filterOrders = (filter) => {
@@ -302,83 +323,80 @@ export default function Orders(props) {
   };
 
   const createOrder = async () => {
-    if (orderPaymentMethod) {
-      setLoading(true);
+    setLoading(true);
 
-      let orderLines = [];
+    let orderLines = [];
 
-      props.buyState.map((s) => {
-        s.product &&
-          s.art &&
-          orderLines.push({
-            product: s.product,
-            art: s.art,
-            quantity: s.quantity,
-          });
-      });
+    props.buyState.map((s) => {
+      s.product &&
+        s.art &&
+        orderLines.push({
+          product: s.product,
+          art: s.art,
+          quantity: s.quantity,
+        });
+    });
 
-      const consumer = await axios.post(
-        process.env.REACT_APP_BACKEND_URL + "/consumer/create",
-        {
-          active: true,
-          contactedBy: {
-            username: "web",
-            id: 1,
-            phone: "",
-            email: "hola@prixelart.com",
-          },
-          consumerType: "Particular",
-          firstname: props.valuesConsumerForm?.name,
-          lastname: props.valuesConsumerForm?.lastName,
-          username: props.valuesConsumerForm?.username,
-          ci: props.valuesConsumerForm?.ci,
-          phone: props.valuesConsumerForm?.phone,
-          email: props.valuesConsumerForm?.email,
-          address: props.valuesConsumerForm?.address,
-          billingAddress:
-            props.valuesConsumerForm?.billingAddress ||
-            props.valuesConsumerForm?.address,
-          shippingAddress:
-            props.valuesConsumerForm?.shippingAddress ||
-            props.valuesConsumerForm?.address,
-        }
-      );
-      window.open(utils.generateWaBuyMessage(orderLines), "_blank");
+    const consumer = await axios.post(
+      process.env.REACT_APP_BACKEND_URL + "/consumer/create",
+      {
+        active: true,
+        contactedBy: {
+          username: "web",
+          id: 1,
+          phone: "",
+          email: "hola@prixelart.com",
+        },
+        consumerType: "Particular",
+        firstname: props.values?.name,
+        lastname: props.values?.lastName,
+        username: props.values?.username,
+        ci: props.values?.ci,
+        phone: props.values?.phone,
+        email: props.values?.email,
+        address: props.values?.address,
+        billingAddress: props.values?.billingAddress || props.values?.address,
+        shippingAddress: props.values?.shippingAddress || props.values?.address,
+      }
+    );
 
-      const base_url = process.env.REACT_APP_BACKEND_URL + "/order/create";
-      let input = {
-        orderId: nanoid(6),
-        firstname: consumer.data.newConsumer.firstname,
-        lastname: consumer.data.newConsumer.lastname,
-        ci: consumer.data.newConsumer.ci,
-        requests: orderLines,
-        email: consumer.data.newConsumer.email,
-        phone: consumer.data.newConsumer.phone,
-        billingAddress: consumer.data.newConsumer.billingAddress,
-        shippingAddress: consumer.data.newConsumer.shippingAddress,
-        tax: getTotalPrice(props.buyState) * 0.16,
-        subtotal: getTotalPrice(props.buyState),
-        total:
-          getTotalPrice(props.buyState) + getTotalPrice(props.buyState) * 0.16,
-        createdOn: new Date(),
-        createdBy: consumer.data.newConsumer,
-        orderType: "Particular",
-        // consumerId: consumer.data.newConsumer._id,
-        status: "Procesando",
-        orderPaymentMethod: orderPaymentMethod,
-      };
-      const order = await axios.post(base_url, input).then(() => {
-        console.log("Orden generada correctamente. Por favor, revisa tu email");
-      });
-      props.setValuesConsumerForm(undefined);
-      localStorage.removeItem("buyState");
-      props.setBuyState([]);
-      setLoading(false);
-    } else {
-      props.setOpen(true);
-      props.setMessage("Por favor selecciona una forma de pago.");
-    }
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/order/create";
+    let input = {
+      orderId: nanoid(6),
+      firstname: consumer.data.newConsumer.firstname,
+      lastname: consumer.data.newConsumer.lastname,
+      ci: consumer.data.newConsumer.ci,
+      requests: orderLines,
+      email: consumer.data.newConsumer.email,
+      phone: consumer.data.newConsumer.phone,
+      billingAddress: consumer.data.newConsumer.billingAddress,
+      shippingAddress: consumer.data.newConsumer.shippingAddress,
+      internalShippingMethod: props.values.shippingAgencyLocal,
+      domesticShippingMethod: props.values.shippingAgencyNational,
+      internationalShippingMethod: props.values.shippingAgencyInternational,
+      observations: props.values.observations,
+      tax: getTotalPrice(props.buyState) * 0.16,
+      subtotal: getTotalPrice(props.buyState),
+      total:
+        getTotalPrice(props.buyState) + getTotalPrice(props.buyState) * 0.16,
+      createdOn: new Date(),
+      createdBy: consumer.data.newConsumer,
+      orderType: "Particular",
+      // consumerId: consumer.data.newConsumer._id,
+      status: "Procesando",
+      orderPaymentMethod: orderPaymentMethod,
+    };
+    const order = await axios.post(base_url, input).then(() => {
+      console.log("Orden generada correctamente. Por favor, revisa tu email");
+    });
+    props.setValues(undefined);
+    localStorage.removeItem("buyState");
+    props.setBuyState([]);
+    setOpenCreateOrder(false);
+    readOrders();
+    setLoading(false);
   };
+  console.log(modalContent);
 
   const getTotalPrice = (state) => {
     let prices = [];
@@ -412,14 +430,6 @@ export default function Orders(props) {
   useEffect(() => {
     readOrders();
   }, []);
-
-  const handleBack = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep - 1);
-  };
-
-  const handleNext = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep + 1);
-  };
 
   const handleStep = (step) => () => {
     setActiveStep(step);
@@ -461,8 +471,14 @@ export default function Orders(props) {
     });
   }, []);
 
+  useEffect(() => {
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/art/read-all";
+    axios.get(base_url).then((response) => {
+      setArtList(response.data.arts);
+    });
+  }, []);
+
   const handleProduct = (event) => {
-    // setSelectedProduct(e.target.value);
     let selectedProduct = event.target.value;
     let selectedProductFull = productList.find(
       (result) => result.name === selectedProduct
@@ -473,7 +489,7 @@ export default function Orders(props) {
     });
   };
 
-  const changeProduct = (event, art, index) => {
+  const changeProduct = (event, art, index, variant) => {
     props.setSelectedArtToAssociate({
       index,
       item: art,
@@ -483,13 +499,55 @@ export default function Orders(props) {
     let selectedProductFull = productList.find(
       (result) => result.name === selectedProduct
     );
+    if (variant) {
+      props.AssociateProduct({
+        index: index,
+        item: selectedProductFull.push({ selection: variant }),
+        type: "product",
+      });
+    } else
+      props.AssociateProduct({
+        index: index,
+        item: selectedProductFull,
+        type: "product",
+      });
+  };
+
+  const changeArt = (art, product, index) => {
+    props.setSelectedProductToAssociate({
+      index,
+      item: product,
+      previous: true,
+    });
+    let selectedArt = art;
+    let selectedArtFull = artList.find(
+      (result) => result.title === selectedArt
+    );
     props.AssociateProduct({
       index: index,
-      item: selectedProductFull,
+      item: selectedArtFull,
+      type: "art",
+    });
+  };
+
+  const handleVariantProduct = (variant, index, art, product) => {
+    props.setSelectedArtToAssociate({
+      index,
+      item: art,
+      previous: true,
+    });
+    let selectedVariant = product.variants.find(
+      (result) => result.name === variant
+    );
+    product.selection = selectedVariant;
+    product.publicEquation = selectedVariant.publicPrice.equation;
+    props.AssociateProduct({
+      index: index,
+      item: product,
       type: "product",
     });
   };
-  console.log(props.buyState);
+
   return (
     <>
       <Backdrop
@@ -580,15 +638,17 @@ export default function Orders(props) {
                       <>
                         <TableRow key={index}>
                           <TableCell align="center">{row.orderId}</TableCell>
-                          <TableCell align="center">{row.createdOn}</TableCell>
+                          <TableCell align="center">
+                            {row.createdOn.substring(0, 10)}
+                          </TableCell>
                           <TableCell align="center">
                             {row.createdBy.firstname} {row.createdBy.lastname}
                           </TableCell>
                           <TableCell align="center">
                             <Button
                               onClick={() => {
-                                setIsShowDetails(!isShowDetails);
                                 setModalContent(row);
+                                setIsShowDetails(!isShowDetails);
                               }}
                               style={{
                                 padding: 10,
@@ -662,13 +722,15 @@ export default function Orders(props) {
           </Paper>
         </Grid>
       </Grid>
+
       <Modal
+        open={isShowDetails}
+
         // xl={12}
         // lg={12}
         // md={12}
         // sm={12}
         // xs={12}
-        open={isShowDetails}
         // onClose={!}
       >
         <Grid container className={classes.paper2}>
@@ -684,89 +746,118 @@ export default function Orders(props) {
               <CloseIcon />
             </IconButton>
           </Grid>
-          <Grid
-            style={{
-              display: "flex",
-              flexDirection: rows?.lenght > 2 || isMobile ? "column" : "row",
-              // margin: "10px 0px 20px 0px",
-            }}
-            item
-            xs={12}
-            sm={6}
-            md={6}
-            lg={6}
-          >
-            {modalContent?.requests.map((item, index) => (
-              <div
+          {modalContent && (
+            <>
+              <Grid
                 style={{
                   display: "flex",
-                  flexDirection: "column",
-                  margin: "0px 20px 20px 0px",
-                  // borderWidth: 1,
+                  flexDirection:
+                    rows?.lenght > 2 || isMobile ? "column" : "row",
+                  // margin: "10px 0px 20px 0px",
                 }}
+                item
+                xs={12}
+                sm={6}
+                md={6}
+                lg={6}
               >
-                <strong>
-                  {"Item #"}
-                  {index + 1}
-                </strong>
-                <div>{"Arte: " + item.art.title}</div>
-                <div>{"Id: " + item.art.artId}</div>
-                <div style={{ marginBottom: 10 }}>
-                  {"Prixer: " + item.art.prixerUsername}
-                </div>
-                <div>{"Producto: " + item.product.name}</div>
-                <div>{"Id: " + item.product._id}</div>
-                {item.product.attributes.map((a, i) => {
-                  return (
-                    <p
-                      style={{
-                        // fontSize: 12,
-                        padding: 0,
-                        margin: 0,
-                        marginBottom: 10,
-                      }}
-                    >
-                      {a.name + ": "}
-                      {item.product.selection[i]}
-                    </p>
-                  );
-                })}
-                <div>{"Cantidad: " + item.quantity}</div>
-              </div>
-            ))}
-          </Grid>
+                {modalContent?.requests.map((item, index) => (
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      margin: "0px 20px 20px 0px",
+                      // borderWidth: 1,
+                    }}
+                  >
+                    <strong>
+                      {"Item #"}
+                      {index + 1}
+                    </strong>
+                    <div>{"Arte: " + item.art.title}</div>
+                    <div>{"Id: " + item.art.artId}</div>
+                    <div style={{ marginBottom: 10 }}>
+                      {"Prixer: " + item.art.prixerUsername}
+                    </div>
+                    <div>{"Producto: " + item.product.name}</div>
+                    <div>{"Id: " + item.product._id}</div>
+                    {item.product.attributes.map((a, i) => {
+                      return (
+                        <p
+                          style={{
+                            // fontSize: 12,
+                            padding: 0,
+                            margin: 0,
+                            marginBottom: 10,
+                          }}
+                        >
+                          {a.name + ": "}
+                          {item.product.selection[i]}
+                        </p>
+                      );
+                    })}
+                    <div>{"Cantidad: " + item.quantity}</div>
+                  </div>
+                ))}
+              </Grid>
 
-          <Grid item xs={12} sm={12} md={6} lg={3} style={{ marginBottom: 20 }}>
-            <strong>Datos de pago</strong>
-            <div>{"Subtotal: $" + modalContent?.subtotal.toFixed(2)}</div>
-            <div>{"IVA: $" + modalContent?.tax.toFixed(2)}</div>
-            <div style={{ marginBottom: 10 }}>
-              {"Total: $" + modalContent?.total.toFixed(2)}
-            </div>
-            <div style={{ marginBottom: 40 }}>
-              {"Forma de pago: " + modalContent?.orderPaymentMethod}
-            </div>
-            {/* <div>{"Dirección: " + row.billingAddress}</div> */}
-            {/* </Grid>
-          <Grid item xs={12} sm={12} md={6} lg={3}> */}
-            <strong>Datos de envío</strong>
-            <div>
-              {"Nombre: " +
-                modalContent?.createdBy.firstname +
-                " " +
-                modalContent?.createdBy.lastname}
-            </div>
-            <div>{"Email: " + modalContent?.createdBy.email}</div>
-            <div>{"Teléfono: " + modalContent?.createdBy.phone}</div>
-            <div>
-              {"Dirección de cobro: " + modalContent?.createdBy.billingAddress}
-            </div>
-            <div>
-              {"Dirección de envío: " + modalContent?.createdBy.shippingAddress}
-            </div>
-          </Grid>
+              <Grid
+                item
+                xs={12}
+                sm={12}
+                md={6}
+                lg={3}
+                style={{ marginBottom: 20 }}
+              >
+                <strong>Datos de pago</strong>
+                <div>{"Subtotal: $" + modalContent?.subtotal.toFixed(2)}</div>
+                <div>{"IVA: $" + modalContent?.tax.toFixed(2)}</div>
+                <div style={{ marginBottom: 10 }}>
+                  {"Total: $" + modalContent?.total.toFixed(2)}
+                </div>
+                <div style={{ marginBottom: 40 }}>
+                  {"Forma de pago: " + modalContent?.orderPaymentMethod}
+                </div>
+                <strong>Datos de envío</strong>
+                <div>
+                  {"Nombre: " +
+                    modalContent?.createdBy.firstname +
+                    " " +
+                    modalContent?.createdBy.lastname}
+                </div>
+                {modalContent.createdBy.email && (
+                  <div>{"Email: " + modalContent?.createdBy.email}</div>
+                )}
+                {modalContent.createdBy.phone && (
+                  <div>{"Teléfono: " + modalContent?.createdBy.phone}</div>
+                )}
+                <div>
+                  {"Dirección de cobro: " +
+                    modalContent?.createdBy.billingAddress}
+                </div>
+                <div>
+                  {"Dirección de envío: " +
+                    modalContent?.createdBy.shippingAddress}
+                </div>
+                {(modalContent.domesticShippingMethod ||
+                  modalContent.internalShippingMethod ||
+                  modalContent.internationalShippingMethod) && (
+                  <div>
+                    {"Agencia de envío: " +
+                      modalContent?.domesticShippingMethod ||
+                      modalContent?.internalShippingMethod ||
+                      modalContent?.internationalShippingMethod}
+                  </div>
+                )}
+                {modalContent.observations && (
+                  <div>{"Observaciones: " + modalContent.observations}</div>
+                )}
+              </Grid>
+            </>
+          )}
         </Grid>
       </Modal>
+
       <Modal open={openCreateOrder}>
         <Grid
           container
@@ -1186,19 +1277,16 @@ export default function Orders(props) {
                         style={{ minWidth: "100%" }}
                         variant="outlined"
                       >
-                        <InputLabel required id="internalShippingMethod">
-                          En Caracas
-                        </InputLabel>
+                        <InputLabel>En Caracas</InputLabel>
                         <Select
                           className={classes.textField}
-                          labelId="internalShippingMethod"
-                          id="internalShippingMethod"
-                          name="internalShippingMethod"
-                          // value={props.orderState.selectedOrder.internalShippingMethod}
-                          // onChange={(e) => {
-                          //   onChangeOrderBasics(e.target.name, e.target.value);
-                          // }}
-                          label="En Caracas"
+                          value={props.values?.shippingAgencyLocal || ""}
+                          onChange={(e) => {
+                            props.setValues({
+                              ...props.values,
+                              shippingAgencyLocal: e.target.value,
+                            });
+                          }}
                         >
                           <MenuItem value="">
                             <em></em>
@@ -1223,19 +1311,16 @@ export default function Orders(props) {
                         style={{ minWidth: "100%" }}
                         variant="outlined"
                       >
-                        <InputLabel required id="domesticShippingMethod">
-                          En Venezuela
-                        </InputLabel>
+                        <InputLabel>En Venezuela</InputLabel>
                         <Select
                           className={classes.textField}
-                          labelId="domesticShippingMethod"
-                          id="domesticShippingMethod"
-                          name="domesticShippingMethod"
-                          // value={props.orderState.selectedOrder.domesticShippingMethod}
-                          // onChange={(e) => {
-                          //   onChangeOrderBasics(e.target.name, e.target.value);
-                          // }}
-                          label="En Venezuela"
+                          value={props.values?.shippingAgencyNational || ""}
+                          onChange={(e) => {
+                            props.setValues({
+                              ...props.values,
+                              shippingAgencyNational: e.target.value,
+                            });
+                          }}
                         >
                           <MenuItem value="">
                             <em></em>
@@ -1265,14 +1350,15 @@ export default function Orders(props) {
                         </InputLabel>
                         <Select
                           className={classes.textField}
-                          labelId="internationalShippingMethod"
-                          id="internationalShippingMethod"
-                          name="internationalShippingMethod"
-                          // value={props.orderState.selectedOrder.internationalShippingMethod}
-                          // onChange={(e) => {
-                          //   onChangeOrderBasics(e.target.name, e.target.value);
-                          // }}
-                          label="Internacional"
+                          value={
+                            props.values?.shippingAgencyInternational || ""
+                          }
+                          onChange={(e) => {
+                            props.setValues({
+                              ...props.values,
+                              shippingAgencyInternational: e.target.value,
+                            });
+                          }}
                         >
                           <MenuItem value="">
                             <em></em>
@@ -1283,36 +1369,6 @@ export default function Orders(props) {
                             </MenuItem>
                           ))}
                         </Select>
-                      </FormControl>
-                    </Grid>
-                    <Grid
-                      item
-                      lg={12}
-                      md={12}
-                      sm={12}
-                      xs={12}
-                      className={classes.gridInput}
-                    >
-                      <FormControl
-                        variant="outlined"
-                        style={{ minWidth: "100%" }}
-                      >
-                        <TextField
-                          className={classes.textField}
-                          variant="outlined"
-                          rows="3"
-                          multiline
-                          // fullWidth
-                          display="inline"
-                          id="observations"
-                          label="Observaciones"
-                          name="observations"
-                          autoComplete="observations"
-                          // value={props.orderState.selectedOrder.observations}
-                          // onChange={(e) => {
-                          //   onChangeOrderBasics(e.target.name, e.target.value);
-                          // }}
-                        />
                       </FormControl>
                     </Grid>
                   </Grid>
@@ -1567,7 +1623,7 @@ export default function Orders(props) {
                           elevation={3}
                         >
                           <Grid
-                            item
+                            container
                             // xs={12}
                             // sm={12}
                             // md={12}
@@ -1575,117 +1631,24 @@ export default function Orders(props) {
                             // xl
                             style={{
                               display: "flex",
-                              height: isIphone ? 160 : 220,
+                              // height: isIphone ? 160 : 220,
                             }}
                           >
-                            {buy.art ? (
+                            <Grid item xs={5} sm={5} md={5} lg={5} xl={5}>
+                              {/* {buy.product ? ( */}
                               <div
                                 style={{
                                   display: "flex",
-                                  flexDirection: "column",
-                                  height: isIphone ? 160 : 220,
-                                }}
-                              >
-                                <div
-                                  style={{
-                                    backgroundColor: "#eeeeee",
-                                    width: isIphone ? 120 : 180,
-                                    height: isIphone ? 120 : 180,
-                                    borderRadius: "10px",
-                                    display: "flex",
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                  }}
-                                >
-                                  <Img
-                                    placeholder="/imgLoading.svg"
-                                    style={{
-                                      backgroundColor: "#eeeeee",
-                                      maxWidth: isIphone ? 120 : 180,
-                                      maxHeight: isIphone ? 120 : 180,
-                                      borderRadius: 10,
-                                    }}
-                                    src={buy.art ? buy.art.squareThumbUrl : ""}
-                                    debounce={1000}
-                                    cache
-                                    error="/imgError.svg"
-                                    alt={buy.art && buy.art.title}
-                                    id={buy.art && buy.art.artId}
-                                  />
-                                </div>
-                                <div
-                                  style={{
-                                    display: "flex",
-                                    justifyContent: "space-evenly",
-                                  }}
-                                >
-                                  <IconButton
-                                    className={classes.iconButton}
-                                    style={{ height: 40, width: 40 }}
-                                    onClick={() =>
-                                      props.deleteProductInItem({
-                                        id: index,
-                                        type: "art",
-                                      })
-                                    }
-                                  >
-                                    <DeleteIcon />
-                                  </IconButton>
-                                  <IconButton
-                                    className={classes.iconButton}
-                                    style={{ height: 40, width: 40 }}
-                                    onClick={() => {
-                                      props.setSelectedArtToAssociate({
-                                        index,
-                                        item: buy.product,
-                                        previous: true,
-                                      });
-                                      history.push({ pathname: "/galeria" });
-                                    }}
-                                  >
-                                    <AddIcon fontSize="medium" />
-                                  </IconButton>
-                                </div>
-                              </div>
-                            ) : (
-                              <div
-                                style={{
-                                  height: "180px",
-                                  width: "180px",
-                                  display: "grid",
-                                }}
-                              >
-                                <IconButton
-                                  className={classes.addItemContainer}
-                                  onClick={() => {
-                                    props.setSelectedArtToAssociate({
-                                      index,
-                                      item: buy.art,
-                                      previous: true,
-                                    });
-                                    history.push({ pathname: "/galeria" });
-                                  }}
-                                >
-                                  <AddIcon
-                                    style={{ fontSize: 80 }}
-                                    color="primary"
-                                  />
-                                </IconButton>
-                              </div>
-                            )}
-                            {buy.product ? (
-                              <div
-                                style={{
-                                  display: "flex",
-                                  flexDirection: "column",
-                                  height: isIphone ? 160 : 220,
+                                  // flexDirection: "column",
+                                  height: 120,
+                                  marginRight: 20,
                                 }}
                               >
                                 <Img
                                   placeholder="/imgLoading.svg"
                                   style={{
                                     backgroundColor: "#eeeeee",
-                                    height: isIphone ? 120 : 180,
+                                    height: 120,
                                     borderRadius: "10px",
                                     marginRight: "20px",
                                     marginLeft: "20px",
@@ -1700,26 +1663,84 @@ export default function Orders(props) {
                                 <div
                                   style={{
                                     display: "flex",
-                                    justifyContent: "space-evenly",
-                                    marginRight: "20px",
+                                    flexDirection: "column",
+                                    width: "100%",
+                                  }}
+                                >
+                                  <FormControl
+                                    className={classes.formControl}
+                                    style={{
+                                      minWidth: 200,
+                                      marginBottom: 10,
+                                    }}
+                                  >
+                                    <InputLabel style={{ paddingLeft: 15 }}>
+                                      {buy.product
+                                        ? "Producto"
+                                        : "Agrega un producto"}
+                                    </InputLabel>
+                                    <Select
+                                      variant="outlined"
+                                      value={buy.product.name}
+                                      onChange={(e) =>
+                                        changeProduct(e, buy.art, index)
+                                      }
+                                    >
+                                      {productList !== "" &&
+                                        productList.map((product) => {
+                                          return (
+                                            <MenuItem value={product.name}>
+                                              {product.name}
+                                            </MenuItem>
+                                          );
+                                        })}
+                                    </Select>
+                                  </FormControl>
+
+                                  {buy.product.attributes.length > 0 && (
+                                    <FormControl
+                                      className={classes.formControl}
+                                      style={{ minWidth: 200 }}
+                                    >
+                                      <InputLabel style={{ paddingLeft: 15 }}>
+                                        {buy.product.attributes[0]?.name}
+                                      </InputLabel>
+                                      <Select
+                                        variant="outlined"
+                                        value={buy.product.selection.name}
+                                        onChange={(e) => {
+                                          handleVariantProduct(
+                                            e.target.value,
+                                            index,
+                                            buy.art,
+                                            buy.product
+                                          );
+                                        }}
+                                      >
+                                        {buy.product.variants.map((a) => {
+                                          return (
+                                            <MenuItem value={a.name}>
+                                              {a.name}
+                                            </MenuItem>
+                                          );
+                                        })}
+                                      </Select>
+                                    </FormControl>
+                                  )}
+                                </div>
+                              </div>
+                              {/* ) : (
+                                <div
+                                  style={{
+                                    height: "180px",
+                                    width: "180px",
+                                    display: "grid",
                                     marginLeft: "20px",
+                                    marginRight: "20px",
                                   }}
                                 >
                                   <IconButton
-                                    className={classes.iconButton}
-                                    style={{ height: 40, width: 40 }}
-                                    onClick={() =>
-                                      props.deleteProductInItem({
-                                        id: index,
-                                        type: "product",
-                                      })
-                                    }
-                                  >
-                                    <DeleteIcon />
-                                  </IconButton>
-                                  <IconButton
-                                    className={classes.iconButton}
-                                    style={{ height: 40, width: 40 }}
+                                    className={classes.addItemContainer}
                                     onClick={() => {
                                       props.setSelectedArtToAssociate({
                                         index,
@@ -1729,273 +1750,202 @@ export default function Orders(props) {
                                       history.push({ pathname: "/productos" });
                                     }}
                                   >
-                                    <AddIcon fontSize="medium" />
+                                    <AddIcon
+                                      style={{ fontSize: 80 }}
+                                      color="primary"
+                                    />
                                   </IconButton>
                                 </div>
-                              </div>
-                            ) : (
-                              <div
-                                style={{
-                                  height: "180px",
-                                  width: "180px",
-                                  display: "grid",
-                                  marginLeft: "20px",
-                                  marginRight: "20px",
-                                }}
-                              >
-                                <IconButton
-                                  className={classes.addItemContainer}
-                                  onClick={() => {
-                                    props.setSelectedArtToAssociate({
-                                      index,
-                                      item: buy.art,
-                                      previous: true,
-                                    });
-                                    history.push({ pathname: "/productos" });
+                              )} */}
+                            </Grid>
+                            <Grid
+                              item
+                              xs={5}
+                              sm={5}
+                              md={6}
+                              lg={6}
+                              xl={6}
+                              style={{ display: "flex" }}
+                            >
+                              {buy.art && (
+                                <div
+                                  style={{
+                                    backgroundColor: "#eeeeee",
+                                    width: 120,
+                                    height: 120,
+                                    borderRadius: "10px",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    marginRight: 20,
                                   }}
                                 >
-                                  <AddIcon
-                                    style={{ fontSize: 80 }}
-                                    color="primary"
+                                  <Img
+                                    placeholder="/imgLoading.svg"
+                                    style={{
+                                      backgroundColor: "#eeeeee",
+                                      maxWidth: 120,
+                                      maxHeight: 120,
+                                      borderRadius: 10,
+                                    }}
+                                    src={buy.art ? buy.art.squareThumbUrl : ""}
+                                    debounce={1000}
+                                    cache
+                                    error="/imgError.svg"
+                                    alt={buy.art && buy.art.title}
+                                    id={buy.art && buy.art.artId}
                                   />
-                                </IconButton>
-                              </div>
-                            )}
-                            {isMobile && (
-                              <Grid
-                                item
-                                xs
-                                sm
-                                md
-                                lg
-                                xl
+                                </div>
+                              )}
+                              <div
                                 style={{
+                                  width: "100%",
+                                  // height: 200,
                                   display: "flex",
-                                  justifyContent: "end",
-                                  height: 160,
+                                  flexDirection: "column",
+                                  alignContent: "space-between",
                                 }}
                               >
-                                <Tooltip
-                                  title="Eliminar item"
-                                  style={{ height: 40, width: 40 }}
-                                >
-                                  <IconButton
-                                    size="small"
-                                    onClick={() =>
-                                      props.deleteItemInBuyState({ id: index })
-                                    }
-                                    color="primary"
-                                  >
-                                    <DeleteIcon />
-                                  </IconButton>
-                                </Tooltip>
-                              </Grid>
-                            )}
-                          </Grid>
-
-                          <Grid
-                            item
-                            xs={12}
-                            sm={12}
-                            md
-                            lg
-                            xl
-                            style={{
-                              minWidth: 290,
-                              height: 200,
-                              display: "flex",
-                              flexDirection: "column",
-                              alignContent: "space-between",
-                            }}
-                          >
-                            <div>
-                              {buy.product ? (
-                                <>
-                                  <p
-                                    style={{
-                                      fontSize: "16px",
-                                      padding: 0,
-                                      margin: 0,
-                                    }}
-                                  >
-                                    <strong> Producto: </strong>
-                                    {buy.product?.name}
-                                  </p>
-                                  {buy.product.attributes.length > 0 && (
-                                    <FormControl
-                                      className={classes.formControl}
-                                      // style={{ width: "100%" }}
-                                    >
-                                      <InputLabel
-                                        id="demo-simple-select-label"
-                                        style={{ paddingLeft: 15 }}
-                                      >
-                                        {buy.product.attributes[0]?.name}
-                                      </InputLabel>
-                                      <Select
-                                        variant="outlined"
-                                        labelId="demo-simple-select-label"
-                                        id="demo-simple-select"
-                                        // value={""}
-                                        onChange={(e) => {
-                                          handleVariantProduct(e);
-                                        }}
-                                      >
-                                        {buy.product.variants.map((a, i) => {
-                                          return (
-                                            <MenuItem
-                                              value={a.attributes[0].value}
-                                            >
-                                              {a.attributes[0].value}
-                                            </MenuItem>
-                                          );
-                                        })}
-                                      </Select>
-                                    </FormControl>
-                                  )}
-                                </>
-                              ) : (
                                 <FormControl
                                   className={classes.formControl}
-                                  style={{ width: "100%" }}
+                                  style={{
+                                    marginBottom: 10,
+                                  }}
                                 >
-                                  <InputLabel
-                                    id="demo-simple-select-label"
-                                    style={{ paddingLeft: 15 }}
-                                  >
-                                    Agrega un producto
+                                  <InputLabel style={{ paddingLeft: 15 }}>
+                                    {buy.art ? "Arte" : "título del arte"}
                                   </InputLabel>
                                   <Select
                                     variant="outlined"
-                                    labelId="demo-simple-select-label"
-                                    id="demo-simple-select"
-                                    // value={""}
+                                    value={buy.art?.title || ""}
                                     onChange={(e) =>
-                                      changeProduct(e, buy.art, index)
+                                      changeArt(
+                                        e.target.value,
+                                        buy.product,
+                                        index
+                                      )
                                     }
                                   >
-                                    {productList !== "" &&
-                                      productList.map((product, index) => {
+                                    {artList !== "" &&
+                                      artList.map((art) => {
                                         return (
-                                          <MenuItem value={product.name}>
-                                            {product.name}
+                                          <MenuItem value={art.title}>
+                                            {art.title.substring(0, 22)} -{" "}
+                                            {art.prixerUsername}
                                           </MenuItem>
                                         );
                                       })}
                                   </Select>
                                 </FormControl>
-                              )}
-                              {buy.art ? (
-                                <>
-                                  <p
+
+                                {buy.art && (
+                                  <>
+                                    <p
+                                      style={{
+                                        fontSize: "12px",
+                                        padding: 0,
+                                        margin: 0,
+                                      }}
+                                    >
+                                      <strong> Arte: </strong> {buy.art.artId}
+                                    </p>
+                                    {/* <p
+                                          style={{
+                                            fontSize: "12px",
+                                            padding: 0,
+                                            margin: 0,
+                                          }}
+                                        >
+                                          <strong> Prixer: </strong>{" "}
+                                          {buy.art?.prixerUsername}
+                                        </p> */}
+                                  </>
+                                )}
+                                {buy.product && (
+                                  <Grid
+                                    item
+                                    xs={12}
                                     style={{
-                                      fontSize: "12px",
-                                      padding: 0,
-                                      margin: 0,
+                                      display: "flex",
+                                      justifyContent: "space-between",
+                                      alignItems: "end",
+                                      margin: "10px 0",
                                     }}
                                   >
-                                    <strong> Arte: </strong>{" "}
-                                    {buy.art?.title.substring(0, 10)}
-                                  </p>
-                                  <p
-                                    style={{
-                                      fontSize: "12px",
-                                      padding: 0,
-                                      margin: 0,
-                                    }}
-                                  >
-                                    <strong> Prixer: </strong>{" "}
-                                    {buy.art?.prixerUsername.substring(0, 10)}
-                                  </p>
-                                </>
-                              ) : (
-                                <Button
-                                  style={{ fontSize: 14 }}
-                                  size="small"
-                                  onClick={() => {
-                                    props.setSelectedArtToAssociate({
-                                      index,
-                                      item: buy.product,
-                                      previous: true,
-                                    });
-                                    history.push({ pathname: "/galeria" });
-                                  }}
-                                >
-                                  Elige un arte
-                                </Button>
-                              )}
-                            </div>
-                            {buy.product ? (
-                              <Grid
-                                item
-                                xs={12}
-                                style={{
-                                  display: "flex",
-                                  justifyContent: "space-between",
-                                  alignItems: "end",
-                                }}
-                              >
-                                <div style={{ paddingBottom: 5 }}>
-                                  <strong>Precio:</strong>
-                                  {`$${
-                                    buy.product?.publicEquation ||
-                                    buy.product?.publicPrice.from.replace(
-                                      /[$]/gi,
-                                      ""
-                                    )
-                                  }`}
-                                </div>
-                                <div
-                                  style={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                  }}
-                                >
-                                  <strong>Cantidad: </strong>
-                                  <input
-                                    style={{
-                                      width: 80,
-                                      padding: "10px",
-                                      borderRadius: 4,
-                                    }}
-                                    type="number"
-                                    defaultValue={1}
-                                    value={buy.quantity}
-                                    min="1"
-                                    InputLabelProps={{
-                                      shrink: true,
-                                    }}
-                                    onChange={(e) => {
-                                      props.changeQuantity({
-                                        index,
-                                        art: buy.art,
-                                        product: buy.product,
-                                        quantity: e.target.value,
-                                      });
-                                    }}
-                                  />
-                                </div>
-                              </Grid>
-                            ) : (
-                              ""
-                            )}
-                          </Grid>
-                          {!isMobile && (
-                            <Tooltip
-                              title="Eliminar item"
-                              style={{ height: 40, width: 40 }}
+                                    <div style={{ paddingBottom: 5 }}>
+                                      <strong>Precio: </strong>
+                                      {`$${
+                                        buy.product?.publicEquation ||
+                                        buy.product?.publicPrice.from.replace(
+                                          /[$]/gi,
+                                          ""
+                                        )
+                                      }`}
+                                    </div>
+                                    <div
+                                      style={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                      }}
+                                    >
+                                      <strong>Cantidad: </strong>
+                                      <input
+                                        style={{
+                                          width: 80,
+                                          padding: "10px",
+                                          borderRadius: 4,
+                                        }}
+                                        type="number"
+                                        defaultValue={1}
+                                        value={buy.quantity}
+                                        min="1"
+                                        InputLabelProps={{
+                                          shrink: true,
+                                        }}
+                                        onChange={(e) => {
+                                          props.changeQuantity({
+                                            index,
+                                            art: buy.art,
+                                            product: buy.product,
+                                            quantity: e.target.value,
+                                          });
+                                        }}
+                                      />
+                                    </div>
+                                  </Grid>
+                                )}
+                              </div>
+                            </Grid>
+
+                            <Grid
+                              item
+                              xs={1}
+                              sm={1}
+                              md={1}
+                              lg={1}
+                              xl={1}
+                              style={{
+                                display: "flex",
+                                justifyContent: "end",
+                                height: 160,
+                              }}
                             >
-                              <IconButton
-                                size="small"
-                                onClick={() =>
-                                  props.deleteItemInBuyState({ id: index })
-                                }
-                                color="primary"
+                              <Tooltip
+                                title="Eliminar item"
+                                style={{ height: 40, width: 40 }}
                               >
-                                <DeleteIcon />
-                              </IconButton>
-                            </Tooltip>
-                          )}
+                                <IconButton
+                                  size="small"
+                                  onClick={() =>
+                                    props.deleteItemInBuyState({ id: index })
+                                  }
+                                  color="primary"
+                                >
+                                  <DeleteIcon />
+                                </IconButton>
+                              </Tooltip>
+                            </Grid>
+                          </Grid>
                         </Paper>
                       </Grid>
                     );
@@ -2046,6 +1996,247 @@ export default function Orders(props) {
                       </Select>
                     </FormControl>
                   </Paper>
+                </Grid>
+              </Grid>
+            )}
+            {activeStep === 2 && (
+              <Grid
+                container
+                style={{
+                  display: "flex",
+                  padding: "8px",
+                }}
+              >
+                {props.values && (
+                  <Grid item lg={4} md={4}>
+                    <Typography>
+                      Pedido a nombre de{" "}
+                      <strong>
+                        {props.values.name} {props.values.lastName}
+                      </strong>
+                      .<br></br> A contactar por{" "}
+                      <strong>{props.values.phone}</strong>.<br></br> Entregar
+                      en <strong>{props.values.address}</strong>
+                    </Typography>
+
+                    <FormControl
+                      variant="outlined"
+                      style={{ minWidth: "100%", marginTop: 20 }}
+                    >
+                      <TextField
+                        className={classes.textField}
+                        variant="outlined"
+                        rows="3"
+                        multiline
+                        // fullWidth
+                        display="inline"
+                        id="observations"
+                        label="Observaciones"
+                        name="observations"
+                        autoComplete="observations"
+                        value={props.values.observations}
+                        onChange={(e) => {
+                          props.setValues({
+                            ...props.values,
+                            observations: e.target.value,
+                          });
+                        }}
+                      />
+                    </FormControl>
+                  </Grid>
+                )}
+                <Grid item md={8} lg={8} style={{ paddingLeft: 40 }}>
+                  <div style={{ fontWeight: "bold" }}>Items:</div>
+                  <div>
+                    <List component="div" disablePadding>
+                      {props.buyState.length > 0 ? (
+                        props.buyState?.map((item, index) => (
+                          <>
+                            {item.product && item.art && (
+                              <>
+                                <ListItem>
+                                  <ListItemText primary={`#${index + 1}`} />
+                                </ListItem>
+                                <Collapse
+                                  in={true}
+                                  timeout="auto"
+                                  unmountOnExit
+                                >
+                                  <List component="div" disablePadding>
+                                    <ListItem>
+                                      <ListItemText
+                                        inset
+                                        style={{
+                                          marginLeft: 0,
+                                          paddingLeft: 0,
+                                        }}
+                                        primary={
+                                          <Grid container>
+                                            <Grid item xs={12} md={8}>
+                                              {item.product.name +
+                                                " X " +
+                                                item.art.title}
+                                            </Grid>
+                                            <Grid
+                                              item
+                                              xs={12}
+                                              md={4}
+                                              style={{
+                                                display: "flex",
+                                                justifyContent: isMobile
+                                                  ? "space-between"
+                                                  : "",
+                                              }}
+                                            >
+                                              <div>
+                                                Cantidad: {item.quantity || 1}
+                                              </div>
+                                              <div
+                                                style={{
+                                                  textAlign: "end",
+                                                  paddingLeft: 10,
+                                                }}
+                                              >
+                                                {`Precio: $${
+                                                  (item.product
+                                                    .publicEquation ||
+                                                    item.product.publicPrice.from.replace(
+                                                      /[$]/gi,
+                                                      ""
+                                                    )) * (item.quantity || 1)
+                                                }`}
+                                              </div>
+                                            </Grid>
+                                          </Grid>
+                                        }
+                                      />
+                                    </ListItem>
+                                  </List>
+                                </Collapse>
+                                <Divider />
+                                {getTotalCombinedItems(props.buyState)
+                                  .totalNotCompleted?.length >= 1 && (
+                                  <Typography
+                                    style={{
+                                      fontSize: "11px",
+                                      // color: "primary",
+                                    }}
+                                  >
+                                    {getTotalCombinedItems(props.buyState)
+                                      .totalNotCompleted?.length > 1
+                                      ? `Faltan ${
+                                          getTotalCombinedItems(props.buyState)
+                                            .totalNotCompleted.length
+                                        } productos por definir.`
+                                      : `Falta 1 producto por definir.`}
+                                  </Typography>
+                                )}
+                              </>
+                            )}
+                          </>
+                        ))
+                      ) : (
+                        <Typography>No has seleccionado nada aún.</Typography>
+                      )}
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                        }}
+                      >
+                        <Grid
+                          item
+                          lg={6}
+                          md={6}
+                          sm={6}
+                          xs={6}
+                          style={{ paddingLeft: 0 }}
+                        >
+                          <FormControl
+                            disabled={props.buyState.length == 0}
+                            className={classes.formControl}
+                            style={{ minWidth: 200, marginTop: 25 }}
+                          >
+                            <InputLabel style={{ paddingLeft: 15 }}>
+                              Método de pago
+                            </InputLabel>
+                            <Select
+                              variant="outlined"
+                              value={props.orderPaymentMethod}
+                              onChange={(event) =>
+                                setOrderPaymentMethod(event.target.value)
+                              }
+                            >
+                              <MenuItem value={"Pago móvil"}>
+                                Pago Movil
+                              </MenuItem>
+                              <MenuItem value={"Transferecia en Bolívares"}>
+                                Transferencia en Bs
+                              </MenuItem>
+                              <MenuItem value={"Banco Panamá"}>
+                                Banco Panamá
+                              </MenuItem>
+                              <MenuItem value={"Zelle"}>Zelle</MenuItem>
+                              <MenuItem value={"USD efectivo"}>
+                                Efectivo en dólares
+                              </MenuItem>
+                            </Select>
+                          </FormControl>
+                        </Grid>
+                        <Grid
+                          item
+                          lg={6}
+                          md={6}
+                          sm={6}
+                          xs={6}
+                          style={{
+                            display: "flex",
+                            alignItems: "end",
+                            marginTop: "24px",
+                            marginRight: "14px",
+                            flexDirection: "column",
+                          }}
+                        >
+                          {props.buyState.length > 0 && (
+                            <>
+                              <strong>{`Subtotal: $${getTotalPrice(
+                                props.buyState
+                              ).toFixed(2)}`}</strong>
+                              <strong>
+                                {`IVA: $${getIvaCost(props.buyState).toFixed(
+                                  2
+                                )}`}
+                              </strong>
+                              <strong>{`Total: $${
+                                getTotalPrice(props.buyState) +
+                                getIvaCost(props.buyState)
+                              }`}</strong>
+                              <br />
+                            </>
+                          )}
+                        </Grid>
+                      </div>
+                    </List>
+                  </div>
+                </Grid>
+                <Grid
+                  item
+                  lg={12}
+                  style={{
+                    display: "flex",
+                    justifyContent: "end",
+                    marginTop: 20,
+                    marginBottom: "-20px",
+                  }}
+                >
+                  <Button
+                    disabled={props.buyState.length == 0}
+                    variant="contained"
+                    color="primary"
+                    onClick={createOrder}
+                  >
+                    Crear orden
+                  </Button>
                 </Grid>
               </Grid>
             )}

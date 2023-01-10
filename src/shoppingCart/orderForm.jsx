@@ -23,6 +23,7 @@ import HomeIcon from "@material-ui/icons/Home";
 import EmailIcon from "@material-ui/icons/Email";
 import LocalPhoneIcon from "@material-ui/icons/LocalPhone";
 import { Typography } from "@material-ui/core";
+
 const useStyles = makeStyles((theme) => ({
   gridInput: {
     width: "100%",
@@ -33,7 +34,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function OrderForm(props) {
+export default function OrderForm(props) {
   const classes = useStyles();
   const theme = useTheme();
 
@@ -261,5 +262,3 @@ function OrderForm(props) {
     </>
   );
 }
-
-export default OrderForm;

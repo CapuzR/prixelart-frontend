@@ -294,6 +294,7 @@ export default function ShoppingPage(props) {
                       setValuesConsumer={props.setValues}
                       onCreateConsumer={props.onCreateConsumer}
                       buyState={props.buyState}
+                      setBuyState={props.setBuyState}
                       orderPaymentMethod={orderPaymentMethod}
                       setOrderPaymentMethod={setOrderPaymentMethod}
                     />

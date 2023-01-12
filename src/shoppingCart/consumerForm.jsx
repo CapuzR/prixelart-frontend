@@ -129,6 +129,7 @@ function ConsumerForm(props) {
                 className={classes.gridInput}
               >
                 <TextField
+                  // type="string"
                   variant="outlined"
                   id="standard-name"
                   label="Nombre"
@@ -167,36 +168,7 @@ function ConsumerForm(props) {
                   margin="normal"
                 />
               </Grid>
-              <Grid
-                item
-                lg={4}
-                md={4}
-                sm={4}
-                xs={12}
-                className={classes.gridInput}
-              >
-                <TextField
-                  variant="outlined"
-                  className={classes.textField}
-                  id="standard-name"
-                  label="Usuario"
-                  fullWidth
-                  required
-                  value={
-                    props.values?.username
-                      ? props.values.username.toLowerCase()
-                      : ""
-                  }
-                  error={!UtilVals.isAValidUsername(props.values?.username)}
-                  onChange={(e) =>
-                    props.setValues({
-                      ...props.values,
-                      username: e.target.value,
-                    })
-                  }
-                  margin="normal"
-                />
-              </Grid>
+
               <Grid
                 item
                 lg={4}
@@ -253,9 +225,9 @@ function ConsumerForm(props) {
               </Grid>
               <Grid
                 item
-                lg={4}
-                md={4}
-                sm={4}
+                lg={8}
+                md={8}
+                sm={8}
                 xs={12}
                 className={classes.gridInput}
               >

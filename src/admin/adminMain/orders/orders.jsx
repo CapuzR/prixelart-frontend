@@ -675,7 +675,9 @@ export default function Orders(props) {
                             </Button>
                           </TableCell>
 
-                          <TableCell align="center">${row.total}</TableCell>
+                          <TableCell align="center">
+                            ${row.total.toFixed(2)}
+                          </TableCell>
                           <TableCell align="center">
                             <FormControl disabled={row.status !== "Procesando"}>
                               <Select

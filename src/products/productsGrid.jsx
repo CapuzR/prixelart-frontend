@@ -75,7 +75,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function ProductGrid(props) {
   const classes = useStyles();
-  const [tiles, setTiles] = useState();
+  const [tiles, setTiles] = useState([]);
   const [imagesVariants, setImagesVariants] = useState([]);
   const [imagesProducts, setImagesProducts] = useState();
   const [width, setWidth] = useState([]);
@@ -86,6 +86,10 @@ export default function ProductGrid(props) {
   const handleChange = (event) => {
     setOrder(event.target.value);
   };
+
+  useEffect(() => {
+    console.log(tiles[2]);
+  }, [tiles]);
 
   useEffect(() => {
     const base_url = process.env.REACT_APP_BACKEND_URL + "/product/read-all";
@@ -137,8 +141,6 @@ export default function ProductGrid(props) {
     props.setSelectedProduct(tile);
     props.setIsOpenAssociateArt(true);
   };
-
-  // console.log(tiles[0].attributes);
 
   return (
     <>
@@ -267,7 +269,7 @@ export default function ProductGrid(props) {
                     variant="h5"
                     component="h2"
                   >
-                    {JSON.parse(localStorage.getItem("token")) &&
+                    {/* {JSON.parse(localStorage.getItem("token")) &&
                     JSON.parse(localStorage.getItem("token")).username
                       ? tile.needsEquation &&
                         tile.prixerEquation &&
@@ -291,7 +293,21 @@ export default function ProductGrid(props) {
                       : "PVP: " +
                         tile.publicPrice?.from +
                         " - " +
-                        tile.publicPrice?.to}
+                        tile.publicPrice?.to} */}
+                    <br></br>
+                    {tile.publicEquation !== ""
+                      ? "PVP: $" + tile.publicEquation
+                      : tile.attributes !== [] &&
+                        tile.publicPrice.to !== tile.publicPrice.from &&
+                        tile.publicPrice.to !== ""
+                      ? "PVP: $" +
+                        tile.publicPrice.from.replace(/[$]/gi, "") +
+                        " - " +
+                        tile.variants[0].publicPrice.equation.replace(
+                          /[$]/gi,
+                          ""
+                        )
+                      : "PVP: $" + tile.publicPrice.from.replace(/[$]/gi, "")}
                   </Typography>
                   <MDEditor.Markdown
                     source={tile.description}

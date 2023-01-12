@@ -496,6 +496,7 @@ export default function ProductGrid(props) {
                     Información <WhatsAppIcon />
                   </Button>
                 </CardActions>
+
                 <CardActions>
                   {tile.variants &&
                     tile.variants.map((v) => {

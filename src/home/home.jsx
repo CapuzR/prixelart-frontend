@@ -292,7 +292,7 @@ export default function Home(props) {
       JSON.parse(localStorage.getItem("token")) && TermsAgreeModal();
     }
   }, []);
-  console.log(props.buyState);
+
   return (
     <React.Fragment>
       <AppBar prixerUsername={prixerUsername} />

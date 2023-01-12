@@ -822,22 +822,26 @@ export default function ArtUploader(props) {
                     <InputLabel required id="categoryLabel">
                       Categoría
                     </InputLabel>
-                    <Select
-                      labelId="categoryLabel"
-                      id="category"
-                      value={category}
-                      onChange={handleCategoryChange}
-                      label="category"
+                    <Tooltip
+                      title={"Tu arte podrá ser encontrado por esta categoría"}
                     >
-                      <MenuItem value="">
-                        <em></em>
-                      </MenuItem>
-                      {categories.map((n) => (
-                        <MenuItem key={n} value={n}>
-                          {n}
+                      <Select
+                        labelId="categoryLabel"
+                        id="category"
+                        value={category}
+                        onChange={handleCategoryChange}
+                        label="category"
+                      >
+                        <MenuItem value="">
+                          <em></em>
                         </MenuItem>
-                      ))}
-                    </Select>
+                        {categories.map((n) => (
+                          <MenuItem key={n} value={n}>
+                            {n}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </Tooltip>
                   </FormControl>
                 </Grid>
                 <Grid item xs={12} sm={12}>
@@ -869,32 +873,40 @@ export default function ArtUploader(props) {
                   />
                 </Grid>
                 <Grid item xs={12} sm={12}>
-                  <TextField
-                    autoComplete="description"
-                    required
-                    name="description"
-                    variant="outlined"
-                    fullWidth
-                    id="description"
-                    label="Descripción"
-                    autoFocus
-                    multiline
-                    rows={4}
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                  />
+                  <Tooltip
+                    title={"Tu arte podrá ser encontrado por esta descripción"}
+                  >
+                    <TextField
+                      autoComplete="description"
+                      required
+                      name="description"
+                      variant="outlined"
+                      fullWidth
+                      id="description"
+                      label="Descripción"
+                      autoFocus
+                      multiline
+                      rows={4}
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                    />
+                  </Tooltip>
                 </Grid>
                 <Grid item xs={12}>
-                  <TextField
-                    variant="outlined"
-                    fullWidth
-                    id="location"
-                    label="Ubicación"
-                    name="location"
-                    autoComplete="location"
-                    value={location}
-                    onChange={(e) => setLocation(e.target.value)}
-                  />
+                  <Tooltip
+                    title={"Tu arte podrá ser encontrado por esta ubicación"}
+                  >
+                    <TextField
+                      variant="outlined"
+                      fullWidth
+                      id="location"
+                      label="Ubicación"
+                      name="location"
+                      autoComplete="location"
+                      value={location}
+                      onChange={(e) => setLocation(e.target.value)}
+                    />
+                  </Tooltip>
                 </Grid>
               </Grid>
             </form>

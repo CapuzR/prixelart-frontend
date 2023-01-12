@@ -138,9 +138,7 @@ export default function ProductGrid(props) {
     props.setIsOpenAssociateArt(true);
   };
 
-  useEffect(() => {
-    console.log(tiles);
-  }, [tiles]);
+  // console.log(tiles[0].attributes);
 
   return (
     <>
@@ -518,7 +516,12 @@ export default function ProductGrid(props) {
                   style={{ display: "flex", justifyContent: "center" }}
                 >
                   <Button
-                    // disabled={tile.variants !== []}
+                    disabled={
+                      tile.attributes[0] !== undefined &&
+                      tile.selection[0] === undefined
+                        ? true
+                        : false
+                    }
                     size="small"
                     color="primary"
                     onClick={(e) => {

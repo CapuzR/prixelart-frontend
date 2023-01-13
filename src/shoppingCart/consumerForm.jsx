@@ -16,6 +16,7 @@ import AccordionDetails from "@material-ui/core/AccordionDetails";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
+import validations from "./validations";
 
 const useStyles = makeStyles((theme) => ({
   gridInput: {
@@ -129,9 +130,7 @@ function ConsumerForm(props) {
                 className={classes.gridInput}
               >
                 <TextField
-                  // type="string"
                   variant="outlined"
-                  id="standard-name"
                   label="Nombre"
                   fullWidth
                   className={classes.textField}
@@ -140,6 +139,12 @@ function ConsumerForm(props) {
                     props.setValues({ ...props.values, name: e.target.value })
                   }
                   required
+                  error={!validations.isAValidName(props.values?.name)}
+                  helperText={
+                    !validations.isAValidName(props.values?.name) &&
+                    props.values.name !== undefined &&
+                    "Formato no válido."
+                  }
                   margin="normal"
                 />
               </Grid>
@@ -165,6 +170,12 @@ function ConsumerForm(props) {
                       lastName: e.target.value,
                     })
                   }
+                  error={!validations.isAValidName(props.values?.lastName)}
+                  helperText={
+                    !validations.isAValidName(props.values?.lastName) &&
+                    props.values.lastName !== undefined &&
+                    "Formato no válido."
+                  }
                   margin="normal"
                 />
               </Grid>
@@ -182,13 +193,22 @@ function ConsumerForm(props) {
                   id="standard-name"
                   label="Cédula o RIF"
                   fullWidth
-                  helperText="ej: V-12345679 o V-1234567-0"
+                  helperText={
+                    !validations.isAValidCi(props.values?.ci) &&
+                    props.values.ci !== undefined
+                      ? "ej: V12345679 o 12345678 \n" + "Formato no válido."
+                      : "ej: V12345679 o 12345678"
+                  }
                   className={classes.textField}
                   value={props.values?.ci ? props.values.ci : ""}
                   onChange={(e) =>
                     props.setValues({ ...props.values, ci: e.target.value })
                   }
                   required
+                  error={
+                    props.values?.ci !== undefined &&
+                    !validations.isAValidCi(props.values?.ci)
+                  }
                   margin="normal"
                 />
               </Grid>
@@ -206,14 +226,29 @@ function ConsumerForm(props) {
                   label="Telefono"
                   fullWidth
                   className={classes.textField}
-                  helperText="ej: 584141234567 o +584141234567 o 04143201028"
+                  helperText={
+                    !validations.isAValidPhoneNum(props.values?.phone) &&
+                    props.values.phone !== undefined ? (
+                      <div>
+                        <div>
+                          ej: 584141234567 o +584141234567 o 04143201028
+                        </div>
+                        Formato no válido.
+                      </div>
+                    ) : (
+                      "ej: 584141234567 o +584141234567 o 04143201028"
+                    )
+                  }
                   value={props.values?.phone ? props.values.phone : ""}
-                  //   error={!UtilVals.isAValidPhoneNum(props.values?.phone)}
                   onChange={(e) =>
                     props.setValues({ ...props.values, phone: e.target.value })
                   }
                   required
                   margin="normal"
+                  error={
+                    props.values?.phone !== undefined &&
+                    !validations.isAValidPhoneNum(props.values?.phone)
+                  }
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
@@ -233,15 +268,23 @@ function ConsumerForm(props) {
               >
                 <TextField
                   variant="outlined"
-                  id="standard-name"
                   label="Correo"
                   fullWidth
                   className={classes.textField}
                   value={props.values?.email ? props.values.email : ""}
+                  helperText={
+                    !validations.isAValidEmail(props.values?.email) &&
+                    props.values.email !== undefined &&
+                    "Formato no válido."
+                  }
                   onChange={(e) =>
                     props.setValues({ ...props.values, email: e.target.value })
                   }
-                  error={!UtilVals.isAValidEmail(props.values?.email)}
+                  error={
+                    // !validations.isAValidEmail(props.values?.email) ||
+                    // props.value?.email === undefined ||
+                    !validations.isAValidEmail(props.values?.email)
+                  }
                   required
                   margin="normal"
                   InputProps={{
@@ -268,7 +311,7 @@ function ConsumerForm(props) {
                   label="Dirección de envio"
                   className={classes.textField}
                   multiline
-                  rows={3}
+                  minRows={3}
                   helperText="Incluir todos los detalles posibles, incluidas referencias."
                   value={props.values?.address ? props.values.address : ""}
                   required
@@ -307,14 +350,7 @@ function ConsumerForm(props) {
         <AccordionDetails>
           <form autoComplete="off">
             <Grid container>
-              <Grid
-                item
-                lg={12}
-                md={12}
-                sm={12}
-                xs={12}
-                // className={classes.gridInput}
-              >
+              <Grid item lg={12} md={12} sm={12} xs={12}>
                 <FormControlLabel
                   control={
                     <Checkbox
@@ -355,6 +391,7 @@ function ConsumerForm(props) {
                       shippingName: e.target.value,
                     })
                   }
+                  error={!validations.isAValidName(props.values?.shippingName)}
                   required
                   margin="normal"
                 />
@@ -389,6 +426,9 @@ function ConsumerForm(props) {
                     })
                   }
                   margin="normal"
+                  error={
+                    !validations.isAValidName(props.values?.shippingLastName)
+                  }
                 />
               </Grid>
               <Grid
@@ -414,13 +454,6 @@ function ConsumerForm(props) {
                         : ""
                       : props.values.shippingPhone
                   }
-                  // error={
-                  //   shippingDataCheck
-                  //     ? props.values?.phone != undefined &&
-                  //       !UtilVals.isAValidPhoneNum(props.values?.phone)
-                  //     : props.values?.shippingPhone != undefined &&
-                  //       !UtilVals.isAValidPhoneNum(props.values?.shippingPhone)
-                  // }
                   onChange={(e) => {
                     props.setValues({
                       ...props.values,
@@ -429,6 +462,11 @@ function ConsumerForm(props) {
                   }}
                   required
                   margin="normal"
+                  error={
+                    !validations.isAValidPhoneNum(
+                      props.values?.shippingPhone
+                    ) && props.values.shippingPhone !== undefined
+                  }
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
@@ -574,6 +612,7 @@ function ConsumerForm(props) {
                   }
                   required
                   margin="normal"
+                  error={!validations.isAValidName(props.values?.billingShName)}
                 />
               </Grid>
               <Grid
@@ -610,6 +649,9 @@ function ConsumerForm(props) {
                     })
                   }
                   margin="normal"
+                  error={
+                    !validations.isAValidName(props.values?.billingShLastName)
+                  }
                 />
               </Grid>
               <Grid
@@ -639,18 +681,6 @@ function ConsumerForm(props) {
                         : ""
                       : props.values.billingShPhone
                   }
-                  // error={
-                  //   billingDataCheck
-                  //     ? props.values?.phone != undefined &&
-                  //       !UtilVals.isAValidPhoneNum(props.values?.phone)
-                  //     : billingShDataCheck
-                  //     ? (props.values?.billingPhone != undefined ||
-                  //         (shippingDataCheck &&
-                  //           props.values?.phone != undefined)) &&
-                  //       !UtilVals.isAValidPhoneNum(props.values?.billingPhone)
-                  //     : props.values?.billingShPhone != undefined &&
-                  //       !UtilVals.isAValidPhoneNum(props.values?.billingShPhone)
-                  // }
                   onChange={(e) =>
                     props.setValues({
                       ...props.values,
@@ -659,6 +689,11 @@ function ConsumerForm(props) {
                   }
                   required
                   margin="normal"
+                  error={
+                    !validations.isAValidPhoneNum(
+                      props.values?.billingShPhone
+                    ) && props.values.billingShPhone !== undefined
+                  }
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">

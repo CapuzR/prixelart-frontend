@@ -32,7 +32,7 @@ function App() {
     useState(undefined);
   const [selectedProductToAssociate, setSelectedProductToAssociate] =
     useState(undefined);
-  const [valuesConsumerForm, setValuesConsumerForm] = useState();
+  const [valuesConsumerForm, setValuesConsumerForm] = useState("");
 
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("");

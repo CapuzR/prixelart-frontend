@@ -27,6 +27,7 @@ import ConsumerForm from "./consumerForm";
 import OrderForm from "./orderForm";
 import CartReview from "./cartReview";
 import { nanoid } from "nanoid";
+import validations from "./validations";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -147,6 +148,8 @@ export default function ShoppingPage(props) {
     });
     return total;
   };
+
+  // console.log(props.valuesConsumerForm?.email);
 
   const createOrder = async () => {
     if (orderPaymentMethod) {
@@ -321,13 +324,23 @@ export default function ShoppingPage(props) {
                       !props.valuesConsumerForm ||
                       !props.valuesConsumerForm.name ||
                       !props.valuesConsumerForm.lastName ||
-                      !props.valuesConsumerForm.username ||
                       !props.valuesConsumerForm.ci ||
                       !props.valuesConsumerForm.phone ||
                       !props.valuesConsumerForm.email ||
-                      !props.valuesConsumerForm.address
-                      // !orderPaymentMethod
-                      // !props.valuesConsumerForm.billingAddress
+                      !props.valuesConsumerForm.address ||
+                      !validations.isAValidEmail(
+                        props.valuesConsumerForm?.email
+                      ) ||
+                      !validations.isAValidCi(props.valuesConsumerForm?.ci) ||
+                      !validations.isAValidName(
+                        props.valuesConsumerForm?.name
+                      ) ||
+                      !validations.isAValidName(
+                        props.valuesConsumerForm?.lastName
+                      ) ||
+                      !validations.isAValidPhoneNum(
+                        props.valuesConsumerForm?.phone
+                      )
                     }
                     onClick={
                       activeStep === steps.length - 1 ? createOrder : handleNext

@@ -234,6 +234,7 @@ export default function UserData(props) {
   const handleChange = (e) => {
     setSpecialtyArt(e.target.value);
   };
+
   return prixerExists ? (
     <div className={classes.root}>
       <Backdrop className={classes.backdrop} open={backdrop}>
@@ -310,10 +311,12 @@ export default function UserData(props) {
                     }}
                   >
                     <Typography variant="body1">
-                      {specialtyArt?.map((specialty, index) =>
-                        specialtyArt?.length === index + 1
-                          ? specialty
-                          : `${specialty}, `
+                      {specialtyArt?.map(
+                        (specialty, index) =>
+                          specialty !== "" &&
+                          (specialtyArt?.length === index + 1
+                            ? specialty
+                            : `${specialty}, `)
                       )}
                     </Typography>
                     {/* <Typography variant="h5">
@@ -348,7 +351,9 @@ export default function UserData(props) {
                       justifyContent: isMobile ? "center" : "flexstart",
                     }}
                   >
-                    <Typography>{description}</Typography>
+                    <Typography align={isMobile ? "center" : "left"}>
+                      {description}
+                    </Typography>
                   </Box>
                   <Box
                     style={{

@@ -35,6 +35,7 @@ import CssBaseline from "@material-ui/core/CssBaseline";
 import Paper from "@material-ui/core/Paper";
 import Chip from "@material-ui/core/Chip";
 import Autocomplete from "@material-ui/lab/Autocomplete";
+import InfoIcon from "@material-ui/icons/Info";
 
 const useStyles = makeStyles((theme) => ({
   img: {
@@ -819,29 +820,22 @@ export default function ArtUploader(props) {
                     sm={12}
                     md={12}
                   >
-                    <InputLabel required id="categoryLabel">
-                      Categoría
-                    </InputLabel>
+                    <InputLabel required>Categoría</InputLabel>
+                    <Select value={category} onChange={handleCategoryChange}>
+                      <MenuItem value="">
+                        <em></em>
+                      </MenuItem>
+                      {categories.map((n) => (
+                        <MenuItem key={n} value={n}>
+                          {n}
+                        </MenuItem>
+                      ))}
+                    </Select>
                     <Tooltip
                       title={"Tu arte podrá ser encontrado por esta categoría"}
                     >
-                      <Select
-                        labelId="categoryLabel"
-                        id="category"
-                        value={category}
-                        onChange={handleCategoryChange}
-                        label="category"
-                      >
-                        <MenuItem value="">
-                          <em></em>
-                        </MenuItem>
-                        {categories.map((n) => (
-                          <MenuItem key={n} value={n}>
-                            {n}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </Tooltip>
+                      <infoIcon />
+                    </Tooltip>{" "}
                   </FormControl>
                 </Grid>
                 <Grid item xs={12} sm={12}>

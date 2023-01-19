@@ -197,19 +197,39 @@ export default function ShoppingPage(props) {
             props.valuesConsumerForm?.address,
         }
       );
-      window.open(utils.generateWaBuyMessage(orderLines), "_blank");
+      // window.open(utils.generateWaBuyMessage(orderLines), "_blank");
 
       const base_url = process.env.REACT_APP_BACKEND_URL + "/order/create";
       let input = {
         orderId: nanoid(6),
-        firstname: consumer.data.newConsumer.firstname,
-        lastname: consumer.data.newConsumer.lastname,
-        ci: consumer.data.newConsumer.ci,
         requests: orderLines,
-        email: consumer.data.newConsumer.email,
-        phone: consumer.data.newConsumer.phone,
-        billingAddress: consumer.data.newConsumer.billingAddress,
-        shippingAddress: consumer.data.newConsumer.shippingAddress,
+        basicData: {
+          firstname: consumer.data.newConsumer.firstname,
+          lastname: consumer.data.newConsumer.lastname,
+          ci: consumer.data.newConsumer.ci,
+          email: consumer.data.newConsumer.email,
+          phone: consumer.data.newConsumer.phone,
+        },
+        shippingData: {
+          name: props.valuesConsumerForm?.shippingName,
+          lastname: props.valuesConsumerForm?.shippingLastName,
+          phone: props.valuesConsumerForm?.shippingPhone,
+          address: props.valuesConsumerForm?.shippingAddress,
+          internalShippingMethod: props.valuesConsumerForm?.shippingAgencyLocal,
+          domesticShippingMethod:
+            props.valuesConsumerForm?.shippingAgencyNational,
+          internationalShippingMethod:
+            props.valuesConsumerForm?.shippingAgencyInternational,
+        },
+        billingData: {
+          name: props.valuesConsumerForm?.billingShName,
+          lastname: props.valuesConsumerForm?.billingShLastName,
+          ci: props.valuesConsumerForm?.billingCi,
+          company: props.valuesConsumerForm?.billingCompany,
+          phone: props.valuesConsumerForm?.billingPhone,
+          address: props.valuesConsumerForm?.billingAddress,
+          orderPaymentMethod: orderPaymentMethod,
+        },
         tax: getTotalPrice(props.buyState) * 0.16,
         subtotal: getTotalPrice(props.buyState),
         total:
@@ -219,7 +239,6 @@ export default function ShoppingPage(props) {
         orderType: "Particular",
         // consumerId: consumer.data.newConsumer._id,
         status: "Procesando",
-        orderPaymentMethod: orderPaymentMethod,
       };
       const order = await axios.post(base_url, input).then(() => {
         console.log("Orden generada correctamente. Por favor, revisa tu email");

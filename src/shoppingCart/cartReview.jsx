@@ -415,7 +415,7 @@ export default function CartReview(props) {
                     }}
                   >
                     <div style={{ paddingBottom: 5 }}>
-                      <strong>Precio:</strong>
+                      <strong>Precio Unitario:</strong>
                       {`$${
                         buy.product?.publicEquation ||
                         buy.product?.publicPrice.from.replace(/[$]/gi, "")

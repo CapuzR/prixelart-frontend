@@ -16,6 +16,10 @@ import AccordionDetails from "@material-ui/core/AccordionDetails";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
+import FormControl from "@material-ui/core/FormControl";
+import InputLabel from "@material-ui/core/InputLabel";
+import MenuItem from "@material-ui/core/MenuItem";
+import Select from "@material-ui/core/Select";
 import validations from "./validations";
 
 const useStyles = makeStyles((theme) => ({
@@ -34,6 +38,9 @@ function ConsumerForm(props) {
   const [billingDataCheck, setBillingDataCheck] = useState(true);
   const [billingShDataCheck, setBillingShDataCheck] = useState(false);
   const [expanded, setExpanded] = useState(false);
+  const internalShippingList = ["Yalo", "DH", "CC", "No aplica"];
+  const domesticShippingList = ["Tealca", "Zoom", "MRW", "No aplica"];
+  const internationalShippingList = ["FedEx", "DHL", "MRW", "No aplica"];
 
   const handleAccordionExpansion = (panel) => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
@@ -116,7 +123,7 @@ function ConsumerForm(props) {
           aria-controls="panel1a-content"
           id="panel1a-header"
         >
-          <Typography>Datos básicos</Typography>
+          <Typography>Datos Básicos</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <form autoComplete="off">
@@ -195,9 +202,9 @@ function ConsumerForm(props) {
                   fullWidth
                   helperText={
                     !validations.isAValidCi(props.values?.ci) &&
-                    props.values.ci !== undefined
-                      ? "ej: V12345679 o 12345678 \n" + "Formato no válido."
-                      : "ej: V12345679 o 12345678"
+                    props.values?.ci !== undefined
+                      ? "ej: V12345679 ó 12345678 \n" + "Formato no válido."
+                      : "ej: V12345679 ó 12345678"
                   }
                   className={classes.textField}
                   value={props.values?.ci ? props.values.ci : ""}
@@ -228,15 +235,15 @@ function ConsumerForm(props) {
                   className={classes.textField}
                   helperText={
                     !validations.isAValidPhoneNum(props.values?.phone) &&
-                    props.values.phone !== undefined ? (
+                    props.values?.phone !== undefined ? (
                       <div>
                         <div>
-                          ej: 584141234567 o +584141234567 o 04143201028
+                          ej: 584141234567 ó +584141234567 ó 04143201028
                         </div>
                         Formato no válido.
                       </div>
                     ) : (
-                      "ej: 584141234567 o +584141234567 o 04143201028"
+                      "ej: 584141234567 ó +584141234567 ó 04143201028"
                     )
                   }
                   value={props.values?.phone ? props.values.phone : ""}
@@ -360,7 +367,7 @@ function ConsumerForm(props) {
                       }}
                     />
                   }
-                  label="Igual a Datos básicos"
+                  label="Igual a datos básicos"
                 />
               </Grid>
               <Grid
@@ -465,7 +472,7 @@ function ConsumerForm(props) {
                   error={
                     !validations.isAValidPhoneNum(
                       props.values?.shippingPhone
-                    ) && props.values.shippingPhone !== undefined
+                    ) && props.values?.shippingPhone !== undefined
                   }
                   InputProps={{
                     startAdornment: (
@@ -518,6 +525,101 @@ function ConsumerForm(props) {
                   }}
                 />
               </Grid>
+              <Grid
+                item
+                lg={4}
+                md={4}
+                sm={4}
+                xs={12}
+                className={classes.gridInput}
+              >
+                <FormControl style={{ minWidth: "100%" }} variant="outlined">
+                  <InputLabel>En Caracas</InputLabel>
+                  <Select
+                    className={classes.textField}
+                    value={props.values?.shippingAgencyLocal || ""}
+                    onChange={(e) => {
+                      props.setValues({
+                        ...props.values,
+                        shippingAgencyLocal: e.target.value,
+                      });
+                    }}
+                  >
+                    <MenuItem value="">
+                      <em></em>
+                    </MenuItem>
+                    {internalShippingList.map((n) => (
+                      <MenuItem key={n} value={n}>
+                        {n}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid
+                item
+                lg={4}
+                md={4}
+                sm={4}
+                xs={12}
+                className={classes.gridInput}
+              >
+                <FormControl style={{ minWidth: "100%" }} variant="outlined">
+                  <InputLabel>En Venezuela</InputLabel>
+                  <Select
+                    className={classes.textField}
+                    value={props.values?.shippingAgencyNational || ""}
+                    onChange={(e) => {
+                      props.setValues({
+                        ...props.values,
+                        shippingAgencyNational: e.target.value,
+                      });
+                    }}
+                  >
+                    <MenuItem value="">
+                      <em></em>
+                    </MenuItem>
+                    {domesticShippingList.map((n) => (
+                      <MenuItem key={n} value={n}>
+                        {n}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid
+                item
+                lg={4}
+                md={4}
+                sm={4}
+                xs={12}
+                className={classes.gridInput}
+              >
+                <FormControl style={{ minWidth: "100%" }} variant="outlined">
+                  <InputLabel required id="internationalShippingMethod">
+                    Internacional
+                  </InputLabel>
+                  <Select
+                    className={classes.textField}
+                    value={props.values?.shippingAgencyInternational || ""}
+                    onChange={(e) => {
+                      props.setValues({
+                        ...props.values,
+                        shippingAgencyInternational: e.target.value,
+                      });
+                    }}
+                  >
+                    <MenuItem value="">
+                      <em></em>
+                    </MenuItem>
+                    {internationalShippingList.map((n) => (
+                      <MenuItem key={n} value={n}>
+                        {n}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
             </Grid>
           </form>
         </AccordionDetails>
@@ -532,7 +634,7 @@ function ConsumerForm(props) {
           aria-controls="panel1a-content"
           id="panel1a-header"
         >
-          <Typography>Datos de facturación</Typography>
+          <Typography>Datos de Facturación</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <form autoComplete="off">
@@ -559,7 +661,7 @@ function ConsumerForm(props) {
                       }}
                     />
                   }
-                  label="Igual a Datos básicos"
+                  label="Igual a datos básicos"
                 />
                 <FormControlLabel
                   control={
@@ -575,7 +677,7 @@ function ConsumerForm(props) {
                       }}
                     />
                   }
-                  label="Igual a Datos de envío"
+                  label="Igual a datos de envío"
                 />
               </Grid>
               <Grid
@@ -665,6 +767,76 @@ function ConsumerForm(props) {
                 <TextField
                   variant="outlined"
                   id="standard-name"
+                  label="Cédula o RIF"
+                  fullWidth
+                  helperText={
+                    !validations.isAValidCi(props.values?.ci) &&
+                    props.values.ci !== undefined
+                      ? "ej: V12345679 o 12345678 \n" + "Formato no válido."
+                      : "ej: V12345679 o 12345678"
+                  }
+                  className={classes.textField}
+                  disabled={billingDataCheck || billingShDataCheck}
+                  value={
+                    billingDataCheck
+                      ? props.values?.ci
+                        ? props.values.ci
+                        : ""
+                      : props.values.billingCi
+                  }
+                  onChange={(e) =>
+                    props.setValues({
+                      ...props.values,
+                      billingCi: e.target.value,
+                    })
+                  }
+                  required
+                  error={
+                    props.values?.ci !== undefined &&
+                    !validations.isAValidCi(props.values?.ci)
+                  }
+                  margin="normal"
+                />
+              </Grid>
+              <Grid
+                item
+                lg={8}
+                md={8}
+                sm={8}
+                xs={12}
+                className={classes.gridInput}
+              >
+                <TextField
+                  variant="outlined"
+                  id="standard-name"
+                  label="Razón Social"
+                  fullWidth
+                  className={classes.textField}
+                  disabled={billingDataCheck || billingShDataCheck}
+                  value={props.values.billingCompany || ""}
+                  onChange={(e) =>
+                    props.setValues({
+                      ...props.values,
+                      billingCompany: e.target.value,
+                    })
+                  }
+                  required
+                  margin="normal"
+                  // error={!validations.isAValidName(props.values?.billingShName)}
+                />
+              </Grid>
+
+              <Grid
+                item
+                lg={4}
+                md={4}
+                sm={4}
+                xs={12}
+                className={classes.gridInput}
+              >
+                <TextField
+                  variant="outlined"
+                  id="standard-name"
                   label="Telefono"
                   fullWidth
                   disabled={billingDataCheck || billingShDataCheck}
@@ -692,7 +864,7 @@ function ConsumerForm(props) {
                   error={
                     !validations.isAValidPhoneNum(
                       props.values?.billingShPhone
-                    ) && props.values.billingShPhone !== undefined
+                    ) && props.values?.billingShPhone !== undefined
                   }
                   InputProps={{
                     startAdornment: (

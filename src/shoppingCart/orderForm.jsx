@@ -139,7 +139,7 @@ export default function OrderForm(props) {
                                               paddingLeft: 10,
                                             }}
                                           >
-                                            {`Precio: $${
+                                            {`Monto: $${
                                               (item.product.publicEquation ||
                                                 item.product.publicPrice.from.replace(
                                                   /[$]/gi,

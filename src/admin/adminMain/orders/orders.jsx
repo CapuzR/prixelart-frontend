@@ -36,10 +36,8 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 import LocalPhoneIcon from "@material-ui/icons/LocalPhone";
 import EmailIcon from "@material-ui/icons/Email";
 import HomeIcon from "@material-ui/icons/Home";
-import CartReview from "../../../shoppingCart/cartReview";
 import Stepper from "@material-ui/core/Stepper";
 import Step from "@material-ui/core/Step";
-import StepLabel from "@material-ui/core/StepLabel";
 import StepButton from "@material-ui/core/StepButton";
 import BusinessIcon from "@material-ui/icons/Business";
 import Img from "react-cool-img";
@@ -50,13 +48,6 @@ import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import Collapse from "@material-ui/core/Collapse";
 import Divider from "@material-ui/core/Divider";
-import OutlinedInput from "@material-ui/core/OutlinedInput";
-
-import ConsumerForm from "../../../shoppingCart/consumerForm";
-import OrderBasicInfo from "../../orderCrud/createOrder/orderBasicInfo";
-import OrderDetails from "../../orderCrud/createOrder/orderDetails";
-import Autocomplete from "@material-ui/lab/Autocomplete";
-
 import { useHistory } from "react-router-dom";
 
 import utils from "../../../utils/utils";
@@ -808,51 +799,131 @@ export default function Orders(props) {
                 xs={12}
                 sm={12}
                 md={6}
-                lg={3}
-                style={{ marginBottom: 20 }}
+                lg={6}
+                style={{ display: "flex", marginBottom: 20 }}
               >
-                <strong>Datos de pago</strong>
-                <div>{"Subtotal: $" + modalContent?.subtotal.toFixed(2)}</div>
-                <div>{"IVA: $" + modalContent?.tax.toFixed(2)}</div>
-                <div style={{ marginBottom: 10 }}>
-                  {"Total: $" + modalContent?.total.toFixed(2)}
-                </div>
-                <div style={{ marginBottom: 40 }}>
-                  {"Forma de pago: " + modalContent?.orderPaymentMethod}
-                </div>
-                <strong>Datos de envío</strong>
-                <div>
-                  {"Nombre: " +
-                    modalContent?.createdBy.firstname +
-                    " " +
-                    modalContent?.createdBy.lastname}
-                </div>
-                {modalContent.createdBy.email && (
-                  <div>{"Email: " + modalContent?.createdBy.email}</div>
-                )}
-                {modalContent.createdBy.phone && (
-                  <div>{"Teléfono: " + modalContent?.createdBy.phone}</div>
-                )}
-                <div>
-                  {"Dirección de cobro: " +
-                    modalContent?.createdBy.billingAddress}
-                </div>
-                <div>
-                  {"Dirección de envío: " +
-                    modalContent?.createdBy.shippingAddress}
-                </div>
-                {(modalContent.domesticShippingMethod ||
-                  modalContent.internalShippingMethod ||
-                  modalContent.internationalShippingMethod) && (
+                {console.log(modalContent)}
+                <Grid
+                  item
+                  xs={12}
+                  sm={12}
+                  md={6}
+                  lg={4}
+                  xl={3}
+                  style={{ marginBottom: 40, marginRight: 20 }}
+                >
+                  <strong>Datos básicos</strong>
                   <div>
-                    {"Agencia de envío: " +
-                      modalContent?.domesticShippingMethod ||
-                      modalContent?.internalShippingMethod ||
-                      modalContent?.internationalShippingMethod}
+                    {"Nombre: " +
+                      modalContent.basicData.firstname +
+                      " " +
+                      modalContent.basicData.lastname}
                   </div>
-                )}
+                  <div>{"CI o RIF: " + modalContent?.basicData.ci}</div>
+                  <div>{"Teléfono: " + modalContent?.basicData.phone}</div>
+                  <div>{"Email: " + modalContent?.basicData.email}</div>
+                </Grid>
+
+                <Grid
+                  item
+                  xs={12}
+                  sm={12}
+                  md={6}
+                  lg={4}
+                  xl={3}
+                  style={{ marginBottom: 40, marginRight: 20 }}
+                >
+                  <strong>Datos de envío</strong>
+                  {modalContent.shippingData.Name &&
+                    modalContent.shippingData.lastname && (
+                      <div>
+                        {"Nombre: " +
+                          modalContent?.shippingData.name +
+                          " " +
+                          modalContent?.shippingData.lastname}
+                      </div>
+                    )}
+                  {modalContent.shippingData.phone && (
+                    <div>{"Teléfono: " + modalContent?.shippingData.phone}</div>
+                  )}
+                  {(modalContent.shippingData.domesticShippingMethod ||
+                    modalContent.shippingData.internalShippingMethod ||
+                    modalContent.shippingData.internationalShippingMethod) && (
+                    <div>
+                      {"Agencia de envío: " +
+                        modalContent?.shippingData.domesticShippingMethod ||
+                        modalContent?.shippingData.internalShippingMethod ||
+                        modalContent?.shippingData.internationalShippingMethod}
+                    </div>
+                  )}
+                  {modalContent.shippingData.address && (
+                    <div>
+                      {"Dirección de envío: " +
+                        modalContent?.shippingData.address}
+                    </div>
+                  )}
+                </Grid>
+
+                <Grid
+                  item
+                  xs={12}
+                  sm={12}
+                  md={6}
+                  lg={4}
+                  xl={3}
+                  style={{ marginBottom: 40, marginRight: 20 }}
+                >
+                  <strong>Datos de facturación</strong>
+                  {modalContent.billingData.name &&
+                    modalContent.billingData.lastname && (
+                      <div>
+                        {"Nombre: " +
+                          modalContent?.billingData.name +
+                          " " +
+                          modalContent?.billingData.lastname}
+                      </div>
+                    )}
+                  {modalContent.billingData.ci && (
+                    <div>{"CI o RIF: " + modalContent?.billingData.ci}</div>
+                  )}
+                  {modalContent.billingData.company && (
+                    <div>
+                      {"Razón social: " + modalContent?.billingData.company}
+                    </div>
+                  )}
+                  {modalContent.billingData.phone && (
+                    <div>{"Teléfono: " + modalContent?.billingData.phone}</div>
+                  )}
+                  {modalContent.billingData.address && (
+                    <div style={{ marginBottom: 20 }}>
+                      {"Dirección de cobro: " +
+                        modalContent?.billingData.address}
+                    </div>
+                  )}
+                  <strong>Datos de pago</strong>
+                  <div>{"Subtotal: $" + modalContent?.subtotal.toFixed(2)}</div>
+                  <div>{"IVA: $" + modalContent?.tax.toFixed(2)}</div>
+                  <div style={{ marginBottom: 10 }}>
+                    {"Total: $" + modalContent?.total.toFixed(2)}
+                  </div>
+                  <div>
+                    {"Forma de pago: " +
+                      modalContent?.billingData.orderPaymentMethod}
+                  </div>
+                </Grid>
+
                 {modalContent.observations && (
-                  <div>{"Observaciones: " + modalContent.observations}</div>
+                  <Grid
+                    item
+                    xs={12}
+                    sm={12}
+                    md={6}
+                    lg={4}
+                    xl={3}
+                    style={{ marginBottom: 40, marginRight: 20 }}
+                  >
+                    {"Observaciones: " + modalContent.observations}
+                  </Grid>
                 )}
               </Grid>
             </>

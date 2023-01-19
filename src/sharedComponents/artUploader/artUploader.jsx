@@ -831,11 +831,6 @@ export default function ArtUploader(props) {
                         </MenuItem>
                       ))}
                     </Select>
-                    <Tooltip
-                      title={"Tu arte podrá ser encontrado por esta categoría"}
-                    >
-                      <infoIcon />
-                    </Tooltip>{" "}
                   </FormControl>
                 </Grid>
                 <Grid item xs={12} sm={12}>
@@ -867,40 +862,45 @@ export default function ArtUploader(props) {
                   />
                 </Grid>
                 <Grid item xs={12} sm={12}>
-                  <Tooltip
-                    title={"Tu arte podrá ser encontrado por esta descripción"}
-                  >
-                    <TextField
-                      autoComplete="description"
-                      required
-                      name="description"
-                      variant="outlined"
-                      fullWidth
-                      id="description"
-                      label="Descripción"
-                      autoFocus
-                      multiline
-                      rows={4}
-                      value={description}
-                      onChange={(e) => setDescription(e.target.value)}
-                    />
-                  </Tooltip>
+                  <TextField
+                    autoComplete="description"
+                    required
+                    name="description"
+                    variant="outlined"
+                    fullWidth
+                    id="description"
+                    label="Descripción"
+                    autoFocus
+                    multiline
+                    rows={4}
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                  />
                 </Grid>
                 <Grid item xs={12}>
-                  <Tooltip
-                    title={"Tu arte podrá ser encontrado por esta ubicación"}
-                  >
-                    <TextField
-                      variant="outlined"
-                      fullWidth
-                      id="location"
-                      label="Ubicación"
-                      name="location"
-                      autoComplete="location"
-                      value={location}
-                      onChange={(e) => setLocation(e.target.value)}
-                    />
-                  </Tooltip>
+                  <TextField
+                    variant="outlined"
+                    fullWidth
+                    id="location"
+                    label="Ubicación"
+                    name="location"
+                    autoComplete="location"
+                    value={location}
+                    onChange={(e) => setLocation(e.target.value)}
+                  />
+                </Grid>
+                <Grid
+                  item
+                  xs={12}
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                  }}
+                >
+                  <InfoIcon color={"secondary"} />
+                  <Typography color={"secondary"}>
+                    Tu arte podrá ser encontrado por estos datos.
+                  </Typography>
                 </Grid>
               </Grid>
             </form>

@@ -29,6 +29,7 @@ import axios from "axios";
 import AppBar from "@material-ui/core/AppBar";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
+import AspectRatioSelector from "../../../sharedComponents/artUploader/aspectRatioSelector";
 
 const useStyle = makeStyles((theme) => ({
   images: {
@@ -73,7 +74,7 @@ const useStyle = makeStyles((theme) => ({
   buttonImgLoader: {
     color: "#d33f49",
     cursor: "pointer",
-    position: "absolute",
+    // position: "absolute",
   },
   backdrop: {
     zIndex: theme.zIndex.drawer + 1,
@@ -102,6 +103,17 @@ function TabPanel(props) {
     </div>
   );
 }
+const aspectRatios = [
+  {
+    id: 1,
+    name: "21:9",
+    aspect: 21 / 9,
+    thumb: "",
+    crop: { x: 0, y: 0 },
+    zoom: 1,
+    cropped: false,
+  },
+];
 
 function CarouselAdmin(props) {
   const theme = useTheme();
@@ -123,6 +135,7 @@ function CarouselAdmin(props) {
   const [create, setCreate] = useState(false); // toast para imagen creada y listada
   const [createF, setCreateF] = useState(false);
   const [loading, setLoading] = useState(false); // Loading
+  const [croppedArt, setCroppedArt] = useState(aspectRatios);
 
   const classes = useStyle();
 
@@ -351,23 +364,7 @@ function CarouselAdmin(props) {
             Edit carousel
           </Typography>
         </Grid>
-        <Grid>
-          {imageLoader.loader && (
-            <div style={{ height: "80vh" }}>
-              <Tooltip className={classes.buttonImgLoader}>
-                <HighlightOffOutlinedIcon
-                  style={{ width: "2rem" }}
-                  onClick={cancelUploadImage}
-                />
-              </Tooltip>
-              <img
-                className={classes.imageLoad}
-                src={imageLoader.loader}
-                alt="+"
-              ></img>
-            </div>
-          )}
-        </Grid>
+
         <div className={classes.tab}>
           <AppBar
             position="static"
@@ -376,6 +373,7 @@ function CarouselAdmin(props) {
               color: "#d33f49",
               fontWeight: 400,
               boxShadow: "none",
+              marginBottom: 10,
             }}
           >
             <Tabs value={value} onChange={handleChange}>
@@ -383,6 +381,137 @@ function CarouselAdmin(props) {
               <Tab label="Mobile" />
             </Tabs>
           </AppBar>
+          {imageLoader.loader && (
+            <Grid style={{ display: "flex", justifyContent: "center" }}>
+              <Grid lg={8} style={{ display: "flex" }}>
+                <img
+                  className={classes.imageLoad}
+                  src={imageLoader.loader}
+                  alt="Uploaded"
+                />
+                {/* {croppedArt.map(
+                  (ar, index) =>
+                    ar.id === tabValue && (
+                      <Grid
+                        item
+                        xs={12}
+                        sm={12}
+                        md={12}
+                        style={{
+                          position: "relative",
+                          height: 300,
+                          display: "flex",
+                          flexDirection: "column",
+                          justifyContent: "center",
+                        }}
+                      >
+                        {croppedArt[index].thumb == "" ? (
+                          <EasyCropper
+                            art={art}
+                            ar={ar}
+                            croppedArt={croppedArt}
+                            setCroppedArt={setCroppedArt}
+                            index={index}
+                            setCroppedAreaPixels={setCroppedAreaPixels}
+                          />
+                        ) : (
+                          <Grid
+                            item
+                            xs={12}
+                            sm={12}
+                            md={12}
+                            style={{
+                              position: "relative",
+                              height: 300,
+                              display: "flex",
+                              flexDirection: "column",
+                              justifyContent: "center",
+                            }}
+                          >
+                            <Tooltip
+                              title={
+                                "Genera el recorte para recomendar a tus clientes las mejores secciones de tu arte."
+                              }
+                            >
+                              <img
+                                className={classes.img}
+                                alt="Uploaded"
+                                src={croppedArtTemp[index].thumb}
+                              />
+                            </Tooltip>
+                          </Grid>
+                        )}
+                        {croppedArt[index].cropped ? (
+                          <Grid
+                            item
+                            xs={12}
+                            sm={12}
+                            md={12}
+                            style={{
+                              position: "absolute",
+                              right: 5,
+                              bottom: 5,
+                            }}
+                          >
+                            <IconButton
+                              color="secondary"
+                              aria-label="add an alarm"
+                              style={{ padding: 0 }}
+                              onClick={() => {
+                                updateCrop(index);
+                              }}
+                            >
+                              <Typography>Recortar</Typography>
+                              <CropIcon />
+                            </IconButton>
+                          </Grid>
+                        ) : (
+                          <Grid
+                            item
+                            xs={12}
+                            sm={12}
+                            md={12}
+                            style={{
+                              position: "absolute",
+                              right: 5,
+                              bottom: 5,
+                              zIndex: 20,
+                            }}
+                          >
+                            <IconButton
+                              color="secondary"
+                              aria-label="add an alarm"
+                              style={{ padding: 0 }}
+                              onClick={() => {
+                                handleCrop(index);
+                              }}
+                            >
+                              <Typography>Listo</Typography>
+                              <CheckCircleOutlineIcon />
+                            </IconButton>
+                          </Grid>
+                        )}
+                      </Grid>
+                    )
+                )} */}
+                {/* <AspectRatioSelector
+                  art={imageLoader.loader}
+                  croppedArt={croppedArt}
+                  setCroppedArt={setCroppedArt}
+                /> */}
+
+                <Tooltip
+                  className={classes.buttonImgLoader}
+                  title="Eliminar imagen"
+                >
+                  <HighlightOffOutlinedIcon
+                    style={{ width: "2rem" }}
+                    onClick={cancelUploadImage}
+                  />
+                </Tooltip>
+              </Grid>
+            </Grid>
+          )}
           <TabPanel value={value} index={0}>
             <Box style={{ display: "flex", justifyContent: "center" }}>
               <FormControl>
@@ -444,10 +573,10 @@ function CarouselAdmin(props) {
                     Enviar
                   </Button>
                 </form>
-                <Typography style={{ color: "gray", marginBottom: 10 }}>
+                {/* <Typography style={{ color: "gray", marginBottom: 10 }}>
                   Te recomendamos usar imágenes de proporción 16:9, o al menos
                   4:3
-                </Typography>
+                </Typography> */}
               </FormControl>
 
               <Snackbar

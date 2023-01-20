@@ -65,12 +65,18 @@ export default function MainListItems(props) {
         <ListItem
           button
           selected={props.active === "payment-method"}
-          style={{ color: "gray" }}
+          // style={{ color: "gray" }}
         >
           <ListItemIcon>
             <PaymentIcon />
           </ListItemIcon>
-          <ListItemText primary="Métodos de pago" />
+          <ListItemText
+            primary="Métodos de pago"
+            onClick={(e) => {
+              handleClick("payment-method");
+            }}
+            selected={props.active === "payment-method"}
+          />
           {/* <ListItemText primary="Métodos de pago" onClick={(e)=>{handleClick('payment-method')}}  /> */}
         </ListItem>
         <ListItem

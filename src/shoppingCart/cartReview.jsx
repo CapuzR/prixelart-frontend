@@ -315,7 +315,9 @@ export default function CartReview(props) {
                       }}
                     >
                       <Typography variant="h6">
-                        {buy.product.name + " X " + buy.art.title}
+                        {buy.product.name +
+                          " X " +
+                          buy.art.title.substring(0, 27)}
                       </Typography>
                     </div>
                   )}

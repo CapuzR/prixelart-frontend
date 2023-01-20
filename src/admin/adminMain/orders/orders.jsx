@@ -551,7 +551,12 @@ export default function Orders(props) {
       <Grid container spacing={3} style={{ margin: isDesktop ? "12px" : "" }}>
         <Grid item xs={12} md={12} lg={12}>
           <Paper className={fixedHeightPaper}>
-            <div style={{ display: "flex", justifyContent: "space-between" }}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+              }}
+            >
               <Title>Órdenes</Title>
               <div>
                 <Fab

@@ -21,6 +21,8 @@ import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
 import Select from "@material-ui/core/Select";
 import validations from "./validations";
+import InfoIcon from "@material-ui/icons/Info";
+import Tooltip from "@material-ui/core/Tooltip";
 
 const useStyles = makeStyles((theme) => ({
   gridInput: {
@@ -198,14 +200,8 @@ function ConsumerForm(props) {
                 <TextField
                   variant="outlined"
                   id="standard-name"
-                  label="Cédula o RIF"
+                  label="CI o RIF"
                   fullWidth
-                  helperText={
-                    !validations.isAValidCi(props.values?.ci) &&
-                    props.values?.ci !== undefined
-                      ? "ej: V12345679 ó 12345678 \n" + "Formato no válido."
-                      : "ej: V12345679 ó 12345678"
-                  }
                   className={classes.textField}
                   value={props.values?.ci ? props.values.ci : ""}
                   onChange={(e) =>
@@ -217,13 +213,28 @@ function ConsumerForm(props) {
                     !validations.isAValidCi(props.values?.ci)
                   }
                   margin="normal"
+                  InputProps={{
+                    endAdornment: (
+                      <Tooltip
+                        title={
+                          !validations.isAValidCi(props.values?.ci) &&
+                          props.values?.ci !== undefined
+                            ? "ej: V12345679 ó 12345678 \n" +
+                              "Formato no válido."
+                            : "ej: V12345679 ó 12345678"
+                        }
+                      >
+                        <InfoIcon color="secondary" />
+                      </Tooltip>
+                    ),
+                  }}
                 />
               </Grid>
               <Grid
                 item
-                lg={4}
-                md={4}
-                sm={4}
+                lg={5}
+                md={5}
+                sm={5}
                 xs={12}
                 className={classes.gridInput}
               >
@@ -233,19 +244,6 @@ function ConsumerForm(props) {
                   label="Telefono"
                   fullWidth
                   className={classes.textField}
-                  helperText={
-                    !validations.isAValidPhoneNum(props.values?.phone) &&
-                    props.values?.phone !== undefined ? (
-                      <div>
-                        <div>
-                          ej: 584141234567 ó +584141234567 ó 04143201028
-                        </div>
-                        Formato no válido.
-                      </div>
-                    ) : (
-                      "ej: 584141234567 ó +584141234567 ó 04143201028"
-                    )
-                  }
                   value={props.values?.phone ? props.values.phone : ""}
                   onChange={(e) =>
                     props.setValues({ ...props.values, phone: e.target.value })
@@ -259,17 +257,36 @@ function ConsumerForm(props) {
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
-                        <LocalPhoneIcon />
+                        <LocalPhoneIcon color="secondary" />
                       </InputAdornment>
+                    ),
+                    endAdornment: (
+                      <Tooltip
+                        title={
+                          !validations.isAValidPhoneNum(props.values?.phone) &&
+                          props.values?.phone !== undefined ? (
+                            <div>
+                              <div>
+                                ej: 584141234567 ó +584141234567 ó 04143201028
+                              </div>
+                              Formato no válido.
+                            </div>
+                          ) : (
+                            "ej: 584141234567 ó +584141234567 ó 04143201028"
+                          )
+                        }
+                      >
+                        <InfoIcon color="secondary" />
+                      </Tooltip>
                     ),
                   }}
                 />
               </Grid>
               <Grid
                 item
-                lg={8}
-                md={8}
-                sm={8}
+                lg={7}
+                md={7}
+                sm={7}
                 xs={12}
                 className={classes.gridInput}
               >
@@ -297,7 +314,7 @@ function ConsumerForm(props) {
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
-                        <EmailIcon />
+                        <EmailIcon color="secondary" />
                       </InputAdornment>
                     ),
                   }}
@@ -332,7 +349,7 @@ function ConsumerForm(props) {
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
-                        <HomeIcon />
+                        <HomeIcon color="secondary" />
                       </InputAdornment>
                     ),
                   }}
@@ -453,7 +470,7 @@ function ConsumerForm(props) {
                   fullWidth
                   disabled={shippingDataCheck}
                   className={classes.textField}
-                  helperText="ej: 584141234567 o +584141234567 o 04143201028"
+                  // helperText="ej: 584141234567 o +584141234567 o 04143201028"
                   value={
                     shippingDataCheck
                       ? props.values?.phone
@@ -470,15 +487,34 @@ function ConsumerForm(props) {
                   required
                   margin="normal"
                   error={
-                    !validations.isAValidPhoneNum(
-                      props.values?.shippingPhone
-                    ) && props.values?.shippingPhone !== undefined
+                    props.values?.shippingPhone !== undefined &&
+                    props.values?.shippingPhone !== "" &&
+                    !validations.isAValidPhoneNum(props.values?.shippingPhone)
                   }
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
-                        <LocalPhoneIcon />
+                        <LocalPhoneIcon color="secondary" />
                       </InputAdornment>
+                    ),
+                    endAdornment: (
+                      <Tooltip
+                        title={
+                          !validations.isAValidPhoneNum(props.values?.phone) &&
+                          props.values?.phone !== undefined ? (
+                            <div>
+                              <div>
+                                ej: 584141234567 ó +584141234567 ó 04143201028
+                              </div>
+                              Formato no válido.
+                            </div>
+                          ) : (
+                            "ej: 584141234567 ó +584141234567 ó 04143201028"
+                          )
+                        }
+                      >
+                        <InfoIcon color="secondary" />
+                      </Tooltip>
                     ),
                   }}
                 />
@@ -519,7 +555,7 @@ function ConsumerForm(props) {
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
-                        <HomeIcon />
+                        <HomeIcon color="secondary" />
                       </InputAdornment>
                     ),
                   }}
@@ -769,12 +805,6 @@ function ConsumerForm(props) {
                   id="standard-name"
                   label="Cédula o RIF"
                   fullWidth
-                  helperText={
-                    !validations.isAValidCi(props.values?.ci) &&
-                    props.values.ci !== undefined
-                      ? "ej: V12345679 o 12345678 \n" + "Formato no válido."
-                      : "ej: V12345679 o 12345678"
-                  }
                   className={classes.textField}
                   disabled={billingDataCheck || billingShDataCheck}
                   value={
@@ -796,6 +826,21 @@ function ConsumerForm(props) {
                     !validations.isAValidCi(props.values?.ci)
                   }
                   margin="normal"
+                  InputProps={{
+                    endAdornment: (
+                      <Tooltip
+                        title={
+                          !validations.isAValidCi(props.values?.ci) &&
+                          props.values?.ci !== undefined
+                            ? "ej: V12345679 ó J000123456 \n" +
+                              "Formato no válido."
+                            : "ej: V12345679 ó J000123456"
+                        }
+                      >
+                        <InfoIcon color="secondary" />
+                      </Tooltip>
+                    ),
+                  }}
                 />
               </Grid>
               <Grid
@@ -813,7 +858,7 @@ function ConsumerForm(props) {
                   fullWidth
                   className={classes.textField}
                   disabled={billingDataCheck || billingShDataCheck}
-                  value={props.values.billingCompany || ""}
+                  value={props.values?.billingCompany || ""}
                   onChange={(e) =>
                     props.setValues({
                       ...props.values,
@@ -841,7 +886,6 @@ function ConsumerForm(props) {
                   fullWidth
                   disabled={billingDataCheck || billingShDataCheck}
                   className={classes.textField}
-                  helperText="ej: 584141234567 o +584141234567 o 04143201028"
                   value={
                     billingShDataCheck
                       ? props.values?.shippingPhone
@@ -869,8 +913,27 @@ function ConsumerForm(props) {
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
-                        <LocalPhoneIcon />
+                        <LocalPhoneIcon color="secondary" />
                       </InputAdornment>
+                    ),
+                    endAdornment: (
+                      <Tooltip
+                        title={
+                          !validations.isAValidPhoneNum(props.values?.phone) &&
+                          props.values?.phone !== undefined ? (
+                            <div>
+                              <div>
+                                ej: 584141234567 ó +584141234567 ó 04143201028
+                              </div>
+                              Formato no válido.
+                            </div>
+                          ) : (
+                            "ej: 584141234567 ó +584141234567 ó 04143201028"
+                          )
+                        }
+                      >
+                        <InfoIcon color="secondary" />
+                      </Tooltip>
                     ),
                   }}
                 />

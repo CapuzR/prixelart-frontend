@@ -23,6 +23,8 @@ import HomeIcon from "@material-ui/icons/Home";
 import EmailIcon from "@material-ui/icons/Email";
 import LocalPhoneIcon from "@material-ui/icons/LocalPhone";
 import { Typography } from "@material-ui/core";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 const useStyles = makeStyles((theme) => ({
   gridInput: {
@@ -37,9 +39,22 @@ const useStyles = makeStyles((theme) => ({
 export default function OrderForm(props) {
   const classes = useStyles();
   const theme = useTheme();
-
+  const [paymentMethods, setPaymentMethods] = useState();
   const isIphone = useMediaQuery(theme.breakpoints.down("xs"));
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+
+  useEffect(() => {
+    const base_url =
+      process.env.REACT_APP_BACKEND_URL + "/payment-method/read-all-v2";
+    axios
+      .get(base_url)
+      .then((response) => {
+        setPaymentMethods(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
 
   const getTotalPrice = (state) => {
     let prices = [];
@@ -117,7 +132,7 @@ export default function OrderForm(props) {
                                         <Grid item xs={12} md={8}>
                                           {item.product.name +
                                             " X " +
-                                            item.art.title}
+                                            item.art.title.substring(0, 27)}
                                         </Grid>
                                         <Grid
                                           item
@@ -211,7 +226,7 @@ export default function OrderForm(props) {
                               props.setOrderPaymentMethod(event.target.value)
                             }
                           >
-                            <MenuItem value={"Pago móvil"}>Pago Movil</MenuItem>
+                            {/* <MenuItem value={"Pago móvil"}>Pago Movil</MenuItem>
                             <MenuItem value={"Transferecian en Bolívares"}>
                               Transferencia en Bs
                             </MenuItem>
@@ -221,7 +236,11 @@ export default function OrderForm(props) {
                             <MenuItem value={"Zelle"}>Zelle</MenuItem>
                             <MenuItem value={"USD efectivo"}>
                               Efectivo en dólares
-                            </MenuItem>
+                            </MenuItem> */}
+                            {paymentMethods &&
+                              paymentMethods.map((m) => (
+                                <MenuItem value={m}>{m.name}</MenuItem>
+                              ))}
                           </Select>
                         </FormControl>
                       </Grid>
@@ -239,6 +258,23 @@ export default function OrderForm(props) {
                           flexDirection: "column",
                         }}
                       >
+                        {props.orderPaymentMethod && (
+                          <>
+                            <div
+                              style={{
+                                display: "flex",
+                                flexDirection: "column",
+                              }}
+                            >
+                              <p align="right">
+                                {props?.orderPaymentMethod.instructions}
+                                <br></br>
+                                <br></br>
+                                {props?.orderPaymentMethod.paymentData}
+                              </p>
+                            </div>
+                          </>
+                        )}
                         <strong>{`Subtotal: $${getTotalPrice(
                           props.buyState
                         ).toFixed(2)}`}</strong>

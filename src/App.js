@@ -298,6 +298,14 @@ function App() {
             setSelectedProductToAssociate={setSelectedProductToAssociate}
             selectedProductToAssociate={selectedProductToAssociate}
             AssociateProduct={AssociateProduct}
+            setBuyState={setBuyState}
+            deleteProductInItem={deleteProductInItem}
+            setSelectedArtToAssociate={setSelectedArtToAssociate}
+            changeQuantity={changeQuantity}
+            valuesConsumerForm={valuesConsumerForm}
+            setValuesConsumerForm={setValuesConsumerForm}
+            setOpen={setOpen}
+            setMessage={setMessage}
           />
         </Route>
         <Route component={Home} />

@@ -201,6 +201,7 @@ export default function Orders(props) {
   const [activeStep, setActiveStep] = React.useState(0);
   const [productList, setProductList] = useState([]);
   const [artList, setArtList] = useState([]);
+  const [paymentMethods, setPaymentMethods] = useState(undefined);
   const [orderPaymentMethod, setOrderPaymentMethod] = useState(undefined);
   const steps = [`Datos del comprador`, `Productos`, `Orden de compra`];
   const [imagesVariants, setImagesVariants] = useState([]);
@@ -219,9 +220,32 @@ export default function Orders(props) {
     "Devuelto",
     "Cambio",
   ];
-  const internalShippingList = ["Yalo", "DH", "CC", "No aplica"];
-  const domesticShippingList = ["Tealca", "Zoom", "MRW", "No aplica"];
-  const internationalShippingList = ["FedEx", "DHL", "MRW", "No aplica"];
+  const [shippingList, setShippingList] = useState();
+  useEffect(() => {
+    const base_url =
+      process.env.REACT_APP_BACKEND_URL + "/shipping-method/read-all-v2";
+    axios
+      .get(base_url)
+      .then((response) => {
+        setShippingList(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
+
+  useEffect(() => {
+    const base_url =
+      process.env.REACT_APP_BACKEND_URL + "/payment-method/read-all-v2";
+    axios
+      .get(base_url)
+      .then((response) => {
+        setPaymentMethods(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
 
   const readOrders = async () => {
     setLoading(true);
@@ -250,6 +274,21 @@ export default function Orders(props) {
     let iva = getTotalPrice(state) * 0.16;
     return iva;
   };
+
+  const getTotal = (x) => {
+    let n = [];
+    n.push(getTotalPrice(props.buyState));
+    n.push(getIvaCost(props.buyState));
+    {
+      props.values.shippingMethod && n.push(shippingCost);
+    }
+    let total = n.reduce(function (a, b) {
+      return a + b;
+    });
+    return total;
+  };
+
+  let shippingCost = Number(props.values?.shippingMethod?.price);
 
   const filterOrders = (filter) => {
     setLoading(true);
@@ -354,22 +393,35 @@ export default function Orders(props) {
     const base_url = process.env.REACT_APP_BACKEND_URL + "/order/create";
     let input = {
       orderId: nanoid(6),
-      firstname: consumer.data.newConsumer.firstname,
-      lastname: consumer.data.newConsumer.lastname,
-      ci: consumer.data.newConsumer.ci,
       requests: orderLines,
-      email: consumer.data.newConsumer.email,
-      phone: consumer.data.newConsumer.phone,
-      billingAddress: consumer.data.newConsumer.billingAddress,
-      shippingAddress: consumer.data.newConsumer.shippingAddress,
-      internalShippingMethod: props.values.shippingAgencyLocal,
-      domesticShippingMethod: props.values.shippingAgencyNational,
-      internationalShippingMethod: props.values.shippingAgencyInternational,
+      basicData: {
+        firstname: consumer.data.newConsumer.firstname,
+        lastname: consumer.data.newConsumer.lastname,
+        ci: consumer.data.newConsumer.ci,
+        email: consumer.data.newConsumer.email,
+        phone: consumer.data.newConsumer.phone,
+      },
+      shippingData: {
+        name: props.values?.shippingName,
+        lastname: props.values?.shippingLastName,
+        phone: props.values?.shippingPhone,
+        address: props.values?.shippingAddress,
+        shippingMethod: props.values?.shippingMethod,
+      },
+      billingData: {
+        name: props.values?.billingShName,
+        lastname: props.values?.billingShLastName,
+        ci: props.values?.billingCi,
+        company: props.values?.billingCompany,
+        phone: props.values?.billingPhone,
+        address: props.values?.billingAddress,
+        orderPaymentMethod: orderPaymentMethod.name,
+      },
       observations: props.values.observations,
       tax: getTotalPrice(props.buyState) * 0.16,
       subtotal: getTotalPrice(props.buyState),
-      total:
-        getTotalPrice(props.buyState) + getTotalPrice(props.buyState) * 0.16,
+      shippingCost: shippingCost,
+      total: getTotal(props.buyState),
       createdOn: new Date(),
       createdBy: consumer.data.newConsumer,
       orderType: "Particular",
@@ -387,7 +439,6 @@ export default function Orders(props) {
     readOrders();
     setLoading(false);
   };
-  console.log(modalContent);
 
   const getTotalPrice = (state) => {
     let prices = [];
@@ -807,7 +858,6 @@ export default function Orders(props) {
                 lg={6}
                 style={{ display: "flex", marginBottom: 20 }}
               >
-                {console.log(modalContent)}
                 <Grid
                   item
                   xs={12}
@@ -839,32 +889,30 @@ export default function Orders(props) {
                   style={{ marginBottom: 40, marginRight: 20 }}
                 >
                   <strong>Datos de envío</strong>
-                  {modalContent.shippingData.Name &&
-                    modalContent.shippingData.lastname && (
+                  {modalContent.shippingData?.name &&
+                    modalContent.shippingData?.lastname && (
                       <div>
                         {"Nombre: " +
-                          modalContent?.shippingData.name +
+                          modalContent?.shippingData?.name +
                           " " +
-                          modalContent?.shippingData.lastname}
+                          modalContent?.shippingData?.lastname}
                       </div>
                     )}
-                  {modalContent.shippingData.phone && (
-                    <div>{"Teléfono: " + modalContent?.shippingData.phone}</div>
-                  )}
-                  {(modalContent.shippingData.domesticShippingMethod ||
-                    modalContent.shippingData.internalShippingMethod ||
-                    modalContent.shippingData.internationalShippingMethod) && (
+                  {modalContent.shippingData?.phone && (
                     <div>
-                      {"Agencia de envío: " +
-                        modalContent?.shippingData.domesticShippingMethod ||
-                        modalContent?.shippingData.internalShippingMethod ||
-                        modalContent?.shippingData.internationalShippingMethod}
+                      {"Teléfono: " + modalContent?.shippingData?.phone}
                     </div>
                   )}
-                  {modalContent.shippingData.address && (
+                  {modalContent.shippingData?.shippingMethod && (
+                    <div>
+                      {"Método de envío: " +
+                        modalContent?.shippingData?.shippingMethod.name}
+                    </div>
+                  )}
+                  {modalContent.shippingData?.address && (
                     <div>
                       {"Dirección de envío: " +
-                        modalContent?.shippingData.address}
+                        modalContent?.shippingData?.address}
                     </div>
                   )}
                 </Grid>
@@ -908,6 +956,10 @@ export default function Orders(props) {
                   <strong>Datos de pago</strong>
                   <div>{"Subtotal: $" + modalContent?.subtotal.toFixed(2)}</div>
                   <div>{"IVA: $" + modalContent?.tax.toFixed(2)}</div>
+                  <div>
+                    {"Envío: $" +
+                      modalContent?.shippingData.shippingMethod.price}
+                  </div>
                   <div style={{ marginBottom: 10 }}>
                     {"Total: $" + modalContent?.total.toFixed(2)}
                   </div>
@@ -1345,9 +1397,9 @@ export default function Orders(props) {
                     </Grid>
                     <Grid
                       item
-                      lg={4}
-                      md={4}
-                      sm={4}
+                      lg={6}
+                      md={6}
+                      sm={12}
                       xs={12}
                       className={classes.gridInput}
                     >
@@ -1355,97 +1407,24 @@ export default function Orders(props) {
                         style={{ minWidth: "100%" }}
                         variant="outlined"
                       >
-                        <InputLabel>En Caracas</InputLabel>
+                        <InputLabel>Método de envío</InputLabel>
                         <Select
                           className={classes.textField}
-                          value={props.values?.shippingAgencyLocal || ""}
+                          value={props.values?.shippingMethod || ""}
                           onChange={(e) => {
                             props.setValues({
                               ...props.values,
-                              shippingAgencyLocal: e.target.value,
+                              shippingMethod: e.target.value,
                             });
                           }}
                         >
                           <MenuItem value="">
                             <em></em>
                           </MenuItem>
-                          {internalShippingList.map((n) => (
-                            <MenuItem key={n} value={n}>
-                              {n}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                      </FormControl>
-                    </Grid>
-                    <Grid
-                      item
-                      lg={4}
-                      md={4}
-                      sm={4}
-                      xs={12}
-                      className={classes.gridInput}
-                    >
-                      <FormControl
-                        style={{ minWidth: "100%" }}
-                        variant="outlined"
-                      >
-                        <InputLabel>En Venezuela</InputLabel>
-                        <Select
-                          className={classes.textField}
-                          value={props.values?.shippingAgencyNational || ""}
-                          onChange={(e) => {
-                            props.setValues({
-                              ...props.values,
-                              shippingAgencyNational: e.target.value,
-                            });
-                          }}
-                        >
-                          <MenuItem value="">
-                            <em></em>
-                          </MenuItem>
-                          {domesticShippingList.map((n) => (
-                            <MenuItem key={n} value={n}>
-                              {n}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                      </FormControl>
-                    </Grid>
-                    <Grid
-                      item
-                      lg={4}
-                      md={4}
-                      sm={4}
-                      xs={12}
-                      className={classes.gridInput}
-                    >
-                      <FormControl
-                        style={{ minWidth: "100%" }}
-                        variant="outlined"
-                      >
-                        <InputLabel required id="internationalShippingMethod">
-                          Internacional
-                        </InputLabel>
-                        <Select
-                          className={classes.textField}
-                          value={
-                            props.values?.shippingAgencyInternational || ""
-                          }
-                          onChange={(e) => {
-                            props.setValues({
-                              ...props.values,
-                              shippingAgencyInternational: e.target.value,
-                            });
-                          }}
-                        >
-                          <MenuItem value="">
-                            <em></em>
-                          </MenuItem>
-                          {internationalShippingList.map((n) => (
-                            <MenuItem key={n} value={n}>
-                              {n}
-                            </MenuItem>
-                          ))}
+                          {shippingList &&
+                            shippingList.map((n) => (
+                              <MenuItem value={n}>{n.name}</MenuItem>
+                            ))}
                         </Select>
                       </FormControl>
                     </Grid>
@@ -2240,24 +2219,15 @@ export default function Orders(props) {
                             </InputLabel>
                             <Select
                               variant="outlined"
-                              value={props.orderPaymentMethod}
+                              value={orderPaymentMethod}
                               onChange={(event) =>
                                 setOrderPaymentMethod(event.target.value)
                               }
                             >
-                              <MenuItem value={"Pago móvil"}>
-                                Pago Movil
-                              </MenuItem>
-                              <MenuItem value={"Transferecia en Bolívares"}>
-                                Transferencia en Bs
-                              </MenuItem>
-                              <MenuItem value={"Banco Panamá"}>
-                                Banco Panamá
-                              </MenuItem>
-                              <MenuItem value={"Zelle"}>Zelle</MenuItem>
-                              <MenuItem value={"USD efectivo"}>
-                                Efectivo en dólares
-                              </MenuItem>
+                              {paymentMethods &&
+                                paymentMethods.map((m) => (
+                                  <MenuItem value={m}>{m.name}</MenuItem>
+                                ))}
                             </Select>
                           </FormControl>
                         </Grid>
@@ -2285,10 +2255,12 @@ export default function Orders(props) {
                                   2
                                 )}`}
                               </strong>
-                              <strong>{`Total: $${
-                                getTotalPrice(props.buyState) +
-                                getIvaCost(props.buyState)
-                              }`}</strong>
+                              {props.values.shippingMethod && (
+                                <strong>{`Envío: $${shippingCost}`}</strong>
+                              )}
+                              <strong>{`Total: $${getTotal(
+                                props.buyState
+                              )}`}</strong>
                               <br />
                             </>
                           )}

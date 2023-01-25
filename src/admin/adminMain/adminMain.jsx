@@ -27,6 +27,7 @@ import Orders from "./orders/orders";
 import Preferences from "./preferences/Preferences";
 import Testimonials from "../TestimonialsCrud/Testimonials";
 import Prixers from "./prixers/prixers";
+import ShippingMethods from "./shippingMethodCrud/readShippingMethod";
 
 function Copyright() {
   return (
@@ -228,6 +229,8 @@ export default function AdminMain(props) {
                 <Consumers />
               ) : active === "payment-method" ? (
                 <PaymentMethods />
+              ) : active === "shipping-method" ? (
+                <ShippingMethods />
               ) : active === "order" ? (
                 <Orders
                   buyState={props.buyState}

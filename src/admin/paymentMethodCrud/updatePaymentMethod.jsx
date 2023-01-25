@@ -49,10 +49,9 @@ export default function UpdatePaymentMethod(props) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!active && !instructions && !name) {
+    if (!instructions || !name) {
       setErrorMessage("Por favor completa todos los campos requeridos.");
       setSnackBarError(true);
-      e.preventDefault();
     } else {
       setLoading(true);
       setButtonState(true);
@@ -67,14 +66,14 @@ export default function UpdatePaymentMethod(props) {
 
       const base_url =
         process.env.REACT_APP_BACKEND_URL + "/payment-method/update";
-      const response = await axios.post(base_url, data);
+      const response = await axios.put(base_url, data);
       if (response.data.success === false) {
         setLoading(false);
         setButtonState(false);
         setErrorMessage(response.data.message);
         setSnackBarError(true);
       } else {
-        setErrorMessage("Actualización de consumidor exitosa.");
+        setErrorMessage("Actualización del método de pago exitosa.");
         setSnackBarError(true);
         history.push("/admin/payment-method/read");
       }

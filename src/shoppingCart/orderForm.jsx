@@ -88,6 +88,21 @@ export default function OrderForm(props) {
     return iva;
   };
 
+  const getTotal = (x) => {
+    let n = [];
+    n.push(getTotalPrice(props.buyState));
+    n.push(getIvaCost(props.buyState));
+    {
+      props.valuesConsumer.shippingMethod && n.push(shippingCost);
+    }
+    let total = n.reduce(function (a, b) {
+      return a + b;
+    });
+    return total;
+  };
+
+  let shippingCost = Number(props.valuesConsumer.shippingMethod?.price);
+
   return (
     <>
       {/* <h2>Datos de la orden</h2> */}
@@ -215,28 +230,12 @@ export default function OrderForm(props) {
                             Método de pago
                           </InputLabel>
                           <Select
-                            input={
-                              <OutlinedInput
-                                name="age"
-                                id="outlined-age-simple"
-                              />
-                            }
+                            input={<OutlinedInput />}
                             value={props.orderPaymentMethod}
                             onChange={(event) =>
                               props.setOrderPaymentMethod(event.target.value)
                             }
                           >
-                            {/* <MenuItem value={"Pago móvil"}>Pago Movil</MenuItem>
-                            <MenuItem value={"Transferecian en Bolívares"}>
-                              Transferencia en Bs
-                            </MenuItem>
-                            <MenuItem value={"Banco Panamá"}>
-                              Banco Panamá
-                            </MenuItem>
-                            <MenuItem value={"Zelle"}>Zelle</MenuItem>
-                            <MenuItem value={"USD efectivo"}>
-                              Efectivo en dólares
-                            </MenuItem> */}
                             {paymentMethods &&
                               paymentMethods.map((m) => (
                                 <MenuItem value={m}>{m.name}</MenuItem>
@@ -268,9 +267,9 @@ export default function OrderForm(props) {
                             >
                               <p align="right">
                                 {props?.orderPaymentMethod.instructions}
+                                {/* <br></br>
                                 <br></br>
-                                <br></br>
-                                {props?.orderPaymentMethod.paymentData}
+                                {props?.orderPaymentMethod.paymentData} */}
                               </p>
                             </div>
                           </>
@@ -281,12 +280,17 @@ export default function OrderForm(props) {
                         <strong>
                           {`IVA: $${getIvaCost(props.buyState).toFixed(2)}`}
                         </strong>
+                        {props.valuesConsumer.shippingMethod && (
+                          <strong>{`Envío: $${shippingCost}`}</strong>
+                        )}
                         <strong>{`Total: $${
-                          getTotalPrice(props.buyState) +
-                          getIvaCost(props.buyState)
+                          // getTotalPrice(props.buyState) +
+                          // getIvaCost(props.buyState)
+                          getTotal(props.buyState)
                         }`}</strong>
                         <br />
                       </Grid>
+                      {console.log(props.valuesConsumer)}
                     </div>
                   </List>
                 </div>

@@ -149,6 +149,24 @@ export default function ShoppingPage(props) {
     return total;
   };
 
+  const getIvaCost = (state) => {
+    let iva = getTotalPrice(state) * 0.16;
+    return iva;
+  };
+
+  const getTotal = (x) => {
+    let n = [];
+    n.push(getTotalPrice(props.buyState));
+    n.push(getIvaCost(props.buyState));
+    {
+      props.valuesConsumerForm.shippingMethod && n.push(shippingCost);
+    }
+    let total = n.reduce(function (a, b) {
+      return a + b;
+    });
+    return total;
+  };
+
   // console.log(props.valuesConsumerForm?.email);
 
   const createOrder = async () => {
@@ -215,11 +233,7 @@ export default function ShoppingPage(props) {
           lastname: props.valuesConsumerForm?.shippingLastName,
           phone: props.valuesConsumerForm?.shippingPhone,
           address: props.valuesConsumerForm?.shippingAddress,
-          internalShippingMethod: props.valuesConsumerForm?.shippingAgencyLocal,
-          domesticShippingMethod:
-            props.valuesConsumerForm?.shippingAgencyNational,
-          internationalShippingMethod:
-            props.valuesConsumerForm?.shippingAgencyInternational,
+          shippingMethod: props.valuesConsumerForm?.shippingMethod,
         },
         billingData: {
           name: props.valuesConsumerForm?.billingShName,
@@ -228,12 +242,12 @@ export default function ShoppingPage(props) {
           company: props.valuesConsumerForm?.billingCompany,
           phone: props.valuesConsumerForm?.billingPhone,
           address: props.valuesConsumerForm?.billingAddress,
-          orderPaymentMethod: orderPaymentMethod,
+          orderPaymentMethod: orderPaymentMethod.name,
         },
         tax: getTotalPrice(props.buyState) * 0.16,
         subtotal: getTotalPrice(props.buyState),
-        total:
-          getTotalPrice(props.buyState) + getTotalPrice(props.buyState) * 0.16,
+        shippingCost: shippingCost,
+        total: getTotal(props.buyState),
         createdOn: new Date(),
         createdBy: consumer.data.newConsumer,
         orderType: "Particular",
@@ -253,7 +267,8 @@ export default function ShoppingPage(props) {
       props.setMessage("Por favor selecciona una forma de pago.");
     }
   };
-
+  let shippingCost = Number(props.valuesConsumerForm?.shippingMethod?.price);
+  console.log(props.valuesConsumerForm.shippingMethod.price);
   return (
     <>
       <Backdrop className={classes.backdrop} open={loading}>

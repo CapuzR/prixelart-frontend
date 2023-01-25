@@ -31,7 +31,7 @@ export default function ReadPaymentMethods(props) {
     const base_url =
       process.env.REACT_APP_BACKEND_URL + "/payment-method/read-all";
     axios
-      .post(base_url)
+      .get(base_url)
       .then((response) => {
         setRows(response.data);
       })
@@ -48,49 +48,47 @@ export default function ReadPaymentMethods(props) {
   return (
     <React.Fragment>
       <Title>Métodos de pago</Title>
-      {rows && (
-        <Table size="small">
-          <TableHead>
-            <TableRow>
-              <TableCell align="center"></TableCell>
-              <TableCell align="center">Activo</TableCell>
-              <TableCell align="center">Nombre</TableCell>
-              <TableCell align="center">Datos de pago</TableCell>
-              <TableCell align="center">Instrucciones</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {rows &&
-              rows.map((row) => (
-                <TableRow key={row._id}>
-                  <TableCell align="center">
-                    <Fab
-                      color="default"
-                      style={{ width: 35, height: 35 }}
-                      aria-label="edit"
-                      onClick={(e) => {
-                        handleActive(row, "update");
-                      }}
-                    >
-                      <EditIcon />
-                    </Fab>
-                  </TableCell>
-                  <TableCell align="center">
-                    <Checkbox
-                      disabled
-                      checked={row.active}
-                      color="primary"
-                      // inputProps={{ 'aria-label': 'secondary checkbox' }}
-                    />
-                  </TableCell>
-                  <TableCell align="center">{row.name}</TableCell>
-                  <TableCell align="center">{row.paymentData}</TableCell>
-                  <TableCell align="center">{row.instructions}</TableCell>
-                </TableRow>
-              ))}
-          </TableBody>
-        </Table>
-      )}
+      <Table size="small">
+        <TableHead>
+          <TableRow>
+            <TableCell align="center"></TableCell>
+            <TableCell align="center">Activo</TableCell>
+            <TableCell align="center">Nombre</TableCell>
+            <TableCell align="center">Datos de pago</TableCell>
+            <TableCell align="center">Instrucciones</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {rows &&
+            rows.map((row) => (
+              <TableRow key={row._id}>
+                <TableCell align="center">
+                  <Fab
+                    color="default"
+                    style={{ width: 35, height: 35 }}
+                    aria-label="edit"
+                    onClick={(e) => {
+                      handleActive(row, "update");
+                    }}
+                  >
+                    <EditIcon />
+                  </Fab>
+                </TableCell>
+                <TableCell align="center">
+                  <Checkbox
+                    disabled
+                    checked={row.active}
+                    color="primary"
+                    // inputProps={{ 'aria-label': 'secondary checkbox' }}
+                  />
+                </TableCell>
+                <TableCell align="center">{row.name}</TableCell>
+                <TableCell align="center">{row.paymentData}</TableCell>
+                <TableCell align="center">{row.instructions}</TableCell>
+              </TableRow>
+            ))}
+        </TableBody>
+      </Table>
     </React.Fragment>
   );
 }

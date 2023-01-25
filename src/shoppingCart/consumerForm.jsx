@@ -23,6 +23,8 @@ import Select from "@material-ui/core/Select";
 import validations from "./validations";
 import InfoIcon from "@material-ui/icons/Info";
 import Tooltip from "@material-ui/core/Tooltip";
+import { useEffect } from "react";
+import axios from "axios";
 
 const useStyles = makeStyles((theme) => ({
   gridInput: {
@@ -40,9 +42,20 @@ function ConsumerForm(props) {
   const [billingDataCheck, setBillingDataCheck] = useState(true);
   const [billingShDataCheck, setBillingShDataCheck] = useState(false);
   const [expanded, setExpanded] = useState(false);
-  const internalShippingList = ["Yalo", "DH", "CC", "No aplica"];
-  const domesticShippingList = ["Tealca", "Zoom", "MRW", "No aplica"];
-  const internationalShippingList = ["FedEx", "DHL", "MRW", "No aplica"];
+  const [shippingList, setShippingList] = useState();
+
+  useEffect(() => {
+    const base_url =
+      process.env.REACT_APP_BACKEND_URL + "/shipping-method/read-all-v2";
+    axios
+      .get(base_url)
+      .then((response) => {
+        setShippingList(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
 
   const handleAccordionExpansion = (panel) => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
@@ -563,96 +576,31 @@ function ConsumerForm(props) {
               </Grid>
               <Grid
                 item
-                lg={4}
-                md={4}
-                sm={4}
+                lg={6}
+                md={6}
+                sm={12}
                 xs={12}
                 className={classes.gridInput}
               >
                 <FormControl style={{ minWidth: "100%" }} variant="outlined">
-                  <InputLabel>En Caracas</InputLabel>
+                  <InputLabel>Método de envío</InputLabel>
                   <Select
                     className={classes.textField}
-                    value={props.values?.shippingAgencyLocal || ""}
+                    value={props.values?.shippingMethod || ""}
                     onChange={(e) => {
                       props.setValues({
                         ...props.values,
-                        shippingAgencyLocal: e.target.value,
+                        shippingMethod: e.target.value,
                       });
                     }}
                   >
                     <MenuItem value="">
                       <em></em>
                     </MenuItem>
-                    {internalShippingList.map((n) => (
-                      <MenuItem key={n} value={n}>
-                        {n}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Grid>
-              <Grid
-                item
-                lg={4}
-                md={4}
-                sm={4}
-                xs={12}
-                className={classes.gridInput}
-              >
-                <FormControl style={{ minWidth: "100%" }} variant="outlined">
-                  <InputLabel>En Venezuela</InputLabel>
-                  <Select
-                    className={classes.textField}
-                    value={props.values?.shippingAgencyNational || ""}
-                    onChange={(e) => {
-                      props.setValues({
-                        ...props.values,
-                        shippingAgencyNational: e.target.value,
-                      });
-                    }}
-                  >
-                    <MenuItem value="">
-                      <em></em>
-                    </MenuItem>
-                    {domesticShippingList.map((n) => (
-                      <MenuItem key={n} value={n}>
-                        {n}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Grid>
-              <Grid
-                item
-                lg={4}
-                md={4}
-                sm={4}
-                xs={12}
-                className={classes.gridInput}
-              >
-                <FormControl style={{ minWidth: "100%" }} variant="outlined">
-                  <InputLabel required id="internationalShippingMethod">
-                    Internacional
-                  </InputLabel>
-                  <Select
-                    className={classes.textField}
-                    value={props.values?.shippingAgencyInternational || ""}
-                    onChange={(e) => {
-                      props.setValues({
-                        ...props.values,
-                        shippingAgencyInternational: e.target.value,
-                      });
-                    }}
-                  >
-                    <MenuItem value="">
-                      <em></em>
-                    </MenuItem>
-                    {internationalShippingList.map((n) => (
-                      <MenuItem key={n} value={n}>
-                        {n}
-                      </MenuItem>
-                    ))}
+                    {shippingList &&
+                      shippingList.map((n) => (
+                        <MenuItem value={n}>{n.name}</MenuItem>
+                      ))}
                   </Select>
                 </FormControl>
               </Grid>

@@ -171,7 +171,7 @@ export default function UserData(props) {
         console.log(error);
       });
   }, [props.prixerUsername]);
-
+  console.log(instagram);
   const handleProfileDataEdit = async () => {
     if (prixerDataState === "edit") {
       setBackdrop(true);

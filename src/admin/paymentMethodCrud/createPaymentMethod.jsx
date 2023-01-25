@@ -63,7 +63,7 @@ export default function CreatePaymentMethod(props) {
     } else {
       setErrorMessage("Registro del método de pago exitoso.");
       setSnackBarError(true);
-      setActive("");
+      setActive(true);
       setName("");
       setInstructions("");
       setPaymentData("");
@@ -90,7 +90,6 @@ export default function CreatePaymentMethod(props) {
                     checked={active}
                     color="primary"
                     inputProps={{ "aria-label": "secondary checkbox" }}
-                    // onChange={setActive(!active)}
                     onChange={() => {
                       setActive(!active);
                     }}

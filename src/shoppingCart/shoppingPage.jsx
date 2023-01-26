@@ -215,7 +215,7 @@ export default function ShoppingPage(props) {
             props.valuesConsumerForm?.address,
         }
       );
-      // window.open(utils.generateWaBuyMessage(orderLines), "_blank");
+      window.open(utils.generateWaBuyMessage(orderLines), "_blank");
 
       const base_url = process.env.REACT_APP_BACKEND_URL + "/order/create";
       let input = {

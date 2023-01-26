@@ -28,7 +28,13 @@ function isAValidCi(ci) {
   return re.test(String(ci));
 }
 
+function isAValidUsername(username) {
+  const re = /^[a-zA-Z-0-9]{4,15}$/;
+  return re.test(String(username));
+}
+
 export default {
+  isAValidUsername,
   isAValidEmail,
   isAValidPassword,
   isAValidName,

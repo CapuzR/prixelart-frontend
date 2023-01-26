@@ -5,7 +5,7 @@ import { useState } from "react";
 import axios from "axios";
 import { useHistory } from "react-router-dom";
 
-import validations from "../utils/validations";
+import validations from "../shoppingCart/validations";
 import Copyright from "../sharedComponents/Copyright/copyright";
 
 //material-ui

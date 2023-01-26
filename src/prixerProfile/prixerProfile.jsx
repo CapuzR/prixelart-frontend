@@ -67,9 +67,8 @@ const useStyles = makeStyles((theme) => ({
 export default function PrixerProfile(props) {
   const classes = useStyles();
   const [openArtFormDialog, setOpenArtFormDialog] = useState(false);
-  const prixerUsername =
-    // props.match.params.username.toLowerCase() ||
-    "frandemiranda";
+  const prixerUsername = props.match.params.username.toLowerCase();
+  // "frandemiranda";
   const [termsAgreeVar, setTermsAgreeVar] = useState(true);
   const [value, setValue] = useState("");
   const [openShoppingCart, setOpenShoppingCart] = useState(false);

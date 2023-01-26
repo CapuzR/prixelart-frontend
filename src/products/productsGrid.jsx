@@ -88,10 +88,6 @@ export default function ProductGrid(props) {
   };
 
   useEffect(() => {
-    console.log(tiles[2]);
-  }, [tiles]);
-
-  useEffect(() => {
     const base_url = process.env.REACT_APP_BACKEND_URL + "/product/read-all";
     axios.get(base_url).then(async (response) => {
       let productsAttTemp1 = response.data.products;

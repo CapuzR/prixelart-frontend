@@ -544,7 +544,7 @@ export default function Home(props) {
           margin: isDesktop ? "auto" : 0,
         }}
       >
-        {props.buyState.length > 0 ? (
+        {props.buyState?.length > 0 ? (
           <div
             style={{
               marginLeft: 15,
@@ -583,7 +583,7 @@ export default function Home(props) {
           >
             Cerrar
           </Button>
-          {props.buyState.length > 0 && (
+          {props.buyState?.length > 0 && (
             <Button
               onClick={() => {
                 history.push({ pathname: "/shopping" });
@@ -678,7 +678,7 @@ export default function Home(props) {
         <DialogContent>
           <DialogContentText id="alert-dialog-slide-description">
             {!props.selectedProductToAssociate?.previous &&
-              props.buyState.length > 0 &&
+              props.buyState?.length > 0 &&
               props.buyState.find((buy) => buy.product !== undefined) && (
                 <strong>
                   Puedes asociar el arte a un producto de tu carrito de compras
@@ -688,7 +688,7 @@ export default function Home(props) {
             <div style={{ display: "flex" }}>
               {props.selectedProductToAssociate?.previous ? (
                 "¿Deseas asociar este producto al item seleccionado previamente en el carrito?"
-              ) : props.buyState.length > 0 &&
+              ) : props.buyState?.length > 0 &&
                 props.buyState.find((buy) => buy.product !== undefined) ? (
                 props.buyState.map((buy, index) => {
                   return (
@@ -760,7 +760,7 @@ export default function Home(props) {
           >
             {props.selectedProductToAssociate?.previous ? "No" : "Cerrar"}
           </Button>
-          {props.buyState.length > 0 &&
+          {props.buyState?.length > 0 &&
             props.buyState.find((buy) => buy.product !== undefined) && (
               <Button
                 disabled={!props.selectedProductToAssociate}

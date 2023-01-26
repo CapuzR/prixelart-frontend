@@ -268,7 +268,7 @@ export default function ShoppingPage(props) {
     }
   };
   let shippingCost = Number(props.valuesConsumerForm?.shippingMethod?.price);
-  console.log(props.valuesConsumerForm.shippingMethod.price);
+
   return (
     <>
       <Backdrop className={classes.backdrop} open={loading}>

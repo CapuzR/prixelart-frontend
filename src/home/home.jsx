@@ -488,6 +488,8 @@ export default function Home(props) {
                   addItemToBuyState={props.addItemToBuyState}
                   setIsOpenAssociateProduct={props.setIsOpenAssociateProduct}
                   setSelectedArt={setSelectedArt}
+                  setPrixer={props.setPrixer}
+                  setFullArt={props.setFullArt}
                 />
               )
               // </Suspense>

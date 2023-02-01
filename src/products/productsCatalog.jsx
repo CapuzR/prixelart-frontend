@@ -16,7 +16,12 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogActions from "@material-ui/core/DialogActions";
 import Button from "@material-ui/core/Button";
 import Img from "react-cool-img";
+import Typography from "@material-ui/core/Typography";
+
 import { useHistory } from "react-router-dom";
+import useMediaQuery from "@material-ui/core/useMediaQuery";
+import { useTheme } from "@material-ui/core/styles";
+import CartReview from "../shoppingCart/cartReview";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -65,11 +70,19 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function ProductsCatalog(props) {
+  const theme = useTheme();
+
   const [openArtFormDialog, setOpenArtFormDialog] = useState(false);
+  const [openShoppingCart, setOpenShoppingCart] = useState(false);
+  const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
+  const isDeskTop = useMediaQuery(theme.breakpoints.up("sm"));
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
   const [selectedProduct, setSelectedProduct] = useState(undefined);
   const prixerUsername = "all";
   const classes = useStyles();
   const history = useHistory();
+
   return (
     <>
       <AppBar prixerUsername={prixerUsername} />
@@ -92,12 +105,12 @@ export default function ProductsCatalog(props) {
             setOpenArtFormDialog={setOpenArtFormDialog}
           />
         )}
-        {JSON.parse(localStorage.getItem("token")) &&
-          JSON.parse(localStorage.getItem("token")).username && (
-            <Grid className={classes.float}>
-              <FloatingAddButton setOpenArtFormDialog={setOpenArtFormDialog} />
-            </Grid>
-          )}
+        <Grid className={classes.float}>
+          <FloatingAddButton
+            setOpenArtFormDialog={setOpenArtFormDialog}
+            setOpenShoppingCart={setOpenShoppingCart}
+          />
+        </Grid>
         <Dialog
           open={props.isOpenAssociateArt}
           keepMounted
@@ -224,6 +237,65 @@ export default function ProductsCatalog(props) {
               </Button>
             )}
           </DialogActions>
+        </Dialog>
+        <Dialog
+          maxWidth={"lg"}
+          open={openShoppingCart}
+          style={{
+            width: isDeskTop ? 850 : "100%",
+            margin: isDesktop ? "auto" : 0,
+          }}
+        >
+          {props.buyState?.length > 0 ? (
+            <div
+              style={{
+                marginLeft: 15,
+                marginRight: 15,
+                marginTop: -60,
+              }}
+            >
+              <CartReview
+                buyState={props.buyState}
+                changeQuantity={props.changeQuantity}
+                deleteItemInBuyState={props.deleteItemInBuyState}
+                deleteProductInItem={props.deleteProductInItem}
+                setSelectedArtToAssociate={props.setSelectedArtToAssociate}
+              />
+            </div>
+          ) : (
+            <div style={{ margin: "90px 10px 40px 10px" }}>
+              <Typography variant={"h6"} align={"Center"} justify={"center"}>
+                Actualmente no tienes ningun producto dentro del carrito de
+                compra.
+              </Typography>
+            </div>
+          )}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-around",
+              marginBottom: 20,
+            }}
+          >
+            <Button
+              onClick={() => {
+                setOpenShoppingCart(false);
+              }}
+              color="primary"
+            >
+              Cerrar
+            </Button>
+            {props.buyState?.length > 0 && (
+              <Button
+                onClick={() => {
+                  history.push({ pathname: "/shopping" });
+                }}
+                color="primary"
+              >
+                Comprar
+              </Button>
+            )}
+          </div>
         </Dialog>
       </Container>
     </>

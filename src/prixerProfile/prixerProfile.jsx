@@ -67,15 +67,18 @@ const useStyles = makeStyles((theme) => ({
 export default function PrixerProfile(props) {
   const classes = useStyles();
   const [openArtFormDialog, setOpenArtFormDialog] = useState(false);
-  const prixerUsername = props.match.params.username.toLowerCase();
-  // "frandemiranda";
+  const prixerUsername = new URLSearchParams(window.location)
+    .get("pathname")
+    .replace(/[/]/gi, "");
+  // let prixer = globalParams.get("pathname");
+  // const [prixer, setPrixer] = useState(globalParams.values("username") || null);
+  // const prixerUsername = props.match.params.username.toLowerCase();
   const [termsAgreeVar, setTermsAgreeVar] = useState(true);
   const [value, setValue] = useState("");
   const [openShoppingCart, setOpenShoppingCart] = useState(false);
   const history = useHistory();
   const theme = useTheme();
   const [selectedArt, setSelectedArt] = useState(undefined);
-
   const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
   const isDeskTop = useMediaQuery(theme.breakpoints.up("sm"));
 
@@ -130,6 +133,8 @@ export default function PrixerProfile(props) {
       });
   };
 
+  // console.log(props);
+
   return (
     <Container component="main" maxWidth="xl" className={classes.paper}>
       <CssBaseline />
@@ -144,6 +149,8 @@ export default function PrixerProfile(props) {
         addItemToBuyState={props.addItemToBuyState}
         setIsOpenAssociateProduct={props.setIsOpenAssociateProduct}
         setSelectedArt={setSelectedArt}
+        setPrixer={props.setPrixer}
+        setFullArt={props.setFullArt}
       />
       {openArtFormDialog && (
         <ArtUploader
@@ -151,12 +158,14 @@ export default function PrixerProfile(props) {
           setOpenArtFormDialog={setOpenArtFormDialog}
         />
       )}
-      {JSON.parse(localStorage.getItem("token")) &&
-        JSON.parse(localStorage.getItem("token")).username && (
-          <Grid className={classes.float}>
-            <FloatingAddButton setOpenArtFormDialog={setOpenArtFormDialog} />
-          </Grid>
-        )}
+      <Grid className={classes.float}>
+        <FloatingAddButton
+          setOpenArtFormDialog={setOpenArtFormDialog}
+          setOpenShoppingCart={setOpenShoppingCart}
+        />
+      </Grid>
+
+      {/* Terms & Co */}
       <Modal
         xl={800}
         lg={800}
@@ -211,6 +220,7 @@ export default function PrixerProfile(props) {
         </div>
       </Modal>
 
+      {/* Associate Item */}
       <Dialog
         open={props.isOpenAssociateProduct}
         keepMounted
@@ -345,6 +355,8 @@ export default function PrixerProfile(props) {
         </DialogActions>
       </Dialog>
 
+      {/* Shopping Cart
+       */}
       <Dialog
         maxWidth={"lg"}
         open={openShoppingCart}

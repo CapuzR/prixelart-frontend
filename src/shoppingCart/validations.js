@@ -19,7 +19,7 @@ function isAValidPhoneNum(phoneNumber) {
 }
 
 function isAValidName(name) {
-  const re = /^[A-zÀ-ú\s]*$/;
+  const re = /^[A-zÀ-ú\s]{2,15}$/;
   return re.test(String(name));
 }
 
@@ -29,7 +29,7 @@ function isAValidCi(ci) {
 }
 
 function isAValidUsername(username) {
-  const re = /^[a-zA-Z-0-9]{4,15}$/;
+  const re = /^[a-z-0-9]{3,15}$/;
   return re.test(String(username));
 }
 

@@ -18,12 +18,16 @@ import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import FormControl from "@material-ui/core/FormControl";
 import Snackbar from "@material-ui/core/Snackbar";
+import { Backdrop } from "@material-ui/core";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 import axios from "axios";
 // import CircularProgress from '@material-ui/core/CircularProgress';
 // import Backdrop from '@material-ui/core/Backdrop';
 import Checkbox from "@material-ui/core/Checkbox";
 import EditIcon from "@material-ui/icons/Edit";
+import DeleteIcon from "@material-ui/icons/Delete";
+
 import Fab from "@material-ui/core/Fab";
 // import Button from '@material-ui/core/Button';
 
@@ -164,8 +168,27 @@ export default function ReadShippingMethod(props) {
       }
     }
   };
+  const deleteMethod = async (id) => {
+    setLoading(true);
+
+    const URI =
+      process.env.REACT_APP_BACKEND_URL + "/shipping-method/delete/" + id;
+    await axios.delete(URI);
+    setErrorMessage("Método de envío eliminado exitosamente.");
+    setSnackBarError(true);
+    readMethods();
+    setLoading(false);
+  };
+
   return (
     <React.Fragment>
+      <Backdrop
+        className={classes.backdrop}
+        open={loading}
+        transitionDuration={1000}
+      >
+        <CircularProgress />
+      </Backdrop>
       <div style={{ position: "relative" }}>
         <div style={{ position: "absolute", right: 10, marginTop: 15 }}>
           <Fab
@@ -198,20 +221,25 @@ export default function ReadShippingMethod(props) {
                   <Table size="small">
                     <TableHead>
                       <TableRow>
-                        <TableCell align="center"></TableCell>
+                        <TableCell />
                         <TableCell align="center">Activo</TableCell>
                         <TableCell align="center">Nombre</TableCell>
                         <TableCell align="center">Costo</TableCell>
+                        <TableCell />
                       </TableRow>
                     </TableHead>
                     <TableBody>
                       {rows &&
                         rows.map((row) => (
                           <TableRow key={row._id}>
-                            <TableCell align="center">
+                            <TableCell>
                               <Fab
                                 color="default"
-                                style={{ width: 35, height: 35 }}
+                                style={{
+                                  width: 35,
+                                  height: 35,
+                                  marginRight: 100,
+                                }}
                                 aria-label="edit"
                                 onClick={(e) => {
                                   handleActive(row, "update");
@@ -220,16 +248,32 @@ export default function ReadShippingMethod(props) {
                                 <EditIcon />
                               </Fab>
                             </TableCell>
-                            <TableCell align="center">
+                            <TableCell>
                               <Checkbox
                                 disabled
                                 checked={row.active}
                                 color="primary"
-                                // inputProps={{ 'aria-label': 'secondary checkbox' }}
                               />
                             </TableCell>
                             <TableCell align="center">{row.name}</TableCell>
                             <TableCell align="center">${row.price}</TableCell>
+                            <TableCell>
+                              <Fab
+                                color="default"
+                                style={{
+                                  width: 35,
+                                  height: 35,
+                                  marginLeft: 100,
+                                }}
+                                aria-label="edit"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  deleteMethod(row._id);
+                                }}
+                              >
+                                <DeleteIcon />
+                              </Fab>
+                            </TableCell>
                           </TableRow>
                         ))}
                     </TableBody>

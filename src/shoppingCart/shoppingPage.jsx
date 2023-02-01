@@ -167,8 +167,6 @@ export default function ShoppingPage(props) {
     return total;
   };
 
-  // console.log(props.valuesConsumerForm?.email);
-
   const createOrder = async () => {
     if (orderPaymentMethod) {
       setLoading(true);
@@ -215,12 +213,14 @@ export default function ShoppingPage(props) {
             props.valuesConsumerForm?.address,
         }
       );
-      window.open(utils.generateWaBuyMessage(orderLines), "_blank");
+      // window.open(utils.generateWaBuyMessage(orderLines), "_blank");
 
       const base_url = process.env.REACT_APP_BACKEND_URL + "/order/create";
-      let input = {
+      const base_url2 = process.env.REACT_APP_BACKEND_URL + "/order/sendEmail";
+
+      const input = {
         orderId: nanoid(6),
-        requests: orderLines,
+        // requests: orderLines,
         basicData: {
           firstname: consumer.data.newConsumer.firstname,
           lastname: consumer.data.newConsumer.lastname,
@@ -254,13 +254,30 @@ export default function ShoppingPage(props) {
         // consumerId: consumer.data.newConsumer._id,
         status: "Procesando",
       };
-      const order = await axios.post(base_url, input).then(() => {
-        console.log("Orden generada correctamente. Por favor, revisa tu email");
-      });
-      history.push({ pathname: "/" });
-      props.setValuesConsumerForm(undefined);
-      localStorage.removeItem("buyState");
-      props.setBuyState([]);
+      // const data = {
+      //   email: consumer.data.newConsumer.email,
+      // };
+
+      // const order = await axios.post(base_url, input).then(async (response) => {
+      //   console.log("Orden generada correctamente. Por favor, revisa tu email");
+      // });
+
+      await axios
+        .post(base_url2, input)
+        .then(async (response) => {
+          if (!response.data.success) {
+            console.log(response.data.info);
+          } else {
+            console.log(response.data);
+          }
+        })
+        .catch((error) => {
+          console.log(error.response);
+        });
+      // history.push({ pathname: "/" });
+      // props.setValuesConsumerForm(undefined);
+      // localStorage.removeItem("buyState");
+      // props.setBuyState([]);
       setLoading(false);
     } else {
       props.setOpen(true);

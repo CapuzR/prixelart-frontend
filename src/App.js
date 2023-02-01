@@ -33,7 +33,8 @@ function App() {
   const [selectedProductToAssociate, setSelectedProductToAssociate] =
     useState(undefined);
   const [valuesConsumerForm, setValuesConsumerForm] = useState("");
-
+  const [prixer, setPrixer] = useState(null);
+  const [fullArt, setFullArt] = useState(null);
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("");
 
@@ -243,6 +244,7 @@ function App() {
             setSelectedProductToAssociate={setSelectedProductToAssociate}
             selectedProductToAssociate={selectedProductToAssociate}
             AssociateProduct={AssociateProduct}
+            setPrixer={setPrixer}
           />
         </Route>
 
@@ -279,12 +281,52 @@ function App() {
 
         <Route exact path="/recuperar/:token" component={ResetPassword} />
 
-        <Route exact path="/:username/art/:artId" component={FullscreenPhoto} />
+        <Route
+          exact
+          path="/prixer=:username/art=:artId"
+          component={FullscreenPhoto}
+        >
+          <FullscreenPhoto
+            buyState={buyState}
+            deleteItemInBuyState={deleteItemInBuyState}
+            addItemToBuyState={addItemToBuyState}
+            prixer={prixer}
+            fullArt={fullArt}
+            isOpenAssociateProduct={isOpenAssociateProduct}
+            setIsOpenAssociateProduct={setIsOpenAssociateProduct}
+            setSelectedProductToAssociate={setSelectedProductToAssociate}
+            selectedProductToAssociate={selectedProductToAssociate}
+            AssociateProduct={AssociateProduct}
+            setBuyState={setBuyState}
+            deleteProductInItem={deleteProductInItem}
+            setSelectedArtToAssociate={setSelectedArtToAssociate}
+            changeQuantity={changeQuantity}
+            setOpen={setOpen}
+            setMessage={setMessage}
+          />
+        </Route>
 
-        <Route exact path="/:username" component={PrixerProfile} />
+        {/* <Route exact path="/:username" component={PrixerProfile} /> */}
 
-        <Route path="/prixer-profile">
-          <PrixerProfile />
+        <Route path="/:username">
+          <PrixerProfile
+            buyState={buyState}
+            deleteItemInBuyState={deleteItemInBuyState}
+            addItemToBuyState={addItemToBuyState}
+            isOpenAssociateProduct={isOpenAssociateProduct}
+            setIsOpenAssociateProduct={setIsOpenAssociateProduct}
+            setSelectedProductToAssociate={setSelectedProductToAssociate}
+            selectedProductToAssociate={selectedProductToAssociate}
+            AssociateProduct={AssociateProduct}
+            setBuyState={setBuyState}
+            deleteProductInItem={deleteProductInItem}
+            setSelectedArtToAssociate={setSelectedArtToAssociate}
+            changeQuantity={changeQuantity}
+            setOpen={setOpen}
+            setMessage={setMessage}
+            setPrixer={setPrixer}
+            setFullArt={setFullArt}
+          />
         </Route>
 
         <Route path="/">
@@ -306,6 +348,8 @@ function App() {
             setValuesConsumerForm={setValuesConsumerForm}
             setOpen={setOpen}
             setMessage={setMessage}
+            setPrixer={setPrixer}
+            setFullArt={setFullArt}
           />
         </Route>
         <Route component={Home} />

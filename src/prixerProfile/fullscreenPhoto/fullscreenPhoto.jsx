@@ -34,6 +34,9 @@ import Chip from "@material-ui/core/Chip";
 import Modal from "@material-ui/core/Modal";
 import MDEditor from "@uiw/react-md-editor";
 import AddShoppingCartIcon from "@material-ui/icons/AddShoppingCart";
+import CartReview from "../../shoppingCart/cartReview";
+import useMediaQuery from "@material-ui/core/useMediaQuery";
+import { useTheme } from "@material-ui/core/styles";
 
 const IOSSwitch = withStyles((theme) => ({
   root: {
@@ -131,6 +134,8 @@ const photoIsos = ["100", "200", "400"];
 export default function FullscreenPhoto(props) {
   const classes = useStyles();
   const history = useHistory();
+  const theme = useTheme();
+
   const [ready, setReady] = useState(false);
   const [tiles, setTiles] = useState([]);
   const [updatedTile, setUpdatedTile] = useState([]);
@@ -148,6 +153,11 @@ export default function FullscreenPhoto(props) {
   const [points, setPoints] = useState(50);
   const [termsAgreeVar, setTermsAgreeVar] = useState(true);
   const [value, setValue] = useState("");
+  const [openShoppingCart, setOpenShoppingCart] = useState(false);
+  const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
+  const isDeskTop = useMediaQuery(theme.breakpoints.up("sm"));
+
+  // const [isOpenAssociateProduct, setIsOpenAssociateProduct] = useState(false);
 
   const propsRank = {
     min: 0,
@@ -236,13 +246,11 @@ export default function FullscreenPhoto(props) {
     setHiddenArt(undefined);
   };
   function tagsEdit(tempTiles, tile, e, tags) {
-    console.log(tempTiles);
     return tempTiles.map((item) => {
       const result = tags.trim().split(/\s+/);
       if (item.artId === tile.artId) {
         item.tags = tags;
       }
-      console.log(result);
       return item;
     });
   }
@@ -326,15 +334,6 @@ export default function FullscreenPhoto(props) {
     history.push({ pathname: "/" + prixerUsername });
   };
 
-  // const copyCodeToClipboard = (e, tile) => {
-  //   const el = document.createElement('textarea');
-  //   el.value = utils.generateArtMessage(tile, 'copy');
-  //   document.body.appendChild(el);
-  //   el.select();
-  //   document.execCommand('copy');
-  //   document.body.removeChild(el);
-  // }
-
   const deleteArt = async () => {
     const base_url =
       process.env.REACT_APP_BACKEND_URL + "/art/delete/" + selectedArt;
@@ -384,24 +383,20 @@ export default function FullscreenPhoto(props) {
     readArt();
   };
 
-  // const getChecked = () => {
-  //   setChecked((check) => !check);
-  // };
-
   const readArt = async () => {
     setLoading(true);
     if (tiles) {
       const base_url =
         process.env.REACT_APP_BACKEND_URL + "/art/read-by-prixer";
       const data = {
-        username: props.match.params.username,
+        username: props.prixer,
       };
       await axios.post(base_url, data).then((response) => {
         if (tiles.length !== response.data.arts.length) {
           setTiles(response.data.arts);
           setReady(true);
-          if (document.getElementById(props.match.params.artId)) {
-            document.getElementById(props.match.params.artId).scrollIntoView({
+          if (document.getElementById(props.fullArt.artId)) {
+            document.getElementById(props.fullArt.artId).scrollIntoView({
               behavior: "smooth",
               block: "center",
             });
@@ -448,7 +443,6 @@ export default function FullscreenPhoto(props) {
           }
         })
         .catch((error) => {
-          // console.log(error);
           setSelectedArt(undefined);
         });
     }
@@ -467,15 +461,12 @@ export default function FullscreenPhoto(props) {
         console.log(error);
       });
   };
+
   const handleSubmit = async (e, Id) => {
     e.preventDefault();
     const formData = new FormData();
     const termsAgree = true;
     formData.append("termsAgree", termsAgree);
-    // formData.append(
-    //   "username",
-    //   JSON.parse(localStorage.getItem("token")).username
-    // );
     const base_url =
       process.env.REACT_APP_BACKEND_URL + "/prixer/update-terms/" + Id;
     const response = await axios
@@ -1552,14 +1543,12 @@ export default function FullscreenPhoto(props) {
               setOpenArtFormDialog={setOpenArtFormDialog}
             />
           )}
-          {JSON.parse(localStorage.getItem("token")) &&
-            JSON.parse(localStorage.getItem("token")).username && (
-              <Grid className={classes.float}>
-                <FloatingAddButton
-                  setOpenArtFormDialog={setOpenArtFormDialog}
-                />
-              </Grid>
-            )}
+          <Grid className={classes.float}>
+            <FloatingAddButton
+              setOpenArtFormDialog={setOpenArtFormDialog}
+              setOpenShoppingCart={setOpenShoppingCart}
+            />
+          </Grid>
           <Snackbar
             open={snackBar}
             autoHideDuration={2000}
@@ -1755,6 +1744,65 @@ export default function FullscreenPhoto(props) {
               </Button>
             )}
           </DialogActions>
+        </Dialog>
+        <Dialog
+          maxWidth={"lg"}
+          open={openShoppingCart}
+          style={{
+            width: isDeskTop ? 850 : "100%",
+            margin: isDesktop ? "auto" : 0,
+          }}
+        >
+          {props.buyState?.length > 0 ? (
+            <div
+              style={{
+                marginLeft: 15,
+                marginRight: 15,
+                marginTop: -60,
+              }}
+            >
+              <CartReview
+                buyState={props.buyState}
+                changeQuantity={props.changeQuantity}
+                deleteItemInBuyState={props.deleteItemInBuyState}
+                deleteProductInItem={props.deleteProductInItem}
+                setSelectedArtToAssociate={props.setSelectedArtToAssociate}
+              />
+            </div>
+          ) : (
+            <div style={{ margin: "90px 10px 40px 10px" }}>
+              <Typography variant={"h6"} align={"Center"} justify={"center"}>
+                Actualmente no tienes ningun producto dentro del carrito de
+                compra.
+              </Typography>
+            </div>
+          )}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-around",
+              marginBottom: 20,
+            }}
+          >
+            <Button
+              onClick={() => {
+                setOpenShoppingCart(false);
+              }}
+              color="primary"
+            >
+              Cerrar
+            </Button>
+            {props.buyState?.length > 0 && (
+              <Button
+                onClick={() => {
+                  history.push({ pathname: "/shopping" });
+                }}
+                color="primary"
+              >
+                Comprar
+              </Button>
+            )}
+          </div>
         </Dialog>
       </Container>
     </>

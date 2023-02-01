@@ -26,6 +26,7 @@ import IconButton from "@material-ui/core/IconButton";
 import Tooltip from "@material-ui/core/Tooltip";
 
 import AddShoppingCartIcon from "@material-ui/icons/AddShoppingCart";
+import FullscreenPhoto from "../fullscreenPhoto/fullscreenPhoto";
 const IOSSwitch = withStyles((theme) => ({
   root: {
     width: 42,
@@ -136,6 +137,9 @@ export default function Grid(props) {
   const [selectedArt, setSelectedArt] = useState(undefined);
   const [open, setOpen] = useState(false);
   const [openV, setOpenV] = useState(false);
+  const [openFullArt, setOpenFullArt] = useState(false);
+  const [fullArt, setFullArt] = useState(null);
+  const [fullPrixer, setFullPrixer] = useState(null);
   const [disabledReason, setDisabledReason] = useState("");
   const [visible, setVisible] = useState(true);
   const [visibles, setVisibles] = useState([]);
@@ -176,6 +180,7 @@ export default function Grid(props) {
       setDisabledReason("");
     }
   };
+  // console.log(globalParams);
 
   useEffect(() => {
     if (props.prixerUsername || globalParams.get("prixer")) {
@@ -224,7 +229,7 @@ export default function Grid(props) {
         const base_url =
           process.env.REACT_APP_BACKEND_URL + "/art/read-by-prixer";
         const body = {
-          username: props.prixerUsername || globalParams.get("prixer"),
+          username: props.prixerUsername,
         };
         axios.post(base_url, body).then((response) => {
           setTiles(utils.shuffle(response.data.arts));
@@ -272,9 +277,13 @@ export default function Grid(props) {
   }, [searchValue, categoryValue]);
 
   const handleFullImage = (e, tile) => {
+    props.setPrixer(tile.prixerUsername);
+    props.setFullArt(tile);
+    let art = e.target.id;
     history.push({
-      pathname: "/" + tile.prixerUsername + "/art/" + e.target.id,
+      pathname: "/prixer=" + tile.prixerUsername + "/art=" + art,
     });
+    setOpenFullArt(true);
   };
 
   const searchPhotos = (e, queryValue, categories) => {
@@ -346,6 +355,7 @@ export default function Grid(props) {
     columnWidth: 200,
     itemSelector: ".grid-item",
   });
+
   return (
     <>
       <div className={classes.root}>
@@ -561,6 +571,13 @@ export default function Grid(props) {
           )}
         </Masonry>
       </ResponsiveMasonry>
+      {openFullArt && (
+        <FullscreenPhoto
+          art={fullArt}
+          buyState={props.buyState}
+          prixer={fullPrixer}
+        />
+      )}
     </>
   );
 }

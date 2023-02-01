@@ -33,6 +33,8 @@ import Checkbox from "@material-ui/core/Checkbox";
 import Modal from "@material-ui/core/Modal";
 import { useTheme } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
+import InfoIcon from "@material-ui/icons/Info";
+import Tooltip from "@material-ui/core/Tooltip";
 
 import clsx from "clsx";
 import jwt from "jwt-decode";
@@ -101,30 +103,19 @@ export default function SignUp() {
 
   const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
 
-  const handleOnChange = () => {
-    setIsChecked(!isChecked);
-    // setTermsAgree(!isChecked);
-  };
   const styles = useStyles();
   const [modal, setModal] = useState(false);
   const openModal = () => {
     setModal(!modal);
   };
-  const body = (
-    <div className={styles.modal}>
-      <div>{value}</div>
-      <div align="center">
-        <Button variant="contained" color="primary" onClick={() => openModal()}>
-          Aceptar
-        </Button>
-      </div>
-    </div>
-  );
+
   //Error states.
-  const [usernameError, setUsernameError] = useState();
-  const [emailError, setEmailError] = useState();
-  const [passwordError, setPasswordError] = useState();
-  const [errorMessage, setErrorMessage] = useState();
+  const [usernameError, setUsernameError] = useState(false);
+  const [firstNameError, setFirstNameError] = useState(false);
+  const [lastNameError, setLastNameError] = useState(false);
+  const [emailError, setEmailError] = useState(false);
+  const [passwordError, setPasswordError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState(false);
   const [snackBarError, setSnackBarError] = useState(false);
 
   const now = new Date();
@@ -142,7 +133,6 @@ export default function SignUp() {
         password: password,
         firstName: firstName,
         lastName: lastName,
-        // termsAgree: termsAgree,
       };
       setButtonState(true);
       axios
@@ -177,11 +167,13 @@ export default function SignUp() {
   };
 
   useEffect(() => {
-    if (email && username && password) {
+    if (email && username && password && firstName && lastName) {
       if (
         validations.isAValidEmail(email) &&
         validations.isAValidUsername(username) &&
-        validations.isAValidPassword(password)
+        validations.isAValidPassword(password) &&
+        validations.isAValidName(firstName) &&
+        validations.isAValidName(lastName)
       ) {
         setButtonState(false);
       } else {
@@ -205,6 +197,35 @@ export default function SignUp() {
     }
   };
 
+  const handleFirstNameChange = (e) => {
+    if (validations.isAValidName(e.target.value)) {
+      setFirstName(e.target.value);
+      setFirstNameError(false);
+      setSnackBarError(false);
+    } else {
+      setFirstName(e.target.value);
+      setErrorMessage(
+        "Por favor introduce tu nombre sin números o caráteres especiales."
+      );
+      setSnackBarError(true);
+      setFirstNameError(true);
+    }
+  };
+
+  const handleLastNameChange = (e) => {
+    if (validations.isAValidName(e.target.value)) {
+      setLastName(e.target.value);
+      setLastNameError(false);
+      setSnackBarError(false);
+    } else {
+      setLastName(e.target.value);
+      setErrorMessage(
+        "Por favor introduce tu apellido sin números o caráteres especiales."
+      );
+      setSnackBarError(true);
+      setLastNameError(true);
+    }
+  };
   const handleUsernameChange = (e) => {
     if (validations.isAValidUsername(e.target.value)) {
       setUsername(e.target.value);
@@ -268,6 +289,13 @@ export default function SignUp() {
                 autoComplete="username"
                 value={username}
                 onChange={handleUsernameChange}
+                InputProps={{
+                  endAdornment: (
+                    <Tooltip title={"ej: pedroperez10  o  mariaperez"}>
+                      <InfoIcon color="secondary" />
+                    </Tooltip>
+                  ),
+                }}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -277,11 +305,12 @@ export default function SignUp() {
                 variant="outlined"
                 required
                 fullWidth
+                error={firstNameError}
                 id="firstName"
                 label="Nombre"
                 autoFocus
                 value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
+                onChange={handleFirstNameChange}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -289,12 +318,13 @@ export default function SignUp() {
                 variant="outlined"
                 required
                 fullWidth
+                error={lastNameError}
                 id="lastName"
                 label="Apellido"
                 name="lastName"
                 autoComplete="lname"
                 value={lastName}
-                onChange={(e) => setLastName(e.target.value)}
+                onChange={handleLastNameChange}
               />
             </Grid>
             <Grid item xs={12}>

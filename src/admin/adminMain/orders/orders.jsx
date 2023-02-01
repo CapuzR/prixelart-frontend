@@ -676,7 +676,6 @@ export default function Orders(props) {
                         </FormControl>
                       </div>
                     </TableCell>
-                    {/* <TableCell align="center">Total</TableCell> */}
                   </TableRow>
                 </TableHead>
                 <TableBody>

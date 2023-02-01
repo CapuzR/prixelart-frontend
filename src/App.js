@@ -230,7 +230,11 @@ function App() {
             isOpenAssociateArt={isOpenAssociateArt}
             setIsOpenAssociateArt={setIsOpenAssociateArt}
             setSelectedArtToAssociate={setSelectedArtToAssociate}
+            changeQuantity={changeQuantity}
             selectedArtToAssociate={selectedArtToAssociate}
+            selectedProductToAssociate={selectedProductToAssociate}
+            deleteItemInBuyState={deleteItemInBuyState}
+            deleteProductInItem={deleteProductInItem}
             AssociateProduct={AssociateProduct}
           />
         </Route>
@@ -243,8 +247,15 @@ function App() {
             setIsOpenAssociateProduct={setIsOpenAssociateProduct}
             setSelectedProductToAssociate={setSelectedProductToAssociate}
             selectedProductToAssociate={selectedProductToAssociate}
+            selectedArtToAssociate={selectedArtToAssociate}
+            setSelectedArtToAssociate={setSelectedArtToAssociate}
+            deleteItemInBuyState={deleteItemInBuyState}
+            deleteProductInItem={deleteProductInItem}
+            changeQuantity={changeQuantity}
             AssociateProduct={AssociateProduct}
             setPrixer={setPrixer}
+            prixer={prixer}
+            setFullArt={setFullArt}
           />
         </Route>
 

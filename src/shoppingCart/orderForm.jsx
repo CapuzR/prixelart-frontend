@@ -290,7 +290,6 @@ export default function OrderForm(props) {
                         }`}</strong>
                         <br />
                       </Grid>
-                      {console.log(props.valuesConsumer)}
                     </div>
                   </List>
                 </div>

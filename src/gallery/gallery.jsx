@@ -155,12 +155,13 @@ export default function Gallery(props) {
         </Grid>
         <Grid>
           <ArtsGrid
-            prixerUsername={null}
+            prixerUsername={props.prixer}
             setPrixer={setPrixerUsername}
             buyState={props.buyState}
             addItemToBuyState={props.addItemToBuyState}
             setIsOpenAssociateProduct={props.setIsOpenAssociateProduct}
             setSelectedArt={setSelectedArt}
+            setFullArt={props.setFullArt}
           />
         </Grid>
         {openArtFormDialog && (

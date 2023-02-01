@@ -275,11 +275,17 @@ export default function Grid(props) {
       });
     }
   }, [searchValue, categoryValue]);
+  console.log(fullPrixer);
 
-  const handleFullImage = (e, tile) => {
-    props.setPrixer(tile.prixerUsername);
+  const handleFullImage = async (e, tile) => {
+    // props.setPrixer(tile.prixerUsername);
+    setFullPrixer(tile.prixerUsername);
+
     props.setFullArt(tile);
     let art = e.target.id;
+    // if (fullPrixer === null) {
+    //   history
+    // }
     history.push({
       pathname: "/prixer=" + tile.prixerUsername + "/art=" + art,
     });

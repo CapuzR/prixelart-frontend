@@ -171,9 +171,6 @@ export default function ShoppingPage(props) {
     if (orderPaymentMethod) {
       setLoading(true);
       props.setOpen(true);
-      props.setMessage(
-        "¡Gracias por tu compra! te redireccionaremos a Whatsapp para ser atendido por nuestro departamento de ventas."
-      );
 
       let orderLines = [];
 
@@ -266,7 +263,10 @@ export default function ShoppingPage(props) {
         .post(base_url2, input)
         .then(async (response) => {
           if (!response.data.success) {
-            console.log(response.data.info);
+            props.setMessage(response.data.info);
+            // props.setMessage(
+            //   "¡Gracias por tu compra! te redireccionaremos a Whatsapp para ser atendido por nuestro departamento de ventas."
+            // );
           } else {
             console.log(response.data);
           }
@@ -284,6 +284,7 @@ export default function ShoppingPage(props) {
       props.setMessage("Por favor selecciona una forma de pago.");
     }
   };
+
   let shippingCost = Number(props.valuesConsumerForm?.shippingMethod?.price);
 
   return (

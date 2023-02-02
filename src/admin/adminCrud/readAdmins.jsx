@@ -18,7 +18,7 @@ export default function ReadAdmins() {
       try {
         const rowState = await axios.post(
           base_url,
-          {},
+          { adminToken: localStorage.getItem("adminTokenV") },
           { withCredentials: true }
         );
 

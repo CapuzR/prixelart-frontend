@@ -116,10 +116,12 @@ export default function Login() {
             setSnackBarError(true);
             const token = jwt(response.data.adminToken);
             localStorage.setItem("adminToken", JSON.stringify(token));
+            localStorage.setItem("adminTokenV", response.data.adminToken);
             localStorage.setItem(
               "adminTokenExpire",
               JSON.stringify(now.getTime() + 21600000)
             );
+            console.log(response.data);
             history.push({ pathname: "/admin/dashboard" });
           }
         })

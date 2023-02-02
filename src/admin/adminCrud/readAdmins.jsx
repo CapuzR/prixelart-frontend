@@ -11,13 +11,16 @@ import axios from "axios";
 export default function ReadAdmins() {
   const [rows, setRows] = useState();
 
-  //AQUIIIII
   useEffect(() => {
     let isMounted = true;
     const base_url = process.env.REACT_APP_BACKEND_URL + "/admin/read-all";
     async function fetchMyAPI() {
       try {
-        const rowState = await axios.post(base_url);
+        const rowState = await axios.post(
+          base_url,
+          {},
+          { withCredentials: true }
+        );
 
         if (rowState.data && isMounted) {
           setRows(rowState.data);
@@ -48,7 +51,7 @@ export default function ReadAdmins() {
         </TableHead>
         <TableBody>
           {rows &&
-            rows?.map((row) => (
+            rows.map((row) => (
               <TableRow key={row.username}>
                 <TableCell align="center">{row.firstname}</TableCell>
                 <TableCell align="center">{row.lastname}</TableCell>

@@ -1,71 +1,69 @@
-
 //Programar el Recuérdame.
 //Llevar el Password a un componente propio.
 
-import React, { useEffect } from 'react';
-import Avatar from '@material-ui/core/Avatar';
-import Button from '@material-ui/core/Button';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import Link from '@material-ui/core/Link';
-import Paper from '@material-ui/core/Paper';
-import Box from '@material-ui/core/Box';
-import Grid from '@material-ui/core/Grid';
-import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
-import axios from 'axios';
+import React, { useEffect } from "react";
+import Avatar from "@material-ui/core/Avatar";
+import Button from "@material-ui/core/Button";
+import CssBaseline from "@material-ui/core/CssBaseline";
+import Link from "@material-ui/core/Link";
+import Paper from "@material-ui/core/Paper";
+import Box from "@material-ui/core/Box";
+import Grid from "@material-ui/core/Grid";
+import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
+import Typography from "@material-ui/core/Typography";
+import { makeStyles } from "@material-ui/core/styles";
+import axios from "axios";
 import { useHistory } from "react-router-dom";
-import { useState } from 'react';
-import Snackbar from '@material-ui/core/Snackbar';
-import validations from '../utils/validations';
-import jwt from 'jwt-decode';
+import { useState } from "react";
+import Snackbar from "@material-ui/core/Snackbar";
+import validations from "../utils/validations";
+import jwt from "jwt-decode";
 
-
-import clsx from 'clsx';
-import IconButton from '@material-ui/core/IconButton';
-import OutlinedInput from '@material-ui/core/OutlinedInput';
-import InputLabel from '@material-ui/core/InputLabel';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import FormControl from '@material-ui/core/FormControl';
-import Visibility from '@material-ui/icons/Visibility';
-import VisibilityOff from '@material-ui/icons/VisibilityOff';
+import clsx from "clsx";
+import IconButton from "@material-ui/core/IconButton";
+import OutlinedInput from "@material-ui/core/OutlinedInput";
+import InputLabel from "@material-ui/core/InputLabel";
+import InputAdornment from "@material-ui/core/InputAdornment";
+import FormControl from "@material-ui/core/FormControl";
+import Visibility from "@material-ui/icons/Visibility";
+import VisibilityOff from "@material-ui/icons/VisibilityOff";
 
 function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
-      {'Copyright © '}
+      {"Copyright © "}
       <Link color="inherit" href="https://prixelart.com/">
         prixelart.com
-      </Link>{' '}
+      </Link>{" "}
       {new Date().getFullYear()}
-      {'.'}
+      {"."}
     </Typography>
   );
 }
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    height: '100vh',
+    height: "100vh",
   },
   image: {
-    backgroundRepeat: 'no-repeat',
+    backgroundRepeat: "no-repeat",
     // backgroundColor: '#404e5c',
     // theme.palette.type === 'light' ? theme.palette.grey[50] : theme.palette.grey[900],
-    backgroundSize: 'cover',
-    backgroundPosition: 'center',
+    backgroundSize: "cover",
+    backgroundPosition: "center",
   },
   paper: {
     margin: theme.spacing(8, 4),
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
   },
   avatar: {
     margin: theme.spacing(1),
     backgroundColor: theme.palette.secondary.main,
   },
   form: {
-    width: '100%',
+    width: "100%",
     marginTop: theme.spacing(1),
   },
   submit: {
@@ -76,8 +74,8 @@ const useStyles = makeStyles((theme) => ({
 export default function Login() {
   const classes = useStyles();
   const history = useHistory();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [art, setArt] = useState(false);
 
@@ -90,55 +88,56 @@ export default function Login() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if ((!email) || (!password)) {
-      setErrorMessage('Por favor completa todos los campos requeridos.');
+    if (!email || !password) {
+      setErrorMessage("Por favor completa todos los campos requeridos.");
       setSnackBarError(true);
     } else {
       const base_url = process.env.REACT_APP_BACKEND_URL + "/admin/login";
       const data = {
-        'email': email,
-        'password': password
+        email: email.toLowerCase(),
+        password: password,
       };
-      axios.post(base_url, data)
-        .then(response => {
-          if (response.data.error_info === 'error_pw') {
-            setPassword('');
+      axios
+        .post(base_url, data)
+        .then((response) => {
+          if (response.data.error_info === "error_pw") {
+            setPassword("");
             setPasswordError(true);
             setErrorMessage(response.data.error_message);
             setSnackBarError(true);
-          } else if (response.data.error_info === 'error_email') {
-            setPassword('');
+          } else if (response.data.error_info === "error_email") {
+            setPassword("");
             setEmailError(true);
             setErrorMessage(response.data.error_message);
             setSnackBarError(true);
           } else {
             setPasswordError(true);
-            setErrorMessage('Inicio de sesión completado.');
+            setErrorMessage("Inicio de sesión completado.");
             setSnackBarError(true);
             const token = jwt(response.data.adminToken);
-            localStorage.setItem('adminToken', JSON.stringify(token));
-            localStorage.setItem('adminTokenExpire', JSON.stringify(now.getTime() + 21600000));
+            localStorage.setItem("adminToken", JSON.stringify(token));
+            localStorage.setItem(
+              "adminTokenExpire",
+              JSON.stringify(now.getTime() + 21600000)
+            );
             history.push({ pathname: "/admin/dashboard" });
           }
         })
-        .catch(error => {
+        .catch((error) => {
           console.log(error);
-        })
+        });
     }
-  }
+  };
 
-  useEffect(()=> {
-    const base_url= process.env.REACT_APP_BACKEND_URL + "/art/random";
+  useEffect(() => {
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/art/random";
 
-     axios.get(base_url)
-      .then(response =>{
-        if(response.data.arts){
-          response.data.arts.imageUrl &&
-            setArt(response.data.arts.largeThumbUrl);
-        }
-      });
+    axios.get(base_url).then((response) => {
+      if (response.data.arts) {
+        response.data.arts.imageUrl && setArt(response.data.arts.largeThumbUrl);
+      }
+    });
   }, []);
-
 
   const handleEmailChange = (e) => {
     if (validations.isAValidEmail(e.target.value)) {
@@ -147,12 +146,11 @@ export default function Login() {
       setSnackBarError(false);
     } else {
       setEmail(e.target.value);
-      setErrorMessage('Por favor introduce un correo electrónico válido.');
+      setErrorMessage("Por favor introduce un correo electrónico válido.");
       setSnackBarError(true);
       setEmailError(true);
     }
-  }
-
+  };
 
   //Password
   const handlePasswordChange = (e) => {
@@ -163,10 +161,12 @@ export default function Login() {
     } else {
       setPassword(e.target.value);
       setPasswordError(true);
-      setErrorMessage('Disculpa, tu contraseña debe tener entre 8 y 15 caracteres, incluyendo al menos: una minúscula, una mayúscula, un número y un caracter especial.');
+      setErrorMessage(
+        "Disculpa, tu contraseña debe tener entre 8 y 15 caracteres, incluyendo al menos: una minúscula, una mayúscula, un número y un caracter especial."
+      );
       setSnackBarError(true);
     }
-  }
+  };
 
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
@@ -177,12 +177,17 @@ export default function Login() {
   };
   //END Password
 
-
-
   return (
     <Grid container component="main" className={classes.root}>
       <CssBaseline />
-      <Grid item xs={false} sm={4} md={7} className={classes.image} style={{backgroundImage: 'url('+art+')'}} />
+      <Grid
+        item
+        xs={false}
+        sm={4}
+        md={7}
+        className={classes.image}
+        style={{ backgroundImage: "url(" + art + ")" }}
+      />
       <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
         <div className={classes.paper}>
           <Avatar className={classes.avatar}>
@@ -194,7 +199,12 @@ export default function Login() {
           <form className={classes.form} onSubmit={handleSubmit} noValidate>
             <Grid container spacing={2}>
               <Grid item xs={12}>
-                <FormControl className={clsx(classes.margin, classes.textField)} variant="outlined" xs={12} fullWidth={true}>
+                <FormControl
+                  className={clsx(classes.margin, classes.textField)}
+                  variant="outlined"
+                  xs={12}
+                  fullWidth={true}
+                >
                   <InputLabel htmlFor="email">Correo electrónico</InputLabel>
                   <OutlinedInput
                     id="email"
@@ -207,11 +217,18 @@ export default function Login() {
                 </FormControl>
               </Grid>
               <Grid item xs={12}>
-                <FormControl className={clsx(classes.margin, classes.textField)} variant="outlined" xs={12} fullWidth={true}>
-                  <InputLabel htmlFor="outlined-adornment-password">Contraseña</InputLabel>
+                <FormControl
+                  className={clsx(classes.margin, classes.textField)}
+                  variant="outlined"
+                  xs={12}
+                  fullWidth={true}
+                >
+                  <InputLabel htmlFor="outlined-adornment-password">
+                    Contraseña
+                  </InputLabel>
                   <OutlinedInput
                     id="outlined-adornment-password"
-                    type={showPassword ? 'text' : 'password'}
+                    type={showPassword ? "text" : "password"}
                     value={password}
                     label="Contraseña"
                     error={passwordError}
@@ -244,7 +261,7 @@ export default function Login() {
                 className={classes.submit}
               >
                 Inicia sesión
-            </Button>
+              </Button>
               <Box mt={5}>
                 <Copyright />
               </Box>

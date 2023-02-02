@@ -212,7 +212,12 @@ function CarouselAdmin(props) {
     type === "bannerImagesDesktop"
       ? formData.append("bannerImagesDesktop", image.file)
       : formData.append("bannerImagesMobile", image.file);
-    let res = await axios.put(URI, formData);
+    let res = await axios.put(
+      URI,
+      { adminToken: localStorage.getItem("adminTokenV") },
+      { withCredentials: true },
+      formData
+    );
     setLoadImage({
       loader: "",
       filename: "Subir imagenes",
@@ -259,7 +264,12 @@ function CarouselAdmin(props) {
       type === "bannerImagesDesktop"
         ? newFormData.append("bannerImagesDesktop", image.file)
         : newFormData.append("bannerImagesMobile", image.file);
-      let res = await axios.post(URI, newFormData);
+      let res = await axios.post(
+        URI,
+        newFormData,
+        { adminToken: localStorage.getItem("adminTokenV") },
+        { withCredentials: true }
+      );
       createOpen();
       setType("");
       newImage({
@@ -289,7 +299,11 @@ function CarouselAdmin(props) {
         process.env.REACT_APP_BACKEND_URL +
         "/admin/preferences/carousel/" +
         image._id;
-      let res = await axios.delete(URI);
+      let res = await axios.delete(
+        URI,
+        { adminToken: localStorage.getItem("adminTokenV") },
+        { withCredentials: true }
+      );
       getImagesForTheCarousel();
       handleClickOpenI();
       setLoading(false);

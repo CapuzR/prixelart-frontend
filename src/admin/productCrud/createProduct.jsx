@@ -240,7 +240,12 @@ export default function CreateProduct() {
           images.images.map((file) => formData.append("productImages", file));
           const base_url =
             process.env.REACT_APP_BACKEND_URL + "/product/create";
-          const response = await axios.post(base_url, formData);
+          const response = await axios.post(
+            base_url,
+            formData,
+            { adminToken: localStorage.getItem("adminTokenV") },
+            { withCredentials: true }
+          );
           if (response.data.success === false) {
             setLoading(false);
             setButtonState(false);

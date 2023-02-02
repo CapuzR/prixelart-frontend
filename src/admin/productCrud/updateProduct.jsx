@@ -249,8 +249,10 @@ export default function UpdateAdmin(props) {
           };
 
           const currentVideo =
-            typeof imagesList.find((result) => result.type === "video") === "object" ? 
-            imagesList.find((result) => result.type === "video") : '';
+            typeof imagesList.find((result) => result.type === "video") ===
+            "object"
+              ? imagesList.find((result) => result.type === "video")
+              : "";
 
           newFormData.append("active", active);
           newFormData.append("name", productName);
@@ -265,35 +267,39 @@ export default function UpdateAdmin(props) {
           newFormData.append("hasSpecialVar", hasSpecialVar);
           imagesList.length > 1
             ? imagesList.map((url) => {
-              const indexVideo = imagesList.indexOf(currentVideo);
-                if (videoUrl === "" && currentVideo !== '') {
+                const indexVideo = imagesList.indexOf(currentVideo);
+                if (videoUrl === "" && currentVideo !== "") {
                   imagesList.splice(indexVideo, 1);
                 }
                 newFormData.append("images", url.url);
               })
             : imagesList.map((url) => {
-               const indexVideo = imagesList.indexOf(currentVideo);
-                if (videoUrl === "" && currentVideo !== '') {
+                const indexVideo = imagesList.indexOf(currentVideo);
+                if (videoUrl === "" && currentVideo !== "") {
                   imagesList.splice(indexVideo, 1);
                 }
-                if(typeof url === 'string'){
+                if (typeof url === "string") {
                   newFormData.append("images", url);
                 }
-                if(typeof url === 'object'){
+                if (typeof url === "object") {
                   newFormData.append("images", url.url);
                 }
-
               });
-              if(images.images){
-                images.images.map((file) => {
-                  newFormData.append("newProductImages", file);
-                  console.log(file)
-                })
-              }
+          if (images.images) {
+            images.images.map((file) => {
+              newFormData.append("newProductImages", file);
+              console.log(file);
+            });
+          }
           newFormData.append("video", videoUrl);
           const base_url =
             process.env.REACT_APP_BACKEND_URL + `/product/update/${productId}`;
-          const response = await axios.put(base_url, newFormData);
+          const response = await axios.put(
+            base_url,
+            newFormData,
+            { adminToken: localStorage.getItem("adminTokenV") },
+            { withCredentials: true }
+          );
           if (response.data.success === false) {
             setLoading(false);
             setButtonState(false);

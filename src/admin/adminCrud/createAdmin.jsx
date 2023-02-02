@@ -85,7 +85,12 @@ export default function CreateAdmin() {
       };
 
       const base_url = process.env.REACT_APP_BACKEND_URL + "/admin/create";
-      const response = await axios.post(base_url, data);
+      const response = await axios.post(
+        base_url,
+        data,
+        { adminToken: localStorage.getItem("adminTokenV") },
+        { withCredentials: true }
+      );
       if (response.data.success === false) {
         setLoading(false);
         setButtonState(false);

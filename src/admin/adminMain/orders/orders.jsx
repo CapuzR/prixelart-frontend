@@ -251,7 +251,11 @@ export default function Orders(props) {
     setLoading(true);
     const base_url = process.env.REACT_APP_BACKEND_URL + "/order/read-all";
     await axios
-      .get(base_url)
+      .post(
+        base_url,
+        { adminToken: localStorage.getItem("adminTokenV") },
+        { withCredentials: true }
+      )
       .then((response) => {
         setRows(response.data.orders);
       })
@@ -343,7 +347,11 @@ export default function Orders(props) {
 
   const deleteOrder = async (id) => {
     const URI = process.env.REACT_APP_BACKEND_URL + "/order/delete/" + id;
-    await axios.delete(URI);
+    await axios.delete(
+      URI,
+      { adminToken: localStorage.getItem("adminTokenV") },
+      { withCredentials: true }
+    );
     filterOrders();
   };
 
@@ -460,7 +468,12 @@ export default function Orders(props) {
 
   const handleChangeStatus = async (id, status) => {
     const URI = process.env.REACT_APP_BACKEND_URL + "/order/update/" + id;
-    await axios.put(URI, { status: status });
+    await axios.put(
+      URI,
+      { status: status },
+      { adminToken: localStorage.getItem("adminTokenV") },
+      { withCredentials: true }
+    );
     readOrders();
   };
 

@@ -162,7 +162,12 @@ export default function Grid(props) {
     if (event.target.checked === true) {
       const base_url = process.env.REACT_APP_BACKEND_URL + "/art/disable/" + id;
       art.visible = visible;
-      const response = await axios.put(base_url, art);
+      const response = await axios.put(
+        base_url,
+        art,
+        { adminToken: localStorage.getItem("adminTokenV") },
+        { withCredentials: true }
+      );
       setSnackBarMessage("Arte modificado exitosamente");
       setSnackBar(true);
       setLoading(false);
@@ -172,7 +177,12 @@ export default function Grid(props) {
       const base_url = process.env.REACT_APP_BACKEND_URL + "/art/disable/" + id;
       art.visible = visible;
       art.disabledReason = disabledReason;
-      const response = await axios.put(base_url, art);
+      const response = await axios.put(
+        base_url,
+        art,
+        { adminToken: localStorage.getItem("adminTokenV") },
+        { withCredentials: true }
+      );
       handleClose();
       setSnackBarMessage("Arte modificado exitosamente");
       setSnackBar(true);

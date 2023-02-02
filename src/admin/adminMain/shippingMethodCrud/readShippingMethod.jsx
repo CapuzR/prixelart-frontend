@@ -82,7 +82,11 @@ export default function ReadShippingMethod(props) {
     const base_url =
       process.env.REACT_APP_BACKEND_URL + "/shipping-method/read-all";
     axios
-      .get(base_url)
+      .post(
+        base_url,
+        { adminToken: localStorage.getItem("adminTokenV") },
+        { withCredentials: true }
+      )
       .then((response) => {
         setRows(response.data.shippingMethods);
       })
@@ -109,7 +113,12 @@ export default function ReadShippingMethod(props) {
 
     const base_url =
       process.env.REACT_APP_BACKEND_URL + "/shipping-method/create";
-    const response = await axios.post(base_url, data);
+    const response = await axios.post(
+      base_url,
+      data,
+      { adminToken: localStorage.getItem("adminTokenV") },
+      { withCredentials: true }
+    );
     if (response.data.success === false) {
       setLoading(false);
       setErrorMessage(response.data.message);
@@ -151,7 +160,12 @@ export default function ReadShippingMethod(props) {
 
       const base_url =
         process.env.REACT_APP_BACKEND_URL + "/shipping-method/update";
-      const response = await axios.put(base_url, data);
+      const response = await axios.put(
+        base_url,
+        data,
+        { adminToken: localStorage.getItem("adminTokenV") },
+        { withCredentials: true }
+      );
       if (response.data.success === false) {
         setLoading(false);
         setErrorMessage(response.data.message);
@@ -173,7 +187,11 @@ export default function ReadShippingMethod(props) {
 
     const URI =
       process.env.REACT_APP_BACKEND_URL + "/shipping-method/delete/" + id;
-    await axios.delete(URI);
+    await axios.delete(
+      URI,
+      { adminToken: localStorage.getItem("adminTokenV") },
+      { withCredentials: true }
+    );
     setErrorMessage("Método de envío eliminado exitosamente.");
     setSnackBarError(true);
     readMethods();

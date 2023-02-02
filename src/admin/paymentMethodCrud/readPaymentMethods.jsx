@@ -43,7 +43,11 @@ export default function ReadPaymentMethods(props) {
     const base_url =
       process.env.REACT_APP_BACKEND_URL + "/payment-method/read-all";
     axios
-      .get(base_url)
+      .post(
+        base_url,
+        { adminToken: localStorage.getItem("adminTokenV") },
+        { withCredentials: true }
+      )
       .then((response) => {
         setRows(response.data);
       })
@@ -65,7 +69,11 @@ export default function ReadPaymentMethods(props) {
     setLoading(true);
     const URI =
       process.env.REACT_APP_BACKEND_URL + "/payment-method/delete/" + id;
-    await axios.delete(URI);
+    await axios.delete(
+      URI,
+      { adminToken: localStorage.getItem("adminTokenV") },
+      { withCredentials: true }
+    );
     setErrorMessage("Método de envío eliminado exitosamente.");
     setSnackBarError(true);
     readMethods();

@@ -28,7 +28,7 @@ export default function ReadOrders(props) {
     props.setPaymentMethod(paymentMethod);
     history.push("/admin/payment-method/" + action + "/" + paymentMethod._id);
   };
-  console.log(rows);
+
   return (
     <React.Fragment>
       <Title>Métodos de pago</Title>

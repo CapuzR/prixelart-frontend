@@ -253,7 +253,7 @@ export default function Grid(props) {
         text: searchValue,
       };
       axios.get(base_url, { params }).then((response) => {
-        setTiles(utils.shuffle(response.data.arts));
+        setTiles(response.data.arts);
         setBackdrop(false);
       });
     } else if (categoryValue) {
@@ -275,17 +275,11 @@ export default function Grid(props) {
       });
     }
   }, [searchValue, categoryValue]);
-  console.log(fullPrixer);
 
   const handleFullImage = async (e, tile) => {
-    // props.setPrixer(tile.prixerUsername);
     setFullPrixer(tile.prixerUsername);
-
     props.setFullArt(tile);
     let art = e.target.id;
-    // if (fullPrixer === null) {
-    //   history
-    // }
     history.push({
       pathname: "/prixer=" + tile.prixerUsername + "/art=" + art,
     });

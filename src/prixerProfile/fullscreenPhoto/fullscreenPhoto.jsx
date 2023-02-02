@@ -389,7 +389,7 @@ export default function FullscreenPhoto(props) {
       const base_url =
         process.env.REACT_APP_BACKEND_URL + "/art/read-by-prixer";
       const data = {
-        username: props.prixer || props.prixerUsername,
+        username: props.fullArt.prixerUsername,
       };
       await axios.post(base_url, data).then((response) => {
         if (tiles.length !== response.data.arts.length) {

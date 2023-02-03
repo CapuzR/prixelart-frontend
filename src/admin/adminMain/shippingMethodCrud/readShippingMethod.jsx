@@ -111,7 +111,7 @@ export default function ReadShippingMethod(props) {
       price: price,
       adminToken: localStorage.getItem("adminTokenV"),
     };
-
+    console.log(data);
     const base_url =
       process.env.REACT_APP_BACKEND_URL + "/shipping-method/create";
     const response = await axios.post(base_url, data, {

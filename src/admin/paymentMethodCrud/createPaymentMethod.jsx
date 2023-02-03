@@ -51,16 +51,12 @@ export default function CreatePaymentMethod(props) {
       createdBy: JSON.parse(localStorage.getItem("adminToken")),
       instructions: instructions,
       paymentData: paymentData,
+      adminToken: localStorage.getItem("adminTokenV"),
     };
 
     const base_url =
       process.env.REACT_APP_BACKEND_URL + "/payment-method/create";
-    const response = await axios.post(
-      base_url,
-      data,
-      { adminToken: localStorage.getItem("adminTokenV") },
-      { withCredentials: true }
-    );
+    const response = await axios.post(base_url, data);
     if (response.data.success === false) {
       setLoading(false);
       setErrorMessage(response.data.message);

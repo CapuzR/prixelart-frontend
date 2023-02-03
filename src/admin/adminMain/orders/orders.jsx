@@ -221,6 +221,7 @@ export default function Orders(props) {
     "Cambio",
   ];
   const [shippingList, setShippingList] = useState();
+
   useEffect(() => {
     const base_url =
       process.env.REACT_APP_BACKEND_URL + "/shipping-method/read-all-v2";
@@ -468,12 +469,11 @@ export default function Orders(props) {
 
   const handleChangeStatus = async (id, status) => {
     const URI = process.env.REACT_APP_BACKEND_URL + "/order/update/" + id;
-    await axios.put(
-      URI,
-      { status: status },
-      { adminToken: localStorage.getItem("adminTokenV") },
-      { withCredentials: true }
-    );
+    const body = {
+      adminToken: localStorage.getItem("adminTokenV"),
+      status: status,
+    };
+    await axios.put(URI, body, { withCredentials: true });
     readOrders();
   };
 
@@ -671,24 +671,7 @@ export default function Orders(props) {
                     <TableCell align="center">Nombre</TableCell>
                     <TableCell align="center">Productos</TableCell>
                     <TableCell align="center">Total</TableCell>
-                    <TableCell align="center">
-                      <div style={{ display: "flex", justifyContent: "end" }}>
-                        <FormControl className={classes.formControl}>
-                          <InputLabel id="demo-simple-select-label">
-                            Status
-                          </InputLabel>
-                          <Select
-                            labelId="demo-simple-select-label"
-                            id="demo-simple-select"
-                            value={filter}
-                            onChange={handleChange}
-                          >
-                            <MenuItem value={"finished"}>Finalizadas</MenuItem>
-                            <MenuItem value={"processing"}>Procesando</MenuItem>
-                          </Select>
-                        </FormControl>
-                      </div>
-                    </TableCell>
+                    <TableCell align="center">Status</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -738,7 +721,12 @@ export default function Orders(props) {
                             ${row.total.toFixed(2)}
                           </TableCell>
                           <TableCell align="center">
-                            <FormControl disabled={row.status !== "Procesando"}>
+                            <FormControl
+                              disabled={
+                                row.status === "Cancelada" ||
+                                row.status === "Completada"
+                              }
+                            >
                               <Select
                                 SelectClassKey
                                 value={row.status}
@@ -749,12 +737,24 @@ export default function Orders(props) {
                                   );
                                 }}
                               >
-                                <MenuItem value={"Procesando"}>
-                                  Procesando
+                                <MenuItem value={"Por producir"}>
+                                  Por producir
                                 </MenuItem>
-
                                 <MenuItem value={"Cancelada"}>
                                   Cancelada
+                                </MenuItem>
+                                <MenuItem value={"Detenido"}>Detenido</MenuItem>
+                                <MenuItem value={"En impresión"}>
+                                  En impresión
+                                </MenuItem>
+                                <MenuItem value={"En producción"}>
+                                  En producción
+                                </MenuItem>
+                                <MenuItem value={"Por entregar"}>
+                                  Por entregar
+                                </MenuItem>
+                                <MenuItem value={"Entregado"}>
+                                  Entregado
                                 </MenuItem>
                                 <MenuItem value={"Completada"}>
                                   Completada
@@ -812,8 +812,7 @@ export default function Orders(props) {
               <Grid
                 style={{
                   display: "flex",
-                  flexDirection:
-                    rows?.lenght > 2 || isMobile ? "column" : "row",
+                  flexDirection: "column",
                   // margin: "10px 0px 20px 0px",
                 }}
                 item
@@ -828,36 +827,96 @@ export default function Orders(props) {
                       display: "flex",
                       flexDirection: "column",
                       margin: "0px 20px 20px 0px",
-                      // borderWidth: 1,
+                      borderWidth: "1px",
+                      borderStyle: "solid",
+                      borderRadius: 10,
+                      padding: 5,
+                      borderColor: "#d33f49",
                     }}
                   >
-                    <strong>
+                    <Typography
+                      variant="h6"
+                      style={{ textAlign: "center", margin: 5 }}
+                    >
                       {"Item #"}
                       {index + 1}
-                    </strong>
-                    <div>{"Arte: " + item.art.title}</div>
-                    <div>{"Id: " + item.art.artId}</div>
-                    <div style={{ marginBottom: 10 }}>
-                      {"Prixer: " + item.art.prixerUsername}
-                    </div>
-                    <div>{"Producto: " + item.product.name}</div>
-                    <div>{"Id: " + item.product._id}</div>
-                    {item.product.attributes.map((a, i) => {
-                      return (
-                        <p
+                    </Typography>
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        justifyContent: "space-evenly",
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: 150,
+                          height: 150,
+                          borderRadius: 10,
+                          backgroundColor: "#eeeeee",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <Img
+                          src={item.art.squareThumbUrl}
                           style={{
-                            // fontSize: 12,
-                            padding: 0,
-                            margin: 0,
-                            marginBottom: 10,
+                            maxWidth: 150,
+                            maxHeight: 150,
+                            borderRadius: 10,
                           }}
-                        >
-                          {a.name + ": "}
-                          {item.product.selection[i]}
-                        </p>
-                      );
-                    })}
-                    <div>{"Cantidad: " + item.quantity}</div>
+                        />
+                      </div>
+                      <div
+                        style={{
+                          width: 150,
+                          height: 150,
+                          borderRadius: 10,
+                          backgroundColor: "#eeeeee",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <Img
+                          src={
+                            item.product.thumbUrl ||
+                            item.product.sources.images[0].url
+                          }
+                          style={{
+                            maxWidth: 150,
+                            maxHeight: 150,
+                            borderRadius: 10,
+                          }}
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <div>{"Arte: " + item.art.title}</div>
+                      <div>{"Id: " + item.art.artId}</div>
+                      <div style={{ marginBottom: 10 }}>
+                        {"Prixer: " + item.art.prixerUsername}
+                      </div>
+                      <div>{"Producto: " + item.product.name}</div>
+                      <div>{"Id: " + item.product._id}</div>
+                      {item.product.attributes.map((a, i) => {
+                        return (
+                          <p
+                            style={{
+                              // fontSize: 12,
+                              padding: 0,
+                              margin: 0,
+                              marginBottom: 10,
+                            }}
+                          >
+                            {a.name + ": "}
+                            {item.product.selection[i]}
+                          </p>
+                        );
+                      })}
+                      <div>{"Cantidad: " + item.quantity}</div>
+                    </div>
                   </div>
                 ))}
               </Grid>
@@ -868,16 +927,28 @@ export default function Orders(props) {
                 sm={12}
                 md={6}
                 lg={6}
-                style={{ display: "flex", marginBottom: 20 }}
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  marginBottom: 20,
+                }}
               >
                 <Grid
-                  item
-                  xs={12}
-                  sm={12}
-                  md={6}
-                  lg={4}
-                  xl={3}
-                  style={{ marginBottom: 40, marginRight: 20 }}
+                  // item
+                  // xs={12}
+                  // sm={12}
+                  // md={12}
+                  // lg={12}
+                  // xl={12}
+                  style={{
+                    marginBottom: 40,
+                    marginRight: 20,
+                    borderWidth: "1px",
+                    borderStyle: "solid",
+                    borderRadius: 10,
+                    borderColor: "grey",
+                    padding: 5,
+                  }}
                 >
                   <strong>Datos básicos</strong>
                   <div>
@@ -889,16 +960,27 @@ export default function Orders(props) {
                   <div>{"CI o RIF: " + modalContent?.basicData.ci}</div>
                   <div>{"Teléfono: " + modalContent?.basicData.phone}</div>
                   <div>{"Email: " + modalContent?.basicData.email}</div>
+                  {modalContent?.basicData.address && (
+                    <div>{"Dirección: " + modalContent?.basicData.address}</div>
+                  )}
                 </Grid>
 
                 <Grid
-                  item
-                  xs={12}
-                  sm={12}
-                  md={6}
-                  lg={4}
-                  xl={3}
-                  style={{ marginBottom: 40, marginRight: 20 }}
+                  // item
+                  // xs={12}
+                  // sm={12}
+                  // md={6}
+                  // lg={4}
+                  // xl={3}
+                  style={{
+                    marginBottom: 40,
+                    marginRight: 20,
+                    borderWidth: "1px",
+                    borderStyle: "solid",
+                    borderRadius: 10,
+                    borderColor: "grey",
+                    padding: 5,
+                  }}
                 >
                   <strong>Datos de envío</strong>
                   {modalContent.shippingData?.name &&
@@ -930,15 +1012,25 @@ export default function Orders(props) {
                 </Grid>
 
                 <Grid
-                  item
-                  xs={12}
-                  sm={12}
-                  md={6}
-                  lg={4}
-                  xl={3}
-                  style={{ marginBottom: 40, marginRight: 20 }}
+                  // item
+                  // xs={12}
+                  // sm={12}
+                  // md={6}
+                  // lg={4}
+                  // xl={3}
+                  style={{
+                    marginBottom: 40,
+                    marginRight: 20,
+                    borderWidth: "1px",
+                    borderStyle: "solid",
+                    borderRadius: 10,
+                    borderColor: "grey",
+                    padding: 5,
+                  }}
                 >
-                  <strong>Datos de facturación</strong>
+                  {modalContent.billingData.ci && (
+                    <strong>Datos de facturación</strong>
+                  )}
                   {modalContent.billingData.name &&
                     modalContent.billingData.lastname && (
                       <div>
@@ -2294,7 +2386,7 @@ export default function Orders(props) {
                   <Button
                     disabled={props.buyState.length == 0}
                     variant="contained"
-                    color="primary"
+                    color={"primary"}
                     onClick={createOrder}
                   >
                     Crear orden

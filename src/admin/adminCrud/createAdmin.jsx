@@ -1,5 +1,7 @@
 import React from "react";
 import { useState } from "react";
+import { useHistory, useLocation } from "react-router-dom";
+
 import { makeStyles } from "@material-ui/core/styles";
 import Title from "../adminMain/Title";
 import axios from "axios";
@@ -26,6 +28,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function CreateAdmin() {
   const classes = useStyles();
+  const history = useHistory();
   const [username, setUsername] = useState("");
   const [firstname, setFirstname] = useState("");
   const [lastname, setLastname] = useState("");
@@ -105,6 +108,7 @@ export default function CreateAdmin() {
         setEmail("");
         setPhone("");
         setPassword("");
+        history.push({ pathname: "/admin/user/read" });
       }
     }
   };
@@ -202,7 +206,7 @@ export default function CreateAdmin() {
                 autoComplete="email"
                 value={email}
                 onChange={(e) => {
-                  setEmail(e.target.value).toLowerCase();
+                  setEmail(e.target.value);
                 }}
               />
             </FormControl>

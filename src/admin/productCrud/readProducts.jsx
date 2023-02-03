@@ -52,7 +52,7 @@ export default function ReadProducts(props) {
 
   const deleteProduct = async (id) => {
     const URI = process.env.REACT_APP_BACKEND_URL + `/product/delete/${id}`;
-    const res = await axios.delete(
+    const res = await axios.put(
       URI,
       { adminToken: localStorage.getItem("adminTokenV") },
       { withCredentials: true }

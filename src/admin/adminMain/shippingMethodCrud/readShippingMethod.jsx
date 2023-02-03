@@ -122,7 +122,7 @@ export default function ReadShippingMethod(props) {
       setErrorMessage(response.data.message);
       setSnackBarError(true);
     } else {
-      setErrorMessage("Registro del método de pago exitoso.");
+      setErrorMessage("Registro del método de envío exitoso.");
       setSnackBarError(true);
       setActive(true);
       setName("");

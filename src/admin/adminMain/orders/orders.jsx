@@ -848,7 +848,7 @@ export default function Orders(props) {
                         justifyContent: "space-evenly",
                       }}
                     >
-                      <div
+                      <Paper
                         style={{
                           width: 150,
                           height: 150,
@@ -858,6 +858,7 @@ export default function Orders(props) {
                           alignItems: "center",
                           justifyContent: "center",
                         }}
+                        elevation={3}
                       >
                         <Img
                           src={item.art.squareThumbUrl}
@@ -867,8 +868,8 @@ export default function Orders(props) {
                             borderRadius: 10,
                           }}
                         />
-                      </div>
-                      <div
+                      </Paper>
+                      <Paper
                         style={{
                           width: 150,
                           height: 150,
@@ -878,6 +879,7 @@ export default function Orders(props) {
                           alignItems: "center",
                           justifyContent: "center",
                         }}
+                        elevation={3}
                       >
                         <Img
                           src={
@@ -890,9 +892,9 @@ export default function Orders(props) {
                             borderRadius: 10,
                           }}
                         />
-                      </div>
+                      </Paper>
                     </div>
-                    <div>
+                    <div style={{ padding: 10 }}>
                       <div>{"Arte: " + item.art.title}</div>
                       <div>{"Id: " + item.art.artId}</div>
                       <div style={{ marginBottom: 10 }}>
@@ -947,7 +949,7 @@ export default function Orders(props) {
                     borderStyle: "solid",
                     borderRadius: 10,
                     borderColor: "grey",
-                    padding: 5,
+                    padding: 15,
                   }}
                 >
                   <strong>Datos básicos</strong>
@@ -979,7 +981,7 @@ export default function Orders(props) {
                     borderStyle: "solid",
                     borderRadius: 10,
                     borderColor: "grey",
-                    padding: 5,
+                    padding: 15,
                   }}
                 >
                   <strong>Datos de envío</strong>
@@ -1025,7 +1027,7 @@ export default function Orders(props) {
                     borderStyle: "solid",
                     borderRadius: 10,
                     borderColor: "grey",
-                    padding: 5,
+                    padding: 15,
                   }}
                 >
                   {modalContent.billingData.ci && (

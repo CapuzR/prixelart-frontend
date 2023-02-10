@@ -95,6 +95,7 @@ export default function SignUp() {
   const [lastName, setLastName] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [openTooltip, setOpenTooltip] = useState(false);
   const [buttonState, setButtonState] = useState(true);
   const [isChecked, setIsChecked] = useState(false);
   // const [termsAgree, setTermsAgree] = useState(false);
@@ -291,7 +292,12 @@ export default function SignUp() {
                 onChange={handleUsernameChange}
                 InputProps={{
                   endAdornment: (
-                    <Tooltip title={"ej: pedroperez10  o  mariaperez"}>
+                    <Tooltip
+                      title={"ej: pedroperez10  o  mariaperez"}
+                      onClick={(e) => setOpenTooltip(!openTooltip)}
+                      open={openTooltip}
+                      onClose={(leaveDelay) => setOpenTooltip(false)}
+                    >
                       <InfoIcon color="secondary" />
                     </Tooltip>
                   ),

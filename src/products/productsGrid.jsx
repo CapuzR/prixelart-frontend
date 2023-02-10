@@ -304,6 +304,17 @@ export default function ProductGrid(props) {
                           ""
                         )
                       : "PVP: $" + tile.publicPrice.from.replace(/[$]/gi, "")}
+                    <br></br>
+                    {JSON.parse(localStorage.getItem("token")) &&
+                    JSON.parse(localStorage.getItem("token")).username &&
+                    tile.attributes !== [] &&
+                    tile.publicPrice.to !== tile.publicPrice.from &&
+                    tile.publicPrice.to !== ""
+                      ? "PVM: " +
+                        tile.prixerPrice?.from +
+                        " - " +
+                        tile.prixerPrice?.to
+                      : "PVM: " + tile.prixerPrice?.from}
                   </Typography>
                   <MDEditor.Markdown
                     source={tile.description}

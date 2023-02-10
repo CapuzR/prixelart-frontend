@@ -24,6 +24,7 @@ import utils from "../../utils/utils";
 import SearchBar from "../../sharedComponents/searchBar/searchBar.jsx";
 import IconButton from "@material-ui/core/IconButton";
 import Tooltip from "@material-ui/core/Tooltip";
+import CardActionArea from "@material-ui/core/CardActionArea";
 
 import AddShoppingCartIcon from "@material-ui/icons/AddShoppingCart";
 import FullscreenPhoto from "../fullscreenPhoto/fullscreenPhoto";
@@ -429,46 +430,49 @@ export default function Grid(props) {
                       <AddShoppingCartIcon />
                     </IconButton>
                   </Tooltip>
-                  <Img
-                    onClick={(e) => {
-                      handleFullImage(e, tile);
-                    }}
-                    placeholder="/imgLoading.svg"
-                    style={{
-                      backgroundColor: "#eeeeee",
-                      width: "100%",
-                      marginBottom: "7px",
-                      borderRadius: "4px",
-                      // objectFit: "cover",
-                    }}
-                    src={tile.squareThumbUrl}
-                    debounce={1000}
-                    cache
-                    error="/imgError.svg"
-                    // srcSet={tile.smallThumbUrl + ' 600w, ' + tile.mediumThumbUrl + ' 850w, ' + tile.largeThumbUrl + ' 1300w'}
-                    // sizes="(min-width: 1600px) 850px, (min-width: 960px) 450px, (min-width: 640px) 400px, 200px"
-                    // sizes="(min-width: 1600px) 850px, (min-width: 960px) 450px, (min-width: 640px) 200px, (min-width: 375px) 80px"
-                    alt={tile.title}
-                    id={tile.artId}
-                    key={tile.artId}
-                  />
-                  {JSON.parse(localStorage.getItem("adminToken")) && (
-                    <IOSSwitch
-                      color="primary"
-                      size="normal"
-                      checked={tile.visible}
-                      onChange={(e) => {
-                        if (e.target.checked === false) {
-                          handleClickVisible();
-                          setSelectedArt(tile.artId);
-                          setVisible(e.target.checked);
-                        } else {
-                          setVisibleArt(tile, tile.artId, e);
-                          setVisible(e.target.checked);
-                        }
+                  <CardActionArea>
+                    <Img
+                      draggable={false}
+                      onClick={(e) => {
+                        handleFullImage(e, tile);
                       }}
+                      placeholder="/imgLoading.svg"
+                      style={{
+                        backgroundColor: "#eeeeee",
+                        width: "100%",
+                        marginBottom: "7px",
+                        borderRadius: "4px",
+                        // objectFit: "cover",
+                      }}
+                      src={tile.squareThumbUrl}
+                      debounce={1000}
+                      cache
+                      error="/imgError.svg"
+                      // srcSet={tile.smallThumbUrl + ' 600w, ' + tile.mediumThumbUrl + ' 850w, ' + tile.largeThumbUrl + ' 1300w'}
+                      // sizes="(min-width: 1600px) 850px, (min-width: 960px) 450px, (min-width: 640px) 400px, 200px"
+                      // sizes="(min-width: 1600px) 850px, (min-width: 960px) 450px, (min-width: 640px) 200px, (min-width: 375px) 80px"
+                      alt={tile.title}
+                      id={tile.artId}
+                      key={tile.artId}
                     />
-                  )}
+                    {JSON.parse(localStorage.getItem("adminToken")) && (
+                      <IOSSwitch
+                        color="primary"
+                        size="normal"
+                        checked={tile.visible}
+                        onChange={(e) => {
+                          if (e.target.checked === false) {
+                            handleClickVisible();
+                            setSelectedArt(tile.artId);
+                            setVisible(e.target.checked);
+                          } else {
+                            setVisibleArt(tile, tile.artId, e);
+                            setVisible(e.target.checked);
+                          }
+                        }}
+                      />
+                    )}
+                  </CardActionArea>
                   <Dialog
                     open={selectedArt === tile.artId}
                     onClose={handleCloseVisible}

@@ -20,7 +20,7 @@ import FormControl from "@material-ui/core/FormControl";
 import Snackbar from "@material-ui/core/Snackbar";
 import { Backdrop } from "@material-ui/core";
 import CircularProgress from "@material-ui/core/CircularProgress";
-
+import validations from "../../../shoppingCart/validations";
 import axios from "axios";
 // import CircularProgress from '@material-ui/core/CircularProgress';
 // import Backdrop from '@material-ui/core/Backdrop';
@@ -111,7 +111,6 @@ export default function ReadShippingMethod(props) {
       price: price,
       adminToken: localStorage.getItem("adminTokenV"),
     };
-    console.log(data);
     const base_url =
       process.env.REACT_APP_BACKEND_URL + "/shipping-method/create";
     const response = await axios.post(base_url, data, {
@@ -324,10 +323,7 @@ export default function ReadShippingMethod(props) {
                             required
                             fullWidth
                             display="inline"
-                            // id="name"
                             label="Nombre"
-                            // name="name"
-                            // autoComplete="name"
                             value={name}
                             onChange={(e) => {
                               setName(e.target.value);
@@ -341,20 +337,22 @@ export default function ReadShippingMethod(props) {
                             variant="outlined"
                             xs={6}
                             fullWidth={true}
+                            required
                           >
                             <TextField
                               variant="outlined"
                               fullWidth
                               multiline
-                              //   minRows={5}
-                              //   id="paymentData"
+                              required
                               label="Precio aproximado"
-                              //   name="paymentData"
-                              //   autoComplete="paymentData"
                               value={price}
                               onChange={(e) => {
                                 setPrice(e.target.value);
                               }}
+                              error={
+                                price !== undefined &&
+                                !validations.isAValidNumber(price)
+                              }
                             />
                           </FormControl>
                         </Grid>
@@ -363,7 +361,9 @@ export default function ReadShippingMethod(props) {
                         variant="contained"
                         color="primary"
                         type="submit"
-                        disabled={!name}
+                        disabled={
+                          !name || !price || !validations.isAValidNumber(price)
+                        }
                         style={{ marginTop: 20 }}
                       >
                         Crear

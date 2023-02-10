@@ -300,7 +300,7 @@ export default function MenuAppBar(props) {
               <Tab
                 className={classes.button}
                 onClick={(e) => {
-                  window.open(utils.generateWaMessage(), "_blank");
+                  window.open("https://linktr.ee/prixelart", "_blank");
                 }}
                 label="Contáctanos"
               />
@@ -371,7 +371,7 @@ export default function MenuAppBar(props) {
               <Tab
                 className={classes.button}
                 onClick={(e) => {
-                  window.open(utils.generateWaMessage(), "_blank");
+                  window.open("https://linktr.ee/prixelart", "_blank");
                 }}
                 label="Contáctanos"
               />

@@ -43,6 +43,12 @@ function ConsumerForm(props) {
   const [billingShDataCheck, setBillingShDataCheck] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const [shippingList, setShippingList] = useState();
+  const [openTooltip, setOpenTooltip] = useState(false);
+  const [openTooltip2, setOpenTooltip2] = useState(false);
+
+  const [openTooltipPh, setOpenTooltipPh] = useState(false);
+  const [openTooltipPh2, setOpenTooltipPh2] = useState(false);
+  const [openTooltipPh3, setOpenTooltipPh3] = useState(false);
 
   useEffect(() => {
     const base_url =
@@ -229,6 +235,9 @@ function ConsumerForm(props) {
                   InputProps={{
                     endAdornment: (
                       <Tooltip
+                        onClick={(e) => setOpenTooltip(!openTooltip)}
+                        open={openTooltip}
+                        onClose={(leaveDelay) => setOpenTooltip(false)}
                         title={
                           !validations.isAValidCi(props.values?.ci) &&
                           props.values?.ci !== undefined
@@ -275,6 +284,9 @@ function ConsumerForm(props) {
                     ),
                     endAdornment: (
                       <Tooltip
+                        onClick={(e) => setOpenTooltipPh(!openTooltipPh)}
+                        open={openTooltipPh}
+                        onClose={(leaveDelay) => setOpenTooltipPh(false)}
                         title={
                           !validations.isAValidPhoneNum(props.values?.phone) &&
                           props.values?.phone !== undefined ? (
@@ -483,7 +495,6 @@ function ConsumerForm(props) {
                   fullWidth
                   disabled={shippingDataCheck}
                   className={classes.textField}
-                  // helperText="ej: 584141234567 o +584141234567 o 04143201028"
                   value={
                     shippingDataCheck
                       ? props.values?.phone
@@ -512,6 +523,9 @@ function ConsumerForm(props) {
                     ),
                     endAdornment: (
                       <Tooltip
+                        onClick={(e) => setOpenTooltipPh2(!openTooltipPh2)}
+                        open={openTooltipPh2}
+                        onClose={(leaveDelay) => setOpenTooltipPh2(false)}
                         title={
                           !validations.isAValidPhoneNum(props.values?.phone) &&
                           props.values?.phone !== undefined ? (
@@ -688,7 +702,7 @@ function ConsumerForm(props) {
                       ? props.values?.name
                         ? props.values.name
                         : ""
-                      : props.values.billingShName
+                      : ""
                   }
                   onChange={(e) =>
                     props.setValues({
@@ -725,7 +739,7 @@ function ConsumerForm(props) {
                       ? props.values?.lastName
                         ? props.values.lastName
                         : ""
-                      : props.values.billingShLastName
+                      : ""
                   }
                   required
                   onChange={(e) =>
@@ -760,7 +774,7 @@ function ConsumerForm(props) {
                       ? props.values?.ci
                         ? props.values.ci
                         : ""
-                      : props.values.billingCi
+                      : ""
                   }
                   onChange={(e) =>
                     props.setValues({
@@ -777,6 +791,9 @@ function ConsumerForm(props) {
                   InputProps={{
                     endAdornment: (
                       <Tooltip
+                        onClick={(e) => setOpenTooltip2(!openTooltip2)}
+                        open={openTooltip2}
+                        onClose={(leaveDelay) => setOpenTooltip2(false)}
                         title={
                           !validations.isAValidCi(props.values?.ci) &&
                           props.values?.ci !== undefined
@@ -843,7 +860,7 @@ function ConsumerForm(props) {
                       ? props.values?.phone
                         ? props.values.phone
                         : ""
-                      : props.values.billingShPhone
+                      : ""
                   }
                   onChange={(e) =>
                     props.setValues({
@@ -866,6 +883,9 @@ function ConsumerForm(props) {
                     ),
                     endAdornment: (
                       <Tooltip
+                        onClick={(e) => setOpenTooltipPh3(!openTooltipPh3)}
+                        open={openTooltipPh3}
+                        onClose={(leaveDelay) => setOpenTooltipPh3(false)}
                         title={
                           !validations.isAValidPhoneNum(props.values?.phone) &&
                           props.values?.phone !== undefined ? (
@@ -912,7 +932,7 @@ function ConsumerForm(props) {
                       ? props.values?.address
                         ? props.values.address
                         : ""
-                      : props.values.billingShAddress
+                      : ""
                   }
                   required
                   onChange={(e) =>

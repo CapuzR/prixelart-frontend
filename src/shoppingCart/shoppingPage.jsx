@@ -210,14 +210,14 @@ export default function ShoppingPage(props) {
             props.valuesConsumerForm?.address,
         }
       );
-      // window.open(utils.generateWaBuyMessage(orderLines), "_blank");
+      window.open(utils.generateWaBuyMessage(orderLines), "_blank");
 
       const base_url = process.env.REACT_APP_BACKEND_URL + "/order/create";
       const base_url2 = process.env.REACT_APP_BACKEND_URL + "/order/sendEmail";
 
       const input = {
         orderId: nanoid(6),
-        // requests: orderLines,
+        requests: orderLines,
         basicData: {
           firstname: consumer.data.newConsumer.firstname,
           lastname: consumer.data.newConsumer.lastname,
@@ -251,22 +251,22 @@ export default function ShoppingPage(props) {
         // consumerId: consumer.data.newConsumer._id,
         status: "Procesando",
       };
-      // const data = {
-      //   email: consumer.data.newConsumer.email,
-      // };
+      const data = {
+        email: consumer.data.newConsumer.email,
+      };
 
-      // const order = await axios.post(base_url, input).then(async (response) => {
-      //   console.log("Orden generada correctamente. Por favor, revisa tu email");
-      // });
+      const order = await axios.post(base_url, input).then(async (response) => {
+        console.log("Orden generada correctamente. Por favor, revisa tu email");
+      });
 
       await axios
         .post(base_url2, input)
         .then(async (response) => {
           if (!response.data.success) {
             props.setMessage(response.data.info);
-            // props.setMessage(
-            //   "¡Gracias por tu compra! te redireccionaremos a Whatsapp para ser atendido por nuestro departamento de ventas."
-            // );
+            props.setMessage(
+              "¡Gracias por tu compra! te redireccionaremos a Whatsapp para ser atendido por nuestro departamento de ventas."
+            );
           } else {
             console.log(response.data);
           }
@@ -274,10 +274,10 @@ export default function ShoppingPage(props) {
         .catch((error) => {
           console.log(error.response);
         });
-      // history.push({ pathname: "/" });
-      // props.setValuesConsumerForm(undefined);
-      // localStorage.removeItem("buyState");
-      // props.setBuyState([]);
+      history.push({ pathname: "/" });
+      props.setValuesConsumerForm(undefined);
+      localStorage.removeItem("buyState");
+      props.setBuyState([]);
       setLoading(false);
     } else {
       props.setOpen(true);

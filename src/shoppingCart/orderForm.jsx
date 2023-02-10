@@ -101,7 +101,9 @@ export default function OrderForm(props) {
     return total;
   };
 
-  let shippingCost = Number(props.valuesConsumer.shippingMethod?.price);
+  let shippingCost = Number(
+    props.valuesConsumer.shippingMethod?.price.replace(/[$]/gi, "")
+  );
 
   return (
     <>
@@ -242,6 +244,23 @@ export default function OrderForm(props) {
                               ))}
                           </Select>
                         </FormControl>
+                        {props.orderPaymentMethod && (
+                          <>
+                            <div
+                              style={{
+                                display: "flex",
+                                flexDirection: "column",
+                              }}
+                            >
+                              <p align="left">
+                                {props?.orderPaymentMethod.instructions}
+                                <br></br>
+                                <br></br>
+                                {props?.orderPaymentMethod.paymentData}
+                              </p>
+                            </div>
+                          </>
+                        )}
                       </Grid>
                       <Grid
                         item
@@ -257,23 +276,6 @@ export default function OrderForm(props) {
                           flexDirection: "column",
                         }}
                       >
-                        {props.orderPaymentMethod && (
-                          <>
-                            <div
-                              style={{
-                                display: "flex",
-                                flexDirection: "column",
-                              }}
-                            >
-                              <p align="right">
-                                {props?.orderPaymentMethod.instructions}
-                                {/* <br></br>
-                                <br></br>
-                                {props?.orderPaymentMethod.paymentData} */}
-                              </p>
-                            </div>
-                          </>
-                        )}
                         <strong>{`Subtotal: $${getTotalPrice(
                           props.buyState
                         ).toFixed(2)}`}</strong>

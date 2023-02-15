@@ -418,10 +418,17 @@ export default function CartReview(props) {
                   >
                     <div style={{ paddingBottom: 5 }}>
                       <strong>Precio Unitario:</strong>
-                      {`$${
+                      {/* {`$${
                         buy.product?.publicEquation ||
                         buy.product?.publicPrice.from.replace(/[$]/gi, "")
-                      }`}
+                      }`} */}
+
+                      {JSON.parse(localStorage.getItem("token")) &&
+                      JSON.parse(localStorage.getItem("token")).username
+                        ? "$" + buy.product?.prixerEquation
+                        : "$" + buy.product?.publicEquation ||
+                          "$" +
+                            buy.product?.publicPrice.from.replace(/[$]/gi, "")}
                     </div>
                     <div
                       style={{

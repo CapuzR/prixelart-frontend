@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import axios from "axios";
+
 import "./App.css";
 import Login from "./login/loginPage";
 import AdminLogin from "./adminLogin/adminLoginPage";
@@ -37,16 +39,38 @@ function App() {
   const [fullArt, setFullArt] = useState(null);
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("");
-
+  const [dollarValue, setDollarValue] = useState("");
   document.addEventListener("contextmenu", (event) => {
     event.preventDefault();
   });
+
+  function readDollarValue() {
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/dollarValue/read";
+    axios.get(base_url).then((response) => {
+      setDollarValue(response.data.dollarValue);
+    });
+  }
+
+  console.log(dollarValue);
+
+  useEffect(() => {
+    readDollarValue();
+  }, []);
 
   useEffect(() => {
     setInterval(() => {
       expire("token", "tokenExpire");
     }, 60000);
   }, []);
+
+  const updateDollarValue = () => {
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/dollarValue/update";
+    const body = {
+      adminToken: localStorage.getItem("adminTokenV"),
+      dollarValue: dollarValue,
+    };
+    axios.post(base_url, body);
+  };
 
   function addItemToBuyState(input) {
     const newState = [...buyState];
@@ -153,7 +177,13 @@ function App() {
         </Route>
 
         <Route path="/admin/dashboard">
-          <AdminMain />
+          <AdminMain
+            dollarValue={dollarValue}
+            setDollarValue={setDollarValue}
+            updateDollarValue={updateDollarValue}
+            setMessage={setMessage}
+            setOpen={setOpen}
+          />
         </Route>
 
         <Route path="/admin">
@@ -173,25 +203,26 @@ function App() {
             setOpen={setOpen}
             setMessage={setMessage}
             addItemToBuyState={addItemToBuyState}
+            dollarValue={dollarValue}
           />
         </Route>
 
         <Route path="/admin/user/create">
-          <AdminMain />
+          <AdminMain dollarValue={dollarValue} />
         </Route>
 
         <Route path="/admin/users/read">
-          <AdminMain />
+          <AdminMain dollarValue={dollarValue} />
         </Route>
 
         <Route exact path="/user/update/:userId" component={AdminMain} />
 
         <Route path="/admin/product/create">
-          <AdminMain />
+          <AdminMain dollarValue={dollarValue} />
         </Route>
 
         <Route path="/admin/products/read">
-          <AdminMain />
+          <AdminMain dollarValue={dollarValue} />
         </Route>
 
         <Route exact path="/product/update/:productId" component={AdminMain} />
@@ -209,11 +240,11 @@ function App() {
         />
 
         <Route path="/admin/consumer/create">
-          <AdminMain />
+          <AdminMain dollarValue={dollarValue} />
         </Route>
 
         <Route path="/admin/consumers/read">
-          <AdminMain />
+          <AdminMain dollarValue={dollarValue} />
         </Route>
 
         <Route

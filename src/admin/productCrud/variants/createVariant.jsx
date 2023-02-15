@@ -27,6 +27,7 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import { nanoid } from "nanoid";
+import validations from "../../../shoppingCart/validations";
 
 const useStyles = makeStyles((theme) => ({
   seeMore: {
@@ -51,31 +52,31 @@ export default function CreateVariant(props) {
     (props.variant && props.variant.name) || ""
   );
   const [description, setDescription] = useState(
-    (props.variant && props.variant.description) || ""
+    (props.variant && props.variant.description) || undefined
   );
   const [category, setCategory] = useState(
-    (props.variant && props.variant.category) || ""
+    (props.variant && props.variant.category) || undefined
   );
   const [considerations, setConsiderations] = useState(
-    (props.variant && props.variant.considerations) || ""
+    (props.variant && props.variant.considerations) || undefined
   );
   const [publicPriceEq, setPublicPriceEq] = useState(
-    (props.variant && props.variant.publicPrice.equation) || ""
+    (props.variant && props.variant.publicPrice.equation) || undefined
   );
   const [fromPublicPrice, setFromPublicPrice] = useState(
-    (props.variant && props.variant.publicPrice.from) || ""
+    (props.variant && props.variant.publicPrice.from) || undefined
   );
   const [toPublicPrice, setToPublicPrice] = useState(
-    (props.variant && props.variant.publicPrice.to) || ""
+    (props.variant && props.variant.publicPrice.to) || undefined
   );
   const [prixerPriceEq, setPrixerPriceEq] = useState(
-    (props.variant && props.variant.prixerPrice.equation) || ""
+    (props.variant && props.variant.prixerPrice.equation) || undefined
   );
   const [fromPrixerPrice, setFromPrixerPrice] = useState(
-    (props.variant && props.variant.prixerPrice.from) || ""
+    (props.variant && props.variant.prixerPrice.from) || undefined
   );
   const [toPrixerPrice, setToPrixerPrice] = useState(
-    (props.variant && props.variant.prixerPrice.to) || ""
+    (props.variant && props.variant.prixerPrice.to) || undefined
   );
   const [loading, setLoading] = useState(false);
   const [buttonState, setButtonState] = useState(false);
@@ -186,11 +187,7 @@ export default function CreateVariant(props) {
         !category &&
         !considerations &&
         !publicPriceEq &&
-        !fromPublicPrice &&
-        !toPublicPrice &&
         !prixerPriceEq &&
-        !fromPrixerPrice &&
-        !toPrixerPrice &&
         !image
       ) {
         setErrorMessage("Por favor completa todos los campos requeridos.");
@@ -536,149 +533,49 @@ export default function CreateVariant(props) {
             </Grid>
           </Grid>
           <Grid container style={{ marginTop: 20 }}>
-            <h3>Precios Público</h3>
+            <h3>Precios </h3>
           </Grid>
           <Grid container spacing={2}>
-            <Grid item xs={12} md={12}>
-              <FormControl
-                className={clsx(classes.margin, classes.textField)}
+            <Grid item xs={12} sm={12} md={6} lg={6}>
+              <TextField
                 variant="outlined"
-                xs={12}
-                fullWidth={true}
-              >
-                <TextField
-                  variant="outlined"
-                  required
-                  fullWidth
-                  id="publicPriceEquation"
-                  label="Ecuación"
-                  name="publicPriceEquation"
-                  autoComplete="publicPriceEquation"
-                  value={publicPriceEq}
-                  onChange={(e) => {
-                    setPublicPriceEq(e.target.value);
-                  }}
-                />
-              </FormControl>
+                required
+                fullWidth
+                id="publicPriceEquation"
+                label="Público"
+                name="publicPriceEquation"
+                autoComplete="publicPriceEquation"
+                value={publicPriceEq}
+                onChange={(e) => {
+                  setPublicPriceEq(e.target.value);
+                }}
+                error={
+                  publicPriceEq !== undefined &&
+                  !validations.isAValidPrice(publicPriceEq)
+                }
+              />
             </Grid>
-            <Grid container xs={12} md={12} spacing={2} style={{ margin: 0 }}>
-              <Grid item xs={6} md={6}>
-                <FormControl
-                  className={clsx(classes.margin, classes.textField)}
-                  variant="outlined"
-                  xs={12}
-                  fullWidth={true}
-                >
-                  <TextField
-                    variant="outlined"
-                    required
-                    fullWidth
-                    id="fromPublicPrice"
-                    label="Desde"
-                    name="fromPublicPrice"
-                    autoComplete="fromPublicPrice"
-                    value={fromPublicPrice}
-                    onChange={(e) => {
-                      setFromPublicPrice(e.target.value);
-                    }}
-                  />
-                </FormControl>
-              </Grid>
-              <Grid item xs={6} md={6}>
-                <FormControl
-                  className={clsx(classes.margin, classes.textField)}
-                  variant="outlined"
-                  xs={12}
-                  fullWidth={true}
-                >
-                  <TextField
-                    variant="outlined"
-                    required
-                    fullWidth
-                    id="toPublicPrice"
-                    label="Hasta"
-                    name="toPublicPrice"
-                    autoComplete="toPublicPrice"
-                    value={toPublicPrice}
-                    onChange={(e) => {
-                      setToPublicPrice(e.target.value);
-                    }}
-                  />
-                </FormControl>
-              </Grid>
+            <Grid item xs={12} sm={12} md={6} lg={6}>
+              <TextField
+                variant="outlined"
+                required
+                fullWidth
+                id="prixerPriceEq"
+                label="Prixers"
+                name="prixerPriceEq"
+                autoComplete="prixerPriceEq"
+                value={prixerPriceEq}
+                onChange={(e) => {
+                  setPrixerPriceEq(e.target.value);
+                }}
+                error={
+                  prixerPriceEq !== undefined &&
+                  !validations.isAValidPrice(prixerPriceEq)
+                }
+              />
             </Grid>
           </Grid>
-          <Grid container style={{ marginTop: 20 }}>
-            <h3>Precios Prixers</h3>
-          </Grid>
-          <Grid container spacing={2}>
-            <Grid item xs={4} md={4}>
-              <FormControl
-                className={clsx(classes.margin, classes.textField)}
-                variant="outlined"
-                xs={12}
-                fullWidth={true}
-              >
-                <TextField
-                  variant="outlined"
-                  required
-                  fullWidth
-                  id="prixerPriceEq"
-                  label="Ecuación"
-                  name="prixerPriceEq"
-                  autoComplete="prixerPriceEq"
-                  value={prixerPriceEq}
-                  onChange={(e) => {
-                    setPrixerPriceEq(e.target.value);
-                  }}
-                />
-              </FormControl>
-            </Grid>
-            <Grid item xs={4} md={5}>
-              <FormControl
-                className={clsx(classes.margin, classes.textField)}
-                variant="outlined"
-                xs={12}
-                fullWidth={true}
-              >
-                <TextField
-                  variant="outlined"
-                  required
-                  fullWidth
-                  id="fromPrixerPrice"
-                  label="Desde"
-                  name="fromPrixerPrice"
-                  autoComplete="fromPrixerPrice"
-                  value={fromPrixerPrice}
-                  onChange={(e) => {
-                    setFromPrixerPrice(e.target.value);
-                  }}
-                />
-              </FormControl>
-            </Grid>
-            <Grid item xs={4} md={5}>
-              <FormControl
-                className={clsx(classes.margin, classes.textField)}
-                variant="outlined"
-                xs={12}
-                fullWidth={true}
-              >
-                <TextField
-                  variant="outlined"
-                  required
-                  fullWidth
-                  id="toPrixerPrice"
-                  label="Hasta"
-                  name="toPrixerPrice"
-                  autoComplete="toPrixerPrice"
-                  value={toPrixerPrice}
-                  onChange={(e) => {
-                    setToPrixerPrice(e.target.value);
-                  }}
-                />
-              </FormControl>
-            </Grid>
-          </Grid>
+          <Grid container spacing={2}></Grid>
           <Grid container xs={12} spacing={2}>
             <Grid container style={{ marginTop: 20 }}>
               <h3>Atributos</h3>

@@ -418,19 +418,20 @@ export default function Grid(props) {
                   ) : (
                     ""
                   )}
-                  <Tooltip title="Agregar al carrito">
-                    <IconButton
-                      size="small"
-                      color="primary"
-                      onClick={(e) => {
-                        addingToCart(e, tile);
-                      }}
-                      style={{ position: "absolute", padding: "8px" }}
-                    >
-                      <AddShoppingCartIcon />
-                    </IconButton>
-                  </Tooltip>
+
                   <CardActionArea>
+                    <Tooltip title="Agregar al carrito">
+                      <IconButton
+                        size="small"
+                        color="primary"
+                        onClick={(e) => {
+                          addingToCart(e, tile);
+                        }}
+                        style={{ position: "absolute", padding: "8px" }}
+                      >
+                        <AddShoppingCartIcon />
+                      </IconButton>
+                    </Tooltip>
                     <Img
                       draggable={false}
                       onClick={(e) => {
@@ -442,19 +443,16 @@ export default function Grid(props) {
                         width: "100%",
                         marginBottom: "7px",
                         borderRadius: "4px",
-                        // objectFit: "cover",
                       }}
                       src={tile.squareThumbUrl}
                       debounce={1000}
                       cache
                       error="/imgError.svg"
-                      // srcSet={tile.smallThumbUrl + ' 600w, ' + tile.mediumThumbUrl + ' 850w, ' + tile.largeThumbUrl + ' 1300w'}
-                      // sizes="(min-width: 1600px) 850px, (min-width: 960px) 450px, (min-width: 640px) 400px, 200px"
-                      // sizes="(min-width: 1600px) 850px, (min-width: 960px) 450px, (min-width: 640px) 200px, (min-width: 375px) 80px"
                       alt={tile.title}
                       id={tile.artId}
                       key={tile.artId}
                     />
+
                     {JSON.parse(localStorage.getItem("adminToken")) && (
                       <IOSSwitch
                         color="primary"

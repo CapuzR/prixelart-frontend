@@ -27,6 +27,7 @@ import Box from "@material-ui/core/Box";
 import MDEditor from "@uiw/react-md-editor";
 import Variants from "../adminMain/products/variants";
 import Backdrop from "@material-ui/core/Backdrop";
+import validations from "../../shoppingCart/validations";
 
 const useStyles = makeStyles((theme) => ({
   seeMore: {
@@ -634,10 +635,14 @@ export default function UpdateAdmin(props) {
                       label="Desde"
                       name="fromPublicPrice"
                       autoComplete="fromPublicPrice"
-                      value={fromPublicPrice ? fromPublicPrice : "$"}
+                      value={fromPublicPrice}
                       onChange={(e) => {
                         setFromPublicPrice(e.target.value);
                       }}
+                      error={
+                        fromPublicPrice !== undefined &&
+                        !validations.isAValidPrice(fromPublicPrice)
+                      }
                     />
                   </FormControl>
                 </Grid>
@@ -650,16 +655,20 @@ export default function UpdateAdmin(props) {
                   >
                     <TextField
                       variant="outlined"
-                      required
+                      // required
                       fullWidth
                       id="toPublicPrice"
                       label="Hasta"
                       name="toPublicPrice"
                       autoComplete="toPublicPrice"
-                      value={toPublicPrice ? toPublicPrice : "$"}
+                      value={toPublicPrice}
                       onChange={(e) => {
                         setToPublicPrice(e.target.value);
                       }}
+                      error={
+                        toPublicPrice !== undefined &&
+                        !validations.isAValidPrice(toPublicPrice)
+                      }
                     />
                   </FormControl>
                 </Grid>
@@ -683,10 +692,14 @@ export default function UpdateAdmin(props) {
                       label="Desde"
                       name="fromPrixerPrice"
                       autoComplete="fromPrixerPrice"
-                      value={fromPrixerPrice ? fromPrixerPrice : "$"}
+                      value={fromPrixerPrice}
                       onChange={(e) => {
                         setFromPrixerPrice(e.target.value);
                       }}
+                      error={
+                        fromPrixerPrice !== undefined &&
+                        !validations.isAValidPrice(fromPrixerPrice)
+                      }
                     />
                   </FormControl>
                 </Grid>
@@ -699,16 +712,20 @@ export default function UpdateAdmin(props) {
                   >
                     <TextField
                       variant="outlined"
-                      required
+                      // required
                       fullWidth
                       id="toPrixerPrice"
                       label="Hasta"
                       name="toPrixerPrice"
                       autoComplete="toPrixerPrice"
-                      value={toPrixerPrice ? toPrixerPrice : "$"}
+                      value={toPrixerPrice}
                       onChange={(e) => {
                         setToPrixerPrice(e.target.value);
                       }}
+                      error={
+                        toPrixerPrice !== undefined &&
+                        !validations.isAValidPrice(toPrixerPrice)
+                      }
                     />
                   </FormControl>
                 </Grid>

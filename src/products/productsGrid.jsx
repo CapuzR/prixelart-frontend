@@ -305,16 +305,32 @@ export default function ProductGrid(props) {
                         )
                       : "PVP: $" + tile.publicPrice.from.replace(/[$]/gi, "")}
                     <br></br>
+                    {JSON.parse(localStorage.getItem("adminToken")) &&
+                    JSON.parse(localStorage.getItem("adminToken")).username &&
+                    tile.prixerEquation !== ""
+                      ? "PVM: $" + tile.prixerEquation
+                      : tile.attributes !== []
+                      ? tile.publicPrice.to !== tile.publicPrice.from &&
+                        tile.publicPrice.to !== ""
+                        ? "PVM: $" +
+                          tile.prixerPrice?.from +
+                          " - " +
+                          tile.prixerPrice?.to
+                        : "PVM: $" + tile.prixerPrice?.from.replace(/[$]/gi, "")
+                      : null}
                     {JSON.parse(localStorage.getItem("token")) &&
                     JSON.parse(localStorage.getItem("token")).username &&
-                    tile.attributes !== [] &&
-                    tile.publicPrice.to !== tile.publicPrice.from &&
-                    tile.publicPrice.to !== ""
-                      ? "PVM: " +
-                        tile.prixerPrice?.from +
-                        " - " +
-                        tile.prixerPrice?.to
-                      : "PVM: " + tile.prixerPrice?.from}
+                    tile.prixerEquation !== ""
+                      ? "PVM: $" + tile.prixerEquation
+                      : tile.attributes !== []
+                      ? tile.publicPrice.to !== tile.publicPrice.from &&
+                        tile.publicPrice.to !== ""
+                        ? "PVM: $" +
+                          tile.prixerPrice?.from +
+                          " - " +
+                          tile.prixerPrice?.to
+                        : "PVM: $" + tile.prixerPrice?.from.replace(/[$]/gi, "")
+                      : null}
                   </Typography>
                   <MDEditor.Markdown
                     source={tile.description}
@@ -491,7 +507,7 @@ export default function ProductGrid(props) {
                             }}
                             label={att.selection}
                           >
-                            <MenuItem value="">
+                            <MenuItem value={undefined}>
                               <em></em>
                             </MenuItem>
                             {att.value &&

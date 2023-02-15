@@ -124,10 +124,14 @@ export default function ReadProducts(props) {
                   </TableCell>
                   <TableCell align="center">{row.category}</TableCell>
                   <TableCell align="center">
-                    {row.publicPrice.from}-{row.publicPrice.from}
+                    ${row.publicPrice.from.replace(/[$]/gi, "")}
+                    {row.publicPrice.to &&
+                      " - " + row.publicPrice.to.replace(/[$]/gi, "")}
                   </TableCell>
                   <TableCell align="center">
-                    {row.prixerPrice.from}-{row.prixerPrice.to}
+                    ${row.prixerPrice.from.replace(/[$]/gi, "")}
+                    {row.prixerPrice.to &&
+                      " - " + row.prixerPrice.to.replace(/[$]/gi, "")}
                   </TableCell>
                   <TableCell align="center">
                     <Fab

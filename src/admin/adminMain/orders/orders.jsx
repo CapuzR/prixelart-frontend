@@ -477,6 +477,17 @@ export default function Orders(props) {
     readOrders();
   };
 
+  const handleChangePayStatus = async (id, payStatus) => {
+    const URI =
+      process.env.REACT_APP_BACKEND_URL + "/order/updatePayStatus/" + id;
+    const body = {
+      adminToken: localStorage.getItem("adminTokenV"),
+      payStatus: payStatus,
+    };
+    await axios.put(URI, body, { withCredentials: true });
+    readOrders();
+  };
+
   const handleChange = (event) => {
     setFilter(event.target.value);
     filterOrders(event.target.value);
@@ -671,6 +682,7 @@ export default function Orders(props) {
                     <TableCell align="center">Nombre</TableCell>
                     <TableCell align="center">Productos</TableCell>
                     <TableCell align="center">Total</TableCell>
+                    <TableCell align="center">Status de Pago</TableCell>
                     <TableCell align="center">Status</TableCell>
                   </TableRow>
                 </TableHead>
@@ -720,6 +732,31 @@ export default function Orders(props) {
                           <TableCell align="center">
                             ${row.total.toFixed(2)}
                           </TableCell>
+
+                          <TableCell align="center">
+                            <FormControl
+                              disabled={row.payStatus === "Verificado"}
+                            >
+                              <Select
+                                SelectClassKey
+                                value={row.payStatus || "Pendiente"}
+                                onChange={(e) => {
+                                  handleChangePayStatus(
+                                    row.orderId,
+                                    e.target.value
+                                  );
+                                }}
+                              >
+                                <MenuItem value={"Pendiente"}>
+                                  Pendiente
+                                </MenuItem>
+                                <MenuItem value={"Verificado"}>
+                                  Verificado
+                                </MenuItem>
+                              </Select>
+                            </FormControl>
+                          </TableCell>
+
                           <TableCell align="center">
                             <FormControl
                               disabled={
@@ -784,16 +821,7 @@ export default function Orders(props) {
         </Grid>
       </Grid>
 
-      <Modal
-        open={isShowDetails}
-
-        // xl={12}
-        // lg={12}
-        // md={12}
-        // sm={12}
-        // xs={12}
-        // onClose={!}
-      >
+      <Modal open={isShowDetails}>
         <Grid container className={classes.paper2}>
           <Grid
             item
@@ -813,7 +841,6 @@ export default function Orders(props) {
                 style={{
                   display: "flex",
                   flexDirection: "column",
-                  // margin: "10px 0px 20px 0px",
                 }}
                 item
                 xs={12}
@@ -1063,8 +1090,9 @@ export default function Orders(props) {
                   <div>{"Subtotal: $" + modalContent?.subtotal.toFixed(2)}</div>
                   <div>{"IVA: $" + modalContent?.tax.toFixed(2)}</div>
                   <div>
-                    {"Envío: $" +
-                      modalContent?.shippingData.shippingMethod.price}
+                    {modalContent.shippingData?.shippingMethod &&
+                      "Envío: $" +
+                        modalContent?.shippingData?.shippingMethod?.price}
                   </div>
                   <div style={{ marginBottom: 10 }}>
                     {"Total: $" + modalContent?.total.toFixed(2)}

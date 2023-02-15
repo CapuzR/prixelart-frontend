@@ -351,7 +351,7 @@ export default function ReadShippingMethod(props) {
                               }}
                               error={
                                 price !== undefined &&
-                                !validations.isAValidNumber(price)
+                                !validations.isAValidPrice(price)
                               }
                             />
                           </FormControl>
@@ -362,7 +362,7 @@ export default function ReadShippingMethod(props) {
                         color="primary"
                         type="submit"
                         disabled={
-                          !name || !price || !validations.isAValidNumber(price)
+                          !name || !price || !validations.isAValidPrice(price)
                         }
                         style={{ marginTop: 20 }}
                       >
@@ -440,6 +440,10 @@ export default function ReadShippingMethod(props) {
                               onChange={(e) => {
                                 setPrice(e.target.value);
                               }}
+                              error={
+                                price !== undefined &&
+                                !validations.isAValidPrice(price)
+                              }
                             />
                           </FormControl>
                         </Grid>
@@ -449,6 +453,9 @@ export default function ReadShippingMethod(props) {
                         color="primary"
                         type="submit"
                         style={{ marginTop: 20 }}
+                        disabled={
+                          !name || !price || !validations.isAValidPrice(price)
+                        }
                       >
                         Actualizar
                       </Button>

@@ -133,15 +133,20 @@ export default function ShoppingPage(props) {
 
   const getTotalPrice = (state) => {
     let prices = [];
-    state.map(
-      (item) =>
-        item.product &&
-        item.art &&
-        prices.push(
-          (item.product.publicEquation ||
-            item.product.publicPrice.from.replace(/[$]/gi, "")) *
-            (item.quantity || 1)
-        )
+    state.map((item) =>
+      item.product && item.art
+        ? JSON.parse(localStorage.getItem("token")) &&
+          JSON.parse(localStorage.getItem("token")).username &&
+          prices.push(
+            (item.product.prixerEquation ||
+              item.product.prixerPrice.from.replace(/[$]/gi, "")) *
+              (item.quantity || 1)
+          )
+        : prices.push(
+            (item.product.publicEquation ||
+              item.product.publicPrice.from.replace(/[$]/gi, "")) *
+              (item.quantity || 1)
+          )
     );
     let total = prices.reduce(function (a, b) {
       return a + b;
@@ -224,6 +229,7 @@ export default function ShoppingPage(props) {
           ci: consumer.data.newConsumer.ci,
           email: consumer.data.newConsumer.email,
           phone: consumer.data.newConsumer.phone,
+          adddress: consumer.data.newConsumer.address,
         },
         shippingData: {
           name: props.valuesConsumerForm?.shippingName,

@@ -28,6 +28,14 @@ import Preferences from "./preferences/Preferences";
 import Testimonials from "../TestimonialsCrud/Testimonials";
 import Prixers from "./prixers/prixers";
 import ShippingMethods from "./shippingMethodCrud/readShippingMethod";
+import Fab from "@material-ui/core/Fab";
+import AttachMoneyIcon from "@material-ui/icons/AttachMoney";
+import Modal from "@material-ui/core/Modal";
+import CloseIcon from "@material-ui/icons/Close";
+import Grid from "@material-ui/core/Grid";
+import TextField from "@material-ui/core/TextField";
+import SaveIcon from "@material-ui/icons/Save";
+import { update } from "immutable";
 
 function Copyright() {
   return (
@@ -45,6 +53,38 @@ function Copyright() {
 const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
+  floatingButton: {
+    margin: theme.spacing(1),
+    marginRight: 10,
+    top: "auto",
+    bottom: 20,
+    left: "auto",
+    paddingRight: "5",
+    position: "fixed",
+    backgroundColor: theme.palette.primary.main,
+  },
+  paper2: {
+    position: "fixed",
+    right: 1,
+    top: "auto",
+    bottom: 10,
+    left: "auto",
+    width: 310,
+    // maxHeight: "90%",
+    // overflowY: "auto",
+    backgroundColor: "white",
+    boxShadow: theme.shadows[2],
+    padding: "16px 32px 24px",
+    // top: "50%",
+    // left: "50%",
+    transform: "translate(-50%, -50%)",
+    textAlign: "justify",
+    minWidth: 320,
+    borderRadius: 10,
+    marginTop: "12px",
+    display: "flex",
+    flexDirection: "row",
+  },
   root: {
     display: "flex",
     backgroundColor: "rgba(102, 102, 102, 0.1)",
@@ -132,7 +172,7 @@ export default function AdminMain(props) {
   const [active, setActive] = useState("user");
   const location = useLocation();
   const history = useHistory();
-  // const [selectedProduct, setSelectedProduct] = useState(undefined);
+  const [openDollarView, setOpenDollarView] = useState(false);
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -160,6 +200,13 @@ export default function AdminMain(props) {
     setOpen(false);
   }, [active]);
 
+  const dollarView = () => {
+    setOpenDollarView(true);
+  };
+
+  const handleClose = () => {
+    setOpenDollarView(false);
+  };
   return (
     <div className={classes.root}>
       {JSON.parse(localStorage.getItem("adminToken")) ? (
@@ -263,6 +310,57 @@ export default function AdminMain(props) {
               </Box>
             </Container>
           </main>
+          <Fab
+            color="primary"
+            size="small"
+            onClick={dollarView}
+            style={{ right: 10 }}
+            className={classes.floatingButton}
+          >
+            <AttachMoneyIcon />
+          </Fab>
+          <Modal open={openDollarView}>
+            <Grid container className={classes.paper2}>
+              <Grid
+                item
+                style={{
+                  width: "100%",
+                  display: "flex",
+                  justifyContent: "flex-end",
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center" }}>
+                  <Typography color="primary">Tasa de cambio BCV</Typography>
+
+                  <IconButton onClick={handleClose}>
+                    <CloseIcon />
+                  </IconButton>
+                </div>
+              </Grid>
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <TextField
+                  variant="outlined"
+                  value={props.dollarValue}
+                  onChange={(e) => props.setDollarValue(e.target.value)}
+                />
+                <Fab
+                  color="primary"
+                  size="small"
+                  onClick={() => {
+                    props.updateDollarValue();
+                    props.setOpen(true);
+                    props.setMessage(
+                      "Tasa del dólar actualizada satisfactoriamente."
+                    );
+                    handleClose();
+                  }}
+                  style={{ marginRight: 10, marginLeft: 10 }}
+                >
+                  <SaveIcon />
+                </Fab>
+              </div>
+            </Grid>
+          </Modal>
         </>
       ) : (
         history.push({ pathname: "/" })

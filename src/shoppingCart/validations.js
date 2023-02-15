@@ -33,8 +33,8 @@ function isAValidUsername(username) {
   return re.test(String(username));
 }
 
-function isAValidNumber(number) {
-  const re = /^[0-9]{1,4}$/;
+function isAValidPrice(number) {
+  const re = /^[0-9]+(([,]+[0-9]{1,2})?){1,6}$/;
   return re.test(String(number));
 }
 
@@ -45,5 +45,5 @@ export default {
   isAValidName,
   isAValidPhoneNum,
   isAValidCi,
-  isAValidNumber,
+  isAValidPrice,
 };

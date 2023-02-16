@@ -39,19 +39,17 @@ function App() {
   const [fullArt, setFullArt] = useState(null);
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("");
-  const [dollarValue, setDollarValue] = useState("");
+  const [dollarValue, setDollarValue] = useState("1");
   document.addEventListener("contextmenu", (event) => {
     event.preventDefault();
   });
 
-  function readDollarValue() {
+  const readDollarValue = async () => {
     const base_url = process.env.REACT_APP_BACKEND_URL + "/dollarValue/read";
-    axios.get(base_url).then((response) => {
+    await axios.get(base_url).then((response) => {
       setDollarValue(response.data.dollarValue);
     });
-  }
-
-  console.log(dollarValue);
+  };
 
   useEffect(() => {
     readDollarValue();
@@ -267,6 +265,7 @@ function App() {
             deleteItemInBuyState={deleteItemInBuyState}
             deleteProductInItem={deleteProductInItem}
             AssociateProduct={AssociateProduct}
+            // dollarValue={dollarValue}
           />
         </Route>
 
@@ -392,6 +391,7 @@ function App() {
             setMessage={setMessage}
             setPrixer={setPrixer}
             setFullArt={setFullArt}
+            dollarValue={dollarValue}
           />
         </Route>
         <Route component={Home} />

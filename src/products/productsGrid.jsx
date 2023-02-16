@@ -31,6 +31,8 @@ import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
 import { setProductAtts, getAttributes, getEquation } from "./services.js";
 import AddShoppingCartIcon from "@material-ui/icons/ShoppingCart";
 import { useHistory } from "react-router-dom";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import Switch from "@material-ui/core/Switch";
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -71,6 +73,18 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
     heigh: "40vh",
   },
+  dollar: {
+    color: "white",
+    backgroundColor: "#d33f49",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    width: 30,
+    height: 30,
+    borderRadius: "50%",
+    fontSize: 20,
+    marginRight: 10,
+  },
 }));
 
 export default function ProductGrid(props) {
@@ -82,7 +96,7 @@ export default function ProductGrid(props) {
   const [height, setHeight] = useState([]);
   const [order, setOrder] = useState("");
   const history = useHistory();
-
+  const [dollarValue, setDollarValue] = useState(1);
   const handleChange = (event) => {
     setOrder(event.target.value);
   };
@@ -132,6 +146,17 @@ export default function ProductGrid(props) {
     });
   }, [order]);
 
+  const readDollarValue = async () => {
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/dollarValue/read";
+    await axios.get(base_url).then((response) => {
+      setDollarValue(response.data.dollarValue);
+    });
+  };
+
+  useEffect(() => {
+    readDollarValue();
+  });
+
   const addingToCart = (e, tile) => {
     e.preventDefault();
     props.setSelectedProduct(tile);
@@ -141,9 +166,25 @@ export default function ProductGrid(props) {
   return (
     <>
       <div style={{ display: "flex", justifyContent: "end" }}>
+        {/* <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+            marginRight: 30,
+          }}
+        >
+          <div className={classes.dollar}>$</div>
+          <Switch color="primary" style={{ marginRight: "-5px" }} />
+          <div className={classes.dollar}>Bs</div>
+        </div> */}
+
         <FormControl className={classes.formControl}>
-          <InputLabel id="demo-simple-select-label">Ordenar</InputLabel>
+          <InputLabel style={{ marginLeft: 10 }} id="demo-simple-select-label">
+            Ordenar
+          </InputLabel>
           <Select
+            variant="outlined"
             labelId="demo-simple-select-label"
             id="demo-simple-select"
             value={order}
@@ -265,34 +306,11 @@ export default function ProductGrid(props) {
                     variant="h5"
                     component="h2"
                   >
-                    {/* {JSON.parse(localStorage.getItem("token")) &&
-                    JSON.parse(localStorage.getItem("token")).username
-                      ? tile.needsEquation &&
-                        tile.prixerEquation &&
-                        tile.prixerEquation != 0
-                        ? "PVP: $" +
-                          Math.round(parseFloat(tile.publicEquation)) +
-                          " \n PVM: $" +
-                          Math.round(parseFloat(tile.prixerEquation))
-                        : "PVP: $" +
-                          tile.publicPrice?.from +
-                          " - " +
-                          tile.publicPrice?.to +
-                          " \n PVM: $" +
-                          tile.prixerPrice?.from +
-                          " - " +
-                          tile.prixerPrice?.to
-                      : tile.needsEquation &&
-                        tile.publicEquation &&
-                        tile.publicEquation != 0
-                      ? "PVP: $" + Math.round(parseFloat(tile.publicEquation))
-                      : "PVP: " +
-                        tile.publicPrice?.from +
-                        " - " +
-                        tile.publicPrice?.to} */}
-                    <br></br>
                     {tile.publicEquation !== ""
-                      ? "PVP: $" + tile.publicEquation
+                      ? "PVP: $" +
+                        tile.publicEquation +
+                        " - Bs" +
+                        (tile.publicEquation * dollarValue).toFixed(2)
                       : tile.attributes !== [] &&
                         tile.publicPrice.to !== tile.publicPrice.from &&
                         tile.publicPrice.to !== ""
@@ -302,10 +320,25 @@ export default function ProductGrid(props) {
                         tile.variants[0].publicPrice.equation.replace(
                           /[$]/gi,
                           ""
-                        )
-                      : "PVP: $" + tile.publicPrice.from.replace(/[$]/gi, "")}
+                        ) +
+                        " | Bs" +
+                        (
+                          tile.publicPrice.from.replace(/[$]/gi, "") *
+                          dollarValue
+                        ).toFixed(2) +
+                        " - " +
+                        (
+                          tile.publicPrice.to.replace(/[$]/gi, "") * dollarValue
+                        ).toFixed(2)
+                      : "PVP: $" +
+                        tile.publicPrice.from.replace(/[$]/gi, "") +
+                        " | Bs" +
+                        (
+                          tile.publicPrice.from.replace(/[$]/gi, "") *
+                          dollarValue
+                        ).toFixed(2)}
                     <br></br>
-                    {JSON.parse(localStorage.getItem("adminToken")) &&
+                    {/* {/* {JSON.parse(localStorage.getItem("adminToken")) &&
                     JSON.parse(localStorage.getItem("adminToken")).username &&
                     tile.prixerEquation !== ""
                       ? "PVM: $" + tile.prixerEquation
@@ -317,8 +350,8 @@ export default function ProductGrid(props) {
                           " - " +
                           tile.prixerPrice?.to
                         : "PVM: $" + tile.prixerPrice?.from.replace(/[$]/gi, "")
-                      : null}
-                    {JSON.parse(localStorage.getItem("token")) &&
+                      : null} */}
+                    {/* {JSON.parse(localStorage.getItem("token")) &&
                     JSON.parse(localStorage.getItem("token")).username &&
                     tile.prixerEquation !== ""
                       ? "PVM: $" + tile.prixerEquation
@@ -330,7 +363,7 @@ export default function ProductGrid(props) {
                           " - " +
                           tile.prixerPrice?.to
                         : "PVM: $" + tile.prixerPrice?.from.replace(/[$]/gi, "")
-                      : null}
+                      : null} */}
                   </Typography>
                   <MDEditor.Markdown
                     source={tile.description}

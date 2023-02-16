@@ -83,7 +83,7 @@ const useStyles = makeStyles((theme) => ({
     height: 30,
     borderRadius: "50%",
     fontSize: 20,
-    marginRight: 10,
+    // marginRight: 5,
   },
 }));
 
@@ -100,6 +100,7 @@ export default function ProductGrid(props) {
   const handleChange = (event) => {
     setOrder(event.target.value);
   };
+  const [currency, setCurrency] = useState(false);
 
   useEffect(() => {
     const base_url = process.env.REACT_APP_BACKEND_URL + "/product/read-all";
@@ -163,6 +164,10 @@ export default function ProductGrid(props) {
     props.setIsOpenAssociateArt(true);
   };
 
+  const changeCurrency = () => {
+    setCurrency(!currency);
+  };
+
   return (
     <>
       <div style={{ display: "flex", justifyContent: "end" }}>
@@ -171,11 +176,18 @@ export default function ProductGrid(props) {
             display: "flex",
             flexDirection: "row",
             alignItems: "center",
-            marginRight: 30,
+            marginRight: 40,
           }}
         >
           <div className={classes.dollar}>$</div>
-          <Switch color="primary" style={{ marginRight: "-5px" }} />
+          <Switch
+            color="primary"
+            value={currency}
+            onChange={(e) => {
+              changeCurrency(e);
+            }}
+            style={{ marginRight: "-5px" }}
+          />
           <div className={classes.dollar}>Bs</div>
         </div> */}
 
@@ -351,19 +363,23 @@ export default function ProductGrid(props) {
                           tile.prixerPrice?.to
                         : "PVM: $" + tile.prixerPrice?.from.replace(/[$]/gi, "")
                       : null} */}
-                    {/* {JSON.parse(localStorage.getItem("token")) &&
+                    {JSON.parse(localStorage.getItem("token")) &&
                     JSON.parse(localStorage.getItem("token")).username &&
                     tile.prixerEquation !== ""
                       ? "PVM: $" + tile.prixerEquation
-                      : tile.attributes !== []
-                      ? tile.publicPrice.to !== tile.publicPrice.from &&
+                      : JSON.parse(localStorage.getItem("token")) &&
+                        JSON.parse(localStorage.getItem("token")).username &&
+                        tile.attributes !== []
+                      ? JSON.parse(localStorage.getItem("token")) &&
+                        JSON.parse(localStorage.getItem("token")).username &&
+                        tile.publicPrice.to !== tile.publicPrice.from &&
                         tile.publicPrice.to !== ""
                         ? "PVM: $" +
                           tile.prixerPrice?.from +
                           " - " +
                           tile.prixerPrice?.to
                         : "PVM: $" + tile.prixerPrice?.from.replace(/[$]/gi, "")
-                      : null} */}
+                      : null}
                   </Typography>
                   <MDEditor.Markdown
                     source={tile.description}

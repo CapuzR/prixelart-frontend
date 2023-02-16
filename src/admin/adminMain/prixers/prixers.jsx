@@ -177,10 +177,17 @@ export default function Prixers() {
                         >
                           {tile.username} -
                           {tile.specialty ||
-                            tile.specialtyArt?.map((specialty, index) =>
-                              tile.specialtyArt?.length === index + 1
-                                ? specialty
-                                : `${specialty}, `
+                            // tile.specialtyArt?.map((specialty, index) =>
+                            //   tile.specialtyArt?.length === index + 1
+                            //     ? specialty
+                            //     : `${specialty}, `
+                            // )}
+                            tile.specialtyArt?.map(
+                              (specialty, index) =>
+                                specialty !== "" &&
+                                (tile.specialtyArt?.length === index + 1
+                                  ? specialty
+                                  : `${specialty}, `)
                             )}
                         </Typography>
                       </CardContent>

@@ -147,15 +147,18 @@ export default function ShoppingPage(props) {
   const getTotalPrice = (state) => {
     let prices = [];
     state.map((item) =>
-      item.product && item.art
-        ? JSON.parse(localStorage.getItem("token")) &&
-          JSON.parse(localStorage.getItem("token")).username &&
-          prices.push(
+      item.product &&
+      item.art &&
+      JSON.parse(localStorage.getItem("token")) &&
+      JSON.parse(localStorage.getItem("token")).username
+        ? prices.push(
             (item.product.prixerEquation ||
               item.product.prixerPrice.from.replace(/[$]/gi, "")) *
               (item.quantity || 1)
           )
-        : prices.push(
+        : item.product &&
+          item.art &&
+          prices.push(
             (item.product.publicEquation ||
               item.product.publicPrice.from.replace(/[$]/gi, "")) *
               (item.quantity || 1)
@@ -231,7 +234,7 @@ export default function ShoppingPage(props) {
       window.open(utils.generateWaBuyMessage(orderLines), "_blank");
 
       const base_url = process.env.REACT_APP_BACKEND_URL + "/order/create";
-      const base_url2 = process.env.REACT_APP_BACKEND_URL + "/order/sendEmail";
+      // const base_url2 = process.env.REACT_APP_BACKEND_URL + "/order/sendEmail";
 
       const input = {
         orderId: nanoid(6),
@@ -274,12 +277,8 @@ export default function ShoppingPage(props) {
         email: consumer.data.newConsumer.email,
       };
 
-      const order = await axios.post(base_url, input).then(async (response) => {
-        console.log("Orden generada correctamente. Por favor, revisa tu email");
-      });
-
-      await axios
-        .post(base_url2, input)
+      const order = await axios
+        .post(base_url, input)
         .then(async (response) => {
           if (!response.data.success) {
             props.setMessage(response.data.info);

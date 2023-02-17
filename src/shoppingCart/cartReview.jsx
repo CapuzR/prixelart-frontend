@@ -13,6 +13,7 @@ import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { useHistory } from "react-router-dom";
 import IconButton from "@material-ui/core/IconButton";
 import { Typography } from "@material-ui/core";
+import { BorderStyle } from "@material-ui/icons";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -425,31 +426,47 @@ export default function CartReview(props) {
                   >
                     <div style={{ paddingBottom: 5 }}>
                       <strong>Precio Unitario:</strong>
-                      {JSON.parse(localStorage.getItem("token")) &&
-                      JSON.parse(localStorage.getItem("token")).username &&
-                      props.currency === true
-                        ? " Bs" +
-                          (
-                            buy.product?.prixerEquation * props.dollarValue
-                          ).toFixed(2)
-                        : JSON.parse(localStorage.getItem("token")) &&
+                      {props.currency
+                        ? JSON.parse(localStorage.getItem("token")) &&
                           JSON.parse(localStorage.getItem("token")).username
-                        ? " $" + buy.product?.prixerEquation
-                        : props.currency === true
-                        ? " Bs" +
+                          ? buy.product.prixerEquation !== ""
+                            ? " Bs" +
+                              (
+                                buy.product.prixerEquation
+                                  .replace(/[$]/gi, "")
+                                  .replace(/[,]/gi, ".") * props.dollarValue
+                              ).toFixed(2)
+                            : " Bs" +
+                              (
+                                Number(
+                                  buy.product.prixerPrice.from
+                                    .replace(/[$]/gi, "")
+                                    .replace(/[,]/gi, ".")
+                                ) * props.dollarValue
+                              ).toFixed(2)
+                          : buy.product.publicEquation !== ""
+                          ? " Bs" +
                             (
-                              buy.product?.publicEquation * props.dollarValue
-                            ).toFixed(2) ||
-                          " Bs" +
+                              buy.product.publicEquation * props.dollarValue
+                            ).toFixed(2)
+                          : " Bs" +
                             (
-                              buy.product?.publicPrice.from.replace(
+                              buy.product.publicPrice.from.replace(
                                 /[$]/gi,
                                 ""
                               ) * props.dollarValue
                             ).toFixed(2)
-                        : " $" + buy.product?.publicEquation ||
-                          " $" +
-                            buy.product?.publicPrice.from.replace(/[$]/gi, "")}
+                        : JSON.parse(localStorage.getItem("token")) &&
+                          JSON.parse(localStorage.getItem("token")).username
+                        ? buy.product.prixerEquation !== ""
+                          ? " $" +
+                            buy.product.prixerEquation.replace(/[$]/gi, "")
+                          : " $" +
+                            buy.product.prixerPrice.from.replace(/[$]/gi, "")
+                        : buy.product.publicEquation !== ""
+                        ? " $" + buy.product.publicEquation
+                        : " $" +
+                          buy.product.publicPrice.from.replace(/[$]/gi, "")}
                     </div>
                     <div
                       style={{

@@ -65,15 +65,17 @@ export default function OrderForm(props) {
       JSON.parse(localStorage.getItem("token")).username
         ? prices.push(
             (item.product.prixerEquation ||
-              item.product.prixerPrice.from.replace(/[$]/gi, "")) *
-              (item.quantity || 1)
+              item.product.prixerPrice.from
+                .replace(/[$]/gi, "")
+                .replace(/[,]/gi, ".")) * (item.quantity || 1)
           )
         : item.product &&
           item.art &&
           prices.push(
             (item.product.publicEquation ||
-              item.product.publicPrice.from.replace(/[$]/gi, "")) *
-              (item.quantity || 1)
+              item.product.publicPrice.from
+                .replace(/[$]/gi, "")
+                .replace(/[,]/gi, ".")) * (item.quantity || 1)
           )
     );
     let total = prices.reduce(function (a, b) {
@@ -182,61 +184,78 @@ export default function OrderForm(props) {
                                           >
                                             Monto:
                                             <br></br>
-                                            {JSON.parse(
-                                              localStorage.getItem("token")
-                                            ) &&
-                                            JSON.parse(
-                                              localStorage.getItem("token")
-                                            ).username &&
-                                            props.currency
-                                              ? "Bs" +
+                                            {props.currency
+                                              ? JSON.parse(
+                                                  localStorage.getItem("token")
+                                                ) &&
+                                                JSON.parse(
+                                                  localStorage.getItem("token")
+                                                ).username
+                                                ? item.product
+                                                    .prixerEquation !== ""
+                                                  ? "Bs" +
+                                                    (
+                                                      item.product.prixerEquation
+                                                        .replace(/[$]/gi, "")
+                                                        .replace(/[,]/gi, ".") *
+                                                      props.dollarValue *
+                                                      item.quantity
+                                                    ).toFixed(2)
+                                                  : "Bs" +
+                                                    (
+                                                      Number(
+                                                        item.product.prixerPrice.from
+                                                          .replace(/[$]/gi, "")
+                                                          .replace(/[,]/gi, ".")
+                                                      ) *
+                                                      props.dollarValue *
+                                                      item.quantity
+                                                    ).toFixed(2)
+                                                : item.product
+                                                    .publicEquation !== ""
+                                                ? "Bs" +
                                                   (
                                                     item.product
-                                                      .prixerEquation *
-                                                    props.dollarValue
-                                                  ).toFixed(2) ||
-                                                (
-                                                  item.product.prixerPrice.from.replace(
-                                                    /[$]/gi,
-                                                    ""
-                                                  ) * props.dollarValue
-                                                ).toFixed(2)
+                                                      .publicEquation *
+                                                    props.dollarValue *
+                                                    item.quantity
+                                                  ).toFixed(2)
+                                                : "Bs" +
+                                                  (
+                                                    item.product.publicPrice.from
+                                                      .replace(/[$]/gi, "")
+                                                      .replace(/[,]/gi, ".") *
+                                                    props.dollarValue *
+                                                    item.quantity
+                                                  ).toFixed(2)
                                               : JSON.parse(
                                                   localStorage.getItem("token")
                                                 ) &&
                                                 JSON.parse(
                                                   localStorage.getItem("token")
                                                 ).username
-                                              ? "Bs" +
-                                                  item.product.prixerEquation ||
-                                                "Bs" +
-                                                  item.product.prixerPrice.from.replace(
-                                                    /[$]/gi,
-                                                    ""
-                                                  )
-                                              : props.currency
-                                              ? "Bs" +
-                                                  (
-                                                    item.product
-                                                      .publicEquation *
-                                                    props.dollarValue
-                                                  ).toFixed(2) ||
-                                                "Bs" +
-                                                  (
-                                                    item.product.publicPrice.from.replace(
-                                                      /[$]/gi,
-                                                      ""
-                                                    ) * props.dollarValue
-                                                  ).toFixed(2) *
-                                                    (item.quantity || 1)
+                                              ? item.product.prixerEquation !==
+                                                ""
+                                                ? "$" +
+                                                  item.product.prixerEquation
+                                                    .replace(/[$]/gi, "")
+                                                    .replace(/[,]/gi, ".") *
+                                                    item.quantity
+                                                : "$" +
+                                                  item.product.prixerPrice.from
+                                                    .replace(/[$]/gi, "")
+                                                    .replace(/[,]/gi, ".") *
+                                                    item.quantity
+                                              : item.product.publicEquation !==
+                                                ""
+                                              ? "$" +
+                                                item.product.publicEquation
                                               : "$" +
-                                                (item.product.publicEquation ||
-                                                  "$" +
-                                                    item.product.publicPrice.from.replace(
-                                                      /[$]/gi,
-                                                      ""
-                                                    )) *
-                                                  (item.quantity || 1)}
+                                                item.product.publicPrice.from.replace(
+                                                  /[$]/gi,
+                                                  ""
+                                                ) *
+                                                  item.quantity}
                                           </div>
                                         </Grid>
                                       </Grid>

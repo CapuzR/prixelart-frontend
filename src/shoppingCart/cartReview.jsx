@@ -46,7 +46,14 @@ export default function CartReview(props) {
 
   return (
     <>
-      <Grid item style={{ width: "100%" }}>
+      <Grid
+        item
+        style={{
+          width: "100%",
+          display: "flex",
+          justifyContent: "space-between",
+        }}
+      >
         <h1 style={{ marginBottom: 20, marginTop: 90 }}>Carrito de compras</h1>
       </Grid>
 
@@ -418,16 +425,30 @@ export default function CartReview(props) {
                   >
                     <div style={{ paddingBottom: 5 }}>
                       <strong>Precio Unitario:</strong>
-                      {/* {`$${
-                        buy.product?.publicEquation ||
-                        buy.product?.publicPrice.from.replace(/[$]/gi, "")
-                      }`} */}
-
                       {JSON.parse(localStorage.getItem("token")) &&
-                      JSON.parse(localStorage.getItem("token")).username
-                        ? "$" + buy.product?.prixerEquation
-                        : "$" + buy.product?.publicEquation ||
-                          "$" +
+                      JSON.parse(localStorage.getItem("token")).username &&
+                      props.currency === true
+                        ? " Bs" +
+                          (
+                            buy.product?.prixerEquation * props.dollarValue
+                          ).toFixed(2)
+                        : JSON.parse(localStorage.getItem("token")) &&
+                          JSON.parse(localStorage.getItem("token")).username
+                        ? " $" + buy.product?.prixerEquation
+                        : props.currency === true
+                        ? " Bs" +
+                            (
+                              buy.product?.publicEquation * props.dollarValue
+                            ).toFixed(2) ||
+                          " Bs" +
+                            (
+                              buy.product?.publicPrice.from.replace(
+                                /[$]/gi,
+                                ""
+                              ) * props.dollarValue
+                            ).toFixed(2)
+                        : " $" + buy.product?.publicEquation ||
+                          " $" +
                             buy.product?.publicPrice.from.replace(/[$]/gi, "")}
                     </div>
                     <div

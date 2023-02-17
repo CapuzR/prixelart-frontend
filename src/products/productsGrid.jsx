@@ -74,8 +74,6 @@ const useStyles = makeStyles((theme) => ({
     heigh: "40vh",
   },
   dollar: {
-    color: "white",
-    backgroundColor: "#d33f49",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -171,7 +169,7 @@ export default function ProductGrid(props) {
   return (
     <>
       <div style={{ display: "flex", justifyContent: "end" }}>
-        {/* <div
+        <div
           style={{
             display: "flex",
             flexDirection: "row",
@@ -179,7 +177,15 @@ export default function ProductGrid(props) {
             marginRight: 40,
           }}
         >
-          <div className={classes.dollar}>$</div>
+          <div
+            className={classes.dollar}
+            style={{
+              color: currency ? "black" : "white",
+              backgroundColor: currency ? "white" : "#d33f49",
+            }}
+          >
+            $
+          </div>
           <Switch
             color="primary"
             value={currency}
@@ -188,8 +194,16 @@ export default function ProductGrid(props) {
             }}
             style={{ marginRight: "-5px" }}
           />
-          <div className={classes.dollar}>Bs</div>
-        </div> */}
+          <div
+            className={classes.dollar}
+            style={{
+              color: currency ? "white" : "black",
+              backgroundColor: currency ? "#d33f49" : "white",
+            }}
+          >
+            Bs
+          </div>
+        </div>
 
         <FormControl className={classes.formControl}>
           <InputLabel style={{ marginLeft: 10 }} id="demo-simple-select-label">
@@ -318,11 +332,30 @@ export default function ProductGrid(props) {
                     variant="h5"
                     component="h2"
                   >
-                    {tile.publicEquation !== ""
-                      ? "PVP: $" +
-                        tile.publicEquation +
-                        " - Bs" +
-                        (tile.publicEquation * dollarValue).toFixed(2)
+                    {currency
+                      ? tile.publicEquation !== ""
+                        ? "PVP: Bs" +
+                          (tile.publicEquation * dollarValue).toFixed(2)
+                        : tile.attributes !== [] &&
+                          tile.publicPrice.to !== tile.publicPrice.from &&
+                          tile.publicPrice.to !== ""
+                        ? "PVP: Bs" +
+                          (
+                            tile.publicPrice.from.replace(/[$]/gi, "") *
+                            dollarValue
+                          ).toFixed(2) +
+                          " - " +
+                          (
+                            tile.publicPrice.to.replace(/[$]/gi, "") *
+                            dollarValue
+                          ).toFixed(2)
+                        : "PVP: Bs" +
+                          (
+                            tile.publicPrice.from.replace(/[$]/gi, "") *
+                            dollarValue
+                          ).toFixed(2)
+                      : tile.publicEquation !== ""
+                      ? "PVP: $" + tile.publicEquation
                       : tile.attributes !== [] &&
                         tile.publicPrice.to !== tile.publicPrice.from &&
                         tile.publicPrice.to !== ""
@@ -332,23 +365,8 @@ export default function ProductGrid(props) {
                         tile.variants[0].publicPrice.equation.replace(
                           /[$]/gi,
                           ""
-                        ) +
-                        " | Bs" +
-                        (
-                          tile.publicPrice.from.replace(/[$]/gi, "") *
-                          dollarValue
-                        ).toFixed(2) +
-                        " - " +
-                        (
-                          tile.publicPrice.to.replace(/[$]/gi, "") * dollarValue
-                        ).toFixed(2)
-                      : "PVP: $" +
-                        tile.publicPrice.from.replace(/[$]/gi, "") +
-                        " | Bs" +
-                        (
-                          tile.publicPrice.from.replace(/[$]/gi, "") *
-                          dollarValue
-                        ).toFixed(2)}
+                        )
+                      : "PVP: $" + tile.publicPrice.from.replace(/[$]/gi, "")}
                     <br></br>
                     {/* {/* {JSON.parse(localStorage.getItem("adminToken")) &&
                     JSON.parse(localStorage.getItem("adminToken")).username &&
@@ -365,21 +383,51 @@ export default function ProductGrid(props) {
                       : null} */}
                     {JSON.parse(localStorage.getItem("token")) &&
                     JSON.parse(localStorage.getItem("token")).username &&
-                    tile.prixerEquation !== ""
-                      ? "PVM: $" + tile.prixerEquation
-                      : JSON.parse(localStorage.getItem("token")) &&
-                        JSON.parse(localStorage.getItem("token")).username &&
-                        tile.attributes !== []
-                      ? JSON.parse(localStorage.getItem("token")) &&
-                        JSON.parse(localStorage.getItem("token")).username &&
-                        tile.publicPrice.to !== tile.publicPrice.from &&
-                        tile.publicPrice.to !== ""
-                        ? "PVM: $" +
-                          tile.prixerPrice?.from +
+                    currency
+                      ? tile.prixerEquation !== ""
+                        ? "PVP: Bs" +
+                          (
+                            tile.prixerEquation
+                              .replace(/[$]/gi, "")
+                              .replace(/[,]/gi, ".") * dollarValue
+                          ).toFixed(2)
+                        : tile.attributes !== [] &&
+                          tile.prixerPrice.to !== tile.prixerPrice.from &&
+                          tile.prixerPrice.to !== ""
+                        ? "PVP: Bs" +
+                          (
+                            Number(
+                              tile.prixerPrice.from
+                                .replace(/[$]/gi, "")
+                                .replace(/[,]/gi, ".")
+                            ) * dollarValue
+                          ).toFixed(2) +
                           " - " +
-                          tile.prixerPrice?.to
-                        : "PVM: $" + tile.prixerPrice?.from.replace(/[$]/gi, "")
-                      : null}
+                          Number(
+                            tile.prixerPrice.to
+                              .replace(/[$]/gi, "")
+                              .replace(/[,]/gi, ".") * dollarValue
+                          ).toFixed(2)
+                        : "PVP: Bs" +
+                          Number(
+                            tile.prixerPrice.from
+                              .replace(/[$]/gi, "")
+                              .replace(/[,]/gi, ".") * dollarValue
+                          ).toFixed(2)
+                      : tile.prixerEquation !== ""
+                      ? "PVP: $" + tile.prixerEquation
+                      : tile.attributes !== [] &&
+                        tile.prixerPrice.to !== tile.prixerPrice.from &&
+                        tile.prixerPrice.to !== "" &&
+                        tile.prixerPrice.to !== undefined
+                      ? "PVP: $" +
+                        tile.prixerPrice.from.replace(/[$]/gi, "") +
+                        " - " +
+                        tile.variants[0]?.prixerPrice.equation.replace(
+                          /[$]/gi,
+                          ""
+                        )
+                      : "PVP: $" + tile.prixerPrice.from.replace(/[$]/gi, "")}
                   </Typography>
                   <MDEditor.Markdown
                     source={tile.description}

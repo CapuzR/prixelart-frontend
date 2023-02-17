@@ -202,6 +202,8 @@ function App() {
             setMessage={setMessage}
             addItemToBuyState={addItemToBuyState}
             dollarValue={dollarValue}
+            setDollarValue={setDollarValue}
+            updateDollarValue={updateDollarValue}
           />
         </Route>
 
@@ -210,7 +212,13 @@ function App() {
         </Route>
 
         <Route path="/admin/users/read">
-          <AdminMain dollarValue={dollarValue} />
+          <AdminMain
+            dollarValue={dollarValue}
+            setDollarValue={setDollarValue}
+            updateDollarValue={updateDollarValue}
+            setMessage={setMessage}
+            setOpen={setOpen}
+          />
         </Route>
 
         <Route exact path="/user/update/:userId" component={AdminMain} />
@@ -220,7 +228,13 @@ function App() {
         </Route>
 
         <Route path="/admin/products/read">
-          <AdminMain dollarValue={dollarValue} />
+          <AdminMain
+            dollarValue={dollarValue}
+            setDollarValue={setDollarValue}
+            updateDollarValue={updateDollarValue}
+            setMessage={setMessage}
+            setOpen={setOpen}
+          />
         </Route>
 
         <Route exact path="/product/update/:productId" component={AdminMain} />
@@ -242,7 +256,13 @@ function App() {
         </Route>
 
         <Route path="/admin/consumers/read">
-          <AdminMain dollarValue={dollarValue} />
+          <AdminMain
+            dollarValue={dollarValue}
+            setDollarValue={setDollarValue}
+            updateDollarValue={updateDollarValue}
+            setMessage={setMessage}
+            setOpen={setOpen}
+          />
         </Route>
 
         <Route

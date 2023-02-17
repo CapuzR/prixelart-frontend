@@ -28,6 +28,7 @@ import OrderForm from "./orderForm";
 import CartReview from "./cartReview";
 import { nanoid } from "nanoid";
 import validations from "./validations";
+import Switch from "@material-ui/core/Switch";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -53,6 +54,16 @@ const useStyles = makeStyles((theme) => ({
     zIndex: theme.zIndex.drawer + 1,
     color: theme.palette.primary.main,
   },
+  dollar: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    width: 30,
+    height: 30,
+    borderRadius: "50%",
+    fontSize: 20,
+    // marginRight: 5,
+  },
 }));
 
 export default function ShoppingPage(props) {
@@ -66,6 +77,8 @@ export default function ShoppingPage(props) {
   const [activeStep, setActiveStep] = React.useState(0);
   const [loading, setLoading] = useState(false);
   const steps = [`Tus datos`, `Orden de compra`];
+  const [dollarValue, setDollarValue] = useState(1);
+  const [currency, setCurrency] = useState(false);
 
   // useEffect(() => {
   //   {
@@ -293,6 +306,21 @@ export default function ShoppingPage(props) {
 
   let shippingCost = Number(props.valuesConsumerForm?.shippingMethod?.price);
 
+  const readDollarValue = async () => {
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/dollarValue/read";
+    await axios.get(base_url).then((response) => {
+      setDollarValue(response.data.dollarValue);
+    });
+  };
+
+  useEffect(() => {
+    readDollarValue();
+  });
+
+  const changeCurrency = () => {
+    setCurrency(!currency);
+  };
+
   return (
     <>
       <Backdrop className={classes.backdrop} open={loading}>
@@ -307,13 +335,66 @@ export default function ShoppingPage(props) {
             spacing={2}
             style={{ justifyContent: "space-between" }}
           >
-            <Grid item xs={12} sm={12} md={6} lg={7} xl={7}>
+            <Grid
+              item
+              xs={12}
+              sm={12}
+              md={12}
+              lg={12}
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                marginRight: 40,
+                marginTop: "150px",
+                justifyContent: "end",
+              }}
+            >
+              <div
+                className={classes.dollar}
+                style={{
+                  color: currency ? "black" : "white",
+                  backgroundColor: currency ? "white" : "#d33f49",
+                }}
+              >
+                $
+              </div>
+              <Switch
+                color="primary"
+                value={currency}
+                onChange={(e) => {
+                  changeCurrency(e);
+                }}
+                style={{ marginRight: "-5px" }}
+              />
+              <div
+                className={classes.dollar}
+                style={{
+                  color: currency ? "white" : "black",
+                  backgroundColor: currency ? "#d33f49" : "white",
+                }}
+              >
+                Bs
+              </div>
+            </Grid>
+
+            <Grid
+              item
+              xs={12}
+              sm={12}
+              md={6}
+              lg={7}
+              xl={7}
+              style={{ marginTop: "-150px" }}
+            >
               <CartReview
                 buyState={props.buyState}
                 changeQuantity={props.changeQuantity}
                 deleteItemInBuyState={props.deleteItemInBuyState}
                 deleteProductInItem={props.deleteProductInItem}
                 setSelectedArtToAssociate={props.setSelectedArtToAssociate}
+                dollarValue={dollarValue}
+                currency={currency}
               />
             </Grid>
 
@@ -321,7 +402,7 @@ export default function ShoppingPage(props) {
               <Paper
                 style={{
                   padding: "10px 10px 0px 10px",
-                  marginTop: "150px",
+                  // marginTop: "150px",
                   // height: "500px",
                   // display: "flex",
                   width: "100%",
@@ -358,6 +439,8 @@ export default function ShoppingPage(props) {
                       setBuyState={props.setBuyState}
                       orderPaymentMethod={orderPaymentMethod}
                       setOrderPaymentMethod={setOrderPaymentMethod}
+                      dollarValue={dollarValue}
+                      currency={currency}
                     />
                   )}
                 </div>

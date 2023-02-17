@@ -59,15 +59,18 @@ export default function OrderForm(props) {
   const getTotalPrice = (state) => {
     let prices = [];
     state.map((item) =>
-      item.product && item.art
-        ? JSON.parse(localStorage.getItem("token")) &&
-          JSON.parse(localStorage.getItem("token")).username &&
-          prices.push(
+      item.product &&
+      item.art &&
+      JSON.parse(localStorage.getItem("token")) &&
+      JSON.parse(localStorage.getItem("token")).username
+        ? prices.push(
             (item.product.prixerEquation ||
               item.product.prixerPrice.from.replace(/[$]/gi, "")) *
               (item.quantity || 1)
           )
-        : prices.push(
+        : item.product &&
+          item.art &&
+          prices.push(
             (item.product.publicEquation ||
               item.product.publicPrice.from.replace(/[$]/gi, "")) *
               (item.quantity || 1)
@@ -168,7 +171,8 @@ export default function OrderForm(props) {
                                           }}
                                         >
                                           <div>
-                                            Cantidad: {item.quantity || 1}
+                                            Cantidad:
+                                            <br></br> {item.quantity || 1}
                                           </div>
                                           <div
                                             style={{
@@ -176,13 +180,63 @@ export default function OrderForm(props) {
                                               paddingLeft: 10,
                                             }}
                                           >
-                                            {`Monto: $${
-                                              (item.product.publicEquation ||
-                                                item.product.publicPrice.from.replace(
-                                                  /[$]/gi,
-                                                  ""
-                                                )) * (item.quantity || 1)
-                                            }`}
+                                            Monto:
+                                            <br></br>
+                                            {JSON.parse(
+                                              localStorage.getItem("token")
+                                            ) &&
+                                            JSON.parse(
+                                              localStorage.getItem("token")
+                                            ).username &&
+                                            props.currency
+                                              ? "Bs" +
+                                                  (
+                                                    item.product
+                                                      .prixerEquation *
+                                                    props.dollarValue
+                                                  ).toFixed(2) ||
+                                                (
+                                                  item.product.prixerPrice.from.replace(
+                                                    /[$]/gi,
+                                                    ""
+                                                  ) * props.dollarValue
+                                                ).toFixed(2)
+                                              : JSON.parse(
+                                                  localStorage.getItem("token")
+                                                ) &&
+                                                JSON.parse(
+                                                  localStorage.getItem("token")
+                                                ).username
+                                              ? "Bs" +
+                                                  item.product.prixerEquation ||
+                                                "Bs" +
+                                                  item.product.prixerPrice.from.replace(
+                                                    /[$]/gi,
+                                                    ""
+                                                  )
+                                              : props.currency
+                                              ? "Bs" +
+                                                  (
+                                                    item.product
+                                                      .publicEquation *
+                                                    props.dollarValue
+                                                  ).toFixed(2) ||
+                                                "Bs" +
+                                                  (
+                                                    item.product.publicPrice.from.replace(
+                                                      /[$]/gi,
+                                                      ""
+                                                    ) * props.dollarValue
+                                                  ).toFixed(2) *
+                                                    (item.quantity || 1)
+                                              : "$" +
+                                                (item.product.publicEquation ||
+                                                  "$" +
+                                                    item.product.publicPrice.from.replace(
+                                                      /[$]/gi,
+                                                      ""
+                                                    )) *
+                                                  (item.quantity || 1)}
                                           </div>
                                         </Grid>
                                       </Grid>
@@ -258,10 +312,10 @@ export default function OrderForm(props) {
                               }}
                             >
                               <p align="left">
-                                {props?.orderPaymentMethod.instructions}
+                                {props?.orderPaymentMethod?.instructions}
                                 <br></br>
                                 <br></br>
-                                {props?.orderPaymentMethod.paymentData}
+                                {props?.orderPaymentMethod?.paymentData}
                               </p>
                             </div>
                           </>
@@ -281,20 +335,43 @@ export default function OrderForm(props) {
                           flexDirection: "column",
                         }}
                       >
-                        <strong>{`Subtotal: $${getTotalPrice(
-                          props.buyState
-                        ).toFixed(2)}`}</strong>
                         <strong>
-                          {`IVA: $${getIvaCost(props.buyState).toFixed(2)}`}
+                          {props.currency
+                            ? "Subtotal: Bs" +
+                              (
+                                getTotalPrice(props.buyState) *
+                                props.dollarValue
+                              ).toFixed(2)
+                            : `Subtotal: $${getTotalPrice(
+                                props.buyState
+                              ).toFixed(2)}`}
                         </strong>
-                        {props.valuesConsumer.shippingMethod && (
-                          <strong>{`Envío: $${shippingCost}`}</strong>
+                        <strong>
+                          {props.currency
+                            ? "IVA: Bs" +
+                              (
+                                getIvaCost(props.buyState) * props.dollarValue
+                              ).toFixed(2)
+                            : `IVA: $${getIvaCost(props.buyState).toFixed(2)}`}
+                        </strong>
+                        {props.valuesConsumer.shippingMethod &&
+                        props.currency ? (
+                          <strong>{`Envío: Bs${(
+                            shippingCost * props.dollarValue
+                          ).toFixed(2)}`}</strong>
+                        ) : (
+                          props.valuesConsumer.shippingMethod && (
+                            <strong>{`Envío: $${shippingCost}`}</strong>
+                          )
                         )}
-                        <strong>{`Total: $${
-                          // getTotalPrice(props.buyState) +
-                          // getIvaCost(props.buyState)
-                          getTotal(props.buyState)
-                        }`}</strong>
+                        <strong>
+                          {props.currency
+                            ? "Total: Bs" +
+                              (
+                                getTotal(props.buyState) * props.dollarValue
+                              ).toFixed(2)
+                            : `Total: $${getTotal(props.buyState).toFixed(2)}`}
+                        </strong>
                         <br />
                       </Grid>
                     </div>

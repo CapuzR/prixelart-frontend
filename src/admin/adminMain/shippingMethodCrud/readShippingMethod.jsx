@@ -373,7 +373,7 @@ export default function ReadShippingMethod(props) {
                 </>
               ) : (
                 <>
-                  <Title>Actualización de Método de pago</Title>
+                  <Title>Actualización de Método de envío</Title>
                   <form
                     className={classes.form}
                     noValidate
@@ -432,14 +432,12 @@ export default function ReadShippingMethod(props) {
                               required
                               display="inline"
                               fullWidth
-                              //   id="instructions"
-                              label="Intrucciones"
-                              //   name="instructions"
-                              //   autoComplete="instructions"
+                              label="Costo"
                               value={price}
                               onChange={(e) => {
                                 setPrice(e.target.value);
                               }}
+                              // type={"Number"}
                               error={
                                 price !== undefined &&
                                 !validations.isAValidPrice(price)

@@ -34,7 +34,7 @@ function isAValidUsername(username) {
 }
 
 function isAValidPrice(number) {
-  const re = /^[0-9]+(([,]+[0-9]{1,2})?){1,6}$/;
+  const re = /^[0-9]+(([.]+[0-9]{1,2})?){1,6}$/;
   return re.test(String(number));
 }
 

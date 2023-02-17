@@ -36,6 +36,7 @@ import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
 import SaveIcon from "@material-ui/icons/Save";
 import { update } from "immutable";
+import validations from "../../shoppingCart/validations";
 
 function Copyright() {
   return (
@@ -341,9 +342,21 @@ export default function AdminMain(props) {
                 <TextField
                   variant="outlined"
                   value={props.dollarValue}
-                  onChange={(e) => props.setDollarValue(e.target.value)}
+                  onChange={(e) => {
+                    if (e.target.value < 0) {
+                      props.setDollarValue(0);
+                    } else {
+                      props.setDollarValue(e.target.value);
+                    }
+                  }}
+                  error={
+                    props.dollarValue !== undefined &&
+                    !validations.isAValidPrice(props.dollarValue)
+                  }
+                  type={"number"}
                 />
                 <Fab
+                  disabled={!validations.isAValidPrice(props.dollarValue)}
                   color="primary"
                   size="small"
                   onClick={() => {

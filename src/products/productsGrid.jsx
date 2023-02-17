@@ -385,7 +385,7 @@ export default function ProductGrid(props) {
                     JSON.parse(localStorage.getItem("token")).username &&
                     currency
                       ? tile.prixerEquation !== ""
-                        ? "PVP: Bs" +
+                        ? "PVM: Bs" +
                           (
                             tile.prixerEquation
                               .replace(/[$]/gi, "")
@@ -394,7 +394,7 @@ export default function ProductGrid(props) {
                         : tile.attributes !== [] &&
                           tile.prixerPrice.to !== tile.prixerPrice.from &&
                           tile.prixerPrice.to !== ""
-                        ? "PVP: Bs" +
+                        ? "PVM: Bs" +
                           (
                             Number(
                               tile.prixerPrice.from
@@ -408,26 +408,32 @@ export default function ProductGrid(props) {
                               .replace(/[$]/gi, "")
                               .replace(/[,]/gi, ".") * dollarValue
                           ).toFixed(2)
-                        : "PVP: Bs" +
+                        : "PVM: Bs" +
                           Number(
                             tile.prixerPrice.from
                               .replace(/[$]/gi, "")
                               .replace(/[,]/gi, ".") * dollarValue
                           ).toFixed(2)
-                      : tile.prixerEquation !== ""
-                      ? "PVP: $" + tile.prixerEquation
+                      : JSON.parse(localStorage.getItem("token")) &&
+                        JSON.parse(localStorage.getItem("token")).username &&
+                        tile.prixerEquation !== ""
+                      ? "PVM: $" + tile.prixerEquation
                       : tile.attributes !== [] &&
+                        JSON.parse(localStorage.getItem("token")) &&
+                        JSON.parse(localStorage.getItem("token")).username &&
                         tile.prixerPrice.to !== tile.prixerPrice.from &&
                         tile.prixerPrice.to !== "" &&
                         tile.prixerPrice.to !== undefined
-                      ? "PVP: $" +
+                      ? "PVM: $" +
                         tile.prixerPrice.from.replace(/[$]/gi, "") +
                         " - " +
                         tile.variants[0]?.prixerPrice.equation.replace(
                           /[$]/gi,
                           ""
                         )
-                      : "PVP: $" + tile.prixerPrice.from.replace(/[$]/gi, "")}
+                      : JSON.parse(localStorage.getItem("token")) &&
+                        JSON.parse(localStorage.getItem("token")).username &&
+                        "PVM: $" + tile.prixerPrice.from.replace(/[$]/gi, "")}
                   </Typography>
                   <MDEditor.Markdown
                     source={tile.description}

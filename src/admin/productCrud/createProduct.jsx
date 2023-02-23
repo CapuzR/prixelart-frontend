@@ -28,7 +28,7 @@ import FormControl from "@material-ui/core/FormControl";
 // import Visibility from '@material-ui/icons/Visibility';
 // import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import clsx from "clsx";
-// import validations from '../../utils/validations';
+import validations from "../../shoppingCart/validations";
 import HighlightOffOutlinedIcon from "@material-ui/icons/HighlightOffOutlined";
 import Box from "@material-ui/core/Box";
 import Checkbox from "@material-ui/core/Checkbox";
@@ -90,10 +90,10 @@ export default function CreateProduct() {
   const [images, newImages] = useState({ images: [] });
   const [videoUrl, setVideoUrl] = useState("");
   const [videoPreview, setVideoPreview] = useState("");
-  const [fromPublicPrice, setFromPublicPrice] = useState("");
-  const [toPublicPrice, setToPublicPrice] = useState("");
-  const [fromPrixerPrice, setFromPrixerPrice] = useState("");
-  const [toPrixerPrice, setToPrixerPrice] = useState("");
+  const [fromPublicPrice, setFromPublicPrice] = useState();
+  const [toPublicPrice, setToPublicPrice] = useState();
+  const [fromPrixerPrice, setFromPrixerPrice] = useState();
+  const [toPrixerPrice, setToPrixerPrice] = useState();
   const [loading, setLoading] = useState(false);
   const [buttonState, setButtonState] = useState(false);
   const [hasSpecialVar, setHasSpecialVar] = useState(false);
@@ -197,10 +197,10 @@ export default function CreateProduct() {
           !considerations &&
           // !fixedPublicPrice &&
           !fromPublicPrice &&
-          !toPublicPrice &&
+          // !toPublicPrice &&
           // !fixedPrixerPrice &&
           !fromPrixerPrice &&
-          !toPrixerPrice &&
+          // !toPrixerPrice &&
           !images
         ) {
           setErrorMessage("Por favor completa todos los campos requeridos.");
@@ -622,21 +622,6 @@ export default function CreateProduct() {
             <Title>PVP</Title>
           </Grid>
           <Grid container spacing={2}>
-            {/* <Grid item xs={4} md={4}>
-                    <FormControl className={clsx(classes.margin, classes.textField)} variant="outlined" xs={12} fullWidth={true}>
-                    <TextField
-                        variant="outlined"
-                        required
-                        fullWidth
-                        id="fixedPublicPrice"
-                        label="Fijo"
-                        name="fixedPublicPrice"
-                        autoComplete="fixedPublicPrice"
-                        value={fixedPublicPrice}
-                        onChange={(e) => {setFixedPublicPrice(e.target.value);}}
-                    />
-                    </FormControl>
-                </Grid> */}
             <Grid item xs={4} md={5}>
               <FormControl
                 className={clsx(classes.margin, classes.textField)}
@@ -656,6 +641,10 @@ export default function CreateProduct() {
                   onChange={(e) => {
                     setFromPublicPrice(e.target.value);
                   }}
+                  error={
+                    fromPublicPrice !== undefined &&
+                    !validations.isAValidPrice(fromPublicPrice)
+                  }
                 />
               </FormControl>
             </Grid>
@@ -668,7 +657,7 @@ export default function CreateProduct() {
               >
                 <TextField
                   variant="outlined"
-                  required
+                  // required
                   fullWidth
                   id="toPublicPrice"
                   label="Hasta"
@@ -678,6 +667,10 @@ export default function CreateProduct() {
                   onChange={(e) => {
                     setToPublicPrice(e.target.value);
                   }}
+                  error={
+                    toPublicPrice !== undefined &&
+                    !validations.isAValidPrice(toPublicPrice)
+                  }
                 />
               </FormControl>
             </Grid>
@@ -686,21 +679,6 @@ export default function CreateProduct() {
             <Title>PVM</Title>
           </Grid>
           <Grid container spacing={2}>
-            {/* <Grid item xs={4} md={4}>
-                    <FormControl className={clsx(classes.margin, classes.textField)} variant="outlined" xs={12} fullWidth={true}>
-                    <TextField
-                        variant="outlined"
-                        required
-                        fullWidth
-                        id="fixedPrixerPrice"
-                        label="Fijo"
-                        name="fixedPrixerPrice"
-                        autoComplete="fixedPrixerPrice"
-                        value={fixedPrixerPrice}
-                        onChange={(e) => {setFixedPrixerPrice(e.target.value);}}
-                    />
-                    </FormControl>
-                </Grid> */}
             <Grid item xs={4} md={5}>
               <FormControl
                 className={clsx(classes.margin, classes.textField)}
@@ -720,6 +698,10 @@ export default function CreateProduct() {
                   onChange={(e) => {
                     setFromPrixerPrice(e.target.value);
                   }}
+                  error={
+                    fromPrixerPrice !== undefined &&
+                    !validations.isAValidPrice(fromPrixerPrice)
+                  }
                 />
               </FormControl>
             </Grid>
@@ -732,7 +714,7 @@ export default function CreateProduct() {
               >
                 <TextField
                   variant="outlined"
-                  required
+                  // required
                   fullWidth
                   id="toPrixerPrice"
                   label="Hasta"
@@ -742,6 +724,10 @@ export default function CreateProduct() {
                   onChange={(e) => {
                     setToPrixerPrice(e.target.value);
                   }}
+                  error={
+                    toPrixerPrice !== undefined &&
+                    !validations.isAValidPrice(toPrixerPrice)
+                  }
                 />
               </FormControl>
             </Grid>

@@ -27,10 +27,13 @@ export default function ReadProducts(props) {
     const base_url =
       process.env.REACT_APP_BACKEND_URL + "/admin/product/read-all";
     axios
-      .get(base_url)
+      .post(
+        base_url,
+        { adminToken: localStorage.getItem("adminTokenV") },
+        { withCredentials: true }
+      )
       .then((response) => {
         setRows(response.data.products);
-        console.log(response.data.products);
       })
       .catch((error) => {
         console.log(error);
@@ -49,7 +52,11 @@ export default function ReadProducts(props) {
 
   const deleteProduct = async (id) => {
     const URI = process.env.REACT_APP_BACKEND_URL + `/product/delete/${id}`;
-    const res = await axios.delete(URI);
+    const res = await axios.put(
+      URI,
+      { adminToken: localStorage.getItem("adminTokenV") },
+      { withCredentials: true }
+    );
     setDelete(res.data);
     getRows();
     setDeleteOpen(true);
@@ -91,8 +98,7 @@ export default function ReadProducts(props) {
                     </Fab>
                   </TableCell>
                   <TableCell align="center">
-                    {
-                      row.sources.images.length > 0 ? (
+                    {row.sources.images.length > 0 ? (
                       <>
                         <img
                           src={row.sources.images[0]?.url}
@@ -103,13 +109,9 @@ export default function ReadProducts(props) {
                           style={{ fontSize: "1rem", color: "#bdbdbd" }}
                         >{`Cantidad de imagenes: ${row.sources.images.length}`}</Typography>
                       </>
-                      ) : (
-                        <img 
-                        src={row.thumbUrl}
-                        alt='prix-product'
-                        width={150}/>
-                      )}
-
+                    ) : (
+                      <img src={row.thumbUrl} alt="prix-product" width={150} />
+                    )}
                   </TableCell>
                   <TableCell align="center">{row.name}</TableCell>
                   <TableCell align="center">
@@ -122,10 +124,14 @@ export default function ReadProducts(props) {
                   </TableCell>
                   <TableCell align="center">{row.category}</TableCell>
                   <TableCell align="center">
-                    {row.publicPrice.from}-{row.publicPrice.from}
+                    ${row.publicPrice.from.replace(/[$]/gi, "")}
+                    {row.publicPrice.to &&
+                      " - " + row.publicPrice.to.replace(/[$]/gi, "")}
                   </TableCell>
                   <TableCell align="center">
-                    {row.prixerPrice.from}-{row.prixerPrice.to}
+                    ${row.prixerPrice.from.replace(/[$]/gi, "")}
+                    {row.prixerPrice.to &&
+                      " - " + row.prixerPrice.to.replace(/[$]/gi, "")}
                   </TableCell>
                   <TableCell align="center">
                     <Fab

@@ -27,6 +27,7 @@ import Box from "@material-ui/core/Box";
 import MDEditor from "@uiw/react-md-editor";
 import Variants from "../adminMain/products/variants";
 import Backdrop from "@material-ui/core/Backdrop";
+import validations from "../../shoppingCart/validations";
 
 const useStyles = makeStyles((theme) => ({
   seeMore: {
@@ -244,8 +245,10 @@ export default function UpdateAdmin(props) {
           };
 
           const currentVideo =
-            typeof imagesList.find((result) => result.type === "video") === "object" ? 
-            imagesList.find((result) => result.type === "video") : '';
+            typeof imagesList.find((result) => result.type === "video") ===
+            "object"
+              ? imagesList.find((result) => result.type === "video")
+              : "";
 
           newFormData.append("active", active);
           newFormData.append("name", productName);
@@ -260,35 +263,39 @@ export default function UpdateAdmin(props) {
           newFormData.append("hasSpecialVar", hasSpecialVar);
           imagesList.length > 1
             ? imagesList.map((url) => {
-              const indexVideo = imagesList.indexOf(currentVideo);
-                if (videoUrl === "" && currentVideo !== '') {
+                const indexVideo = imagesList.indexOf(currentVideo);
+                if (videoUrl === "" && currentVideo !== "") {
                   imagesList.splice(indexVideo, 1);
                 }
                 newFormData.append("images", url && url.url);
               })
             : imagesList.map((url) => {
-               const indexVideo = imagesList.indexOf(currentVideo);
-                if (videoUrl === "" && currentVideo !== '') {
+                const indexVideo = imagesList.indexOf(currentVideo);
+                if (videoUrl === "" && currentVideo !== "") {
                   imagesList.splice(indexVideo, 1);
                 }
-                if(typeof url === 'string'){
+                if (typeof url === "string") {
                   newFormData.append("images", url);
                 }
-                if(typeof url === 'object'){
+                if (typeof url === "object") {
                   newFormData.append("images", url.url);
                 }
-
               });
-              if(images.images){
-                images.images.map((file) => {
-                  newFormData.append("newProductImages", file);
-                  console.log(file)
-                })
-              }
+          if (images.images) {
+            images.images.map((file) => {
+              newFormData.append("newProductImages", file);
+              console.log(file);
+            });
+          }
           newFormData.append("video", videoUrl);
           const base_url =
             process.env.REACT_APP_BACKEND_URL + `/product/update/${productId}`;
-          const response = await axios.put(base_url, newFormData);
+          const response = await axios.put(
+            base_url,
+            newFormData,
+            { adminToken: localStorage.getItem("adminTokenV") },
+            { withCredentials: true }
+          );
           if (response.data.success === false) {
             setLoading(false);
             setButtonState(false);
@@ -623,10 +630,14 @@ export default function UpdateAdmin(props) {
                       label="Desde"
                       name="fromPublicPrice"
                       autoComplete="fromPublicPrice"
-                      value={fromPublicPrice ? fromPublicPrice : "$"}
+                      value={fromPublicPrice}
                       onChange={(e) => {
                         setFromPublicPrice(e.target.value);
                       }}
+                      error={
+                        fromPublicPrice !== undefined &&
+                        !validations.isAValidPrice(fromPublicPrice)
+                      }
                     />
                   </FormControl>
                 </Grid>
@@ -639,16 +650,20 @@ export default function UpdateAdmin(props) {
                   >
                     <TextField
                       variant="outlined"
-                      required
+                      // required
                       fullWidth
                       id="toPublicPrice"
                       label="Hasta"
                       name="toPublicPrice"
                       autoComplete="toPublicPrice"
-                      value={toPublicPrice ? toPublicPrice : "$"}
+                      value={toPublicPrice}
                       onChange={(e) => {
                         setToPublicPrice(e.target.value);
                       }}
+                      error={
+                        toPublicPrice !== undefined &&
+                        !validations.isAValidPrice(toPublicPrice)
+                      }
                     />
                   </FormControl>
                 </Grid>
@@ -672,10 +687,14 @@ export default function UpdateAdmin(props) {
                       label="Desde"
                       name="fromPrixerPrice"
                       autoComplete="fromPrixerPrice"
-                      value={fromPrixerPrice ? fromPrixerPrice : "$"}
+                      value={fromPrixerPrice}
                       onChange={(e) => {
                         setFromPrixerPrice(e.target.value);
                       }}
+                      error={
+                        fromPrixerPrice !== undefined &&
+                        !validations.isAValidPrice(fromPrixerPrice)
+                      }
                     />
                   </FormControl>
                 </Grid>
@@ -688,16 +707,20 @@ export default function UpdateAdmin(props) {
                   >
                     <TextField
                       variant="outlined"
-                      required
+                      // required
                       fullWidth
                       id="toPrixerPrice"
                       label="Hasta"
                       name="toPrixerPrice"
                       autoComplete="toPrixerPrice"
-                      value={toPrixerPrice ? toPrixerPrice : "$"}
+                      value={toPrixerPrice}
                       onChange={(e) => {
                         setToPrixerPrice(e.target.value);
                       }}
+                      error={
+                        toPrixerPrice !== undefined &&
+                        !validations.isAValidPrice(toPrixerPrice)
+                      }
                     />
                   </FormControl>
                 </Grid>

@@ -33,6 +33,10 @@ import Switch from "@material-ui/core/Switch";
 import Chip from "@material-ui/core/Chip";
 import Modal from "@material-ui/core/Modal";
 import MDEditor from "@uiw/react-md-editor";
+import AddShoppingCartIcon from "@material-ui/icons/AddShoppingCart";
+import CartReview from "../../shoppingCart/cartReview";
+import useMediaQuery from "@material-ui/core/useMediaQuery";
+import { useTheme } from "@material-ui/core/styles";
 
 const IOSSwitch = withStyles((theme) => ({
   root: {
@@ -127,9 +131,11 @@ const useStyles = makeStyles((theme) => ({
 
 const photoIsos = ["100", "200", "400"];
 
-export default function FullscreePhoto(props) {
+export default function FullscreenPhoto(props) {
   const classes = useStyles();
   const history = useHistory();
+  const theme = useTheme();
+
   const [ready, setReady] = useState(false);
   const [tiles, setTiles] = useState([]);
   const [updatedTile, setUpdatedTile] = useState([]);
@@ -144,9 +150,14 @@ export default function FullscreePhoto(props) {
   const [openV, setOpenV] = useState(false);
   const [disabledReason, setDisabledReason] = useState("");
   const [visible, setVisible] = useState(true);
-  let [points, setPoints] = useState(50);
+  const [points, setPoints] = useState(50);
   const [termsAgreeVar, setTermsAgreeVar] = useState(true);
   const [value, setValue] = useState("");
+  const [openShoppingCart, setOpenShoppingCart] = useState(false);
+  const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
+  const isDeskTop = useMediaQuery(theme.breakpoints.up("sm"));
+
+  // const [isOpenAssociateProduct, setIsOpenAssociateProduct] = useState(false);
 
   const propsRank = {
     min: 0,
@@ -235,13 +246,11 @@ export default function FullscreePhoto(props) {
     setHiddenArt(undefined);
   };
   function tagsEdit(tempTiles, tile, e, tags) {
-    console.log(tempTiles);
     return tempTiles.map((item) => {
       const result = tags.trim().split(/\s+/);
       if (item.artId === tile.artId) {
         item.tags = tags;
       }
-      console.log(result);
       return item;
     });
   }
@@ -325,15 +334,6 @@ export default function FullscreePhoto(props) {
     history.push({ pathname: "/" + prixerUsername });
   };
 
-  // const copyCodeToClipboard = (e, tile) => {
-  //   const el = document.createElement('textarea');
-  //   el.value = utils.generateArtMessage(tile, 'copy');
-  //   document.body.appendChild(el);
-  //   el.select();
-  //   document.execCommand('copy');
-  //   document.body.removeChild(el);
-  // }
-
   const deleteArt = async () => {
     const base_url =
       process.env.REACT_APP_BACKEND_URL + "/art/delete/" + selectedArt;
@@ -349,7 +349,12 @@ export default function FullscreePhoto(props) {
     if (event.target.checked === true) {
       const base_url = process.env.REACT_APP_BACKEND_URL + "/art/disable/" + id;
       art.visible = visible;
-      const response = await axios.put(base_url, art);
+      const response = await axios.put(
+        base_url,
+        art,
+        { adminToken: localStorage.getItem("adminTokenV") },
+        { withCredentials: true }
+      );
       setSnackBarMessage("Arte modificado exitosamente");
       setSnackBar(true);
       setLoading(false);
@@ -359,7 +364,12 @@ export default function FullscreePhoto(props) {
       const base_url = process.env.REACT_APP_BACKEND_URL + "/art/disable/" + id;
       art.visible = visible;
       art.disabledReason = disabledReason;
-      const response = await axios.put(base_url, art);
+      const response = await axios.put(
+        base_url,
+        art,
+        { adminToken: localStorage.getItem("adminTokenV") },
+        { withCredentials: true }
+      );
       handleClose();
       setSnackBarMessage("Arte modificado exitosamente");
       setSnackBar(true);
@@ -373,7 +383,12 @@ export default function FullscreePhoto(props) {
     setLoading(true);
     const URI = process.env.REACT_APP_BACKEND_URL + "/art/rank/" + id;
     art.points = parseInt(points);
-    const response = await axios.put(URI, art);
+    const response = await axios.put(
+      URI,
+      art,
+      { adminToken: localStorage.getItem("adminTokenV") },
+      { withCredentials: true }
+    );
     setSnackBarMessage("Puntuación agregada exitosamente");
     setInterval(() => {
       setLoading(false);
@@ -383,24 +398,20 @@ export default function FullscreePhoto(props) {
     readArt();
   };
 
-  // const getChecked = () => {
-  //   setChecked((check) => !check);
-  // };
-
   const readArt = async () => {
     setLoading(true);
     if (tiles) {
       const base_url =
         process.env.REACT_APP_BACKEND_URL + "/art/read-by-prixer";
       const data = {
-        username: props.match.params.username,
+        username: props.fullArt.prixerUsername,
       };
       await axios.post(base_url, data).then((response) => {
         if (tiles.length !== response.data.arts.length) {
           setTiles(response.data.arts);
           setReady(true);
-          if (document.getElementById(props.match.params.artId)) {
-            document.getElementById(props.match.params.artId).scrollIntoView({
+          if (document.getElementById(props.fullArt.artId)) {
+            document.getElementById(props.fullArt.artId).scrollIntoView({
               behavior: "smooth",
               block: "center",
             });
@@ -421,34 +432,35 @@ export default function FullscreePhoto(props) {
 
   const updateArtData = (e, tile) => {
     setLoading(true);
-    const base_url =
-      process.env.REACT_APP_BACKEND_URL + "/art/update/" + selectedArt;
-    const data = {
-      title: tile.title,
-      description: tile.description,
-      tags: tile.tags,
-      category: tile.category,
-      artId: tile.artId,
-      artType: tile.artType,
-      artLocation: tile.artLocation,
-    };
-    axios
-      .put(base_url, data)
-      .then((response) => {
-        if (response.data.data.success == true) {
-          setSnackBarMessage(response.data.data.success);
-          setSnackBar(true);
+    if (artDataState === "") {
+      const base_url =
+        process.env.REACT_APP_BACKEND_URL + "/art/update/" + selectedArt;
+      const data = {
+        title: updatedTile.title,
+        description: updatedTile.description,
+        tags: updatedTile.tags,
+        category: updatedTile.category,
+        artId: updatedTile.artId,
+        artType: updatedTile.artType,
+        artLocation: updatedTile.artLocation,
+      };
+      axios
+        .put(base_url, data)
+        .then((response) => {
+          if (response.data.data.success == true) {
+            setSnackBarMessage(response.data.data.success);
+            setSnackBar(true);
+            setSelectedArt(undefined);
+          } else {
+            setSnackBarMessage(response.data.data.error_message);
+            setSnackBar(true);
+            setSelectedArt(undefined);
+          }
+        })
+        .catch((error) => {
           setSelectedArt(undefined);
-        } else {
-          setSnackBarMessage(response.data.data.error_message);
-          setSnackBar(true);
-          setSelectedArt(undefined);
-        }
-      })
-      .catch((error) => {
-        // console.log(error);
-        setSelectedArt(undefined);
-      });
+        });
+    }
     setLoading(false);
   };
 
@@ -499,15 +511,12 @@ export default function FullscreePhoto(props) {
         console.log(error);
       });
   };
+
   const handleSubmit = async (e, Id) => {
     e.preventDefault();
     const formData = new FormData();
     const termsAgree = true;
     formData.append("termsAgree", termsAgree);
-    // formData.append(
-    //   "username",
-    //   JSON.parse(localStorage.getItem("token")).username
-    // );
     const base_url =
       process.env.REACT_APP_BACKEND_URL + "/prixer/update-terms/" + Id;
     const response = await axios
@@ -538,6 +547,12 @@ export default function FullscreePhoto(props) {
     }
   }, []);
 
+  const addingToCart = (e, tile) => {
+    e.preventDefault();
+    setSelectedArt(tile);
+    props.setIsOpenAssociateProduct(true);
+  };
+
   return !ready ? (
     <div className={classes.loading}>
       <CircularProgress />
@@ -554,214 +569,235 @@ export default function FullscreePhoto(props) {
               artDataState !== tile.artId ? (
                 <div id={tile.artId} key={tile.artId}>
                   {tile.visible === true ? (
-                    <Card style={{ marginTop: 35 }}>
-                      <CardActionArea disabled>
-                        <Img
-                          placeholder="/imgLoading.svg"
-                          style={{ backgroundColor: "#eeeeee", width: "100%" }}
-                          src={tile.largeThumbUrl || tile.thumbnailUrl}
-                          debounce={1000} // Default is 300 (ms)
-                          cache
-                          error="/imgError.svg"
-                          srcSet={
-                            tile.smallThumbUrl +
-                            " 600w, " +
-                            tile.mediumThumbUrl +
-                            " 850w, " +
-                            tile.largeThumbUrl +
-                            " 1300w"
-                          }
-                          sizes="(min-width: 960px) 1300px, (min-width: 640px) 850px, 600px"
-                          alt={tile.title}
-                          id={tile.artId}
-                        />
-                      </CardActionArea>
-                      <CardContent>
-                        <Grid
-                          item
-                          container
-                          xs={12}
-                          sm={12}
-                          style={{
-                            whiteSpace: "nowrap",
-                            padding: 0,
-                            margin: 0,
-                          }}
-                          justify="space-between"
-                        >
-                          <Typography
+                    <>
+                      <Card style={{ marginTop: 35 }}>
+                        <CardActionArea disabled>
+                          <Img
+                            placeholder="/imgLoading.svg"
                             style={{
-                              display: "inline-block",
-                              fontSize: "0.8em",
-                              paddingLeft: 0,
+                              backgroundColor: "#eeeeee",
+                              width: "100%",
                             }}
-                          >
-                            ID: {tile.artId}
-                          </Typography>
-                          <Grid
-                            container
-                            spacing={1}
-                            style={{
-                              flexWrap: "nowrap",
-                              alignItems: "center",
-                              justifyContent: "flex-end",
-                              marginBottom: "-35px",
-                            }}
-                          >
-                            <Grid item>
-                              <Button
-                                size="small"
-                                variant="outlined"
-                                onClick={(e) =>
-                                  navigateToPrixer(e, tile.prixerUsername)
-                                }
-                              >
-                                <Typography
-                                  gutterBottom
-                                  variant="h7"
-                                  component="h2"
-                                  style={{
-                                    display: "inline-block",
-                                    right: 0,
-                                    textAlign: "right",
-                                    margin: 0,
-                                    fontSize: 12,
-                                  }}
-                                >
-                                  Prixer: {tile.prixerUsername}
-                                </Typography>
-                              </Button>
-                            </Grid>
-                            <Grid item>
-                              {JSON.parse(
-                                localStorage.getItem("adminToken")
-                              ) && (
-                                <Button
-                                  size="small"
-                                  color="primary"
-                                  variant="contained"
-                                  disabled
-                                >
-                                  <Typography>Puntos: {tile.points}</Typography>
-                                </Button>
-                              )}
-                            </Grid>
-                          </Grid>
-                        </Grid>
-                        <Grid
-                          item
-                          container
-                          xs={12}
-                          sm={12}
-                          justify="space-between"
-                          style={{ textAlign: "left", padding: 0, margin: 0 }}
-                        >
+                            src={tile.largeThumbUrl || tile.thumbnailUrl}
+                            debounce={1000} // Default is 300 (ms)
+                            cache
+                            error="/imgError.svg"
+                            srcSet={
+                              tile.smallThumbUrl +
+                              " 600w, " +
+                              tile.mediumThumbUrl +
+                              " 850w, " +
+                              tile.largeThumbUrl +
+                              " 1300w"
+                            }
+                            sizes="(min-width: 960px) 1300px, (min-width: 640px) 850px, 600px"
+                            alt={tile.title}
+                            id={tile.artId}
+                          />
+                        </CardActionArea>
+                        <CardContent>
                           <Grid
                             item
-                            xs={6}
-                            sm={6}
-                            style={{ textAlign: "left", padding: 0, margin: 0 }}
+                            container
+                            xs={12}
+                            sm={12}
+                            style={{
+                              whiteSpace: "nowrap",
+                              padding: 0,
+                              margin: 0,
+                            }}
+                            justify="space-between"
                           >
                             <Typography
-                              gutterBottom
-                              variant="h5"
-                              component="h2"
-                              style={{ margin: 0 }}
-                            >
-                              {tile.title}
-                            </Typography>
-                          </Grid>
-                        </Grid>
-                        <Grid
-                          item
-                          container
-                          xs={12}
-                          sm={12}
-                          style={{ textAlign: "left", padding: 0, margin: 0 }}
-                        >
-                          {tile.artLocation && (
-                            <Typography
                               style={{
+                                display: "inline-block",
                                 fontSize: "0.8em",
-                                paddingBottom: 10,
-                                paddingLeft: 3,
+                                paddingLeft: 0,
                               }}
                             >
-                              Ubicación: {tile.artLocation}
+                              ID: {tile.artId}
                             </Typography>
-                          )}
-                        </Grid>
-                        <Typography
-                          variant="body2"
-                          color="textSecondary"
-                          component="p"
-                          style={{
-                            whiteSpace: "pre-line",
-                            fontSize: "1.1em",
-                            marginBottom: 10,
-                          }}
-                        >
-                          {tile.description}
-                        </Typography>
-                        {tile.originalPhotoHeight && tile.originalPhotoWidth && (
+                            <Grid
+                              container
+                              spacing={1}
+                              style={{
+                                flexWrap: "nowrap",
+                                alignItems: "center",
+                                justifyContent: "flex-end",
+                                marginBottom: "-35px",
+                              }}
+                            >
+                              <Grid item>
+                                <Button
+                                  size="small"
+                                  variant="outlined"
+                                  onClick={(e) =>
+                                    navigateToPrixer(e, tile.prixerUsername)
+                                  }
+                                >
+                                  <Typography
+                                    gutterBottom
+                                    variant="h7"
+                                    component="h2"
+                                    style={{
+                                      display: "inline-block",
+                                      right: 0,
+                                      textAlign: "right",
+                                      margin: 0,
+                                      fontSize: 12,
+                                    }}
+                                  >
+                                    Prixer: {tile.prixerUsername}
+                                  </Typography>
+                                </Button>
+                              </Grid>
+                              <Grid item>
+                                {JSON.parse(
+                                  localStorage.getItem("adminToken")
+                                ) && (
+                                  <Button
+                                    size="small"
+                                    color="primary"
+                                    variant="contained"
+                                    disabled
+                                  >
+                                    <Typography>
+                                      Puntos: {tile.points}
+                                    </Typography>
+                                  </Button>
+                                )}
+                              </Grid>
+                            </Grid>
+                          </Grid>
+                          <Grid
+                            item
+                            container
+                            xs={12}
+                            sm={12}
+                            justify="space-between"
+                            style={{ textAlign: "left", padding: 0, margin: 0 }}
+                          >
+                            <Grid
+                              item
+                              xs={6}
+                              sm={6}
+                              style={{
+                                textAlign: "left",
+                                padding: 0,
+                                margin: 0,
+                              }}
+                            >
+                              <Typography
+                                gutterBottom
+                                variant="h5"
+                                component="h2"
+                                style={{ margin: 0 }}
+                              >
+                                {tile.title}
+                              </Typography>
+                            </Grid>
+                          </Grid>
+                          <Grid
+                            item
+                            container
+                            xs={12}
+                            sm={12}
+                            style={{ textAlign: "left", padding: 0, margin: 0 }}
+                          >
+                            {tile.artLocation && (
+                              <Typography
+                                style={{
+                                  fontSize: "0.8em",
+                                  paddingBottom: 10,
+                                  paddingLeft: 3,
+                                }}
+                              >
+                                Ubicación: {tile.artLocation}
+                              </Typography>
+                            )}
+                          </Grid>
                           <Typography
                             variant="body2"
                             color="textSecondary"
                             component="p"
+                            style={{
+                              whiteSpace: "pre-line",
+                              fontSize: "1.1em",
+                              marginBottom: 10,
+                            }}
                           >
-                            Máximo para impresión: {maxPrintValues(tile)}
+                            {tile.description}
                           </Typography>
-                        )}
-                      </CardContent>
-                      <CardActions>
-                        {/* <Button size="small" color="primary">
-                  Comparte
-                </Button> */}
-                        <Button
-                          size="small"
-                          color="primary"
-                          onClick={(e) => {
-                            window.open(
-                              utils.generateWaMessage(tile),
-                              "_blank"
-                            );
+                          {tile.originalPhotoHeight &&
+                            tile.originalPhotoWidth && (
+                              <Typography
+                                variant="body2"
+                                color="textSecondary"
+                                component="p"
+                              >
+                                Máximo para impresión: {maxPrintValues(tile)}
+                              </Typography>
+                            )}
+                        </CardContent>
+                        <CardActions
+                          style={{
+                            display: "flex",
+                            justifyContent: "space-around",
                           }}
                         >
-                          <WhatsAppIcon /> Escríbenos
-                        </Button>
-                        {JSON.parse(localStorage.getItem("token")) &&
-                          JSON.parse(localStorage.getItem("token")).username ==
-                            tile.prixerUsername && (
-                            <Button
-                              size="small"
-                              color="primary"
-                              onClick={(e) => {
-                                handleArtEdit(e, tile);
-                                setSelectedArt(tile.artId);
-                              }}
-                            >
-                              Editar
-                            </Button>
-                          )}
-                        {JSON.parse(localStorage.getItem("adminToken")) && (
-                          <IOSSwitch
+                          <Button
+                            size="small"
                             color="primary"
-                            size="normal"
-                            checked={tile.visible}
-                            onChange={(e) => {
-                              setHiddenArt(tile.artId);
-                              if (e.target.checked === false) {
-                                handleClickVisible();
-                                setVisible(e.target.checked);
-                              } else {
-                                setVisibleArt(tile, tile.artId, e);
-                                setVisible(e.target.checked);
-                              }
+                            onClick={(e) => {
+                              addingToCart(e, tile);
                             }}
-                          />
-                        )}
-                        {JSON.parse(localStorage.getItem("adminToken")) && (
-                          <>
+                          >
+                            <AddShoppingCartIcon /> Comprar
+                          </Button>
+                          <Button
+                            size="small"
+                            color="primary"
+                            onClick={(e) => {
+                              window.open(
+                                utils.generateWaMessage(tile),
+                                "_blank"
+                              );
+                            }}
+                          >
+                            <WhatsAppIcon /> Escríbenos
+                          </Button>
+                          {JSON.parse(localStorage.getItem("token")) &&
+                            JSON.parse(localStorage.getItem("token"))
+                              .username == tile.prixerUsername && (
+                              <Button
+                                size="small"
+                                color="primary"
+                                onClick={(e) => {
+                                  handleArtEdit(e, tile);
+                                  setSelectedArt(tile.artId);
+                                }}
+                              >
+                                Editar
+                              </Button>
+                            )}
+                          {JSON.parse(localStorage.getItem("adminToken")) && (
+                            <IOSSwitch
+                              color="primary"
+                              size="normal"
+                              checked={tile.visible}
+                              onChange={(e) => {
+                                setHiddenArt(tile.artId);
+                                if (e.target.checked === false) {
+                                  handleClickVisible();
+                                  setVisible(e.target.checked);
+                                } else {
+                                  setVisibleArt(tile, tile.artId, e);
+                                  setVisible(e.target.checked);
+                                }
+                              }}
+                            />
+                          )}
+                          {JSON.parse(localStorage.getItem("adminToken")) && (
                             <FormControl>
                               <Grid
                                 container
@@ -795,130 +831,121 @@ export default function FullscreePhoto(props) {
                                 </Grid>
                               </Grid>
                             </FormControl>
-                            <Dialog
-                              open={hiddenArt === tile.artId}
-                              onClose={handleCloseVisible}
-                            >
-                              <DialogTitle>
-                                {"¿Estás seguro de ocultar este arte?"}
-                              </DialogTitle>
-                              <DialogContent>
-                                <DialogContentText
-                                  style={{
-                                    textAlign: "center",
-                                  }}
-                                >
-                                  Este arte ya no será visible en este perfil y
-                                  la página de inicio.
-                                </DialogContentText>
-                              </DialogContent>
-                              <Grid
-                                item
-                                xs
-                                style={{
-                                  display: "flex",
-                                  justifyContent: "center",
+                          )}
+                          {JSON.parse(localStorage.getItem("token")) &&
+                            JSON.parse(localStorage.getItem("token"))
+                              .username == tile.prixerUsername && (
+                              <Button
+                                color="primary"
+                                size="small"
+                                onClick={(e) => {
+                                  handleClickOpen(e);
+                                  setSelectedArt(tile.artId);
                                 }}
                               >
-                                <TextField
-                                  style={{ width: "95%", marginBottom: "5px" }}
-                                  fullWidth
-                                  multiline
-                                  required
-                                  id="disableReason"
-                                  label="¿Por qué quieres ocultar este arte?"
-                                  variant="outlined"
-                                  onChange={(e) => {
-                                    setDisabledReason(e.target.value);
-                                    // handleArtTitleEdit(e, tile);
-                                  }}
-                                />
-                              </Grid>
-                              <DialogActions>
-                                <Button
-                                  onClick={handleCloseVisible}
-                                  color="primary"
-                                >
-                                  Cancelar
-                                </Button>
-                                <Button
-                                  onClick={(e) => {
-                                    setVisibleArt(tile, selectedArt, e);
-                                    setHiddenArt(undefined);
-                                    handleCloseVisible();
-                                  }}
-                                  background="primary"
-                                  style={{
-                                    color: "white",
-                                    backgroundColor: "#d33f49",
-                                  }}
-                                >
-                                  Aceptar
-                                </Button>
-                              </DialogActions>
-                            </Dialog>
-                          </>
-                        )}
-
-                        {JSON.parse(localStorage.getItem("token")) &&
-                          JSON.parse(localStorage.getItem("token")).username ==
-                            tile.prixerUsername && (
-                            <Button
-                              color="primary"
-                              size="small"
-                              onClick={(e) => {
-                                handleClickOpen(e);
-                                setSelectedArt(tile.artId);
-                              }}
-                            >
-                              Eliminar
-                            </Button>
-                          )}
-                        <Dialog
-                          open={open}
-                          onClose={handleClose}
-                          aria-labelledby="alert-dialog-title"
-                          aria-describedby="alert-dialog-description"
+                                Eliminar
+                              </Button>
+                            )}
+                        </CardActions>
+                      </Card>
+                      <Dialog
+                        open={hiddenArt === tile.artId}
+                        onClose={handleCloseVisible}
+                      >
+                        <DialogTitle>
+                          {"¿Estás seguro de ocultar este arte?"}
+                        </DialogTitle>
+                        <DialogContent>
+                          <DialogContentText
+                            style={{
+                              textAlign: "center",
+                            }}
+                          >
+                            Este arte ya no será visible en este perfil y la
+                            página de inicio.
+                          </DialogContentText>
+                        </DialogContent>
+                        <Grid
+                          item
+                          xs
+                          style={{
+                            display: "flex",
+                            justifyContent: "center",
+                          }}
                         >
-                          <DialogTitle id="alert-dialog-title">
-                            {"¿Estás seguro de eliminar este arte?"}
-                          </DialogTitle>
-                          <DialogContent>
-                            <DialogContentText
-                              id="alert-dialog-description"
-                              style={{
-                                textAlign: "center",
-                              }}
-                            >
-                              Este arte se eliminará permanentemente de tu
-                              perfil.
-                            </DialogContentText>
-                          </DialogContent>
-                          <DialogActions>
-                            <Button onClick={handleClose} color="primary">
-                              Cancelar
-                            </Button>
-                            <Button
-                              onClick={() => {
-                                deleteArt(selectedArt);
-                                setSelectedArt(undefined);
-                              }}
-                              background="primary"
-                              style={{
-                                color: "white",
-                                backgroundColor: "#d33f49",
-                              }}
-                            >
-                              Aceptar
-                            </Button>
-                          </DialogActions>
-                        </Dialog>
-
-                        {/* <Button size="small" color="primary" onClick={(e)=>{copyCodeToClipboard(e, tile)}}>
-                  <FileCopyIcon/>
-                </Button> */}
-                      </CardActions>
-                    </Card>
+                          <TextField
+                            style={{ width: "95%", marginBottom: "5px" }}
+                            fullWidth
+                            multiline
+                            required
+                            id="disableReason"
+                            label="¿Por qué quieres ocultar este arte?"
+                            variant="outlined"
+                            onChange={(e) => {
+                              setDisabledReason(e.target.value);
+                              // handleArtTitleEdit(e, tile);
+                            }}
+                          />
+                        </Grid>
+                        <DialogActions>
+                          <Button onClick={handleCloseVisible} color="primary">
+                            Cancelar
+                          </Button>
+                          <Button
+                            onClick={(e) => {
+                              setVisibleArt(tile, selectedArt, e);
+                              setHiddenArt(undefined);
+                              handleCloseVisible();
+                            }}
+                            background="primary"
+                            style={{
+                              color: "white",
+                              backgroundColor: "#d33f49",
+                            }}
+                          >
+                            Aceptar
+                          </Button>
+                        </DialogActions>
+                      </Dialog>
+                      <Dialog
+                        open={open}
+                        onClose={handleClose}
+                        aria-labelledby="alert-dialog-title"
+                        aria-describedby="alert-dialog-description"
+                      >
+                        <DialogTitle id="alert-dialog-title">
+                          {"¿Estás seguro de eliminar este arte?"}
+                        </DialogTitle>
+                        <DialogContent>
+                          <DialogContentText
+                            id="alert-dialog-description"
+                            style={{
+                              textAlign: "center",
+                            }}
+                          >
+                            Este arte se eliminará permanentemente de tu perfil.
+                          </DialogContentText>
+                        </DialogContent>
+                        <DialogActions>
+                          <Button onClick={handleClose} color="primary">
+                            Cancelar
+                          </Button>
+                          <Button
+                            onClick={() => {
+                              deleteArt(selectedArt);
+                              setSelectedArt(undefined);
+                            }}
+                            background="primary"
+                            style={{
+                              color: "white",
+                              backgroundColor: "#d33f49",
+                            }}
+                          >
+                            Aceptar
+                          </Button>
+                        </DialogActions>
+                      </Dialog>
+                    </>
                   ) : (
                     JSON.parse(localStorage.getItem("adminToken")) && (
                       <Card style={{ marginTop: 35 }}>
@@ -1050,15 +1077,16 @@ export default function FullscreePhoto(props) {
                           >
                             {tile.description}
                           </Typography>
-                          {tile.originalPhotoHeight && tile.originalPhotoWidth && (
-                            <Typography
-                              variant="body2"
-                              color="textSecondary"
-                              component="p"
-                            >
-                              Máximo para impresión: {maxPrintValues(tile)}
-                            </Typography>
-                          )}
+                          {tile.originalPhotoHeight &&
+                            tile.originalPhotoWidth && (
+                              <Typography
+                                variant="body2"
+                                color="textSecondary"
+                                component="p"
+                              >
+                                Máximo para impresión: {maxPrintValues(tile)}
+                              </Typography>
+                            )}
                         </CardContent>
                         <CardActions>
                           {/* <Button size="small" color="primary">
@@ -1565,14 +1593,12 @@ export default function FullscreePhoto(props) {
               setOpenArtFormDialog={setOpenArtFormDialog}
             />
           )}
-          {JSON.parse(localStorage.getItem("token")) &&
-            JSON.parse(localStorage.getItem("token")).username && (
-              <Grid className={classes.float}>
-                <FloatingAddButton
-                  setOpenArtFormDialog={setOpenArtFormDialog}
-                />
-              </Grid>
-            )}
+          <Grid className={classes.float}>
+            <FloatingAddButton
+              setOpenArtFormDialog={setOpenArtFormDialog}
+              setOpenShoppingCart={setOpenShoppingCart}
+            />
+          </Grid>
           <Snackbar
             open={snackBar}
             autoHideDuration={2000}
@@ -1634,6 +1660,200 @@ export default function FullscreePhoto(props) {
             </div>
           </div>
         </Modal>
+        <Dialog
+          open={props.isOpenAssociateProduct}
+          keepMounted
+          fullWidth
+          onClose={() => props.setIsOpenAssociateProduct(false)}
+          aria-labelledby="alert-dialog-slide-title"
+          aria-describedby="alert-dialog-slide-description"
+        >
+          <DialogTitle id="alert-dialog-slide-title">
+            {"Asocia el arte a un producto dentro de tu carrito de compras"}
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-slide-description">
+              {!props.selectedProductToAssociate?.previous &&
+                props.buyState?.length > 0 &&
+                props.buyState.find((buy) => buy.product !== undefined) && (
+                  <strong>
+                    Puedes asociar el arte a un producto de tu carrito de
+                    compras o agregarlo y asociarlo mas tarde.
+                  </strong>
+                )}
+              <div style={{ display: "flex" }}>
+                {props.selectedProductToAssociate?.previous ? (
+                  "¿Deseas asociar este producto al item seleccionado previamente en el carrito?"
+                ) : props.buyState?.length > 0 &&
+                  props.buyState.find((buy) => buy.product !== undefined) ? (
+                  props.buyState.map((buy, index) => {
+                    return (
+                      <div
+                        style={{
+                          display: "flex",
+                          width: "180px",
+                        }}
+                      >
+                        {buy.product && (
+                          <div
+                            key={index}
+                            style={{
+                              marginBottom: "32px",
+                              height: "180px",
+                              width: "180px",
+                            }}
+                            onClick={() =>
+                              props.setSelectedProductToAssociate({
+                                index,
+                                item: buy.product,
+                              })
+                            }
+                          >
+                            <Img
+                              placeholder="/imgLoading.svg"
+                              style={{
+                                backgroundColor: "#eeeeee",
+                                height: "180px",
+                                width: "180px",
+                                opacity:
+                                  props.selectedProductToAssociate?.index ===
+                                  index
+                                    ? "1"
+                                    : "0.6",
+                              }}
+                              src={buy.product ? buy.product.thumbUrl : ""}
+                              debounce={1000}
+                              cache
+                              error="/imgError.svg"
+                              // srcSet={tile.smallThumbUrl + ' 600w, ' + tile.mediumThumbUrl + ' 850w, ' + tile.largeThumbUrl + ' 1300w'}
+                              sizes="(min-width: 1600px) 850px, (min-width: 960px) 450px, (min-width: 640px) 400px, 200px"
+                              alt={buy.product && buy.product.name}
+                              id={index}
+                            />
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })
+                ) : (
+                  <strong>
+                    Parece que no tienes ningun producto dentro del carrito de
+                    compras, aun asi, puedes agregar este producto y asociarlo
+                    más tarde.
+                  </strong>
+                )}
+              </div>
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button
+              onClick={() => {
+                !props.selectedProductToAssociate?.previous &&
+                  props.setSelectedProductToAssociate(undefined);
+                props.setIsOpenAssociateProduct(false);
+              }}
+              color="primary"
+            >
+              {props.selectedProductToAssociate?.previous ? "No" : "Cerrar"}
+            </Button>
+            {props.buyState?.length > 0 &&
+              props.buyState.find((buy) => buy.product !== undefined) && (
+                <Button
+                  disabled={!props.selectedProductToAssociate}
+                  onClick={() => {
+                    props.AssociateProduct({
+                      index: props.selectedProductToAssociate.index,
+                      item: selectedArt,
+                      type: "art",
+                    });
+                    props.setSelectedProductToAssociate(undefined);
+                    setSelectedArt(undefined);
+                    props.setIsOpenAssociateProduct(false);
+                  }}
+                  color="primary"
+                >
+                  {props.selectedProductToAssociate?.previous
+                    ? "Sí"
+                    : "Asociar"}
+                </Button>
+              )}
+            {!props.selectedProductToAssociate?.previous && (
+              <Button
+                onClick={() => {
+                  props.addItemToBuyState({
+                    type: "art",
+                    item: selectedArt,
+                  });
+
+                  setSelectedArt(undefined);
+                  history.push({ pathname: "/productos" });
+                }}
+                color="primary"
+              >
+                Agregar como nuevo
+              </Button>
+            )}
+          </DialogActions>
+        </Dialog>
+        <Dialog
+          maxWidth={"lg"}
+          open={openShoppingCart}
+          style={{
+            width: isDeskTop ? 850 : "100%",
+            margin: isDesktop ? "auto" : 0,
+          }}
+        >
+          {props.buyState?.length > 0 ? (
+            <div
+              style={{
+                marginLeft: 15,
+                marginRight: 15,
+                marginTop: -60,
+              }}
+            >
+              <CartReview
+                buyState={props.buyState}
+                changeQuantity={props.changeQuantity}
+                deleteItemInBuyState={props.deleteItemInBuyState}
+                deleteProductInItem={props.deleteProductInItem}
+                setSelectedArtToAssociate={props.setSelectedArtToAssociate}
+              />
+            </div>
+          ) : (
+            <div style={{ margin: "90px 10px 40px 10px" }}>
+              <Typography variant={"h6"} align={"Center"} justify={"center"}>
+                Actualmente no tienes ningun producto dentro del carrito de
+                compra.
+              </Typography>
+            </div>
+          )}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-around",
+              marginBottom: 20,
+            }}
+          >
+            <Button
+              onClick={() => {
+                setOpenShoppingCart(false);
+              }}
+              color="primary"
+            >
+              Cerrar
+            </Button>
+            {props.buyState?.length > 0 && (
+              <Button
+                onClick={() => {
+                  history.push({ pathname: "/shopping" });
+                }}
+                color="primary"
+              >
+                Comprar
+              </Button>
+            )}
+          </div>
+        </Dialog>
       </Container>
     </>
   );

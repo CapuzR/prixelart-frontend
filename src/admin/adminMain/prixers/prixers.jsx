@@ -105,16 +105,14 @@ export default function Prixers() {
 
     const base_url =
       process.env.REACT_APP_BACKEND_URL + "/prixer/update-home/" + GetId;
-    const response = await axios.put(
-      base_url,
-      {
-        status:
-          e.target.value === "false" || e.target.value === "" ? true : false,
-      },
-      {
-        "Content-Type": "multipart/form-data",
-      }
-    );
+    const body = {
+      status:
+        e.target.value === "false" || e.target.value === "" ? true : false,
+      adminToken: localStorage.getItem("adminTokenV"),
+    };
+    const response = await axios.put(base_url, body, {
+      "Content-Type": "multipart/form-data",
+    });
     await readPrixers();
     // console.log(response);
     setLoading(false);
@@ -179,10 +177,17 @@ export default function Prixers() {
                         >
                           {tile.username} -
                           {tile.specialty ||
-                            tile.specialtyArt?.map((specialty, index) =>
-                              tile.specialtyArt?.length === index + 1
-                                ? specialty
-                                : `${specialty}, `
+                            // tile.specialtyArt?.map((specialty, index) =>
+                            //   tile.specialtyArt?.length === index + 1
+                            //     ? specialty
+                            //     : `${specialty}, `
+                            // )}
+                            tile.specialtyArt?.map(
+                              (specialty, index) =>
+                                specialty !== "" &&
+                                (tile.specialtyArt?.length === index + 1
+                                  ? specialty
+                                  : `${specialty}, `)
                             )}
                         </Typography>
                       </CardContent>

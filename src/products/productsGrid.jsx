@@ -29,6 +29,10 @@ import MenuItem from "@material-ui/core/MenuItem";
 import TextField from "@material-ui/core/TextField";
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
 import { setProductAtts, getAttributes, getEquation } from "./services.js";
+import AddShoppingCartIcon from "@material-ui/icons/ShoppingCart";
+import { useHistory } from "react-router-dom";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import Switch from "@material-ui/core/Switch";
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -69,28 +73,32 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
     heigh: "40vh",
   },
+  dollar: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    width: 30,
+    height: 30,
+    borderRadius: "50%",
+    fontSize: 20,
+    // marginRight: 5,
+  },
 }));
-
-const getGridListCols = () => {
-  if (isWidthUp("md", 200)) {
-    return 4;
-  }
-
-  return 1;
-};
 
 export default function ProductGrid(props) {
   const classes = useStyles();
-  const [tiles, setTiles] = useState();
+  const [tiles, setTiles] = useState([]);
   const [imagesVariants, setImagesVariants] = useState([]);
   const [imagesProducts, setImagesProducts] = useState();
   const [width, setWidth] = useState([]);
   const [height, setHeight] = useState([]);
   const [order, setOrder] = useState("");
-
+  const history = useHistory();
+  const [dollarValue, setDollarValue] = useState(1);
   const handleChange = (event) => {
     setOrder(event.target.value);
   };
+  const [currency, setCurrency] = useState(false);
 
   useEffect(() => {
     const base_url = process.env.REACT_APP_BACKEND_URL + "/product/read-all";
@@ -137,12 +145,72 @@ export default function ProductGrid(props) {
     });
   }, [order]);
 
+  const readDollarValue = async () => {
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/dollarValue/read";
+    await axios.get(base_url).then((response) => {
+      setDollarValue(response.data.dollarValue);
+    });
+  };
+
+  useEffect(() => {
+    readDollarValue();
+  });
+
+  const addingToCart = (e, tile) => {
+    e.preventDefault();
+    props.setSelectedProduct(tile);
+    props.setIsOpenAssociateArt(true);
+  };
+
+  const changeCurrency = () => {
+    setCurrency(!currency);
+  };
+
   return (
     <>
       <div style={{ display: "flex", justifyContent: "end" }}>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+            marginRight: 40,
+          }}
+        >
+          <div
+            className={classes.dollar}
+            style={{
+              color: currency ? "black" : "white",
+              backgroundColor: currency ? "white" : "#d33f49",
+            }}
+          >
+            $
+          </div>
+          <Switch
+            color="primary"
+            value={currency}
+            onChange={(e) => {
+              changeCurrency(e);
+            }}
+            style={{ marginRight: "-5px" }}
+          />
+          <div
+            className={classes.dollar}
+            style={{
+              color: currency ? "white" : "black",
+              backgroundColor: currency ? "#d33f49" : "white",
+            }}
+          >
+            Bs
+          </div>
+        </div>
+
         <FormControl className={classes.formControl}>
-          <InputLabel id="demo-simple-select-label">Ordenar</InputLabel>
+          <InputLabel style={{ marginLeft: 10 }} id="demo-simple-select-label">
+            Ordenar
+          </InputLabel>
           <Select
+            variant="outlined"
             labelId="demo-simple-select-label"
             id="demo-simple-select"
             value={order}
@@ -245,54 +313,134 @@ export default function ProductGrid(props) {
                     )}
                   </Carousel>
                 </CardMedia>
-                <CardActionArea style={{ alignContent: "space-between" }}>
-                  <CardContent data-color-mode="light">
-                    <Typography
-                      gutterBottom
-                      style={{ padding: 0, marginBotom: 12, width: 10 }}
-                      variant="h5"
-                      component="h2"
-                    >
-                      {tile.name}
-                    </Typography>
-                    <Typography
-                      gutterBottom
-                      style={{ fontSize: 15, padding: 0, marginBottom: 15 }}
-                      variant="h5"
-                      component="h2"
-                    >
-                      {JSON.parse(localStorage.getItem("token")) &&
-                      JSON.parse(localStorage.getItem("token")).username
-                        ? tile.needsEquation &&
-                          tile.prixerEquation &&
-                          tile.prixerEquation != 0
-                          ? "PVP: $" +
-                            Math.round(parseFloat(tile.publicEquation)) +
-                            " \n PVM: $" +
-                            Math.round(parseFloat(tile.prixerEquation))
-                          : "PVP: $" +
-                            tile.publicPrice?.from +
-                            " - " +
-                            tile.publicPrice?.to +
-                            " \n PVM: $" +
-                            tile.prixerPrice?.from +
-                            " - " +
-                            tile.prixerPrice?.to
-                        : tile.needsEquation &&
-                          tile.publicEquation &&
-                          tile.publicEquation != 0
-                        ? "PVP: $" + Math.round(parseFloat(tile.publicEquation))
-                        : "PVP: " +
-                          tile.publicPrice?.from +
+                {/* <CardActionArea style={{ alignContent: "space-between" }}> */}
+                <CardContent
+                  data-color-mode="light"
+                  style={{ alignContent: "space-between" }}
+                >
+                  <Typography
+                    gutterBottom
+                    style={{ padding: 0, marginBotom: 12, width: 10 }}
+                    variant="h5"
+                    component="h2"
+                  >
+                    {tile.name}
+                  </Typography>
+                  <Typography
+                    gutterBottom
+                    style={{ fontSize: 15, padding: 0, marginBottom: 15 }}
+                    variant="h5"
+                    component="h2"
+                  >
+                    {currency
+                      ? tile.publicEquation !== ""
+                        ? "PVP: Bs" +
+                          (tile.publicEquation * dollarValue).toFixed(2)
+                        : tile.attributes !== [] &&
+                          tile.publicPrice.to !== tile.publicPrice.from &&
+                          tile.publicPrice.to !== ""
+                        ? "PVP: Bs" +
+                          (
+                            tile.publicPrice.from.replace(/[$]/gi, "") *
+                            dollarValue
+                          ).toFixed(2) +
                           " - " +
-                          tile.publicPrice?.to}
-                    </Typography>
-                    <MDEditor.Markdown
-                      source={tile.description}
-                      style={{ whiteSpace: "pre-wrap" }}
-                    />
-                  </CardContent>
-                </CardActionArea>
+                          (
+                            tile.publicPrice.to.replace(/[$]/gi, "") *
+                            dollarValue
+                          ).toFixed(2)
+                        : "PVP: Bs" +
+                          (
+                            tile.publicPrice.from.replace(/[$]/gi, "") *
+                            dollarValue
+                          ).toFixed(2)
+                      : tile.publicEquation !== ""
+                      ? "PVP: $" + tile.publicEquation
+                      : tile.attributes !== [] &&
+                        tile.publicPrice.to !== tile.publicPrice.from &&
+                        tile.publicPrice.to !== ""
+                      ? "PVP: $" +
+                        tile.publicPrice.from.replace(/[$]/gi, "") +
+                        " - " +
+                        tile.variants[0].publicPrice.equation.replace(
+                          /[$]/gi,
+                          ""
+                        )
+                      : "PVP: $" + tile.publicPrice.from.replace(/[$]/gi, "")}
+                    <br></br>
+                    {/* {/* {JSON.parse(localStorage.getItem("adminToken")) &&
+                    JSON.parse(localStorage.getItem("adminToken")).username &&
+                    tile.prixerEquation !== ""
+                      ? "PVM: $" + tile.prixerEquation
+                      : tile.attributes !== []
+                      ? tile.publicPrice.to !== tile.publicPrice.from &&
+                        tile.publicPrice.to !== ""
+                        ? "PVM: $" +
+                          tile.prixerPrice?.from +
+                          " - " +
+                          tile.prixerPrice?.to
+                        : "PVM: $" + tile.prixerPrice?.from.replace(/[$]/gi, "")
+                      : null} */}
+                    {JSON.parse(localStorage.getItem("token")) &&
+                    JSON.parse(localStorage.getItem("token")).username &&
+                    currency
+                      ? tile.prixerEquation !== ""
+                        ? "PVM: Bs" +
+                          (
+                            tile.prixerEquation
+                              .replace(/[$]/gi, "")
+                              .replace(/[,]/gi, ".") * dollarValue
+                          ).toFixed(2)
+                        : tile.attributes !== [] &&
+                          tile.prixerPrice.to !== tile.prixerPrice.from &&
+                          tile.prixerPrice.to !== ""
+                        ? "PVM: Bs" +
+                          (
+                            Number(
+                              tile.prixerPrice.from
+                                .replace(/[$]/gi, "")
+                                .replace(/[,]/gi, ".")
+                            ) * dollarValue
+                          ).toFixed(2) +
+                          " - " +
+                          Number(
+                            tile.prixerPrice.to
+                              .replace(/[$]/gi, "")
+                              .replace(/[,]/gi, ".") * dollarValue
+                          ).toFixed(2)
+                        : "PVM: Bs" +
+                          Number(
+                            tile.prixerPrice.from
+                              .replace(/[$]/gi, "")
+                              .replace(/[,]/gi, ".") * dollarValue
+                          ).toFixed(2)
+                      : JSON.parse(localStorage.getItem("token")) &&
+                        JSON.parse(localStorage.getItem("token")).username &&
+                        tile.prixerEquation !== ""
+                      ? "PVM: $" + tile.prixerEquation
+                      : tile.attributes !== [] &&
+                        JSON.parse(localStorage.getItem("token")) &&
+                        JSON.parse(localStorage.getItem("token")).username &&
+                        tile.prixerPrice.to !== tile.prixerPrice.from &&
+                        tile.prixerPrice.to !== "" &&
+                        tile.prixerPrice.to !== undefined
+                      ? "PVM: $" +
+                        tile.prixerPrice.from.replace(/[$]/gi, "") +
+                        " - " +
+                        tile.variants[0]?.prixerPrice.equation.replace(
+                          /[$]/gi,
+                          ""
+                        )
+                      : JSON.parse(localStorage.getItem("token")) &&
+                        JSON.parse(localStorage.getItem("token")).username &&
+                        "PVM: $" + tile.prixerPrice.from.replace(/[$]/gi, "")}
+                  </Typography>
+                  <MDEditor.Markdown
+                    source={tile.description}
+                    style={{ whiteSpace: "pre-wrap" }}
+                  />
+                </CardContent>
+                {/* </CardActionArea> */}
                 {tile.hasSpecialVar && (
                   <>
                     <CardActions style={{ width: "25%" }}>
@@ -462,7 +610,7 @@ export default function ProductGrid(props) {
                             }}
                             label={att.selection}
                           >
-                            <MenuItem value="">
+                            <MenuItem value={undefined}>
                               <em></em>
                             </MenuItem>
                             {att.value &&
@@ -490,6 +638,7 @@ export default function ProductGrid(props) {
                     Información <WhatsAppIcon />
                   </Button>
                 </CardActions>
+
                 <CardActions>
                   {tile.variants &&
                     tile.variants.map((v) => {
@@ -500,6 +649,32 @@ export default function ProductGrid(props) {
                       }
                     })}
                 </CardActions>
+                <Grid
+                  item
+                  xs={12}
+                  sm={12}
+                  md={12}
+                  lg={12}
+                  xl={12}
+                  style={{ display: "flex", justifyContent: "center" }}
+                >
+                  <Button
+                    disabled={
+                      tile.attributes[0] !== undefined &&
+                      tile.selection[0] === undefined
+                        ? true
+                        : false
+                    }
+                    size="small"
+                    color="primary"
+                    onClick={(e) => {
+                      addingToCart(e, tile);
+                    }}
+                  >
+                    <AddShoppingCartIcon />
+                    Agregar
+                  </Button>
+                </Grid>
               </Card>
             ))
           ) : (

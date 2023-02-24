@@ -36,9 +36,14 @@ export default function MultilineTextFields(props) {
   const handleChange = async () => {
     const base_url =
       process.env.REACT_APP_BACKEND_URL + "/termsAndConditions/update";
-    const response = await axios.put(base_url, {
-      termsAndConditions: value,
-    });
+    const response = await axios.put(
+      base_url,
+      {
+        termsAndConditions: value,
+      },
+      { adminToken: localStorage.getItem("adminTokenV") },
+      { withCredentials: true }
+    );
     // changeTermsAgree();
   };
 

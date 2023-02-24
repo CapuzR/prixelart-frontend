@@ -22,7 +22,12 @@ import Switch from "@material-ui/core/Switch";
 import Typography from "@material-ui/core/Typography";
 import utils from "../../utils/utils";
 import SearchBar from "../../sharedComponents/searchBar/searchBar.jsx";
+import IconButton from "@material-ui/core/IconButton";
+import Tooltip from "@material-ui/core/Tooltip";
+import CardActionArea from "@material-ui/core/CardActionArea";
 
+import AddShoppingCartIcon from "@material-ui/icons/AddShoppingCart";
+import FullscreenPhoto from "../fullscreenPhoto/fullscreenPhoto";
 const IOSSwitch = withStyles((theme) => ({
   root: {
     width: 42,
@@ -133,6 +138,9 @@ export default function Grid(props) {
   const [selectedArt, setSelectedArt] = useState(undefined);
   const [open, setOpen] = useState(false);
   const [openV, setOpenV] = useState(false);
+  const [openFullArt, setOpenFullArt] = useState(false);
+  const [fullArt, setFullArt] = useState(null);
+  const [fullPrixer, setFullPrixer] = useState(null);
   const [disabledReason, setDisabledReason] = useState("");
   const [visible, setVisible] = useState(true);
   const [visibles, setVisibles] = useState([]);
@@ -155,7 +163,12 @@ export default function Grid(props) {
     if (event.target.checked === true) {
       const base_url = process.env.REACT_APP_BACKEND_URL + "/art/disable/" + id;
       art.visible = visible;
-      const response = await axios.put(base_url, art);
+      const response = await axios.put(
+        base_url,
+        art,
+        { adminToken: localStorage.getItem("adminTokenV") },
+        { withCredentials: true }
+      );
       setSnackBarMessage("Arte modificado exitosamente");
       setSnackBar(true);
       setLoading(false);
@@ -165,7 +178,12 @@ export default function Grid(props) {
       const base_url = process.env.REACT_APP_BACKEND_URL + "/art/disable/" + id;
       art.visible = visible;
       art.disabledReason = disabledReason;
-      const response = await axios.put(base_url, art);
+      const response = await axios.put(
+        base_url,
+        art,
+        { adminToken: localStorage.getItem("adminTokenV") },
+        { withCredentials: true }
+      );
       handleClose();
       setSnackBarMessage("Arte modificado exitosamente");
       setSnackBar(true);
@@ -173,6 +191,7 @@ export default function Grid(props) {
       setDisabledReason("");
     }
   };
+  // console.log(globalParams);
 
   useEffect(() => {
     if (props.prixerUsername || globalParams.get("prixer")) {
@@ -221,7 +240,7 @@ export default function Grid(props) {
         const base_url =
           process.env.REACT_APP_BACKEND_URL + "/art/read-by-prixer";
         const body = {
-          username: props.prixerUsername || globalParams.get("prixer"),
+          username: props.prixerUsername,
         };
         axios.post(base_url, body).then((response) => {
           setTiles(utils.shuffle(response.data.arts));
@@ -245,7 +264,7 @@ export default function Grid(props) {
         text: searchValue,
       };
       axios.get(base_url, { params }).then((response) => {
-        setTiles(utils.shuffle(response.data.arts));
+        setTiles(response.data.arts);
         setBackdrop(false);
       });
     } else if (categoryValue) {
@@ -268,10 +287,14 @@ export default function Grid(props) {
     }
   }, [searchValue, categoryValue]);
 
-  const handleFullImage = (e, tile) => {
+  const handleFullImage = async (e, tile) => {
+    setFullPrixer(tile.prixerUsername);
+    props.setFullArt(tile);
+    let art = e.target.id;
     history.push({
-      pathname: "/" + tile.prixerUsername + "/art/" + e.target.id,
+      pathname: "/prixer=" + tile.prixerUsername + "/art=" + art,
     });
+    setOpenFullArt(true);
   };
 
   const searchPhotos = (e, queryValue, categories) => {
@@ -333,10 +356,17 @@ export default function Grid(props) {
     }
   };
 
+  const addingToCart = (e, tile) => {
+    e.preventDefault();
+    props.setSelectedArt(tile);
+    props.setIsOpenAssociateProduct(true);
+  };
+
   const msnry = new Masonry(".grid", {
     columnWidth: 200,
     itemSelector: ".grid-item",
   });
+
   return (
     <>
       <div className={classes.root}>
@@ -388,46 +418,59 @@ export default function Grid(props) {
                   ) : (
                     ""
                   )}
-                  <Img
-                    onClick={(e) => {
-                      handleFullImage(e, tile);
-                    }}
-                    placeholder="/imgLoading.svg"
-                    style={{
-                      backgroundColor: "#eeeeee",
-                      width: "100%",
-                      marginBottom: "7px",
-                      borderRadius: "4px",
-                      // objectFit: "cover",
-                    }}
-                    src={tile.smallThumbUrl}
-                    debounce={1000}
-                    cache
-                    error="/imgError.svg"
-                    // srcSet={tile.smallThumbUrl + ' 600w, ' + tile.mediumThumbUrl + ' 850w, ' + tile.largeThumbUrl + ' 1300w'}
-                    // sizes="(min-width: 1600px) 850px, (min-width: 960px) 450px, (min-width: 640px) 400px, 200px"
-                    // sizes="(min-width: 1600px) 850px, (min-width: 960px) 450px, (min-width: 640px) 200px, (min-width: 375px) 80px"
-                    alt={tile.title}
-                    id={tile.artId}
-                    key={tile.artId}
-                  />
-                  {JSON.parse(localStorage.getItem("adminToken")) && (
-                    <IOSSwitch
-                      color="primary"
-                      size="normal"
-                      checked={tile.visible}
-                      onChange={(e) => {
-                        if (e.target.checked === false) {
-                          handleClickVisible();
-                          setSelectedArt(tile.artId);
-                          setVisible(e.target.checked);
-                        } else {
-                          setVisibleArt(tile, tile.artId, e);
-                          setVisible(e.target.checked);
-                        }
+
+                  <CardActionArea>
+                    <Tooltip title="Agregar al carrito">
+                      <IconButton
+                        size="small"
+                        color="primary"
+                        onClick={(e) => {
+                          addingToCart(e, tile);
+                        }}
+                        style={{ position: "absolute", padding: "8px" }}
+                      >
+                        <AddShoppingCartIcon />
+                      </IconButton>
+                    </Tooltip>
+                    <Img
+                      draggable={false}
+                      onClick={(e) => {
+                        handleFullImage(e, tile);
                       }}
+                      placeholder="/imgLoading.svg"
+                      style={{
+                        backgroundColor: "#eeeeee",
+                        width: "100%",
+                        marginBottom: "7px",
+                        borderRadius: "4px",
+                      }}
+                      src={tile.squareThumbUrl}
+                      debounce={1000}
+                      cache
+                      error="/imgError.svg"
+                      alt={tile.title}
+                      id={tile.artId}
+                      key={tile.artId}
                     />
-                  )}
+
+                    {JSON.parse(localStorage.getItem("adminToken")) && (
+                      <IOSSwitch
+                        color="primary"
+                        size="normal"
+                        checked={tile.visible}
+                        onChange={(e) => {
+                          if (e.target.checked === false) {
+                            handleClickVisible();
+                            setSelectedArt(tile.artId);
+                            setVisible(e.target.checked);
+                          } else {
+                            setVisibleArt(tile, tile.artId, e);
+                            setVisible(e.target.checked);
+                          }
+                        }}
+                      />
+                    )}
+                  </CardActionArea>
                   <Dialog
                     open={selectedArt === tile.artId}
                     onClose={handleCloseVisible}
@@ -540,6 +583,13 @@ export default function Grid(props) {
           )}
         </Masonry>
       </ResponsiveMasonry>
+      {openFullArt && (
+        <FullscreenPhoto
+          art={fullArt}
+          buyState={props.buyState}
+          prixer={fullPrixer}
+        />
+      )}
     </>
   );
 }

@@ -33,7 +33,12 @@ export default function ReadVariants(props) {
 
   useEffect(() => {
     axios
-      .post(base_url, props.product)
+      .post(
+        base_url,
+        props.product,
+        { adminToken: localStorage.getItem("adminTokenV") },
+        { withCredentials: true }
+      )
       .then((response) => {
         response.data.products[0].variants &&
           setRows(response.data.products[0].variants);
@@ -67,7 +72,7 @@ export default function ReadVariants(props) {
 
   return (
     <React.Fragment>
-      <Table size="small" style={{overflow: 'auto'}}>
+      <Table size="small" style={{ overflow: "auto" }}>
         <TableHead>
           <TableRow>
             <TableCell align="center"></TableCell>
@@ -80,56 +85,53 @@ export default function ReadVariants(props) {
           </TableRow>
         </TableHead>
         <TableBody>
-              {
-                rows &&
-                rows.map((row) => (
-                  <TableRow key={row._id}>
-                    <TableCell align="center">
-                    <Fab
-                      color="default"
-                      style={{ width: 35, height: 35 }}
-                      aria-label="edit"
-                      onClick={(e) => {
-                        handleActive(row, "update");
-                      }}
-                    >
-                      <EditIcon />
-                    </Fab>
-                  </TableCell>
-                  <TableCell align="center">
-                  {
-                    row.variantImage ?
+          {rows &&
+            rows.map((row) => (
+              <TableRow key={row._id}>
+                <TableCell align="center">
+                  <Fab
+                    color="default"
+                    style={{ width: 35, height: 35 }}
+                    aria-label="edit"
+                    onClick={(e) => {
+                      handleActive(row, "update");
+                    }}
+                  >
+                    <EditIcon />
+                  </Fab>
+                </TableCell>
+                <TableCell align="center">
+                  {row.variantImage ? (
                     <img
                       src={row.variantImage[0]?.url}
                       style={{ width: 50, height: "auto" }}
                     />
-                    :
+                  ) : (
                     <img
                       src={row.thumbUrl}
                       style={{ width: 50, height: "auto" }}
                     />
-                  }
-                  </TableCell>
-                  <TableCell align="center">{row.name}</TableCell>
-                  <TableCell align="center">
-                    <Checkbox
-                      disabled
-                      checked={row.active}
-                      color="primary"
-                      inputProps={{ "aria-label": "secondary checkbox" }}
-                    />
-                  </TableCell>
-                  <TableCell align="center">{row.description}</TableCell>
-                  <TableCell align="center">
-                    {row.publicPrice.from}-{row.publicPrice.to}
-                  </TableCell>
-                  <TableCell align="center">
-                    {row.prixerPrice.from}-{row.prixerPrice.to}
-                  </TableCell>
-                  </TableRow>
-              ))
-              }
-      </TableBody>
+                  )}
+                </TableCell>
+                <TableCell align="center">{row.name}</TableCell>
+                <TableCell align="center">
+                  <Checkbox
+                    disabled
+                    checked={row.active}
+                    color="primary"
+                    inputProps={{ "aria-label": "secondary checkbox" }}
+                  />
+                </TableCell>
+                <TableCell align="center">{row.description}</TableCell>
+                <TableCell align="center">
+                  ${row.publicPrice.equation}
+                </TableCell>
+                <TableCell align="center">
+                  ${row.prixerPrice.equation}
+                </TableCell>
+              </TableRow>
+            ))}
+        </TableBody>
       </Table>
     </React.Fragment>
   );

@@ -18,6 +18,7 @@ import WebAssetIcon from "@material-ui/icons/WebAsset";
 import Preferences from "./preferences/Preferences";
 import Testimonials from "../TestimonialsCrud/Testimonials";
 import { InsertEmoticon } from "@material-ui/icons";
+import LocalShippingIcon from "@material-ui/icons/LocalShipping";
 
 export default function MainListItems(props) {
   const history = useHistory();
@@ -65,24 +66,51 @@ export default function MainListItems(props) {
         <ListItem
           button
           selected={props.active === "payment-method"}
-          style={{ color: "gray" }}
+          // style={{ color: "gray" }}
         >
           <ListItemIcon>
             <PaymentIcon />
           </ListItemIcon>
-          <ListItemText primary="Métodos de pago" />
+          <ListItemText
+            primary="Métodos de pago"
+            onClick={(e) => {
+              handleClick("payment-method");
+            }}
+            selected={props.active === "payment-method"}
+          />
+          {/* <ListItemText primary="Métodos de pago" onClick={(e)=>{handleClick('payment-method')}}  /> */}
+        </ListItem>
+        <ListItem
+          button
+          selected={props.active === "shipping-method"}
+          // style={{ color: "gray" }}
+        >
+          <ListItemIcon>
+            <LocalShippingIcon />
+          </ListItemIcon>
+          <ListItemText
+            primary="Métodos de envío"
+            onClick={(e) => {
+              handleClick("shipping-method");
+            }}
+            selected={props.active === "shipping-method"}
+          />
           {/* <ListItemText primary="Métodos de pago" onClick={(e)=>{handleClick('payment-method')}}  /> */}
         </ListItem>
         <ListItem
           button
           selected={props.active === "order"}
-          style={{ color: "gray" }}
+          // style={{ color: "gray" }}
         >
           <ListItemIcon>
             <ReceiptIcon />
           </ListItemIcon>
-          <ListItemText primary="Pedidos" />
-          {/* <ListItemText primary="Pedidos" onClick={(e)=>{handleClick('order')}}  /> */}
+          <ListItemText
+            primary="Pedidos"
+            onClick={(e) => {
+              handleClick("order");
+            }}
+          />
         </ListItem>
         <ListItem
           button

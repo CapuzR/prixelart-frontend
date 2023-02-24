@@ -47,7 +47,9 @@ function App() {
   const readDollarValue = async () => {
     const base_url = process.env.REACT_APP_BACKEND_URL + "/dollarValue/read";
     await axios.get(base_url).then((response) => {
-      setDollarValue(response.data.dollarValue);
+      if (response.data.dollarValue !== undefined) {
+        setDollarValue(response.data.dollarValue);
+      } else return;
     });
   };
 

@@ -98,7 +98,7 @@ export default function ReadProducts(props) {
                     </Fab>
                   </TableCell>
                   <TableCell align="center">
-                    {row.sources.images.length > 0 ? (
+                    {row.sources.images?.length > 0 ? (
                       <>
                         <img
                           src={row.sources.images[0]?.url}

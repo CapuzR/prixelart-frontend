@@ -98,6 +98,7 @@ export default function ProductsCatalog(props) {
           addItemToBuyState={props.addItemToBuyState}
           setSelectedProduct={setSelectedProduct}
           setIsOpenAssociateArt={props.setIsOpenAssociateArt}
+          dollarValue={props.dollarValue}
         />
         {openArtFormDialog && (
           <ArtUploader

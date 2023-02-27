@@ -287,7 +287,7 @@ function App() {
             deleteItemInBuyState={deleteItemInBuyState}
             deleteProductInItem={deleteProductInItem}
             AssociateProduct={AssociateProduct}
-            // dollarValue={dollarValue}
+            dollarValue={dollarValue}
           />
         </Route>
 

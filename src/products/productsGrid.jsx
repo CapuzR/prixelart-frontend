@@ -94,7 +94,7 @@ export default function ProductGrid(props) {
   const [height, setHeight] = useState([]);
   const [order, setOrder] = useState("");
   const history = useHistory();
-  const [dollarValue, setDollarValue] = useState(1);
+  // const [dollarValue, setDollarValue] = useState(1);
   const handleChange = (event) => {
     setOrder(event.target.value);
   };
@@ -148,13 +148,14 @@ export default function ProductGrid(props) {
   const readDollarValue = async () => {
     const base_url = process.env.REACT_APP_BACKEND_URL + "/dollarValue/read";
     await axios.get(base_url).then((response) => {
-      setDollarValue(response.data.dollarValue);
+      // setDollarValue(response.data.dollarValue);
+      console.log(response.data);
     });
   };
 
   useEffect(() => {
     readDollarValue();
-  });
+  }, []);
 
   const addingToCart = (e, tile) => {
     e.preventDefault();
@@ -303,8 +304,8 @@ export default function ProductGrid(props) {
                             dangerouslySetInnerHTML={{ __html: img.url }}
                           />
                         )
-                      ))
-                    : (
+                      )
+                    ) : (
                       <img
                         src={tile.thumbUrl}
                         className={classes.img}
@@ -335,24 +336,24 @@ export default function ProductGrid(props) {
                     {currency
                       ? tile.publicEquation !== ""
                         ? "PVP: Bs" +
-                          (tile.publicEquation * dollarValue).toFixed(2)
+                          (tile.publicEquation * props.dollarValue).toFixed(2)
                         : tile.attributes !== [] &&
                           tile.publicPrice.to !== tile.publicPrice.from &&
                           tile.publicPrice.to !== ""
                         ? "PVP: Bs" +
                           (
                             tile.publicPrice.from.replace(/[$]/gi, "") *
-                            dollarValue
+                            props.dollarValue
                           ).toFixed(2) +
                           " - " +
                           (
                             tile.publicPrice.to.replace(/[$]/gi, "") *
-                            dollarValue
+                            props.dollarValue
                           ).toFixed(2)
                         : "PVP: Bs" +
                           (
                             tile.publicPrice.from.replace(/[$]/gi, "") *
-                            dollarValue
+                            props.dollarValue
                           ).toFixed(2)
                       : tile.publicEquation !== ""
                       ? "PVP: $" + tile.publicEquation
@@ -389,7 +390,7 @@ export default function ProductGrid(props) {
                           (
                             tile.prixerEquation
                               .replace(/[$]/gi, "")
-                              .replace(/[,]/gi, ".") * dollarValue
+                              .replace(/[,]/gi, ".") * props.dollarValue
                           ).toFixed(2)
                         : tile.attributes !== [] &&
                           tile.prixerPrice.to !== tile.prixerPrice.from &&
@@ -400,19 +401,19 @@ export default function ProductGrid(props) {
                               tile.prixerPrice.from
                                 .replace(/[$]/gi, "")
                                 .replace(/[,]/gi, ".")
-                            ) * dollarValue
+                            ) * props.dollarValue
                           ).toFixed(2) +
                           " - " +
                           Number(
                             tile.prixerPrice.to
                               .replace(/[$]/gi, "")
-                              .replace(/[,]/gi, ".") * dollarValue
+                              .replace(/[,]/gi, ".") * props.dollarValue
                           ).toFixed(2)
                         : "PVM: Bs" +
                           Number(
                             tile.prixerPrice.from
                               .replace(/[$]/gi, "")
-                              .replace(/[,]/gi, ".") * dollarValue
+                              .replace(/[,]/gi, ".") * props.dollarValue
                           ).toFixed(2)
                       : JSON.parse(localStorage.getItem("token")) &&
                         JSON.parse(localStorage.getItem("token")).username &&

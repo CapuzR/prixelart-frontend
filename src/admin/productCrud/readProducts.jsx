@@ -79,6 +79,7 @@ export default function ReadProducts(props) {
               <TableCell align="center">Categoría</TableCell>
               <TableCell align="center">PVP desde-hasta</TableCell>
               <TableCell align="center">PVM desde-hasta</TableCell>
+              <TableCell align="center">Tiempo de producción</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -132,6 +133,11 @@ export default function ReadProducts(props) {
                     ${row.prixerPrice.from.replace(/[$]/gi, "")}
                     {row.prixerPrice.to &&
                       " - " + row.prixerPrice.to.replace(/[$]/gi, "")}
+                  </TableCell>
+                  <TableCell align="center">
+                    {row.productionTime && Number(row.productionTime) > 1
+                      ? row.productionTime + " días"
+                      : row.productionTime && row.productionTime + " día"}
                   </TableCell>
                   <TableCell align="center">
                     <Fab

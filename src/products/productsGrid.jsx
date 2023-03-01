@@ -145,18 +145,6 @@ export default function ProductGrid(props) {
     });
   }, [order]);
 
-  const readDollarValue = async () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + "/dollarValue/read";
-    await axios.get(base_url).then((response) => {
-      // setDollarValue(response.data.dollarValue);
-      console.log(response.data);
-    });
-  };
-
-  useEffect(() => {
-    readDollarValue();
-  }, []);
-
   const addingToCart = (e, tile) => {
     e.preventDefault();
     props.setSelectedProduct(tile);

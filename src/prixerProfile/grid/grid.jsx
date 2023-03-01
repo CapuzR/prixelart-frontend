@@ -205,6 +205,7 @@ export default function Grid(props) {
         };
         axios.get(base_url, { params }).then((response) => {
           setTiles(utils.shuffle(response.data.arts));
+          props.setSearchResult(response.data.arts);
           setBackdrop(false);
         });
       } else if (searchValue) {
@@ -216,6 +217,7 @@ export default function Grid(props) {
         };
         axios.get(base_url, { params }).then((response) => {
           setTiles(utils.shuffle(response.data.arts));
+          props.setSearchResult(response.data.arts);
           // response.data.arts.map((bool) =>
           //   visibles.push({
           //     id: bool.artId,
@@ -234,6 +236,7 @@ export default function Grid(props) {
         };
         axios.get(base_url, { params }).then((response) => {
           setTiles(utils.shuffle(response.data.arts));
+          props.setSearchResult(response.data.arts);
           setBackdrop(false);
         });
       } else {
@@ -244,6 +247,7 @@ export default function Grid(props) {
         };
         axios.post(base_url, body).then((response) => {
           setTiles(utils.shuffle(response.data.arts));
+          props.setSearchResult(response.data.arts);
           setBackdrop(false);
         });
       }
@@ -256,6 +260,7 @@ export default function Grid(props) {
       };
       axios.get(base_url, { params }).then((response) => {
         setTiles(utils.shuffle(response.data.arts));
+        props.setSearchResult(response.data.arts);
         setBackdrop(false);
       });
     } else if (searchValue) {
@@ -265,6 +270,7 @@ export default function Grid(props) {
       };
       axios.get(base_url, { params }).then((response) => {
         setTiles(response.data.arts);
+        props.setSearchResult(response.data.arts);
         setBackdrop(false);
       });
     } else if (categoryValue) {
@@ -275,12 +281,14 @@ export default function Grid(props) {
       };
       axios.get(base_url, { params }).then((response) => {
         setTiles(utils.shuffle(response.data.arts));
+        props.setSearchResult(response.data.arts);
         setBackdrop(false);
       });
     } else {
       const base_url = process.env.REACT_APP_BACKEND_URL + "/art/read-all";
       axios.get(base_url).then((response) => {
         setTiles(response.data.arts);
+        props.setSearchResult(response.data.arts);
         // getTags(response);
         setBackdrop(false);
       });
@@ -290,6 +298,7 @@ export default function Grid(props) {
   const handleFullImage = async (e, tile) => {
     setFullPrixer(tile.prixerUsername);
     props.setFullArt(tile);
+    props.setSearchResult(tiles);
     let art = e.target.id;
     history.push({
       pathname: "/prixer=" + tile.prixerUsername + "/art=" + art,
@@ -585,9 +594,10 @@ export default function Grid(props) {
       </ResponsiveMasonry>
       {openFullArt && (
         <FullscreenPhoto
-          art={fullArt}
+          art={props.fullArt}
           buyState={props.buyState}
-          prixer={fullPrixer}
+          // prixer={fullPrixer}
+          searchResult={props.searchResult}
         />
       )}
     </>

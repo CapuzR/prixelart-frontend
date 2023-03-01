@@ -162,6 +162,9 @@ export default function Gallery(props) {
             setIsOpenAssociateProduct={props.setIsOpenAssociateProduct}
             setSelectedArt={setSelectedArt}
             setFullArt={props.setFullArt}
+            fullArt={props.fullArt}
+            setSearchResult={props.setSearchResult}
+            searchResult={props.searchResult}
           />
         </Grid>
         {openArtFormDialog && (

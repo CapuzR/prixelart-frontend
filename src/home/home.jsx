@@ -490,6 +490,7 @@ export default function Home(props) {
                   setSelectedArt={setSelectedArt}
                   setPrixer={props.setPrixer}
                   setFullArt={props.setFullArt}
+                  setSearchResult={props.setSearchResult}
                 />
               )
               // </Suspense>

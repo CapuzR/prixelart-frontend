@@ -91,6 +91,9 @@ export default function UpdateAdmin(props) {
   const [considerations, setConsiderations] = useState(
     props?.product?.considerations
   );
+  const [productionTime, setProductionTime] = useState(
+    props.product?.productionTime
+  );
   const [fromPublicPrice, setFromPublicPrice] = useState(
     props?.product?.publicPrice?.from
   );
@@ -256,6 +259,7 @@ export default function UpdateAdmin(props) {
           newFormData.append("category", category);
           newFormData.append("variants", JSON.stringify(variants));
           newFormData.append("considerations", considerations);
+          newFormData.append("productionTime", productionTime);
           newFormData.append("publicPriceFrom", data.publicPrice.from);
           newFormData.append("publicPriceTo", data.publicPrice.to);
           newFormData.append("prixerPriceFrom", data.prixerPrice.from);
@@ -599,13 +603,28 @@ export default function UpdateAdmin(props) {
                       fullWidth
                       multiline
                       rows={2}
-                      id="considerations"
                       label="Consideraciones"
-                      name="considerations"
-                      autoComplete="considerations"
                       value={considerations}
                       onChange={(e) => {
                         setConsiderations(e.target.value);
+                      }}
+                    />
+                  </FormControl>
+                  <FormControl
+                    className={clsx(classes.margin, classes.textField)}
+                    variant="outlined"
+                    xs={12}
+                    fullWidth={true}
+                    style={{ marginTop: 20 }}
+                  >
+                    <TextField
+                      variant="outlined"
+                      required
+                      fullWidth
+                      label="Tiempo de producción"
+                      value={productionTime}
+                      onChange={(e) => {
+                        setProductionTime(e.target.value);
                       }}
                     />
                   </FormControl>

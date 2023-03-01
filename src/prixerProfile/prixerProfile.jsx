@@ -151,6 +151,7 @@ export default function PrixerProfile(props) {
         setSelectedArt={setSelectedArt}
         setPrixer={props.setPrixer}
         setFullArt={props.setFullArt}
+        setSearchResult={props.setSearchResult}
       />
       {openArtFormDialog && (
         <ArtUploader

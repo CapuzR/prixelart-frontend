@@ -428,6 +428,7 @@ export default function ShoppingPage(props) {
                     <ConsumerForm
                       setValues={props.setValuesConsumerForm}
                       values={props.valuesConsumerForm}
+                      buyState={props.buyState}
                     />
                   ) : (
                     <OrderForm

@@ -137,13 +137,14 @@ export default function FullscreenPhoto(props) {
   const theme = useTheme();
 
   const [ready, setReady] = useState(false);
-  const [tiles, setTiles] = useState([]);
+  const [tiles, setTiles] = useState(props.searchResult);
   const [updatedTile, setUpdatedTile] = useState([]);
   const [loading, setLoading] = useState(false);
   const [artDataState, setArtDataState] = useState();
   const [snackBar, setSnackBar] = useState(false);
   const [snackBarMessage, setSnackBarMessage] = useState(false);
   const [openArtFormDialog, setOpenArtFormDialog] = useState(false);
+  const [fullArt, setFullArt] = useState(props.fullArt);
   const [selectedArt, setSelectedArt] = useState(undefined);
   const [hiddenArt, setHiddenArt] = useState(undefined);
   const [open, setOpen] = useState(false);
@@ -397,38 +398,25 @@ export default function FullscreenPhoto(props) {
     setSelectedArt(undefined);
     readArt();
   };
-
   const readArt = async () => {
     setLoading(true);
-    if (tiles) {
-      const base_url =
-        process.env.REACT_APP_BACKEND_URL + "/art/read-by-prixer";
-      const data = {
-        username: props.fullArt.prixerUsername,
-      };
-      await axios.post(base_url, data).then((response) => {
-        if (tiles.length !== response.data.arts.length) {
-          setTiles(response.data.arts);
-          setReady(true);
-          if (document.getElementById(props.fullArt.artId)) {
-            document.getElementById(props.fullArt.artId).scrollIntoView({
-              behavior: "smooth",
-              block: "center",
-            });
-          } else {
-            setSnackBarMessage(
-              "Arte no encontrado, por favor inténtalo de nuevo."
-            );
-            setSnackBar(true);
-          }
-        }
-      });
-    }
+    setTiles(props.searchResult);
+    setFullArt(props.fullArt);
+    setReady(true);
     setLoading(false);
+    setTimeout(accurateLocation, 1000);
   };
+
   useEffect(() => {
     readArt();
   }, []);
+
+  const accurateLocation = () => {
+    document.getElementById(props.fullArt.artId).scrollIntoView({
+      behavior: "smooth",
+      block: "center",
+    });
+  };
 
   const updateArtData = (e, tile) => {
     setLoading(true);
@@ -463,41 +451,6 @@ export default function FullscreenPhoto(props) {
     }
     setLoading(false);
   };
-
-  // useEffect(() => {
-  //   setLoading(true);
-  //   if (artDataState === "") {
-  //     const base_url =
-  //       process.env.REACT_APP_BACKEND_URL + "/art/update/" + selectedArt;
-  //     const data = {
-  //       title: updatedTile.title,
-  //       description: updatedTile.description,
-  //       tags: updatedTile.tags,
-  //       category: updatedTile.category,
-  //       artId: updatedTile.artId,
-  //       artType: updatedTile.artType,
-  //       artLocation: updatedTile.artLocation,
-  //     };
-  //     axios
-  //       .put(base_url, data)
-  //       .then((response) => {
-  //         if (response.data.data.success == true) {
-  //           setSnackBarMessage(response.data.data.success);
-  //           setSnackBar(true);
-  //           setSelectedArt(undefined);
-  //         } else {
-  //           setSnackBarMessage(response.data.data.error_message);
-  //           setSnackBar(true);
-  //           setSelectedArt(undefined);
-  //         }
-  //       })
-  //       .catch((error) => {
-  //         // console.log(error);
-  //         setSelectedArt(undefined);
-  //       });
-  //   }
-  //   setLoading(false);
-  // }, [artDataState]);
 
   const getTerms = () => {
     const base_url =

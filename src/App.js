@@ -39,6 +39,7 @@ function App() {
   const [fullArt, setFullArt] = useState(null);
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("");
+  const [searchResult, setSearchResult] = useState([]);
   const [dollarValue, setDollarValue] = useState("1");
   document.addEventListener("contextmenu", (event) => {
     event.preventDefault();
@@ -308,6 +309,9 @@ function App() {
             setPrixer={setPrixer}
             prixer={prixer}
             setFullArt={setFullArt}
+            fullArt={fullArt}
+            setSearchResult={setSearchResult}
+            searchResult={searchResult}
           />
         </Route>
 
@@ -321,6 +325,7 @@ function App() {
             changeQuantity={changeQuantity}
             valuesConsumerForm={valuesConsumerForm}
             setValuesConsumerForm={setValuesConsumerForm}
+            dollarValue={dollarValue}
             setOpen={setOpen}
             setMessage={setMessage}
           />
@@ -355,6 +360,7 @@ function App() {
             addItemToBuyState={addItemToBuyState}
             prixer={prixer}
             fullArt={fullArt}
+            searchResult={searchResult}
             isOpenAssociateProduct={isOpenAssociateProduct}
             setIsOpenAssociateProduct={setIsOpenAssociateProduct}
             setSelectedProductToAssociate={setSelectedProductToAssociate}
@@ -389,6 +395,7 @@ function App() {
             setMessage={setMessage}
             setPrixer={setPrixer}
             setFullArt={setFullArt}
+            setSearchResult={setSearchResult}
           />
         </Route>
 
@@ -413,6 +420,7 @@ function App() {
             setMessage={setMessage}
             setPrixer={setPrixer}
             setFullArt={setFullArt}
+            setSearchResult={setSearchResult}
             dollarValue={dollarValue}
           />
         </Route>

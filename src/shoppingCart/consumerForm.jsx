@@ -49,6 +49,27 @@ function ConsumerForm(props) {
   const [openTooltipPh, setOpenTooltipPh] = useState(false);
   const [openTooltipPh2, setOpenTooltipPh2] = useState(false);
   const [openTooltipPh3, setOpenTooltipPh3] = useState(false);
+  let shippingDate = new Date();
+  const months = [
+    "Enero",
+    "Febrero",
+    "Marzo",
+    "Abril",
+    "May0",
+    "Junio",
+    "Julio",
+    "Agosto",
+    "Septiembre",
+    "Octubre",
+    "Noviembre",
+    "Diciembre",
+  ];
+
+  let readyDate = new Date(
+    shippingDate.setDate(
+      shippingDate.getDate() + Number(props.buyState[0].product.productionTime)
+    )
+  );
 
   useEffect(() => {
     const base_url =
@@ -616,8 +637,46 @@ function ConsumerForm(props) {
                         <MenuItem value={n}>{n.name}</MenuItem>
                       ))}
                   </Select>
+                  {/* <div style={{ marginTop: 10, marginLeft: 10 }}>
+                    {"Tu pedido estará listo el día " +
+                      readyDate.getDate() +
+                      " de " +
+                      months[readyDate.getMonth()] +
+                      "."}
+                  </div> */}
                 </FormControl>
               </Grid>
+              {/* <Grid
+                item
+                lg={6}
+                md={6}
+                sm={12}
+                xs={12}
+                className={classes.gridInput}
+              >
+                <TextField
+                  style={{
+                    width: "100%",
+                  }}
+                  label="Fecha de Entrega"
+                  type="date"
+                  variant="outlined"
+                  // required
+                  format="dd-MM-yyyy"
+                  defaultValue={readyDate}
+                  // value={readyDate}
+                  className={classes.textField}
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  onChange={(e) => {
+                    props.setValues({
+                      ...props.values,
+                      shippingDate: e.target.value,
+                    });
+                  }}
+                />
+              </Grid> */}
             </Grid>
           </form>
         </AccordionDetails>

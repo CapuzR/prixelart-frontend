@@ -135,16 +135,20 @@ export default function FullscreenPhoto(props) {
   const classes = useStyles();
   const history = useHistory();
   const theme = useTheme();
+  const globalParams = new URLSearchParams(window.location.pathname);
 
   const [ready, setReady] = useState(false);
   const [tiles, setTiles] = useState(props.searchResult);
+  const [newTag, setNewTag] = useState([]);
   const [updatedTile, setUpdatedTile] = useState([]);
   const [loading, setLoading] = useState(false);
   const [artDataState, setArtDataState] = useState();
   const [snackBar, setSnackBar] = useState(false);
   const [snackBarMessage, setSnackBarMessage] = useState(false);
   const [openArtFormDialog, setOpenArtFormDialog] = useState(false);
-  const [fullArt, setFullArt] = useState(props.fullArt);
+  const [fullArt, setFullArt] = useState(
+    props.fullArt?.artId || globalParams.get("/art")
+  );
   const [selectedArt, setSelectedArt] = useState(undefined);
   const [hiddenArt, setHiddenArt] = useState(undefined);
   const [open, setOpen] = useState(false);
@@ -155,6 +159,7 @@ export default function FullscreenPhoto(props) {
   const [termsAgreeVar, setTermsAgreeVar] = useState(true);
   const [value, setValue] = useState("");
   const [openShoppingCart, setOpenShoppingCart] = useState(false);
+
   const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
   const isDeskTop = useMediaQuery(theme.breakpoints.up("sm"));
 
@@ -165,14 +170,39 @@ export default function FullscreenPhoto(props) {
     max: 100,
   };
 
-  const handleArtEdit = (e, tile) => {
+  const handleArtEdit = async (e, tile) => {
     setLoading(true);
     if (artDataState === tile.artId) {
       if (updatedTile.title !== "" && updatedTile.description !== "") {
         setUpdatedTile(tile);
+        const base_url =
+          process.env.REACT_APP_BACKEND_URL + "/art/update/" + selectedArt;
+        const data = {
+          title: tile.title,
+          description: tile.description,
+          tags: tile.tags,
+          category: tile.category,
+          // artId: tile.artId,
+          artType: tile.artType,
+          artLocation: tile.artLocation,
+        };
+        await axios
+          .put(base_url, data)
+          .then((response) => {
+            if (response.data.data.success == true) {
+              setSnackBarMessage(response.data.data.success);
+              setSnackBar(true);
+              setSelectedArt(undefined);
+            } else {
+              setSnackBarMessage(response.data.data.error_message);
+              setSnackBar(true);
+              setSelectedArt(undefined);
+            }
+          })
+          .catch((error) => {
+            setSelectedArt(undefined);
+          });
         setArtDataState("");
-        setSnackBarMessage("Arte actualizado correctamente");
-        setSnackBar(true);
       } else {
         setSnackBarMessage("Por favor llena los campos requeridos");
         setSnackBar(true);
@@ -219,10 +249,10 @@ export default function FullscreenPhoto(props) {
     setTiles(result);
   };
 
-  // const handleArtTagsEdit = async (e, tile, tags) => {
+  // const handleArtTagsEdit = async (e, tile) => {
   //   let tempTiles = tiles;
-  //   setNewTag = tile.tags;
-  //   let result = await tagsEdit(tempTiles, tile, e, tags);
+  //   // setNewTag(tile.tags);
+  //   // let result = await tagsEdit(tempTiles, tile, e);
   //   setTiles(result);
   // };
 
@@ -246,6 +276,7 @@ export default function FullscreenPhoto(props) {
     setOpenV(false);
     setHiddenArt(undefined);
   };
+
   function tagsEdit(tempTiles, tile, e, tags) {
     return tempTiles.map((item) => {
       const result = tags.trim().split(/\s+/);
@@ -401,7 +432,16 @@ export default function FullscreenPhoto(props) {
   const readArt = async () => {
     setLoading(true);
     setTiles(props.searchResult);
-    setFullArt(props.fullArt);
+    const artId = globalParams.get("/art");
+
+    if (props.fullArt) {
+    } else {
+      const URI = process.env.REACT_APP_BACKEND_URL + "/art/read-by-id";
+      await axios.post(URI, { _id: artId }).then((response) => {
+        setTiles([response.data.arts]);
+      });
+    }
+    setFullArt(artId);
     setReady(true);
     setLoading(false);
     setTimeout(accurateLocation, 1000);
@@ -412,27 +452,27 @@ export default function FullscreenPhoto(props) {
   }, []);
 
   const accurateLocation = () => {
-    document.getElementById(props.fullArt.artId).scrollIntoView({
+    document.getElementById(fullArt).scrollIntoView({
       behavior: "smooth",
       block: "center",
     });
   };
 
-  const updateArtData = (e, tile) => {
+  const updateArtData = async (e, tile) => {
     setLoading(true);
     if (artDataState === "") {
       const base_url =
         process.env.REACT_APP_BACKEND_URL + "/art/update/" + selectedArt;
       const data = {
-        title: updatedTile.title,
-        description: updatedTile.description,
-        tags: updatedTile.tags,
-        category: updatedTile.category,
-        artId: updatedTile.artId,
-        artType: updatedTile.artType,
-        artLocation: updatedTile.artLocation,
+        title: tile.title,
+        description: tile.description,
+        tags: tile.tags,
+        category: tile.category,
+        // artId: tile.artId,
+        artType: tile.artType,
+        artLocation: tile.artLocation,
       };
-      axios
+      await axios
         .put(base_url, data)
         .then((response) => {
           if (response.data.data.success == true) {
@@ -449,6 +489,7 @@ export default function FullscreenPhoto(props) {
           setSelectedArt(undefined);
         });
     }
+    setArtDataState(tile.artId);
     setLoading(false);
   };
 
@@ -1132,10 +1173,14 @@ export default function FullscreenPhoto(props) {
                   )}
                 </div>
               ) : (
-                <Card id={tile.artId} key={tile.artId}>
+                <Card
+                  id={tile.artId}
+                  key={tile.artId}
+                  style={{ marginTop: 35 }}
+                >
                   <Img
                     placeholder="/imgLoading.svg"
-                    style={{ backgroundColor: "#eeeeee", height: "100%" }}
+                    style={{ backgroundColor: "#eeeeee", width: "100%" }}
                     src={tile.largeThumbUrl || tile.thumbnailUrl}
                     debounce={1000} // Default is 300 (ms)
                     cache
@@ -1423,34 +1468,6 @@ export default function FullscreenPhoto(props) {
                               }}
                             />
                           </Grid>
-                          {/* <Grid item xs={12} sm={12}>
-                              <Autocomplete
-                                multiple
-                                id="tags-filled"
-                                options={tile.tags.map((option) => option)}
-                                defaultValue={tile.tags}
-                                freeSolo
-                                renderTags={(value, getTagProps) =>
-                                  value.map(
-                                    (option, index) => (
-                                      <Chip
-                                        variant="outlined"
-                                        label={option}
-                                        {...getTagProps({ index })}
-                                      />
-                                    ),
-                                    { ...handleArtTagsEdit(value) }
-                                  )
-                                }
-                                renderInput={(params) => (
-                                  <TextField
-                                    {...params}
-                                    variant="outlined"
-                                    label="Etiquetas"
-                                  />
-                                )}
-                              />
-                            </Grid> */}
                           <Grid
                             item
                             xs={12}
@@ -1466,6 +1483,7 @@ export default function FullscreenPhoto(props) {
                               renderTags={(value, getTagProps) =>
                                 value.map((option, index) => (
                                   <Chip
+                                    style={{ marginRight: 5 }}
                                     onDelete={() => {
                                       const newTiles = [...tiles];
                                       newTiles.find(
@@ -1487,6 +1505,17 @@ export default function FullscreenPhoto(props) {
                                   label="Etiquetas"
                                   onKeyDown={(e) => {
                                     if (e.key === "Enter" && e.target.value) {
+                                      const newTiles = [...tiles];
+                                      newTiles
+                                        .find(
+                                          (item) => item.artId === tile.artId
+                                        )
+                                        .tags.push(e.target.value);
+                                      setTiles(newTiles);
+                                    } else if (
+                                      e.key === " " &&
+                                      e.target.value
+                                    ) {
                                       const newTiles = [...tiles];
                                       newTiles
                                         .find(
@@ -1526,7 +1555,7 @@ export default function FullscreenPhoto(props) {
                           size="small"
                           color="primary"
                           onClick={(e) => {
-                            updateArtData(e, tile);
+                            // updateArtData(e, tile);
                             handleArtEdit(e, tile);
                           }}
                         >

@@ -349,11 +349,7 @@ function App() {
 
         <Route exact path="/recuperar/:token" component={ResetPassword} />
 
-        <Route
-          exact
-          path="/prixer=:username/art=:artId"
-          component={FullscreenPhoto}
-        >
+        <Route exact path="/art=:artId" component={FullscreenPhoto}>
           <FullscreenPhoto
             buyState={buyState}
             deleteItemInBuyState={deleteItemInBuyState}

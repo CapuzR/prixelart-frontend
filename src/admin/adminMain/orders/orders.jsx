@@ -49,6 +49,7 @@ import ListItemText from "@material-ui/core/ListItemText";
 import Collapse from "@material-ui/core/Collapse";
 import Divider from "@material-ui/core/Divider";
 import { useHistory } from "react-router-dom";
+import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 
 import utils from "../../../utils/utils";
 import { nanoid } from "nanoid";
@@ -190,6 +191,7 @@ export default function Orders(props) {
   const isIphone = useMediaQuery(theme.breakpoints.down("xs"));
 
   const [isShowDetails, setIsShowDetails] = useState(false);
+  const [showVoucher, setShowVoucher] = useState(false);
   const [rows, setRows] = useState();
   const [modalContent, setModalContent] = useState();
   const [loading, setLoading] = useState(false);
@@ -359,6 +361,10 @@ export default function Orders(props) {
   const handleClose = () => {
     setIsShowDetails(false);
     setOpenCreateOrder(false);
+  };
+
+  const handleCloseVoucher = () => {
+    setShowVoucher(true);
   };
 
   const createOrder = async () => {
@@ -614,6 +620,11 @@ export default function Orders(props) {
     });
   };
 
+  const setOpen = () => {
+    // setIsShowDetails(false);
+    setShowVoucher(!showVoucher);
+  };
+
   return (
     <>
       <Backdrop
@@ -716,15 +727,7 @@ export default function Orders(props) {
                                   flexDirection: "column",
                                 }}
                               >
-                                {row.requests?.map((item) => (
-                                  <div>
-                                    {item.art.title +
-                                      " X " +
-                                      item.product.name +
-                                      " X " +
-                                      item.quantity}
-                                  </div>
-                                ))}
+                                Detalles
                               </div>
                             </Button>
                           </TableCell>
@@ -766,7 +769,11 @@ export default function Orders(props) {
                             >
                               <Select
                                 SelectClassKey
-                                value={row.status}
+                                value={
+                                  (row.status = "Procesando"
+                                    ? "Por producir"
+                                    : row.status)
+                                }
                                 onChange={(e) => {
                                   handleChangeStatus(
                                     row.orderId,
@@ -831,293 +838,350 @@ export default function Orders(props) {
               justifyContent: "flex-end",
             }}
           >
+            {!showVoucher && (
+              <IconButton onClick={handleCloseVoucher}>
+                <ArrowBackIcon />
+              </IconButton>
+            )}
             <IconButton onClick={handleClose}>
               <CloseIcon />
             </IconButton>
           </Grid>
-          {modalContent && (
-            <>
-              <Grid
+          {!showVoucher ? (
+            <Paper
+              elevation={3}
+              style={{
+                maxWidth: 600,
+                maxHeight: 400,
+                borderRadius: 10,
+                marginTop: 10,
+              }}
+            >
+              <Img
+                src={modalContent?.paymentVoucher}
+                alt="voucher"
                 style={{
-                  display: "flex",
-                  flexDirection: "column",
+                  maxWidth: 600,
+                  maxHeight: 400,
+                  borderRadius: 10,
+                  // marginTop: 10,
                 }}
-                item
-                xs={12}
-                sm={6}
-                md={6}
-                lg={6}
-              >
-                {modalContent?.requests.map((item, index) => (
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      margin: "0px 20px 20px 0px",
-                      borderWidth: "1px",
-                      borderStyle: "solid",
-                      borderRadius: 10,
-                      padding: 5,
-                      borderColor: "#d33f49",
-                    }}
-                  >
-                    <Typography
-                      variant="h6"
-                      style={{ textAlign: "center", margin: 5 }}
-                    >
-                      {"Item #"}
-                      {index + 1}
-                    </Typography>
+              />
+            </Paper>
+          ) : (
+            modalContent && (
+              <>
+                <Grid
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                  }}
+                  item
+                  xs={12}
+                  sm={6}
+                  md={6}
+                  lg={6}
+                >
+                  {modalContent?.requests.map((item, index) => (
                     <div
                       style={{
                         display: "flex",
-                        flexDirection: "row",
-                        justifyContent: "space-evenly",
+                        flexDirection: "column",
+                        margin: "0px 20px 20px 0px",
+                        borderWidth: "1px",
+                        borderStyle: "solid",
+                        borderRadius: 10,
+                        padding: 5,
+                        borderColor: "#d33f49",
                       }}
                     >
-                      <Paper
-                        style={{
-                          width: 150,
-                          height: 150,
-                          borderRadius: 10,
-                          backgroundColor: "#eeeeee",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                        }}
-                        elevation={3}
+                      <Typography
+                        variant="h6"
+                        style={{ textAlign: "center", margin: 5 }}
                       >
-                        <Img
-                          src={item.art.squareThumbUrl}
-                          style={{
-                            maxWidth: 150,
-                            maxHeight: 150,
-                            borderRadius: 10,
-                          }}
-                        />
-                      </Paper>
-                      <Paper
+                        {"Item #"}
+                        {index + 1}
+                      </Typography>
+                      <div
                         style={{
-                          width: 150,
-                          height: 150,
-                          borderRadius: 10,
-                          backgroundColor: "#eeeeee",
                           display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
+                          flexDirection: "row",
+                          justifyContent: "space-evenly",
                         }}
-                        elevation={3}
                       >
-                        <Img
-                          src={
-                            item.product.thumbUrl ||
-                            item.product.sources.images[0].url
-                          }
+                        <Paper
                           style={{
-                            maxWidth: 150,
-                            maxHeight: 150,
+                            width: 150,
+                            height: 150,
                             borderRadius: 10,
+                            backgroundColor: "#eeeeee",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
                           }}
-                        />
-                      </Paper>
-                    </div>
-                    <div style={{ padding: 10 }}>
-                      <div>{"Arte: " + item.art.title}</div>
-                      <div>{"Id: " + item.art.artId}</div>
-                      <div style={{ marginBottom: 10 }}>
-                        {"Prixer: " + item.art.prixerUsername}
-                      </div>
-                      <div>{"Producto: " + item.product.name}</div>
-                      <div>{"Id: " + item.product._id}</div>
-                      {item.product.attributes.map((a, i) => {
-                        return (
-                          <p
+                          elevation={3}
+                        >
+                          <Img
+                            src={item.art.squareThumbUrl}
                             style={{
-                              // fontSize: 12,
-                              padding: 0,
-                              margin: 0,
-                              marginBottom: 10,
+                              maxWidth: 150,
+                              maxHeight: 150,
+                              borderRadius: 10,
                             }}
-                          >
-                            {a.name + ": "}
-                            {item.product.selection[i]}
-                          </p>
-                        );
-                      })}
-                      <div>{"Cantidad: " + item.quantity}</div>
-                    </div>
-                  </div>
-                ))}
-              </Grid>
-
-              <Grid
-                item
-                xs={12}
-                sm={12}
-                md={6}
-                lg={6}
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  marginBottom: 20,
-                }}
-              >
-                <Grid
-                  // item
-                  // xs={12}
-                  // sm={12}
-                  // md={12}
-                  // lg={12}
-                  // xl={12}
-                  style={{
-                    marginBottom: 40,
-                    marginRight: 20,
-                    borderWidth: "1px",
-                    borderStyle: "solid",
-                    borderRadius: 10,
-                    borderColor: "grey",
-                    padding: 15,
-                  }}
-                >
-                  <strong>Datos básicos</strong>
-                  <div>
-                    {"Nombre: " +
-                      modalContent.basicData.firstname +
-                      " " +
-                      modalContent.basicData.lastname}
-                  </div>
-                  <div>{"CI o RIF: " + modalContent?.basicData.ci}</div>
-                  <div>{"Teléfono: " + modalContent?.basicData.phone}</div>
-                  <div>{"Email: " + modalContent?.basicData.email}</div>
-                  {modalContent?.basicData.address && (
-                    <div>{"Dirección: " + modalContent?.basicData.address}</div>
-                  )}
-                </Grid>
-
-                <Grid
-                  // item
-                  // xs={12}
-                  // sm={12}
-                  // md={6}
-                  // lg={4}
-                  // xl={3}
-                  style={{
-                    marginBottom: 40,
-                    marginRight: 20,
-                    borderWidth: "1px",
-                    borderStyle: "solid",
-                    borderRadius: 10,
-                    borderColor: "grey",
-                    padding: 15,
-                  }}
-                >
-                  <strong>Datos de envío</strong>
-                  {modalContent.shippingData?.name &&
-                    modalContent.shippingData?.lastname && (
-                      <div>
-                        {"Nombre: " +
-                          modalContent?.shippingData?.name +
-                          " " +
-                          modalContent?.shippingData?.lastname}
+                          />
+                        </Paper>
+                        <Paper
+                          style={{
+                            width: 150,
+                            height: 150,
+                            borderRadius: 10,
+                            backgroundColor: "#eeeeee",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                          }}
+                          elevation={3}
+                        >
+                          <Img
+                            src={
+                              item.product.thumbUrl ||
+                              item.product.sources.images[0].url
+                            }
+                            style={{
+                              maxWidth: 150,
+                              maxHeight: 150,
+                              borderRadius: 10,
+                            }}
+                          />
+                        </Paper>
                       </div>
-                    )}
-                  {modalContent.shippingData?.phone && (
-                    <div>
-                      {"Teléfono: " + modalContent?.shippingData?.phone}
+                      <div style={{ padding: 10 }}>
+                        <div>{"Arte: " + item.art.title}</div>
+                        <div>{"Id: " + item.art.artId}</div>
+                        <div style={{ marginBottom: 10 }}>
+                          {"Prixer: " + item.art.prixerUsername}
+                        </div>
+                        <div>{"Producto: " + item.product.name}</div>
+                        <div>{"Id: " + item.product._id}</div>
+                        {item.product.attributes.map((a, i) => {
+                          return (
+                            <p
+                              style={{
+                                // fontSize: 12,
+                                padding: 0,
+                                margin: 0,
+                                marginBottom: 10,
+                              }}
+                            >
+                              {a.name + ": "}
+                              {item.product.selection[i]}
+                            </p>
+                          );
+                        })}
+                        <div>{"Cantidad: " + item.quantity}</div>
+                      </div>
                     </div>
-                  )}
-                  {modalContent.shippingData?.shippingMethod && (
-                    <div>
-                      {"Método de envío: " +
-                        modalContent?.shippingData?.shippingMethod.name}
-                    </div>
-                  )}
-                  {modalContent.shippingData?.address && (
-                    <div>
-                      {"Dirección de envío: " +
-                        modalContent?.shippingData?.address}
-                    </div>
-                  )}
+                  ))}
                 </Grid>
 
                 <Grid
-                  // item
-                  // xs={12}
-                  // sm={12}
-                  // md={6}
-                  // lg={4}
-                  // xl={3}
+                  item
+                  xs={12}
+                  sm={12}
+                  md={6}
+                  lg={6}
                   style={{
-                    marginBottom: 40,
-                    marginRight: 20,
-                    borderWidth: "1px",
-                    borderStyle: "solid",
-                    borderRadius: 10,
-                    borderColor: "grey",
-                    padding: 15,
+                    display: "flex",
+                    flexDirection: "column",
+                    marginBottom: 20,
                   }}
                 >
-                  {modalContent.billingData.ci && (
-                    <strong>Datos de facturación</strong>
-                  )}
-                  {modalContent.billingData.name &&
-                    modalContent.billingData.lastname && (
-                      <div>
-                        {"Nombre: " +
-                          modalContent?.billingData.name +
-                          " " +
-                          modalContent?.billingData.lastname}
-                      </div>
-                    )}
-                  {modalContent.billingData.ci && (
-                    <div>{"CI o RIF: " + modalContent?.billingData.ci}</div>
-                  )}
-                  {modalContent.billingData.company && (
-                    <div>
-                      {"Razón social: " + modalContent?.billingData.company}
-                    </div>
-                  )}
-                  {modalContent.billingData.phone && (
-                    <div>{"Teléfono: " + modalContent?.billingData.phone}</div>
-                  )}
-                  {modalContent.billingData.address && (
-                    <div style={{ marginBottom: 20 }}>
-                      {"Dirección de cobro: " +
-                        modalContent?.billingData.address}
-                    </div>
-                  )}
-                  <strong>Datos de pago</strong>
-                  <div>{"Subtotal: $" + modalContent?.subtotal.toFixed(2)}</div>
-                  <div>{"IVA: $" + modalContent?.tax.toFixed(2)}</div>
-                  <div>
-                    {modalContent.shippingData?.shippingMethod &&
-                      "Envío: $" +
-                        modalContent?.shippingData?.shippingMethod?.price}
-                  </div>
-                  <div style={{ marginBottom: 10 }}>
-                    {"Total: $" + modalContent?.total.toFixed(2)}
-                  </div>
-                  <div>
-                    {"Forma de pago: " +
-                      modalContent?.billingData.orderPaymentMethod}
-                  </div>
-                </Grid>
-
-                {modalContent.observations && (
                   <Grid
-                    item
-                    xs={12}
-                    sm={12}
-                    md={6}
-                    lg={4}
-                    xl={3}
-                    style={{ marginBottom: 40, marginRight: 20 }}
+                    style={{
+                      marginBottom: 40,
+                      marginRight: 20,
+                      borderWidth: "1px",
+                      borderStyle: "solid",
+                      borderRadius: 10,
+                      borderColor: "grey",
+                      padding: 15,
+                    }}
                   >
-                    {"Observaciones: " + modalContent.observations}
+                    <strong>Datos básicos</strong>
+                    <div>
+                      {"Nombre: " +
+                        modalContent.basicData.firstname +
+                        " " +
+                        modalContent.basicData.lastname}
+                    </div>
+                    <div>{"CI o RIF: " + modalContent?.basicData.ci}</div>
+                    <div>{"Teléfono: " + modalContent?.basicData.phone}</div>
+                    <div>{"Email: " + modalContent?.basicData.email}</div>
+                    <div>{"Dirección: " + modalContent?.basicData.address}</div>
                   </Grid>
-                )}
-              </Grid>
-            </>
+
+                  {modalContent.shippingData !== undefined && (
+                    <Grid
+                      style={{
+                        marginBottom: 40,
+                        marginRight: 20,
+                        borderWidth: "1px",
+                        borderStyle: "solid",
+                        borderRadius: 10,
+                        borderColor: "grey",
+                        padding: 15,
+                      }}
+                    >
+                      <strong>Datos de envío</strong>
+                      {modalContent.shippingData?.name &&
+                        modalContent.shippingData?.lastname && (
+                          <div>
+                            {"Nombre: " +
+                              modalContent?.shippingData?.name +
+                              " " +
+                              modalContent?.shippingData?.lastname}
+                          </div>
+                        )}
+                      {modalContent.shippingData?.phone && (
+                        <div>
+                          {"Teléfono: " + modalContent?.shippingData?.phone}
+                        </div>
+                      )}
+                      {modalContent.shippingData?.shippingMethod && (
+                        <div>
+                          {"Método de envío: " +
+                            modalContent?.shippingData?.shippingMethod.name}
+                        </div>
+                      )}
+                      {modalContent.shippingData?.address ? (
+                        <div>
+                          {"Dirección de envío: " +
+                            modalContent?.shippingData?.address}
+                        </div>
+                      ) : (
+                        <div>
+                          {"Dirección de envío: " +
+                            modalContent?.basicData?.address}
+                        </div>
+                      )}
+                    </Grid>
+                  )}
+
+                  {modalContent.billingData !== undefined && (
+                    <Grid
+                      style={{
+                        marginBottom: 40,
+                        marginRight: 20,
+                        borderWidth: "1px",
+                        borderStyle: "solid",
+                        borderRadius: 10,
+                        borderColor: "grey",
+                        padding: 15,
+                      }}
+                    >
+                      {modalContent.billingData.ci && (
+                        <strong>Datos de facturación</strong>
+                      )}
+                      {modalContent.billingData.name &&
+                        modalContent.billingData.lastname && (
+                          <div>
+                            {"Nombre: " +
+                              modalContent?.billingData.name +
+                              " " +
+                              modalContent?.billingData.lastname}
+                          </div>
+                        )}
+                      {modalContent.billingData.ci && (
+                        <div>{"CI o RIF: " + modalContent?.billingData.ci}</div>
+                      )}
+                      {modalContent.billingData.company && (
+                        <div>
+                          {"Razón social: " + modalContent?.billingData.company}
+                        </div>
+                      )}
+                      {modalContent.billingData.phone && (
+                        <div>
+                          {"Teléfono: " + modalContent?.billingData.phone}
+                        </div>
+                      )}
+                      {modalContent.billingData.address && (
+                        <div style={{ marginBottom: 20 }}>
+                          {"Dirección de cobro: " +
+                            modalContent?.billingData.address}
+                        </div>
+                      )}
+                    </Grid>
+                  )}
+
+                  <Grid
+                    style={{
+                      marginBottom: 40,
+                      marginRight: 20,
+                      borderWidth: "1px",
+                      borderStyle: "solid",
+                      borderRadius: 10,
+                      borderColor: "grey",
+                      padding: 15,
+                    }}
+                  >
+                    <strong>Datos de pago</strong>
+                    <div>
+                      {"Subtotal: $" + modalContent?.subtotal.toFixed(2)}
+                    </div>
+                    <div>{"IVA: $" + modalContent?.tax.toFixed(2)}</div>
+                    <div>
+                      {modalContent.shippingData?.shippingMethod &&
+                        "Envío: $" +
+                          modalContent?.shippingData?.shippingMethod?.price}
+                    </div>
+                    <div style={{ marginBottom: 10 }}>
+                      {"Total: $" + modalContent?.total.toFixed(2)}
+                    </div>
+                    <div>
+                      {"Forma de pago: " +
+                        modalContent?.billingData.orderPaymentMethod}
+                    </div>
+                    {modalContent.paymentVoucher && (
+                      <Paper
+                        style={{
+                          width: 200,
+                          borderRadius: 10,
+                          marginTop: 10,
+                        }}
+                        elevation={3}
+                      >
+                        <Img
+                          style={{ width: 200, borderRadius: 10 }}
+                          src={modalContent?.paymentVoucher}
+                          alt="voucher"
+                          onClick={() => {
+                            // setIsShowDetails(false);
+                            setShowVoucher(!showVoucher);
+                          }}
+                        />
+                      </Paper>
+                    )}
+                  </Grid>
+
+                  {modalContent.observations && (
+                    <Grid
+                      style={{
+                        marginBottom: 40,
+                        marginRight: 20,
+                        borderWidth: "1px",
+                        borderStyle: "solid",
+                        borderRadius: 10,
+                        borderColor: "grey",
+                        padding: 15,
+                      }}
+                    >
+                      <strong>Observaciones</strong>
+                      <div> {modalContent.observations}</div>
+                    </Grid>
+                  )}
+                </Grid>
+              </>
+            )
           )}
         </Grid>
       </Modal>

@@ -34,6 +34,8 @@ import { useHistory } from "react-router-dom";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Switch from "@material-ui/core/Switch";
 
+let actualCurrency = "'$'";
+
 const useStyles = makeStyles((theme) => ({
   formControl: {
     margin: theme.spacing(1),
@@ -82,6 +84,72 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: "50%",
     fontSize: 20,
     // marginRight: 5,
+  },
+  base: {
+    width: "70px",
+    height: "37px",
+    padding: "0px",
+  },
+  switchBase: {
+    color: "silver",
+    padding: "1px",
+    "&$checked": {
+      "& + $track": {
+        backgroundColor: "silver",
+      },
+    },
+  },
+  thumb: {
+    color: "#d33f49",
+    width: "30px",
+    height: "30px",
+    margin: "2px",
+    "&:before": {
+      content: "'$'",
+      fontSize: "18px",
+      color: "white",
+      display: "flex",
+      marginTop: "3px",
+      justifyContent: "center",
+    },
+  },
+  thumbTrue: {
+    color: "#d33f49",
+    width: "30px",
+    height: "30px",
+    margin: "2px",
+    "&:before": {
+      content: "'Bs'",
+      fontSize: "18px",
+      color: "white",
+      display: "flex",
+      marginTop: "3px",
+      justifyContent: "center",
+    },
+  },
+  track: {
+    borderRadius: "20px",
+    backgroundColor: "silver",
+    opacity: "1 !important",
+    "&:after, &:before": {
+      color: "black",
+      fontSize: "18px",
+      position: "absolute",
+      top: "6px",
+    },
+    "&:after": {
+      content: "'$'",
+      left: "8px",
+    },
+    "&:before": {
+      content: "'Bs'",
+      right: "7px",
+    },
+  },
+  checked: {
+    color: "#d33f49 !important",
+    transform: "translateX(35px) !important",
+    padding: "1px",
   },
 }));
 
@@ -166,7 +234,7 @@ export default function ProductGrid(props) {
             marginRight: 40,
           }}
         >
-          <div
+          {/* <div
             className={classes.dollar}
             style={{
               color: currency ? "black" : "white",
@@ -174,16 +242,24 @@ export default function ProductGrid(props) {
             }}
           >
             $
-          </div>
+          </div> */}
           <Switch
+            classes={{
+              root: classes.base,
+              switchBase: classes.switchBase,
+              thumb: currency ? classes.thumbTrue : classes.thumb,
+              track: classes.track,
+              checked: classes.checked,
+            }}
             color="primary"
             value={currency}
             onChange={(e) => {
               changeCurrency(e);
             }}
             style={{ marginRight: "-5px" }}
+            // inputProps={{ "aria-label": "secondary checkbox" }}
           />
-          <div
+          {/* <div
             className={classes.dollar}
             style={{
               color: currency ? "white" : "black",
@@ -191,7 +267,7 @@ export default function ProductGrid(props) {
             }}
           >
             Bs
-          </div>
+          </div> */}
         </div>
 
         <FormControl className={classes.formControl}>

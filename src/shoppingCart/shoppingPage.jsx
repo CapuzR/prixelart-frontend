@@ -74,12 +74,13 @@ export default function ShoppingPage(props) {
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const isIphone = useMediaQuery(theme.breakpoints.down("xs"));
   const [orderPaymentMethod, setOrderPaymentMethod] = useState(undefined);
+  const [observations, setObservations] = useState();
   const [activeStep, setActiveStep] = React.useState(0);
   const [loading, setLoading] = useState(false);
   const steps = [`Tus datos`, `Orden de compra`];
   const [dollarValue, setDollarValue] = useState(1);
   const [currency, setCurrency] = useState(false);
-
+  const [paymentVoucher, setPaymentVoucher] = useState();
   // useEffect(() => {
   //   {
   //     JSON.parse(localStorage.getItem("token")) && TermsAgreeModal();
@@ -234,7 +235,6 @@ export default function ShoppingPage(props) {
       window.open(utils.generateWaBuyMessage(orderLines), "_blank");
 
       const base_url = process.env.REACT_APP_BACKEND_URL + "/order/create";
-      // const base_url2 = process.env.REACT_APP_BACKEND_URL + "/order/sendEmail";
 
       const input = {
         orderId: nanoid(6),
@@ -245,7 +245,7 @@ export default function ShoppingPage(props) {
           ci: consumer.data.newConsumer.ci,
           email: consumer.data.newConsumer.email,
           phone: consumer.data.newConsumer.phone,
-          adddress: consumer.data.newConsumer.address,
+          address: consumer.data.newConsumer.address,
         },
         shippingData: {
           name: props.valuesConsumerForm?.shippingName,
@@ -271,16 +271,26 @@ export default function ShoppingPage(props) {
         createdBy: consumer.data.newConsumer,
         orderType: "Particular",
         // consumerId: consumer.data.newConsumer._id,
-        status: "Procesando",
-      };
-      const data = {
-        email: consumer.data.newConsumer.email,
+        status: "Por producir",
+        observations: observations,
       };
 
-      const order = await axios
-        .post(base_url, input)
+      await axios
+        .post(base_url, input, {
+          "Content-Type": "multipart/form-data",
+        })
         .then(async (response) => {
           if (!response.data.success) {
+            console.log(response.data);
+            const formData = new FormData();
+            formData.append("paymentVoucher", paymentVoucher);
+            let ID = response.data.newOrder.orderId;
+            const base_url2 =
+              process.env.REACT_APP_BACKEND_URL + "/order/addVoucher/" + ID;
+            await axios.put(base_url2, formData, {
+              "Content-Type": "multipart/form-data",
+            });
+
             props.setMessage(response.data.info);
             props.setMessage(
               "¡Gracias por tu compra! te redireccionaremos a Whatsapp para ser atendido por nuestro departamento de ventas."
@@ -292,10 +302,10 @@ export default function ShoppingPage(props) {
         .catch((error) => {
           console.log(error.response);
         });
-      history.push({ pathname: "/" });
-      props.setValuesConsumerForm(undefined);
-      localStorage.removeItem("buyState");
-      props.setBuyState([]);
+      // history.push({ pathname: "/" });
+      // props.setValuesConsumerForm(undefined);
+      // localStorage.removeItem("buyState");
+      // props.setBuyState([]);
       setLoading(false);
     } else {
       props.setOpen(true);
@@ -314,7 +324,7 @@ export default function ShoppingPage(props) {
 
   useEffect(() => {
     readDollarValue();
-  });
+  }, []);
 
   const changeCurrency = () => {
     setCurrency(!currency);
@@ -433,12 +443,16 @@ export default function ShoppingPage(props) {
                   ) : (
                     <OrderForm
                       valuesConsumer={props.valuesConsumerForm}
+                      values={props.valuesConsumerForm}
                       setValuesConsumer={props.setValues}
                       onCreateConsumer={props.onCreateConsumer}
                       buyState={props.buyState}
                       setBuyState={props.setBuyState}
                       orderPaymentMethod={orderPaymentMethod}
                       setOrderPaymentMethod={setOrderPaymentMethod}
+                      setPaymentVoucher={setPaymentVoucher}
+                      setObservations={setObservations}
+                      paymentVoucher={paymentVoucher}
                       dollarValue={dollarValue}
                       currency={currency}
                     />

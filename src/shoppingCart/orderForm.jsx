@@ -8,21 +8,15 @@ import ListItemText from "@material-ui/core/ListItemText";
 import Collapse from "@material-ui/core/Collapse";
 import Divider from "@material-ui/core/Divider";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
-import IconButton from "@material-ui/core/IconButton";
-import WhatsAppIcon from "@material-ui/icons/WhatsApp";
-import util from "../utils/utils";
-import TextField from "@material-ui/core/TextField";
 import MenuItem from "@material-ui/core/MenuItem";
 import OutlinedInput from "@material-ui/core/OutlinedInput";
 import Select from "@material-ui/core/Select";
 import InputLabel from "@material-ui/core/InputLabel";
 import FormControl from "@material-ui/core/FormControl";
-import InputAdornment from "@material-ui/core/InputAdornment";
-import BusinessIcon from "@material-ui/icons/Business";
-import HomeIcon from "@material-ui/icons/Home";
-import EmailIcon from "@material-ui/icons/Email";
-import LocalPhoneIcon from "@material-ui/icons/LocalPhone";
+import Button from "@material-ui/core/Button";
+import Tooltip from "@material-ui/core/Tooltip";
 import { Typography } from "@material-ui/core";
+import TextField from "@material-ui/core/TextField";
 import { useEffect, useState } from "react";
 import axios from "axios";
 
@@ -40,6 +34,7 @@ export default function OrderForm(props) {
   const classes = useStyles();
   const theme = useTheme();
   const [paymentMethods, setPaymentMethods] = useState();
+  const [previewVoucher, setPreviewVoucher] = useState();
   const isIphone = useMediaQuery(theme.breakpoints.down("xs"));
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
@@ -55,6 +50,13 @@ export default function OrderForm(props) {
         console.log(error);
       });
   }, []);
+
+  const onImageChange = async (e) => {
+    if (e.target.files && e.target.files[0]) {
+      props.setPaymentVoucher(e.target.files[0]);
+      setPreviewVoucher(URL.createObjectURL(e.target.files[0]));
+    }
+  };
 
   const getTotalPrice = (state) => {
     let prices = [];
@@ -195,18 +197,20 @@ export default function OrderForm(props) {
                                                     .prixerEquation !== ""
                                                   ? "Bs" +
                                                     (
-                                                      item.product.prixerEquation
-                                                        .replace(/[$]/gi, "")
-                                                        .replace(/[,]/gi, ".") *
+                                                      item.product
+                                                        .prixerEquation *
+                                                      // .replace(/[$]/gi, "")
+                                                      // .replace(/[,]/gi, ".")
                                                       props.dollarValue *
                                                       item.quantity
                                                     ).toFixed(2)
                                                   : "Bs" +
                                                     (
                                                       Number(
-                                                        item.product.prixerPrice.from
-                                                          .replace(/[$]/gi, "")
-                                                          .replace(/[,]/gi, ".")
+                                                        item.product.prixerPrice
+                                                          .from
+                                                        // .replace(/[$]/gi, "")
+                                                        // .replace(/[,]/gi, ".")
                                                       ) *
                                                       props.dollarValue *
                                                       item.quantity
@@ -237,14 +241,15 @@ export default function OrderForm(props) {
                                               ? item.product.prixerEquation !==
                                                 ""
                                                 ? "$" +
-                                                  item.product.prixerEquation
-                                                    .replace(/[$]/gi, "")
-                                                    .replace(/[,]/gi, ".") *
+                                                  item.product.prixerEquation *
+                                                    // .replace(/[$]/gi, "")
+                                                    // .replace(/[,]/gi, ".")
                                                     item.quantity
                                                 : "$" +
-                                                  item.product.prixerPrice.from
-                                                    .replace(/[$]/gi, "")
-                                                    .replace(/[,]/gi, ".") *
+                                                  item.product.prixerPrice
+                                                    .from *
+                                                    // .replace(/[$]/gi, "")
+                                                    // .replace(/[,]/gi, ".")
                                                     item.quantity
                                               : item.product.publicEquation !==
                                                 ""
@@ -336,6 +341,31 @@ export default function OrderForm(props) {
                                 <br></br>
                                 {props?.orderPaymentMethod?.paymentData}
                               </p>
+                              <div>
+                                {props.paymentVoucher && (
+                                  <img
+                                    src={previewVoucher}
+                                    style={{ width: 200, borderRadius: 10 }}
+                                  />
+                                )}
+                                <input
+                                  type="file"
+                                  id="inputfile"
+                                  accept="image/jpeg, image/jpg, image/webp, image/png"
+                                  onChange={onImageChange}
+                                  style={{ display: "none" }}
+                                />
+                                <label htmlFor="inputfile">
+                                  <Button
+                                    size="small"
+                                    variant="contained"
+                                    component="span"
+                                    style={{ textTransform: "capitalize" }}
+                                  >
+                                    Cargar comprobante
+                                  </Button>
+                                </label>
+                              </div>
                             </div>
                           </>
                         )}
@@ -394,6 +424,23 @@ export default function OrderForm(props) {
                         <br />
                       </Grid>
                     </div>
+                    <Grid
+                      item
+                      lg={12}
+                      md={12}
+                      sm={12}
+                      xs={12}
+                      style={{ paddingLeft: 0, marginTop: 30 }}
+                    >
+                      <TextField
+                        variant="outlined"
+                        label="Observaciones"
+                        fullWidth
+                        className={classes.textField}
+                        value={props.observations}
+                        onChange={(e) => props.setObservations(e.target.value)}
+                      />
+                    </Grid>
                   </List>
                 </div>
               </div>

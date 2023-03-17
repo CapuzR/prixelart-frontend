@@ -28,6 +28,7 @@ import MDEditor from "@uiw/react-md-editor";
 import Variants from "../adminMain/products/variants";
 import Backdrop from "@material-ui/core/Backdrop";
 import validations from "../../shoppingCart/validations";
+import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
 
 const useStyles = makeStyles((theme) => ({
   seeMore: {
@@ -113,7 +114,7 @@ export default function UpdateAdmin(props) {
   const [hasSpecialVar, setHasSpecialVar] = useState(
     props?.product?.hasSpecialVar || false
   );
-  const [videoUrl, setVideoUrl] = useState("");
+  const [videoUrl, setVideoUrl] = useState(undefined);
   const [imageLoader, setLoadImage] = useState({
     loader: [],
     filename: "Subir imagenes",
@@ -129,7 +130,7 @@ export default function UpdateAdmin(props) {
 
   useEffect(() => {
     const indexImage =
-      imagesList.length < 1 ? imagesList.indexOf(thumbUrl) : undefined;
+      imagesList?.length < 1 ? imagesList?.indexOf(thumbUrl) : undefined;
 
     imagesList?.map((url) => {
       url?.type === "images"
@@ -194,6 +195,8 @@ export default function UpdateAdmin(props) {
   const modifyString = (a, sti) => {
     const width = sti.replace("560", "326").replace("315", "326");
     setVideoUrl(width);
+    let video = { type: "video", url: width.stringify };
+    imagesList.push(video);
   };
 
   const handleSubmit = async (e) => {
@@ -201,7 +204,7 @@ export default function UpdateAdmin(props) {
     if (
       images.images.length &&
       imageLoader.loader.length &&
-      imagesList.length >= 5
+      imagesList?.length >= 5
     ) {
       setLoaDOpen(true);
     } else {
@@ -248,9 +251,9 @@ export default function UpdateAdmin(props) {
           };
 
           const currentVideo =
-            typeof imagesList.find((result) => result.type === "video") ===
+            typeof imagesList?.find((result) => result?.type === "video") ===
             "object"
-              ? imagesList.find((result) => result.type === "video")
+              ? imagesList?.find((result) => result?.type === "video")
               : "";
 
           newFormData.append("active", active);
@@ -265,19 +268,11 @@ export default function UpdateAdmin(props) {
           newFormData.append("prixerPriceFrom", data.prixerPrice.from);
           newFormData.append("prixerPriceTo", data.prixerPrice.to);
           newFormData.append("hasSpecialVar", hasSpecialVar);
-          imagesList.length > 1
-            ? imagesList.map((url) => {
-                const indexVideo = imagesList.indexOf(currentVideo);
-                if (videoUrl === "" && currentVideo !== "") {
-                  imagesList.splice(indexVideo, 1);
-                }
-                newFormData.append("images", url && url.url);
+          imagesList && imagesList?.length > 1
+            ? imagesList?.map((url) => {
+                url !== null && newFormData.append("images", url && url.url);
               })
-            : imagesList.map((url) => {
-                const indexVideo = imagesList.indexOf(currentVideo);
-                if (videoUrl === "" && currentVideo !== "") {
-                  imagesList.splice(indexVideo, 1);
-                }
+            : imagesList?.map((url) => {
                 if (typeof url === "string") {
                   newFormData.append("images", url);
                 }
@@ -285,13 +280,12 @@ export default function UpdateAdmin(props) {
                   newFormData.append("images", url.url);
                 }
               });
-          if (images.images) {
+          images.images &&
             images.images.map((file) => {
               newFormData.append("newProductImages", file);
-              console.log(file);
             });
-          }
-          newFormData.append("video", videoUrl);
+          // (currentVideo || videoUrl) &&
+          //   newFormData.append("video", currentVideo || videoUrl);
           const base_url =
             process.env.REACT_APP_BACKEND_URL + `/product/update/${productId}`;
           const response = await axios.put(
@@ -320,6 +314,8 @@ export default function UpdateAdmin(props) {
     setShowVariants(true);
     props.setProductEdit(false);
   };
+
+  console.log(imagesList);
 
   return (
     <React.Fragment>
@@ -423,11 +419,11 @@ export default function UpdateAdmin(props) {
                 </Grid>
                 <Grid
                   item
-                  xs={12}
-                  sm={12}
-                  md={8}
-                  lg={8}
-                  xl={8}
+                  xs={11}
+                  sm={11}
+                  md={7}
+                  lg={7}
+                  xl={7}
                   style={{ display: "flex" }}
                 >
                   {imageLoader.loader &&
@@ -465,7 +461,7 @@ export default function UpdateAdmin(props) {
                                 onChange={(a) => {
                                   const i = imageLoader.loader.indexOf(img);
                                   replaceImage(a, i);
-                                  imagesList.splice(key_id, 1);
+                                  imagesList?.splice(key_id, 1);
                                 }}
                               />
                               <EditIcon />
@@ -478,7 +474,7 @@ export default function UpdateAdmin(props) {
                               onClick={(d) => {
                                 imageLoader.loader.splice(key_id, 1);
                                 images.images.splice(key_id, 1);
-                                imagesList.splice(key_id, 1);
+                                imagesList?.splice(key_id, 1);
                                 setLoadImage({
                                   loader: imageLoader.loader,
                                   filename: "Subir Imagenes",
@@ -496,12 +492,27 @@ export default function UpdateAdmin(props) {
                               objectFit: "contain",
                             }}
                             src={img}
-                            alt="+"
+                            alt="Video"
                           />
                         </div>
                       );
                     })}
                 </Grid>
+                <IconButton
+                  variant="text"
+                  className={classes.buttonImgLoader}
+                  style={{
+                    color: "#d33f49",
+                    width: 40,
+                    height: 40,
+                  }}
+                  onClick={(e) => {
+                    setImagesList(undefined);
+                    setLoadImage({ loader: [], filename: "Subir imagenes" });
+                  }}
+                >
+                  <DeleteOutlineIcon style={{ width: 30, height: 30 }} />
+                </IconButton>
                 <Grid item xs={12}>
                   <Grid container xs={isDesktop ? 12 : 12}>
                     <Grid item xs={12} md={6}>

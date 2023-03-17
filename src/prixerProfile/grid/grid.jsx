@@ -296,12 +296,12 @@ export default function Grid(props) {
   }, [searchValue, categoryValue]);
 
   const handleFullImage = async (e, tile) => {
-    setFullPrixer(tile.prixerUsername);
+    // setFullPrixer(tile.prixerUsername);
     props.setFullArt(tile);
     props.setSearchResult(tiles);
     let art = e.target.id;
     history.push({
-      pathname: "/prixer=" + tile.prixerUsername + "/art=" + art,
+      pathname: "/art=" + art,
     });
     setOpenFullArt(true);
   };

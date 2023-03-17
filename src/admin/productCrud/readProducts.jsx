@@ -16,6 +16,7 @@ import Modal from "@material-ui/core/Modal";
 import Snackbar from "@material-ui/core/Snackbar";
 import Fab from "@material-ui/core/Fab";
 import Typography from "@material-ui/core/Typography";
+import Paper from "@material-ui/core/Paper";
 
 export default function ReadProducts(props) {
   const history = useHistory();
@@ -101,17 +102,55 @@ export default function ReadProducts(props) {
                   <TableCell align="center">
                     {row.sources.images?.length > 0 ? (
                       <>
-                        <img
-                          src={row.sources.images[0]?.url}
-                          width={150}
-                          alt="imageProduct"
-                        />
+                        {row.sources.images[0]?.type === "video" ? (
+                          <span
+                            // key={key_id}
+                            dangerouslySetInnerHTML={{
+                              __html: row.sources.images[0]?.url,
+                            }}
+                          />
+                        ) : (
+                          <Paper
+                            elevation={3}
+                            style={{
+                              display: "flex",
+                              justifyContent: "center",
+                              alignContent: "center",
+                              width: 210,
+                              height: 210,
+                              objectFit: "contain",
+                            }}
+                          >
+                            <img
+                              src={row.sources.images[0]?.url || row.thumbUrl}
+                              width={200}
+                              alt="imageProduct"
+                            />
+                          </Paper>
+                        )}
+
                         <Typography
                           style={{ fontSize: "1rem", color: "#bdbdbd" }}
                         >{`Cantidad de imagenes: ${row.sources.images.length}`}</Typography>
                       </>
                     ) : (
-                      <img src={row.thumbUrl} alt="prix-product" width={150} />
+                      <Paper
+                        elevation={3}
+                        style={{
+                          display: "flex",
+                          justifyContent: "center",
+                          alignContent: "center",
+                          width: 210,
+                          height: 210,
+                          objectFit: "contain",
+                        }}
+                      >
+                        <img
+                          src={row.thumbUrl}
+                          alt="prix-product"
+                          width={200}
+                        />{" "}
+                      </Paper>
                     )}
                   </TableCell>
                   <TableCell align="center">{row.name}</TableCell>

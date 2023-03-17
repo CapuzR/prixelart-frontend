@@ -415,7 +415,7 @@ function ConsumerForm(props) {
           aria-controls="panel1a-content"
           id="panel1a-header"
         >
-          <Typography>Datos de Envío</Typography>
+          <Typography>Datos de Entrega</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <form autoComplete="off">
@@ -618,7 +618,7 @@ function ConsumerForm(props) {
                 className={classes.gridInput}
               >
                 <FormControl style={{ minWidth: "100%" }} variant="outlined">
-                  <InputLabel>Método de envío</InputLabel>
+                  <InputLabel>Método de entrega</InputLabel>
                   <Select
                     className={classes.textField}
                     value={props.values?.shippingMethod || ""}
@@ -761,7 +761,7 @@ function ConsumerForm(props) {
                       ? props.values?.name
                         ? props.values.name
                         : ""
-                      : ""
+                      : props.values.billingShName || ""
                   }
                   onChange={(e) =>
                     props.setValues({
@@ -798,7 +798,7 @@ function ConsumerForm(props) {
                       ? props.values?.lastName
                         ? props.values.lastName
                         : ""
-                      : ""
+                      : props.values.billingShLastName || ""
                   }
                   required
                   onChange={(e) =>
@@ -829,11 +829,15 @@ function ConsumerForm(props) {
                   className={classes.textField}
                   disabled={billingDataCheck || billingShDataCheck}
                   value={
-                    billingDataCheck
+                    billingShDataCheck
+                      ? props.values?.shippingCi
+                        ? props.values.shippingCi
+                        : ""
+                      : billingDataCheck
                       ? props.values?.ci
                         ? props.values.ci
                         : ""
-                      : ""
+                      : props.values.billingCi || ""
                   }
                   onChange={(e) =>
                     props.setValues({
@@ -919,7 +923,7 @@ function ConsumerForm(props) {
                       ? props.values?.phone
                         ? props.values.phone
                         : ""
-                      : ""
+                      : props.values.billingShPhone || ""
                   }
                   onChange={(e) =>
                     props.setValues({
@@ -979,7 +983,7 @@ function ConsumerForm(props) {
                   fullWidth
                   label="Dirección de facturación"
                   multiline
-                  rows={3}
+                  minRows={3}
                   disabled={billingDataCheck || billingShDataCheck}
                   className={classes.textField}
                   value={
@@ -991,7 +995,7 @@ function ConsumerForm(props) {
                       ? props.values?.address
                         ? props.values.address
                         : ""
-                      : ""
+                      : props.values.billingShAddress || ""
                   }
                   required
                   onChange={(e) =>

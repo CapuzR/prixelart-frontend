@@ -432,16 +432,17 @@ export default function CartReview(props) {
                           ? buy.product.prixerEquation !== ""
                             ? " Bs" +
                               (
-                                buy.product.prixerEquation
-                                  .replace(/[$]/gi, "")
-                                  .replace(/[,]/gi, ".") * props.dollarValue
+                                buy.product.prixerEquation *
+                                // .replace(/[$]/gi, "")
+                                // .replace(/[,]/gi, ".")
+                                props.dollarValue
                               ).toFixed(2)
                             : " Bs" +
                               (
                                 Number(
                                   buy.product.prixerPrice.from
-                                    .replace(/[$]/gi, "")
-                                    .replace(/[,]/gi, ".")
+                                  // .replace(/[$]/gi, "")
+                                  // .replace(/[,]/gi, ".")
                                 ) * props.dollarValue
                               ).toFixed(2)
                           : buy.product.publicEquation !== ""
@@ -459,9 +460,9 @@ export default function CartReview(props) {
                         : JSON.parse(localStorage.getItem("token")) &&
                           JSON.parse(localStorage.getItem("token")).username
                         ? buy.product.prixerEquation !== ""
-                          ? " $" +
-                            buy.product.prixerEquation.replace(/[$]/gi, "")
-                          : " $" +
+                          ? " $" + buy.product.prixerEquation
+                          : // .replace(/[$]/gi, "")
+                            " $" +
                             buy.product.prixerPrice.from.replace(/[$]/gi, "")
                         : buy.product.publicEquation !== ""
                         ? " $" + buy.product.publicEquation

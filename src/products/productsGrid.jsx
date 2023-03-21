@@ -341,7 +341,9 @@ export default function ProductGrid(props) {
                             <span
                               key={key_id}
                               style={{ width: "100%" }}
-                              dangerouslySetInnerHTML={{ __html: img.url }}
+                              dangerouslySetInnerHTML={{
+                                __html: img.url.replace(/[,]/gi, ""),
+                              }}
                             ></span>
                           )
                         )
@@ -357,7 +359,7 @@ export default function ProductGrid(props) {
                         img.type === "images" ? (
                           <img
                             key={key_id}
-                            src={img.url}
+                            src={img.url.replace(/[,]/gi, "")}
                             className={classes.img}
                             alt="product"
                           />

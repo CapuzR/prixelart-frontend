@@ -344,7 +344,6 @@ function CarouselAdmin(props) {
           .json()
           .then((data) => {
             newImages({ images: data.imagesCarousels });
-            console.log(data);
           })
           .catch((err) => console.error(`Your request is wrong: ${err}`))
       )
@@ -355,8 +354,6 @@ function CarouselAdmin(props) {
   useEffect(() => {
     getImagesForTheCarousel();
   }, []);
-
-  console.log(images);
 
   return (
     <>

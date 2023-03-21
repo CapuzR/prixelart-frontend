@@ -234,15 +234,6 @@ export default function ProductGrid(props) {
             marginRight: 40,
           }}
         >
-          {/* <div
-            className={classes.dollar}
-            style={{
-              color: currency ? "black" : "white",
-              backgroundColor: currency ? "white" : "#d33f49",
-            }}
-          >
-            $
-          </div> */}
           <Switch
             classes={{
               root: classes.base,
@@ -257,17 +248,7 @@ export default function ProductGrid(props) {
               changeCurrency(e);
             }}
             style={{ marginRight: "-5px" }}
-            // inputProps={{ "aria-label": "secondary checkbox" }}
           />
-          {/* <div
-            className={classes.dollar}
-            style={{
-              color: currency ? "white" : "black",
-              backgroundColor: currency ? "#d33f49" : "white",
-            }}
-          >
-            Bs
-          </div> */}
         </div>
 
         <FormControl className={classes.formControl}>
@@ -341,7 +322,9 @@ export default function ProductGrid(props) {
                             <span
                               key={key_id}
                               style={{ width: "100%" }}
-                              dangerouslySetInnerHTML={{ __html: img.url }}
+                              dangerouslySetInnerHTML={{
+                                __html: img.url.replace(/[,]/gi, ""),
+                              }}
                             ></span>
                           )
                         )
@@ -357,7 +340,7 @@ export default function ProductGrid(props) {
                         img.type === "images" ? (
                           <img
                             key={key_id}
-                            src={img.url}
+                            src={img.url.replace(/[,]/gi, "")}
                             className={classes.img}
                             alt="product"
                           />

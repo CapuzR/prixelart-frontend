@@ -29,7 +29,7 @@ import CartReview from "./cartReview";
 import { nanoid } from "nanoid";
 import validations from "./validations";
 import Switch from "@material-ui/core/Switch";
-
+import { Alert } from "@material-ui/lab";
 const useStyles = makeStyles((theme) => ({
   paper: {
     display: "flex",
@@ -63,6 +63,72 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: "50%",
     fontSize: 20,
     // marginRight: 5,
+  },
+  base: {
+    width: "70px",
+    height: "37px",
+    padding: "0px",
+  },
+  switchBase: {
+    color: "silver",
+    padding: "1px",
+    "&$checked": {
+      "& + $track": {
+        backgroundColor: "silver",
+      },
+    },
+  },
+  thumb: {
+    color: "#d33f49",
+    width: "30px",
+    height: "30px",
+    margin: "2px",
+    "&:before": {
+      content: "'$'",
+      fontSize: "18px",
+      color: "white",
+      display: "flex",
+      marginTop: "3px",
+      justifyContent: "center",
+    },
+  },
+  thumbTrue: {
+    color: "#d33f49",
+    width: "30px",
+    height: "30px",
+    margin: "2px",
+    "&:before": {
+      content: "'Bs'",
+      fontSize: "18px",
+      color: "white",
+      display: "flex",
+      marginTop: "3px",
+      justifyContent: "center",
+    },
+  },
+  track: {
+    borderRadius: "20px",
+    backgroundColor: "silver",
+    opacity: "1 !important",
+    "&:after, &:before": {
+      color: "black",
+      fontSize: "18px",
+      position: "absolute",
+      top: "6px",
+    },
+    "&:after": {
+      content: "'$'",
+      left: "8px",
+    },
+    "&:before": {
+      content: "'Bs'",
+      right: "7px",
+    },
+  },
+  checked: {
+    color: "#d33f49 !important",
+    transform: "translateX(35px) !important",
+    padding: "1px",
   },
 }));
 
@@ -281,7 +347,6 @@ export default function ShoppingPage(props) {
         })
         .then(async (response) => {
           if (!response.data.success) {
-            console.log(response.data);
             const formData = new FormData();
             formData.append("paymentVoucher", paymentVoucher);
             let ID = response.data.newOrder.orderId;
@@ -296,16 +361,15 @@ export default function ShoppingPage(props) {
               "¡Gracias por tu compra! te redireccionaremos a Whatsapp para ser atendido por nuestro departamento de ventas."
             );
           } else {
-            console.log(response.data);
           }
         })
         .catch((error) => {
           console.log(error.response);
         });
-      // history.push({ pathname: "/" });
-      // props.setValuesConsumerForm(undefined);
-      // localStorage.removeItem("buyState");
-      // props.setBuyState([]);
+      history.push({ pathname: "/" });
+      props.setValuesConsumerForm(undefined);
+      localStorage.removeItem("buyState");
+      props.setBuyState([]);
       setLoading(false);
     } else {
       props.setOpen(true);
@@ -336,6 +400,7 @@ export default function ShoppingPage(props) {
         <CircularProgress />
       </Backdrop>
       <AppBar prixerUsername={prixerUsername} />
+
       <Container component="main" maxWidth="s" className={classes.paper}>
         <CssBaseline />
         {props.buyState.length > 0 ? (
@@ -344,6 +409,20 @@ export default function ShoppingPage(props) {
             spacing={2}
             style={{ justifyContent: "space-between" }}
           >
+            <div
+              style={{
+                marginTop: 80,
+                display: "flex",
+                alignContent: "center",
+                justifyContent: "center",
+                width: "100%",
+              }}
+            >
+              <Alert severity="info">
+                <strong>Importante:</strong> tus datos son 100% confidenciales y
+                no serán compartidos con terceros
+              </Alert>
+            </div>
             <Grid
               item
               xs={12}
@@ -355,20 +434,18 @@ export default function ShoppingPage(props) {
                 flexDirection: "row",
                 alignItems: "center",
                 marginRight: 40,
-                marginTop: "150px",
+                // marginTop: "150px",
                 justifyContent: "end",
               }}
             >
-              <div
-                className={classes.dollar}
-                style={{
-                  color: currency ? "black" : "white",
-                  backgroundColor: currency ? "white" : "#d33f49",
-                }}
-              >
-                $
-              </div>
               <Switch
+                classes={{
+                  root: classes.base,
+                  switchBase: classes.switchBase,
+                  thumb: currency ? classes.thumbTrue : classes.thumb,
+                  track: classes.track,
+                  checked: classes.checked,
+                }}
                 color="primary"
                 value={currency}
                 onChange={(e) => {
@@ -376,15 +453,6 @@ export default function ShoppingPage(props) {
                 }}
                 style={{ marginRight: "-5px" }}
               />
-              <div
-                className={classes.dollar}
-                style={{
-                  color: currency ? "white" : "black",
-                  backgroundColor: currency ? "#d33f49" : "white",
-                }}
-              >
-                Bs
-              </div>
             </Grid>
 
             <Grid

@@ -114,7 +114,6 @@ export default function Prixers() {
       "Content-Type": "multipart/form-data",
     });
     await readPrixers();
-    // console.log(response);
     setLoading(false);
   };
 

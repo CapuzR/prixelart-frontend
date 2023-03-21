@@ -116,9 +116,10 @@ export default function ReadProducts(props) {
                               display: "flex",
                               justifyContent: "center",
                               alignContent: "center",
-                              width: 210,
+                              width: 220,
                               height: 210,
                               objectFit: "contain",
+                              padding: 10,
                             }}
                           >
                             <img
@@ -140,9 +141,10 @@ export default function ReadProducts(props) {
                           display: "flex",
                           justifyContent: "center",
                           alignContent: "center",
-                          width: 210,
+                          width: 220,
                           height: 210,
                           objectFit: "contain",
+                          padding: 10,
                         }}
                       >
                         <img

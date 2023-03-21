@@ -29,6 +29,8 @@ import Variants from "../adminMain/products/variants";
 import Backdrop from "@material-ui/core/Backdrop";
 import validations from "../../shoppingCart/validations";
 import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
+import { ImageList } from "@material-ui/core";
+import { SkipPrevious } from "@material-ui/icons";
 
 const useStyles = makeStyles((theme) => ({
   seeMore: {
@@ -142,7 +144,13 @@ export default function UpdateAdmin(props) {
       imagesList.push(thumbUrl);
       imageLoader.loader.push(thumbUrl);
     }
-
+    setTimeout(() => {
+      if (props.product.sources.images) {
+        props?.product?.sources.images.map((element) => {
+          element.type === "video" && setVideoUrl(element.Url);
+        });
+      }
+    }, 1000);
     return () => {
       localStorage.removeItem("product");
     };
@@ -179,7 +187,10 @@ export default function UpdateAdmin(props) {
       const resizedString = await convertToBase64(file);
       imageLoader.loader.push(resizedString);
       images.images.push(file);
-      setLoadImage({ loader: imageLoader.loader, filename: file.name });
+      setLoadImage({
+        loader: imageLoader.loader,
+        filename: file.name.replace(/[,]/gi, ""),
+      });
     }
   };
 
@@ -196,9 +207,8 @@ export default function UpdateAdmin(props) {
     const width = sti.replace("560", "326").replace("315", "326");
     setVideoUrl(width);
     let video = { type: "video", url: width.stringify };
-    imagesList.push(video);
+    // imagesList.push(video);
   };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (
@@ -221,9 +231,9 @@ export default function UpdateAdmin(props) {
           !category &&
           !considerations &&
           !fromPublicPrice &&
-          !toPublicPrice &&
+          // !toPublicPrice &&
           !fromPrixerPrice &&
-          !toPrixerPrice &&
+          // !toPrixerPrice &&
           !images
         ) {
           setErrorMessage("Por favor completa todos los campos requeridos.");
@@ -254,7 +264,7 @@ export default function UpdateAdmin(props) {
             typeof imagesList?.find((result) => result?.type === "video") ===
             "object"
               ? imagesList?.find((result) => result?.type === "video")
-              : "";
+              : undefined;
 
           newFormData.append("active", active);
           newFormData.append("name", productName);
@@ -268,24 +278,25 @@ export default function UpdateAdmin(props) {
           newFormData.append("prixerPriceFrom", data.prixerPrice.from);
           newFormData.append("prixerPriceTo", data.prixerPrice.to);
           newFormData.append("hasSpecialVar", hasSpecialVar);
-          imagesList && imagesList?.length > 1
-            ? imagesList?.map((url) => {
-                url !== null && newFormData.append("images", url && url.url);
-              })
-            : imagesList?.map((url) => {
-                if (typeof url === "string") {
-                  newFormData.append("images", url);
-                }
-                if (typeof url === "object") {
-                  newFormData.append("images", url.url);
-                }
-              });
-          images.images &&
+          if (imagesList !== []) {
+            const images = [];
+
+            imagesList?.map((img) => {
+              img !== null &&
+                typeof img !== "string" &&
+                images.push(img.url + " ");
+            });
+            newFormData.append("images", images);
+          } else newFormData.append("images", []);
+
+          if (images.images) {
             images.images.map((file) => {
               newFormData.append("newProductImages", file);
             });
-          // (currentVideo || videoUrl) &&
-          //   newFormData.append("video", currentVideo || videoUrl);
+          }
+          if (videoUrl) {
+            newFormData.append("video", videoUrl);
+          }
           const base_url =
             process.env.REACT_APP_BACKEND_URL + `/product/update/${productId}`;
           const response = await axios.put(
@@ -314,8 +325,6 @@ export default function UpdateAdmin(props) {
     setShowVariants(true);
     props.setProductEdit(false);
   };
-
-  console.log(imagesList);
 
   return (
     <React.Fragment>
@@ -507,7 +516,7 @@ export default function UpdateAdmin(props) {
                     height: 40,
                   }}
                   onClick={(e) => {
-                    setImagesList(undefined);
+                    setImagesList([]);
                     setLoadImage({ loader: [], filename: "Subir imagenes" });
                   }}
                 >

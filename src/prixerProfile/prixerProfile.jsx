@@ -133,8 +133,6 @@ export default function PrixerProfile(props) {
       });
   };
 
-  // console.log(props);
-
   return (
     <Container component="main" maxWidth="xl" className={classes.paper}>
       <CssBaseline />

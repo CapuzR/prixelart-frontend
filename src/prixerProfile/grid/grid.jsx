@@ -191,7 +191,6 @@ export default function Grid(props) {
       setDisabledReason("");
     }
   };
-  // console.log(globalParams);
 
   useEffect(() => {
     if (props.prixerUsername || globalParams.get("prixer")) {

@@ -341,6 +341,10 @@ export default function ShoppingPage(props) {
         observations: observations,
       };
 
+      const base_ur2 = process.env.REACT_APP_BACKEND_URL + "/order/sendEmail";
+      let sms;
+      await axios.post(base_ur2, sms);
+
       await axios
         .post(base_url, input, {
           "Content-Type": "multipart/form-data",
@@ -376,6 +380,12 @@ export default function ShoppingPage(props) {
       props.setMessage("Por favor selecciona una forma de pago.");
     }
   };
+
+  // const sendMail = async () => {
+  //   const base_ur2 = process.env.REACT_APP_BACKEND_URL + "/order/sendEmail";
+  //   let sms;
+  //   await axios.post(base_ur2, sms);
+  // };
 
   let shippingCost = Number(props.valuesConsumerForm?.shippingMethod?.price);
 
@@ -566,7 +576,10 @@ export default function ShoppingPage(props) {
                       )
                     }
                     onClick={
-                      activeStep === steps.length - 1 ? createOrder : handleNext
+                      activeStep === steps.length - 1
+                        ? createOrder
+                        : // sendMail
+                          handleNext
                     }
                   >
                     {activeStep === steps.length - 1 ? "Ordenar" : "Siguiente"}

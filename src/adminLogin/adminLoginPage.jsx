@@ -121,7 +121,6 @@ export default function Login() {
               "adminTokenExpire",
               JSON.stringify(now.getTime() + 21600000)
             );
-            console.log(response.data);
             history.push({ pathname: "/admin/dashboard" });
           }
         })

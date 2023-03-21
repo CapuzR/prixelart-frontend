@@ -234,15 +234,6 @@ export default function ProductGrid(props) {
             marginRight: 40,
           }}
         >
-          {/* <div
-            className={classes.dollar}
-            style={{
-              color: currency ? "black" : "white",
-              backgroundColor: currency ? "white" : "#d33f49",
-            }}
-          >
-            $
-          </div> */}
           <Switch
             classes={{
               root: classes.base,
@@ -257,17 +248,7 @@ export default function ProductGrid(props) {
               changeCurrency(e);
             }}
             style={{ marginRight: "-5px" }}
-            // inputProps={{ "aria-label": "secondary checkbox" }}
           />
-          {/* <div
-            className={classes.dollar}
-            style={{
-              color: currency ? "white" : "black",
-              backgroundColor: currency ? "#d33f49" : "white",
-            }}
-          >
-            Bs
-          </div> */}
         </div>
 
         <FormControl className={classes.formControl}>

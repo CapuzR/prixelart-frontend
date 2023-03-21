@@ -61,7 +61,6 @@ export default function MultilineTextFields(props) {
       "/prixer/update-home/updateTermsAgree" +
       prixersIds;
     const response2 = await axios.put(base_url2, { termsAgree: false });
-    console.log(response2.data);
   };
 
   useEffect(() => {

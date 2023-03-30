@@ -145,7 +145,7 @@ export default function UpdateAdmin(props) {
       imageLoader.loader.push(thumbUrl);
     }
     setTimeout(() => {
-      if (props.product.sources.images) {
+      if (props.product?.sources.images) {
         props?.product?.sources.images.map((element) => {
           element.type === "video" && setVideoUrl(element.Url);
         });
@@ -335,7 +335,7 @@ export default function UpdateAdmin(props) {
       }
       {showVariants ? (
         <>
-          <Grid container justify="left">
+          <Grid container justifyContent="left">
             <Grid item xs={2}>
               <button
                 href="#"
@@ -369,7 +369,7 @@ export default function UpdateAdmin(props) {
         </>
       ) : (
         <div>
-          <Grid container justify="left">
+          <Grid container justifyContent="left">
             <Grid item xs={2} style={{ color: "rgba(191, 191, 191, 0.5)" }}>
               <Title>Productos </Title>
             </Grid>

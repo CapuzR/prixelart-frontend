@@ -517,6 +517,8 @@ export default function ShoppingPage(props) {
                       setValues={props.setValuesConsumerForm}
                       values={props.valuesConsumerForm}
                       buyState={props.buyState}
+                      setOpen={props.setOpen}
+                      setMessage={props.setMessage}
                     />
                   ) : (
                     <OrderForm

@@ -45,9 +45,9 @@ export default function CreateVariant(props) {
     (props.variant && props.variant.active) || false
   );
   const [attributes, setAttributes] = useState(
-    (props.variant && props.variant.attributes) || [{ name: "", value: "" }]
+    (props.variant && props.variant.attributes) || undefined
   );
-  const [buttonAttState, setButtonAttState] = useState();
+  // const [buttonAttState, setButtonAttState] = useState();
   const [variantName, setVariantName] = useState(
     (props.variant && props.variant.name) || ""
   );
@@ -81,29 +81,25 @@ export default function CreateVariant(props) {
   const [loading, setLoading] = useState(false);
   const [buttonState, setButtonState] = useState(false);
   const history = useHistory();
-  const [image, setImage] = useState(
-    (props.variant && props.variant.variantImage) || []
-  );
-  const [newFile, setNewFile] = useState();
-  const [videoUrl, setVideoUrl] = useState("");
-  const [videoPreview, setVideoPreview] = useState("");
-  const [loadeImage, setLoadImage] = useState({ loader: [] }); //props.variant && props.variant.variantImage ||
-  //Error states.
+  const [image, setImage] = useState(props?.variant?.variantImage);
+  const [videoUrl, setVideoUrl] = useState(undefined);
+  const [videoPreview, setVideoPreview] = useState(undefined);
+  const [loadeImage, setLoadImage] = useState({
+    loader: [],
+  }); //props.variant && props.variant.variantImage ||
   const [errorMessage, setErrorMessage] = useState();
   const [open, setOpen] = useState(false);
   const [loadOpen, setLoadOpen] = useState(false);
   const [snackBarError, setSnackBarError] = useState(false);
-  const [passwordError, setPasswordError] = useState();
-  const [emailError, setEmailError] = useState();
   const [mustImage, setMustImages] = useState(false);
 
-  useEffect(() => {
-    image.map((url) => {
+  if (loadeImage.loader[0] === undefined) {
+    image?.map((url) => {
       url.type === "images"
         ? loadeImage.loader.push(url.url)
         : setVideoUrl(url.url);
     });
-  }, []);
+  }
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -163,10 +159,10 @@ export default function CreateVariant(props) {
 
   const insertVariants = (productData, variants) => {
     let updatedVariants = productData;
-    updatedVariants.variants = productData.variants.filter((v) => {
-      if (v._id != props.variant._id) return v;
+    updatedVariants.variants = productData.variants.filter((variant) => {
+      if (variant._id !== props.variant._id) return variant;
     });
-    variants._id = props.variant._id;
+    // variants._id = props.variant._id;
     updatedVariants.variants.unshift(variants);
 
     return updatedVariants;
@@ -200,7 +196,7 @@ export default function CreateVariant(props) {
         const productData = props.product;
         const formData = new FormData();
         const variants = {
-          _id: (props.variant && props.variant._id) || nanoid(),
+          _id: (props.variant && props.variant._id) || nanoid(6),
           image: image,
           active: active,
           name: variantName,
@@ -222,27 +218,20 @@ export default function CreateVariant(props) {
         variants.attributes
           ? variants.attributes.push(...attributes)
           : (variants.attributes = attributes);
-        let updatedWithVariants = {};
+        let prevVariants = [];
 
-        if (props.variant) {
-          updatedWithVariants = insertVariants(productData, variants);
-        } else {
-          productData.variants.unshift(variants);
-          updatedWithVariants = productData;
+        if (props.product.variants) {
+          prevVariants = props.product.variants;
         }
 
-        formData.append("productActive", updatedWithVariants.active);
-        formData.append("productCategory", updatedWithVariants.category);
-        formData.append(
-          "productConsiderations",
-          updatedWithVariants.considerations
-        );
-        formData.append("productDescription", updatedWithVariants.description);
-        formData.append(
-          "productHasSpecialVar",
-          updatedWithVariants.hasSpecialVar
-        );
-        formData.append("productName", updatedWithVariants.name);
+        formData.append("productActive", productData.active);
+        productData.category &&
+          formData.append("productCategory", productData.category);
+        productData.considerations &&
+          formData.append("productConsiderations", productData.considerations);
+        formData.append("productDescription", productData.description);
+        formData.append("productHasSpecialVar", productData.hasSpecialVar);
+        formData.append("productName", productData.name);
         variants.attributes.map((obj) => {
           if (obj.name) {
             formData.append("attributesName", obj.name);
@@ -251,29 +240,14 @@ export default function CreateVariant(props) {
             formData.append("attributesValue", obj.value);
           }
         });
-        updatedWithVariants.sources.images.map((img) =>
+        productData.sources.images.map((img) =>
           formData.append("productImages", img.url)
         );
-        formData.append(
-          "variants",
-          JSON.stringify(updatedWithVariants.variants)
-        );
-        formData.append(
-          "productPublicPriceFrom",
-          updatedWithVariants.publicPrice.from
-        );
-        formData.append(
-          "productPublicPriceTo",
-          updatedWithVariants.publicPrice.to
-        );
-        formData.append(
-          "productPrixerPriceFrom",
-          updatedWithVariants.prixerPrice.from
-        );
-        formData.append(
-          "productPrixerPriceTo",
-          updatedWithVariants.prixerPrice.to
-        );
+        formData.append("variants", JSON.stringify(prevVariants));
+        formData.append("productPublicPriceFrom", productData.publicPrice.from);
+        formData.append("productPublicPriceTo", productData.publicPrice.to);
+        formData.append("productPrixerPriceFrom", productData.prixerPrice.from);
+        formData.append("productPrixerPriceTo", productData.prixerPrice.to);
         formData.append("variant_id", variants._id);
         formData.append("video", videoUrl);
         image.map((file) => {
@@ -299,7 +273,6 @@ export default function CreateVariant(props) {
           process.env.REACT_APP_BACKEND_URL +
           "/product/update/" +
           props.product._id;
-        // await axios.put(base_url, formData)
         const response = await axios.put(
           base_url,
           formData,
@@ -393,7 +366,7 @@ export default function CreateVariant(props) {
                 xl={8}
                 style={{ display: "flex" }}
               >
-                {loadeImage.loader &&
+                {loadeImage.loader !== [] &&
                   loadeImage.loader.map((img, key_id) => {
                     return (
                       <div
@@ -441,14 +414,13 @@ export default function CreateVariant(props) {
                             <HighlightOffOutlinedIcon />
                           </IconButton>
                         </div>
-
                         <img
                           style={{
                             width: "100%",
                             // height: "200px",
                             objectFit: "contain",
                           }}
-                          src={img}
+                          src={img || img.url}
                           alt="+"
                         />
                       </div>

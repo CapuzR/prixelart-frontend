@@ -266,7 +266,6 @@ export default function CreateProduct() {
       }
     }
   };
-
   return (
     <React.Fragment>
       {

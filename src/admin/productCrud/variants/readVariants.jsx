@@ -124,10 +124,10 @@ export default function ReadVariants(props) {
                 </TableCell>
                 <TableCell align="center">{row.description}</TableCell>
                 <TableCell align="center">
-                  ${row.publicPrice.equation}
+                  ${row.publicPrice?.equation}
                 </TableCell>
                 <TableCell align="center">
-                  ${row.prixerPrice.equation}
+                  ${row.prixerPrice?.equation}
                 </TableCell>
               </TableRow>
             ))}

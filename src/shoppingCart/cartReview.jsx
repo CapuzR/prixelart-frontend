@@ -355,6 +355,18 @@ export default function CartReview(props) {
                           </p>
                         );
                       })}
+                      {/* {buy.product.productionTime && (
+                        <p
+                          style={{
+                            fontSize: "12px",
+                            padding: 0,
+                            margin: 0,
+                          }}
+                        >
+                          <strong> Tiempo de producción estimado: </strong>{" "}
+                          {buy.product.productionTime} días
+                        </p>
+                      )} */}
                     </>
                   ) : (
                     <Button
@@ -425,6 +437,19 @@ export default function CartReview(props) {
                     }}
                   >
                     <div style={{ paddingBottom: 5 }}>
+                      {buy.product.productionTime && (
+                        <p
+                          style={{
+                            fontSize: "12px",
+                            padding: 0,
+                            margin: 0,
+                          }}
+                        >
+                          <strong> Tiempo de producción estimado: </strong>{" "}
+                          {buy.product.productionTime}{" "}
+                          {buy.product.productionTime == 1 ? "día." : "días."}
+                        </p>
+                      )}
                       <strong>Precio Unitario:</strong>
                       {props.currency
                         ? JSON.parse(localStorage.getItem("token")) &&

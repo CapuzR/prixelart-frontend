@@ -487,6 +487,21 @@ export default function ProductGrid(props) {
                     source={tile.description}
                     style={{ whiteSpace: "pre-wrap" }}
                   />
+                  {tile.productionTime && (
+                    <div
+                      style={{
+                        fontFamily:
+                          "apple-system, Segoe UI, Helvetica, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji",
+                        fontSize: 16,
+                        lineHeight: 1.5,
+                        wordWrap: "break-word",
+                        // color: "gray",
+                      }}
+                    >
+                      Tiempo de producción estimado: {tile.productionTime}{" "}
+                      {tile.productionTime == 1 ? "día." : "días."}
+                    </div>
+                  )}
                 </CardContent>
                 {/* </CardActionArea> */}
                 {tile.hasSpecialVar && (

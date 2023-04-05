@@ -769,11 +769,7 @@ export default function Orders(props) {
                             >
                               <Select
                                 SelectClassKey
-                                value={
-                                  (row.status = "Procesando"
-                                    ? "Por producir"
-                                    : row.status)
-                                }
+                                value={row.status}
                                 onChange={(e) => {
                                   handleChangeStatus(
                                     row.orderId,

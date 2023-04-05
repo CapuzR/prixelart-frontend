@@ -272,9 +272,8 @@ export default function ShoppingPage(props) {
           });
       });
 
-      const consumer = await axios.post(
-        process.env.REACT_APP_BACKEND_URL + "/consumer/create",
-        {
+      const consumer = await axios
+        .post(process.env.REACT_APP_BACKEND_URL + "/consumer/create", {
           active: true,
           contactedBy: {
             username: "web",
@@ -296,95 +295,115 @@ export default function ShoppingPage(props) {
           shippingAddress:
             props.valuesConsumerForm?.shippingAddress ||
             props.valuesConsumerForm?.address,
-        }
-      );
-      window.open(utils.generateWaBuyMessage(orderLines), "_blank");
-
-      const base_url = process.env.REACT_APP_BACKEND_URL + "/order/create";
-
-      const input = {
-        orderId: nanoid(6),
-        requests: orderLines,
-        basicData: {
-          firstname: consumer.data.newConsumer.firstname,
-          lastname: consumer.data.newConsumer.lastname,
-          ci: consumer.data.newConsumer.ci,
-          email: consumer.data.newConsumer.email,
-          phone: consumer.data.newConsumer.phone,
-          address: consumer.data.newConsumer.address,
-        },
-        shippingData: {
-          name: props.valuesConsumerForm?.shippingName,
-          lastname: props.valuesConsumerForm?.shippingLastName,
-          phone: props.valuesConsumerForm?.shippingPhone,
-          address: props.valuesConsumerForm?.shippingAddress,
-          shippingMethod: props.valuesConsumerForm?.shippingMethod,
-        },
-        billingData: {
-          name: props.valuesConsumerForm?.billingShName,
-          lastname: props.valuesConsumerForm?.billingShLastName,
-          ci: props.valuesConsumerForm?.billingCi,
-          company: props.valuesConsumerForm?.billingCompany,
-          phone: props.valuesConsumerForm?.billingPhone,
-          address: props.valuesConsumerForm?.billingAddress,
-          orderPaymentMethod: orderPaymentMethod.name,
-        },
-        tax: getTotalPrice(props.buyState) * 0.16,
-        subtotal: getTotalPrice(props.buyState),
-        shippingCost: shippingCost,
-        total: getTotal(props.buyState),
-        createdOn: new Date(),
-        createdBy: consumer.data.newConsumer,
-        orderType: "Particular",
-        // consumerId: consumer.data.newConsumer._id,
-        status: "Por producir",
-        observations: observations,
-      };
-
-      const base_ur2 = process.env.REACT_APP_BACKEND_URL + "/order/sendEmail";
-      let sms;
-      await axios.post(base_ur2, sms);
-
-      await axios
-        .post(base_url, input, {
-          "Content-Type": "multipart/form-data",
         })
         .then(async (response) => {
-          if (!response.data.success) {
-            const formData = new FormData();
-            formData.append("paymentVoucher", paymentVoucher);
-            let ID = response.data.newOrder.orderId;
-            const base_url2 =
-              process.env.REACT_APP_BACKEND_URL + "/order/addVoucher/" + ID;
-            await axios.put(base_url2, formData, {
-              "Content-Type": "multipart/form-data",
-            });
-
-            props.setMessage(response.data.info);
-            props.setMessage(
-              "¡Gracias por tu compra! te redireccionaremos a Whatsapp para ser atendido por nuestro departamento de ventas."
-            );
+          console.log(response);
+          if (response.data.res.success === false) {
+            props.setMessage(response.data);
+            console.log(response.data);
           } else {
+            // window.open(utils.generateWaBuyMessage(orderLines), "_blank");
+
+            const base_url =
+              process.env.REACT_APP_BACKEND_URL + "/order/create";
+
+            const input = {
+              orderId: nanoid(6),
+              requests: orderLines,
+              basicData: {
+                firstname: consumer.data.newConsumer.firstname,
+                lastname: consumer.data.newConsumer.lastname,
+                ci: consumer.data.newConsumer.ci,
+                email: consumer.data.newConsumer.email,
+                phone: consumer.data.newConsumer.phone,
+                address: consumer.data.newConsumer.address,
+              },
+              shippingData: {
+                name: props.valuesConsumerForm?.shippingName,
+                lastname: props.valuesConsumerForm?.shippingLastName,
+                phone: props.valuesConsumerForm?.shippingPhone,
+                address: props.valuesConsumerForm?.shippingAddress,
+                shippingMethod: props.valuesConsumerForm?.shippingMethod,
+              },
+              billingData: {
+                name: props.valuesConsumerForm?.billingShName,
+                lastname: props.valuesConsumerForm?.billingShLastName,
+                ci: props.valuesConsumerForm?.billingCi,
+                company: props.valuesConsumerForm?.billingCompany,
+                phone: props.valuesConsumerForm?.billingPhone,
+                address: props.valuesConsumerForm?.billingAddress,
+                orderPaymentMethod: orderPaymentMethod.name,
+              },
+              tax: getTotalPrice(props.buyState) * 0.16,
+              subtotal: getTotalPrice(props.buyState),
+              shippingCost: shippingCost,
+              total: getTotal(props.buyState),
+              createdOn: new Date(),
+              createdBy: consumer.data.newConsumer,
+              orderType: "Particular",
+              // consumerId: consumer.data.newConsumer._id,
+              status: "Por producir",
+              observations: observations,
+            };
+
+            await axios
+              .post(base_url, input, {
+                "Content-Type": "multipart/form-data",
+              })
+              .then(async (response) => {
+                if (response.status == 200) {
+                  if (paymentVoucher !== undefined) {
+                    const formData = new FormData();
+                    formData.append("paymentVoucher", paymentVoucher);
+                    let ID = response.data.newOrder.orderId;
+                    const base_url2 =
+                      process.env.REACT_APP_BACKEND_URL +
+                      "/order/addVoucher/" +
+                      ID;
+                    await axios.put(base_url2, formData, {
+                      "Content-Type": "multipart/form-data",
+                    });
+                  }
+
+                  props.setMessage(response.data.info);
+                  props.setMessage(
+                    "¡Gracias por tu compra! te redireccionaremos a Whatsapp para ser atendido por nuestro departamento de ventas."
+                  );
+
+                  const base_ur2 =
+                    process.env.REACT_APP_BACKEND_URL + "/order/sendEmail";
+                  let orderData = {
+                    firstname: props.valuesConsumerForm.name,
+                    lastname: props.valuesConsumerForm.lastName,
+                    email: props.valuesConsumerForm?.email,
+                    requests: orderLines,
+                    orderId: response.data.newOrder.orderId,
+                    total: getTotal(props.buyState),
+                  };
+
+                  await axios
+                    .post(base_ur2, orderData)
+                    .then(async (response) => {
+                      if (response.data.success === false) {
+                        await axios.post(base_ur2, orderData);
+                      } else return;
+                    });
+                }
+              })
+              .catch((error) => {
+                console.log(error.response);
+              });
+            // history.push({ pathname: "/" });
+            // props.setValuesConsumerForm(undefined);
+            // localStorage.removeItem("buyState");
+            // props.setBuyState([]);
           }
-        })
-        .catch((error) => {
-          console.log(error.response);
         });
-      history.push({ pathname: "/" });
-      props.setValuesConsumerForm(undefined);
-      localStorage.removeItem("buyState");
-      props.setBuyState([]);
       setLoading(false);
     } else {
       props.setOpen(true);
       props.setMessage("Por favor selecciona una forma de pago.");
     }
-  };
-
-  const sendMail = async () => {
-    const base_ur2 = process.env.REACT_APP_BACKEND_URL + "/order/sendEmail";
-    let sms;
-    await axios.post(base_ur2, sms);
   };
 
   let shippingCost = Number(props.valuesConsumerForm?.shippingMethod?.price);
@@ -578,10 +597,7 @@ export default function ShoppingPage(props) {
                       )
                     }
                     onClick={
-                      activeStep === steps.length - 1
-                        ? //  createOrder
-                          sendMail
-                        : handleNext
+                      activeStep === steps.length - 1 ? createOrder : handleNext
                     }
                   >
                     {activeStep === steps.length - 1 ? "Ordenar" : "Siguiente"}

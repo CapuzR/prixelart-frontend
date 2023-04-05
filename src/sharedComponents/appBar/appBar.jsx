@@ -153,6 +153,14 @@ export default function MenuAppBar(props) {
     setAnchorEl(null);
   };
 
+  const handleMyStats = () => {
+    history.push({
+      pathname:
+        "/" + JSON.parse(localStorage.getItem("token")).username + "/stats",
+    });
+    setAnchorEl(null);
+  };
+
   const handleLogout = () => {
     const base_url = process.env.REACT_APP_BACKEND_URL + "/logout";
     axios.post(base_url).then((response) => {
@@ -325,6 +333,11 @@ export default function MenuAppBar(props) {
                 />
                 <Tab
                   className={classes.button}
+                  onClick={handleMyStats}
+                  label="Mi Resumen"
+                />
+                <Tab
+                  className={classes.button}
                   onClick={handlePasswordChange}
                   label="Cambiar contraseña"
                 />
@@ -436,6 +449,8 @@ export default function MenuAppBar(props) {
                   onClose={handleClose}
                 >
                   <MenuItem onClick={handleMyAccount}>Mi Cuenta</MenuItem>
+                  <MenuItem onClick={handleMyStats}>Mi Resumen</MenuItem>
+
                   <MenuItem onClick={handlePasswordChange}>
                     Cambiar contraseña
                   </MenuItem>

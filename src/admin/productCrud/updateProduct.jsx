@@ -31,6 +31,8 @@ import validations from "../../shoppingCart/validations";
 import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
 import { ImageList } from "@material-ui/core";
 import { SkipPrevious } from "@material-ui/icons";
+import ReadProducts from "./readProducts";
+import Paper from "@material-ui/core/Paper";
 
 const useStyles = makeStyles((theme) => ({
   seeMore: {
@@ -156,6 +158,19 @@ export default function UpdateAdmin(props) {
     };
   }, []);
 
+  useEffect(() => {
+    readProduct();
+  }, []);
+
+  const readProduct = () => {
+    const base_url2 = process.env.REACT_APP_BACKEND_URL + "/product/read";
+    axios.post(base_url2, { _id: props.product._id }).then((response) => {
+      let product = response.data.products[0];
+      props.setProduct(product);
+      localStorage.setItem("product", JSON.stringify(product));
+    });
+  };
+
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -209,6 +224,7 @@ export default function UpdateAdmin(props) {
     let video = { type: "video", url: width.stringify };
     // imagesList.push(video);
   };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (
@@ -494,15 +510,27 @@ export default function UpdateAdmin(props) {
                               <HighlightOffOutlinedIcon />
                             </IconButton>
                           </div>
-                          <img
-                            style={{
-                              width: "100%",
-                              // height: "200px",
-                              objectFit: "contain",
-                            }}
-                            src={img}
-                            alt="Video"
-                          />
+                          <Paper elevation={3} style={{ padding: 10 }}>
+                            <img
+                              style={{
+                                width: "100%",
+                                objectFit: "contain",
+                              }}
+                              src={img}
+                              alt="Imagen"
+                            />
+                          </Paper>
+                          {/* ) : (
+                            img.type === "video" && (
+                              <span
+                                key={key_id}
+                                style={{ width: "100%" }}
+                                dangerouslySetInnerHTML={{
+                                  __html: img.url.replace(/[,]/gi, ""),
+                                }}
+                              ></span>
+                            )
+                          )} */}
                         </div>
                       );
                     })}

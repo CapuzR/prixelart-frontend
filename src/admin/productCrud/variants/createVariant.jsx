@@ -13,12 +13,7 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import IconButton from "@material-ui/core/IconButton";
 import EditIcon from "@material-ui/icons/Edit";
 import HighlightOffOutlinedIcon from "@material-ui/icons/HighlightOffOutlined";
-import OutlinedInput from "@material-ui/core/OutlinedInput";
-import InputLabel from "@material-ui/core/InputLabel";
-import InputAdornment from "@material-ui/core/InputAdornment";
 import FormControl from "@material-ui/core/FormControl";
-import Visibility from "@material-ui/icons/Visibility";
-import VisibilityOff from "@material-ui/icons/VisibilityOff";
 import clsx from "clsx";
 import Checkbox from "@material-ui/core/Checkbox";
 import Dialog from "@material-ui/core/Dialog";
@@ -28,7 +23,7 @@ import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import { nanoid } from "nanoid";
 import validations from "../../../shoppingCart/validations";
-
+import Paper from "@material-ui/core/Paper";
 const useStyles = makeStyles((theme) => ({
   seeMore: {
     marginTop: theme.spacing(3),
@@ -45,43 +40,43 @@ export default function CreateVariant(props) {
     (props.variant && props.variant.active) || false
   );
   const [attributes, setAttributes] = useState(
-    (props.variant && props.variant.attributes) || undefined
+    (props.variant && props.variant.attributes) || []
   );
   // const [buttonAttState, setButtonAttState] = useState();
   const [variantName, setVariantName] = useState(
     (props.variant && props.variant.name) || ""
   );
   const [description, setDescription] = useState(
-    (props.variant && props.variant.description) || undefined
+    (props.variant && props.variant.description) || ""
   );
   const [category, setCategory] = useState(
-    (props.variant && props.variant.category) || undefined
+    (props.variant && props.variant.category) || ""
   );
   const [considerations, setConsiderations] = useState(
-    (props.variant && props.variant.considerations) || undefined
+    (props.variant && props.variant.considerations) || ""
   );
   const [publicPriceEq, setPublicPriceEq] = useState(
-    (props.variant && props.variant.publicPrice.equation) || undefined
+    (props.variant && props.variant.publicPrice.equation) || ""
   );
   const [fromPublicPrice, setFromPublicPrice] = useState(
-    (props.variant && props.variant.publicPrice.from) || undefined
+    (props.variant && props.variant.publicPrice.from) || ""
   );
   const [toPublicPrice, setToPublicPrice] = useState(
-    (props.variant && props.variant.publicPrice.to) || undefined
+    (props.variant && props.variant.publicPrice.to) || ""
   );
   const [prixerPriceEq, setPrixerPriceEq] = useState(
-    (props.variant && props.variant.prixerPrice.equation) || undefined
+    (props.variant && props.variant.prixerPrice.equation) || ""
   );
   const [fromPrixerPrice, setFromPrixerPrice] = useState(
-    (props.variant && props.variant.prixerPrice.from) || undefined
+    (props.variant && props.variant.prixerPrice.from) || ""
   );
   const [toPrixerPrice, setToPrixerPrice] = useState(
-    (props.variant && props.variant.prixerPrice.to) || undefined
+    (props.variant && props.variant.prixerPrice.to) || ""
   );
   const [loading, setLoading] = useState(false);
   const [buttonState, setButtonState] = useState(false);
   const history = useHistory();
-  const [image, setImage] = useState(props?.variant?.variantImage);
+  const [image, setImage] = useState(props?.variant?.variantImage || []);
   const [videoUrl, setVideoUrl] = useState(undefined);
   const [videoPreview, setVideoPreview] = useState(undefined);
   const [loadeImage, setLoadImage] = useState({
@@ -93,7 +88,7 @@ export default function CreateVariant(props) {
   const [snackBarError, setSnackBarError] = useState(false);
   const [mustImage, setMustImages] = useState(false);
 
-  if (loadeImage.loader[0] === undefined) {
+  if (loadeImage.loader[0] === undefined && image !== undefined) {
     image?.map((url) => {
       url.type === "images"
         ? loadeImage.loader.push(url.url)
@@ -170,7 +165,7 @@ export default function CreateVariant(props) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (image.length === 0) {
+    if (image === undefined) {
       setMustImages(true);
       setTimeout(() => {
         setMustImages(false);
@@ -179,9 +174,9 @@ export default function CreateVariant(props) {
       if (
         !active &&
         !variantName &&
-        !description &&
-        !category &&
-        !considerations &&
+        // !description &&
+        // !category &&
+        // !considerations &&
         !publicPriceEq &&
         !prixerPriceEq &&
         !image
@@ -218,21 +213,26 @@ export default function CreateVariant(props) {
         variants.attributes
           ? variants.attributes.push(...attributes)
           : (variants.attributes = attributes);
-        let prevVariants = [];
-
-        if (props.product.variants) {
-          prevVariants = props.product.variants;
-        }
 
         formData.append("productActive", productData.active);
-        productData.category &&
+        if (productData.category !== undefined && productData.category !== "") {
           formData.append("productCategory", productData.category);
-        productData.considerations &&
+        }
+        if (
+          productData.considerations !== undefined &&
+          productData.considerations !== ""
+        ) {
           formData.append("productConsiderations", productData.considerations);
-        formData.append("productDescription", productData.description);
+        }
+        if (
+          productData.description !== undefined &&
+          productData.description !== ""
+        ) {
+          formData.append("productDescription", productData.description);
+        }
         formData.append("productHasSpecialVar", productData.hasSpecialVar);
         formData.append("productName", productData.name);
-        variants.attributes.map((obj) => {
+        variants.attributes?.map((obj) => {
           if (obj.name) {
             formData.append("attributesName", obj.name);
           }
@@ -243,21 +243,30 @@ export default function CreateVariant(props) {
         productData.sources.images.map((img) =>
           formData.append("productImages", img.url)
         );
-        formData.append("variants", JSON.stringify(prevVariants));
+        const x = JSON.parse(localStorage.getItem("product"));
+
+        if (x.variants) {
+          formData.append("variants", JSON.stringify(x.variants)); // DE AQUI
+        }
         formData.append("productPublicPriceFrom", productData.publicPrice.from);
         formData.append("productPublicPriceTo", productData.publicPrice.to);
         formData.append("productPrixerPriceFrom", productData.prixerPrice.from);
         formData.append("productPrixerPriceTo", productData.prixerPrice.to);
         formData.append("variant_id", variants._id);
-        formData.append("video", videoUrl);
-        image.map((file) => {
-          if (file.url === undefined) {
-            formData.append("variantImage", file);
-          }
-          if (typeof file.url === "string") {
-            formData.append("images", file.url);
+        let varImages = [];
+        image.map((img) => {
+          if (img.type === "images") {
+            varImages.push(img.url + " ");
+          } else if (img.type === "video") {
+            formData.append("video", img.url);
+          } else if (typeof img.size === "number") {
+            formData.append("variantImage", img);
           }
         });
+        formData.append("images", varImages);
+        if (videoUrl !== undefined) {
+          formData.append("video", videoUrl);
+        }
         formData.append("variantActive", variants.active);
         formData.append("variantName", variants.name);
         formData.append("variantDescription", variants.description);
@@ -269,6 +278,7 @@ export default function CreateVariant(props) {
         formData.append("variantPrixerPriceFrom", variants.prixerPrice.from);
         formData.append("variantPrixerPriceTo", variants.prixerPrice.to);
         formData.append("variantPrixerPriceEq", variants.prixerPrice.equation);
+
         const base_url =
           process.env.REACT_APP_BACKEND_URL +
           "/product/update/" +
@@ -372,13 +382,11 @@ export default function CreateVariant(props) {
                       <div
                         style={{
                           width: "25%",
-                          // maxHeight: "200px",
                           marginRight: "4px",
                         }}
                       >
                         <div
                           style={{
-                            // marginBottom: "-32px",
                             textAlign: "right",
                           }}
                         >
@@ -414,15 +422,25 @@ export default function CreateVariant(props) {
                             <HighlightOffOutlinedIcon />
                           </IconButton>
                         </div>
-                        <img
-                          style={{
-                            width: "100%",
-                            // height: "200px",
-                            objectFit: "contain",
-                          }}
-                          src={img || img.url}
-                          alt="+"
-                        />
+                        <Paper elevation={3} style={{ padding: 10 }}>
+                          <img
+                            style={{
+                              width: "100%",
+                              objectFit: "contain",
+                            }}
+                            src={img || img.url}
+                            alt="Imagen"
+                          />
+                        </Paper>
+                        {/* {videoUrl && (
+                          <span
+                            key={key_id}
+                            style={{ width: "100%" }}
+                            dangerouslySetInnerHTML={{
+                              __html: videoUrl.replace(/[,]/gi, ""),
+                            }}
+                          ></span>
+                        )} */}
                       </div>
                     );
                   })}
@@ -639,7 +657,10 @@ export default function CreateVariant(props) {
                 variant="contained"
                 color="default"
                 onClick={() => {
-                  setAttributes(attributes.concat({ name: "", value: "" }));
+                  // setAttributes(
+                  attributes === undefined || []
+                    ? setAttributes([{ name: "", value: "" }])
+                    : attributes.push({ name: "", value: "" });
                 }}
                 disabled={buttonState}
                 style={{ marginTop: 20 }}

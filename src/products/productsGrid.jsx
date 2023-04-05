@@ -172,12 +172,14 @@ export default function ProductGrid(props) {
     const base_url = process.env.REACT_APP_BACKEND_URL + "/product/read-all";
     axios.get(base_url).then(async (response) => {
       let productsAttTemp1 = response.data.products;
+
       await productsAttTemp1.map(async (p, iProd, pArr) => {
         p.variants.map((variant) => {
           imagesVariants.push(variant.variantImage);
         });
         productsAttTemp1 = await getEquation(p, iProd, pArr);
       });
+
       if (order === "") {
         setTiles(getAttributes(productsAttTemp1));
       } else if (order === "A-Z") {
@@ -637,6 +639,7 @@ export default function ProductGrid(props) {
                     </CardActions>
                   </>
                 )}
+
                 {tile.attributes &&
                   tile.attributes.map((att, iAtt, attributesArr) => (
                     <CardActions key={iAtt} style={{ width: "50%" }}>

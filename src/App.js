@@ -18,6 +18,7 @@ import expire from "./utils/expire";
 import PasswordChange from "./prixerProfile/passwordChange/passwordChange";
 import ForgotPassword from "./prixerProfile/passwordReset/forgotPassword";
 import ResetPassword from "./prixerProfile/passwordReset/passwordReset";
+import PrixerStats from "../src/prixerProfile/prixerStats";
 import Snackbar from "@material-ui/core/Snackbar";
 import Orders from "./admin/adminMain/orders/orders";
 import OrderForm from "./shoppingCart/orderForm";
@@ -371,7 +372,9 @@ function App() {
           />
         </Route>
 
-        {/* <Route exact path="/:username" component={PrixerProfile} /> */}
+        <Route path="/:username/stats">
+          <PrixerStats />
+        </Route>
 
         <Route path="/:username">
           <PrixerProfile

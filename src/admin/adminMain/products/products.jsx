@@ -296,6 +296,7 @@ export default function Products(props) {
               ) : activeCrud === "update" ? (
                 <div style={{ height: "155vh" }}>
                   <UpdateProduct
+                    setProduct={setProduct}
                     product={product}
                     setProductEdit={setProductEdit}
                   />

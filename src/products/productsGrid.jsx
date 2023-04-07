@@ -321,48 +321,47 @@ export default function ProductGrid(props) {
                                 className={classes.img}
                                 alt="variant"
                               />
-                            ),
-                          tile.variants[0].video && (
-                            <span
-                              key={1}
-                              style={{ width: "100%" }}
-                              dangerouslySetInnerHTML={{
-                                __html: tile.variants[0].video,
-                              }}
-                            />
-                          )
+                            )
+                          // ) : (
+                          //   <span
+                          //     key={key_id}
+                          //     style={{ width: "100%" }}
+                          //     dangerouslySetInnerHTML={{
+                          //       __html: img.url,
+                          //     }}
+                          //   />
+                          // )
                         )
                       ) : (
-                        <img
-                          src={tile.thumbUrl}
-                          className={classes.img}
-                          alt="product"
-                        />
-                      )
-                    ) : tile.sources && tile.sources.images?.length > 0 ? (
-                      tile.sources.images.map(
-                        (img, key_id) =>
-                          img.type === "images" && (
-                            <img
-                              key={key_id}
-                              src={img.url.replace(/[,]/gi, "")}
-                              className={classes.img}
-                              alt="product"
-                            />
-                          )
+                        tile.sources &&
+                        tile.sources.length > 0 &&
+                        tile.sources.images?.map(
+                          (img, key_id) =>
+                            img.type === "images" && (
+                              <img
+                                key={key_id}
+                                src={img.url.replace(/[,]/gi, "")}
+                                className={classes.img}
+                                alt="product"
+                              />
+                            )
+                        )
+                        //   (
+                        //     <span
+                        //       key={"video"}
+                        //       style={{ width: "100%" }}
+                        //       dangerouslySetInnerHTML={{
+                        //         __html: tile.sources.video,
+                        //       }}
+                        //     />
+                        //   ))
+                        // )
                       )
                     ) : (
                       <img
                         src={tile.thumbUrl}
                         className={classes.img}
                         alt="product"
-                      />
-                    )}
-                    {tile.sources.video && (
-                      <span
-                        key={1}
-                        style={{ width: "100%" }}
-                        dangerouslySetInnerHTML={{ __html: tile.sources.video }}
                       />
                     )}
                   </Carousel>

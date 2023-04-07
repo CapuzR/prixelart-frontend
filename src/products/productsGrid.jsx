@@ -312,22 +312,24 @@ export default function ProductGrid(props) {
                   >
                     {tile.needsEquation ? (
                       tile.variants[0].variantImage ? (
-                        tile.variants[0].variantImage.map((img, key_id) =>
-                          img.type === "images" ? (
-                            <img
-                              key={key_id}
-                              src={img.url}
-                              className={classes.img}
-                              alt="variant"
-                            />
-                          ) : (
+                        tile.variants[0].variantImage.map(
+                          (img, key_id) =>
+                            img.type === "images" && (
+                              <img
+                                key={key_id}
+                                src={img.url}
+                                className={classes.img}
+                                alt="variant"
+                              />
+                            ),
+                          tile.variants[0].video && (
                             <span
-                              key={key_id}
+                              key={1}
                               style={{ width: "100%" }}
                               dangerouslySetInnerHTML={{
-                                __html: img.url.replace(/[,]/gi, ""),
+                                __html: tile.variants[0].video,
                               }}
-                            ></span>
+                            />
                           )
                         )
                       ) : (
@@ -338,27 +340,29 @@ export default function ProductGrid(props) {
                         />
                       )
                     ) : tile.sources && tile.sources.images?.length > 0 ? (
-                      tile.sources.images.map((img, key_id) =>
-                        img.type === "images" ? (
-                          <img
-                            key={key_id}
-                            src={img.url.replace(/[,]/gi, "")}
-                            className={classes.img}
-                            alt="product"
-                          />
-                        ) : (
-                          <span
-                            key={key_id}
-                            style={{ width: "100%" }}
-                            dangerouslySetInnerHTML={{ __html: img.url }}
-                          />
-                        )
+                      tile.sources.images.map(
+                        (img, key_id) =>
+                          img.type === "images" && (
+                            <img
+                              key={key_id}
+                              src={img.url.replace(/[,]/gi, "")}
+                              className={classes.img}
+                              alt="product"
+                            />
+                          )
                       )
                     ) : (
                       <img
                         src={tile.thumbUrl}
                         className={classes.img}
                         alt="product"
+                      />
+                    )}
+                    {tile.sources.video && (
+                      <span
+                        key={1}
+                        style={{ width: "100%" }}
+                        dangerouslySetInnerHTML={{ __html: tile.sources.video }}
                       />
                     )}
                   </Carousel>

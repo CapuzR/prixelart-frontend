@@ -77,7 +77,9 @@ export default function CreateVariant(props) {
   const [buttonState, setButtonState] = useState(false);
   const history = useHistory();
   const [image, setImage] = useState(props?.variant?.variantImage || []);
-  const [videoUrl, setVideoUrl] = useState(undefined);
+  const [videoUrl, setVideoUrl] = useState(
+    (props.variant && props.variant?.video) || undefined
+  );
   const [videoPreview, setVideoPreview] = useState(undefined);
   const [loadeImage, setLoadImage] = useState({
     loader: [],
@@ -172,7 +174,7 @@ export default function CreateVariant(props) {
       }, 3000);
     } else {
       if (
-        !active &&
+        // !active &&
         !variantName &&
         // !description &&
         // !category &&
@@ -188,7 +190,7 @@ export default function CreateVariant(props) {
         setLoading(true);
         setButtonState(true);
 
-        const productData = props.product;
+        // const productData = props.product;
         const formData = new FormData();
         const variants = {
           _id: (props.variant && props.variant._id) || nanoid(6),
@@ -213,25 +215,6 @@ export default function CreateVariant(props) {
         variants.attributes
           ? variants.attributes.push(...attributes)
           : (variants.attributes = attributes);
-
-        formData.append("productActive", productData.active);
-        if (productData.category !== undefined && productData.category !== "") {
-          formData.append("productCategory", productData.category);
-        }
-        if (
-          productData.considerations !== undefined &&
-          productData.considerations !== ""
-        ) {
-          formData.append("productConsiderations", productData.considerations);
-        }
-        if (
-          productData.description !== undefined &&
-          productData.description !== ""
-        ) {
-          formData.append("productDescription", productData.description);
-        }
-        formData.append("productHasSpecialVar", productData.hasSpecialVar);
-        formData.append("productName", productData.name);
         variants.attributes?.map((obj) => {
           if (obj.name) {
             formData.append("attributesName", obj.name);
@@ -240,25 +223,11 @@ export default function CreateVariant(props) {
             formData.append("attributesValue", obj.value);
           }
         });
-        productData.sources.images.map((img) =>
-          formData.append("productImages", img.url)
-        );
-        const x = JSON.parse(localStorage.getItem("product"));
-
-        if (x.variants) {
-          formData.append("variants", JSON.stringify(x.variants)); // DE AQUI
-        }
-        formData.append("productPublicPriceFrom", productData.publicPrice.from);
-        formData.append("productPublicPriceTo", productData.publicPrice.to);
-        formData.append("productPrixerPriceFrom", productData.prixerPrice.from);
-        formData.append("productPrixerPriceTo", productData.prixerPrice.to);
         formData.append("variant_id", variants._id);
         let varImages = [];
         image.map((img) => {
           if (img.type === "images") {
             varImages.push(img.url + " ");
-          } else if (img.type === "video") {
-            formData.append("video", img.url);
           } else if (typeof img.size === "number") {
             formData.append("variantImage", img);
           }
@@ -281,7 +250,7 @@ export default function CreateVariant(props) {
 
         const base_url =
           process.env.REACT_APP_BACKEND_URL +
-          "/product/update/" +
+          "/product/updateVariants/" +
           props.product._id;
         const response = await axios.put(
           base_url,
@@ -294,6 +263,7 @@ export default function CreateVariant(props) {
           setLoading(false);
           setButtonState(false);
           setErrorMessage(response.data.message);
+          console.log(response.error);
           setSnackBarError(true);
           props.setVariant("");
         } else {
@@ -444,6 +414,58 @@ export default function CreateVariant(props) {
                       </div>
                     );
                   })}
+                {videoUrl && (
+                  <>
+                    <div
+                      style={{
+                        // width: "25%",
+                        marginRight: "4px",
+                        flexDirection: "row",
+                      }}
+                    >
+                      <div
+                        style={{
+                          textAlign: "right",
+                          display: "flex",
+                        }}
+                      >
+                        <IconButton
+                          variant="text"
+                          className={classes.buttonImgLoader}
+                          style={{
+                            color: "#d33f49",
+                          }}
+                          component="label"
+                          onClick={handleClickOpen}
+                        >
+                          <EditIcon />
+                        </IconButton>
+
+                        <IconButton
+                          variant="text"
+                          className={classes.buttonImgLoader}
+                          style={{ color: "#d33f49" }}
+                          onClick={(d) => {
+                            setVideoUrl(undefined);
+                          }}
+                        >
+                          <HighlightOffOutlinedIcon />
+                        </IconButton>
+                      </div>
+
+                      <Paper elevation={3} style={{ padding: 10 }}>
+                        <span
+                          key={1}
+                          style={{ width: "100%" }}
+                          dangerouslySetInnerHTML={{
+                            __html: videoUrl,
+                          }}
+                          alt={"video"}
+                        />
+                      </Paper>
+                    </div>
+                  </>
+                )}
               </Grid>
               <Checkbox
                 checked={active}

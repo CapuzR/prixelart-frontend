@@ -118,7 +118,7 @@ export default function UpdateAdmin(props) {
   const [hasSpecialVar, setHasSpecialVar] = useState(
     props?.product?.hasSpecialVar || false
   );
-  const [videoUrl, setVideoUrl] = useState(undefined);
+  const [videoUrl, setVideoUrl] = useState(props?.product?.sources.video);
   const [imageLoader, setLoadImage] = useState({
     loader: [],
     filename: "Subir imagenes",
@@ -133,6 +133,7 @@ export default function UpdateAdmin(props) {
   const [mustImage, setMustImages] = useState(false);
 
   useEffect(() => {
+    readProduct();
     const indexImage =
       imagesList?.length < 1 ? imagesList?.indexOf(thumbUrl) : undefined;
 
@@ -158,9 +159,8 @@ export default function UpdateAdmin(props) {
     };
   }, []);
 
-  useEffect(() => {
-    readProduct();
-  }, []);
+  // useEffect(() => {
+  // }, []);
 
   const readProduct = () => {
     const base_url2 = process.env.REACT_APP_BACKEND_URL + "/product/read";
@@ -221,8 +221,6 @@ export default function UpdateAdmin(props) {
   const modifyString = (a, sti) => {
     const width = sti.replace("560", "326").replace("315", "326");
     setVideoUrl(width);
-    let video = { type: "video", url: width.stringify };
-    // imagesList.push(video);
   };
 
   const handleSubmit = async (e) => {
@@ -247,9 +245,7 @@ export default function UpdateAdmin(props) {
           !category &&
           !considerations &&
           !fromPublicPrice &&
-          // !toPublicPrice &&
           !fromPrixerPrice &&
-          // !toPrixerPrice &&
           !images
         ) {
           setErrorMessage("Por favor completa todos los campos requeridos.");
@@ -275,12 +271,6 @@ export default function UpdateAdmin(props) {
               },
             ],
           };
-
-          const currentVideo =
-            typeof imagesList?.find((result) => result?.type === "video") ===
-            "object"
-              ? imagesList?.find((result) => result?.type === "video")
-              : undefined;
 
           newFormData.append("active", active);
           newFormData.append("name", productName);
@@ -457,16 +447,12 @@ export default function UpdateAdmin(props) {
                         <div
                           style={{
                             width: "25%",
-                            // maxHeight: "200px",
                             marginRight: "4px",
-                            // display: "flex",
                             flexDirection: "row",
                           }}
                         >
                           <div
                             style={{
-                              // marginBottom: "-32px",
-                              // display: "flex",
                               textAlign: "right",
                             }}
                           >
@@ -520,20 +506,61 @@ export default function UpdateAdmin(props) {
                               alt="Imagen"
                             />
                           </Paper>
-                          {/* ) : (
-                            img.type === "video" && (
-                              <span
-                                key={key_id}
-                                style={{ width: "100%" }}
-                                dangerouslySetInnerHTML={{
-                                  __html: img.url.replace(/[,]/gi, ""),
-                                }}
-                              ></span>
-                            )
-                          )} */}
                         </div>
                       );
                     })}
+                  {videoUrl && (
+                    <>
+                      <div
+                        style={{
+                          // width: "25%",
+                          marginRight: "4px",
+                          flexDirection: "row",
+                        }}
+                      >
+                        <div
+                          style={{
+                            textAlign: "right",
+                            display: "flex",
+                          }}
+                        >
+                          <IconButton
+                            variant="text"
+                            className={classes.buttonImgLoader}
+                            style={{
+                              color: "#d33f49",
+                            }}
+                            component="label"
+                            onClick={handleClickOpen}
+                          >
+                            <EditIcon />
+                          </IconButton>
+
+                          <IconButton
+                            variant="text"
+                            className={classes.buttonImgLoader}
+                            style={{ color: "#d33f49" }}
+                            onClick={(d) => {
+                              setVideoUrl(undefined);
+                            }}
+                          >
+                            <HighlightOffOutlinedIcon />
+                          </IconButton>
+                        </div>
+
+                        <Paper elevation={3} style={{ padding: 10 }}>
+                          <span
+                            key={1}
+                            style={{ width: "100%" }}
+                            dangerouslySetInnerHTML={{
+                              __html: videoUrl,
+                            }}
+                            alt={"video"}
+                          />
+                        </Paper>
+                      </div>
+                    </>
+                  )}
                 </Grid>
                 <IconButton
                   variant="text"

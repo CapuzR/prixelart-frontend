@@ -26,7 +26,7 @@ export default function ReadProducts(props) {
 
   const getRows = () => {
     const base_url =
-      process.env.REACT_APP_BACKEND_URL + "/admin/product/read-all";
+      process.env.REACT_APP_BACKEND_URL + "/product/read-all-admin";
     axios
       .post(
         base_url,

@@ -25,8 +25,7 @@ export default function ReadProducts(props) {
   const [deleteOpen, setDeleteOpen] = useState(false);
 
   const getRows = () => {
-    const base_url =
-      process.env.REACT_APP_BACKEND_URL + "/product/read-all-admin";
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/admin/read-products";
     axios
       .post(
         base_url,
@@ -35,6 +34,7 @@ export default function ReadProducts(props) {
       )
       .then((response) => {
         setRows(response.data.products);
+        console.log("consulting products successfully!" + response.data.info);
       })
       .catch((error) => {
         console.log(error);

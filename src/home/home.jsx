@@ -309,6 +309,7 @@ export default function Home(props) {
               marginLeft: isDesktop ? "-24px" : "-16px",
               marginLeft: isDeskTop ? "-24px" : "-16px",
               height: "100vh",
+              marginTop: "60px",
             }}
           >
             <div className={classes.CarouselContent}>

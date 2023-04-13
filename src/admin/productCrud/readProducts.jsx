@@ -27,7 +27,7 @@ export default function ReadProducts(props) {
   const getRows = () => {
     const base_url = process.env.REACT_APP_BACKEND_URL + "/product/read-allv1";
     axios
-      .post(
+      .get(
         base_url,
         { adminToken: localStorage.getItem("adminTokenV") },
         { withCredentials: true }

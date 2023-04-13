@@ -89,10 +89,24 @@ function ConsumerForm(props) {
     "sábado",
   ];
 
+  let ProdTimes = props.buyState.map((item) => {
+    if (item.product && item.art && item.product.productionTime !== undefined) {
+      return item.product.productionTime;
+    }
+  });
+
+  let orderedProdT = ProdTimes.sort(function (a, b) {
+    if (a.toLowerCase() > b.toLowerCase()) {
+      return 1;
+    }
+    if (a.toLowerCase() < b.toLowerCase()) {
+      return -1;
+    }
+    return 0;
+  });
+
   let readyDate = new Date(
-    today.setDate(
-      today.getDate() + Number(props.buyState[0].product.productionTime)
-    )
+    today.setDate(today.getDate() + Number(orderedProdT[0]))
   );
 
   if (readyDate.getDay() === 6) {

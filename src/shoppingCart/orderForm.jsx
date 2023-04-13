@@ -254,7 +254,8 @@ export default function OrderForm(props) {
                                               : item.product.publicEquation !==
                                                 ""
                                               ? "$" +
-                                                item.product.publicEquation
+                                                item.product.publicEquation *
+                                                  item.quantity
                                               : "$" +
                                                 item.product.publicPrice.from.replace(
                                                   /[$]/gi,

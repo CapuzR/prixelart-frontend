@@ -49,21 +49,52 @@ export default function PrixerProfile() {
   const theme = useTheme();
   const prixerUsername = JSON.parse(localStorage.getItem("token")).username;
   const [balance, setBalance] = useState(0);
+  const [relOrders, setRelOrders] = useState([]);
+  const [tab, setTab] = useState("balance");
   const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
 
   useEffect(() => {
     const base_url = process.env.REACT_APP_BACKEND_URL + "/order/byPrixer";
     axios.post(base_url, { prixer: prixerUsername }).then((response) => {
-      let orders = response.data.order;
+      let orders = response.data.orders;
       let total;
       orders.map((order) => {
-        total = order.product.publicEquation * order.quantity * 0.1;
+        order.requests.map((item) => {
+          if (item.art.prixerUsername === prixerUsername) {
+            relOrders.push(item);
+          }
+        });
       });
+      relOrders.map((item) => {
+        if (item.product.prixerEquation) {
+          total = item.product.prixerEquation * item.quantity * 0.1;
+        } else if (item.product.prixerPrice.from) {
+          total = item.product.prixerPrice.from * item.quantity * 0.1;
+        } else if (item.product.publicEquation) {
+          total = item.product.publicEquation * item.quantity * 0.1;
+        } else if (item.product.publicPrice.from) {
+          total = item.product.publicPrice.from * item.quantity * 0.1;
+        }
+      });
+
       setBalance(total.toFixed(2));
     });
   }, []);
 
-  console.log(balance);
+  const handleBalance = (e) => {
+    e.preventDefault();
+    setTab("balance");
+  };
+
+  const handleMovement = (e) => {
+    e.preventDefault();
+    setTab("movement");
+  };
+
+  const handleInteractions = (e) => {
+    e.preventDefault();
+    setTab("interactions");
+  };
 
   return (
     <Container component="main" maxWidth="xl" className={classes.paper}>
@@ -72,16 +103,23 @@ export default function PrixerProfile() {
         <AppBar prixerUsername={prixerUsername} />
       </Grid>
       <Grid className={classes.paper2}>
-        <Paper style={{ width: "70%", padding: 10, borderRadius: 10 }}>
+        <Paper
+          style={{ width: "70%", padding: 10, borderRadius: 10 }}
+          elevation={3}
+        >
           <Typography color="primary" variant="h6" style={{ paddingLeft: 10 }}>
             Mi Resumen
           </Typography>
           <Grid container>
-            <Grid item xs={4} sm={4}>
-              <Tabs>
-                <Tab label="Balance General" />
+            <Grid item xs={4} sm={3}>
+              <Tabs orientation="vertical">
+                <Tab label="Balance General" onClick={handleBalance} />
+                <Tab label="Movimientos" onClick={handleMovement} />
+                <Tab label="Interacciones" onClick={handleInteractions} />
               </Tabs>
             </Grid>
+            <hr />
+
             <Grid
               item
               xs={8}
@@ -90,20 +128,77 @@ export default function PrixerProfile() {
                 display: "flex",
                 justifyContent: "center",
                 flexDirection: "column",
+                minHeight: 200,
               }}
             >
-              <Typography
-                variant="body2"
-                style={{ display: "flex", justifyContent: "center" }}
-              >
-                Tu balance es de:
-              </Typography>
-              <Typography
-                variant="h2"
-                style={{ display: "flex", justifyContent: "center" }}
-              >
-                ${balance}
-              </Typography>
+              {tab === "balance" && (
+                <Grid>
+                  <Typography
+                    variant="body2"
+                    style={{ display: "flex", justifyContent: "center" }}
+                  >
+                    Tu balance es de:
+                  </Typography>
+                  <Typography
+                    variant="h2"
+                    style={{ display: "flex", justifyContent: "center" }}
+                  >
+                    ${balance}
+                  </Typography>
+                </Grid>
+              )}
+              {tab === "movement" && (
+                <Grid>
+                  <Typography>Tus Movimientos:</Typography>
+                  {relOrders.length > 0 ? (
+                    relOrders.map((item) => (
+                      <Grid
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          color: "grey",
+                          backgroundColor: "ghostwhite",
+                          padding: 10,
+                          borderRadius: 10,
+                          margin: "10px 0px 10px 0px",
+                        }}
+                      >
+                        <Grid item>
+                          {/* <Typography color="gris"> */}
+                          {item.product.name} x {item.art.title}
+                          {/* </Typography> */}
+                        </Grid>
+                        <Grid style={{ color: "green", fontWeight: "bold" }}>
+                          + $
+                          {item.product.prixerEquation
+                            ? item.product.prixerEquation * item.quantity * 0.1
+                            : item.product.prixerPrice.from
+                            ? item.product.prixerPrice.from *
+                              item.quantity *
+                              0.1
+                            : item.product.publicEquation
+                            ? item.product.publicEquation * item.quantity * 0.1
+                            : item.product.publicPrice.from &&
+                              item.product.publicPrice.from *
+                                item.quantity *
+                                0.1}
+                        </Grid>
+                      </Grid>
+                    ))
+                  ) : (
+                    <Typography>
+                      Aún no hay órdenes registradas para ti :c{" "}
+                    </Typography>
+                  )}
+                </Grid>
+              )}
+              {tab === "interactions" && (
+                // <div margin={"auto"}>
+                <Typography align="center" variant="h4">
+                  Próximamente
+                </Typography>
+                // </div>
+              )}
             </Grid>
           </Grid>
         </Paper>

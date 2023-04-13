@@ -272,6 +272,21 @@ export default function ShoppingPage(props) {
           });
       });
 
+      if (
+        JSON.parse(localStorage.getItem("token")) &&
+        JSON.parse(localStorage.getItem("token")).username
+      ) {
+        orderLines.map((item) => {
+          item.product.publicEquation = undefined;
+          item.product.publicPrice = undefined;
+        });
+      } else {
+        orderLines.map((item) => {
+          item.product.prixerEquation = undefined;
+          item.product.prixerPrice = undefined;
+        });
+      }
+
       const consumer = await axios
         .post(process.env.REACT_APP_BACKEND_URL + "/consumer/create", {
           active: true,
@@ -297,13 +312,11 @@ export default function ShoppingPage(props) {
             props.valuesConsumerForm?.address,
         })
         .then(async (response) => {
-          console.log(response);
-          if (response.data.res.success === false) {
+          if (!response.data.res.success) {
             props.setMessage(response.data);
-            console.log(response.data);
           } else {
             // window.open(utils.generateWaBuyMessage(orderLines), "_blank");
-
+            console.log(response.data);
             const base_url =
               process.env.REACT_APP_BACKEND_URL + "/order/create";
 
@@ -311,12 +324,12 @@ export default function ShoppingPage(props) {
               orderId: nanoid(6),
               requests: orderLines,
               basicData: {
-                firstname: consumer.data.newConsumer.firstname,
-                lastname: consumer.data.newConsumer.lastname,
-                ci: consumer.data.newConsumer.ci,
-                email: consumer.data.newConsumer.email,
-                phone: consumer.data.newConsumer.phone,
-                address: consumer.data.newConsumer.address,
+                firstname: response.data.newConsumer.firstname,
+                lastname: response.data.newConsumer.lastname,
+                ci: response.data.newConsumer.ci,
+                email: response.data.newConsumer.email,
+                phone: response.data.newConsumer.phone,
+                address: response.data.newConsumer.address,
               },
               shippingData: {
                 name: props.valuesConsumerForm?.shippingName,
@@ -339,7 +352,7 @@ export default function ShoppingPage(props) {
               shippingCost: shippingCost,
               total: getTotal(props.buyState),
               createdOn: new Date(),
-              createdBy: consumer.data.newConsumer,
+              createdBy: response.data.newConsumer,
               orderType: "Particular",
               // consumerId: consumer.data.newConsumer._id,
               status: "Por producir",
@@ -370,24 +383,26 @@ export default function ShoppingPage(props) {
                     "¡Gracias por tu compra! te redireccionaremos a Whatsapp para ser atendido por nuestro departamento de ventas."
                   );
 
-                  const base_ur2 =
+                  const base_url3 =
                     process.env.REACT_APP_BACKEND_URL + "/order/sendEmail";
                   let orderData = {
-                    firstname: props.valuesConsumerForm.name,
-                    lastname: props.valuesConsumerForm.lastName,
-                    email: props.valuesConsumerForm?.email,
+                    basicData: input.basicData,
+                    shippingData: input.shippingData,
+                    billingData: input.billingData,
                     requests: orderLines,
                     orderId: response.data.newOrder.orderId,
+                    tax: getTotalPrice(props.buyState) * 0.16,
+                    subtotal: getTotalPrice(props.buyState),
+                    shippingCost: shippingCost,
                     total: getTotal(props.buyState),
+                    observations: observations,
                   };
 
-                  await axios
-                    .post(base_ur2, orderData)
-                    .then(async (response) => {
-                      if (response.data.success === false) {
-                        await axios.post(base_ur2, orderData);
-                      } else return;
-                    });
+                  await axios.post(base_url3, input).then(async (response) => {
+                    if (response.data.success === false) {
+                      await axios.post(base_url3, input);
+                    } else return;
+                  });
                 }
               })
               .catch((error) => {

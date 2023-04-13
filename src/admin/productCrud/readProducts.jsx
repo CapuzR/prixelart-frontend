@@ -25,7 +25,7 @@ export default function ReadProducts(props) {
   const [deleteOpen, setDeleteOpen] = useState(false);
 
   const getRows = () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + "/admin/read-products";
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/product/read-allv1";
     axios
       .post(
         base_url,

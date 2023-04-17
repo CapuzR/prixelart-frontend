@@ -310,8 +310,8 @@ export default function ProductGrid(props) {
                       },
                     }}
                   >
-                    {tile.needsEquation ? (
-                      tile.variants[0].variantImage ? (
+                    {
+                      tile.needsEquation && tile.variants[0].variantImage ? (
                         tile.variants[0].variantImage.map(
                           (img, key_id) =>
                             img.type === "images" && (
@@ -330,40 +330,49 @@ export default function ProductGrid(props) {
                           //       __html: img.url,
                           //     }}
                           //   />
-                          // )
                         )
-                      ) : (
-                        tile.sources &&
-                        tile.sources.length > 0 &&
+                      ) : tile.sources.images &&
+                        tile.sources.images[0] !== undefined ? (
                         tile.sources.images?.map(
-                          (img, key_id) =>
-                            img.type === "images" && (
+                          (img, i) =>
+                            img.type === "images" &&
+                            img.url !== null && (
                               <img
-                                key={key_id}
-                                src={img.url.replace(/[,]/gi, "")}
+                                key={i}
+                                src={
+                                  img.url.replace(/[,]/gi, "") || tile.thumbUrl
+                                }
                                 className={classes.img}
-                                alt="product"
+                                alt="product.png"
                               />
                             )
                         )
-                        //   (
-                        //     <span
-                        //       key={"video"}
-                        //       style={{ width: "100%" }}
-                        //       dangerouslySetInnerHTML={{
-                        //         __html: tile.sources.video,
-                        //       }}
-                        //     />
-                        //   ))
-                        // )
+                      ) : (
+                        <img
+                          src={tile.thumbUrl}
+                          className={classes.img}
+                          alt="*"
+                        />
                       )
-                    ) : (
-                      <img
-                        src={tile.thumbUrl}
-                        className={classes.img}
-                        alt="product"
-                      />
-                    )}
+                      // )
+                      //   (
+                      //     <span
+                      //       key={"video"}
+                      //       style={{ width: "100%" }}
+                      //       dangerouslySetInnerHTML={{
+                      //         __html: tile.sources.video,
+                      //       }}
+                      //     />
+                      //   ))
+                      // )
+                      //   )
+                      // ) : (
+                      //   <img
+                      //     src={tile.thumbUrl}
+                      //     className={classes.img}
+                      //     alt="*"
+                      //   />
+                    }
                   </Carousel>
                 </CardMedia>
                 {/* <CardActionArea style={{ alignContent: "space-between" }}> */}

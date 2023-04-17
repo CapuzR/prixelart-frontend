@@ -333,19 +333,28 @@ export default function ProductGrid(props) {
                         )
                       ) : tile.sources.images &&
                         tile.sources.images[0] !== undefined ? (
-                        tile.sources.images?.map(
-                          (img, i) =>
-                            img.type === "images" &&
+                        tile.sources.images?.map((img, i) =>
+                          img.url !== null && img.type === "images" ? (
+                            <img
+                              key={i}
+                              src={
+                                img.url?.replace(/[,]/gi, "") || tile.thumbUrl
+                              }
+                              className={classes.img}
+                              alt="product.png"
+                            />
+                          ) : (
+                            img.type === "video" &&
                             img.url !== null && (
-                              <img
-                                key={i}
-                                src={
-                                  img.url.replace(/[,]/gi, "") || tile.thumbUrl
-                                }
-                                className={classes.img}
-                                alt="product.png"
+                              <span
+                                key={"video"}
+                                style={{ width: "100%" }}
+                                dangerouslySetInnerHTML={{
+                                  __html: img.url,
+                                }}
                               />
                             )
+                          )
                         )
                       ) : (
                         <img
@@ -355,15 +364,7 @@ export default function ProductGrid(props) {
                         />
                       )
                       // )
-                      //   (
-                      //     <span
-                      //       key={"video"}
-                      //       style={{ width: "100%" }}
-                      //       dangerouslySetInnerHTML={{
-                      //         __html: tile.sources.video,
-                      //       }}
-                      //     />
-                      //   ))
+                      //   )
                       // )
                       //   )
                       // ) : (

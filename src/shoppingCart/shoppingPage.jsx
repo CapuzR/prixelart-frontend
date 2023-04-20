@@ -254,6 +254,7 @@ export default function ShoppingPage(props) {
     });
     return total;
   };
+  console.log(props.valuesConsumerForm.shippingMethod);
 
   const createOrder = async () => {
     if (orderPaymentMethod) {
@@ -316,7 +317,6 @@ export default function ShoppingPage(props) {
             props.setMessage(response.data);
           } else {
             // window.open(utils.generateWaBuyMessage(orderLines), "_blank");
-            console.log(response.data);
             const base_url =
               process.env.REACT_APP_BACKEND_URL + "/order/create";
 
@@ -358,7 +358,6 @@ export default function ShoppingPage(props) {
               status: "Por producir",
               observations: observations,
             };
-
             await axios
               .post(base_url, input, {
                 "Content-Type": "multipart/form-data",

@@ -444,13 +444,20 @@ export default function Orders(props) {
       status: "Procesando",
       orderPaymentMethod: orderPaymentMethod,
     };
-    const order = await axios.post(base_url, input).then(() => {
+    const base_url3 = process.env.REACT_APP_BACKEND_URL + "/order/sendEmail";
+
+    const order = await axios.post(base_url, input).then(async () => {
       console.log("Orden generada correctamente. Por favor, revisa tu email");
+      await axios.post(base_url3, input).then(async (response) => {
+        if (response.data.success === false) {
+          await axios.post(base_url3, input);
+        } else return;
+      });
     });
+    setOpenCreateOrder(false);
     props.setValues(undefined);
     localStorage.removeItem("buyState");
     props.setBuyState([]);
-    setOpenCreateOrder(false);
     readOrders();
     setLoading(false);
   };
@@ -618,6 +625,16 @@ export default function Orders(props) {
       item: product,
       type: "product",
     });
+  };
+
+  const modifyPrice = (product, index, newPrice) => {
+    const purchase = props.buyState;
+    let item = props.buyState[index];
+    item.product.publicEquation = newPrice;
+    purchase.splice(index, 1, item);
+    product.publicEquation = newPrice;
+    localStorage.setItem("buyState", JSON.stringify(purchase));
+    props.setBuyState(purchase);
   };
 
   const setOpen = () => {
@@ -1075,9 +1092,7 @@ export default function Orders(props) {
                         padding: 15,
                       }}
                     >
-                      {modalContent.billingData.ci && (
-                        <strong>Datos de facturación</strong>
-                      )}
+                      <strong>Datos de facturación</strong>
                       {modalContent.billingData.name &&
                         modalContent.billingData.lastname && (
                           <div>
@@ -2123,7 +2138,7 @@ export default function Orders(props) {
                                       margin: "10px 0",
                                     }}
                                   >
-                                    <div style={{ paddingBottom: 5 }}>
+                                    {/* <div style={{ paddingBottom: 5 }}>
                                       <strong>Precio: </strong>
                                       {`$${
                                         buy.product?.publicEquation ||
@@ -2132,7 +2147,26 @@ export default function Orders(props) {
                                           ""
                                         )
                                       }`}
-                                    </div>
+                                    </div> */}
+                                    <TextField
+                                      variant="outlined"
+                                      label="Precio"
+                                      style={{ width: 120 }}
+                                      defaultValue={
+                                        buy.product?.publicEquation ||
+                                        buy.product?.publicPrice.from.replace(
+                                          /[$]/gi,
+                                          ""
+                                        )
+                                      }
+                                      onChange={(e) => {
+                                        modifyPrice(
+                                          buy.product,
+                                          index,
+                                          e.target.value
+                                        );
+                                      }}
+                                    />
                                     <div
                                       style={{
                                         display: "flex",

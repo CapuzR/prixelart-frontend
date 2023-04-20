@@ -409,7 +409,7 @@ export default function ProductGrid(props) {
                           ).toFixed(2) +
                           " - " +
                           (
-                            tile.publicPrice.to.replace(/[$]/gi, "") *
+                            tile.publicPrice.to?.replace(/[$]/gi, "") *
                             props.dollarValue
                           ).toFixed(2)
                         : "PVP: Bs" +
@@ -425,10 +425,7 @@ export default function ProductGrid(props) {
                       ? "PVP: $" +
                         tile.publicPrice.from.replace(/[$]/gi, "") +
                         " - " +
-                        tile.variants[0].publicPrice.equation.replace(
-                          /[$]/gi,
-                          ""
-                        )
+                        tile.publicPrice.to?.replace(/[$]/gi, "")
                       : "PVP: $" + tile.publicPrice.from.replace(/[$]/gi, "")}
                     <br></br>
                     {/* {/* {JSON.parse(localStorage.getItem("adminToken")) &&

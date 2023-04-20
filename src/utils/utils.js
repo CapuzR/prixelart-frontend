@@ -1,10 +1,14 @@
 const generateWaMessage = (tile = "") => {
-  const waNumber = "584126377748";
+  // const waNumber = "584126377748";
   const welcomeMessage =
     "Holaa, cuéntame más. Quiero asesoría y conocer sus productos.";
   const message = tile !== "" ? generateArtMessage(tile, "wa") : welcomeMessage;
 
-  const url = "https://wa.me/" + waNumber + "?text=" + message;
+  const url =
+    "https://wa.me/" +
+    //  waNumber +
+    "?text=" +
+    message;
 
   return url;
 };
@@ -48,9 +52,7 @@ const generateArtMessage = (tile, type) => {
     " *Prixer:* " +
     tile.prixerUsername +
     lineBreak +
-    " *Enlace:* prixelart.com/" +
-    tile.prixerUsername +
-    "/art/" +
+    " *Enlace:* prixelart.com/art=" +
     tile.artId;
 
   return artMessage;
@@ -66,15 +68,16 @@ const generateWaBuyMessage = (buy) => {
         item.art &&
         item.product &&
         "*Item " +
-          `${index + 1}*
+          `${index + 1}* %0D%0A
           Arte: ${item.art.title} del Prixer: ${
             item.art.prixerUsername
-          }, Producto: ${item.product.name}, ${item.product.attributes.map(
-            (a, i) => {
-              return "- " + a.name + ": " + item.product.selection[i];
-            }
-          )}, Cantidad: ${item.quantity}
-          `
+          }, %0D%0A Producto: ${
+            item.product.name
+          }, ${item.product.attributes.map((a, i) => {
+            return "- " + a.name + ": " + item.product.selection[i];
+          })}, %0D%0A Cantidad: ${item.quantity}
+          ` +
+          "%0D%0A"
     );
 
   const url = "https://wa.me/" + waNumber + "?text=" + message;

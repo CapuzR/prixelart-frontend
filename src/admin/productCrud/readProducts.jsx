@@ -167,12 +167,12 @@ export default function ReadProducts(props) {
                   <TableCell align="center">
                     ${row.publicPrice.from?.replace(/[$]/gi, "")}
                     {row.publicPrice.to &&
-                      " - " + row.publicPrice.to.replace(/[$]/gi, "")}
+                      " - " + row.publicPrice.to?.replace(/[$]/gi, "")}
                   </TableCell>
                   <TableCell align="center">
                     ${row.prixerPrice.from?.replace(/[$]/gi, "")}
                     {row.prixerPrice.to &&
-                      " - " + row.prixerPrice.to.replace(/[$]/gi, "")}
+                      " - " + row.prixerPrice.to?.replace(/[$]/gi, "")}
                   </TableCell>
                   <TableCell align="center">
                     {row.productionTime && Number(row.productionTime) > 1

@@ -18,6 +18,7 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import FloatingAddButton from "../../sharedComponents/floatingAddButton/floatingAddButton";
 import ArtUploader from "../../sharedComponents/artUploader/artUploader";
 import WhatsAppIcon from "@material-ui/icons/WhatsApp";
+import ShareIcon from "@material-ui/icons/Share";
 import utils from "../../utils/utils";
 import MenuItem from "@material-ui/core/MenuItem";
 import FormControl from "@material-ui/core/FormControl";
@@ -758,7 +759,7 @@ export default function FullscreenPhoto(props) {
                               );
                             }}
                           >
-                            <WhatsAppIcon /> Escríbenos
+                            <ShareIcon /> Compartir
                           </Button>
                           {JSON.parse(localStorage.getItem("token")) &&
                             JSON.parse(localStorage.getItem("token"))

@@ -59,19 +59,19 @@ export default function CreateVariant(props) {
     (props.variant && props.variant.publicPrice.equation) || ""
   );
   const [fromPublicPrice, setFromPublicPrice] = useState(
-    (props.variant && props.variant.publicPrice.from) || ""
+    (props.variant && props.variant.publicPrice?.from) || ""
   );
   const [toPublicPrice, setToPublicPrice] = useState(
-    (props.variant && props.variant.publicPrice.to) || ""
+    (props.variant && props.variant.publicPrice?.to) || ""
   );
   const [prixerPriceEq, setPrixerPriceEq] = useState(
-    (props.variant && props.variant.prixerPrice.equation) || ""
+    (props.variant && props.variant.prixerPrice?.equation) || ""
   );
   const [fromPrixerPrice, setFromPrixerPrice] = useState(
-    (props.variant && props.variant.prixerPrice.from) || ""
+    (props.variant && props.variant.prixerPrice?.from) || ""
   );
   const [toPrixerPrice, setToPrixerPrice] = useState(
-    (props.variant && props.variant.prixerPrice.to) || ""
+    (props.variant && props.variant.prixerPrice?.to) || ""
   );
   const [loading, setLoading] = useState(false);
   const [buttonState, setButtonState] = useState(false);
@@ -241,13 +241,25 @@ export default function CreateVariant(props) {
         formData.append("variantDescription", variants.description);
         formData.append("variantCategory", variants.category);
         formData.append("variantConsiderations", variants.considerations);
-        formData.append("variantPublicPriceFrom", variants.publicPrice.from);
-        formData.append("variantPublicPriceTo", variants.publicPrice.to);
+        if (fromPublicPrice) {
+          formData.append("variantPublicPriceFrom", variants.publicPrice.from);
+        }
+        if (toPublicPrice) {
+          formData.append("variantPublicPriceTo", variants.publicPrice.to);
+        }
         formData.append("variantPublicPriceEq", variants.publicPrice.equation);
-        formData.append("variantPrixerPriceFrom", variants.prixerPrice.from);
-        formData.append("variantPrixerPriceTo", variants.prixerPrice.to);
-        formData.append("variantPrixerPriceEq", variants.prixerPrice.equation);
-
+        if (fromPrixerPrice) {
+          formData.append("variantPrixerPriceFrom", variants.prixerPrice.from);
+        }
+        if (toPrixerPrice) {
+          formData.append("variantPrixerPriceTo", variants.prixerPrice.to);
+        }
+        if (prixerPriceEq) {
+          formData.append(
+            "variantPrixerPriceEq",
+            variants.prixerPrice.equation
+          );
+        }
         const base_url =
           process.env.REACT_APP_BACKEND_URL +
           "/product/updateVariants/" +
@@ -570,7 +582,6 @@ export default function CreateVariant(props) {
             <Grid item xs={12} sm={12} md={6} lg={6}>
               <TextField
                 variant="outlined"
-                required
                 fullWidth
                 id="prixerPriceEq"
                 label="Prixers"
@@ -582,6 +593,7 @@ export default function CreateVariant(props) {
                 }}
                 error={
                   prixerPriceEq !== undefined &&
+                  prixerPriceEq !== "" &&
                   !validations.isAValidPrice(prixerPriceEq)
                 }
               />

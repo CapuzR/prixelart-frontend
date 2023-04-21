@@ -35,6 +35,7 @@ import Checkbox from "@material-ui/core/Checkbox";
 import Backdrop from "@material-ui/core/Backdrop";
 import MDEditor from "@uiw/react-md-editor";
 import { useHistory } from "react-router-dom";
+import Paper from "@material-ui/core/Paper";
 
 const useStyles = makeStyles((theme) => ({
   seeMore: {
@@ -87,6 +88,7 @@ export default function CreateProduct() {
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("");
   const [considerations, setConsiderations] = useState("");
+  const [productionTime, setProductionTime] = useState();
   const [images, newImages] = useState({ images: [] });
   const [videoUrl, setVideoUrl] = useState("");
   const [videoPreview, setVideoPreview] = useState("");
@@ -231,10 +233,17 @@ export default function CreateProduct() {
           formData.append("description", description);
           formData.append("category", category);
           formData.append("considerations", considerations);
+          formData.append("productionTime", productionTime);
           formData.append("publicPriceFrom", data.publicPrice.from);
-          formData.append("publicPriceTo", data.publicPrice.to);
-          formData.append("prixerPriceFrom", data.prixerPrice.from);
-          formData.append("prixerPriceTo", data.prixerPrice.to);
+          if (toPublicPrice) {
+            formData.append("publicPriceTo", data.publicPrice.to);
+          }
+          if (fromPrixerPrice) {
+            formData.append("prixerPriceFrom", data.prixerPrice.from);
+          }
+          if (toPrixerPrice) {
+            formData.append("prixerPriceTo", data.prixerPrice.to);
+          }
           formData.append("hasSpecialVar", hasSpecialVar);
           formData.append("video", videoUrl);
           images.images.map((file) => formData.append("productImages", file));
@@ -392,6 +401,58 @@ export default function CreateProduct() {
                     </div>
                   );
                 })}
+              {videoUrl && (
+                <>
+                  <div
+                    style={{
+                      // width: "25%",
+                      marginRight: "4px",
+                      flexDirection: "row",
+                    }}
+                  >
+                    <div
+                      style={{
+                        textAlign: "right",
+                        display: "flex",
+                      }}
+                    >
+                      <IconButton
+                        variant="text"
+                        className={classes.buttonImgLoader}
+                        style={{
+                          color: "#d33f49",
+                        }}
+                        component="label"
+                        onClick={handleClickOpen}
+                      >
+                        <EditIcon />
+                      </IconButton>
+
+                      <IconButton
+                        variant="text"
+                        className={classes.buttonImgLoader}
+                        style={{ color: "#d33f49" }}
+                        onClick={(d) => {
+                          setVideoUrl(undefined);
+                        }}
+                      >
+                        <HighlightOffOutlinedIcon />
+                      </IconButton>
+                    </div>
+
+                    <Paper elevation={3} style={{ padding: 10 }}>
+                      <span
+                        key={1}
+                        style={{ width: "100%" }}
+                        dangerouslySetInnerHTML={{
+                          __html: videoUrl,
+                        }}
+                        alt={"video"}
+                      />
+                    </Paper>
+                  </div>
+                </>
+              )}
             </Grid>
             <Grid container xs={isDesktop ? 12 : 12}>
               <Grid item xs={12} md={6}>
@@ -612,6 +673,23 @@ export default function CreateProduct() {
                   value={considerations}
                   onChange={(e) => {
                     setConsiderations(e.target.value);
+                  }}
+                />
+              </FormControl>
+              <FormControl
+                className={clsx(classes.margin, classes.textField)}
+                variant="outlined"
+                xs={12}
+                fullWidth={true}
+                style={{ marginTop: 20 }}
+              >
+                <TextField
+                  variant="outlined"
+                  fullWidth
+                  label="Tiempo de producción"
+                  value={productionTime}
+                  onChange={(e) => {
+                    setProductionTime(e.target.value);
                   }}
                 />
               </FormControl>

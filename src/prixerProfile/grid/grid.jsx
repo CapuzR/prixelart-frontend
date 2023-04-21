@@ -452,7 +452,7 @@ export default function Grid(props) {
                         marginBottom: "7px",
                         borderRadius: "4px",
                       }}
-                      src={tile.squareThumbUrl}
+                      src={tile.largeThumbUrl || tile.squareThumbUrl}
                       debounce={1000}
                       cache
                       error="/imgError.svg"

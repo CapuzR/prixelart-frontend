@@ -310,38 +310,16 @@ export default function ProductGrid(props) {
                       },
                     }}
                   >
-                    {
-                      tile.needsEquation && tile.variants[0].variantImage ? (
-                        tile.variants[0].variantImage.map(
-                          (img, key_id) =>
-                            img.type === "images" && (
-                              <img
-                                key={key_id}
-                                src={img.url}
-                                className={classes.img}
-                                alt="variant"
-                              />
-                            )
-                          // ) : (
-                          //   <span
-                          //     key={key_id}
-                          //     style={{ width: "100%" }}
-                          //     dangerouslySetInnerHTML={{
-                          //       __html: img.url,
-                          //     }}
-                          //   />
-                        )
-                      ) : tile.sources.images &&
-                        tile.sources.images[0] !== undefined ? (
-                        tile.sources.images?.map((img, i) =>
-                          img.url !== null && img.type === "images" ? (
+                    {typeof tile.selection[0] === "string" ? (
+                      tile.variants
+                        .find(({ name }) => name === tile.selection[0])
+                        .variantImage.map((img, key_id) =>
+                          img.type === "images" ? (
                             <img
-                              key={i}
-                              src={
-                                img.url?.replace(/[,]/gi, "") || tile.thumbUrl
-                              }
+                              key={key_id}
+                              src={img.url}
                               className={classes.img}
-                              alt="product.png"
+                              alt="variant"
                             />
                           ) : (
                             img.type === "video" &&
@@ -356,27 +334,39 @@ export default function ProductGrid(props) {
                             )
                           )
                         )
-                      ) : (
-                        <img
-                          src={tile.thumbUrl}
-                          className={classes.img}
-                          alt="*"
-                        />
+                    ) : tile.sources.images &&
+                      tile.sources.images[0] !== undefined ? (
+                      tile.sources.images?.map((img, i) =>
+                        img.url !== null && img.type === "images" ? (
+                          <img
+                            key={i}
+                            src={img.url?.replace(/[,]/gi, "") || tile.thumbUrl}
+                            className={classes.img}
+                            alt="product.png"
+                          />
+                        ) : (
+                          img.type === "video" &&
+                          img.url !== null && (
+                            <span
+                              key={"video"}
+                              style={{ width: "100%" }}
+                              dangerouslySetInnerHTML={{
+                                __html: img.url,
+                              }}
+                            />
+                          )
+                        )
                       )
-                      // )
-                      //   )
-                      // )
-                      //   )
-                      // ) : (
-                      //   <img
-                      //     src={tile.thumbUrl}
-                      //     className={classes.img}
-                      //     alt="*"
-                      //   />
-                    }
+                    ) : (
+                      <img
+                        src={tile.thumbUrl}
+                        className={classes.img}
+                        alt="*"
+                      />
+                    )}
                   </Carousel>
                 </CardMedia>
-                {/* <CardActionArea style={{ alignContent: "space-between" }}> */}
+
                 <CardContent
                   data-color-mode="light"
                   style={{ alignContent: "space-between" }}
@@ -421,7 +411,7 @@ export default function ProductGrid(props) {
                       ? "PVP: $" + tile.publicEquation
                       : tile.attributes !== [] &&
                         tile.publicPrice.to !== tile.publicPrice.from &&
-                        tile.publicPrice.to !== ""
+                        tile.publicPrice.to
                       ? "PVP: $" +
                         tile.publicPrice.from.replace(/[$]/gi, "") +
                         " - " +
@@ -682,6 +672,7 @@ export default function ProductGrid(props) {
                                 setTiles(
                                   pAtts.pAtt ? [...pAtts.pAtt] : [...pAtts.att]
                                 );
+                                console.log(pAtts);
                               }
                             }}
                             label={att.selection}
@@ -700,20 +691,6 @@ export default function ProductGrid(props) {
                       </Grid>
                     </CardActions>
                   ))}
-                <CardActions>
-                  <Button
-                    size="small"
-                    color="primary"
-                    onClick={(e) => {
-                      window.open(
-                        utils.generateWaProductMessage(tile),
-                        "_blank"
-                      );
-                    }}
-                  >
-                    Información <WhatsAppIcon />
-                  </Button>
-                </CardActions>
 
                 <CardActions>
                   {tile.variants &&
@@ -732,7 +709,7 @@ export default function ProductGrid(props) {
                   md={12}
                   lg={12}
                   xl={12}
-                  style={{ display: "flex", justifyContent: "center" }}
+                  style={{ display: "flex", justifyContent: "space-between" }}
                 >
                   <Button
                     disabled={
@@ -750,6 +727,20 @@ export default function ProductGrid(props) {
                     <AddShoppingCartIcon />
                     Agregar
                   </Button>
+                  <CardActions>
+                    <Button
+                      size="small"
+                      color="primary"
+                      onClick={(e) => {
+                        window.open(
+                          utils.generateWaProductMessage(tile),
+                          "_blank"
+                        );
+                      }}
+                    >
+                      Información <WhatsAppIcon />
+                    </Button>
+                  </CardActions>
                 </Grid>
               </Card>
             ))

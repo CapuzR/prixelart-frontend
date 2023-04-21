@@ -94,7 +94,7 @@ export const getEquation = async (
     if (filteredVars.length != 0) {
       if (
         filteredVars[0].publicPrice.equation &&
-        filteredVars[0].prixerPrice.equation
+        filteredVars[0].prixerPrice?.equation
       ) {
         productArr[iProd].needsEquation = true;
         productArr[iProd].publicEquation = eval(

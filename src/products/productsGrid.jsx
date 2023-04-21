@@ -31,10 +31,7 @@ import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
 import { setProductAtts, getAttributes, getEquation } from "./services.js";
 import AddShoppingCartIcon from "@material-ui/icons/ShoppingCart";
 import { useHistory } from "react-router-dom";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Switch from "@material-ui/core/Switch";
-
-let actualCurrency = "'$'";
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -83,7 +80,6 @@ const useStyles = makeStyles((theme) => ({
     height: 30,
     borderRadius: "50%",
     fontSize: 20,
-    // marginRight: 5,
   },
   base: {
     width: "70px",
@@ -310,7 +306,8 @@ export default function ProductGrid(props) {
                       },
                     }}
                   >
-                    {typeof tile.selection[0] === "string" ? (
+                    {typeof tile.selection[0] === "string" &&
+                    tile.variants[0].variantImage !== undefined ? (
                       tile.variants
                         .find(({ name }) => name === tile.selection[0])
                         .variantImage.map((img, key_id) =>
@@ -672,7 +669,6 @@ export default function ProductGrid(props) {
                                 setTiles(
                                   pAtts.pAtt ? [...pAtts.pAtt] : [...pAtts.att]
                                 );
-                                console.log(pAtts);
                               }
                             }}
                             label={att.selection}

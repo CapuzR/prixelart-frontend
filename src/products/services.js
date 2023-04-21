@@ -90,7 +90,6 @@ export const getEquation = async (
         return false;
       }
     });
-
     if (filteredVars.length != 0) {
       if (
         filteredVars[0].publicPrice.equation &&
@@ -113,8 +112,16 @@ export const getEquation = async (
             height
           ) || 0
         );
-      } else {
-        productArr[iProd].needsEquation = false;
+      } else if (filteredVars[0].publicPrice.equation) {
+        productArr[iProd].needsEquation = true;
+        productArr[iProd].publicEquation = eval(
+          structureEquation(
+            filteredVars[0].publicPrice.equation,
+            iProd,
+            width,
+            height
+          ) || 0
+        );
       }
     } else {
       productArr[iProd].needsEquation = false;

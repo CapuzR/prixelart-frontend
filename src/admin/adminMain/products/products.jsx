@@ -207,13 +207,14 @@ export default function Products(props) {
     <>
       <div style={{ position: "relative" }}>
         {productEdit && (
-          <div style={{ position: "absolute", right: 0 }}>
+          <div style={{ position: "absolute", right: 0, top: 16 }}>
             <Fab
               color="default"
               aria-label="edit"
               onClick={() => {
                 handleProductAction("read");
               }}
+              style={{ marginRight: "10px" }}
             >
               <ViewListIcon />
             </Fab>

@@ -150,7 +150,7 @@ export default function UpdateAdmin(props) {
     setTimeout(() => {
       if (props.product?.sources.images) {
         props?.product?.sources.images.map((element) => {
-          element.type === "video" && setVideoUrl(element.Url);
+          element.type === "video" && setVideoUrl(element.url);
         });
       }
     }, 1000);
@@ -158,9 +158,6 @@ export default function UpdateAdmin(props) {
       localStorage.removeItem("product");
     };
   }, []);
-
-  // useEffect(() => {
-  // }, []);
 
   const readProduct = () => {
     const base_url2 = process.env.REACT_APP_BACKEND_URL + "/product/read";
@@ -245,7 +242,7 @@ export default function UpdateAdmin(props) {
           !category &&
           !considerations &&
           !fromPublicPrice &&
-          !fromPrixerPrice &&
+          // !fromPrixerPrice &&
           !images
         ) {
           setErrorMessage("Por favor completa todos los campos requeridos.");
@@ -280,9 +277,15 @@ export default function UpdateAdmin(props) {
           newFormData.append("considerations", considerations);
           newFormData.append("productionTime", productionTime);
           newFormData.append("publicPriceFrom", data.publicPrice.from);
-          newFormData.append("publicPriceTo", data.publicPrice.to);
-          newFormData.append("prixerPriceFrom", data.prixerPrice.from);
-          newFormData.append("prixerPriceTo", data.prixerPrice.to);
+          if (toPublicPrice) {
+            newFormData.append("publicPriceTo", data.publicPrice.to);
+          }
+          if (fromPrixerPrice) {
+            newFormData.append("prixerPriceFrom", data.prixerPrice.from);
+          }
+          if (toPrixerPrice) {
+            newFormData.append("prixerPriceTo", data.prixerPrice.to);
+          }
           newFormData.append("hasSpecialVar", hasSpecialVar);
           if (imagesList !== []) {
             const images = [];
@@ -694,7 +697,6 @@ export default function UpdateAdmin(props) {
                   >
                     <TextField
                       variant="outlined"
-                      required
                       fullWidth
                       label="Tiempo de producción"
                       value={productionTime}
@@ -756,6 +758,8 @@ export default function UpdateAdmin(props) {
                       }}
                       error={
                         toPublicPrice !== undefined &&
+                        toPublicPrice !== "" &&
+                        toPublicPrice !== null &&
                         !validations.isAValidPrice(toPublicPrice)
                       }
                     />
@@ -775,7 +779,6 @@ export default function UpdateAdmin(props) {
                   >
                     <TextField
                       variant="outlined"
-                      required
                       fullWidth
                       id="fromPrixerPrice"
                       label="Desde"
@@ -787,6 +790,8 @@ export default function UpdateAdmin(props) {
                       }}
                       error={
                         fromPrixerPrice !== undefined &&
+                        fromPrixerPrice !== "" &&
+                        fromPrixerPrice !== null &&
                         !validations.isAValidPrice(fromPrixerPrice)
                       }
                     />
@@ -813,6 +818,8 @@ export default function UpdateAdmin(props) {
                       }}
                       error={
                         toPrixerPrice !== undefined &&
+                        toPrixerPrice !== "" &&
+                        toPrixerPrice !== null &&
                         !validations.isAValidPrice(toPrixerPrice)
                       }
                     />

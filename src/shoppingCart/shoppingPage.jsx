@@ -254,7 +254,6 @@ export default function ShoppingPage(props) {
     });
     return total;
   };
-  console.log(props.valuesConsumerForm.shippingMethod);
 
   const createOrder = async () => {
     if (orderPaymentMethod) {
@@ -407,10 +406,10 @@ export default function ShoppingPage(props) {
               .catch((error) => {
                 console.log(error.response);
               });
-            // history.push({ pathname: "/" });
-            // props.setValuesConsumerForm(undefined);
-            // localStorage.removeItem("buyState");
-            // props.setBuyState([]);
+            history.push({ pathname: "/" });
+            props.setValuesConsumerForm(undefined);
+            localStorage.removeItem("buyState");
+            props.setBuyState([]);
           }
         });
       setLoading(false);

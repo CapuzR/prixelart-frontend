@@ -50,6 +50,7 @@ import Collapse from "@material-ui/core/Collapse";
 import Divider from "@material-ui/core/Divider";
 import { useHistory } from "react-router-dom";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
+import Switch from "@material-ui/core/Switch";
 
 import utils from "../../../utils/utils";
 import { nanoid } from "nanoid";
@@ -177,6 +178,72 @@ const useStyles = makeStyles((theme) => ({
     zIndex: theme.zIndex.drawer + 1,
     color: theme.palette.primary.main,
   },
+  base: {
+    width: "70px",
+    height: "37px",
+    padding: "0px",
+  },
+  switchBase: {
+    color: "silver",
+    padding: "1px",
+    "&$checked": {
+      "& + $track": {
+        backgroundColor: "silver",
+      },
+    },
+  },
+  thumb: {
+    color: "#d33f49",
+    width: "30px",
+    height: "30px",
+    margin: "2px",
+    "&:before": {
+      content: "'$'",
+      fontSize: "18px",
+      color: "white",
+      display: "flex",
+      marginTop: "3px",
+      justifyContent: "center",
+    },
+  },
+  thumbTrue: {
+    color: "#d33f49",
+    width: "30px",
+    height: "30px",
+    margin: "2px",
+    "&:before": {
+      content: "'Bs'",
+      fontSize: "18px",
+      color: "white",
+      display: "flex",
+      marginTop: "3px",
+      justifyContent: "center",
+    },
+  },
+  track: {
+    borderRadius: "20px",
+    backgroundColor: "silver",
+    opacity: "1 !important",
+    "&:after, &:before": {
+      color: "black",
+      fontSize: "18px",
+      position: "absolute",
+      top: "6px",
+    },
+    "&:after": {
+      content: "'$'",
+      left: "8px",
+    },
+    "&:before": {
+      content: "'Bs'",
+      right: "7px",
+    },
+  },
+  checked: {
+    color: "#d33f49 !important",
+    transform: "translateX(35px) !important",
+    padding: "1px",
+  },
 }));
 
 export default function Orders(props) {
@@ -207,6 +274,9 @@ export default function Orders(props) {
   const [orderPaymentMethod, setOrderPaymentMethod] = useState(undefined);
   const steps = [`Datos del comprador`, `Productos`, `Orden de compra`];
   const [imagesVariants, setImagesVariants] = useState([]);
+  const [currency, setCurrency] = useState(false);
+  const [dollarValue, setDollarValue] = useState(1);
+
   // const [selectedProduct, setSelectedProduct] = useState("");
   const orderTypeList = ["Consignación", "Venta", "Obsequio"];
   const productionStatusList = [
@@ -640,6 +710,21 @@ export default function Orders(props) {
   const setOpen = () => {
     // setIsShowDetails(false);
     setShowVoucher(!showVoucher);
+  };
+
+  const readDollarValue = async () => {
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/dollarValue/read";
+    await axios.get(base_url).then((response) => {
+      setDollarValue(response.data.dollarValue);
+    });
+  };
+
+  useEffect(() => {
+    readDollarValue();
+  }, []);
+
+  const changeCurrency = () => {
+    setCurrency(!currency);
   };
 
   return (
@@ -2292,6 +2377,31 @@ export default function Orders(props) {
                   padding: "8px",
                 }}
               >
+                <Grid
+                  item
+                  xs={12}
+                  sm={12}
+                  md={12}
+                  lg={12}
+                  xl={12}
+                  style={{ display: "flex", justifyContent: "end" }}
+                >
+                  <Switch
+                    classes={{
+                      root: classes.base,
+                      switchBase: classes.switchBase,
+                      thumb: currency ? classes.thumbTrue : classes.thumb,
+                      track: classes.track,
+                      checked: classes.checked,
+                    }}
+                    color="primary"
+                    value={currency}
+                    onChange={(e) => {
+                      changeCurrency(e);
+                    }}
+                    style={{ marginRight: "-5px" }}
+                  />
+                </Grid>
                 {props.values && (
                   <Grid item lg={4} md={4}>
                     <Typography>
@@ -2311,7 +2421,7 @@ export default function Orders(props) {
                       <TextField
                         className={classes.textField}
                         variant="outlined"
-                        rows="3"
+                        minRows="3"
                         multiline
                         // fullWidth
                         display="inline"
@@ -2382,14 +2492,29 @@ export default function Orders(props) {
                                                   paddingLeft: 10,
                                                 }}
                                               >
-                                                {`Precio: $${
-                                                  (item.product
-                                                    .publicEquation ||
-                                                    item.product.publicPrice.from.replace(
-                                                      /[$]/gi,
-                                                      ""
-                                                    )) * (item.quantity || 1)
-                                                }`}
+                                                Precio:
+                                                {currency
+                                                  ? " Bs" +
+                                                    (
+                                                      (item.product
+                                                        .publicEquation ||
+                                                        item.product.publicPrice.from.replace(
+                                                          /[$]/gi,
+                                                          ""
+                                                        )) *
+                                                      dollarValue *
+                                                      (item.quantity || 1)
+                                                    ).toFixed(2)
+                                                  : " $" +
+                                                    (
+                                                      (item.product
+                                                        .publicEquation ||
+                                                        item.product.publicPrice.from.replace(
+                                                          /[$]/gi,
+                                                          ""
+                                                        )) *
+                                                      (item.quantity || 1)
+                                                    ).toFixed(2)}
                                               </div>
                                             </Grid>
                                           </Grid>
@@ -2475,20 +2600,47 @@ export default function Orders(props) {
                         >
                           {props.buyState.length > 0 && (
                             <>
-                              <strong>{`Subtotal: $${getTotalPrice(
-                                props.buyState
-                              ).toFixed(2)}`}</strong>
                               <strong>
-                                {`IVA: $${getIvaCost(props.buyState).toFixed(
-                                  2
-                                )}`}
+                                Subtotal:
+                                {currency
+                                  ? " Bs" +
+                                    (
+                                      getTotalPrice(props.buyState) *
+                                      dollarValue
+                                    ).toFixed(2)
+                                  : " $" +
+                                    getTotalPrice(props.buyState).toFixed(2)}
                               </strong>
+
+                              <strong>
+                                IVA:
+                                {currency
+                                  ? " Bs" +
+                                    (
+                                      getIvaCost(props.buyState) * dollarValue
+                                    ).toFixed(2)
+                                  : " $" +
+                                    getIvaCost(props.buyState).toFixed(2)}
+                              </strong>
+
                               {props.values.shippingMethod && (
-                                <strong>{`Envío: $${shippingCost}`}</strong>
+                                <strong>
+                                  Envío:
+                                  {currency
+                                    ? " Bs" +
+                                      (shippingCost * dollarValue).toFixed(2)
+                                    : " $" + shippingCost.toFixed(2)}
+                                </strong>
                               )}
-                              <strong>{`Total: $${getTotal(
-                                props.buyState
-                              )}`}</strong>
+                              <strong>
+                                Total:
+                                {currency
+                                  ? " Bs" +
+                                    (
+                                      getTotal(props.buyState) * dollarValue
+                                    ).toFixed(2)
+                                  : " $" + getTotal(props.buyState).toFixed(2)}
+                              </strong>
                               <br />
                             </>
                           )}

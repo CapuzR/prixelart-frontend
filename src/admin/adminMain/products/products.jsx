@@ -124,19 +124,22 @@ export default function Products(props) {
   const classes = useStyles();
   const history = useHistory();
   const location = useLocation();
+  const theme = useTheme();
+
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
+
+  const [productEdit, setProductEdit] = useState(true);
+  const [termsAgreeVar, setTermsAgreeVar] = useState(true);
+  const [value, setValue] = useState("");
   const [activeCrud, setActiveCrud] = useState("read");
+  // const [permissions, setPermissions] = useState();
+
   const [product, setProduct] = useState(
     localStorage.getItem("product")
       ? JSON.parse(localStorage.getItem("product"))
       : undefined
   );
-  const [productEdit, setProductEdit] = useState(true);
-  const theme = useTheme();
   const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
-  // const isDeskTop = useMediaQuery(theme.breakpoints.up("sm"));
-  const [termsAgreeVar, setTermsAgreeVar] = useState(true);
-  const [value, setValue] = useState("");
 
   const handleProductAction = (action) => {
     history.push({ pathname: "/admin/product/" + action });
@@ -159,6 +162,23 @@ export default function Products(props) {
     }
   }, []);
 
+  // const checkP = () => {
+  //   const base_url =
+  //     process.env.REACT_APP_BACKEND_URL + "/admin/CheckPermissions";
+  //   axios
+  //     .post(base_url, { adminToken: localStorage.getItem("adminTokenV") })
+  //     .then((response) => {
+  //       setPermissions(response.data.readedRole);
+  //     })
+  //     .catch((error) => {
+  //       console.log(error);
+  //     });
+  // };
+
+  // useEffect(() => {
+  //   checkP();
+  // }, []);
+
   const getTerms = () => {
     const base_url =
       process.env.REACT_APP_BACKEND_URL + "/termsAndConditions/read";
@@ -176,10 +196,6 @@ export default function Products(props) {
     const formData = new FormData();
     const termsAgree = true;
     formData.append("termsAgree", termsAgree);
-    // formData.append(
-    //   "username",
-    //   JSON.parse(localStorage.getItem("token")).username
-    // );
     const base_url =
       process.env.REACT_APP_BACKEND_URL + "/prixer/update-terms/" + Id;
     const response = await axios
@@ -203,6 +219,7 @@ export default function Products(props) {
       getTerms();
     });
   };
+
   return (
     <>
       <div style={{ position: "relative" }}>
@@ -218,18 +235,17 @@ export default function Products(props) {
             >
               <ViewListIcon />
             </Fab>
-            {/* <Fab color="secondary" aria-label="edit" onClick={()=>{handleUserAction('update')}}>
-            <EditIcon />
-          </Fab> */}
-            <Fab
-              color="primary"
-              aria-label="add"
-              onClick={() => {
-                handleProductAction("create");
-              }}
-            >
-              <AddIcon />
-            </Fab>
+            {props.permissions?.createProduct && (
+              <Fab
+                color="primary"
+                aria-label="add"
+                onClick={() => {
+                  handleProductAction("create");
+                }}
+              >
+                <AddIcon />
+              </Fab>
+            )}
 
             <Modal
               xl={800}
@@ -293,7 +309,10 @@ export default function Products(props) {
               {activeCrud === "create" ? (
                 <CreateProduct />
               ) : activeCrud === "read" ? (
-                <ReadProducts setProduct={setProduct} />
+                <ReadProducts
+                  setProduct={setProduct}
+                  permissions={props.permissions}
+                />
               ) : activeCrud === "update" ? (
                 <div style={{ height: "155vh" }}>
                   <UpdateProduct

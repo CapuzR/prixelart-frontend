@@ -20,6 +20,8 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     alignItems: "center",
     width: 450,
+    marginTop: 5,
+    marginBottom: 10,
   },
   input: {
     marginLeft: theme.spacing(1),
@@ -107,7 +109,7 @@ export default function CustomizedInputBase(props) {
 
   return (
     <div>
-      <Paper component="form" className={classes.root}>
+      <Paper component="form" className={classes.root} elevation={3}>
         <div style={{ display: "flex", width: "100%", alignItems: "center" }}>
           <IconButton
             type="submit"

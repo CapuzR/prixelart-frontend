@@ -28,7 +28,12 @@ import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import TextField from "@material-ui/core/TextField";
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
-import { setProductAtts, getAttributes, getEquation } from "./services.js";
+import {
+  setProductAtts,
+  setSecondProductAtts,
+  getAttributes,
+  getEquation,
+} from "./services.js";
 import AddShoppingCartIcon from "@material-ui/icons/ShoppingCart";
 import { useHistory } from "react-router-dom";
 import Switch from "@material-ui/core/Switch";
@@ -307,7 +312,10 @@ export default function ProductGrid(props) {
                     }}
                   >
                     {typeof tile.selection[0] === "string" &&
-                    tile.variants[0].variantImage !== undefined ? (
+                    typeof tile.variants[0]?.variantImage === "object" &&
+                    tile.variants.find(
+                      ({ name }) => name === tile.selection[0]
+                    ) ? (
                       tile.variants
                         .find(({ name }) => name === tile.selection[0])
                         .variantImage.map((img, key_id) =>
@@ -385,7 +393,11 @@ export default function ProductGrid(props) {
                     {currency
                       ? tile.publicEquation !== ""
                         ? "PVP: Bs" +
-                          (tile.publicEquation * props.dollarValue).toFixed(2)
+                          (
+                            tile.publicEquation * props.dollarValue
+                          ).toLocaleString("de-DE", {
+                            minimumFractionDigits: 2,
+                          })
                         : tile.attributes !== [] &&
                           tile.publicPrice.to !== tile.publicPrice.from &&
                           tile.publicPrice.to !== ""
@@ -393,17 +405,23 @@ export default function ProductGrid(props) {
                           (
                             tile.publicPrice.from.replace(/[$]/gi, "") *
                             props.dollarValue
-                          ).toFixed(2) +
+                          ).toLocaleString("de-DE", {
+                            minimumFractionDigits: 2,
+                          }) +
                           " - " +
                           (
                             tile.publicPrice.to?.replace(/[$]/gi, "") *
                             props.dollarValue
-                          ).toFixed(2)
+                          ).toLocaleString("de-DE", {
+                            minimumFractionDigits: 2,
+                          })
                         : "PVP: Bs" +
                           (
                             tile.publicPrice.from.replace(/[$]/gi, "") *
                             props.dollarValue
-                          ).toFixed(2)
+                          ).toLocaleString("de-DE", {
+                            minimumFractionDigits: 2,
+                          })
                       : tile.publicEquation !== ""
                       ? "PVP: $" + tile.publicEquation
                       : tile.attributes !== [] &&
@@ -638,55 +656,115 @@ export default function ProductGrid(props) {
                 )}
 
                 {tile.attributes &&
-                  tile.attributes.map((att, iAtt, attributesArr) => (
-                    <CardActions key={iAtt} style={{ width: "50%" }}>
-                      <Grid item xs={12} sm={12} md={12}>
-                        <FormControl
-                          variant="outlined"
-                          className={classes.form}
-                          xs={12}
-                          sm={12}
-                          md={12}
-                        >
-                          <InputLabel required id="att.name">
-                            {att.name}
-                          </InputLabel>
-                          <Select
-                            labelId="artTypeLabel"
-                            id="artType"
-                            value={tile.selection && tile.selection[iAtt]}
-                            onChange={async (e) => {
-                              const pAtts = await setProductAtts(
-                                e.target.value,
-                                attributesArr,
-                                iProd,
-                                iAtt,
-                                productsArr,
-                                width,
-                                height
-                              );
-                              if (pAtts) {
-                                setTiles(
-                                  pAtts.pAtt ? [...pAtts.pAtt] : [...pAtts.att]
-                                );
-                              }
-                            }}
-                            label={att.selection}
+                  tile.attributes.map((att, iAtt, attributesArr) =>
+                    iAtt === 0 ? (
+                      <CardActions key={iAtt} style={{ width: "50%" }}>
+                        <Grid item xs={12} sm={12} md={12}>
+                          <FormControl
+                            variant="outlined"
+                            className={classes.form}
+                            xs={12}
+                            sm={12}
+                            md={12}
                           >
-                            <MenuItem value={undefined}>
-                              <em></em>
-                            </MenuItem>
-                            {att.value &&
-                              att.value.map((n, i) => (
-                                <MenuItem key={n} value={n}>
-                                  {n}
+                            <InputLabel required id="att.name">
+                              {att.name}
+                            </InputLabel>
+                            <Select
+                              value={tile.selection && tile.selection[0]}
+                              onChange={async (e) => {
+                                const pAtts = await setProductAtts(
+                                  e.target.value,
+                                  attributesArr,
+                                  iProd,
+                                  iAtt,
+                                  productsArr,
+                                  width,
+                                  height
+                                );
+                                if (pAtts) {
+                                  setTiles(
+                                    pAtts.pAtt
+                                      ? [...pAtts.pAtt]
+                                      : [...pAtts.att]
+                                  );
+                                }
+                              }}
+                              label={att.selection}
+                            >
+                              <MenuItem value={undefined}>
+                                <em></em>
+                              </MenuItem>
+                              {att.value &&
+                                att.value.map((n, i) => (
+                                  <MenuItem key={n} value={n}>
+                                    {n}
+                                  </MenuItem>
+                                ))}
+                            </Select>
+                          </FormControl>
+                        </Grid>
+                      </CardActions>
+                    ) : (
+                      tile.selection[0] !== undefined && (
+                        <CardActions key={1} style={{ width: "50%" }}>
+                          <Grid item xs={12} sm={12} md={12}>
+                            <FormControl
+                              variant="outlined"
+                              className={classes.form}
+                              xs={12}
+                              sm={12}
+                              md={12}
+                            >
+                              <InputLabel required id="att.name">
+                                {att.name}
+                              </InputLabel>
+                              <Select
+                                value={tile.selection[1] && tile.selection[1]}
+                                onChange={async (e) => {
+                                  const pAtts = await setSecondProductAtts(
+                                    e.target.value,
+                                    attributesArr,
+                                    iProd,
+                                    iAtt,
+                                    productsArr,
+                                    width,
+                                    height
+                                  );
+                                  if (pAtts) {
+                                    setTiles(
+                                      pAtts.pAtt
+                                        ? [...pAtts.pAtt]
+                                        : [...pAtts.att]
+                                    );
+                                  }
+                                }}
+                                label={att.selection}
+                              >
+                                <MenuItem value={undefined}>
+                                  <em></em>
                                 </MenuItem>
-                              ))}
-                          </Select>
-                        </FormControl>
-                      </Grid>
-                    </CardActions>
-                  ))}
+                                {tile.variants.map(
+                                  (variant) =>
+                                    (variant.attributes[0].value ===
+                                      tile.selection ||
+                                      variant.attributes[0].value ===
+                                        tile.selection[0]) && (
+                                      <MenuItem
+                                        key={variant._id}
+                                        value={variant.attributes[1]?.value}
+                                      >
+                                        {variant.attributes[1]?.value}
+                                      </MenuItem>
+                                    )
+                                )}
+                              </Select>
+                            </FormControl>
+                          </Grid>
+                        </CardActions>
+                      )
+                    )
+                  )}
 
                 <CardActions>
                   {tile.variants &&
@@ -709,8 +787,10 @@ export default function ProductGrid(props) {
                 >
                   <Button
                     disabled={
-                      tile.attributes[0] !== undefined &&
-                      tile.selection[0] === undefined
+                      (tile.attributes[0] !== undefined &&
+                        tile.selection[0] === undefined) ||
+                      (tile.attributes.length === 2 &&
+                        typeof tile.selection === "string")
                         ? true
                         : false
                     }

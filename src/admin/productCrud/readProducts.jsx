@@ -17,16 +17,38 @@ import Snackbar from "@material-ui/core/Snackbar";
 import Fab from "@material-ui/core/Fab";
 import Typography from "@material-ui/core/Typography";
 import Paper from "@material-ui/core/Paper";
+import CircularProgress from "@material-ui/core/CircularProgress";
+import { Backdrop } from "@material-ui/core";
+
+const useStyles = makeStyles((theme) => ({
+  loading: {
+    display: "flex",
+    "& > * + *": {
+      marginLeft: theme.spacing(2),
+    },
+    marginLeft: "50vw",
+    marginTop: "50vh",
+  },
+  backdrop: {
+    zIndex: theme.zIndex.drawer + 1,
+    color: theme.palette.primary.main,
+  },
+}));
 
 export default function ReadProducts(props) {
   const history = useHistory();
+  const classes = useStyles();
+
   const [rows, setRows] = useState();
-  const [deleteSuccess, setDelete] = useState();
+  const [loading, setLoading] = useState(false);
+
+  // const [deleteSuccess, setDelete] = useState();
   const [deleteOpen, setDeleteOpen] = useState(false);
 
-  const getRows = () => {
+  const getRows = async () => {
+    setLoading(true);
     const base_url = process.env.REACT_APP_BACKEND_URL + "/product/read-allv1";
-    axios
+    await axios
       .post(
         base_url,
         { adminToken: localStorage.getItem("adminTokenV") },
@@ -38,6 +60,7 @@ export default function ReadProducts(props) {
       .catch((error) => {
         console.log(error);
       });
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -52,21 +75,24 @@ export default function ReadProducts(props) {
 
   const deleteProduct = async (id) => {
     const URI = process.env.REACT_APP_BACKEND_URL + `/product/delete/${id}`;
-    const res = await axios.put(
-      URI,
-      { adminToken: localStorage.getItem("adminTokenV") },
-      { withCredentials: true }
-    );
-    setDelete(res.data);
-    getRows();
-    setDeleteOpen(true);
-    setTimeout(() => {
-      setDeleteOpen(false);
-    }, 3000);
+    const res = await axios
+      .put(
+        URI,
+        { adminToken: localStorage.getItem("adminTokenV") },
+        { withCredentials: true }
+      )
+      .then(
+        setTimeout(() => {
+          setDeleteOpen(true);
+          getRows();
+        }, 500)
+      );
   };
-
   return (
     <React.Fragment>
+      <Backdrop className={classes.backdrop} open={loading}>
+        <CircularProgress />
+      </Backdrop>
       <Title>Productos</Title>
       {rows && (
         <Table size="small">
@@ -87,16 +113,18 @@ export default function ReadProducts(props) {
               rows.map((row) => (
                 <TableRow key={row._id}>
                   <TableCell align="center">
-                    <Fab
-                      color="default"
-                      style={{ width: 35, height: 35 }}
-                      aria-label="edit"
-                      onClick={(e) => {
-                        handleActive(row, "update");
-                      }}
-                    >
-                      <EditIcon />
-                    </Fab>
+                    {props.permissions?.createProduct && (
+                      <Fab
+                        color="default"
+                        style={{ width: 35, height: 35 }}
+                        aria-label="edit"
+                        onClick={(e) => {
+                          handleActive(row, "update");
+                        }}
+                      >
+                        <EditIcon />
+                      </Fab>
+                    )}
                   </TableCell>
                   <TableCell align="center">
                     {row.sources.images?.length > 0 ? (
@@ -183,17 +211,19 @@ export default function ReadProducts(props) {
                       : row.productionTime && row.productionTime + " día"}
                   </TableCell>
                   <TableCell align="center">
-                    <Fab
-                      color="default"
-                      style={{ width: 35, height: 35 }}
-                      aria-label="Delete"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        deleteProduct(row._id);
-                      }}
-                    >
-                      <DeleteIcon />
-                    </Fab>
+                    {props.permissions?.deleteProduct && (
+                      <Fab
+                        color="default"
+                        style={{ width: 35, height: 35 }}
+                        aria-label="Delete"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          deleteProduct(row._id);
+                        }}
+                      >
+                        <DeleteIcon />
+                      </Fab>
+                    )}
                   </TableCell>
                 </TableRow>
               ))}
@@ -202,8 +232,8 @@ export default function ReadProducts(props) {
       )}
       <Snackbar
         open={deleteOpen}
-        autoHideDuration={1000}
-        message={deleteSuccess?.productResult}
+        autoHideDuration={3000}
+        message={"Producto eliminado."}
       />
     </React.Fragment>
   );

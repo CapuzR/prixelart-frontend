@@ -450,7 +450,7 @@ function ConsumerForm(props) {
                     variant="outlined"
                     id="standard-name"
                     fullWidth
-                    label="Dirección de envio"
+                    label="Dirección"
                     className={classes.textField}
                     multiline
                     minRows={3}
@@ -1100,10 +1100,6 @@ function ConsumerForm(props) {
           </AccordionDetails>
         </Accordion>
       </div>
-      {/* <Snackbar open={open} autoHideDuration={6000} onClose={closeAd}>
-        No puedes seleccionar esta fecha. ¿Lo necesitas antes? Comunícate con un
-        asesor en la sección <strong>Contáctanos</strong>
-      </Snackbar> */}
     </>
   );
 }

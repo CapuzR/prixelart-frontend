@@ -1,7 +1,6 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import { useHistory, useLocation } from "react-router-dom";
-
 import { makeStyles } from "@material-ui/core/styles";
 import Title from "../adminMain/Title";
 import axios from "axios";
@@ -17,21 +16,31 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 import FormControl from "@material-ui/core/FormControl";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
+import MenuItem from "@material-ui/core/MenuItem";
+import Select from "@material-ui/core/Select";
+
 import clsx from "clsx";
 import validations from "../../utils/validations";
 
 const useStyles = makeStyles((theme) => ({
-  seeMore: {
-    marginTop: theme.spacing(3),
+  loading: {
+    display: "flex",
+    "& > * + *": {
+      marginLeft: theme.spacing(2),
+    },
+    marginLeft: "50vw",
+    marginTop: "50vh",
   },
 }));
 
 export default function CreateAdmin() {
   const classes = useStyles();
   const history = useHistory();
+  const [roles, setRoles] = useState([]);
   const [username, setUsername] = useState("");
   const [firstname, setFirstname] = useState("");
   const [lastname, setLastname] = useState("");
+  const [area, setArea] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
@@ -43,6 +52,8 @@ export default function CreateAdmin() {
   const [errorMessage, setErrorMessage] = useState();
   const [snackBarError, setSnackBarError] = useState(false);
   const [passwordError, setPasswordError] = useState();
+
+  const rank = ["Administración", "Ventas", "Producción", "Master"];
 
   //Password
   const handlePasswordChange = (e) => {
@@ -69,9 +80,35 @@ export default function CreateAdmin() {
   };
   //END Password
 
+  const loadRoles = async () => {
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/admin/read-roles";
+    try {
+      const rolesState = await axios.post(
+        base_url,
+        { adminToken: localStorage.getItem("adminTokenV") },
+        { withCredentials: true }
+      );
+      setRoles(rolesState.data);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  useEffect(() => {
+    loadRoles();
+  }, []);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!username && !firstname && !lastname && !phone && !email && !password) {
+    if (
+      !username &&
+      !area &&
+      !firstname &&
+      !lastname &&
+      !phone &&
+      !email &&
+      !password
+    ) {
       setErrorMessage("Por favor completa todos los campos requeridos.");
       setSnackBarError(true);
       e.preventDefault();
@@ -80,6 +117,7 @@ export default function CreateAdmin() {
       setButtonState(true);
       const data = {
         username: username,
+        area: area,
         firstname: firstname,
         lastname: lastname,
         email: email.toLowerCase(),
@@ -120,15 +158,14 @@ export default function CreateAdmin() {
           <CircularProgress />
         </div>
       )}
-      <Title>Administradores</Title>
+      <Title>Crear Administrador</Title>
       <form className={classes.form} noValidate onSubmit={handleSubmit}>
         <Grid container spacing={2}>
-          <Grid item xs={12}>
+          <Grid item xs={6}>
             <FormControl
               className={clsx(classes.margin, classes.textField)}
               variant="outlined"
-              xs={12}
-              fullWidth={true}
+              xs={5}
             >
               <TextField
                 variant="outlined"
@@ -145,7 +182,30 @@ export default function CreateAdmin() {
               />
             </FormControl>
           </Grid>
-          <Grid item xs={12}>
+          <Grid item xs={6}>
+            <FormControl
+              className={clsx(classes.margin, classes.textField)}
+              variant="outlined"
+              style={{ width: "50%" }}
+              required
+              // fullWidth
+            >
+              <InputLabel>Área</InputLabel>
+              <Select
+                input={<OutlinedInput />}
+                value={area}
+                onChange={(e) => {
+                  setArea(e.target.value);
+                }}
+              >
+                {roles &&
+                  roles.map((role) => (
+                    <MenuItem value={role.area}>{role.area}</MenuItem>
+                  ))}
+              </Select>
+            </FormControl>
+          </Grid>
+          <Grid item xs={6}>
             <FormControl
               className={clsx(classes.margin, classes.textField)}
               variant="outlined"
@@ -167,7 +227,7 @@ export default function CreateAdmin() {
               />
             </FormControl>
           </Grid>
-          <Grid item xs={12}>
+          <Grid item xs={6}>
             <FormControl
               className={clsx(classes.margin, classes.textField)}
               variant="outlined"
@@ -189,7 +249,8 @@ export default function CreateAdmin() {
               />
             </FormControl>
           </Grid>
-          <Grid item xs={12}>
+
+          <Grid item xs={8}>
             <FormControl
               className={clsx(classes.margin, classes.textField)}
               variant="outlined"
@@ -211,7 +272,7 @@ export default function CreateAdmin() {
               />
             </FormControl>
           </Grid>
-          <Grid item xs={12}>
+          <Grid item xs={4}>
             <FormControl
               className={clsx(classes.margin, classes.textField)}
               variant="outlined"
@@ -233,12 +294,12 @@ export default function CreateAdmin() {
               />
             </FormControl>
           </Grid>
+
           <Grid item xs={12}>
             <FormControl
               className={clsx(classes.margin, classes.textField)}
               variant="outlined"
               xs={12}
-              fullWidth={true}
             >
               <InputLabel htmlFor="outlined-adornment-password">
                 Contraseña

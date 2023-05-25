@@ -268,7 +268,7 @@ export default function UpdateAdmin(props) {
               },
             ],
           };
-
+          newFormData.append("adminToken", localStorage.getItem("adminTokenV"));
           newFormData.append("active", active);
           newFormData.append("name", productName);
           newFormData.append("description", description);
@@ -308,12 +308,9 @@ export default function UpdateAdmin(props) {
           }
           const base_url =
             process.env.REACT_APP_BACKEND_URL + `/product/update/${productId}`;
-          const response = await axios.put(
-            base_url,
-            newFormData,
-            { adminToken: localStorage.getItem("adminTokenV") },
-            { withCredentials: true }
-          );
+          const response = await axios.put(base_url, newFormData, {
+            withCredentials: true,
+          });
           if (response.data.success === false) {
             setLoading(false);
             setButtonState(false);

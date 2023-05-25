@@ -44,7 +44,7 @@ export default function MultilineTextFields(props) {
       { adminToken: localStorage.getItem("adminTokenV") },
       { withCredentials: true }
     );
-    // changeTermsAgree();
+    changeTermsAgree();
   };
 
   const changeTermsAgree = async () => {
@@ -115,7 +115,7 @@ export default function MultilineTextFields(props) {
       <Paper className={classes.paper}>
         {
           <Grid container spacing={2}>
-            {buttons}
+            {props.permissions?.modifyTermsAndCo && buttons}
             <Grid item xs={12}>
               <div
                 style={{
@@ -127,11 +127,13 @@ export default function MultilineTextFields(props) {
                 }}
                 data-color-mode="light"
               >
-                <MDEditor
-                  value={value}
-                  onChange={setValue}
-                  style={{ minHeight: "600px", height: "600px" }}
-                />
+                {props.permissions?.modifyTermsAndCo && (
+                  <MDEditor
+                    value={value}
+                    onChange={setValue}
+                    style={{ minHeight: "600px", height: "600px" }}
+                  />
+                )}
                 <MDEditor.Markdown
                   source={value}
                   style={{ whiteSpace: "pre-wrap" }}

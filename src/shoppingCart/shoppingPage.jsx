@@ -383,19 +383,6 @@ export default function ShoppingPage(props) {
 
                   const base_url3 =
                     process.env.REACT_APP_BACKEND_URL + "/order/sendEmail";
-                  let orderData = {
-                    basicData: input.basicData,
-                    shippingData: input.shippingData,
-                    billingData: input.billingData,
-                    requests: orderLines,
-                    orderId: response.data.newOrder.orderId,
-                    tax: getTotalPrice(props.buyState) * 0.16,
-                    subtotal: getTotalPrice(props.buyState),
-                    shippingCost: shippingCost,
-                    total: getTotal(props.buyState),
-                    observations: observations,
-                  };
-
                   await axios.post(base_url3, input).then(async (response) => {
                     if (response.data.success === false) {
                       await axios.post(base_url3, input);

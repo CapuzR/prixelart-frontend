@@ -65,7 +65,7 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
     maxWidth: 800,
     margin: "auto",
-    marginBottom: 50,
+    marginBottom: 30,
   },
   paper: {
     display: "flex",
@@ -436,6 +436,7 @@ export default function Home(props) {
                   // flexDirection: isMobile ? "column" : "row",
                   justifyContent: "center",
                 }}
+                elevation={3}
               >
                 <Tabs
                   value={tabValue}

@@ -37,6 +37,7 @@ import TextField from "@material-ui/core/TextField";
 import SaveIcon from "@material-ui/icons/Save";
 import { update } from "immutable";
 import validations from "../../shoppingCart/validations";
+import axios from "axios";
 
 function Copyright() {
   return (
@@ -173,6 +174,7 @@ export default function AdminMain(props) {
   const [active, setActive] = useState("user");
   const location = useLocation();
   const history = useHistory();
+  const [permissions, setPermissions] = useState();
   const [openDollarView, setOpenDollarView] = useState(false);
 
   const handleDrawerOpen = () => {
@@ -181,6 +183,23 @@ export default function AdminMain(props) {
   const handleDrawerClose = () => {
     setOpen(false);
   };
+
+  const checkP = () => {
+    const base_url =
+      process.env.REACT_APP_BACKEND_URL + "/admin/CheckPermissions";
+    axios
+      .post(base_url, { adminToken: localStorage.getItem("adminTokenV") })
+      .then((response) => {
+        setPermissions(response.data.readedRole);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  useEffect(() => {
+    checkP();
+  }, []);
 
   useEffect(() => {
     location.pathname.split("/").length === 7
@@ -208,6 +227,7 @@ export default function AdminMain(props) {
   const handleClose = () => {
     setOpenDollarView(false);
   };
+
   return (
     <div className={classes.root}>
       {JSON.parse(localStorage.getItem("adminToken")) ? (
@@ -262,7 +282,9 @@ export default function AdminMain(props) {
               </IconButton>
             </div>
             <Divider />
-            <List>{<MainListItems active={active} />}</List>
+            <List>
+              {<MainListItems active={active} permissions={permissions} />}
+            </List>
           </Drawer>
           <main className={classes.content}>
             <div className={classes.appBarSpacer} />
@@ -272,17 +294,18 @@ export default function AdminMain(props) {
               ) : active === "dashboard" ? (
                 <Dashboard />
               ) : active === "product" ? (
-                <Products />
+                <Products permissions={permissions} />
               ) : active === "consumer" ? (
-                <Consumers />
+                <Consumers permissions={permissions} />
               ) : active === "payment-method" ? (
-                <PaymentMethods />
+                <PaymentMethods permissions={permissions} />
               ) : active === "shipping-method" ? (
-                <ShippingMethods />
+                <ShippingMethods permissions={permissions} />
               ) : active === "order" ? (
                 <Orders
                   buyState={props.buyState}
                   setBuyState={props.setBuyState}
+                  permissions={permissions}
                   changeQuantity={props.changeQuantity}
                   deleteItemInBuyState={props.deleteItemInBuyState}
                   deleteProductInItem={props.deleteProductInItem}
@@ -298,11 +321,11 @@ export default function AdminMain(props) {
                   setValuesConsumer={props.setValues}
                 />
               ) : active === "prixer" ? (
-                <Prixers />
+                <Prixers permissions={permissions} />
               ) : active === "preferences" ? (
-                <Preferences />
+                <Preferences permissions={permissions} />
               ) : active === "testimonials" ? (
-                <Testimonials />
+                <Testimonials permissions={permissions} />
               ) : (
                 <p>POONG</p>
               )}
@@ -311,15 +334,20 @@ export default function AdminMain(props) {
               </Box>
             </Container>
           </main>
-          <Fab
-            color="primary"
-            size="small"
-            onClick={dollarView}
-            style={{ right: 10 }}
-            className={classes.floatingButton}
-          >
-            <AttachMoneyIcon />
-          </Fab>
+          {(JSON.parse(localStorage.getItem("adminToken")).area ===
+            "Administración" ||
+            JSON.parse(localStorage.getItem("adminToken")).area ===
+              "Master") && (
+            <Fab
+              color="primary"
+              size="small"
+              onClick={dollarView}
+              style={{ right: 10 }}
+              className={classes.floatingButton}
+            >
+              <AttachMoneyIcon />
+            </Fab>
+          )}
           <Modal open={openDollarView}>
             <Grid container className={classes.paper2}>
               <Grid

@@ -195,7 +195,10 @@ export default function ReadVariants(props) {
                       />
                     )}
                   </TableCell>
-                  <TableCell align="center">{row.name}</TableCell>
+                  <TableCell align="center">
+                    {row.name}
+                    {row.attributes[1]?.value && " " + row.attributes[1]?.value}
+                  </TableCell>
                   <TableCell align="center">
                     <Checkbox
                       disabled

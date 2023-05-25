@@ -90,8 +90,8 @@ export default function CreateVariant(props) {
   const [snackBarError, setSnackBarError] = useState(false);
   const [mustImage, setMustImages] = useState(false);
 
-  if (loadeImage.loader[0] === undefined && image !== undefined) {
-    image?.map((url) => {
+  if (loadeImage.loader[0] === undefined && image !== []) {
+    image.map((url) => {
       url.type === "images"
         ? loadeImage.loader.push(url.url)
         : setVideoUrl(url.url);
@@ -212,15 +212,13 @@ export default function CreateVariant(props) {
           },
         };
 
-        variants.attributes
-          ? variants.attributes.push(...attributes)
-          : (variants.attributes = attributes);
-        variants.attributes?.map((obj) => {
+        variants.attributes = attributes;
+        variants.attributes?.map((obj, i) => {
           if (obj.name) {
-            formData.append("attributesName", obj.name);
+            formData.append(`attributesName${i}`, obj.name);
           }
           if (obj.value) {
-            formData.append("attributesValue", obj.value);
+            formData.append(`attributesValue${i}`, obj.value);
           }
         });
         formData.append("variant_id", variants._id);
@@ -691,10 +689,11 @@ export default function CreateVariant(props) {
                 variant="contained"
                 color="default"
                 onClick={() => {
-                  // setAttributes(
-                  attributes === undefined || []
-                    ? setAttributes([{ name: "", value: "" }])
-                    : attributes.push({ name: "", value: "" });
+                  setAttributes(
+                    attributes
+                      // .slice(0, 0)
+                      .concat({ name: "", value: "" })
+                  );
                 }}
                 disabled={buttonState}
                 style={{ marginTop: 20 }}

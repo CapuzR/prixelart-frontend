@@ -7,6 +7,7 @@ import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
 import CarouselAdmin from "./preferencesCarousel";
 import TermsAndConditions from "./preferenceTerms";
+import axios from "axios";
 
 function TabPanel(props) {
   const { children, value, index } = props;
@@ -34,7 +35,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function SimpleTabs() {
+export default function SimpleTabs(props) {
   const classes = useStyles();
   const [value, setValue] = useState(0);
 
@@ -51,10 +52,10 @@ export default function SimpleTabs() {
         </Tabs>
       </AppBar>
       <TabPanel value={value} index={0}>
-        <CarouselAdmin />
+        <CarouselAdmin permissions={props.permissions} />
       </TabPanel>
       <TabPanel value={value} index={1}>
-        <TermsAndConditions />
+        <TermsAndConditions permissions={props.permissions} />
       </TabPanel>
     </div>
   );

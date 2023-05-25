@@ -8,12 +8,40 @@ export const setProductAtts = async (
   height
 ) => {
   let att = productsArr;
-  if (att && att.length > 0 && att[iProd] && att[iProd].selection) {
-    att[iProd].selection[iAtt] = attValue;
+  if (att && att.length > 0 && att[iProd]) {
+    att[iProd].selection = attValue;
+    att[iProd].attributes = attributesArr;
+    const pAtt = await getEquation(att[iProd], iProd, att, width, height);
+    return { pAtt: pAtt, att: att };
   }
+};
+
+export const setSecondProductAtts = async (
+  attValue,
+  attributesArr,
+  iProd,
+  iAtt,
+  productsArr,
+  width,
+  height
+) => {
+  let att = productsArr;
+  let prevSelection;
+
+  if (typeof att[iProd].selection === "string") {
+    prevSelection = [att[iProd].selection];
+  } else {
+    prevSelection = att[iProd].selection;
+  }
+  if (prevSelection[1] !== undefined) {
+    prevSelection.splice(1, 1);
+  }
+  prevSelection.push(attValue);
+  att[iProd].selection = prevSelection;
+  att[iProd].attributes = attributesArr;
+
   const pAtt = await getEquation(att[iProd], iProd, att, width, height);
   return { pAtt: pAtt, att: att };
-  // setTiles(pAtt.pAtt ? [...pAtt.pAtt] : [...pAtt.att]);
 };
 
 export const getAttributes = (products) => {
@@ -78,16 +106,13 @@ export const getEquation = async (
   width,
   height
 ) => {
-  if (product.selection) {
+  if (product.selection?.length === 2) {
     const filteredVars = await product.variants.filter((v, i) => {
-      if (
-        v.attributes &&
-        v.attributes.length != 0 &&
-        v.attributes.length == product.selection.length
-      ) {
-        return v.attributes.every((a) => product.selection.includes(a.value));
-      } else {
-        return false;
+      if (v.attributes && v.attributes.length === 2) {
+        return (
+          v.attributes[0].value === product.selection[0] &&
+          v.attributes[1].value === product.selection[1]
+        );
       }
     });
     if (filteredVars.length != 0) {
@@ -96,9 +121,68 @@ export const getEquation = async (
         filteredVars[0].prixerPrice?.equation
       ) {
         productArr[iProd].needsEquation = true;
+
         productArr[iProd].publicEquation = eval(
           structureEquation(
             filteredVars[0].publicPrice.equation,
+
+            iProd,
+            width,
+            height
+          ) || 0
+        );
+        productArr[iProd].prixerEquation = eval(
+          structureEquation(
+            filteredVars[0].prixerPrice.equation,
+            iProd,
+            width,
+            height
+          ) || 0
+        );
+      } else if (filteredVars[0].publicPrice.equation) {
+        productArr[iProd].needsEquation = true;
+        productArr[iProd].publicEquation = eval(
+          structureEquation(
+            filteredVars[0].publicPrice.equation,
+            iProd,
+            width,
+            height
+          ) || 0
+        );
+      }
+    } else {
+      productArr[iProd].needsEquation = false;
+    }
+  } else if (
+    typeof product.selection === "string" &&
+    product.selection.length === product.attributes.length
+  ) {
+    const filteredVars = await product.variants.filter((v, i) => {
+      if (
+        v.attributes &&
+        v.attributes.length != 0
+        // && v.attributes.length == product.selection.length
+      ) {
+        return v.attributes.every((a) =>
+          a.length > 1
+            ? product.selection.includes(a[0].value)
+            : product.selection.includes(a.value)
+        );
+      } else {
+        return;
+      }
+    });
+    if (filteredVars.length != 0) {
+      if (
+        filteredVars[0].publicPrice.equation &&
+        filteredVars[0].prixerPrice?.equation
+      ) {
+        productArr[iProd].needsEquation = true;
+
+        productArr[iProd].publicEquation = eval(
+          structureEquation(
+            filteredVars[0].publicPrice.equation,
+
             iProd,
             width,
             height
@@ -131,6 +215,5 @@ export const getEquation = async (
     productArr[iProd].publicEquation = "";
     productArr[iProd].prixerEquation = "";
   }
-
   return productArr;
 };

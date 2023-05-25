@@ -41,6 +41,7 @@ function App() {
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("");
   const [searchResult, setSearchResult] = useState([]);
+
   const [dollarValue, setDollarValue] = useState("1");
   document.addEventListener("contextmenu", (event) => {
     event.preventDefault();

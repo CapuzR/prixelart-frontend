@@ -38,8 +38,12 @@ export default function MainListItems(props) {
           <ListItemIcon>
             <DashboardIcon />
           </ListItemIcon>
-          <ListItemText primary="Tablero General" />
-          {/* onClick={(e)=>{handleClick('dashboard')}} /> */}
+          <ListItemText
+            primary="Tablero General"
+            // onClick={(e) => {
+            //   handleClick("dashboard");
+            // }}
+          />
         </ListItem>
         <ListItem button selected={props.active === "product"}>
           <ListItemIcon>
@@ -63,11 +67,7 @@ export default function MainListItems(props) {
           <ListItemText primary="Consumidores" />
           {/* <ListItemText primary="Consumidores" onClick={(e)=>{handleClick('consumer')}}  /> */}
         </ListItem>
-        <ListItem
-          button
-          selected={props.active === "payment-method"}
-          // style={{ color: "gray" }}
-        >
+        <ListItem button selected={props.active === "payment-method"}>
           <ListItemIcon>
             <PaymentIcon />
           </ListItemIcon>
@@ -78,13 +78,8 @@ export default function MainListItems(props) {
             }}
             selected={props.active === "payment-method"}
           />
-          {/* <ListItemText primary="Métodos de pago" onClick={(e)=>{handleClick('payment-method')}}  /> */}
         </ListItem>
-        <ListItem
-          button
-          selected={props.active === "shipping-method"}
-          // style={{ color: "gray" }}
-        >
+        <ListItem button selected={props.active === "shipping-method"}>
           <ListItemIcon>
             <LocalShippingIcon />
           </ListItemIcon>
@@ -95,13 +90,8 @@ export default function MainListItems(props) {
             }}
             selected={props.active === "shipping-method"}
           />
-          {/* <ListItemText primary="Métodos de pago" onClick={(e)=>{handleClick('payment-method')}}  /> */}
         </ListItem>
-        <ListItem
-          button
-          selected={props.active === "order"}
-          // style={{ color: "gray" }}
-        >
+        <ListItem button selected={props.active === "order"}>
           <ListItemIcon>
             <ReceiptIcon />
           </ListItemIcon>
@@ -114,7 +104,6 @@ export default function MainListItems(props) {
         </ListItem>
         <ListItem
           button
-          selected={props.active === "prixer"}
           // style={{ color: "gray" }}
         >
           <ListItemIcon>
@@ -127,22 +116,8 @@ export default function MainListItems(props) {
             }}
           />
         </ListItem>
-        <ListItem
-          button
-          selected={props.active === "parameters"}
-          style={{ color: "gray" }}
-        >
-          <ListItemIcon>
-            <BarChartIcon />
-          </ListItemIcon>
-          <ListItemText primary="Parámetros" />
-          {/* onClick={(e)=>{handleClick('parameters')}}  /> */}
-        </ListItem>
-        <ListItem
-          button
-          selected={props.active === "testimonials"}
-          // style={{ color: "gray" }}
-        >
+
+        <ListItem button selected={props.active === "testimonials"}>
           <ListItemIcon>
             <InsertEmoticon />
           </ListItemIcon>
@@ -156,7 +131,6 @@ export default function MainListItems(props) {
       </div>
       <Divider />
       <div>
-        <ListSubheader inset>Configuración</ListSubheader>
         <ListItem button selected={props.active === "user"}>
           <ListItemIcon>
             <AssignmentIcon />
@@ -168,28 +142,20 @@ export default function MainListItems(props) {
             }}
           />
         </ListItem>
-        <ListItem button selected={props.active === "preferences"}>
-          <ListItemIcon>
-            <WebAssetIcon />
-          </ListItemIcon>
-          <ListItemText
-            primary="Preferencias"
-            onClick={(e) => {
-              handleClick("preferences");
-            }}
-          />
-        </ListItem>
-        <ListItem
-          button
-          selected={props.active === "role"}
-          style={{ color: "gray" }}
-        >
-          <ListItemIcon>
-            <AssignmentIcon />
-          </ListItemIcon>
-          <ListItemText primary="Roles" />
-          {/* onClick={(e)=>{handleClick('role')}}  /> */}
-        </ListItem>
+        {(props.permissions?.modifyBanners ||
+          props.permissions?.modifyTermsAndCo) && (
+          <ListItem button selected={props.active === "preferences"}>
+            <ListItemIcon>
+              <WebAssetIcon />
+            </ListItemIcon>
+            <ListItemText
+              primary="Preferencias"
+              onClick={(e) => {
+                handleClick("preferences");
+              }}
+            />
+          </ListItem>
+        )}
       </div>
     </>
   );

@@ -228,6 +228,7 @@ export default function CreateProduct() {
               },
             ],
           };
+          formData.append("adminToken", localStorage.getItem("adminTokenV"));
           formData.append("active", active);
           formData.append("name", productName);
           formData.append("description", description);
@@ -263,10 +264,8 @@ export default function CreateProduct() {
             setDescription("");
             setCategory("");
             setConsiderations("");
-            //   setFixedPublicPrice('');
             setFromPublicPrice("");
             setToPublicPrice("");
-            //   setFixedPrixerPrice('');
             setFromPrixerPrice("");
             setToPrixerPrice("");
             history.push("/admin/product/read");

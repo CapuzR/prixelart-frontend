@@ -361,21 +361,6 @@ function CarouselAdmin(props) {
         <CircularProgress value={loading} style={{ marginTop: "-250px" }} />
       </Backdrop>
       <Grid>
-        <Grid
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "center",
-            alignItems: "center",
-            color: "#bababa",
-          }}
-        >
-          <ViewCarouselIcon />
-          <Typography style={{ fontSize: "1.5rem", padding: "10px" }}>
-            Edit carousel
-          </Typography>
-        </Grid>
-
         <div className={classes.tab}>
           <AppBar
             position="static"
@@ -525,70 +510,72 @@ function CarouselAdmin(props) {
           )}
           <TabPanel value={value} index={0}>
             <Box style={{ display: "flex", justifyContent: "center" }}>
-              <FormControl>
-                <form
-                  onSubmit={(s) => {
-                    if (image._id !== "") {
-                      handleUpdate(s);
-                    } else {
-                      handleSubmit(s);
-                    }
-                  }}
-                  encType="multipart/form-data"
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    flexDirection: isDesktop ? "row" : "column",
-                    alignItems: isDesktop ? "center" : "stretch",
-                    padding: isDesktop ? "15px" : "20px",
-                    height: isDesktop ? "" : "30vh",
-                    width: isDesktop ? "150%" : "auto",
-                    marginLeft: isDesktop ? "-20%" : "",
-                  }}
-                >
-                  <Typography
-                    className={classes.nameFile}
-                    style={{ width: "auto" }}
-                    id="uploadImage"
+              {props.permissions?.modifyBanners && (
+                <FormControl>
+                  <form
+                    onSubmit={(s) => {
+                      if (image._id !== "") {
+                        handleUpdate(s);
+                      } else {
+                        handleSubmit(s);
+                      }
+                    }}
+                    encType="multipart/form-data"
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      flexDirection: isDesktop ? "row" : "column",
+                      alignItems: isDesktop ? "center" : "stretch",
+                      padding: isDesktop ? "15px" : "20px",
+                      height: isDesktop ? "" : "30vh",
+                      width: isDesktop ? "150%" : "auto",
+                      marginLeft: isDesktop ? "-20%" : "",
+                    }}
                   >
-                    {imageLoader.filename}
-                  </Typography>
-                  <Button
-                    variant="contained"
-                    style={{ width: "auto" }}
-                    component="label"
-                  >
-                    Upload File
-                    <input
-                      name="bannerImagesDesktop"
+                    <Typography
+                      className={classes.nameFile}
                       style={{ width: "auto" }}
-                      type="file"
-                      accept="image/*"
-                      hidden
-                      onChange={(a) => {
-                        a.preventDefault();
-                        loadImage(a);
-                        newImage({
-                          _id: image._id,
-                          file: a.target.files[0],
-                        });
-                      }}
-                    />
-                  </Button>
-                  <Button
-                    variant="outlined"
-                    style={{ width: "auto" }}
-                    color="primary"
-                    type="submit"
-                  >
-                    Enviar
-                  </Button>
-                </form>
-                {/* <Typography style={{ color: "gray", marginBottom: 10 }}>
+                      id="uploadImage"
+                    >
+                      {imageLoader.filename}
+                    </Typography>
+                    <Button
+                      variant="contained"
+                      style={{ width: "auto" }}
+                      component="label"
+                    >
+                      Upload File
+                      <input
+                        name="bannerImagesDesktop"
+                        style={{ width: "auto" }}
+                        type="file"
+                        accept="image/*"
+                        hidden
+                        onChange={(a) => {
+                          a.preventDefault();
+                          loadImage(a);
+                          newImage({
+                            _id: image._id,
+                            file: a.target.files[0],
+                          });
+                        }}
+                      />
+                    </Button>
+                    <Button
+                      variant="outlined"
+                      style={{ width: "auto" }}
+                      color="primary"
+                      type="submit"
+                    >
+                      Enviar
+                    </Button>
+                  </form>
+                  {/* <Typography style={{ color: "gray", marginBottom: 10 }}>
                   Te recomendamos usar imágenes de proporción 16:9, o al menos
                   4:3
                 </Typography> */}
-              </FormControl>
+                </FormControl>
+              )}
 
               <Snackbar
                 anchorOrigin={{
@@ -642,6 +629,100 @@ function CarouselAdmin(props) {
                     img.images.type === "desktop" && (
                       <ImageListItem key={key_id}>
                         <Box>
+                          {props.permissions?.modifyBanners && (
+                            <Box className={classes.buttons}>
+                              <Button
+                                variant="text"
+                                style={{ color: "white" }}
+                                component="label"
+                              >
+                                <input
+                                  type="file"
+                                  name="bannerImagesDesktop"
+                                  hidden
+                                  onChange={(a) => {
+                                    a.preventDefault();
+                                    loadImage(a);
+                                    newImage({
+                                      _id: img._id,
+                                      file: a.target.files[0],
+                                    });
+                                  }}
+                                />
+                                <EditIcon />
+                              </Button>
+                              <Button
+                                variant="text"
+                                style={{ color: "white" }}
+                                onClick={handleClickOpen}
+                              >
+                                <HighlightOffOutlinedIcon
+                                  onClick={() => {
+                                    newImage({
+                                      _id: img._id,
+                                      file: image.file,
+                                    });
+                                  }}
+                                />
+                              </Button>
+                              <Dialog
+                                open={open}
+                                onClose={handleClose}
+                                aria-labelledby="alert-dialog-title"
+                                aria-describedby="alert-dialog-description"
+                              >
+                                <DialogTitle id="alert-dialog-title">
+                                  {
+                                    "¿Estás seguro de eliminar esta imagen del carrusel?"
+                                  }
+                                </DialogTitle>
+                                <DialogContent>
+                                  <DialogContentText id="alert-dialog-description">
+                                    Ésta imagen ya no se verá en el carrusel del
+                                    banner principal
+                                  </DialogContentText>
+                                </DialogContent>
+                                <DialogActions>
+                                  <Button onClick={handleClose} color="primary">
+                                    Cancelar
+                                  </Button>
+                                  <Button
+                                    onClick={(d) => {
+                                      deleteImage(d);
+                                    }}
+                                    color="primary"
+                                  >
+                                    Aceptar
+                                  </Button>
+                                </DialogActions>
+                              </Dialog>
+
+                              <Snackbar
+                                anchorOrigin={{
+                                  vertical: "top",
+                                  horizontal: "right",
+                                }}
+                                open={update}
+                                onClose={closeUpdate}
+                                autoHideDuration={5000}
+                                message="Imagen borrada exitosamente"
+                              />
+                            </Box>
+                          )}
+                          <a href={img.images.url} target="_BLANK">
+                            <img
+                              className={classes.images}
+                              title={img.images.url}
+                              src={img.images.url}
+                            ></img>
+                          </a>
+                        </Box>
+                      </ImageListItem>
+                    )
+                  ) : (
+                    <ImageListItem key={key_id}>
+                      <Box>
+                        {props.permissions?.modifyBanners && (
                           <Box className={classes.buttons}>
                             <Button
                               variant="text"
@@ -720,97 +801,7 @@ function CarouselAdmin(props) {
                               message="Imagen borrada exitosamente"
                             />
                           </Box>
-                          <a href={img.images.url} target="_BLANK">
-                            <img
-                              className={classes.images}
-                              title={img.images.url}
-                              src={img.images.url}
-                            ></img>
-                          </a>
-                        </Box>
-                      </ImageListItem>
-                    )
-                  ) : (
-                    <ImageListItem key={key_id}>
-                      <Box>
-                        <Box className={classes.buttons}>
-                          <Button
-                            variant="text"
-                            style={{ color: "white" }}
-                            component="label"
-                          >
-                            <input
-                              type="file"
-                              name="bannerImagesDesktop"
-                              hidden
-                              onChange={(a) => {
-                                a.preventDefault();
-                                loadImage(a);
-                                newImage({
-                                  _id: img._id,
-                                  file: a.target.files[0],
-                                });
-                              }}
-                            />
-                            <EditIcon />
-                          </Button>
-                          <Button
-                            variant="text"
-                            style={{ color: "white" }}
-                            onClick={handleClickOpen}
-                          >
-                            <HighlightOffOutlinedIcon
-                              onClick={() => {
-                                newImage({
-                                  _id: img._id,
-                                  file: image.file,
-                                });
-                              }}
-                            />
-                          </Button>
-                          <Dialog
-                            open={open}
-                            onClose={handleClose}
-                            aria-labelledby="alert-dialog-title"
-                            aria-describedby="alert-dialog-description"
-                          >
-                            <DialogTitle id="alert-dialog-title">
-                              {
-                                "¿Estás seguro de eliminar esta imagen del carrusel?"
-                              }
-                            </DialogTitle>
-                            <DialogContent>
-                              <DialogContentText id="alert-dialog-description">
-                                Ésta imagen ya no se verá en el carrusel del
-                                banner principal
-                              </DialogContentText>
-                            </DialogContent>
-                            <DialogActions>
-                              <Button onClick={handleClose} color="primary">
-                                Cancelar
-                              </Button>
-                              <Button
-                                onClick={(d) => {
-                                  deleteImage(d);
-                                }}
-                                color="primary"
-                              >
-                                Aceptar
-                              </Button>
-                            </DialogActions>
-                          </Dialog>
-
-                          <Snackbar
-                            anchorOrigin={{
-                              vertical: "top",
-                              horizontal: "right",
-                            }}
-                            open={update}
-                            onClose={closeUpdate}
-                            autoHideDuration={5000}
-                            message="Imagen borrada exitosamente"
-                          />
-                        </Box>
+                        )}
                         <a href={img?.carouselImages} target="_BLANK">
                           <img
                             className={classes.images}
@@ -831,70 +822,72 @@ function CarouselAdmin(props) {
           </TabPanel>
           <TabPanel value={value} index={1}>
             <Box style={{ display: "flex", justifyContent: "center" }}>
-              <FormControl>
-                <form
-                  onSubmit={(s) => {
-                    if (image._id != "") {
-                      handleUpdate(s);
-                    } else {
-                      handleSubmit(s);
-                    }
-                  }}
-                  encType="multipart/form-data"
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    flexDirection: isDesktop ? "row" : "column",
-                    alignItems: isDesktop ? "center" : "stretch",
-                    padding: isDesktop ? "15px" : "20px",
-                    height: isDesktop ? "" : "30vh",
-                    width: isDesktop ? "150%" : "auto",
-                    marginLeft: isDesktop ? "-20%" : "",
-                  }}
-                >
-                  <Typography
-                    className={classes.nameFile}
-                    style={{ width: "auto" }}
-                    id="uploadImage"
+              {props.permissions?.modifyBanners && (
+                <FormControl>
+                  <form
+                    onSubmit={(s) => {
+                      if (image._id != "") {
+                        handleUpdate(s);
+                      } else {
+                        handleSubmit(s);
+                      }
+                    }}
+                    encType="multipart/form-data"
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      flexDirection: isDesktop ? "row" : "column",
+                      alignItems: isDesktop ? "center" : "stretch",
+                      padding: isDesktop ? "15px" : "20px",
+                      height: isDesktop ? "" : "30vh",
+                      width: isDesktop ? "150%" : "auto",
+                      marginLeft: isDesktop ? "-20%" : "",
+                    }}
                   >
-                    {imageLoader.filename}
-                  </Typography>
-                  <Button
-                    variant="contained"
-                    style={{ width: "auto" }}
-                    component="label"
-                  >
-                    Upload File
-                    <input
-                      name="bannerImagesMobile"
+                    <Typography
+                      className={classes.nameFile}
                       style={{ width: "auto" }}
-                      type="file"
-                      accept="image/*"
-                      hidden
-                      onChange={(a) => {
-                        a.preventDefault();
-                        loadImage(a);
-                        newImage({
-                          _id: image._id,
-                          file: a.target.files[0],
-                        });
-                      }}
-                    />
-                  </Button>
-                  <Button
-                    variant="outlined"
-                    style={{ width: "auto" }}
-                    color="primary"
-                    type="submit"
-                  >
-                    Enviar
-                  </Button>
-                </form>
-                <Typography style={{ color: "gray", marginBottom: 10 }}>
-                  Te recomendamos usar imágenes de proporción 9:16, o al menos
-                  4:3
-                </Typography>
-              </FormControl>
+                      id="uploadImage"
+                    >
+                      {imageLoader.filename}
+                    </Typography>
+                    <Button
+                      variant="contained"
+                      style={{ width: "auto" }}
+                      component="label"
+                    >
+                      Upload File
+                      <input
+                        name="bannerImagesMobile"
+                        style={{ width: "auto" }}
+                        type="file"
+                        accept="image/*"
+                        hidden
+                        onChange={(a) => {
+                          a.preventDefault();
+                          loadImage(a);
+                          newImage({
+                            _id: image._id,
+                            file: a.target.files[0],
+                          });
+                        }}
+                      />
+                    </Button>
+                    <Button
+                      variant="outlined"
+                      style={{ width: "auto" }}
+                      color="primary"
+                      type="submit"
+                    >
+                      Enviar
+                    </Button>
+                  </form>
+                  <Typography style={{ color: "gray", marginBottom: 10 }}>
+                    Te recomendamos usar imágenes de proporción 9:16, o al menos
+                    4:3
+                  </Typography>
+                </FormControl>
+              )}
 
               <Snackbar
                 anchorOrigin={{
@@ -951,87 +944,89 @@ function CarouselAdmin(props) {
                         style={{ height: "", width: "" }}
                       >
                         <Box>
-                          <Box
-                            className={classes.buttons}
-                            style={{ width: "" }}
-                          >
-                            <Button
-                              variant="text"
-                              style={{ color: "white" }}
-                              component="label"
+                          {props.permissions?.modifyBanners && (
+                            <Box
+                              className={classes.buttons}
+                              style={{ width: "" }}
                             >
-                              <input
-                                type="file"
-                                name="bannerImagesMobile"
-                                hidden
-                                onChange={(a) => {
-                                  a.preventDefault();
-                                  loadImage(a);
-                                  newImage({
-                                    _id: img._id,
-                                    file: a.target.files[0],
-                                  });
-                                }}
-                              />
-                              <EditIcon />
-                            </Button>
-                            <Button
-                              variant="text"
-                              style={{ color: "white" }}
-                              onClick={handleClickOpen}
-                            >
-                              <HighlightOffOutlinedIcon
-                                onClick={() => {
-                                  newImage({
-                                    _id: img._id,
-                                    file: image.file,
-                                  });
-                                }}
-                              />
-                            </Button>
-                            <Dialog
-                              open={open}
-                              onClose={handleClose}
-                              aria-labelledby="alert-dialog-title"
-                              aria-describedby="alert-dialog-description"
-                            >
-                              <DialogTitle id="alert-dialog-title">
-                                {
-                                  "¿Estás seguro de eliminar esta imagen del carrusel?"
-                                }
-                              </DialogTitle>
-                              <DialogContent>
-                                <DialogContentText id="alert-dialog-description">
-                                  Ésta imagen ya no se verá en el carrusel del
-                                  banner principal
-                                </DialogContentText>
-                              </DialogContent>
-                              <DialogActions>
-                                <Button onClick={handleClose} color="primary">
-                                  Cancelar
-                                </Button>
-                                <Button
-                                  onClick={(d) => {
-                                    deleteImage(d);
+                              <Button
+                                variant="text"
+                                style={{ color: "white" }}
+                                component="label"
+                              >
+                                <input
+                                  type="file"
+                                  name="bannerImagesMobile"
+                                  hidden
+                                  onChange={(a) => {
+                                    a.preventDefault();
+                                    loadImage(a);
+                                    newImage({
+                                      _id: img._id,
+                                      file: a.target.files[0],
+                                    });
                                   }}
-                                  color="primary"
-                                >
-                                  Aceptar
-                                </Button>
-                              </DialogActions>
-                            </Dialog>
+                                />
+                                <EditIcon />
+                              </Button>
+                              <Button
+                                variant="text"
+                                style={{ color: "white" }}
+                                onClick={handleClickOpen}
+                              >
+                                <HighlightOffOutlinedIcon
+                                  onClick={() => {
+                                    newImage({
+                                      _id: img._id,
+                                      file: image.file,
+                                    });
+                                  }}
+                                />
+                              </Button>
+                              <Dialog
+                                open={open}
+                                onClose={handleClose}
+                                aria-labelledby="alert-dialog-title"
+                                aria-describedby="alert-dialog-description"
+                              >
+                                <DialogTitle id="alert-dialog-title">
+                                  {
+                                    "¿Estás seguro de eliminar esta imagen del carrusel?"
+                                  }
+                                </DialogTitle>
+                                <DialogContent>
+                                  <DialogContentText id="alert-dialog-description">
+                                    Ésta imagen ya no se verá en el carrusel del
+                                    banner principal
+                                  </DialogContentText>
+                                </DialogContent>
+                                <DialogActions>
+                                  <Button onClick={handleClose} color="primary">
+                                    Cancelar
+                                  </Button>
+                                  <Button
+                                    onClick={(d) => {
+                                      deleteImage(d);
+                                    }}
+                                    color="primary"
+                                  >
+                                    Aceptar
+                                  </Button>
+                                </DialogActions>
+                              </Dialog>
 
-                            <Snackbar
-                              anchorOrigin={{
-                                vertical: "top",
-                                horizontal: "right",
-                              }}
-                              open={update}
-                              onClose={closeUpdate}
-                              autoHideDuration={5000}
-                              message="Imagen borrada exitosamente"
-                            />
-                          </Box>
+                              <Snackbar
+                                anchorOrigin={{
+                                  vertical: "top",
+                                  horizontal: "right",
+                                }}
+                                open={update}
+                                onClose={closeUpdate}
+                                autoHideDuration={5000}
+                                message="Imagen borrada exitosamente"
+                              />
+                            </Box>
+                          )}
                           <a href={img.images.url} target="_BLANK">
                             <img
                               style={{ height: "80vh", width: "25vw" }}

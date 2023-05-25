@@ -117,7 +117,11 @@ export default function CartReview(props) {
                           maxHeight: isIphone ? 120 : 180,
                           borderRadius: 10,
                         }}
-                        src={buy.art ? buy.art.squareThumbUrl : ""}
+                        src={
+                          buy.art
+                            ? buy.art.squareThumbUrl
+                            : buy.art.largeThumbUrl || ""
+                        }
                         debounce={1000}
                         cache
                         error="/imgError.svg"
@@ -199,7 +203,11 @@ export default function CartReview(props) {
                         marginRight: "20px",
                         marginLeft: "20px",
                       }}
-                      src={buy.product ? buy.product.thumbUrl : ""}
+                      src={
+                        buy.product.sources.images[0].url
+                          ? buy.product.thumbUrl
+                          : ""
+                      }
                       debounce={1000}
                       cache
                       error="/imgError.svg"
@@ -461,7 +469,10 @@ export default function CartReview(props) {
                                 // .replace(/[$]/gi, "")
                                 // .replace(/[,]/gi, ".")
                                 props.dollarValue
-                              ).toFixed(2)
+                              ).toLocaleString("de-DE", {
+                                minimumFractionDigits: 2,
+                                // maximumSignificantDigits: 2,
+                              })
                             : " Bs" +
                               (
                                 Number(
@@ -469,19 +480,28 @@ export default function CartReview(props) {
                                   // .replace(/[$]/gi, "")
                                   // .replace(/[,]/gi, ".")
                                 ) * props.dollarValue
-                              ).toFixed(2)
+                              ).toLocaleString("de-DE", {
+                                minimumFractionDigits: 2,
+                                // maximumSignificantDigits: 2,
+                              })
                           : buy.product.publicEquation !== ""
                           ? " Bs" +
                             (
                               buy.product.publicEquation * props.dollarValue
-                            ).toFixed(2)
+                            ).toLocaleString("de-DE", {
+                              minimumFractionDigits: 2,
+                              // maximumSignificantDigits: 2,
+                            })
                           : " Bs" +
                             (
                               buy.product.publicPrice.from.replace(
                                 /[$]/gi,
                                 ""
                               ) * props.dollarValue
-                            ).toFixed(2)
+                            ).toLocaleString("de-DE", {
+                              minimumFractionDigits: 2,
+                              // maximumSignificantDigits: 2,
+                            })
                         : JSON.parse(localStorage.getItem("token")) &&
                           JSON.parse(localStorage.getItem("token")).username
                         ? buy.product.prixerEquation !== ""

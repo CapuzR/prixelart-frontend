@@ -51,6 +51,7 @@ import Divider from "@material-ui/core/Divider";
 import { useHistory } from "react-router-dom";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import Switch from "@material-ui/core/Switch";
+import Snackbar from "@material-ui/core/Snackbar";
 
 import utils from "../../../utils/utils";
 import { nanoid } from "nanoid";
@@ -244,6 +245,20 @@ const useStyles = makeStyles((theme) => ({
     transform: "translateX(35px) !important",
     padding: "1px",
   },
+  snackbar: {
+    [theme.breakpoints.down("xs")]: {
+      bottom: 90,
+    },
+    margin: {
+      margin: theme.spacing(1),
+    },
+    withoutLabel: {
+      marginTop: theme.spacing(3),
+    },
+    textField: {
+      width: "25ch",
+    },
+  },
 }));
 
 export default function Orders(props) {
@@ -276,23 +291,10 @@ export default function Orders(props) {
   const [imagesVariants, setImagesVariants] = useState([]);
   const [currency, setCurrency] = useState(false);
   const [dollarValue, setDollarValue] = useState(1);
-
-  // const [selectedProduct, setSelectedProduct] = useState("");
-  const orderTypeList = ["Consignación", "Venta", "Obsequio"];
-  const productionStatusList = [
-    "Por solicitar",
-    "Solicitado",
-    "Por producir",
-    "En producción",
-    "En diseño",
-  ];
-  const shippingStatusList = [
-    "Por entregar",
-    "Entregado",
-    "Devuelto",
-    "Cambio",
-  ];
   const [shippingList, setShippingList] = useState();
+
+  const [errorMessage, setErrorMessage] = useState();
+  const [snackBarError, setSnackBarError] = useState(false);
 
   useEffect(() => {
     const base_url =
@@ -434,7 +436,7 @@ export default function Orders(props) {
   };
 
   const handleCloseVoucher = () => {
-    setShowVoucher(true);
+    setShowVoucher(!showVoucher);
   };
 
   const createOrder = async () => {
@@ -556,7 +558,12 @@ export default function Orders(props) {
       adminToken: localStorage.getItem("adminTokenV"),
       status: status,
     };
-    await axios.put(URI, body, { withCredentials: true });
+    await axios.put(URI, body, { withCredentials: true }).then((res) => {
+      if (res.data.message) {
+        setErrorMessage(res.data.message);
+        setSnackBarError(true);
+      }
+    });
     readOrders();
   };
 
@@ -567,7 +574,12 @@ export default function Orders(props) {
       adminToken: localStorage.getItem("adminTokenV"),
       payStatus: payStatus,
     };
-    await axios.put(URI, body, { withCredentials: true });
+    await axios.put(URI, body, { withCredentials: true }).then((res) => {
+      if (res.data.message) {
+        setErrorMessage(res.data.message);
+        setSnackBarError(true);
+      }
+    });
     readOrders();
   };
 
@@ -727,6 +739,10 @@ export default function Orders(props) {
     setCurrency(!currency);
   };
 
+  const closeAd = () => {
+    setSnackBarError(false);
+  };
+
   return (
     <>
       <Backdrop
@@ -747,16 +763,18 @@ export default function Orders(props) {
             >
               <Title>Órdenes</Title>
               <div>
-                <Fab
-                  color="primary"
-                  size="small"
-                  onClick={() => {
-                    setOpenCreateOrder(true);
-                  }}
-                  style={{ marginRight: 10 }}
-                >
-                  <AddIcon />
-                </Fab>
+                {props.permissions.createOrder && (
+                  <Fab
+                    color="primary"
+                    size="small"
+                    onClick={() => {
+                      setOpenCreateOrder(true);
+                    }}
+                    style={{ marginRight: 10 }}
+                  >
+                    <AddIcon />
+                  </Fab>
+                )}
                 <Fab
                   color="primary"
                   size="small"
@@ -794,7 +812,6 @@ export default function Orders(props) {
                     </TableCell>
                     <TableCell align="center">Nombre</TableCell>
                     <TableCell align="center">Productos</TableCell>
-                    <TableCell align="center">Total</TableCell>
                     <TableCell align="center">Status de Pago</TableCell>
                     <TableCell align="center">Status</TableCell>
                   </TableRow>
@@ -833,14 +850,12 @@ export default function Orders(props) {
                               </div>
                             </Button>
                           </TableCell>
-
-                          <TableCell align="center">
-                            ${row.total.toFixed(2)}
-                          </TableCell>
-
                           <TableCell align="center">
                             <FormControl
-                              disabled={row.payStatus === "Verificado"}
+                              disabled={
+                                !props.permissions?.detailPay ||
+                                row.payStatus === "Pagado"
+                              }
                             >
                               <Select
                                 SelectClassKey
@@ -855,9 +870,10 @@ export default function Orders(props) {
                                 <MenuItem value={"Pendiente"}>
                                   Pendiente
                                 </MenuItem>
-                                <MenuItem value={"Verificado"}>
-                                  Verificado
-                                </MenuItem>
+                                <MenuItem value={"Pagado"}>Pagado</MenuItem>
+                                <MenuItem value={"Abonado"}>Abonado</MenuItem>
+                                <MenuItem value={"Giftcard"}>Giftcard</MenuItem>
+                                <MenuItem value={"Obsequio"}>Obsequio</MenuItem>
                               </Select>
                             </FormControl>
                           </TableCell>
@@ -865,6 +881,7 @@ export default function Orders(props) {
                           <TableCell align="center">
                             <FormControl
                               disabled={
+                                !props.permissions?.orderStatus ||
                                 row.status === "Cancelada" ||
                                 row.status === "Completada"
                               }
@@ -936,7 +953,7 @@ export default function Orders(props) {
               justifyContent: "flex-end",
             }}
           >
-            {!showVoucher && (
+            {showVoucher && (
               <IconButton onClick={handleCloseVoucher}>
                 <ArrowBackIcon />
               </IconButton>
@@ -946,6 +963,456 @@ export default function Orders(props) {
             </IconButton>
           </Grid>
           {!showVoucher ? (
+            modalContent && (
+              <>
+                {!props.permissions.detailOrder ? (
+                  <Grid
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                    }}
+                    item
+                    xs={12}
+                  >
+                    {modalContent?.requests.map((item, index) => (
+                      <div
+                        style={{
+                          margin: "0px 20px 20px 0px",
+                          borderWidth: "1px",
+                          borderStyle: "solid",
+                          borderRadius: 10,
+                          padding: 5,
+                          borderColor: "#d33f49",
+                        }}
+                      >
+                        <Typography
+                          variant="h6"
+                          style={{ textAlign: "center", margin: 5 }}
+                        >
+                          {"Item #"}
+                          {index + 1}
+                        </Typography>
+                        <div
+                          style={{
+                            display: "flex",
+                            flexDirection: "row",
+                            justifyContent: "space-evenly",
+                          }}
+                        >
+                          <div
+                            style={{ display: "flex", flexDirection: "row" }}
+                          >
+                            <Paper
+                              style={{
+                                width: 150,
+                                height: 150,
+                                borderRadius: 10,
+                                backgroundColor: "#eeeeee",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                marginRight: 10,
+                                marginBottom: 10,
+                              }}
+                              elevation={3}
+                            >
+                              <Img
+                                src={item.art.squareThumbUrl}
+                                style={{
+                                  maxWidth: 150,
+                                  maxHeight: 150,
+                                  borderRadius: 10,
+                                }}
+                              />
+                            </Paper>
+                            <div>
+                              <div>{"Arte: " + item.art.title}</div>
+                              <div>{"Id: " + item.art.artId}</div>
+                              <div style={{ marginBottom: 10 }}>
+                                {"Prixer: " + item.art.prixerUsername}
+                              </div>
+                            </div>
+                          </div>
+
+                          <div
+                            style={{ display: "flex", flexDirection: "row" }}
+                          >
+                            <Paper
+                              style={{
+                                width: 150,
+                                height: 150,
+                                borderRadius: 10,
+                                backgroundColor: "#eeeeee",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                marginRight: 10,
+                              }}
+                              elevation={3}
+                            >
+                              <Img
+                                src={
+                                  item.product.sources.images[0].url ||
+                                  item.product.thumbUrl
+                                }
+                                style={{
+                                  maxWidth: 150,
+                                  maxHeight: 150,
+                                  borderRadius: 10,
+                                }}
+                              />
+                            </Paper>
+                            <div>
+                              <div>{"Producto: " + item.product.name}</div>
+                              <div>{"Id: " + item.product._id}</div>
+                              {item.product.attributes.map((a, i) => {
+                                return (
+                                  <p
+                                    style={{
+                                      padding: 0,
+                                      margin: 0,
+                                    }}
+                                  >
+                                    {a.name + ": "}
+                                    {item.product.selection.name}
+                                  </p>
+                                );
+                              })}
+                              <div style={{ marginTop: 10 }}>
+                                {"Cantidad: " + item.quantity}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </Grid>
+                ) : (
+                  props.permissions.detailOrder && (
+                    <>
+                      <Grid
+                        style={{
+                          display: "flex",
+                          flexDirection: "column",
+                        }}
+                        item
+                        xs={12}
+                        sm={6}
+                        md={6}
+                        lg={6}
+                      >
+                        {modalContent?.requests.map((item, index) => (
+                          <div
+                            style={{
+                              display: "flex",
+                              flexDirection: "column",
+                              margin: "0px 20px 20px 0px",
+                              borderWidth: "1px",
+                              borderStyle: "solid",
+                              borderRadius: 10,
+                              padding: 5,
+                              borderColor: "#d33f49",
+                            }}
+                          >
+                            <Typography
+                              variant="h6"
+                              style={{ textAlign: "center", margin: 5 }}
+                            >
+                              {"Item #"}
+                              {index + 1}
+                            </Typography>
+                            <div
+                              style={{
+                                display: "flex",
+                                flexDirection: "row",
+                                justifyContent: "space-evenly",
+                              }}
+                            >
+                              <Paper
+                                style={{
+                                  width: 150,
+                                  height: 150,
+                                  borderRadius: 10,
+                                  backgroundColor: "#eeeeee",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                }}
+                                elevation={3}
+                              >
+                                <Img
+                                  src={item.art.squareThumbUrl}
+                                  style={{
+                                    maxWidth: 150,
+                                    maxHeight: 150,
+                                    borderRadius: 10,
+                                  }}
+                                />
+                              </Paper>
+                              <Paper
+                                style={{
+                                  width: 150,
+                                  height: 150,
+                                  borderRadius: 10,
+                                  backgroundColor: "#eeeeee",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                }}
+                                elevation={3}
+                              >
+                                <Img
+                                  src={
+                                    item.product.thumbUrl ||
+                                    item.product.sources.images[0].url
+                                  }
+                                  style={{
+                                    maxWidth: 150,
+                                    maxHeight: 150,
+                                    borderRadius: 10,
+                                  }}
+                                />
+                              </Paper>
+                            </div>
+                            <div style={{ padding: 10 }}>
+                              <div>{"Arte: " + item.art.title}</div>
+                              <div>{"Id: " + item.art.artId}</div>
+                              <div style={{ marginBottom: 10 }}>
+                                {"Prixer: " + item.art.prixerUsername}
+                              </div>
+                              <div>{"Producto: " + item.product.name}</div>
+                              <div>{"Id: " + item.product._id}</div>
+                              {item.product.attributes.map((a, i) => {
+                                return (
+                                  <p
+                                    style={{
+                                      // fontSize: 12,
+                                      padding: 0,
+                                      margin: 0,
+                                    }}
+                                  >
+                                    {a.name + ": "}
+                                    {item.product.selection[i]}
+                                  </p>
+                                );
+                              })}
+                              <div style={{ marginTop: 10 }}>
+                                {"Cantidad: " + item.quantity}
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </Grid>
+                      <Grid
+                        item
+                        xs={12}
+                        sm={12}
+                        md={6}
+                        lg={6}
+                        style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          marginBottom: 20,
+                        }}
+                      >
+                        <Grid
+                          style={{
+                            marginBottom: 40,
+                            marginRight: 20,
+                            borderWidth: "1px",
+                            borderStyle: "solid",
+                            borderRadius: 10,
+                            borderColor: "grey",
+                            padding: 15,
+                          }}
+                        >
+                          <strong>Datos básicos</strong>
+                          <div>
+                            {"Nombre: " +
+                              modalContent.basicData.firstname +
+                              " " +
+                              modalContent.basicData.lastname}
+                          </div>
+                          <div>{"CI o RIF: " + modalContent?.basicData.ci}</div>
+                          <div>
+                            {"Teléfono: " + modalContent?.basicData.phone}
+                          </div>
+                          <div>{"Email: " + modalContent?.basicData.email}</div>
+                          <div>
+                            {"Dirección: " + modalContent?.basicData.address}
+                          </div>
+                        </Grid>
+
+                        {modalContent.shippingData !== undefined && (
+                          <Grid
+                            style={{
+                              marginBottom: 40,
+                              marginRight: 20,
+                              borderWidth: "1px",
+                              borderStyle: "solid",
+                              borderRadius: 10,
+                              borderColor: "grey",
+                              padding: 15,
+                            }}
+                          >
+                            <strong>Datos de envío</strong>
+                            {modalContent.shippingData?.name &&
+                              modalContent.shippingData?.lastname && (
+                                <div>
+                                  {"Nombre: " +
+                                    modalContent?.shippingData?.name +
+                                    " " +
+                                    modalContent?.shippingData?.lastname}
+                                </div>
+                              )}
+                            {modalContent.shippingData?.phone && (
+                              <div>
+                                {"Teléfono: " +
+                                  modalContent?.shippingData?.phone}
+                              </div>
+                            )}
+                            {modalContent.shippingData?.shippingMethod && (
+                              <div>
+                                {"Método de envío: " +
+                                  modalContent?.shippingData?.shippingMethod
+                                    .name}
+                              </div>
+                            )}
+                            {modalContent.shippingData?.address ? (
+                              <div>
+                                {"Dirección de envío: " +
+                                  modalContent?.shippingData?.address}
+                              </div>
+                            ) : (
+                              <div>
+                                {"Dirección de envío: " +
+                                  modalContent?.basicData?.address}
+                              </div>
+                            )}
+                          </Grid>
+                        )}
+
+                        {modalContent.billingData !== undefined && (
+                          <Grid
+                            style={{
+                              marginBottom: 40,
+                              marginRight: 20,
+                              borderWidth: "1px",
+                              borderStyle: "solid",
+                              borderRadius: 10,
+                              borderColor: "grey",
+                              padding: 15,
+                            }}
+                          >
+                            <strong>Datos de facturación</strong>
+                            {modalContent.billingData.name &&
+                              modalContent.billingData.lastname && (
+                                <div>
+                                  {"Nombre: " +
+                                    modalContent?.billingData.name +
+                                    " " +
+                                    modalContent?.billingData.lastname}
+                                </div>
+                              )}
+                            {modalContent.billingData.ci && (
+                              <div>
+                                {"CI o RIF: " + modalContent?.billingData.ci}
+                              </div>
+                            )}
+                            {modalContent.billingData.company && (
+                              <div>
+                                {"Razón social: " +
+                                  modalContent?.billingData.company}
+                              </div>
+                            )}
+                            {modalContent.billingData.phone && (
+                              <div>
+                                {"Teléfono: " + modalContent?.billingData.phone}
+                              </div>
+                            )}
+                            {modalContent.billingData.address && (
+                              <div style={{ marginBottom: 20 }}>
+                                {"Dirección de cobro: " +
+                                  modalContent?.billingData.address}
+                              </div>
+                            )}
+                          </Grid>
+                        )}
+
+                        <Grid
+                          style={{
+                            marginBottom: 40,
+                            marginRight: 20,
+                            borderWidth: "1px",
+                            borderStyle: "solid",
+                            borderRadius: 10,
+                            borderColor: "grey",
+                            padding: 15,
+                          }}
+                        >
+                          <strong>Datos de pago</strong>
+                          <div>
+                            {"Subtotal: $" + modalContent?.subtotal.toFixed(2)}
+                          </div>
+                          <div>{"IVA: $" + modalContent?.tax.toFixed(2)}</div>
+                          <div>
+                            {modalContent.shippingData?.shippingMethod &&
+                              "Envío: $" +
+                                modalContent?.shippingData?.shippingMethod
+                                  ?.price}
+                          </div>
+                          <div style={{ marginBottom: 10 }}>
+                            {"Total: $" + modalContent?.total.toFixed(2)}
+                          </div>
+                          <div>
+                            {"Forma de pago: " +
+                              modalContent?.billingData.orderPaymentMethod}
+                          </div>
+                          {modalContent.paymentVoucher && (
+                            <Paper
+                              style={{
+                                width: 200,
+                                borderRadius: 10,
+                                marginTop: 10,
+                              }}
+                              elevation={3}
+                            >
+                              <Img
+                                style={{ width: 200, borderRadius: 10 }}
+                                src={modalContent?.paymentVoucher}
+                                alt="voucher"
+                                onClick={() => {
+                                  // setIsShowDetails(false);
+                                  setShowVoucher(!showVoucher);
+                                }}
+                              />
+                            </Paper>
+                          )}
+                        </Grid>
+
+                        {modalContent.observations && (
+                          <Grid
+                            style={{
+                              marginBottom: 40,
+                              marginRight: 20,
+                              borderWidth: "1px",
+                              borderStyle: "solid",
+                              borderRadius: 10,
+                              borderColor: "grey",
+                              padding: 15,
+                            }}
+                          >
+                            <strong>Observaciones</strong>
+                            <div> {modalContent.observations}</div>
+                          </Grid>
+                        )}
+                      </Grid>
+                    </>
+                  )
+                )}
+              </>
+            )
+          ) : (
             <Paper
               elevation={3}
               style={{
@@ -966,318 +1433,6 @@ export default function Orders(props) {
                 }}
               />
             </Paper>
-          ) : (
-            modalContent && (
-              <>
-                <Grid
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                  }}
-                  item
-                  xs={12}
-                  sm={6}
-                  md={6}
-                  lg={6}
-                >
-                  {modalContent?.requests.map((item, index) => (
-                    <div
-                      style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        margin: "0px 20px 20px 0px",
-                        borderWidth: "1px",
-                        borderStyle: "solid",
-                        borderRadius: 10,
-                        padding: 5,
-                        borderColor: "#d33f49",
-                      }}
-                    >
-                      <Typography
-                        variant="h6"
-                        style={{ textAlign: "center", margin: 5 }}
-                      >
-                        {"Item #"}
-                        {index + 1}
-                      </Typography>
-                      <div
-                        style={{
-                          display: "flex",
-                          flexDirection: "row",
-                          justifyContent: "space-evenly",
-                        }}
-                      >
-                        <Paper
-                          style={{
-                            width: 150,
-                            height: 150,
-                            borderRadius: 10,
-                            backgroundColor: "#eeeeee",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                          }}
-                          elevation={3}
-                        >
-                          <Img
-                            src={item.art.squareThumbUrl}
-                            style={{
-                              maxWidth: 150,
-                              maxHeight: 150,
-                              borderRadius: 10,
-                            }}
-                          />
-                        </Paper>
-                        <Paper
-                          style={{
-                            width: 150,
-                            height: 150,
-                            borderRadius: 10,
-                            backgroundColor: "#eeeeee",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                          }}
-                          elevation={3}
-                        >
-                          <Img
-                            src={
-                              item.product.thumbUrl ||
-                              item.product.sources.images[0].url
-                            }
-                            style={{
-                              maxWidth: 150,
-                              maxHeight: 150,
-                              borderRadius: 10,
-                            }}
-                          />
-                        </Paper>
-                      </div>
-                      <div style={{ padding: 10 }}>
-                        <div>{"Arte: " + item.art.title}</div>
-                        <div>{"Id: " + item.art.artId}</div>
-                        <div style={{ marginBottom: 10 }}>
-                          {"Prixer: " + item.art.prixerUsername}
-                        </div>
-                        <div>{"Producto: " + item.product.name}</div>
-                        <div>{"Id: " + item.product._id}</div>
-                        {item.product.attributes.map((a, i) => {
-                          return (
-                            <p
-                              style={{
-                                // fontSize: 12,
-                                padding: 0,
-                                margin: 0,
-                                marginBottom: 10,
-                              }}
-                            >
-                              {a.name + ": "}
-                              {item.product.selection[i]}
-                            </p>
-                          );
-                        })}
-                        <div>{"Cantidad: " + item.quantity}</div>
-                      </div>
-                    </div>
-                  ))}
-                </Grid>
-
-                <Grid
-                  item
-                  xs={12}
-                  sm={12}
-                  md={6}
-                  lg={6}
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    marginBottom: 20,
-                  }}
-                >
-                  <Grid
-                    style={{
-                      marginBottom: 40,
-                      marginRight: 20,
-                      borderWidth: "1px",
-                      borderStyle: "solid",
-                      borderRadius: 10,
-                      borderColor: "grey",
-                      padding: 15,
-                    }}
-                  >
-                    <strong>Datos básicos</strong>
-                    <div>
-                      {"Nombre: " +
-                        modalContent.basicData.firstname +
-                        " " +
-                        modalContent.basicData.lastname}
-                    </div>
-                    <div>{"CI o RIF: " + modalContent?.basicData.ci}</div>
-                    <div>{"Teléfono: " + modalContent?.basicData.phone}</div>
-                    <div>{"Email: " + modalContent?.basicData.email}</div>
-                    <div>{"Dirección: " + modalContent?.basicData.address}</div>
-                  </Grid>
-
-                  {modalContent.shippingData !== undefined && (
-                    <Grid
-                      style={{
-                        marginBottom: 40,
-                        marginRight: 20,
-                        borderWidth: "1px",
-                        borderStyle: "solid",
-                        borderRadius: 10,
-                        borderColor: "grey",
-                        padding: 15,
-                      }}
-                    >
-                      <strong>Datos de envío</strong>
-                      {modalContent.shippingData?.name &&
-                        modalContent.shippingData?.lastname && (
-                          <div>
-                            {"Nombre: " +
-                              modalContent?.shippingData?.name +
-                              " " +
-                              modalContent?.shippingData?.lastname}
-                          </div>
-                        )}
-                      {modalContent.shippingData?.phone && (
-                        <div>
-                          {"Teléfono: " + modalContent?.shippingData?.phone}
-                        </div>
-                      )}
-                      {modalContent.shippingData?.shippingMethod && (
-                        <div>
-                          {"Método de envío: " +
-                            modalContent?.shippingData?.shippingMethod.name}
-                        </div>
-                      )}
-                      {modalContent.shippingData?.address ? (
-                        <div>
-                          {"Dirección de envío: " +
-                            modalContent?.shippingData?.address}
-                        </div>
-                      ) : (
-                        <div>
-                          {"Dirección de envío: " +
-                            modalContent?.basicData?.address}
-                        </div>
-                      )}
-                    </Grid>
-                  )}
-
-                  {modalContent.billingData !== undefined && (
-                    <Grid
-                      style={{
-                        marginBottom: 40,
-                        marginRight: 20,
-                        borderWidth: "1px",
-                        borderStyle: "solid",
-                        borderRadius: 10,
-                        borderColor: "grey",
-                        padding: 15,
-                      }}
-                    >
-                      <strong>Datos de facturación</strong>
-                      {modalContent.billingData.name &&
-                        modalContent.billingData.lastname && (
-                          <div>
-                            {"Nombre: " +
-                              modalContent?.billingData.name +
-                              " " +
-                              modalContent?.billingData.lastname}
-                          </div>
-                        )}
-                      {modalContent.billingData.ci && (
-                        <div>{"CI o RIF: " + modalContent?.billingData.ci}</div>
-                      )}
-                      {modalContent.billingData.company && (
-                        <div>
-                          {"Razón social: " + modalContent?.billingData.company}
-                        </div>
-                      )}
-                      {modalContent.billingData.phone && (
-                        <div>
-                          {"Teléfono: " + modalContent?.billingData.phone}
-                        </div>
-                      )}
-                      {modalContent.billingData.address && (
-                        <div style={{ marginBottom: 20 }}>
-                          {"Dirección de cobro: " +
-                            modalContent?.billingData.address}
-                        </div>
-                      )}
-                    </Grid>
-                  )}
-
-                  <Grid
-                    style={{
-                      marginBottom: 40,
-                      marginRight: 20,
-                      borderWidth: "1px",
-                      borderStyle: "solid",
-                      borderRadius: 10,
-                      borderColor: "grey",
-                      padding: 15,
-                    }}
-                  >
-                    <strong>Datos de pago</strong>
-                    <div>
-                      {"Subtotal: $" + modalContent?.subtotal.toFixed(2)}
-                    </div>
-                    <div>{"IVA: $" + modalContent?.tax.toFixed(2)}</div>
-                    <div>
-                      {modalContent.shippingData?.shippingMethod &&
-                        "Envío: $" +
-                          modalContent?.shippingData?.shippingMethod?.price}
-                    </div>
-                    <div style={{ marginBottom: 10 }}>
-                      {"Total: $" + modalContent?.total.toFixed(2)}
-                    </div>
-                    <div>
-                      {"Forma de pago: " +
-                        modalContent?.billingData.orderPaymentMethod}
-                    </div>
-                    {modalContent.paymentVoucher && (
-                      <Paper
-                        style={{
-                          width: 200,
-                          borderRadius: 10,
-                          marginTop: 10,
-                        }}
-                        elevation={3}
-                      >
-                        <Img
-                          style={{ width: 200, borderRadius: 10 }}
-                          src={modalContent?.paymentVoucher}
-                          alt="voucher"
-                          onClick={() => {
-                            // setIsShowDetails(false);
-                            setShowVoucher(!showVoucher);
-                          }}
-                        />
-                      </Paper>
-                    )}
-                  </Grid>
-
-                  {modalContent.observations && (
-                    <Grid
-                      style={{
-                        marginBottom: 40,
-                        marginRight: 20,
-                        borderWidth: "1px",
-                        borderStyle: "solid",
-                        borderRadius: 10,
-                        borderColor: "grey",
-                        padding: 15,
-                      }}
-                    >
-                      <strong>Observaciones</strong>
-                      <div> {modalContent.observations}</div>
-                    </Grid>
-                  )}
-                </Grid>
-              </>
-            )
           )}
         </Grid>
       </Modal>
@@ -1967,7 +2122,6 @@ export default function Orders(props) {
                           style={{
                             padding: isMobile ? 10 : "10px 10px 0px 10px",
                             marginTop: "2px",
-                            // height: isMobile ? "400px" : "230px",
                             display: "flex",
                             flexDirection: isMobile ? "column" : "row",
                           }}
@@ -1975,22 +2129,14 @@ export default function Orders(props) {
                         >
                           <Grid
                             container
-                            // xs={12}
-                            // sm={12}
-                            // md={12}
-                            // lg
-                            // xl
                             style={{
                               display: "flex",
-                              // height: isIphone ? 160 : 220,
                             }}
                           >
                             <Grid item xs={5} sm={5} md={5} lg={5} xl={5}>
-                              {/* {buy.product ? ( */}
                               <div
                                 style={{
                                   display: "flex",
-                                  // flexDirection: "column",
                                   height: 120,
                                   marginRight: 20,
                                 }}
@@ -2072,6 +2218,8 @@ export default function Orders(props) {
                                           return (
                                             <MenuItem value={a.name}>
                                               {a.name}
+                                              {a.attributes[1]?.value &&
+                                                " " + a.attributes[1]?.value}
                                             </MenuItem>
                                           );
                                         })}
@@ -2080,34 +2228,6 @@ export default function Orders(props) {
                                   )}
                                 </div>
                               </div>
-                              {/* ) : (
-                                <div
-                                  style={{
-                                    height: "180px",
-                                    width: "180px",
-                                    display: "grid",
-                                    marginLeft: "20px",
-                                    marginRight: "20px",
-                                  }}
-                                >
-                                  <IconButton
-                                    className={classes.addItemContainer}
-                                    onClick={() => {
-                                      props.setSelectedArtToAssociate({
-                                        index,
-                                        item: buy.art,
-                                        previous: true,
-                                      });
-                                      history.push({ pathname: "/productos" });
-                                    }}
-                                  >
-                                    <AddIcon
-                                      style={{ fontSize: 80 }}
-                                      color="primary"
-                                    />
-                                  </IconButton>
-                                </div>
-                              )} */}
                             </Grid>
                             <Grid
                               item
@@ -2194,8 +2314,9 @@ export default function Orders(props) {
                                     <p
                                       style={{
                                         fontSize: "12px",
-                                        padding: 0,
-                                        margin: 0,
+                                        // padding: 0,
+                                        marginBottom: 10,
+                                        marginTop: -2,
                                       }}
                                     >
                                       <strong> Arte: </strong> {buy.art.artId}
@@ -2219,20 +2340,9 @@ export default function Orders(props) {
                                     style={{
                                       display: "flex",
                                       justifyContent: "space-between",
-                                      alignItems: "end",
-                                      margin: "10px 0",
+                                      // margin: "10px 0",
                                     }}
                                   >
-                                    {/* <div style={{ paddingBottom: 5 }}>
-                                      <strong>Precio: </strong>
-                                      {`$${
-                                        buy.product?.publicEquation ||
-                                        buy.product?.publicPrice.from.replace(
-                                          /[$]/gi,
-                                          ""
-                                        )
-                                      }`}
-                                    </div> */}
                                     <TextField
                                       variant="outlined"
                                       label="Precio"
@@ -2255,32 +2365,41 @@ export default function Orders(props) {
                                     <div
                                       style={{
                                         display: "flex",
-                                        alignItems: "center",
+                                        // alignItems: "center",
+                                        alignItems: "end",
                                       }}
                                     >
-                                      <strong>Cantidad: </strong>
-                                      <input
+                                      <div
                                         style={{
-                                          width: 80,
-                                          padding: "10px",
-                                          borderRadius: 4,
+                                          display: "flex",
+                                          alignItems: "center",
+                                          marginBottom: "10px",
                                         }}
-                                        type="number"
-                                        defaultValue={1}
-                                        value={buy.quantity}
-                                        min="1"
-                                        InputLabelProps={{
-                                          shrink: true,
-                                        }}
-                                        onChange={(e) => {
-                                          props.changeQuantity({
-                                            index,
-                                            art: buy.art,
-                                            product: buy.product,
-                                            quantity: e.target.value,
-                                          });
-                                        }}
-                                      />
+                                      >
+                                        <strong>Cantidad: </strong>
+                                        <input
+                                          style={{
+                                            width: 80,
+                                            padding: "10px",
+                                            borderRadius: 4,
+                                          }}
+                                          type="number"
+                                          defaultValue={1}
+                                          value={buy.quantity}
+                                          min="1"
+                                          InputLabelProps={{
+                                            shrink: true,
+                                          }}
+                                          onChange={(e) => {
+                                            props.changeQuantity({
+                                              index,
+                                              art: buy.art,
+                                              product: buy.product,
+                                              quantity: e.target.value,
+                                            });
+                                          }}
+                                        />
+                                      </div>
                                     </div>
                                   </Grid>
                                 )}
@@ -2607,9 +2726,17 @@ export default function Orders(props) {
                                     (
                                       getTotalPrice(props.buyState) *
                                       dollarValue
-                                    ).toFixed(2)
+                                    ).toLocaleString("de-DE", {
+                                      minimumFractionDigits: 2,
+                                      // maximumSignificantDigits: 2,
+                                    })
                                   : " $" +
-                                    getTotalPrice(props.buyState).toFixed(2)}
+                                    getTotalPrice(
+                                      props.buyState
+                                    ).toLocaleString("de-DE", {
+                                      minimumFractionDigits: 2,
+                                      // maximumSignificantDigits: 2,
+                                    })}
                               </strong>
 
                               <strong>
@@ -2618,9 +2745,18 @@ export default function Orders(props) {
                                   ? " Bs" +
                                     (
                                       getIvaCost(props.buyState) * dollarValue
-                                    ).toFixed(2)
+                                    ).toLocaleString("de-DE", {
+                                      minimumFractionDigits: 2,
+                                      // maximumSignificantDigits: 2,
+                                    })
                                   : " $" +
-                                    getIvaCost(props.buyState).toFixed(2)}
+                                    getIvaCost(props.buyState).toLocaleString(
+                                      "de-DE",
+                                      {
+                                        minimumFractionDigits: 2,
+                                        // maximumSignificantDigits: 2,
+                                      }
+                                    )}
                               </strong>
 
                               {props.values.shippingMethod && (
@@ -2628,8 +2764,17 @@ export default function Orders(props) {
                                   Envío:
                                   {currency
                                     ? " Bs" +
-                                      (shippingCost * dollarValue).toFixed(2)
-                                    : " $" + shippingCost.toFixed(2)}
+                                      (
+                                        shippingCost * dollarValue
+                                      ).toLocaleString("de-DE", {
+                                        minimumFractionDigits: 2,
+                                        // maximumSignificantDigits: 2,
+                                      })
+                                    : " $" +
+                                      shippingCost.toLocaleString("de-DE", {
+                                        minimumFractionDigits: 2,
+                                        // maximumSignificantDigits: 2,
+                                      })}
                                 </strong>
                               )}
                               <strong>
@@ -2638,8 +2783,18 @@ export default function Orders(props) {
                                   ? " Bs" +
                                     (
                                       getTotal(props.buyState) * dollarValue
-                                    ).toFixed(2)
-                                  : " $" + getTotal(props.buyState).toFixed(2)}
+                                    ).toLocaleString("de-DE", {
+                                      minimumFractionDigits: 2,
+                                      // maximumSignificantDigits: 2,
+                                    })
+                                  : " $" +
+                                    getTotal(props.buyState).toLocaleString(
+                                      "de-DE",
+                                      {
+                                        minimumFractionDigits: 2,
+                                        // maximumSignificantDigits: 2,
+                                      }
+                                    )}
                               </strong>
                               <br />
                             </>
@@ -2673,6 +2828,13 @@ export default function Orders(props) {
           </div>
         </Grid>
       </Modal>
+      <Snackbar
+        open={snackBarError}
+        autoHideDuration={4000}
+        message={errorMessage}
+        className={classes.snackbar}
+        onClose={closeAd}
+      />
     </>
   );
 }

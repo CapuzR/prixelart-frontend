@@ -203,7 +203,10 @@ export default function OrderForm(props) {
                                                       // .replace(/[,]/gi, ".")
                                                       props.dollarValue *
                                                       item.quantity
-                                                    ).toFixed(2)
+                                                    ).toLocaleString("de-DE", {
+                                                      minimumFractionDigits: 2,
+                                                      // maximumSignificantDigits: 2,
+                                                    })
                                                   : "Bs" +
                                                     (
                                                       Number(
@@ -214,7 +217,10 @@ export default function OrderForm(props) {
                                                       ) *
                                                       props.dollarValue *
                                                       item.quantity
-                                                    ).toFixed(2)
+                                                    ).toLocaleString("de-DE", {
+                                                      minimumFractionDigits: 2,
+                                                      // maximumSignificantDigits: 2,
+                                                    })
                                                 : item.product
                                                     .publicEquation !== ""
                                                 ? "Bs" +
@@ -223,7 +229,10 @@ export default function OrderForm(props) {
                                                       .publicEquation *
                                                     props.dollarValue *
                                                     item.quantity
-                                                  ).toFixed(2)
+                                                  ).toLocaleString("de-DE", {
+                                                    minimumFractionDigits: 2,
+                                                    // maximumSignificantDigits: 2,
+                                                  })
                                                 : "Bs" +
                                                   (
                                                     item.product.publicPrice.from
@@ -231,7 +240,10 @@ export default function OrderForm(props) {
                                                       .replace(/[,]/gi, ".") *
                                                     props.dollarValue *
                                                     item.quantity
-                                                  ).toFixed(2)
+                                                  ).toLocaleString("de-DE", {
+                                                    minimumFractionDigits: 2,
+                                                    // maximumSignificantDigits: 2,
+                                                  })
                                               : JSON.parse(
                                                   localStorage.getItem("token")
                                                 ) &&
@@ -391,7 +403,10 @@ export default function OrderForm(props) {
                               (
                                 getTotalPrice(props.buyState) *
                                 props.dollarValue
-                              ).toFixed(2)
+                              ).toLocaleString("de-DE", {
+                                minimumFractionDigits: 2,
+                                // maximumSignificantDigits: 2,
+                              })
                             : `Subtotal: $${getTotalPrice(
                                 props.buyState
                               ).toFixed(2)}`}
@@ -401,14 +416,20 @@ export default function OrderForm(props) {
                             ? "IVA: Bs" +
                               (
                                 getIvaCost(props.buyState) * props.dollarValue
-                              ).toFixed(2)
+                              ).toLocaleString("de-DE", {
+                                minimumFractionDigits: 2,
+                                // maximumSignificantDigits: 2,
+                              })
                             : `IVA: $${getIvaCost(props.buyState).toFixed(2)}`}
                         </strong>
                         {props.valuesConsumer.shippingMethod &&
                         props.currency ? (
                           <strong>{`Envío: Bs${(
                             shippingCost * props.dollarValue
-                          ).toFixed(2)}`}</strong>
+                          ).toLocaleString("de-DE", {
+                            minimumFractionDigits: 2,
+                            // maximumSignificantDigits: 2,
+                          })}`}</strong>
                         ) : (
                           props.valuesConsumer.shippingMethod && (
                             <strong>{`Envío: $${shippingCost}`}</strong>
@@ -419,7 +440,10 @@ export default function OrderForm(props) {
                             ? "Total: Bs" +
                               (
                                 getTotal(props.buyState) * props.dollarValue
-                              ).toFixed(2)
+                              ).toLocaleString("de-DE", {
+                                minimumFractionDigits: 2,
+                                // maximumSignificantDigits: 2,
+                              })
                             : `Total: $${getTotal(props.buyState).toFixed(2)}`}
                         </strong>
                         <br />

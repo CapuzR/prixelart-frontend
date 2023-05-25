@@ -400,7 +400,7 @@ export default function UserData(props) {
                       justifyContent: isMobile ? "center" : "flexstart",
                     }}
                   >
-                    {twitter && (
+                    {twitter && twitter !== "undefined" && (
                       <>
                         <TwitterIcon style={{ marginRight: "4px" }} />
                         <a

@@ -1,12 +1,10 @@
-import { React, useState, useEffect} from 'react'
-import SimpleTabs from './tabPreferences'
+import { React, useState, useEffect } from "react";
+import SimpleTabs from "./tabPreferences";
 
-
-export default function Preferences(props)
-{
-    return(
+export default function Preferences(props) {
+  return (
     <>
-        <SimpleTabs />
+      <SimpleTabs permissions={props.permissions} />
     </>
-    )
+  );
 }

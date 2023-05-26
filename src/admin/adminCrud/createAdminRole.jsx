@@ -43,6 +43,8 @@ export default function CreateAdminRole() {
   const [modifyTermsAndCo, setModifyTermsAndCo] = useState(false);
   const [createPaymentMethod, setCreatePaymentMethod] = useState(false);
   const [deletePaymentMethod, setDeletePaymentMethod] = useState(false);
+  const [createShippingMethod, setCreateShippingMethod] = useState(false);
+  const [deleteShippingMethod, setDeleteShippingMethod] = useState(false);
 
   const [loading, setLoading] = useState(false);
   const [buttonState, setButtonState] = useState(false);
@@ -72,6 +74,8 @@ export default function CreateAdminRole() {
         modifyTermsAndCo: modifyTermsAndCo,
         createPaymentMethod: createPaymentMethod,
         deletePaymentMethod: deletePaymentMethod,
+        createShippingMethod: createShippingMethod,
+        deleteShippingMethod: deleteShippingMethod,
       };
       const base_url = process.env.REACT_APP_BACKEND_URL + "/adminRole/create";
       const response = await axios.post(
@@ -130,6 +134,13 @@ export default function CreateAdminRole() {
     setDeletePaymentMethod(!deletePaymentMethod);
   };
 
+  const handleChangeCreateShippingMethod = () => {
+    setCreateShippingMethod(!createShippingMethod);
+  };
+
+  const handleChangeDeleteShippingMethod = () => {
+    setDeleteShippingMethod(!deleteShippingMethod);
+  };
   return (
     <React.Fragment>
       {loading && (
@@ -460,7 +471,72 @@ export default function CreateAdminRole() {
               </FormControl>
             </div>
           </Grid>
-
+          <Grid
+            item
+            xs={12}
+            md={5}
+            style={{
+              border: "2px",
+              borderStyle: "solid",
+              borderColor: "silver",
+              borderRadius: "10px",
+              marginRight: "20px",
+              marginLeft: "20px",
+              marginTop: "20px",
+            }}
+          >
+            <Typography
+              varaint="p"
+              color="secondary"
+              style={{ marginLeft: "20px" }}
+            >
+              Métodos de Envío
+            </Typography>
+            <div>
+              <FormControl
+                className={clsx(classes.margin, classes.textField)}
+                variant="outlined"
+                style={{
+                  width: "90%",
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Typography>
+                  Permiso para crear y modificar métodos de envío
+                </Typography>
+                <Switch
+                  checked={createShippingMethod}
+                  onChange={handleChangeCreateShippingMethod}
+                  name="checkedA"
+                  color="primary"
+                />
+              </FormControl>
+            </div>
+            <div>
+              <FormControl
+                className={clsx(classes.margin, classes.textField)}
+                variant="outlined"
+                style={{
+                  width: "90%",
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Typography>Permiso para eliminar métodos de pago</Typography>
+                <Switch
+                  checked={deleteShippingMethod}
+                  onChange={handleChangeDeleteShippingMethod}
+                  name="checkedA"
+                  color="primary"
+                />
+              </FormControl>
+            </div>
+          </Grid>
           <Grid
             item
             xs={12}

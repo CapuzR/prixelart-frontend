@@ -211,15 +211,17 @@ export default function ReadShippingMethod(props) {
           >
             <ViewListIcon />
           </Fab>
-          <Fab
-            color="primary"
-            aria-label="add"
-            onClick={() => {
-              handleAction("create");
-            }}
-          >
-            <AddIcon />
-          </Fab>
+          {props.permissions.createShippingMethod && (
+            <Fab
+              color="primary"
+              aria-label="add"
+              onClick={() => {
+                handleAction("create");
+              }}
+            >
+              <AddIcon />
+            </Fab>
+          )}
         </div>
 
         <Grid container spacing={3}>
@@ -243,20 +245,22 @@ export default function ReadShippingMethod(props) {
                         rows.map((row) => (
                           <TableRow key={row._id}>
                             <TableCell>
-                              <Fab
-                                color="default"
-                                style={{
-                                  width: 35,
-                                  height: 35,
-                                  marginRight: 100,
-                                }}
-                                aria-label="edit"
-                                onClick={(e) => {
-                                  handleActive(row, "update");
-                                }}
-                              >
-                                <EditIcon />
-                              </Fab>
+                              {props.permissions.createShippingMethod && (
+                                <Fab
+                                  color="default"
+                                  style={{
+                                    width: 35,
+                                    height: 35,
+                                    marginRight: 100,
+                                  }}
+                                  aria-label="edit"
+                                  onClick={(e) => {
+                                    handleActive(row, "update");
+                                  }}
+                                >
+                                  <EditIcon />
+                                </Fab>
+                              )}
                             </TableCell>
                             <TableCell>
                               <Checkbox
@@ -268,21 +272,23 @@ export default function ReadShippingMethod(props) {
                             <TableCell align="center">{row.name}</TableCell>
                             <TableCell align="center">${row.price}</TableCell>
                             <TableCell>
-                              <Fab
-                                color="default"
-                                style={{
-                                  width: 35,
-                                  height: 35,
-                                  marginLeft: 100,
-                                }}
-                                aria-label="edit"
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  deleteMethod(row._id);
-                                }}
-                              >
-                                <DeleteIcon />
-                              </Fab>
+                              {props.permissions.deleteShippingMethod && (
+                                <Fab
+                                  color="default"
+                                  style={{
+                                    width: 35,
+                                    height: 35,
+                                    marginLeft: 100,
+                                  }}
+                                  aria-label="edit"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    deleteMethod(row._id);
+                                  }}
+                                >
+                                  <DeleteIcon />
+                                </Fab>
+                              )}
                             </TableCell>
                           </TableRow>
                         ))}

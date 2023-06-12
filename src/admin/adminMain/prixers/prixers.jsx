@@ -65,7 +65,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Prixers() {
+export default function Prixers(props) {
   const classes = useStyles();
   const theme = useTheme();
 
@@ -190,35 +190,37 @@ export default function Prixers() {
                             )}
                         </Typography>
                       </CardContent>
-                      <Box
-                        style={{
-                          display: "flex",
-                          justifyContent: "end",
-                        }}
-                        label="Visible"
-                      >
-                        <Typography
-                          color="secondary"
-                          style={{ display: "flex", alignItems: "center" }}
-                        >
-                          Visible
-                        </Typography>
-                        <Switch
-                          checked={tile.status}
-                          color="primary"
-                          onChange={
-                            // handleChange
-                            (event) =>
-                              handleChange(event, tile.state) ||
-                              ChangeVisibility(event, tile.prixerId)
-                          }
-                          name="checkedA"
-                          value={tile.status}
-                          inputProps={{
-                            "aria-label": "secondary checkbox",
+                      {props.permissions?.prixerBan && (
+                        <Box
+                          style={{
+                            display: "flex",
+                            justifyContent: "end",
                           }}
-                        />
-                      </Box>
+                          label="Visible"
+                        >
+                          <Typography
+                            color="secondary"
+                            style={{ display: "flex", alignItems: "center" }}
+                          >
+                            Visible
+                          </Typography>
+                          <Switch
+                            checked={tile.status}
+                            color="primary"
+                            onChange={
+                              // handleChange
+                              (event) =>
+                                handleChange(event, tile.state) ||
+                                ChangeVisibility(event, tile.prixerId)
+                            }
+                            name="checkedA"
+                            value={tile.status}
+                            inputProps={{
+                              "aria-label": "secondary checkbox",
+                            }}
+                          />
+                        </Box>
+                      )}
                     </Card>
                   </Grid>
                 ) : (
@@ -244,35 +246,37 @@ export default function Prixers() {
                           {tile.username} - {tile.specialty}
                         </Typography>
                       </CardContent>
-                      <Box
-                        style={{
-                          display: "flex",
-                          justifyContent: "end",
-                        }}
-                        label="Visible"
-                      >
-                        <Typography
-                          color="secondary"
-                          style={{ display: "flex", alignItems: "center" }}
-                        >
-                          Visible
-                        </Typography>
-                        <Switch
-                          checked={tile.status}
-                          color="primary"
-                          onChange={
-                            // handleChange
-                            (event) => ChangeVisibility(event, tile.prixerId)
-                          }
-                          name="checkedA"
-                          // defaultValue={tile.status}
-                          // defaultChecked={tile.status}
-                          value={tile.status}
-                          inputProps={{
-                            "aria-label": "secondary checkbox",
+                      {props.permissions?.prixerBan && (
+                        <Box
+                          style={{
+                            display: "flex",
+                            justifyContent: "end",
                           }}
-                        />
-                      </Box>
+                          label="Visible"
+                        >
+                          <Typography
+                            color="secondary"
+                            style={{ display: "flex", alignItems: "center" }}
+                          >
+                            Visible
+                          </Typography>
+                          <Switch
+                            checked={tile.status}
+                            color="primary"
+                            onChange={
+                              // handleChange
+                              (event) => ChangeVisibility(event, tile.prixerId)
+                            }
+                            name="checkedA"
+                            // defaultValue={tile.status}
+                            // defaultChecked={tile.status}
+                            value={tile.status}
+                            inputProps={{
+                              "aria-label": "secondary checkbox",
+                            }}
+                          />
+                        </Box>
+                      )}
                     </Card>
                   </Grid>
                 )

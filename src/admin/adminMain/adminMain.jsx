@@ -35,6 +35,7 @@ import CloseIcon from "@material-ui/icons/Close";
 import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
 import SaveIcon from "@material-ui/icons/Save";
+import Tooltip from "@material-ui/core/Tooltip";
 import { update } from "immutable";
 import validations from "../../shoppingCart/validations";
 import axios from "axios";
@@ -290,7 +291,7 @@ export default function AdminMain(props) {
             <div className={classes.appBarSpacer} />
             <Container maxWidth="lg" className={classes.container}>
               {active === "user" ? (
-                <AdminUser />
+                <AdminUser permissions={permissions} />
               ) : active === "dashboard" ? (
                 <Dashboard />
               ) : active === "product" ? (
@@ -334,19 +335,18 @@ export default function AdminMain(props) {
               </Box>
             </Container>
           </main>
-          {(JSON.parse(localStorage.getItem("adminToken")).area ===
-            "Administración" ||
-            JSON.parse(localStorage.getItem("adminToken")).area ===
-              "Master") && (
-            <Fab
-              color="primary"
-              size="small"
-              onClick={dollarView}
-              style={{ right: 10 }}
-              className={classes.floatingButton}
-            >
-              <AttachMoneyIcon />
-            </Fab>
+          {permissions?.modifyDollar && (
+            <Tooltip title="Actualizar tasa" style={{ height: 40, width: 40 }}>
+              <Fab
+                color="primary"
+                size="small"
+                onClick={dollarView}
+                style={{ right: 10 }}
+                className={classes.floatingButton}
+              >
+                <AttachMoneyIcon />
+              </Fab>
+            </Tooltip>
           )}
           <Modal open={openDollarView}>
             <Grid container className={classes.paper2}>

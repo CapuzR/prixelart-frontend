@@ -290,11 +290,8 @@ export default function ShoppingPage(props) {
       const consumer = await axios
         .post(process.env.REACT_APP_BACKEND_URL + "/consumer/create", {
           active: true,
-          contactedBy: {
+          createdBy: {
             username: "web",
-            id: 1,
-            phone: "",
-            email: "hola@prixelart.com",
           },
           consumerType: "Particular",
           firstname: props.valuesConsumerForm?.name,

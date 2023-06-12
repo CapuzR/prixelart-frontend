@@ -93,7 +93,7 @@ const MenuProps = {
   },
 };
 
-export default function Testimonials() {
+export default function Testimonials(props) {
   const classes = useStyles();
   const [avatar, setAvatar] = useState({ file: "", _id: "" });
   const [type, setType] = useState("");
@@ -101,7 +101,7 @@ export default function Testimonials() {
   const [value, setValue] = useState("");
   const [footer, setFooter] = useState("");
   const [tiles, setTiles] = useState([]);
-  const [backdrop, setBackdrop] = useState(true); // borrar
+  const [backdrop, setBackdrop] = useState(true);
   const theme = useTheme();
   const [avatarObj, setAvatarObj] = useState("");
   const [avatarPic, setAvatarPic] = useState("");
@@ -325,219 +325,223 @@ export default function Testimonials() {
             justifyContent: "center",
           }}
         >
-          <Grid
-            style={{
-              padding: isMobile ? "0px" : "24px",
-              paddingBottom: "15px",
-              margin: isMobile ? "0px" : "15px",
-            }}
-            className={classes.paper}
-            item
-            xs={12}
-            sm={12}
-            md={12}
-            lg={10}
-            xl={10}
-          >
-            <Paper
-              style={{ padding: isMobile ? "8px" : "24px" }}
+          {props.permissions.createTestimonial && (
+            <Grid
+              style={{
+                padding: isMobile ? "0px" : "24px",
+                paddingBottom: "15px",
+                margin: isMobile ? "0px" : "15px",
+              }}
               className={classes.paper}
+              item
               xs={12}
               sm={12}
+              md={12}
+              lg={10}
+              xl={10}
             >
-              <form
-                encType="multipart/form-data"
-                onSubmit={handleSubmit}
-                className={classes.form}
-                margin={6}
+              <Paper
+                style={{ padding: isMobile ? "8px" : "24px" }}
+                className={classes.paper}
+                xs={12}
+                sm={12}
               >
-                <Grid
-                  container
-                  spacing={1}
-                  style={{
-                    paddingBottom: "10px",
-                    display: "flex",
-                    justifyContent: "center",
-                  }}
+                <form
+                  encType="multipart/form-data"
+                  onSubmit={handleSubmit}
+                  className={classes.form}
+                  margin={6}
                 >
-                  {loading && (
-                    <div className={classes.loading}>
-                      <CircularProgress />
-                    </div>
-                  )}
-                  <Box
-                    padding={"4px"}
-                    paddingRight={4}
-                    paddingLeft={2}
+                  <Grid
+                    container
+                    spacing={1}
                     style={{
-                      width: "30%",
+                      paddingBottom: "10px",
                       display: "flex",
                       justifyContent: "center",
                     }}
                   >
-                    {avatarObj ? (
-                      <Avatar className={classes.avatar}>
-                        <label htmlFor="file-input">
-                          <img
-                            src={avatarObj}
-                            alt="testimonial avatar"
-                            style={{
-                              maxHeight: 80,
-                            }}
-                          />
-                        </label>
-                        <input
-                          style={{ display: "none" }}
-                          accept="image/*"
-                          id="file-input"
-                          type="file"
-                          onChange={onImageChange}
-                          required
-                          name="avatar"
-                        />
-                      </Avatar>
-                    ) : (
-                      <Avatar className={classes.avatar}>
-                        <label htmlFor="file-input">
-                          <AddIcon
-                            style={{
-                              width: 40,
-                              height: 40,
-                              color: "#d33f49",
-                              objectFit: "cover",
-                            }}
-                          />
-                        </label>
-                        <input
-                          style={{ display: "none" }}
-                          accept="image/*"
-                          id="file-input"
-                          type="file"
-                          onChange={onImageChange}
-                          name="avatar"
-                        />
-                      </Avatar>
+                    {loading && (
+                      <div className={classes.loading}>
+                        <CircularProgress />
+                      </div>
                     )}
-                  </Box>
-                  <Grid item xs={8} sm={8} md={8} lg={8} xl={8} padding={10}>
-                    <InputLabel style={{ fontSize: ".85em" }}>Tipo</InputLabel>
-                    <Select
-                      style={{ width: "100%" }}
-                      labelId="tipo"
-                      id="tipo"
-                      value={type}
-                      onChange={(e) => handleChangeType(e)}
-                      MenuProps={MenuProps}
+                    <Box
+                      padding={"4px"}
+                      paddingRight={4}
+                      paddingLeft={2}
+                      style={{
+                        width: "30%",
+                        display: "flex",
+                        justifyContent: "center",
+                      }}
                     >
-                      {["Prixer", "Compañía", "Cliente"].map((type) => (
-                        <MenuItem
-                          key={type}
-                          value={type}
-                          style={getStyles(type, theme)}
-                        >
-                          {type}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </Grid>
-
-                  <Grid item xs={12} sm={12}>
-                    <TextField
-                      autoComplete="fname"
-                      name="name"
-                      variant="outlined"
-                      fullWidth
-                      type="text"
-                      value={name}
-                      id="name"
-                      label="Nombre"
-                      autoFocus
-                      onChange={(e) => {
-                        setName(e.target.value);
-                      }}
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={12}>
-                    <TextField
-                      autoComplete="fname"
-                      name="value"
-                      variant="outlined"
-                      fullWidth
-                      type="text"
-                      value={value}
-                      // inputProps={{ maxLength: 160 }}
-                      id="value"
-                      label="Body"
-                      autoFocus
-                      multiline
-                      rows={3}
-                      onChange={(e) => {
-                        setValue(e.target.value);
-                      }}
-                    />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <TextField
-                      variant="outlined"
-                      fullWidth
-                      name="footer"
-                      label="Footer"
-                      type="text"
-                      value={footer}
-                      inputProps={{ maxLength: 60 }}
-                      id="footer"
-                      autoComplete="fname"
-                      onChange={(e) => {
-                        setFooter(e.target.value);
-                      }}
-                      multiline
-                    />
-                  </Grid>
-                  <Grid
-                    item
-                    xs={12}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                    }}
-                  >
-                    <FormGroup row>
-                      <FormControlLabel
-                        label="Mostrar en la página de inicio"
-                        style={{ color: "secondary" }}
-                        control={
-                          <Switch
-                            color="primary"
-                            checked={state.checkedA}
-                            onChange={(e) => {
-                              handleChange(e);
-                            }}
-                            name="checkedA"
+                      {avatarObj ? (
+                        <Avatar className={classes.avatar}>
+                          <label htmlFor="file-input">
+                            <img
+                              src={avatarObj}
+                              alt="testimonial avatar"
+                              style={{
+                                maxHeight: 80,
+                              }}
+                            />
+                          </label>
+                          <input
+                            style={{ display: "none" }}
+                            accept="image/*"
+                            id="file-input"
+                            type="file"
+                            onChange={onImageChange}
+                            required
+                            name="avatar"
                           />
-                        }
+                        </Avatar>
+                      ) : (
+                        <Avatar className={classes.avatar}>
+                          <label htmlFor="file-input">
+                            <AddIcon
+                              style={{
+                                width: 40,
+                                height: 40,
+                                color: "#d33f49",
+                                objectFit: "cover",
+                              }}
+                            />
+                          </label>
+                          <input
+                            style={{ display: "none" }}
+                            accept="image/*"
+                            id="file-input"
+                            type="file"
+                            onChange={onImageChange}
+                            name="avatar"
+                          />
+                        </Avatar>
+                      )}
+                    </Box>
+                    <Grid item xs={8} sm={8} md={8} lg={8} xl={8} padding={10}>
+                      <InputLabel style={{ fontSize: ".85em" }}>
+                        Tipo
+                      </InputLabel>
+                      <Select
+                        style={{ width: "100%" }}
+                        labelId="tipo"
+                        id="tipo"
+                        value={type}
+                        onChange={(e) => handleChangeType(e)}
+                        MenuProps={MenuProps}
+                      >
+                        {["Prixer", "Compañía", "Cliente"].map((type) => (
+                          <MenuItem
+                            key={type}
+                            value={type}
+                            style={getStyles(type, theme)}
+                          >
+                            {type}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </Grid>
+
+                    <Grid item xs={12} sm={12}>
+                      <TextField
+                        autoComplete="fname"
+                        name="name"
+                        variant="outlined"
+                        fullWidth
+                        type="text"
+                        value={name}
+                        id="name"
+                        label="Nombre"
+                        autoFocus
+                        onChange={(e) => {
+                          setName(e.target.value);
+                        }}
                       />
-                    </FormGroup>
+                    </Grid>
+                    <Grid item xs={12} sm={12}>
+                      <TextField
+                        autoComplete="fname"
+                        name="value"
+                        variant="outlined"
+                        fullWidth
+                        type="text"
+                        value={value}
+                        // inputProps={{ maxLength: 160 }}
+                        id="value"
+                        label="Body"
+                        autoFocus
+                        multiline
+                        rows={3}
+                        onChange={(e) => {
+                          setValue(e.target.value);
+                        }}
+                      />
+                    </Grid>
+                    <Grid item xs={12}>
+                      <TextField
+                        variant="outlined"
+                        fullWidth
+                        name="footer"
+                        label="Footer"
+                        type="text"
+                        value={footer}
+                        inputProps={{ maxLength: 60 }}
+                        id="footer"
+                        autoComplete="fname"
+                        onChange={(e) => {
+                          setFooter(e.target.value);
+                        }}
+                        multiline
+                      />
+                    </Grid>
+                    <Grid
+                      item
+                      xs={12}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                      }}
+                    >
+                      <FormGroup row>
+                        <FormControlLabel
+                          label="Mostrar en la página de inicio"
+                          style={{ color: "secondary" }}
+                          control={
+                            <Switch
+                              color="primary"
+                              checked={state.checkedA}
+                              onChange={(e) => {
+                                handleChange(e);
+                              }}
+                              name="checkedA"
+                            />
+                          }
+                        />
+                      </FormGroup>
+                    </Grid>
                   </Grid>
-                </Grid>
-                <Button
-                  type="submit"
-                  width={"100px"}
-                  variant="contained"
-                  color="primary"
-                  className={classes.submit}
-                  value="submit"
-                  paddingTop="4"
-                  onClick={(event) =>
-                    updateId
-                      ? saveChanges(event, updateId)
-                      : handleSubmit(event)
-                  }
-                >
-                  {updateId ? "Actualizar testimonio" : "Crear testimonio"}
-                </Button>
-              </form>
-            </Paper>
-          </Grid>
+                  <Button
+                    type="submit"
+                    width={"100px"}
+                    variant="contained"
+                    color="primary"
+                    className={classes.submit}
+                    value="submit"
+                    paddingTop="4"
+                    onClick={(event) =>
+                      updateId
+                        ? saveChanges(event, updateId)
+                        : handleSubmit(event)
+                    }
+                  >
+                    {updateId ? "Actualizar testimonio" : "Crear testimonio"}
+                  </Button>
+                </form>
+              </Paper>
+            </Grid>
+          )}
 
           <DragDropContext
             onDragEnd={(result) => {
@@ -598,28 +602,35 @@ export default function Testimonials() {
                                       marginBottom={2}
                                       style={{ width: "100%" }}
                                     >
-                                      <Box
-                                        style={{
-                                          display: "flex",
-                                          justifyContent: "end",
-                                        }}
-                                      >
-                                        <IconButton
-                                          style={{ marginLeft: "10px" }}
-                                          onClick={() =>
-                                            handleTestimonialDataEdit(tile._id)
-                                          }
+                                      {props.permissions.createTestimonial && (
+                                        <Box
+                                          style={{
+                                            display: "flex",
+                                            justifyContent: "end",
+                                          }}
                                         >
-                                          <EditIcon color={"secondary"} />
-                                        </IconButton>
-                                        <IconButton
-                                          onClick={() =>
-                                            deleteTestimonial(tile._id)
-                                          }
-                                        >
-                                          <DeleteIcon color={"secondary"} />
-                                        </IconButton>
-                                      </Box>
+                                          <IconButton
+                                            style={{ marginLeft: "10px" }}
+                                            onClick={() =>
+                                              handleTestimonialDataEdit(
+                                                tile._id
+                                              )
+                                            }
+                                          >
+                                            <EditIcon color={"secondary"} />
+                                          </IconButton>
+                                          {props.permissions
+                                            .deleteTestimonial && (
+                                            <IconButton
+                                              onClick={() =>
+                                                deleteTestimonial(tile._id)
+                                              }
+                                            >
+                                              <DeleteIcon color={"secondary"} />
+                                            </IconButton>
+                                          )}
+                                        </Box>
+                                      )}
                                       <Box
                                         style={{
                                           display: "flex",
@@ -679,36 +690,39 @@ export default function Testimonials() {
                                           {tile.footer}
                                         </Typography>
                                       </Box>
-                                      <Box
-                                        style={{
-                                          paddingTop: "10px",
-                                          display: "flex",
-                                          justifyContent: "end",
-                                        }}
-                                        label="Mostrar en la página de inicio"
-                                      >
-                                        <Typography
-                                          color="secondary"
+                                      {props.permissions.createTestimonial && (
+                                        <Box
                                           style={{
+                                            paddingTop: "10px",
                                             display: "flex",
-                                            alignItems: "center",
+                                            justifyContent: "end",
                                           }}
+                                          label="Mostrar en la página de inicio"
                                         >
-                                          {" "}
-                                          Mostrar en la página de inicio
-                                        </Typography>
-                                        <Switch
-                                          checked={tile.status}
-                                          color="primary"
-                                          onChange={(event) =>
-                                            ChangeVisibility(event, tile._id)
-                                          }
-                                          name="checkedA"
-                                          inputProps={{
-                                            "aria-label": "secondary checkbox",
-                                          }}
-                                        />
-                                      </Box>
+                                          <Typography
+                                            color="secondary"
+                                            style={{
+                                              display: "flex",
+                                              alignItems: "center",
+                                            }}
+                                          >
+                                            {" "}
+                                            Mostrar en la página de inicio
+                                          </Typography>
+                                          <Switch
+                                            checked={tile.status}
+                                            color="primary"
+                                            onChange={(event) =>
+                                              ChangeVisibility(event, tile._id)
+                                            }
+                                            name="checkedA"
+                                            inputProps={{
+                                              "aria-label":
+                                                "secondary checkbox",
+                                            }}
+                                          />
+                                        </Box>
+                                      )}
                                     </Grid>
                                   </Grid>
                                 </Grid>

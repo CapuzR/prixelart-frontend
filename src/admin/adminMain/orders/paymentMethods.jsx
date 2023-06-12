@@ -137,18 +137,17 @@ export default function PaymentMethods(props) {
           >
             <ViewListIcon />
           </Fab>
-          {/* <Fab color="secondary" aria-label="edit" onClick={()=>{handleUserAction('update')}}>
-            <EditIcon />
-          </Fab> */}
-          <Fab
-            color="primary"
-            aria-label="add"
-            onClick={() => {
-              handlePaymentMethodAction("create");
-            }}
-          >
-            <AddIcon />
-          </Fab>
+          {props.permissions?.createPaymentMethod && (
+            <Fab
+              color="primary"
+              aria-label="add"
+              onClick={() => {
+                handlePaymentMethodAction("create");
+              }}
+            >
+              <AddIcon />
+            </Fab>
+          )}
         </div>
       )}
       <Grid container spacing={3}>
@@ -158,7 +157,10 @@ export default function PaymentMethods(props) {
             {activeCrud === "create" ? (
               <CreatePaymentMethod />
             ) : activeCrud === "read" ? (
-              <ReadPaymentMethods setPaymentMethod={setPaymentMethod} />
+              <ReadPaymentMethods
+                setPaymentMethod={setPaymentMethod}
+                permissions={props.permissions}
+              />
             ) : (
               // : activeCrud == 'update' ?
               <div>

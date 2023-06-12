@@ -103,45 +103,43 @@ export default function ReadPaymentMethods(props) {
             rows.map((row) => (
               <TableRow key={row._id}>
                 <TableCell align="center">
-                  <Fab
-                    color="default"
-                    style={{ width: 35, height: 35 }}
-                    aria-label="edit"
-                    onClick={(e) => {
-                      handleActive(row, "update");
-                    }}
-                  >
-                    <EditIcon />
-                  </Fab>
+                  {props.permissions?.createPaymentMethod && (
+                    <Fab
+                      color="default"
+                      style={{ width: 35, height: 35 }}
+                      aria-label="edit"
+                      onClick={(e) => {
+                        handleActive(row, "update");
+                      }}
+                    >
+                      <EditIcon />
+                    </Fab>
+                  )}
                 </TableCell>
                 <TableCell align="center">
-                  <Checkbox
-                    disabled
-                    checked={row.active}
-                    color="primary"
-                    // inputProps={{ 'aria-label': 'secondary checkbox' }}
-                  />
+                  <Checkbox disabled checked={row.active} color="primary" />
                 </TableCell>
                 <TableCell align="center">{row.name}</TableCell>
                 <TableCell align="center">{row.paymentData}</TableCell>
                 <TableCell align="center">{row.instructions}</TableCell>
                 <TableCell align="center">
-                  {" "}
-                  <Fab
-                    color="default"
-                    style={{
-                      width: 35,
-                      height: 35,
-                      marginLeft: 100,
-                    }}
-                    aria-label="edit"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      deleteMethod(row._id);
-                    }}
-                  >
-                    <DeleteIcon />
-                  </Fab>
+                  {props.permissions?.deletePaymentMethod && (
+                    <Fab
+                      color="default"
+                      style={{
+                        width: 35,
+                        height: 35,
+                        marginLeft: 100,
+                      }}
+                      aria-label="edit"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        deleteMethod(row._id);
+                      }}
+                    >
+                      <DeleteIcon />
+                    </Fab>
+                  )}
                 </TableCell>
               </TableRow>
             ))}

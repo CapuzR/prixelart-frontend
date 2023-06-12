@@ -422,11 +422,7 @@ function ConsumerForm(props) {
                         email: e.target.value,
                       })
                     }
-                    error={
-                      // !validations.isAValidEmail(props.values?.email) ||
-                      // props.value?.email === undefined ||
-                      !validations.isAValidEmail(props.values?.email)
-                    }
+                    error={!validations.isAValidEmail(props.values?.email)}
                     required
                     margin="normal"
                     InputProps={{

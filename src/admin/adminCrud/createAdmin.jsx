@@ -188,7 +188,6 @@ export default function CreateAdmin() {
               variant="outlined"
               style={{ width: "50%" }}
               required
-              // fullWidth
             >
               <InputLabel>Área</InputLabel>
               <Select

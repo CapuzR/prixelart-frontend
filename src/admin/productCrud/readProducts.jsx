@@ -2,6 +2,8 @@ import React from "react";
 import { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
+import Tabs from "@material-ui/core/Tabs";
+import Tab from "@material-ui/core/Tab";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
@@ -19,6 +21,7 @@ import Typography from "@material-ui/core/Typography";
 import Paper from "@material-ui/core/Paper";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { Backdrop } from "@material-ui/core";
+import Box from "@material-ui/core/Box";
 
 const useStyles = makeStyles((theme) => ({
   loading: {
@@ -38,13 +41,33 @@ const useStyles = makeStyles((theme) => ({
 export default function ReadProducts(props) {
   const history = useHistory();
   const classes = useStyles();
-
   const [rows, setRows] = useState();
+  const [discountList, setDiscountList] = useState();
   const [loading, setLoading] = useState(false);
+  const [value, setValue] = useState(0);
 
-  // const [deleteSuccess, setDelete] = useState();
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+  };
 
+  function TabPanel(props) {
+    const { children, value, index } = props;
+    return (
+      <div
+        role="tabpanel"
+        hidden={value !== index}
+        id={`simple-tabpanel-${index}`}
+        aria-labelledby={`simple-tab-${index}`}
+      >
+        {value === index && (
+          <Box p={3}>
+            <Typography>{children}</Typography>
+          </Box>
+        )}
+      </div>
+    );
+  }
   const getRows = async () => {
     setLoading(true);
     const base_url = process.env.REACT_APP_BACKEND_URL + "/product/read-allv1";
@@ -63,8 +86,27 @@ export default function ReadProducts(props) {
     setLoading(false);
   };
 
+  const getDiscounts = async () => {
+    setLoading(true);
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/discount/read-allv1";
+    await axios
+      .post(
+        base_url,
+        { adminToken: localStorage.getItem("adminTokenV") },
+        { withCredentials: true }
+      )
+      .then((response) => {
+        setDiscountList(response.data.discounts);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+    setLoading(false);
+  };
+
   useEffect(() => {
     getRows();
+    getDiscounts();
   }, []);
 
   const handleActive = (product, action) => {
@@ -88,153 +130,244 @@ export default function ReadProducts(props) {
         }, 500)
       );
   };
+
   return (
     <React.Fragment>
       <Backdrop className={classes.backdrop} open={loading}>
         <CircularProgress />
       </Backdrop>
-      <Title>Productos</Title>
-      {rows && (
-        <Table size="small">
-          <TableHead>
-            <TableRow>
-              <TableCell align="center"></TableCell>
-              <TableCell align="center">Imagen</TableCell>
-              <TableCell align="center">Nombre</TableCell>
-              <TableCell align="center">Activo</TableCell>
-              <TableCell align="center">Categoría</TableCell>
-              <TableCell align="center">PVP desde-hasta</TableCell>
-              <TableCell align="center">PVM desde-hasta</TableCell>
-              <TableCell align="center">Tiempo de producción</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {rows &&
-              rows.map((row) => (
-                <TableRow key={row._id}>
-                  <TableCell align="center">
-                    {props.permissions?.createProduct && (
-                      <Fab
-                        color="default"
-                        style={{ width: 35, height: 35 }}
-                        aria-label="edit"
-                        onClick={(e) => {
-                          handleActive(row, "update");
-                        }}
-                      >
-                        <EditIcon />
-                      </Fab>
-                    )}
-                  </TableCell>
-                  <TableCell align="center">
-                    {row.sources.images?.length > 0 ? (
-                      <>
-                        {row.sources.images[0]?.type === "video" ? (
-                          <span
-                            // key={key_id}
-                            dangerouslySetInnerHTML={{
-                              __html: row.sources.images[0]?.url,
-                            }}
-                          />
-                        ) : (
-                          <Paper
-                            elevation={3}
-                            style={{
-                              display: "flex",
-                              justifyContent: "center",
-                              alignContent: "center",
-                              width: 220,
-                              height: 210,
-                              objectFit: "contain",
-                              padding: 10,
-                            }}
-                          >
-                            <img
-                              src={row.sources.images[0]?.url || row.thumbUrl}
-                              width={200}
-                              alt="imageProduct"
+      <Tabs value={value} onChange={handleChange} style={{ width: "70%" }}>
+        <Tab indicator="red" backgroundColor="red" label="Productos" />
+        {/* <Tab label="Descuentos" /> */}
+      </Tabs>
+      <TabPanel value={value} index={0}>
+        {rows && (
+          <Table size="small">
+            <TableHead>
+              <TableRow>
+                <TableCell align="center"></TableCell>
+                <TableCell align="center">Imagen</TableCell>
+                <TableCell align="center">Nombre</TableCell>
+                <TableCell align="center">Activo</TableCell>
+                <TableCell align="center">Categoría</TableCell>
+                <TableCell align="center">PVP desde-hasta</TableCell>
+                <TableCell align="center">PVM desde-hasta</TableCell>
+                <TableCell align="center">Tiempo de producción</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {rows &&
+                rows.map((row) => (
+                  <TableRow key={row._id}>
+                    <TableCell align="center">
+                      {props.permissions?.createProduct && (
+                        <Fab
+                          color="default"
+                          style={{ width: 35, height: 35 }}
+                          aria-label="edit"
+                          onClick={(e) => {
+                            handleActive(row, "update");
+                          }}
+                        >
+                          <EditIcon />
+                        </Fab>
+                      )}
+                    </TableCell>
+                    <TableCell align="center">
+                      {row.sources.images?.length > 0 ? (
+                        <>
+                          {row.sources.images[0]?.type === "video" ? (
+                            <span
+                              // key={key_id}
+                              dangerouslySetInnerHTML={{
+                                __html: row.sources.images[0]?.url,
+                              }}
                             />
-                          </Paper>
-                        )}
+                          ) : (
+                            <Paper
+                              elevation={3}
+                              style={{
+                                display: "flex",
+                                justifyContent: "center",
+                                alignContent: "center",
+                                width: 220,
+                                height: 210,
+                                objectFit: "contain",
+                                padding: 10,
+                              }}
+                            >
+                              <img
+                                src={row.sources.images[0]?.url || row.thumbUrl}
+                                width={200}
+                                alt="imageProduct"
+                              />
+                            </Paper>
+                          )}
 
-                        <Typography
-                          style={{ fontSize: "1rem", color: "#bdbdbd" }}
-                        >{`Cantidad de imagenes: ${row.sources.images.length}`}</Typography>
-                      </>
-                    ) : (
-                      <Paper
-                        elevation={3}
-                        style={{
-                          display: "flex",
-                          justifyContent: "center",
-                          alignContent: "center",
-                          width: 220,
-                          height: 210,
-                          objectFit: "contain",
-                          padding: 10,
-                        }}
-                      >
-                        <img
-                          src={row.thumbUrl}
-                          alt="prix-product"
-                          width={200}
-                        />{" "}
-                      </Paper>
-                    )}
-                  </TableCell>
-                  <TableCell align="center">{row.name}</TableCell>
-                  <TableCell align="center">
-                    <Checkbox
-                      disabled
-                      checked={row.active}
-                      color="primary"
-                      inputProps={{ "aria-label": "secondary checkbox" }}
-                    />
-                  </TableCell>
-                  <TableCell align="center">{row.category}</TableCell>
-                  <TableCell align="center">
-                    ${row.publicPrice.from?.replace(/[$]/gi, "")}
-                    {row.publicPrice.to &&
-                      " - " + row.publicPrice.to?.replace(/[$]/gi, "")}
-                  </TableCell>
-                  <TableCell align="center">
-                    {row.prixerPrice &&
-                      row.prixerPrice.from &&
-                      "$" + row.prixerPrice?.from?.replace(/[$]/gi, "")}
-                    {row.prixerPrice &&
-                      row.prixerPrice.to &&
-                      " - " + row.prixerPrice.to?.replace(/[$]/gi, "")}
-                  </TableCell>
-                  <TableCell align="center">
-                    {row.productionTime && Number(row.productionTime) > 1
-                      ? row.productionTime + " días"
-                      : row.productionTime && row.productionTime + " día"}
-                  </TableCell>
-                  <TableCell align="center">
-                    {props.permissions?.deleteProduct && (
-                      <Fab
-                        color="default"
-                        style={{ width: 35, height: 35 }}
-                        aria-label="Delete"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          deleteProduct(row._id);
-                        }}
-                      >
-                        <DeleteIcon />
-                      </Fab>
-                    )}
-                  </TableCell>
-                </TableRow>
-              ))}
-          </TableBody>
-        </Table>
-      )}
+                          <Typography
+                            style={{ fontSize: "1rem", color: "#bdbdbd" }}
+                          >{`Cantidad de imagenes: ${row.sources.images.length}`}</Typography>
+                        </>
+                      ) : (
+                        <Paper
+                          elevation={3}
+                          style={{
+                            display: "flex",
+                            justifyContent: "center",
+                            alignContent: "center",
+                            width: 220,
+                            height: 210,
+                            objectFit: "contain",
+                            padding: 10,
+                          }}
+                        >
+                          <img
+                            src={row.thumbUrl}
+                            alt="prix-product"
+                            width={200}
+                          />{" "}
+                        </Paper>
+                      )}
+                    </TableCell>
+                    <TableCell align="center">{row.name}</TableCell>
+                    <TableCell align="center">
+                      <Checkbox
+                        disabled
+                        checked={row.active}
+                        color="primary"
+                        inputProps={{ "aria-label": "secondary checkbox" }}
+                      />
+                    </TableCell>
+                    <TableCell align="center">{row.category}</TableCell>
+                    <TableCell align="center">
+                      ${row.publicPrice.from?.replace(/[$]/gi, "")}
+                      {row.publicPrice.to &&
+                        " - " + row.publicPrice.to?.replace(/[$]/gi, "")}
+                    </TableCell>
+                    <TableCell align="center">
+                      {row.prixerPrice &&
+                        row.prixerPrice.from &&
+                        "$" + row.prixerPrice?.from?.replace(/[$]/gi, "")}
+                      {row.prixerPrice &&
+                        row.prixerPrice.to &&
+                        " - " + row.prixerPrice.to?.replace(/[$]/gi, "")}
+                    </TableCell>
+                    <TableCell align="center">
+                      {row.productionTime && Number(row.productionTime) > 1
+                        ? row.productionTime + " días"
+                        : row.productionTime && row.productionTime + " día"}
+                    </TableCell>
+                    <TableCell align="center">
+                      {props.permissions?.deleteProduct && (
+                        <Fab
+                          color="default"
+                          style={{ width: 35, height: 35 }}
+                          aria-label="Delete"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            deleteProduct(row._id);
+                          }}
+                        >
+                          <DeleteIcon />
+                        </Fab>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                ))}
+            </TableBody>
+          </Table>
+        )}
+      </TabPanel>
+      <TabPanel value={value} index={1}>
+        {discountList ? (
+          <Table size="small">
+            <TableHead>
+              <TableRow>
+                <TableCell align="center"></TableCell>
+                <TableCell align="center">Nombre</TableCell>
+                <TableCell align="center">Activo</TableCell>
+                <TableCell align="center">Tipo</TableCell>
+                <TableCell align="center">Valor</TableCell>
+                <TableCell align="center">Productos aplicados</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {discountList &&
+                discountList.map((dis) => (
+                  <TableRow key={dis._id}>
+                    <TableCell align="center">
+                      {props.permissions?.createProduct && (
+                        <Fab
+                          color="default"
+                          style={{ width: 35, height: 35 }}
+                          aria-label="edit"
+                          onClick={(e) => {
+                            handleActive(dis, "update");
+                          }}
+                        >
+                          <EditIcon />
+                        </Fab>
+                      )}
+                    </TableCell>
+                    <TableCell align="center">{dis.name}</TableCell>
+                    <TableCell align="center">
+                      <Checkbox
+                        disabled
+                        checked={dis.active || true}
+                        color="primary"
+                        inputProps={{ "aria-label": "secondary checkbox" }}
+                      />
+                    </TableCell>
+                    <TableCell align="center">{dis.type}</TableCell>
+                    <TableCell align="center">
+                      {dis.type === "Porcentaje"
+                        ? "%" + dis.value
+                        : "$" + dis.value}
+                    </TableCell>
+                    <TableCell align="center">
+                      <ul>
+                        {dis.appliedProducts.map((el) => (
+                          <li>{el}</li>
+                        ))}
+                      </ul>
+                    </TableCell>
+
+                    <TableCell align="center">
+                      {props.permissions?.deleteProduct && (
+                        <Fab
+                          color="default"
+                          style={{ width: 35, height: 35 }}
+                          aria-label="Delete"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            deleteProduct(dis._id);
+                          }}
+                        >
+                          <DeleteIcon />
+                        </Fab>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                ))}
+            </TableBody>
+          </Table>
+        ) : (
+          <Typography
+            variant="h6"
+            color="secondary"
+            style={{ display: "flex", justifyContent: "center" }}
+          >
+            No tenemos descuentos por ahora.
+          </Typography>
+        )}
+      </TabPanel>
+
       <Snackbar
         open={deleteOpen}
         autoHideDuration={3000}
         message={"Producto eliminado."}
       />
+      {props.handleCallback(value)}
     </React.Fragment>
   );
 }

@@ -44,9 +44,6 @@ export default function ReadAdmins(props) {
   const [message, setMessage] = useState();
   const [snackbar, setSnackbar] = useState(false);
   const [up, setUp] = useState();
-  const [activeCrud, setActiveCrud] = useState("read");
-  const [admin, setAdmin] = useState();
-
   const loadAdmins = async () => {
     const base_url = process.env.REACT_APP_BACKEND_URL + "/admin/read-all";
     try {
@@ -185,34 +182,36 @@ export default function ReadAdmins(props) {
                   <TableCell align="center">{row.email}</TableCell>
                   <TableCell align="center">{row.username}</TableCell>
                   <TableCell align="center">{row.phone}</TableCell>
-                  <TableCell align="center">
-                    <Fab
-                      color="default"
-                      style={{
-                        width: 35,
-                        height: 35,
-                        marginRight: 16,
-                      }}
-                      onClick={(e) => {
-                        handleActive(row, "update");
-                      }}
-                    >
-                      <EditIcon />
-                    </Fab>
-                    <Fab
-                      color="default"
-                      style={{
-                        width: 35,
-                        height: 35,
-                      }}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        deleteMethod(row.username);
-                      }}
-                    >
-                      <DeleteIcon />
-                    </Fab>
-                  </TableCell>
+                  {props.permissions.modifyAdmins && (
+                    <TableCell align="center">
+                      <Fab
+                        color="default"
+                        style={{
+                          width: 35,
+                          height: 35,
+                          marginRight: 16,
+                        }}
+                        onClick={(e) => {
+                          handleActive(row, "update");
+                        }}
+                      >
+                        <EditIcon />
+                      </Fab>
+                      <Fab
+                        color="default"
+                        style={{
+                          width: 35,
+                          height: 35,
+                        }}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          deleteMethod(row.username);
+                        }}
+                      >
+                        <DeleteIcon />
+                      </Fab>
+                    </TableCell>
+                  )}
                 </TableRow>
               ))}
           </TableBody>
@@ -247,7 +246,7 @@ export default function ReadAdmins(props) {
                         }}
                       >
                         <ul style={{ paddingLeft: 20 }}>
-                          <Typography varaint="p" color="secondary">
+                          <Typography variant="p" color="secondary">
                             Pedidos
                           </Typography>
                           {role.detailOrder && <li>Ver detalles de pedido</li>}
@@ -277,7 +276,7 @@ export default function ReadAdmins(props) {
                         }}
                       >
                         <ul style={{ paddingLeft: 20 }}>
-                          <Typography varaint="p" color="secondary">
+                          <Typography variant="p" color="secondary">
                             Productos
                           </Typography>
                           {role.createProduct && (
@@ -288,7 +287,9 @@ export default function ReadAdmins(props) {
                       </div>
                     )}
 
-                    {(role.modifyBanners || role.modifyTermsAndCo) && (
+                    {(role.modifyBanners ||
+                      role.modifyTermsAndCo ||
+                      role.modifyDollar) && (
                       <div
                         style={{
                           borderWidth: "1px",
@@ -301,12 +302,15 @@ export default function ReadAdmins(props) {
                         }}
                       >
                         <ul style={{ paddingLeft: 20 }}>
-                          <Typography varaint="p" color="secondary">
+                          <Typography variant="p" color="secondary">
                             Preferencias
                           </Typography>
                           {role.modifyBanners && <li>Modificar banners</li>}
                           {role.modifyTermsAndCo && (
                             <li>Modificar términos y condiciones</li>
+                          )}
+                          {role.modifyDollar && (
+                            <li>Modificar valor del dolar</li>
                           )}
                         </ul>
                       </div>
@@ -325,7 +329,7 @@ export default function ReadAdmins(props) {
                         }}
                       >
                         <ul style={{ paddingLeft: 20 }}>
-                          <Typography varaint="p" color="secondary">
+                          <Typography variant="p" color="secondary">
                             Métodos de pago
                           </Typography>
                           {role.createPaymentMethod && (
@@ -352,7 +356,7 @@ export default function ReadAdmins(props) {
                         }}
                       >
                         <ul style={{ paddingLeft: 20 }}>
-                          <Typography varaint="p" color="secondary">
+                          <Typography variant="p" color="secondary">
                             Métodos de envío
                           </Typography>
                           {role.createShippingMethod && (
@@ -364,35 +368,106 @@ export default function ReadAdmins(props) {
                         </ul>
                       </div>
                     )}
+                    {role.prixerBan && (
+                      <div
+                        style={{
+                          borderWidth: "1px",
+                          borderStyle: "solid",
+                          marginLeft: 5,
+
+                          borderRadius: 10,
+                          borderColor: "silver",
+                          width: "35%",
+                        }}
+                      >
+                        <ul style={{ paddingLeft: 20 }}>
+                          <Typography variant="p" color="secondary">
+                            Prixers{" "}
+                          </Typography>
+                          {role.prixerBan && <li>Banear a Prixers</li>}
+                        </ul>
+                      </div>
+                    )}
+                    {(role.createTestimonial || role.deleteTestimonial) && (
+                      <div
+                        style={{
+                          borderWidth: "1px",
+                          borderStyle: "solid",
+                          marginLeft: 5,
+
+                          borderRadius: 10,
+                          borderColor: "silver",
+                          width: "35%",
+                        }}
+                      >
+                        <ul style={{ paddingLeft: 20 }}>
+                          <Typography variant="p" color="secondary">
+                            Testimonios
+                          </Typography>
+                          {role.createTestimonial && (
+                            <li>
+                              Crear, modificar, mostrar y ordenar testimonios
+                            </li>
+                          )}
+                          {role.deleteTestimonial && (
+                            <li>Eliminar testimonios</li>
+                          )}
+                        </ul>
+                      </div>
+                    )}
+                    {role.modifyAdmins && (
+                      <div
+                        style={{
+                          borderWidth: "1px",
+                          borderStyle: "solid",
+                          marginLeft: 5,
+
+                          borderRadius: 10,
+                          borderColor: "silver",
+                          width: "35%",
+                        }}
+                      >
+                        <ul style={{ paddingLeft: 20 }}>
+                          <Typography variant="p" color="secondary">
+                            Usuarios
+                          </Typography>
+                          {role.modifyAdmins && (
+                            <li>Crear, modificar y eliminar Admins</li>
+                          )}
+                        </ul>
+                      </div>
+                    )}
                   </TableCell>
-                  <TableCell align="right">
-                    <Fab
-                      color="default"
-                      style={{
-                        width: 35,
-                        height: 35,
-                        marginRight: 16,
-                      }}
-                      onClick={(e) => {
-                        handleActiveRole(role);
-                      }}
-                    >
-                      <EditIcon />
-                    </Fab>
-                    <Fab
-                      color="default"
-                      style={{
-                        width: 35,
-                        height: 35,
-                      }}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        deleteRole(role._id);
-                      }}
-                    >
-                      <DeleteIcon />
-                    </Fab>
-                  </TableCell>
+                  {props.permissions.modifyAdmins && (
+                    <TableCell align="right">
+                      <Fab
+                        color="default"
+                        style={{
+                          width: 35,
+                          height: 35,
+                          marginRight: 16,
+                        }}
+                        onClick={(e) => {
+                          handleActiveRole(role);
+                        }}
+                      >
+                        <EditIcon />
+                      </Fab>
+                      <Fab
+                        color="default"
+                        style={{
+                          width: 35,
+                          height: 35,
+                        }}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          deleteRole(role._id);
+                        }}
+                      >
+                        <DeleteIcon />
+                      </Fab>
+                    </TableCell>
+                  )}
                 </TableRow>
               ))
             ) : (

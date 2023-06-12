@@ -189,7 +189,6 @@ export default function ReadShippingMethod(props) {
     readMethods();
     setLoading(false);
   };
-
   return (
     <React.Fragment>
       <Backdrop
@@ -211,7 +210,7 @@ export default function ReadShippingMethod(props) {
           >
             <ViewListIcon />
           </Fab>
-          {props.permissions.createShippingMethod && (
+          {props.permissions?.createShippingMethod && (
             <Fab
               color="primary"
               aria-label="add"
@@ -245,7 +244,7 @@ export default function ReadShippingMethod(props) {
                         rows.map((row) => (
                           <TableRow key={row._id}>
                             <TableCell>
-                              {props.permissions.createShippingMethod && (
+                              {props.permissions?.createShippingMethod && (
                                 <Fab
                                   color="default"
                                   style={{
@@ -272,7 +271,7 @@ export default function ReadShippingMethod(props) {
                             <TableCell align="center">{row.name}</TableCell>
                             <TableCell align="center">${row.price}</TableCell>
                             <TableCell>
-                              {props.permissions.deleteShippingMethod && (
+                              {props.permissions?.deleteShippingMethod && (
                                 <Fab
                                   color="default"
                                   style={{

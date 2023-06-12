@@ -50,6 +50,7 @@ import Collapse from "@material-ui/core/Collapse";
 import Divider from "@material-ui/core/Divider";
 import { useHistory } from "react-router-dom";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
+import GetAppIcon from "@material-ui/icons/GetApp";
 import Switch from "@material-ui/core/Switch";
 import Snackbar from "@material-ui/core/Snackbar";
 
@@ -439,6 +440,22 @@ export default function Orders(props) {
     setShowVoucher(!showVoucher);
   };
 
+  const downloadOrders = async () => {
+    setLoading(true);
+    const url = process.env.REACT_APP_BACKEND_URL + "/downloadOrders";
+    await axios
+      .get(url, { adminToken: localStorage.getItem("adminTokenV") })
+      .then((res) => {
+        if (res.data.message) {
+          setErrorMessage(res.data.message);
+          setSnackBarError(true);
+        }
+      });
+    setLoading(false);
+    setErrorMessage("Archivo descargado exitosamente");
+    setSnackBarError(true);
+  };
+
   const createOrder = async () => {
     setLoading(true);
 
@@ -487,6 +504,7 @@ export default function Orders(props) {
         ci: consumer.data.newConsumer.ci,
         email: consumer.data.newConsumer.email,
         phone: consumer.data.newConsumer.phone,
+        address: consumer.data.newConsumer.address,
       },
       shippingData: {
         name: props.values?.shippingName,
@@ -510,10 +528,14 @@ export default function Orders(props) {
       shippingCost: shippingCost,
       total: getTotal(props.buyState),
       createdOn: new Date(),
-      createdBy: consumer.data.newConsumer,
+      createdBy: {
+        username:
+          JSON.parse(localStorage.getItem("adminToken")).firstname +
+          " " +
+          JSON.parse(localStorage.getItem("adminToken")).lastname,
+      },
       orderType: "Particular",
-      // consumerId: consumer.data.newConsumer._id,
-      status: "Procesando",
+      status: "Por producir",
       orderPaymentMethod: orderPaymentMethod,
     };
     const base_url3 = process.env.REACT_APP_BACKEND_URL + "/order/sendEmail";
@@ -742,7 +764,7 @@ export default function Orders(props) {
   const closeAd = () => {
     setSnackBarError(false);
   };
-
+  console.log(rows);
   return (
     <>
       <Backdrop
@@ -763,27 +785,50 @@ export default function Orders(props) {
             >
               <Title>Órdenes</Title>
               <div>
-                {props.permissions.createOrder && (
+                {/* <Tooltip
+                  title="Descargar listado"
+                  style={{ height: 40, width: 40 }}
+                >
+                  <Fab
+                    color="primary"
+                    size="small"
+                    onClick={downloadOrders}
+                    style={{ marginRight: 10 }}
+                  >
+                    <GetAppIcon />
+                  </Fab>
+                </Tooltip> */}
+                {props.permissions?.createOrder && (
+                  <Tooltip
+                    title="Crear pedido"
+                    style={{ height: 40, width: 40 }}
+                  >
+                    <Fab
+                      color="primary"
+                      size="small"
+                      onClick={() => {
+                        setOpenCreateOrder(true);
+                      }}
+                      style={{ marginRight: 10 }}
+                    >
+                      <AddIcon />
+                    </Fab>
+                  </Tooltip>
+                )}
+                <Tooltip
+                  title="Recargar listado"
+                  style={{ height: 40, width: 40 }}
+                >
                   <Fab
                     color="primary"
                     size="small"
                     onClick={() => {
-                      setOpenCreateOrder(true);
+                      readOrders();
                     }}
-                    style={{ marginRight: 10 }}
                   >
-                    <AddIcon />
+                    <RefreshIcon />
                   </Fab>
-                )}
-                <Fab
-                  color="primary"
-                  size="small"
-                  onClick={() => {
-                    readOrders();
-                  }}
-                >
-                  <RefreshIcon />
-                </Fab>
+                </Tooltip>
               </div>
             </div>
 
@@ -826,7 +871,7 @@ export default function Orders(props) {
                             {row.createdOn.substring(0, 10)}
                           </TableCell>
                           <TableCell align="center">
-                            {row.createdBy.firstname} {row.createdBy.lastname}
+                            {row.basicData?.firstname} {row.basicData?.lastname}
                           </TableCell>
                           <TableCell align="center">
                             <Button
@@ -965,7 +1010,7 @@ export default function Orders(props) {
           {!showVoucher ? (
             modalContent && (
               <>
-                {!props.permissions.detailOrder ? (
+                {!props.permissions?.detailOrder ? (
                   <Grid
                     style={{
                       display: "flex",
@@ -1088,7 +1133,7 @@ export default function Orders(props) {
                     ))}
                   </Grid>
                 ) : (
-                  props.permissions.detailOrder && (
+                  props.permissions?.detailOrder && (
                     <>
                       <Grid
                         style={{
@@ -1284,10 +1329,12 @@ export default function Orders(props) {
                                   modalContent?.shippingData?.address}
                               </div>
                             ) : (
-                              <div>
-                                {"Dirección de envío: " +
-                                  modalContent?.basicData?.address}
-                              </div>
+                              modalContent?.basicData?.address && (
+                                <div>
+                                  {"Dirección de envío: " +
+                                    modalContent?.basicData?.address}
+                                </div>
+                              )
                             )}
                           </Grid>
                         )}
@@ -1305,6 +1352,10 @@ export default function Orders(props) {
                             }}
                           >
                             <strong>Datos de facturación</strong>
+                            <div>
+                              {"Pedido creado por: " +
+                                modalContent.createdBy.username}
+                            </div>
                             {modalContent.billingData.name &&
                               modalContent.billingData.lastname && (
                                 <div>
@@ -2759,7 +2810,7 @@ export default function Orders(props) {
                                     )}
                               </strong>
 
-                              {props.values.shippingMethod && (
+                              {props?.values?.shippingMethod && (
                                 <strong>
                                   Envío:
                                   {currency

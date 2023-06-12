@@ -10,18 +10,9 @@ import Button from "@material-ui/core/Button";
 import Grid from "@material-ui/core/Grid";
 import Snackbar from "@material-ui/core/Snackbar";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import IconButton from "@material-ui/core/IconButton";
-import OutlinedInput from "@material-ui/core/OutlinedInput";
-import InputLabel from "@material-ui/core/InputLabel";
-import InputAdornment from "@material-ui/core/InputAdornment";
 import FormControl from "@material-ui/core/FormControl";
-import Visibility from "@material-ui/icons/Visibility";
-import VisibilityOff from "@material-ui/icons/VisibilityOff";
-import MenuItem from "@material-ui/core/MenuItem";
-import Select from "@material-ui/core/Select";
 import { Switch, Typography } from "@material-ui/core";
 import clsx from "clsx";
-import validations from "../../utils/validations";
 
 const useStyles = makeStyles((theme) => ({
   seeMore: {
@@ -49,6 +40,9 @@ export default function UpdateAdminRole(props) {
   const [deleteProduct, setDeleteProduct] = useState(
     props.admin.deleteProduct || false
   );
+  const [modifyDollar, setModifyDollar] = useState(
+    props.admin.modifyDollar || false
+  );
   const [modifyBanners, setModifyBanners] = useState(
     props.admin.modifyBanners || false
   );
@@ -67,6 +61,18 @@ export default function UpdateAdminRole(props) {
   const [deleteShippingMethod, setDeleteShippingMethod] = useState(
     props.admin.deleteShippingMethod || false
   );
+  const [prixerBan, setPrixerBan] = useState(props.admin.prixerBan || false);
+  const [createTestimonial, setCreateTestimonial] = useState(
+    props.admin.createTestimonial || false
+  );
+  const [deleteTestimonial, setDeleteTestimonial] = useState(
+    props.admin.deleteTestimonial || false
+  );
+
+  const [modifyAdmins, setModifyAdmins] = useState(
+    props.admin.modifyAdmins || false
+  );
+
   const [loading, setLoading] = useState(false);
   const [buttonState, setButtonState] = useState(false);
 
@@ -92,11 +98,16 @@ export default function UpdateAdminRole(props) {
         createProduct: createProduct,
         deleteProduct: deleteProduct,
         modifyBanners: modifyBanners,
+        modifyDollar: modifyDollar,
         modifyTermsAndCo: modifyTermsAndCo,
         createPaymentMethod: createPaymentMethod,
         deletePaymentMethod: deletePaymentMethod,
         createShippingMethod: createShippingMethod,
         deleteShippingMethod: deleteShippingMethod,
+        prixerBan: prixerBan,
+        createTestimonial: createTestimonial,
+        deleteTestimonial: deleteTestimonial,
+        modifyAdmins: modifyAdmins,
       };
       const base_url =
         process.env.REACT_APP_BACKEND_URL +
@@ -151,6 +162,10 @@ export default function UpdateAdminRole(props) {
     setModifyTermsAndCo(!modifyTermsAndCo);
   };
 
+  const handleChangeModifyDollar = () => {
+    setModifyDollar(!modifyDollar);
+  };
+
   const handleChangeCreatePaymentMethod = () => {
     setCreatePaymentMethod(!createPaymentMethod);
   };
@@ -165,6 +180,22 @@ export default function UpdateAdminRole(props) {
 
   const handleChangeDeleteShippingMethod = () => {
     setDeleteShippingMethod(!deleteShippingMethod);
+  };
+
+  const handleChangePrixerBan = () => {
+    setPrixerBan(!prixerBan);
+  };
+
+  const handleChangeCreateTestimonial = () => {
+    setCreateTestimonial(!createTestimonial);
+  };
+
+  const handleChangeDeleteTestimonial = () => {
+    setDeleteTestimonial(!deleteTestimonial);
+  };
+
+  const handleChangeModifyAdmins = () => {
+    setModifyAdmins(!modifyAdmins);
   };
 
   return (
@@ -402,6 +433,27 @@ export default function UpdateAdminRole(props) {
                   justifyContent: "space-between",
                 }}
               >
+                <Typography>Permiso para actualizar valor del dolar</Typography>
+                <Switch
+                  checked={modifyDollar}
+                  onChange={handleChangeModifyDollar}
+                  name="checkedA"
+                  color="primary"
+                />
+              </FormControl>
+            </div>
+            <div>
+              <FormControl
+                className={clsx(classes.margin, classes.textField)}
+                variant="outlined"
+                style={{
+                  width: "90%",
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
+              >
                 <Typography>Permiso para modificar banners</Typography>
                 <Switch
                   checked={modifyBanners}
@@ -561,6 +613,160 @@ export default function UpdateAdminRole(props) {
                 <Switch
                   checked={deleteShippingMethod}
                   onChange={handleChangeDeleteShippingMethod}
+                  name="checkedA"
+                  color="primary"
+                />
+              </FormControl>
+            </div>
+          </Grid>
+          <Grid
+            item
+            xs={12}
+            md={5}
+            style={{
+              border: "2px",
+              borderStyle: "solid",
+              borderColor: "silver",
+              borderRadius: "10px",
+              marginRight: "20px",
+              marginLeft: "20px",
+              marginTop: "20px",
+            }}
+          >
+            <Typography
+              varaint="p"
+              color="secondary"
+              style={{ marginLeft: "20px" }}
+            >
+              Prixers{" "}
+            </Typography>
+            <div>
+              <FormControl
+                className={clsx(classes.margin, classes.textField)}
+                variant="outlined"
+                style={{
+                  width: "90%",
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Typography>Permiso para banear Prixer </Typography>
+                <Switch
+                  checked={prixerBan}
+                  onChange={handleChangePrixerBan}
+                  name="checkedA"
+                  color="primary"
+                />
+              </FormControl>
+            </div>
+          </Grid>
+
+          <Grid
+            item
+            xs={12}
+            md={5}
+            style={{
+              border: "2px",
+              borderStyle: "solid",
+              borderColor: "silver",
+              borderRadius: "10px",
+              marginRight: "20px",
+              marginLeft: "20px",
+              marginTop: "20px",
+            }}
+          >
+            <Typography
+              varaint="p"
+              color="secondary"
+              style={{ marginLeft: "20px" }}
+            >
+              Testimonios
+            </Typography>
+            <div>
+              <FormControl
+                className={clsx(classes.margin, classes.textField)}
+                variant="outlined"
+                style={{
+                  width: "90%",
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Typography>
+                  Permiso para crear, modificar, mostrar y ordenar testimonios{" "}
+                </Typography>
+                <Switch
+                  checked={createTestimonial}
+                  onChange={handleChangeCreateTestimonial}
+                  name="checkedA"
+                  color="primary"
+                />
+              </FormControl>
+              <FormControl
+                className={clsx(classes.margin, classes.textField)}
+                variant="outlined"
+                style={{
+                  width: "90%",
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Typography>Permiso para eliminar testimonios </Typography>
+                <Switch
+                  checked={deleteTestimonial}
+                  onChange={handleChangeDeleteTestimonial}
+                  name="checkedA"
+                  color="primary"
+                />
+              </FormControl>
+            </div>
+          </Grid>
+
+          <Grid
+            item
+            xs={12}
+            md={5}
+            style={{
+              border: "2px",
+              borderStyle: "solid",
+              borderColor: "silver",
+              borderRadius: "10px",
+              marginRight: "20px",
+              marginLeft: "20px",
+              marginTop: "20px",
+            }}
+          >
+            <Typography
+              varaint="p"
+              color="secondary"
+              style={{ marginLeft: "20px" }}
+            >
+              Usuarios{" "}
+            </Typography>
+            <div>
+              <FormControl
+                className={clsx(classes.margin, classes.textField)}
+                variant="outlined"
+                style={{
+                  width: "90%",
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Typography>
+                  Permiso para crear, modificar y eliminar Admins{" "}
+                </Typography>
+                <Switch
+                  checked={modifyAdmins}
+                  onChange={handleChangeModifyAdmins}
                   name="checkedA"
                   color="primary"
                 />

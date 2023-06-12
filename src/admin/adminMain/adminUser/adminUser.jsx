@@ -100,7 +100,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function AdminUsers() {
+export default function AdminUsers(props) {
   const classes = useStyles();
   const location = useLocation();
   const history = useHistory();
@@ -134,33 +134,32 @@ export default function AdminUsers() {
   }
   return (
     <div style={{ position: "relative" }}>
-      {/* {page === 0 && ( */}
-      <div style={{ position: "absolute", right: 10, top: 20 }}>
-        <Fab
-          color="default"
-          aria-label="edit"
-          onClick={() => {
-            handleUserAction("read");
-          }}
-          style={{ right: 10 }}
-        >
-          <ViewListIcon />
-        </Fab>
-        <Fab
-          color="primary"
-          aria-label="add"
-          onClick={() => {
-            page === 0
-              ? handleUserAction("create")
-              : handleUserAction("createRole");
-          }}
-        >
-          <AddIcon />
-        </Fab>
-      </div>
-      {/* )} */}
+      {props.permissions.modifyAdmins && (
+        <div style={{ position: "absolute", right: 10, top: 20 }}>
+          <Fab
+            color="default"
+            aria-label="edit"
+            onClick={() => {
+              handleUserAction("read");
+            }}
+            style={{ right: 10 }}
+          >
+            <ViewListIcon />
+          </Fab>
+          <Fab
+            color="primary"
+            aria-label="add"
+            onClick={() => {
+              page === 0
+                ? handleUserAction("create")
+                : handleUserAction("createRole");
+            }}
+          >
+            <AddIcon />
+          </Fab>
+        </div>
+      )}
       <Grid container spacing={4}>
-        {/* Chart */}
         <Grid item xs={12} md={12} lg={12}>
           <Paper className={fixedHeightPaper}>
             {activeCrud === "create" ? (
@@ -170,6 +169,7 @@ export default function AdminUsers() {
                 handleCallback={Callback}
                 setActiveCrud={setActiveCrud}
                 handleCallback2={Callback2}
+                permissions={props.permissions}
               />
             ) : activeCrud === "update" ? (
               <UpdateAdmin admin={admin} />

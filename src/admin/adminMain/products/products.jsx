@@ -19,7 +19,7 @@ import CreateProduct from "../../productCrud/createProduct";
 import UpdateProduct from "../../productCrud/updateProduct";
 import DisableProduct from "../../productCrud/disableProduct";
 import ReadProducts from "../../productCrud/readProducts";
-
+import CreateDiscount from "./createDiscount";
 const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
@@ -98,7 +98,7 @@ const useStyles = makeStyles((theme) => ({
     height: "auto",
   },
   fixedHeight: {
-    height: "auto",
+    // height: "auto",
     overflow: "hidden",
   },
   fab: {
@@ -132,7 +132,11 @@ export default function Products(props) {
   const [termsAgreeVar, setTermsAgreeVar] = useState(true);
   const [value, setValue] = useState("");
   const [activeCrud, setActiveCrud] = useState("read");
-  // const [permissions, setPermissions] = useState();
+  const [page, setPage] = useState(0);
+
+  function Callback(childData) {
+    setPage(childData);
+  }
 
   const [product, setProduct] = useState(
     localStorage.getItem("product")
@@ -161,23 +165,6 @@ export default function Products(props) {
       JSON.parse(localStorage.getItem("token")) && TermsAgreeModal();
     }
   }, []);
-
-  // const checkP = () => {
-  //   const base_url =
-  //     process.env.REACT_APP_BACKEND_URL + "/admin/CheckPermissions";
-  //   axios
-  //     .post(base_url, { adminToken: localStorage.getItem("adminTokenV") })
-  //     .then((response) => {
-  //       setPermissions(response.data.readedRole);
-  //     })
-  //     .catch((error) => {
-  //       console.log(error);
-  //     });
-  // };
-
-  // useEffect(() => {
-  //   checkP();
-  // }, []);
 
   const getTerms = () => {
     const base_url =
@@ -240,7 +227,9 @@ export default function Products(props) {
                 color="primary"
                 aria-label="add"
                 onClick={() => {
-                  handleProductAction("create");
+                  page === 0
+                    ? handleProductAction("create")
+                    : handleProductAction("createDiscount");
                 }}
               >
                 <AddIcon />
@@ -303,13 +292,13 @@ export default function Products(props) {
           </div>
         )}
         <Grid container spacing={3} style={{ margin: isDesktop ? "12px" : "" }}>
-          {/* Chart */}
           <Grid item xs={12} md={12} lg={12}>
             <Paper className={fixedHeightPaper}>
               {activeCrud === "create" ? (
                 <CreateProduct />
               ) : activeCrud === "read" ? (
                 <ReadProducts
+                  handleCallback={Callback}
                   setProduct={setProduct}
                   permissions={props.permissions}
                 />
@@ -320,6 +309,10 @@ export default function Products(props) {
                     product={product}
                     setProductEdit={setProductEdit}
                   />
+                </div>
+              ) : activeCrud === "createDiscount" ? (
+                <div style={{ height: "155vh" }}>
+                  <CreateDiscount />
                 </div>
               ) : (
                 <DisableProduct />

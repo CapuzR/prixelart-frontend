@@ -182,7 +182,7 @@ export default function ReadAdmins(props) {
                   <TableCell align="center">{row.email}</TableCell>
                   <TableCell align="center">{row.username}</TableCell>
                   <TableCell align="center">{row.phone}</TableCell>
-                  {props.permissions.modifyAdmins && (
+                  {props.permissions?.modifyAdmins && (
                     <TableCell align="center">
                       <Fab
                         color="default"
@@ -438,7 +438,7 @@ export default function ReadAdmins(props) {
                       </div>
                     )}
                   </TableCell>
-                  {props.permissions.modifyAdmins && (
+                  {props.permissions?.modifyAdmins && (
                     <TableCell align="right">
                       <Fab
                         color="default"

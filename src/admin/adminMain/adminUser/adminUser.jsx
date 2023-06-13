@@ -134,7 +134,7 @@ export default function AdminUsers(props) {
   }
   return (
     <div style={{ position: "relative" }}>
-      {props.permissions.modifyAdmins && (
+      {props.permissions?.modifyAdmins && (
         <div style={{ position: "absolute", right: 10, top: 20 }}>
           <Fab
             color="default"

@@ -325,7 +325,7 @@ export default function Testimonials(props) {
             justifyContent: "center",
           }}
         >
-          {props.permissions.createTestimonial && (
+          {props.permissions?.createTestimonial && (
             <Grid
               style={{
                 padding: isMobile ? "0px" : "24px",
@@ -602,7 +602,7 @@ export default function Testimonials(props) {
                                       marginBottom={2}
                                       style={{ width: "100%" }}
                                     >
-                                      {props.permissions.createTestimonial && (
+                                      {props.permissions?.createTestimonial && (
                                         <Box
                                           style={{
                                             display: "flex",
@@ -620,7 +620,7 @@ export default function Testimonials(props) {
                                             <EditIcon color={"secondary"} />
                                           </IconButton>
                                           {props.permissions
-                                            .deleteTestimonial && (
+                                            ?.deleteTestimonial && (
                                             <IconButton
                                               onClick={() =>
                                                 deleteTestimonial(tile._id)
@@ -690,7 +690,7 @@ export default function Testimonials(props) {
                                           {tile.footer}
                                         </Typography>
                                       </Box>
-                                      {props.permissions.createTestimonial && (
+                                      {props.permissions?.createTestimonial && (
                                         <Box
                                           style={{
                                             paddingTop: "10px",

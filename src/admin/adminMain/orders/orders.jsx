@@ -785,7 +785,7 @@ export default function Orders(props) {
             >
               <Title>Órdenes</Title>
               <div>
-                {/* <Tooltip
+                <Tooltip
                   title="Descargar listado"
                   style={{ height: 40, width: 40 }}
                 >
@@ -797,7 +797,7 @@ export default function Orders(props) {
                   >
                     <GetAppIcon />
                   </Fab>
-                </Tooltip> */}
+                </Tooltip>
                 {props.permissions?.createOrder && (
                   <Tooltip
                     title="Crear pedido"

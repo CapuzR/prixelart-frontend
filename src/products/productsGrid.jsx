@@ -226,6 +226,170 @@ export default function ProductGrid(props) {
     setCurrency(!currency);
   };
 
+  const priceSelect = (item) => {
+    if (
+      (JSON.parse(localStorage?.getItem("token")) ||
+        JSON.parse(localStorage?.getItem("adminToken"))) &&
+      (JSON.parse(localStorage?.getItem("token"))?.username ||
+        JSON.parse(localStorage?.getItem("adminToken"))?.username) &&
+      item.prixerEquation !== "" &&
+      currency
+    ) {
+      return (
+        "PVM: Bs" +
+        (item.prixerEquation * props.dollarValue).toLocaleString("de-DE", {
+          minimumFractionDigits: 2,
+        })
+      );
+    } else if (
+      (JSON.parse(localStorage.getItem("token")) ||
+        JSON.parse(localStorage.getItem("adminToken"))) &&
+      (JSON.parse(localStorage.getItem("token"))?.username ||
+        JSON.parse(localStorage.getItem("adminToken"))?.username) &&
+      item.prixerEquation !== ""
+    ) {
+      return (
+        "PVP: $" +
+        item.prixerEquation.toLocaleString("de-DE", {
+          minimumFractionDigits: 2,
+        })
+      );
+    } else if (
+      (JSON.parse(localStorage.getItem("token")) ||
+        JSON.parse(localStorage.getItem("adminToken"))) &&
+      (JSON.parse(localStorage.getItem("token"))?.username ||
+        JSON.parse(localStorage.getItem("adminToken"))?.username) &&
+      item.attributes !== [] &&
+      item.prixerPrice.to !== item.prixerPrice.from &&
+      item.prixerPrice.to !== "" &&
+      item.prixerPrice.to !== null &&
+      currency
+    ) {
+      return (
+        "PVM: Bs" +
+        (
+          Number(
+            item.prixerPrice.from.replace(/[$]/gi, "").replace(/[,]/gi, ".")
+          ) * props.dollarValue
+        ).toLocaleString("de-DE", {
+          minimumFractionDigits: 2,
+        }) +
+        " - " +
+        Number(
+          item.prixerPrice.to.replace(/[$]/gi, "").replace(/[,]/gi, ".") *
+            props.dollarValue
+        ).toLocaleString("de-DE", {
+          minimumFractionDigits: 2,
+        })
+      );
+    } else if (
+      (JSON.parse(localStorage.getItem("token")) ||
+        JSON.parse(localStorage.getItem("adminToken"))) &&
+      (JSON.parse(localStorage.getItem("token"))?.username ||
+        JSON.parse(localStorage.getItem("adminToken"))?.username) &&
+      item.attributes !== [] &&
+      item.prixerPrice.to !== item.prixerPrice.from &&
+      item.prixerPrice.to !== "" &&
+      item.prixerPrice.to !== null
+    ) {
+      return (
+        "PVM: $" +
+        Number(
+          item.prixerPrice.from.replace(/[$]/gi, "").replace(/[,]/gi, ".")
+        ).toLocaleString("de-DE", {
+          minimumFractionDigits: 2,
+        }) +
+        " - " +
+        Number(
+          item.prixerPrice.to.replace(/[$]/gi, "").replace(/[,]/gi, ".")
+        ).toLocaleString("de-DE", {
+          minimumFractionDigits: 2,
+        })
+      );
+    } else if (
+      (JSON.parse(localStorage.getItem("token")) ||
+        JSON.parse(localStorage.getItem("adminToken"))) &&
+      (JSON.parse(localStorage.getItem("token"))?.username ||
+        JSON.parse(localStorage.getItem("adminToken"))?.username) &&
+      currency
+    ) {
+      return (
+        "PVM: Bs" +
+        Number(item?.prixerPrice?.from * props.dollarValue).toLocaleString(
+          "de-DE",
+          {
+            minimumFractionDigits: 2,
+          }
+        )
+      );
+    } else if (
+      (JSON.parse(localStorage.getItem("token")) ||
+        JSON.parse(localStorage.getItem("adminToken"))) &&
+      (JSON.parse(localStorage.getItem("token"))?.username ||
+        JSON.parse(localStorage.getItem("adminToken"))?.username)
+    ) {
+      return (
+        "PVM: $" +
+        Number(item?.prixerPrice?.from).toLocaleString("de-DE", {
+          minimumFractionDigits: 2,
+        })
+      );
+    } else if (item.publicEquation !== "" && currency) {
+      return (
+        "PVP: Bs" +
+        (item.publicEquation * props.dollarValue).toLocaleString("de-DE", {
+          minimumFractionDigits: 2,
+        })
+      );
+    } else if (item.publicEquation !== "") {
+      return "PVP: $" + item.publicEquation;
+    } else if (
+      item.attributes !== [] &&
+      item.publicPrice.to !== item.publicPrice.from &&
+      item.publicPrice.to !== "" &&
+      item.publicPrice.to !== null &&
+      currency
+    ) {
+      return (
+        "PVP: Bs" +
+        (
+          item.publicPrice.from.replace(/[$]/gi, "") * props.dollarValue
+        ).toLocaleString("de-DE", {
+          minimumFractionDigits: 2,
+        }) +
+        " - " +
+        (
+          item.publicPrice.to?.replace(/[$]/gi, "") * props.dollarValue
+        ).toLocaleString("de-DE", {
+          minimumFractionDigits: 2,
+        })
+      );
+    } else if (
+      item.attributes !== [] &&
+      item.publicPrice.to !== item.publicPrice.from &&
+      item.publicPrice.to !== "" &&
+      item.publicPrice.to !== null
+    ) {
+      return (
+        "PVP: $" +
+        item.publicPrice.from.replace(/[$]/gi, "") +
+        " - " +
+        item.publicPrice.to?.replace(/[$]/gi, "")
+      );
+    } else if (currency) {
+      return (
+        "PVP: Bs" +
+        (
+          item.publicPrice.from.replace(/[$]/gi, "") * props.dollarValue
+        ).toLocaleString("de-DE", {
+          minimumFractionDigits: 2,
+        })
+      );
+    } else {
+      return "PVP: $" + item.publicPrice.from.replace(/[$]/gi, "");
+    }
+  };
+
   return (
     <>
       <div style={{ display: "flex", justifyContent: "end" }}>
@@ -390,115 +554,7 @@ export default function ProductGrid(props) {
                     variant="h5"
                     component="h2"
                   >
-                    {currency
-                      ? tile.publicEquation !== ""
-                        ? "PVP: Bs" +
-                          (
-                            tile.publicEquation * props.dollarValue
-                          ).toLocaleString("de-DE", {
-                            minimumFractionDigits: 2,
-                          })
-                        : tile.attributes !== [] &&
-                          tile.publicPrice.to !== tile.publicPrice.from &&
-                          tile.publicPrice.to !== ""
-                        ? "PVP: Bs" +
-                          (
-                            tile.publicPrice.from.replace(/[$]/gi, "") *
-                            props.dollarValue
-                          ).toLocaleString("de-DE", {
-                            minimumFractionDigits: 2,
-                          }) +
-                          " - " +
-                          (
-                            tile.publicPrice.to?.replace(/[$]/gi, "") *
-                            props.dollarValue
-                          ).toLocaleString("de-DE", {
-                            minimumFractionDigits: 2,
-                          })
-                        : "PVP: Bs" +
-                          (
-                            tile.publicPrice.from.replace(/[$]/gi, "") *
-                            props.dollarValue
-                          ).toLocaleString("de-DE", {
-                            minimumFractionDigits: 2,
-                          })
-                      : tile.publicEquation !== ""
-                      ? "PVP: $" + tile.publicEquation
-                      : tile.attributes !== [] &&
-                        tile.publicPrice.to !== tile.publicPrice.from &&
-                        tile.publicPrice.to
-                      ? "PVP: $" +
-                        tile.publicPrice.from.replace(/[$]/gi, "") +
-                        " - " +
-                        tile.publicPrice.to?.replace(/[$]/gi, "")
-                      : "PVP: $" + tile.publicPrice.from.replace(/[$]/gi, "")}
-                    <br></br>
-                    {/* {/* {JSON.parse(localStorage.getItem("adminToken")) &&
-                    JSON.parse(localStorage.getItem("adminToken")).username &&
-                    tile.prixerEquation !== ""
-                      ? "PVM: $" + tile.prixerEquation
-                      : tile.attributes !== []
-                      ? tile.publicPrice.to !== tile.publicPrice.from &&
-                        tile.publicPrice.to !== ""
-                        ? "PVM: $" +
-                          tile.prixerPrice?.from +
-                          " - " +
-                          tile.prixerPrice?.to
-                        : "PVM: $" + tile.prixerPrice?.from.replace(/[$]/gi, "")
-                      : null} */}
-                    {JSON.parse(localStorage.getItem("token")) &&
-                    JSON.parse(localStorage.getItem("token")).username &&
-                    currency
-                      ? tile.prixerEquation !== ""
-                        ? "PVM: Bs" +
-                          (
-                            tile.prixerEquation
-                              .replace(/[$]/gi, "")
-                              .replace(/[,]/gi, ".") * props.dollarValue
-                          ).toFixed(2)
-                        : tile.attributes !== [] &&
-                          tile.prixerPrice.to !== tile.prixerPrice.from &&
-                          tile.prixerPrice.to !== ""
-                        ? "PVM: Bs" +
-                          (
-                            Number(
-                              tile.prixerPrice.from
-                                .replace(/[$]/gi, "")
-                                .replace(/[,]/gi, ".")
-                            ) * props.dollarValue
-                          ).toFixed(2) +
-                          " - " +
-                          Number(
-                            tile.prixerPrice.to
-                              .replace(/[$]/gi, "")
-                              .replace(/[,]/gi, ".") * props.dollarValue
-                          ).toFixed(2)
-                        : "PVM: Bs" +
-                          Number(
-                            tile.prixerPrice.from
-                              .replace(/[$]/gi, "")
-                              .replace(/[,]/gi, ".") * props.dollarValue
-                          ).toFixed(2)
-                      : JSON.parse(localStorage.getItem("token")) &&
-                        JSON.parse(localStorage.getItem("token")).username &&
-                        tile.prixerEquation !== ""
-                      ? "PVM: $" + tile.prixerEquation
-                      : tile.attributes !== [] &&
-                        JSON.parse(localStorage.getItem("token")) &&
-                        JSON.parse(localStorage.getItem("token")).username &&
-                        tile.prixerPrice.to !== tile.prixerPrice.from &&
-                        tile.prixerPrice.to !== "" &&
-                        tile.prixerPrice.to !== undefined
-                      ? "PVM: $" +
-                        tile.prixerPrice.from.replace(/[$]/gi, "") +
-                        " - " +
-                        tile.variants[0]?.prixerPrice.equation.replace(
-                          /[$]/gi,
-                          ""
-                        )
-                      : JSON.parse(localStorage.getItem("token")) &&
-                        JSON.parse(localStorage.getItem("token")).username &&
-                        "PVM: $" + tile.prixerPrice.from.replace(/[$]/gi, "")}
+                    {tile && priceSelect(tile)}
                   </Typography>
                   <MDEditor.Markdown
                     source={tile.description}

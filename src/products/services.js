@@ -155,19 +155,11 @@ export const getEquation = async (
     }
   } else if (
     typeof product.selection === "string" &&
-    product.selection.length === product.attributes.length
+    product.attributes.length === 1
   ) {
     const filteredVars = await product.variants.filter((v, i) => {
-      if (
-        v.attributes &&
-        v.attributes.length != 0
-        // && v.attributes.length == product.selection.length
-      ) {
-        return v.attributes.every((a) =>
-          a.length > 1
-            ? product.selection.includes(a[0].value)
-            : product.selection.includes(a.value)
-        );
+      if (v.attributes && v.attributes.length === 1) {
+        return v.attributes.every((a) => product.selection.includes(a.value));
       } else {
         return;
       }

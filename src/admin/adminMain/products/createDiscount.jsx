@@ -99,6 +99,7 @@ export default function CreateDiscount() {
       const data = {
         _id: nanoid(6),
         name: name,
+        active: active,
         description: description,
         type: type,
         value: value,

@@ -138,7 +138,7 @@ export default function ReadProducts(props) {
       </Backdrop>
       <Tabs value={value} onChange={handleChange} style={{ width: "70%" }}>
         <Tab indicator="red" backgroundColor="red" label="Productos" />
-        {/* <Tab label="Descuentos" /> */}
+        <Tab label="Descuentos" />
       </Tabs>
       <TabPanel value={value} index={0}>
         {rows && (

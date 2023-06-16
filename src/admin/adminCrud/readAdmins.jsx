@@ -352,36 +352,36 @@ export default function ReadAdmins(props) {
                       )}
                     </div>
                   </TableCell>
-                  {/* {props.permissions?.modifyAdmins && ( */}
-                  <TableCell align="right">
-                    <Fab
-                      color="default"
-                      style={{
-                        width: 35,
-                        height: 35,
-                        marginRight: 16,
-                      }}
-                      onClick={(e) => {
-                        handleActiveRole(role);
-                      }}
-                    >
-                      <EditIcon />
-                    </Fab>
-                    <Fab
-                      color="default"
-                      style={{
-                        width: 35,
-                        height: 35,
-                      }}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        deleteRole(role._id);
-                      }}
-                    >
-                      <DeleteIcon />
-                    </Fab>
-                  </TableCell>
-                  {/* )} */}
+                  {props.permissions?.modifyAdmins && (
+                    <TableCell align="right">
+                      <Fab
+                        color="default"
+                        style={{
+                          width: 35,
+                          height: 35,
+                          marginRight: 16,
+                        }}
+                        onClick={(e) => {
+                          handleActiveRole(role);
+                        }}
+                      >
+                        <EditIcon />
+                      </Fab>
+                      <Fab
+                        color="default"
+                        style={{
+                          width: 35,
+                          height: 35,
+                        }}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          deleteRole(role._id);
+                        }}
+                      >
+                        <DeleteIcon />
+                      </Fab>
+                    </TableCell>
+                  )}
                 </TableRow>
               ))
             ) : (

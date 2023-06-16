@@ -38,7 +38,7 @@ export default function UpAdmin(props) {
   const [area, setArea] = useState(props.admin.area);
   const [email, setEmail] = useState(props.admin.email);
   const [phone, setPhone] = useState(props.admin.phone);
-  // const [password, setPassword] = useState();
+  const [password, setPassword] = useState();
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [buttonState, setButtonState] = useState(false);

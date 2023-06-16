@@ -209,7 +209,7 @@ function ConsumerForm(props) {
     if (value < stringReadyDate) {
       props.setOpen(true);
       props.setMessage(
-        "No puedes seleccionar esta fecha.\t ¿Lo necesitas antes? Comunícate con un asesor en la sección Contáctanos"
+        "Si lo requieres antes, coméntalo en el campo de observaciones y un asesor se comunicará contigo."
       );
     } else
       props.setValues({
@@ -708,18 +708,9 @@ function ConsumerForm(props) {
                           <MenuItem value={n}>{n.name}</MenuItem>
                         ))}
                     </Select>
-                    <div style={{ marginTop: 10, marginLeft: 10 }}>
-                      {"Tu pedido estará listo el día " +
-                        days[readyDate.getDay()] +
-                        " " +
-                        readyDate.getDate() +
-                        " de " +
-                        months[readyDate.getMonth()] +
-                        ", si está listo antes te lo notificaremos."}
-                    </div>
                   </FormControl>
                 </Grid>
-                {/* <Grid
+                <Grid
                   item
                   lg={6}
                   md={6}
@@ -750,7 +741,18 @@ function ConsumerForm(props) {
                       }}
                     />
                   </FormControl>
-                </Grid> */}
+                </Grid>
+                <Grid>
+                  <div style={{ marginTop: 10, marginLeft: 10 }}>
+                    {"Tu pedido estará listo el día " +
+                      days[readyDate.getDay()] +
+                      " " +
+                      readyDate.getDate() +
+                      " de " +
+                      months[readyDate.getMonth()] +
+                      ", si está listo antes te lo notificaremos."}
+                  </div>
+                </Grid>
               </Grid>
             </form>
           </AccordionDetails>

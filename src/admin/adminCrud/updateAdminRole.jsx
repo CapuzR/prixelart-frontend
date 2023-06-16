@@ -40,6 +40,12 @@ export default function UpdateAdminRole(props) {
   const [deleteProduct, setDeleteProduct] = useState(
     props.admin.deleteProduct || false
   );
+  const [createDiscount, setCreateDiscount] = useState(
+    props.admin.createDiscount || false
+  );
+  const [deleteDiscount, setDeleteDiscount] = useState(
+    props.admin.deleteDiscount || false
+  );
   const [modifyDollar, setModifyDollar] = useState(
     props.admin.modifyDollar || false
   );
@@ -97,6 +103,8 @@ export default function UpdateAdminRole(props) {
         createOrder: createOrder,
         createProduct: createProduct,
         deleteProduct: deleteProduct,
+        createDiscount: createDiscount,
+        deleteDiscount: deleteDiscount,
         modifyBanners: modifyBanners,
         modifyDollar: modifyDollar,
         modifyTermsAndCo: modifyTermsAndCo,
@@ -152,6 +160,14 @@ export default function UpdateAdminRole(props) {
 
   const handleChangeDeleteProduct = () => {
     setDeleteProduct(!deleteProduct);
+  };
+
+  const handleChangeCreateDiscount = () => {
+    setCreateDiscount(!createDiscount);
+  };
+
+  const handleChangeDeleteDiscount = () => {
+    setDeleteDiscount(!deleteDiscount);
   };
 
   const handleChangeModifyBanners = () => {
@@ -394,6 +410,48 @@ export default function UpdateAdminRole(props) {
                 <Switch
                   checked={deleteProduct}
                   onChange={handleChangeDeleteProduct}
+                  name="checkedA"
+                  color="primary"
+                />
+              </FormControl>
+            </div>
+            <div>
+              <FormControl
+                className={clsx(classes.margin, classes.textField)}
+                variant="outlined"
+                style={{
+                  width: "90%",
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Typography>Permiso para crear descuentos</Typography>
+                <Switch
+                  checked={createDiscount}
+                  onChange={handleChangeCreateDiscount}
+                  name="checkedA"
+                  color="primary"
+                />
+              </FormControl>
+            </div>
+            <div>
+              <FormControl
+                className={clsx(classes.margin, classes.textField)}
+                variant="outlined"
+                style={{
+                  width: "90%",
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Typography>Permiso para eliminar descuentos</Typography>
+                <Switch
+                  checked={deleteDiscount}
+                  onChange={handleChangeDeleteDiscount}
                   name="checkedA"
                   color="primary"
                 />

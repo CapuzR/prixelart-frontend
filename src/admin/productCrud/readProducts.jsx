@@ -42,10 +42,10 @@ export default function ReadProducts(props) {
   const history = useHistory();
   const classes = useStyles();
   const [rows, setRows] = useState();
-  const [discountList, setDiscountList] = useState();
+  const [discountList, setDiscountList] = useState([]);
   const [loading, setLoading] = useState(false);
   const [value, setValue] = useState(0);
-
+  const [deleteMessage, setDeleteMessage] = useState();
   const [deleteOpen, setDeleteOpen] = useState(false);
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -115,6 +115,13 @@ export default function ReadProducts(props) {
     history.push("/admin/product/" + action + "/" + product._id);
   };
 
+  const handleActiveDiscount = (discount, action) => {
+    props.setDiscount(discount);
+    localStorage.setItem("discount", JSON.stringify(discount));
+    history.push("/admin/product/" + action + "/" + discount._id);
+    props.setActiveCrud("updateDiscount");
+  };
+
   const deleteProduct = async (id) => {
     const URI = process.env.REACT_APP_BACKEND_URL + `/product/delete/${id}`;
     const res = await axios
@@ -126,7 +133,25 @@ export default function ReadProducts(props) {
       .then(
         setTimeout(() => {
           setDeleteOpen(true);
+          setDeleteMessage("Producto eliminado exitosamente.");
           getRows();
+        }, 500)
+      );
+  };
+
+  const deleteDiscount = async (id) => {
+    const URI = process.env.REACT_APP_BACKEND_URL + `/discount/delete/${id}`;
+    const res = await axios
+      .put(
+        URI,
+        { adminToken: localStorage.getItem("adminTokenV") },
+        { withCredentials: true }
+      )
+      .then(
+        setTimeout(() => {
+          setDeleteOpen(true);
+          setDeleteMessage("Descuento eliminado exitosamente.");
+          getDiscounts();
         }, 500)
       );
   };
@@ -152,6 +177,7 @@ export default function ReadProducts(props) {
                 <TableCell align="center">Categoría</TableCell>
                 <TableCell align="center">PVP desde-hasta</TableCell>
                 <TableCell align="center">PVM desde-hasta</TableCell>
+                <TableCell align="center">Descuento</TableCell>
                 <TableCell align="center">Tiempo de producción</TableCell>
               </TableRow>
             </TableHead>
@@ -252,6 +278,13 @@ export default function ReadProducts(props) {
                         row.prixerPrice.to &&
                         " - " + row.prixerPrice.to?.replace(/[$]/gi, "")}
                     </TableCell>
+                    <TableCell>
+                      {row.discount &&
+                        discountList.map((discount) => {
+                          if (discount._id === row.discount)
+                            return discount.name;
+                        })}
+                    </TableCell>
                     <TableCell align="center">
                       {row.productionTime && Number(row.productionTime) > 1
                         ? row.productionTime + " días"
@@ -296,13 +329,13 @@ export default function ReadProducts(props) {
                 discountList.map((dis) => (
                   <TableRow key={dis._id}>
                     <TableCell align="center">
-                      {props.permissions?.createProduct && (
+                      {props.permissions?.createDiscount && (
                         <Fab
                           color="default"
                           style={{ width: 35, height: 35 }}
                           aria-label="edit"
                           onClick={(e) => {
-                            handleActive(dis, "update");
+                            handleActiveDiscount(dis, "updateDiscount");
                           }}
                         >
                           <EditIcon />
@@ -333,14 +366,14 @@ export default function ReadProducts(props) {
                     </TableCell>
 
                     <TableCell align="center">
-                      {props.permissions?.deleteProduct && (
+                      {props.permissions?.deleteDiscount && (
                         <Fab
                           color="default"
                           style={{ width: 35, height: 35 }}
                           aria-label="Delete"
                           onClick={(e) => {
                             e.preventDefault();
-                            deleteProduct(dis._id);
+                            deleteDiscount(dis._id);
                           }}
                         >
                           <DeleteIcon />
@@ -365,7 +398,7 @@ export default function ReadProducts(props) {
       <Snackbar
         open={deleteOpen}
         autoHideDuration={3000}
-        message={"Producto eliminado."}
+        message={deleteMessage}
       />
       {props.handleCallback(value)}
     </React.Fragment>

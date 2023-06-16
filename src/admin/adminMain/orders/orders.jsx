@@ -764,7 +764,7 @@ export default function Orders(props) {
   const closeAd = () => {
     setSnackBarError(false);
   };
-  console.log(rows);
+
   return (
     <>
       <Backdrop
@@ -944,10 +944,6 @@ export default function Orders(props) {
                                 <MenuItem value={"Por producir"}>
                                   Por producir
                                 </MenuItem>
-                                <MenuItem value={"Cancelada"}>
-                                  Cancelada
-                                </MenuItem>
-                                <MenuItem value={"Detenido"}>Detenido</MenuItem>
                                 <MenuItem value={"En impresión"}>
                                   En impresión
                                 </MenuItem>
@@ -960,9 +956,11 @@ export default function Orders(props) {
                                 <MenuItem value={"Entregado"}>
                                   Entregado
                                 </MenuItem>
-                                <MenuItem value={"Completada"}>
-                                  Completada
+                                <MenuItem value={"Concretado"}>
+                                  Concretado
                                 </MenuItem>
+                                <MenuItem value={"Detenido"}>Detenido</MenuItem>
+                                <MenuItem value={"Anulado"}>Anulado</MenuItem>
                               </Select>
                             </FormControl>
                             {/* <Fab
@@ -1010,7 +1008,7 @@ export default function Orders(props) {
           {!showVoucher ? (
             modalContent && (
               <>
-                {!props.permissions?.detailOrder ? (
+                {props.permissions?.detailOrder ? (
                   <Grid
                     style={{
                       display: "flex",
@@ -1097,8 +1095,8 @@ export default function Orders(props) {
                             >
                               <Img
                                 src={
-                                  item.product.sources.images[0].url ||
-                                  item.product.thumbUrl
+                                  item.product.thumbUrl ||
+                                  item.product.sources.images[0].url
                                 }
                                 style={{
                                   maxWidth: 150,
@@ -1131,9 +1129,25 @@ export default function Orders(props) {
                         </div>
                       </div>
                     ))}
+                    {modalContent.observations && (
+                      <Grid
+                        style={{
+                          marginBottom: 40,
+                          marginRight: 20,
+                          borderWidth: "1px",
+                          borderStyle: "solid",
+                          borderRadius: 10,
+                          borderColor: "grey",
+                          padding: 15,
+                        }}
+                      >
+                        <strong>Observaciones</strong>
+                        <div> {modalContent.observations}</div>
+                      </Grid>
+                    )}
                   </Grid>
                 ) : (
-                  props.permissions?.detailOrder && (
+                  !props.permissions?.detailOrder && (
                     <>
                       <Grid
                         style={{

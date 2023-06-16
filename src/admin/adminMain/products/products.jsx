@@ -20,6 +20,8 @@ import UpdateProduct from "../../productCrud/updateProduct";
 import DisableProduct from "../../productCrud/disableProduct";
 import ReadProducts from "../../productCrud/readProducts";
 import CreateDiscount from "./createDiscount";
+import UpdateDiscount from "./updateDiscount";
+
 const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
@@ -143,6 +145,12 @@ export default function Products(props) {
       ? JSON.parse(localStorage.getItem("product"))
       : undefined
   );
+  const [discount, setDiscount] = useState(
+    localStorage.getItem("discount")
+      ? JSON.parse(localStorage.getItem("discount"))
+      : undefined
+  );
+
   const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
 
   const handleProductAction = (action) => {
@@ -222,7 +230,8 @@ export default function Products(props) {
             >
               <ViewListIcon />
             </Fab>
-            {props.permissions?.createProduct && (
+            {(props.permissions?.createProduct ||
+              props.permissions?.createDiscount) && (
               <Fab
                 color="primary"
                 aria-label="add"
@@ -291,7 +300,7 @@ export default function Products(props) {
             </Modal>
           </div>
         )}
-        <Grid container spacing={3} style={{ margin: isDesktop ? "12px" : "" }}>
+        <Grid container spacing={3} style={{ margin: isDesktop ? "10px" : "" }}>
           <Grid item xs={12} md={12} lg={12}>
             <Paper className={fixedHeightPaper}>
               {activeCrud === "create" ? (
@@ -300,7 +309,9 @@ export default function Products(props) {
                 <ReadProducts
                   handleCallback={Callback}
                   setProduct={setProduct}
+                  setDiscount={setDiscount}
                   permissions={props.permissions}
+                  setActiveCrud={setActiveCrud}
                 />
               ) : activeCrud === "update" ? (
                 <div style={{ height: "155vh" }}>
@@ -313,6 +324,10 @@ export default function Products(props) {
               ) : activeCrud === "createDiscount" ? (
                 <div style={{ height: "155vh" }}>
                   <CreateDiscount />
+                </div>
+              ) : activeCrud === "updateDiscount" ? (
+                <div style={{ height: "155vh" }}>
+                  <UpdateDiscount discount={discount} />
                 </div>
               ) : (
                 <DisableProduct />

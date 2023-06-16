@@ -30,6 +30,8 @@ export default function CreateAdminRole() {
   const [createOrder, setCreateOrder] = useState(false);
   const [createProduct, setCreateProduct] = useState(false);
   const [deleteProduct, setDeleteProduct] = useState(false);
+  const [createDiscount, setCreateDiscount] = useState(false);
+  const [deleteDiscount, setDeleteDiscount] = useState(false);
   const [modifyBanners, setModifyBanners] = useState(false);
   const [modifyDollar, setModifyDollar] = useState(false);
   const [modifyTermsAndCo, setModifyTermsAndCo] = useState(false);
@@ -66,6 +68,8 @@ export default function CreateAdminRole() {
         createOrder: createOrder,
         createProduct: createProduct,
         deleteProduct: deleteProduct,
+        createDiscount: createDiscount,
+        deleteDiscount: deleteDiscount,
         modifyBanners: modifyBanners,
         modifyDollar: modifyDollar,
         modifyTermsAndCo: modifyTermsAndCo,
@@ -119,6 +123,15 @@ export default function CreateAdminRole() {
   const handleChangeDeleteProduct = () => {
     setDeleteProduct(!deleteProduct);
   };
+
+  const handleChangeCreateDiscount = () => {
+    setCreateDiscount(!createDiscount);
+  };
+
+  const handleChangeDeleteDiscount = () => {
+    setDeleteDiscount(!deleteDiscount);
+  };
+
   const handleChangeModifyBanners = () => {
     setModifyBanners(!modifyBanners);
   };
@@ -355,6 +368,48 @@ export default function CreateAdminRole() {
                 <Switch
                   checked={deleteProduct}
                   onChange={handleChangeDeleteProduct}
+                  name="checkedA"
+                  color="primary"
+                />
+              </FormControl>
+            </div>
+            <div>
+              <FormControl
+                className={clsx(classes.margin, classes.textField)}
+                variant="outlined"
+                style={{
+                  width: "90%",
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Typography>Permiso para crear descuentos</Typography>
+                <Switch
+                  checked={createDiscount}
+                  onChange={handleChangeCreateDiscount}
+                  name="checkedA"
+                  color="primary"
+                />
+              </FormControl>
+            </div>
+            <div>
+              <FormControl
+                className={clsx(classes.margin, classes.textField)}
+                variant="outlined"
+                style={{
+                  width: "90%",
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Typography>Permiso para eliminar descuentos</Typography>
+                <Switch
+                  checked={deleteDiscount}
+                  onChange={handleChangeDeleteDiscount}
                   name="checkedA"
                   color="primary"
                 />

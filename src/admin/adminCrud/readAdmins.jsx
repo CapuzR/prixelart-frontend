@@ -236,45 +236,23 @@ export default function ReadAdmins(props) {
                       role.detailPay ||
                       role.orderStatus ||
                       role.createOrder) && (
-                      <div
-                        style={{
-                          borderWidth: "1px",
-                          borderStyle: "solid",
-                          borderRadius: 10,
-                          borderColor: "silver",
-                          width: "35%",
-                        }}
-                      >
-                        <ul style={{ paddingLeft: 20 }}>
-                          <Typography variant="p" color="secondary">
-                            Pedidos
-                          </Typography>
-                          {role.detailOrder && <li>Ver detalles de pedido</li>}
-                          {role.detailPay && (
-                            <li> Modificar detalles de pago</li>
-                          )}
-                          {role.orderStatus && (
-                            <li> Modificar status de pedido</li>
-                          )}
-                          {role.createOrder && (
-                            <li> Crear y modificar pedido</li>
-                          )}
-                        </ul>
-                      </div>
+                      <ul style={{ paddingLeft: 20 }}>
+                        <Typography variant="p" color="secondary">
+                          Pedidos
+                        </Typography>
+                        {role.detailOrder && <li>Ver detalles de pedido</li>}
+                        {role.detailPay && <li> Modificar detalles de pago</li>}
+                        {role.orderStatus && (
+                          <li> Modificar status de pedido</li>
+                        )}
+                        {role.createOrder && <li> Crear y modificar pedido</li>}
+                      </ul>
                     )}
-
-                    {(role.createProduct || role.deleteProduct) && (
-                      <div
-                        style={{
-                          borderWidth: "1px",
-                          borderStyle: "solid",
-                          marginLeft: 5,
-
-                          borderRadius: 10,
-                          borderColor: "silver",
-                          width: "35%",
-                        }}
-                      >
+                    <div style={{ flexDirection: "row" }}>
+                      {(role.createProduct ||
+                        role.deleteProduct ||
+                        role.createDiscount ||
+                        role.deleteDiscount) && (
                         <ul style={{ paddingLeft: 20 }}>
                           <Typography variant="p" color="secondary">
                             Productos
@@ -283,24 +261,17 @@ export default function ReadAdmins(props) {
                             <li>Crear y modificar productos</li>
                           )}
                           {role.deleteProduct && <li> Eliminar productos</li>}
+                          {role.createDiscount && (
+                            <li>Crear y modificar descuentos</li>
+                          )}
+                          {role.deleteDiscount && <li> Eliminar descuentos</li>}
                         </ul>
-                      </div>
-                    )}
-
-                    {(role.modifyBanners ||
-                      role.modifyTermsAndCo ||
-                      role.modifyDollar) && (
-                      <div
-                        style={{
-                          borderWidth: "1px",
-                          borderStyle: "solid",
-                          marginLeft: 5,
-
-                          borderRadius: 10,
-                          borderColor: "silver",
-                          width: "35%",
-                        }}
-                      >
+                      )}
+                    </div>
+                    <div style={{ flexDirection: "row" }}>
+                      {(role.modifyBanners ||
+                        role.modifyTermsAndCo ||
+                        role.modifyDollar) && (
                         <ul style={{ paddingLeft: 20 }}>
                           <Typography variant="p" color="secondary">
                             Preferencias
@@ -313,93 +284,8 @@ export default function ReadAdmins(props) {
                             <li>Modificar valor del dolar</li>
                           )}
                         </ul>
-                      </div>
-                    )}
-
-                    {(role.createPaymentMethod || role.deletePaymentMethod) && (
-                      <div
-                        style={{
-                          borderWidth: "1px",
-                          borderStyle: "solid",
-                          marginLeft: 5,
-
-                          borderRadius: 10,
-                          borderColor: "silver",
-                          width: "35%",
-                        }}
-                      >
-                        <ul style={{ paddingLeft: 20 }}>
-                          <Typography variant="p" color="secondary">
-                            Métodos de pago
-                          </Typography>
-                          {role.createPaymentMethod && (
-                            <li>Crear y modificar métodos de pago</li>
-                          )}
-                          {role.deletePaymentMethod && (
-                            <li>Eliminar método de pago</li>
-                          )}
-                        </ul>
-                      </div>
-                    )}
-
-                    {(role.createShippingMethod ||
-                      role.deleteShippingMethod) && (
-                      <div
-                        style={{
-                          borderWidth: "1px",
-                          borderStyle: "solid",
-                          marginLeft: 5,
-
-                          borderRadius: 10,
-                          borderColor: "silver",
-                          width: "35%",
-                        }}
-                      >
-                        <ul style={{ paddingLeft: 20 }}>
-                          <Typography variant="p" color="secondary">
-                            Métodos de envío
-                          </Typography>
-                          {role.createShippingMethod && (
-                            <li>Crear y modificar métodos de envío</li>
-                          )}
-                          {role.deleteShippingMethod && (
-                            <li>Eliminar método de envío</li>
-                          )}
-                        </ul>
-                      </div>
-                    )}
-                    {role.prixerBan && (
-                      <div
-                        style={{
-                          borderWidth: "1px",
-                          borderStyle: "solid",
-                          marginLeft: 5,
-
-                          borderRadius: 10,
-                          borderColor: "silver",
-                          width: "35%",
-                        }}
-                      >
-                        <ul style={{ paddingLeft: 20 }}>
-                          <Typography variant="p" color="secondary">
-                            Prixers{" "}
-                          </Typography>
-                          {role.prixerBan && <li>Banear a Prixers</li>}
-                        </ul>
-                      </div>
-                    )}
-                    {(role.createTestimonial || role.deleteTestimonial) && (
-                      <div
-                        style={{
-                          borderWidth: "1px",
-                          borderStyle: "solid",
-                          marginLeft: 5,
-
-                          borderRadius: 10,
-                          borderColor: "silver",
-                          width: "35%",
-                        }}
-                      >
+                      )}
+                      {(role.createTestimonial || role.deleteTestimonial) && (
                         <ul style={{ paddingLeft: 20 }}>
                           <Typography variant="p" color="secondary">
                             Testimonios
@@ -413,20 +299,40 @@ export default function ReadAdmins(props) {
                             <li>Eliminar testimonios</li>
                           )}
                         </ul>
-                      </div>
-                    )}
-                    {role.modifyAdmins && (
-                      <div
-                        style={{
-                          borderWidth: "1px",
-                          borderStyle: "solid",
-                          marginLeft: 5,
-
-                          borderRadius: 10,
-                          borderColor: "silver",
-                          width: "35%",
-                        }}
-                      >
+                      )}
+                    </div>
+                    <div style={{ flexDirection: "row" }}>
+                      {(role.createPaymentMethod ||
+                        role.deletePaymentMethod) && (
+                        <ul style={{ paddingLeft: 20 }}>
+                          <Typography variant="p" color="secondary">
+                            Métodos de pago
+                          </Typography>
+                          {role.createPaymentMethod && (
+                            <li>Crear y modificar métodos de pago</li>
+                          )}
+                          {role.deletePaymentMethod && (
+                            <li>Eliminar método de pago</li>
+                          )}
+                        </ul>
+                      )}
+                      {(role.createShippingMethod ||
+                        role.deleteShippingMethod) && (
+                        <ul style={{ paddingLeft: 20 }}>
+                          <Typography variant="p" color="secondary">
+                            Métodos de envío
+                          </Typography>
+                          {role.createShippingMethod && (
+                            <li>Crear y modificar métodos de envío</li>
+                          )}
+                          {role.deleteShippingMethod && (
+                            <li>Eliminar método de envío</li>
+                          )}
+                        </ul>
+                      )}
+                    </div>
+                    <div style={{ flexDirection: "row" }}>
+                      {role.modifyAdmins && (
                         <ul style={{ paddingLeft: 20 }}>
                           <Typography variant="p" color="secondary">
                             Usuarios
@@ -435,39 +341,47 @@ export default function ReadAdmins(props) {
                             <li>Crear, modificar y eliminar Admins</li>
                           )}
                         </ul>
-                      </div>
-                    )}
+                      )}
+                      {role.prixerBan && (
+                        <ul style={{ paddingLeft: 20 }}>
+                          <Typography variant="p" color="secondary">
+                            Prixers{" "}
+                          </Typography>
+                          {role.prixerBan && <li>Banear a Prixers</li>}
+                        </ul>
+                      )}
+                    </div>
                   </TableCell>
-                  {props.permissions?.modifyAdmins && (
-                    <TableCell align="right">
-                      <Fab
-                        color="default"
-                        style={{
-                          width: 35,
-                          height: 35,
-                          marginRight: 16,
-                        }}
-                        onClick={(e) => {
-                          handleActiveRole(role);
-                        }}
-                      >
-                        <EditIcon />
-                      </Fab>
-                      <Fab
-                        color="default"
-                        style={{
-                          width: 35,
-                          height: 35,
-                        }}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          deleteRole(role._id);
-                        }}
-                      >
-                        <DeleteIcon />
-                      </Fab>
-                    </TableCell>
-                  )}
+                  {/* {props.permissions?.modifyAdmins && ( */}
+                  <TableCell align="right">
+                    <Fab
+                      color="default"
+                      style={{
+                        width: 35,
+                        height: 35,
+                        marginRight: 16,
+                      }}
+                      onClick={(e) => {
+                        handleActiveRole(role);
+                      }}
+                    >
+                      <EditIcon />
+                    </Fab>
+                    <Fab
+                      color="default"
+                      style={{
+                        width: 35,
+                        height: 35,
+                      }}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        deleteRole(role._id);
+                      }}
+                    >
+                      <DeleteIcon />
+                    </Fab>
+                  </TableCell>
+                  {/* )} */}
                 </TableRow>
               ))
             ) : (

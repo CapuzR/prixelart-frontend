@@ -563,9 +563,10 @@ export default function Orders(props) {
         item.product &&
         item.art &&
         prices.push(
-          (item.product.publicEquation ||
-            item.product.publicPrice.from.replace(/[$]/gi, "")) *
-            (item.quantity || 1)
+          (item.product.publicEquation.replace(/[,]/gi, ".") ||
+            item.product.publicPrice.from
+              .replace(/[,]/gi, ".")
+              .replace(/[$]/gi, "")) * (item.quantity || 1)
         )
     );
     let total = prices.reduce(function (a, b) {
@@ -2675,25 +2676,53 @@ export default function Orders(props) {
                                                 {currency
                                                   ? " Bs" +
                                                     (
-                                                      (item.product
-                                                        .publicEquation ||
-                                                        item.product.publicPrice.from.replace(
-                                                          /[$]/gi,
-                                                          ""
+                                                      (Number(
+                                                        item.product.publicEquation.replace(
+                                                          /[,]/gi,
+                                                          "."
+                                                        )
+                                                      ) ||
+                                                        Number(
+                                                          item.product.publicPrice.from
+                                                            .replace(
+                                                              /[$]/gi,
+                                                              ""
+                                                            )
+                                                            .replace(
+                                                              /[,]/gi,
+                                                              "."
+                                                            )
                                                         )) *
                                                       dollarValue *
                                                       (item.quantity || 1)
-                                                    ).toFixed(2)
+                                                    ).toLocaleString("de-DE", {
+                                                      minimumFractionDigits: 2,
+                                                      // maximumSignificantDigits: 2,
+                                                    })
                                                   : " $" +
                                                     (
-                                                      (item.product
-                                                        .publicEquation ||
-                                                        item.product.publicPrice.from.replace(
-                                                          /[$]/gi,
-                                                          ""
+                                                      (Number(
+                                                        item.product.publicEquation.replace(
+                                                          /[,]/gi,
+                                                          "."
+                                                        )
+                                                      ) ||
+                                                        Number(
+                                                          item.product.publicPrice.from
+                                                            .replace(
+                                                              /[$]/gi,
+                                                              ""
+                                                            )
+                                                            .replace(
+                                                              /[,]/gi,
+                                                              "."
+                                                            )
                                                         )) *
                                                       (item.quantity || 1)
-                                                    ).toFixed(2)}
+                                                    ).toLocaleString("de-DE", {
+                                                      minimumFractionDigits: 2,
+                                                      // maximumSignificantDigits: 2,
+                                                    })}
                                               </div>
                                             </Grid>
                                           </Grid>

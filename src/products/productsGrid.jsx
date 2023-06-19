@@ -276,7 +276,7 @@ export default function ProductGrid(props) {
         }) +
         " - " +
         Number(
-          item.prixerPrice.to.replace(/[$]/gi, "").replace(/[,]/gi, ".") *
+          item.prixerPrice?.to?.replace(/[$]/gi, "").replace(/[,]/gi, ".") *
             props.dollarValue
         ).toLocaleString("de-DE", {
           minimumFractionDigits: 2,
@@ -301,7 +301,7 @@ export default function ProductGrid(props) {
         }) +
         " - " +
         Number(
-          item.prixerPrice.to.replace(/[$]/gi, "").replace(/[,]/gi, ".")
+          item.prixerPrice?.to?.replace(/[$]/gi, "").replace(/[,]/gi, ".")
         ).toLocaleString("de-DE", {
           minimumFractionDigits: 2,
         })

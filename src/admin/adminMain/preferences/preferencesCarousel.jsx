@@ -204,10 +204,7 @@ function CarouselAdmin(props) {
   const handleUpdate = async (x) => {
     x.preventDefault();
     setLoading(true);
-    const URI =
-      process.env.REACT_APP_BACKEND_URL +
-      "/admin/preferences/carousel/" +
-      image._id;
+    const URI = process.env.REACT_APP_BACKEND_URL + "/carousel/" + image._id;
     const formData = new FormData();
     type === "bannerImagesDesktop"
       ? formData.append("bannerImagesDesktop", image.file)
@@ -258,8 +255,7 @@ function CarouselAdmin(props) {
         filename: "Subir imagenes",
       });
 
-      const URI =
-        process.env.REACT_APP_BACKEND_URL + "/admin/preferences/carousel";
+      const URI = process.env.REACT_APP_BACKEND_URL + "/carousel";
       const newFormData = new FormData();
       type === "bannerImagesDesktop"
         ? newFormData.append("bannerImagesDesktop", image.file)
@@ -336,8 +332,7 @@ function CarouselAdmin(props) {
   //Tomar imagenes en array para ser listadas y renderizadas
   const getImagesForTheCarousel = () => {
     setLoading(true);
-    const URI =
-      process.env.REACT_APP_BACKEND_URL + "/admin/preferences/carousel";
+    const URI = process.env.REACT_APP_BACKEND_URL + "/carousel";
     fetch(URI)
       .then((res) =>
         res

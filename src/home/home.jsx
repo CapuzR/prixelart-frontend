@@ -250,8 +250,7 @@ export default function Home(props) {
   };
 
   const getImagesForTheCarousel = () => {
-    const URI =
-      process.env.REACT_APP_BACKEND_URL + "/admin/preferences/carousel";
+    const URI = process.env.REACT_APP_BACKEND_URL + "/carousel";
     fetch(URI)
       .then((res) =>
         res

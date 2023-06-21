@@ -365,7 +365,10 @@ export default function UserData(props) {
                     <InstagramIcon style={{ marginRight: "4px" }} />
                     <a
                       target="_blank"
-                      href={"https://www.instagram.com/" + instagram}
+                      href={
+                        "https://www.instagram.com/" +
+                        instagram.replace(/[@]/gi, "")
+                      }
                       style={{ textDecoration: "none", color: "#d33f49" }}
                     >
                       {instagram}
@@ -405,7 +408,10 @@ export default function UserData(props) {
                         <TwitterIcon style={{ marginRight: "4px" }} />
                         <a
                           target="_blank"
-                          href={"https://www.twitter.com/" + twitter}
+                          href={
+                            "https://www.twitter.com/" +
+                            twitter.replace(/[@]/gi, "")
+                          }
                           style={{ textDecoration: "none", color: "#d33f49" }}
                         >
                           {twitter}

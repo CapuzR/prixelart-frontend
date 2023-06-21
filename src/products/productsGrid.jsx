@@ -157,6 +157,7 @@ const useStyles = makeStyles((theme) => ({
 export default function ProductGrid(props) {
   const classes = useStyles();
   const [tiles, setTiles] = useState([]);
+  const [discountList, setDiscountList] = useState([]);
   const [imagesVariants, setImagesVariants] = useState([]);
   const [imagesProducts, setImagesProducts] = useState();
   const [width, setWidth] = useState([]);
@@ -164,10 +165,31 @@ export default function ProductGrid(props) {
   const [order, setOrder] = useState("");
   const history = useHistory();
   // const [dollarValue, setDollarValue] = useState(1);
+  const [currency, setCurrency] = useState(false);
+
+  const getDiscounts = async () => {
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/discount/read-allv1";
+    await axios
+      .post(
+        base_url,
+        { adminToken: localStorage.getItem("adminTokenV") },
+        { withCredentials: true }
+      )
+      .then((response) => {
+        setDiscountList(response.data.discounts);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
   const handleChange = (event) => {
     setOrder(event.target.value);
   };
-  const [currency, setCurrency] = useState(false);
+
+  useEffect(() => {
+    getDiscounts();
+  }, []);
 
   useEffect(() => {
     const base_url = process.env.REACT_APP_BACKEND_URL + "/product/read-all";
@@ -227,6 +249,69 @@ export default function ProductGrid(props) {
   };
 
   const priceSelect = (item) => {
+    // if (typeof item.discount === "string") {
+    //   let dis = discountList.filter((dis) => dis._id === item.discount)[0];
+    //   return (
+    //     <>
+    //       <del>
+    //         PVP: $
+    //         {Number(
+    //           item.publicPrice.from.replace(/[$]/gi, "").replace(/[,]/gi, ".")
+    //         ).toLocaleString("de-DE", {
+    //           minimumFractionDigits: 2,
+    //         }) +
+    //           " - " +
+    //           Number(
+    //             item.publicPrice?.to?.replace(/[$]/gi, "").replace(/[,]/gi, ".")
+    //           ).toLocaleString("de-DE", {
+    //             minimumFractionDigits: 2,
+    //           })}
+    //       </del>
+
+    //       <div
+    //         style={{
+    //           backgroundColor: "#d33f49",
+    //           padding: 3,
+    //           width: 180,
+    //           textAlign: "center",
+    //           color: "white",
+    //           fontWeight: "bold",
+    //           borderRadius: 8,
+    //         }}
+    //       >
+    //         Descuento de
+    //         {dis.type === "Porcentaje" && " %" + dis.value}
+    //       </div>
+
+    //       <div>
+    //         PVP: $
+    //         {Number(
+    //           item.publicPrice.from.replace(/[$]/gi, "").replace(/[,]/gi, ".") -
+    //             (item.publicPrice.from
+    //               .replace(/[$]/gi, "")
+    //               .replace(/[,]/gi, ".") /
+    //               100) *
+    //               dis.value
+    //         ).toLocaleString("de-DE", {
+    //           minimumFractionDigits: 2,
+    //         }) +
+    //           " - " +
+    //           Number(
+    //             item.publicPrice?.to
+    //               ?.replace(/[$]/gi, "")
+    //               .replace(/[,]/gi, ".") -
+    //               (item.publicPrice?.to
+    //                 ?.replace(/[$]/gi, "")
+    //                 .replace(/[,]/gi, ".") /
+    //                 100) *
+    //                 dis.value
+    //           ).toLocaleString("de-DE", {
+    //             minimumFractionDigits: 2,
+    //           })}
+    //       </div>
+    //     </>
+    //   );
+    // }
     if (
       (JSON.parse(localStorage?.getItem("token")) ||
         JSON.parse(localStorage?.getItem("adminToken"))) &&

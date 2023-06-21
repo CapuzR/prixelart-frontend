@@ -25,6 +25,7 @@ import Input from "@material-ui/core/Input";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import Modal from "@material-ui/core/Modal";
 import MDEditor from "@uiw/react-md-editor";
+import { nanoid } from "nanoid";
 
 function Copyright() {
   return (
@@ -240,7 +241,6 @@ export default function PrixerRegistration() {
         "username",
         JSON.parse(localStorage.getItem("token")).username
       );
-
       const base_url =
         process.env.REACT_APP_BACKEND_URL + "/prixer-registration";
       axios
@@ -254,6 +254,16 @@ export default function PrixerRegistration() {
             setErrorMessage(response.data.message);
             setSnackBarError(true);
           } else {
+            const data = {
+              _id: nanoid(24),
+              balance: 0,
+              email: JSON.parse(localStorage.getItem("token")).email,
+            };
+            const base_url =
+              process.env.REACT_APP_BACKEND_URL + "/account/create";
+            axios.post(base_url, data, {
+              "Content-Type": "multipart/form-data",
+            });
             setErrorMessage("Registro de Prixer exitoso.");
             setSnackBarError(true);
             history.push({ pathname: "/" + response.data.prixerData.username });
@@ -266,7 +276,6 @@ export default function PrixerRegistration() {
         });
     }
   };
-
   const handleChange = (event) => {
     setSpecialty(event.target.value);
   };
@@ -576,6 +585,7 @@ export default function PrixerRegistration() {
       <Box mt={5}>
         <Copyright />
       </Box>
+
       <Snackbar
         open={snackBarError}
         autoHideDuration={1000}

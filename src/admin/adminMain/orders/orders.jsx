@@ -784,9 +784,9 @@ export default function Orders(props) {
                 justifyContent: "space-between",
               }}
             >
-              <Title>Órdenes</Title>
+              <Title>Pedidos</Title>
               <div>
-                <Tooltip
+                {/* <Tooltip
                   title="Descargar listado"
                   style={{ height: 40, width: 40 }}
                 >
@@ -798,7 +798,7 @@ export default function Orders(props) {
                   >
                     <GetAppIcon />
                   </Fab>
-                </Tooltip>
+                </Tooltip> */}
                 {props.permissions?.createOrder && (
                   <Tooltip
                     title="Crear pedido"
@@ -1084,8 +1084,8 @@ export default function Orders(props) {
                             >
                               <Img
                                 src={
-                                  item.product.thumbUrl ||
-                                  item.product.sources.images[0].url
+                                  item.product?.thumbUrl ||
+                                  item.product?.sources?.images[0]?.url
                                 }
                                 style={{
                                   maxWidth: 150,

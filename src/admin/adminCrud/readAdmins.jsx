@@ -156,247 +156,281 @@ export default function ReadAdmins(props) {
           <CircularProgress />
         </div>
       )}
-      <Tabs value={value} onChange={handleChange} style={{ width: "70%" }}>
-        <Tab indicator="red" backgroundColor="red" label="Administradores" />
-        <Tab label="Roles" />
-      </Tabs>
-      <TabPanel value={value} index={0}>
-        <Table size="small">
-          <TableHead>
-            <TableRow>
-              <TableCell align="center">Nombre</TableCell>
-              <TableCell align="center">Apellido</TableCell>
-              <TableCell align="center">Área</TableCell>
-              <TableCell align="center">Correo</TableCell>
-              <TableCell align="center">Usuario</TableCell>
-              <TableCell align="center">Teléfono</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {rows &&
-              rows.map((row) => (
-                <TableRow key={row.username}>
-                  <TableCell align="center">{row.firstname}</TableCell>
-                  <TableCell align="center">{row.lastname}</TableCell>
-                  <TableCell align="center"> {row.area && row.area}</TableCell>
-                  <TableCell align="center">{row.email}</TableCell>
-                  <TableCell align="center">{row.username}</TableCell>
-                  <TableCell align="center">{row.phone}</TableCell>
-                  {props.permissions?.modifyAdmins && (
-                    <TableCell align="center">
-                      <Fab
-                        color="default"
-                        style={{
-                          width: 35,
-                          height: 35,
-                          marginRight: 16,
-                        }}
-                        onClick={(e) => {
-                          handleActive(row, "update");
-                        }}
-                      >
-                        <EditIcon />
-                      </Fab>
-                      <Fab
-                        color="default"
-                        style={{
-                          width: 35,
-                          height: 35,
-                        }}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          deleteMethod(row.username);
-                        }}
-                      >
-                        <DeleteIcon />
-                      </Fab>
-                    </TableCell>
-                  )}
+      {props.permissions?.modifyAdmins ? (
+        <>
+          <Tabs value={value} onChange={handleChange} style={{ width: "70%" }}>
+            <Tab
+              indicator="red"
+              backgroundColor="red"
+              label="Administradores"
+            />
+            <Tab label="Roles" />
+          </Tabs>
+          <TabPanel value={value} index={0}>
+            <Table size="small">
+              <TableHead>
+                <TableRow>
+                  <TableCell align="center">Nombre</TableCell>
+                  <TableCell align="center">Apellido</TableCell>
+                  <TableCell align="center">Área</TableCell>
+                  <TableCell align="center">Correo</TableCell>
+                  <TableCell align="center">Usuario</TableCell>
+                  <TableCell align="center">Teléfono</TableCell>
                 </TableRow>
-              ))}
-          </TableBody>
-        </Table>
-      </TabPanel>
-      <TabPanel value={value} index={1}>
-        <Table size="small">
-          <TableHead>
-            <TableRow>
-              <TableCell align="center">Área</TableCell>
-              <TableCell align="center">Permisos</TableCell>
-              <TableCell></TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {roles ? (
-              roles.map((role) => (
-                <TableRow key={role._id}>
-                  <TableCell align="center">{role.area}</TableCell>
-                  <TableCell style={{ display: "flex", flexDirection: "row" }}>
-                    {(role.detailOrder ||
-                      role.detailPay ||
-                      role.orderStatus ||
-                      role.createOrder) && (
-                      <ul style={{ paddingLeft: 20 }}>
-                        <Typography variant="p" color="secondary">
-                          Pedidos
-                        </Typography>
-                        {role.detailOrder && <li>Ver detalles de pedido</li>}
-                        {role.detailPay && <li> Modificar detalles de pago</li>}
-                        {role.orderStatus && (
-                          <li> Modificar status de pedido</li>
+              </TableHead>
+              <TableBody>
+                {rows &&
+                  rows.map((row) => (
+                    <TableRow key={row.username}>
+                      <TableCell align="center">{row.firstname}</TableCell>
+                      <TableCell align="center">{row.lastname}</TableCell>
+                      <TableCell align="center">
+                        {" "}
+                        {row.area && row.area}
+                      </TableCell>
+                      <TableCell align="center">{row.email}</TableCell>
+                      <TableCell align="center">{row.username}</TableCell>
+                      <TableCell align="center">{row.phone}</TableCell>
+                      {props.permissions?.modifyAdmins && (
+                        <TableCell align="center">
+                          <Fab
+                            color="default"
+                            style={{
+                              width: 35,
+                              height: 35,
+                              marginRight: 16,
+                            }}
+                            onClick={(e) => {
+                              handleActive(row, "update");
+                            }}
+                          >
+                            <EditIcon />
+                          </Fab>
+                          <Fab
+                            color="default"
+                            style={{
+                              width: 35,
+                              height: 35,
+                            }}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              deleteMethod(row.username);
+                            }}
+                          >
+                            <DeleteIcon />
+                          </Fab>
+                        </TableCell>
+                      )}
+                    </TableRow>
+                  ))}
+              </TableBody>
+            </Table>
+          </TabPanel>
+          <TabPanel value={value} index={1}>
+            <Table size="small">
+              <TableHead>
+                <TableRow>
+                  <TableCell align="center">Área</TableCell>
+                  <TableCell align="center">Permisos</TableCell>
+                  <TableCell></TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {roles ? (
+                  roles.map((role) => (
+                    <TableRow key={role._id}>
+                      <TableCell align="center">{role.area}</TableCell>
+                      <TableCell
+                        style={{ display: "flex", flexDirection: "row" }}
+                      >
+                        {(role.detailOrder ||
+                          role.detailPay ||
+                          role.orderStatus ||
+                          role.createOrder) && (
+                          <ul style={{ paddingLeft: 20 }}>
+                            <Typography variant="p" color="secondary">
+                              Pedidos
+                            </Typography>
+                            {role.detailOrder && (
+                              <li>Ver detalles de pedido</li>
+                            )}
+                            {role.detailPay && (
+                              <li> Modificar detalles de pago</li>
+                            )}
+                            {role.orderStatus && (
+                              <li> Modificar status de pedido</li>
+                            )}
+                            {role.createOrder && (
+                              <li> Crear y modificar pedido</li>
+                            )}
+                          </ul>
                         )}
-                        {role.createOrder && <li> Crear y modificar pedido</li>}
-                      </ul>
-                    )}
-                    <div style={{ flexDirection: "row" }}>
-                      {(role.createProduct ||
-                        role.deleteProduct ||
-                        role.createDiscount ||
-                        role.deleteDiscount) && (
-                        <ul style={{ paddingLeft: 20 }}>
-                          <Typography variant="p" color="secondary">
-                            Productos
-                          </Typography>
-                          {role.createProduct && (
-                            <li>Crear y modificar productos</li>
+                        <div style={{ flexDirection: "row" }}>
+                          {(role.createProduct ||
+                            role.deleteProduct ||
+                            role.createDiscount ||
+                            role.deleteDiscount) && (
+                            <ul style={{ paddingLeft: 20 }}>
+                              <Typography variant="p" color="secondary">
+                                Productos
+                              </Typography>
+                              {role.createProduct && (
+                                <li>Crear y modificar productos</li>
+                              )}
+                              {role.deleteProduct && (
+                                <li> Eliminar productos</li>
+                              )}
+                              {role.createDiscount && (
+                                <li>Crear y modificar descuentos</li>
+                              )}
+                              {role.deleteDiscount && (
+                                <li> Eliminar descuentos</li>
+                              )}
+                            </ul>
                           )}
-                          {role.deleteProduct && <li> Eliminar productos</li>}
-                          {role.createDiscount && (
-                            <li>Crear y modificar descuentos</li>
+                        </div>
+                        <div style={{ flexDirection: "row" }}>
+                          {(role.modifyBanners ||
+                            role.modifyTermsAndCo ||
+                            role.modifyDollar) && (
+                            <ul style={{ paddingLeft: 20 }}>
+                              <Typography variant="p" color="secondary">
+                                Preferencias
+                              </Typography>
+                              {role.modifyBanners && <li>Modificar banners</li>}
+                              {role.modifyTermsAndCo && (
+                                <li>Modificar términos y condiciones</li>
+                              )}
+                              {role.modifyDollar && (
+                                <li>Modificar valor del dolar</li>
+                              )}
+                            </ul>
                           )}
-                          {role.deleteDiscount && <li> Eliminar descuentos</li>}
-                        </ul>
-                      )}
-                    </div>
-                    <div style={{ flexDirection: "row" }}>
-                      {(role.modifyBanners ||
-                        role.modifyTermsAndCo ||
-                        role.modifyDollar) && (
-                        <ul style={{ paddingLeft: 20 }}>
-                          <Typography variant="p" color="secondary">
-                            Preferencias
-                          </Typography>
-                          {role.modifyBanners && <li>Modificar banners</li>}
-                          {role.modifyTermsAndCo && (
-                            <li>Modificar términos y condiciones</li>
+                          {(role.createTestimonial ||
+                            role.deleteTestimonial) && (
+                            <ul style={{ paddingLeft: 20 }}>
+                              <Typography variant="p" color="secondary">
+                                Testimonios
+                              </Typography>
+                              {role.createTestimonial && (
+                                <li>
+                                  Crear, modificar, mostrar y ordenar
+                                  testimonios
+                                </li>
+                              )}
+                              {role.deleteTestimonial && (
+                                <li>Eliminar testimonios</li>
+                              )}
+                            </ul>
                           )}
-                          {role.modifyDollar && (
-                            <li>Modificar valor del dolar</li>
+                        </div>
+                        <div style={{ flexDirection: "row" }}>
+                          {(role.createPaymentMethod ||
+                            role.deletePaymentMethod) && (
+                            <ul style={{ paddingLeft: 20 }}>
+                              <Typography variant="p" color="secondary">
+                                Métodos de pago
+                              </Typography>
+                              {role.createPaymentMethod && (
+                                <li>Crear y modificar métodos de pago</li>
+                              )}
+                              {role.deletePaymentMethod && (
+                                <li>Eliminar método de pago</li>
+                              )}
+                            </ul>
                           )}
-                        </ul>
-                      )}
-                      {(role.createTestimonial || role.deleteTestimonial) && (
-                        <ul style={{ paddingLeft: 20 }}>
-                          <Typography variant="p" color="secondary">
-                            Testimonios
-                          </Typography>
-                          {role.createTestimonial && (
-                            <li>
-                              Crear, modificar, mostrar y ordenar testimonios
-                            </li>
+                          {(role.createShippingMethod ||
+                            role.deleteShippingMethod) && (
+                            <ul style={{ paddingLeft: 20 }}>
+                              <Typography variant="p" color="secondary">
+                                Métodos de envío
+                              </Typography>
+                              {role.createShippingMethod && (
+                                <li>Crear y modificar métodos de envío</li>
+                              )}
+                              {role.deleteShippingMethod && (
+                                <li>Eliminar método de envío</li>
+                              )}
+                            </ul>
                           )}
-                          {role.deleteTestimonial && (
-                            <li>Eliminar testimonios</li>
-                          )}
-                        </ul>
-                      )}
-                    </div>
-                    <div style={{ flexDirection: "row" }}>
-                      {(role.createPaymentMethod ||
-                        role.deletePaymentMethod) && (
-                        <ul style={{ paddingLeft: 20 }}>
-                          <Typography variant="p" color="secondary">
-                            Métodos de pago
-                          </Typography>
-                          {role.createPaymentMethod && (
-                            <li>Crear y modificar métodos de pago</li>
-                          )}
-                          {role.deletePaymentMethod && (
-                            <li>Eliminar método de pago</li>
-                          )}
-                        </ul>
-                      )}
-                      {(role.createShippingMethod ||
-                        role.deleteShippingMethod) && (
-                        <ul style={{ paddingLeft: 20 }}>
-                          <Typography variant="p" color="secondary">
-                            Métodos de envío
-                          </Typography>
-                          {role.createShippingMethod && (
-                            <li>Crear y modificar métodos de envío</li>
-                          )}
-                          {role.deleteShippingMethod && (
-                            <li>Eliminar método de envío</li>
-                          )}
-                        </ul>
-                      )}
-                    </div>
-                    <div style={{ flexDirection: "row" }}>
-                      {role.modifyAdmins && (
-                        <ul style={{ paddingLeft: 20 }}>
-                          <Typography variant="p" color="secondary">
-                            Usuarios
-                          </Typography>
+                        </div>
+                        <div style={{ flexDirection: "row" }}>
                           {role.modifyAdmins && (
-                            <li>Crear, modificar y eliminar Admins</li>
+                            <ul style={{ paddingLeft: 20 }}>
+                              <Typography variant="p" color="secondary">
+                                Usuarios
+                              </Typography>
+                              {role.modifyAdmins && (
+                                <li>Crear, modificar y eliminar Admins</li>
+                              )}
+                            </ul>
                           )}
-                        </ul>
+                          {role.prixerBan && (
+                            <ul style={{ paddingLeft: 20 }}>
+                              <Typography variant="p" color="secondary">
+                                Prixers{" "}
+                              </Typography>
+                              {role.prixerBan && <li>Banear a Prixers</li>}
+                            </ul>
+                          )}
+                        </div>
+                      </TableCell>
+                      {props.permissions?.modifyAdmins && (
+                        <TableCell align="right">
+                          <Fab
+                            color="default"
+                            style={{
+                              width: 35,
+                              height: 35,
+                              marginRight: 16,
+                            }}
+                            onClick={(e) => {
+                              handleActiveRole(role);
+                            }}
+                          >
+                            <EditIcon />
+                          </Fab>
+                          <Fab
+                            color="default"
+                            style={{
+                              width: 35,
+                              height: 35,
+                            }}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              deleteRole(role._id);
+                            }}
+                          >
+                            <DeleteIcon />
+                          </Fab>
+                        </TableCell>
                       )}
-                      {role.prixerBan && (
-                        <ul style={{ paddingLeft: 20 }}>
-                          <Typography variant="p" color="secondary">
-                            Prixers{" "}
-                          </Typography>
-                          {role.prixerBan && <li>Banear a Prixers</li>}
-                        </ul>
-                      )}
-                    </div>
-                  </TableCell>
-                  {props.permissions?.modifyAdmins && (
-                    <TableCell align="right">
-                      <Fab
-                        color="default"
-                        style={{
-                          width: 35,
-                          height: 35,
-                          marginRight: 16,
-                        }}
-                        onClick={(e) => {
-                          handleActiveRole(role);
-                        }}
-                      >
-                        <EditIcon />
-                      </Fab>
-                      <Fab
-                        color="default"
-                        style={{
-                          width: 35,
-                          height: 35,
-                        }}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          deleteRole(role._id);
-                        }}
-                      >
-                        <DeleteIcon />
-                      </Fab>
-                    </TableCell>
-                  )}
-                </TableRow>
-              ))
-            ) : (
-              <Typography
-                variant="h5"
-                color="secondary"
-                align="right"
-                style={{ paddingTop: 30 }}
-              >
-                Aún no hay roles que mostrar
-              </Typography>
-            )}
-          </TableBody>
-        </Table>
-      </TabPanel>
+                    </TableRow>
+                  ))
+                ) : (
+                  <Typography
+                    variant="h5"
+                    color="secondary"
+                    align="right"
+                    style={{ paddingTop: 30 }}
+                  >
+                    Aún no hay roles que mostrar
+                  </Typography>
+                )}
+              </TableBody>
+            </Table>
+          </TabPanel>
+        </>
+      ) : (
+        <Typography
+          variant="h3"
+          color="secondary"
+          align="center"
+          style={{ paddingTop: 30, marginTop: 60, marginBottom: 80 }}
+        >
+          No tienes permiso para entrar a esta área.
+        </Typography>
+      )}
       {up && <UpdateAdmin admin={up} />}
       <Snackbar
         open={snackbar}

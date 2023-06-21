@@ -131,17 +131,19 @@ export default function MainListItems(props) {
       </div>
       <Divider />
       <div>
-        <ListItem button selected={props.active === "user"}>
-          <ListItemIcon>
-            <AssignmentIcon />
-          </ListItemIcon>
-          <ListItemText
-            primary="Usuarios"
-            onClick={(e) => {
-              handleClick("user");
-            }}
-          />
-        </ListItem>
+        {props.permissions?.modifyAdmins && (
+          <ListItem button selected={props.active === "user"}>
+            <ListItemIcon>
+              <AssignmentIcon />
+            </ListItemIcon>
+            <ListItemText
+              primary="Usuarios"
+              onClick={(e) => {
+                handleClick("user");
+              }}
+            />
+          </ListItem>
+        )}
         {(props.permissions?.modifyBanners ||
           props.permissions?.modifyTermsAndCo) && (
           <ListItem button selected={props.active === "preferences"}>

@@ -17,6 +17,16 @@ import CardContent from "@material-ui/core/CardContent";
 import CardMedia from "@material-ui/core/CardMedia";
 import utils from "../../../utils/utils";
 import logo from "../../../logo.svg";
+import { Button } from "@material-ui/core";
+import Modal from "@material-ui/core/Modal";
+import IconButton from "@material-ui/core/IconButton";
+import CloseIcon from "@material-ui/icons/Close";
+import TextField from "@material-ui/core/TextField";
+// import validations from "../../shoppingCart/validations";
+import SaveIcon from "@material-ui/icons/Save";
+import Fab from "@material-ui/core/Fab";
+
+import { nanoid } from "nanoid";
 
 const useStyles = makeStyles((theme) => ({
   loading: {
@@ -63,6 +73,22 @@ const useStyles = makeStyles((theme) => ({
     zIndex: theme.zIndex.drawer + 1,
     color: theme.palette.primary.main,
   },
+  paper2: {
+    position: "fixed",
+    right: "40%",
+    top: "38%",
+    bottom: "37%",
+    left: "40%",
+    width: 310,
+    backgroundColor: "white",
+    boxShadow: theme.shadows[2],
+    padding: "16px 32px 24px",
+    textAlign: "justify",
+    minWidth: 320,
+    borderRadius: 10,
+    display: "flex",
+    flexDirection: "row",
+  },
 }));
 
 export default function Prixers(props) {
@@ -71,14 +97,18 @@ export default function Prixers(props) {
 
   const [loading, setLoading] = useState(false);
   const [tiles, setTiles] = useState([]);
-  const [backdrop, setBackdrop] = useState(true); // borrar
+  const [backdrop, setBackdrop] = useState(true);
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
   // const isDeskTop = useMediaQuery(theme.breakpoints.up("sm"));
   const [state, setState] = useState({
     checkedA: true,
   });
-
+  const [openNewBalance, setOpenNewBalance] = useState(false);
+  const [selectedPrixer, setSelectedPrixer] = useState();
+  const [balance, setBalance] = useState(0);
+  const [message, setMessage] = useState();
+  const [open, setOpen] = useState(false);
   const readPrixers = async () => {
     try {
       setLoading(true);
@@ -120,6 +150,27 @@ export default function Prixers(props) {
   useEffect(() => {
     readPrixers();
   }, []);
+
+  const openNewAccount = () => {
+    const data = {
+      _id: nanoid(24),
+      balance: balance || 0,
+      email: selectedPrixer.email,
+    };
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/account/create";
+    axios.post(base_url, data, {
+      "Content-Type": "multipart/form-data",
+    });
+    setOpen(true);
+    setMessage("Cartera creada y balance actualizado exitosamente.");
+    handleClose();
+    setSelectedPrixer();
+    setBalance(0);
+  };
+
+  const handleClose = () => {
+    setOpenNewBalance(false);
+  };
 
   return (
     <div>
@@ -176,11 +227,6 @@ export default function Prixers(props) {
                         >
                           {tile.username} -
                           {tile.specialty ||
-                            // tile.specialtyArt?.map((specialty, index) =>
-                            //   tile.specialtyArt?.length === index + 1
-                            //     ? specialty
-                            //     : `${specialty}, `
-                            // )}
                             tile.specialtyArt?.map(
                               (specialty, index) =>
                                 specialty !== "" &&
@@ -190,6 +236,26 @@ export default function Prixers(props) {
                             )}
                         </Typography>
                       </CardContent>
+                      {tile.account ? (
+                        <Typography>{tile.account}</Typography>
+                      ) : (
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          style={{
+                            width: 160,
+                            alignSelf: "center",
+                            fontWeight: "bold",
+                          }}
+                          onClick={(e) => {
+                            // openNewAccount(tile);
+                            setSelectedPrixer(tile);
+                            setOpenNewBalance(true);
+                          }}
+                        >
+                          Crear Cartera
+                        </Button>
+                      )}
                       {props.permissions?.prixerBan && (
                         <Box
                           style={{
@@ -283,6 +349,69 @@ export default function Prixers(props) {
               )}
         </Grid>
       </Paper>
+      <Modal open={openNewBalance}>
+        <Grid container className={classes.paper2}>
+          <Grid
+            item
+            style={{
+              width: "100%",
+              display: "flex",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                width: "100%",
+
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <Typography>
+                Balance de
+                {selectedPrixer?.firstName + " " + selectedPrixer?.lastName}:
+              </Typography>
+
+              <IconButton onClick={handleClose}>
+                <CloseIcon />
+              </IconButton>
+            </div>
+          </Grid>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+            }}
+          >
+            <TextField
+              variant="outlined"
+              value={props.dollarValue}
+              onChange={(e) => {
+                setBalance(e.target.value);
+              }}
+              type={"number"}
+            />
+            <Button
+              variant="contained"
+              color="primary"
+              size="small"
+              onClick={() => {
+                openNewAccount();
+              }}
+              style={{ marginRight: 10, marginLeft: 10, marginTop: 5 }}
+            >
+              Guardar
+            </Button>
+          </div>
+        </Grid>
+      </Modal>
+      <Snackbar
+        open={open}
+        autoHideDuration={1000}
+        message={message}
+        className={classes.snackbar}
+      />
     </div>
   );
 }

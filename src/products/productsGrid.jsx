@@ -168,13 +168,9 @@ export default function ProductGrid(props) {
   const [currency, setCurrency] = useState(false);
 
   const getDiscounts = async () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + "/discount/read-allv1";
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/discount/read-allv2";
     await axios
-      .post(
-        base_url,
-        { adminToken: localStorage.getItem("adminTokenV") },
-        { withCredentials: true }
-      )
+      .post(base_url)
       .then((response) => {
         setDiscountList(response.data.discounts);
       })
@@ -229,8 +225,8 @@ export default function ProductGrid(props) {
         setTiles(getAttributes(products));
       } else if (order === "Price") {
         let products = productsAttTemp1.sort(function (a, b) {
-          let aPrice = a.publicPrice.from.replace(/[$]/gi, "");
-          let bPrice = b.publicPrice.from.replace(/[$]/gi, "");
+          let aPrice = a.publicPrice.from;
+          let bPrice = b.publicPrice.from;
           return aPrice - bPrice;
         });
         setTiles(getAttributes(products));
@@ -249,70 +245,549 @@ export default function ProductGrid(props) {
   };
 
   const priceSelect = (item) => {
-    // if (typeof item.discount === "string") {
-    //   let dis = discountList.filter((dis) => dis._id === item.discount)[0];
-    //   return (
-    //     <>
-    //       <del>
-    //         PVP: $
-    //         {Number(
-    //           item.publicPrice.from.replace(/[$]/gi, "").replace(/[,]/gi, ".")
-    //         ).toLocaleString("de-DE", {
-    //           minimumFractionDigits: 2,
-    //         }) +
-    //           " - " +
-    //           Number(
-    //             item.publicPrice?.to?.replace(/[$]/gi, "").replace(/[,]/gi, ".")
-    //           ).toLocaleString("de-DE", {
-    //             minimumFractionDigits: 2,
-    //           })}
-    //       </del>
-
-    //       <div
-    //         style={{
-    //           backgroundColor: "#d33f49",
-    //           padding: 3,
-    //           width: 180,
-    //           textAlign: "center",
-    //           color: "white",
-    //           fontWeight: "bold",
-    //           borderRadius: 8,
-    //         }}
-    //       >
-    //         Descuento de
-    //         {dis.type === "Porcentaje" && " %" + dis.value}
-    //       </div>
-
-    //       <div>
-    //         PVP: $
-    //         {Number(
-    //           item.publicPrice.from.replace(/[$]/gi, "").replace(/[,]/gi, ".") -
-    //             (item.publicPrice.from
-    //               .replace(/[$]/gi, "")
-    //               .replace(/[,]/gi, ".") /
-    //               100) *
-    //               dis.value
-    //         ).toLocaleString("de-DE", {
-    //           minimumFractionDigits: 2,
-    //         }) +
-    //           " - " +
-    //           Number(
-    //             item.publicPrice?.to
-    //               ?.replace(/[$]/gi, "")
-    //               .replace(/[,]/gi, ".") -
-    //               (item.publicPrice?.to
-    //                 ?.replace(/[$]/gi, "")
-    //                 .replace(/[,]/gi, ".") /
-    //                 100) *
-    //                 dis.value
-    //           ).toLocaleString("de-DE", {
-    //             minimumFractionDigits: 2,
-    //           })}
-    //       </div>
-    //     </>
-    //   );
-    // }
     if (
+      typeof item.discount === "string" &&
+      item.prixerEquation !== "" &&
+      (JSON.parse(localStorage?.getItem("token")) ||
+        JSON.parse(localStorage?.getItem("adminToken"))) &&
+      (JSON.parse(localStorage?.getItem("token"))?.username ||
+        JSON.parse(localStorage?.getItem("adminToken"))?.username) &&
+      currency
+    ) {
+      let dis = discountList?.filter((dis) => dis._id === item.discount)[0];
+      return (
+        <>
+          <del>
+            PVM: Bs
+            {Number(props.dollarValue * item.prixerEquation).toLocaleString(
+              "de-DE",
+              {
+                minimumFractionDigits: 2,
+              }
+            )}
+          </del>
+          <div
+            style={{
+              backgroundColor: "#d33f49",
+              padding: 3,
+              width: 180,
+              textAlign: "center",
+              color: "white",
+              fontWeight: "bold",
+              borderRadius: 8,
+            }}
+          >
+            Descuento de
+            {dis?.type === "Porcentaje" && " %" + dis?.value}
+            {dis?.type === "Monto" &&
+              " Bs" +
+                Number(dis?.value * props.dollarValue).toLocaleString("de-DE", {
+                  minimumFractionDigits: 2,
+                })}
+          </div>
+          {dis?.type === "Porcentaje" && (
+            <div>
+              PVM: Bs
+              {Number(
+                (item.prixerEquation.replace(/[,]/gi, ".") -
+                  (item.prixerEquation.replace(/[,]/gi, ".") / 100) *
+                    dis?.value) *
+                  props.dollarValue
+              ).toLocaleString("de-DE", {
+                minimumFractionDigits: 2,
+              })}
+            </div>
+          )}
+          {dis?.type === "Monto" && (
+            <div>
+              PVM: Bs
+              {Number(
+                (item.prixerEquation - dis?.value) * props.dollarValue
+              ).toLocaleString("de-DE", {
+                minimumFractionDigits: 2,
+              })}
+            </div>
+          )}
+        </>
+      );
+    } else if (
+      typeof item.discount === "string" &&
+      item.prixerEquation !== "" &&
+      (JSON.parse(localStorage?.getItem("token")) ||
+        JSON.parse(localStorage?.getItem("adminToken"))) &&
+      (JSON.parse(localStorage?.getItem("token"))?.username ||
+        JSON.parse(localStorage?.getItem("adminToken"))?.username)
+    ) {
+      let dis = discountList?.filter((dis) => dis._id === item.discount)[0];
+      return (
+        <>
+          <del>
+            PVM: $
+            {item.prixerEquation.toLocaleString("de-DE", {
+              minimumFractionDigits: 2,
+            })}
+          </del>
+          <div
+            style={{
+              backgroundColor: "#d33f49",
+              padding: 3,
+              width: 180,
+              textAlign: "center",
+              color: "white",
+              fontWeight: "bold",
+              borderRadius: 8,
+            }}
+          >
+            Descuento de
+            {dis?.type === "Porcentaje" && " %" + dis?.value}
+            {dis?.type === "Monto" && " $" + Number(dis?.value)}
+          </div>
+          {dis?.type === "Porcentaje" && (
+            <div>
+              PVM: $
+              {Number(
+                item.prixerEquation.replace(/[,]/gi, ".") -
+                  (item.prixerEquation.replace(/[,]/gi, ".") / 100) * dis?.value
+              ).toLocaleString("de-DE", {
+                minimumFractionDigits: 2,
+              })}
+            </div>
+          )}
+          {dis?.type === "Monto" && (
+            <div>
+              PVM: $
+              {Number(item.prixerEquation - dis?.value).toLocaleString(
+                "de-DE",
+                {
+                  minimumFractionDigits: 2,
+                }
+              )}
+            </div>
+          )}
+        </>
+      );
+    } else if (
+      typeof item.discount === "string" &&
+      (JSON.parse(localStorage?.getItem("token")) ||
+        JSON.parse(localStorage?.getItem("adminToken"))) &&
+      (JSON.parse(localStorage?.getItem("token"))?.username ||
+        JSON.parse(localStorage?.getItem("adminToken"))?.username) &&
+      item.attributes !== [] &&
+      item.prixerPrice.to !== item.prixerPrice.from &&
+      item.prixerPrice.to !== "" &&
+      item.prixerPrice.to !== null &&
+      currency
+    ) {
+      let dis = discountList?.filter((dis) => dis._id === item.discount)[0];
+      return (
+        <>
+          <del>
+            {"PVM: Bs" +
+              Number(item.prixerPrice.from * props.dollarValue).toLocaleString(
+                "de-DE",
+                {
+                  minimumFractionDigits: 2,
+                }
+              ) +
+              " - " +
+              Number(item.prixerPrice.to * props.dollarValue).toLocaleString(
+                "de-DE",
+                {
+                  minimumFractionDigits: 2,
+                }
+              )}
+          </del>
+          <div
+            style={{
+              backgroundColor: "#d33f49",
+              padding: 3,
+              width: 180,
+              textAlign: "center",
+              color: "white",
+              fontWeight: "bold",
+              borderRadius: 8,
+            }}
+          >
+            Descuento de
+            {dis?.type === "Porcentaje" && " %" + dis?.value}
+            {dis?.type === "Monto" &&
+              " Bs" +
+                Number(dis?.value * props.dollarValue).toLocaleString("de-DE", {
+                  // minimumFractionDigits: 2,
+                })}
+          </div>
+          {dis?.type === "Porcentaje" &&
+            " Bs" +
+              Number(
+                (item.prixerPrice.from -
+                  (item.prixerEquation / 100) * dis?.value) *
+                  props.dollarValue
+              ).toLocaleString("de-DE", {
+                minimumFractionDigits: 2,
+              }) +
+              " - " +
+              Number(
+                (item.prixerPrice?.to -
+                  (item.prixerPrice.to / 100) * dis?.value) *
+                  props.dollarValue
+              ).toLocaleString("de-DE", {
+                minimumFractionDigits: 2,
+              })}
+          {dis?.type === "Monto" &&
+            "PVM: Bs" +
+              Number(
+                (item.prixerPrice.from - dis?.value) * props.dollarValue
+              ).toLocaleString("de-DE", {
+                minimumFractionDigits: 2,
+              }) +
+              " - " +
+              Number(
+                (item.prixerPrice.to - dis?.value) * props.dollarValue
+              ).toLocaleString("de-DE", {
+                minimumFractionDigits: 2,
+              })}
+        </>
+      );
+    } else if (
+      typeof item.discount === "string" &&
+      (JSON.parse(localStorage?.getItem("token")) ||
+        JSON.parse(localStorage?.getItem("adminToken"))) &&
+      (JSON.parse(localStorage?.getItem("token"))?.username ||
+        JSON.parse(localStorage?.getItem("adminToken"))?.username) &&
+      item.attributes !== [] &&
+      item.prixerPrice.to !== item.prixerPrice.from &&
+      item.prixerPrice.to !== "" &&
+      item.prixerPrice.to !== null
+    ) {
+      let dis = discountList?.filter((dis) => dis._id === item.discount)[0];
+      return (
+        <>
+          <del>
+            {"PVM: $" +
+              Number(item.prixerPrice.from).toLocaleString("de-DE", {
+                minimumFractionDigits: 2,
+              }) +
+              " - " +
+              Number(item.prixerPrice.to).toLocaleString("de-DE", {
+                minimumFractionDigits: 2,
+              })}
+          </del>
+          <div
+            style={{
+              backgroundColor: "#d33f49",
+              padding: 3,
+              width: 180,
+              textAlign: "center",
+              color: "white",
+              fontWeight: "bold",
+              borderRadius: 8,
+            }}
+          >
+            Descuento de
+            {dis?.type === "Porcentaje" && " %" + dis?.value}
+            {dis?.type === "Monto" &&
+              " $" +
+                Number(dis?.value).toLocaleString("de-DE", {
+                  // minimumFractionDigits: 2,
+                })}
+          </div>
+          {dis?.type === "Porcentaje" &&
+            " $" +
+              Number(
+                item.prixerPrice.from - (item.prixerEquation / 100) * dis?.value
+              ).toLocaleString("de-DE", {
+                minimumFractionDigits: 2,
+              }) +
+              " - " +
+              Number(
+                item.prixerPrice?.to - (item.prixerPrice.to / 100) * dis?.value
+              ).toLocaleString("de-DE", {
+                minimumFractionDigits: 2,
+              })}
+          {dis?.type === "Monto" &&
+            "PVM: $" +
+              Number(item.prixerPrice.from - dis?.value).toLocaleString(
+                "de-DE",
+                {
+                  minimumFractionDigits: 2,
+                }
+              ) +
+              " - " +
+              Number(item.prixerPrice.to - dis?.value).toLocaleString("de-DE", {
+                minimumFractionDigits: 2,
+              })}
+        </>
+      );
+    } else if (
+      typeof item.discount === "string" &&
+      item.publicEquation !== "" &&
+      currency
+    ) {
+      let dis = discountList?.filter((dis) => dis._id === item.discount)[0];
+      return (
+        <>
+          <del>
+            PVP: Bs
+            {Number(item.publicEquation * props.dollarValue).toLocaleString(
+              "de-DE",
+              {
+                minimumFractionDigits: 2,
+              }
+            )}
+          </del>
+          <div
+            style={{
+              backgroundColor: "#d33f49",
+              padding: 3,
+              width: 180,
+              textAlign: "center",
+              color: "white",
+              fontWeight: "bold",
+              borderRadius: 8,
+            }}
+          >
+            Descuento de
+            {dis?.type === "Porcentaje" && " %" + dis?.value}
+            {dis?.type === "Monto" &&
+              " Bs" +
+                Number(dis?.value * props.dollarValue).toLocaleString("de-DE", {
+                  minimumFractionDigits: 2,
+                })}
+          </div>
+          {dis?.type === "Porcentaje" && (
+            <div>
+              PVP: Bs
+              {Number(
+                (item.publicEquation.replace(/[,]/gi, ".") -
+                  (item.publicEquation.replace(/[,]/gi, ".") / 100) *
+                    dis?.value) *
+                  props.dollarValue
+              ).toLocaleString("de-DE", {
+                minimumFractionDigits: 2,
+              })}
+            </div>
+          )}
+          {dis?.type === "Monto" && (
+            <div>
+              PVP: Bs
+              {Number(
+                (item.publicEquation - dis?.value) * props.dollarValue
+              ).toLocaleString("de-DE", {
+                minimumFractionDigits: 2,
+              })}
+            </div>
+          )}
+        </>
+      );
+    } else if (
+      typeof item.discount === "string" &&
+      item.publicEquation !== ""
+    ) {
+      let dis = discountList?.filter((dis) => dis._id === item.discount)[0];
+      return (
+        <>
+          <del>
+            PVP: $
+            {item.publicEquation.toLocaleString("de-DE", {
+              minimumFractionDigits: 2,
+            })}
+          </del>
+          <div
+            style={{
+              backgroundColor: "#d33f49",
+              padding: 3,
+              width: 180,
+              textAlign: "center",
+              color: "white",
+              fontWeight: "bold",
+              borderRadius: 8,
+            }}
+          >
+            Descuento de
+            {dis?.type === "Porcentaje" && " %" + dis?.value}
+            {dis?.type === "Monto" && " $" + Number(dis?.value)}
+          </div>
+          {dis?.type === "Porcentaje" && (
+            <div>
+              PVP: $
+              {Number(
+                item.publicEquation.replace(/[,]/gi, ".") -
+                  (item.publicEquation.replace(/[,]/gi, ".") / 100) * dis?.value
+              ).toLocaleString("de-DE", {
+                minimumFractionDigits: 2,
+              })}
+            </div>
+          )}
+          {dis?.type === "Monto" && (
+            <div>
+              PVP: $
+              {Number(
+                item.publicEquation -
+                  // .replace(/[,]/gi, ".") -
+                  dis?.value
+              ).toLocaleString("de-DE", {
+                minimumFractionDigits: 2,
+              })}
+            </div>
+          )}
+        </>
+      );
+    } else if (typeof item.discount === "string" && currency) {
+      let dis = discountList?.filter((dis) => dis._id === item.discount)[0];
+      return (
+        <>
+          <del>
+            PVP: Bs
+            {Number(
+              item.publicPrice.from.replace(/[,]/gi, ".") * props.dollarValue
+            ).toLocaleString("de-DE", {
+              minimumFractionDigits: 2,
+            }) +
+              " - " +
+              Number(
+                item.publicPrice?.to?.replace(/[,]/gi, ".") * props.dollarValue
+              ).toLocaleString("de-DE", {
+                minimumFractionDigits: 2,
+              })}
+          </del>
+
+          <div
+            style={{
+              backgroundColor: "#d33f49",
+              padding: 3,
+              width: 180,
+              textAlign: "center",
+              color: "white",
+              fontWeight: "bold",
+              borderRadius: 8,
+            }}
+          >
+            Descuento de
+            {dis?.type === "Porcentaje" && " %" + dis?.value}
+            {dis?.type === "Monto" &&
+              " Bs" +
+                Number(dis?.value * props.dollarValue).toLocaleString("de-DE", {
+                  minimumFractionDigits: 2,
+                })}
+          </div>
+
+          {dis?.type === "Porcentaje" && (
+            <div>
+              PVP: Bs
+              {Number(
+                (item.publicPrice.from.replace(/[,]/gi, ".") -
+                  (item.publicPrice.from.replace(/[,]/gi, ".") / 100) *
+                    dis?.value) *
+                  props.dollarValue
+              ).toLocaleString("de-DE", {
+                minimumFractionDigits: 2,
+              }) +
+                " - " +
+                Number(
+                  (item.publicPrice?.to?.replace(/[,]/gi, ".") -
+                    (item.publicPrice?.to?.replace(/[,]/gi, ".") / 100) *
+                      dis?.value) *
+                    props.dollarValue
+                ).toLocaleString("de-DE", {
+                  minimumFractionDigits: 2,
+                })}
+            </div>
+          )}
+          {dis?.type === "Monto" && (
+            <div>
+              PVP: $
+              {Number(
+                (item.publicPrice.from.replace(/[,]/gi, ".") - dis?.value) *
+                  props.dollarValue
+              ).toLocaleString("de-DE", {
+                minimumFractionDigits: 2,
+              }) +
+                " - " +
+                Number(
+                  (item.publicPrice?.to?.replace(/[,]/gi, ".") - dis?.value) *
+                    props.dollarValue
+                ).toLocaleString("de-DE", {
+                  minimumFractionDigits: 2,
+                })}
+            </div>
+          )}
+        </>
+      );
+    } else if (typeof item.discount === "string") {
+      let dis = discountList?.filter((dis) => dis._id === item.discount)[0];
+      return (
+        <>
+          <del>
+            PVP: $
+            {Number(item.publicPrice.from.replace(/[,]/gi, ".")).toLocaleString(
+              "de-DE",
+              {
+                minimumFractionDigits: 2,
+              }
+            ) +
+              " - " +
+              Number(
+                item.publicPrice?.to?.replace(/[,]/gi, ".")
+              ).toLocaleString("de-DE", {
+                minimumFractionDigits: 2,
+              })}
+          </del>
+
+          <div
+            style={{
+              backgroundColor: "#d33f49",
+              padding: 3,
+              width: 180,
+              textAlign: "center",
+              color: "white",
+              fontWeight: "bold",
+              borderRadius: 8,
+            }}
+          >
+            Descuento de
+            {dis?.type === "Porcentaje" && " %" + dis?.value}
+            {dis?.type === "Monto" && " $" + dis?.value}
+          </div>
+
+          {dis?.type === "Porcentaje" && (
+            <div>
+              PVP: $
+              {Number(
+                item.publicPrice.from.replace(/[,]/gi, ".") -
+                  (item.publicPrice.from.replace(/[,]/gi, ".") / 100) *
+                    dis?.value
+              ).toLocaleString("de-DE", {
+                minimumFractionDigits: 2,
+              }) +
+                " - " +
+                Number(
+                  item.publicPrice?.to?.replace(/[,]/gi, ".") -
+                    (item.publicPrice?.to?.replace(/[,]/gi, ".") / 100) *
+                      dis?.value
+                ).toLocaleString("de-DE", {
+                  minimumFractionDigits: 2,
+                })}
+            </div>
+          )}
+          {dis?.type === "Monto" && (
+            <div>
+              PVP: $
+              {Number(
+                item.publicPrice.from?.replace(/[,]/gi, ".") - dis?.value
+              ).toLocaleString("de-DE", {
+                minimumFractionDigits: 2,
+              }) +
+                " - " +
+                Number(
+                  item.publicPrice?.to?.replace(/[,]/gi, ".") - dis?.value
+                ).toLocaleString("de-DE", {
+                  minimumFractionDigits: 2,
+                })}
+            </div>
+          )}
+        </>
+      );
+    } else if (
       (JSON.parse(localStorage?.getItem("token")) ||
         JSON.parse(localStorage?.getItem("adminToken"))) &&
       (JSON.parse(localStorage?.getItem("token"))?.username ||
@@ -353,16 +828,14 @@ export default function ProductGrid(props) {
       return (
         "PVM: Bs" +
         (
-          Number(
-            item.prixerPrice.from.replace(/[$]/gi, "").replace(/[,]/gi, ".")
-          ) * props.dollarValue
+          Number(item.prixerPrice.from.replace(/[,]/gi, ".")) *
+          props.dollarValue
         ).toLocaleString("de-DE", {
           minimumFractionDigits: 2,
         }) +
         " - " +
         Number(
-          item.prixerPrice?.to?.replace(/[$]/gi, "").replace(/[,]/gi, ".") *
-            props.dollarValue
+          item.prixerPrice?.to?.replace(/[,]/gi, ".") * props.dollarValue
         ).toLocaleString("de-DE", {
           minimumFractionDigits: 2,
         })
@@ -379,17 +852,19 @@ export default function ProductGrid(props) {
     ) {
       return (
         "PVM: $" +
-        Number(
-          item.prixerPrice.from.replace(/[$]/gi, "").replace(/[,]/gi, ".")
-        ).toLocaleString("de-DE", {
-          minimumFractionDigits: 2,
-        }) +
+        Number(item.prixerPrice.from.replace(/[,]/gi, ".")).toLocaleString(
+          "de-DE",
+          {
+            minimumFractionDigits: 2,
+          }
+        ) +
         " - " +
-        Number(
-          item.prixerPrice?.to?.replace(/[$]/gi, "").replace(/[,]/gi, ".")
-        ).toLocaleString("de-DE", {
-          minimumFractionDigits: 2,
-        })
+        Number(item.prixerPrice?.to?.replace(/[,]/gi, ".")).toLocaleString(
+          "de-DE",
+          {
+            minimumFractionDigits: 2,
+          }
+        )
       );
     } else if (
       (JSON.parse(localStorage.getItem("token")) ||
@@ -437,15 +912,11 @@ export default function ProductGrid(props) {
     ) {
       return (
         "PVP: Bs" +
-        (
-          item.publicPrice.from.replace(/[$]/gi, "") * props.dollarValue
-        ).toLocaleString("de-DE", {
+        (item.publicPrice.from * props.dollarValue).toLocaleString("de-DE", {
           minimumFractionDigits: 2,
         }) +
         " - " +
-        (
-          item.publicPrice.to?.replace(/[$]/gi, "") * props.dollarValue
-        ).toLocaleString("de-DE", {
+        (item.publicPrice.to * props.dollarValue).toLocaleString("de-DE", {
           minimumFractionDigits: 2,
         })
       );
@@ -455,23 +926,16 @@ export default function ProductGrid(props) {
       item.publicPrice.to !== "" &&
       item.publicPrice.to !== null
     ) {
-      return (
-        "PVP: $" +
-        item.publicPrice.from.replace(/[$]/gi, "") +
-        " - " +
-        item.publicPrice.to?.replace(/[$]/gi, "")
-      );
+      return "PVP: $" + item.publicPrice.from + " - " + item.publicPrice.to;
     } else if (currency) {
       return (
         "PVP: Bs" +
-        (
-          item.publicPrice.from.replace(/[$]/gi, "") * props.dollarValue
-        ).toLocaleString("de-DE", {
+        (item.publicPrice.from * props.dollarValue).toLocaleString("de-DE", {
           minimumFractionDigits: 2,
         })
       );
     } else {
-      return "PVP: $" + item.publicPrice.from.replace(/[$]/gi, "");
+      return "PVP: $" + item.publicPrice.from;
     }
   };
 

@@ -368,9 +368,12 @@ export default function ReadAdmins(props) {
                           {role.prixerBan && (
                             <ul style={{ paddingLeft: 20 }}>
                               <Typography variant="p" color="secondary">
-                                Prixers{" "}
+                                Prixers
                               </Typography>
                               {role.prixerBan && <li>Banear a Prixers</li>}
+                              {role.setPrixerBalance && (
+                                <li>Modificar Balance de Prixers</li>
+                              )}
                             </ul>
                           )}
                         </div>

@@ -587,7 +587,7 @@ export default function UpdateAdmin(props) {
                         onChange={() => {
                           active ? setActive(false) : setActive(true);
                         }}
-                      />{" "}
+                      />
                       Habilitado / Visible
                     </Grid>
                     <Grid item xs={12} md={6}>

@@ -48,37 +48,28 @@ export default function PrixerProfile() {
   const classes = useStyles();
   const theme = useTheme();
   const prixerUsername = JSON.parse(localStorage.getItem("token")).username;
+  const account = JSON.parse(localStorage.getItem("token")).account;
   const [balance, setBalance] = useState(0);
-  const [relOrders, setRelOrders] = useState([]);
+  const [movements, setMovements] = useState([]);
   const [tab, setTab] = useState("balance");
   const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
 
-  useEffect(() => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + "/order/byPrixer";
-    axios.post(base_url, { prixer: prixerUsername }).then((response) => {
-      let orders = response.data.orders;
-      let total;
-      orders.map((order) => {
-        order.requests.map((item) => {
-          if (item.art.prixerUsername === prixerUsername) {
-            relOrders.push(item);
-          }
-        });
-      });
-      relOrders.map((item) => {
-        if (item.product.prixerEquation) {
-          total = item.product.prixerEquation * item.quantity * 0.1;
-        } else if (item.product.prixerPrice.from) {
-          total = item.product.prixerPrice.from * item.quantity * 0.1;
-        } else if (item.product.publicEquation) {
-          total = item.product.publicEquation * item.quantity * 0.1;
-        } else if (item.product.publicPrice.from) {
-          total = item.product.publicPrice.from * item.quantity * 0.1;
-        }
-      });
+  const getBalance = () => {
+    const url = process.env.REACT_APP_BACKEND_URL + "/account/readById";
+    const data = { _id: account };
+    axios.post(url, data).then((response) => setBalance(response.data.balance));
+  };
 
-      setBalance(total.toFixed(2));
-    });
+  const getMovements = () => {
+    const url = process.env.REACT_APP_BACKEND_URL + "/movement/readByAccount";
+    const data = { _id: account };
+    axios
+      .post(url, data)
+      .then((response) => setMovements(response.data.movements));
+  };
+  useEffect(() => {
+    getBalance();
+    getMovements();
   }, []);
 
   const handleBalance = (e) => {
@@ -134,7 +125,7 @@ export default function PrixerProfile() {
               {tab === "balance" && (
                 <Grid>
                   <Typography
-                    variant="body2"
+                    variant="body1"
                     style={{ display: "flex", justifyContent: "center" }}
                   >
                     Tu balance es de:
@@ -143,15 +134,24 @@ export default function PrixerProfile() {
                     variant="h2"
                     style={{ display: "flex", justifyContent: "center" }}
                   >
-                    ${balance}
+                    $
+                    {balance.toLocaleString("de-DE", {
+                      minimumFractionDigits: 2,
+                      // maximumSignificantDigits: 2,
+                    })}
                   </Typography>
                 </Grid>
               )}
               {tab === "movement" && (
                 <Grid>
-                  <Typography>Tus Movimientos:</Typography>
-                  {relOrders.length > 0 ? (
-                    relOrders.map((item) => (
+                  <Typography
+                    variant="h6"
+                    style={{ display: "flex", justifyContent: "center" }}
+                  >
+                    Tus Movimientos:
+                  </Typography>
+                  {movements ? (
+                    movements.map((mov) => (
                       <Grid
                         style={{
                           display: "flex",
@@ -163,31 +163,46 @@ export default function PrixerProfile() {
                           margin: "10px 0px 10px 0px",
                         }}
                       >
-                        <Grid item>
-                          {/* <Typography color="gris"> */}
-                          {item.product.name} x {item.art.title}
-                          {/* </Typography> */}
+                        <Grid>
+                          {mov.date
+                            ? new Date(mov.date)
+                                .toLocaleString("en-GB", {
+                                  timeZone: "UTC",
+                                })
+                                .slice(0, 10)
+                            : new Date(mov.createdOn)
+                                .toLocaleString("en-GB", {
+                                  timeZone: "UTC",
+                                })
+                                .slice(0, 10)}
                         </Grid>
-                        <Grid style={{ color: "green", fontWeight: "bold" }}>
-                          + $
-                          {item.product.prixerEquation
-                            ? item.product.prixerEquation * item.quantity * 0.1
-                            : item.product.prixerPrice.from
-                            ? item.product.prixerPrice.from *
-                              item.quantity *
-                              0.1
-                            : item.product.publicEquation
-                            ? item.product.publicEquation * item.quantity * 0.1
-                            : item.product.publicPrice.from &&
-                              item.product.publicPrice.from *
-                                item.quantity *
-                                0.1}
-                        </Grid>
+                        <Grid>{mov.description}</Grid>
+                        {mov.type === "Depósito" ? (
+                          <Grid style={{ color: "green", fontWeight: "bold" }}>
+                            + $
+                            {mov.value.toLocaleString("de-DE", {
+                              minimumFractionDigits: 2,
+                              // maximumSignificantDigits: 2,
+                            })}
+                          </Grid>
+                        ) : (
+                          mov.type === "Retiro" && (
+                            <Grid style={{ color: "red", fontWeight: "bold" }}>
+                              - $
+                              {mov.value.toLocaleString("de-DE", {
+                                minimumFractionDigits: 2,
+                                // maximumSignificantDigits: 2,
+                              })}
+                            </Grid>
+                          )
+                        )}
                       </Grid>
                     ))
                   ) : (
-                    <Typography>
-                      Aún no hay órdenes registradas para ti :c{" "}
+                    <Typography
+                      style={{ display: "flex", justifyContent: "center" }}
+                    >
+                      Aún no hay órdenes registradas para ti.
                     </Typography>
                   )}
                 </Grid>

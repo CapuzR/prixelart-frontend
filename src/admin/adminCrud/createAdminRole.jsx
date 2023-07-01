@@ -43,6 +43,7 @@ export default function CreateAdminRole() {
   const [createTestimonial, setCreateTestimonial] = useState(false);
   const [deleteTestimonial, setDeleteTestimonial] = useState(false);
   const [modifyAdmins, setModifyAdmins] = useState(false);
+  const [setPrixerBalance, setSetPrixerBalance] = useState(false);
 
   const [loading, setLoading] = useState(false);
   const [buttonState, setButtonState] = useState(false);
@@ -81,6 +82,7 @@ export default function CreateAdminRole() {
         createTestimonial: createTestimonial,
         deleteTestimonial: deleteTestimonial,
         modifyAdmins: modifyAdmins,
+        setPrixerBalance: setPrixerBalance,
       };
       const base_url = process.env.REACT_APP_BACKEND_URL + "/adminRole/create";
       const response = await axios.post(
@@ -174,6 +176,10 @@ export default function CreateAdminRole() {
 
   const handleChangeModifyAdmins = () => {
     setModifyAdmins(!modifyAdmins);
+  };
+
+  const handleChangeSetPrixerBalance = () => {
+    setSetPrixerBalance(!setPrixerBalance);
   };
 
   return (
@@ -654,7 +660,7 @@ export default function CreateAdminRole() {
               color="secondary"
               style={{ marginLeft: "20px" }}
             >
-              Prixers{" "}
+              Prixers
             </Typography>
             <div>
               <FormControl
@@ -672,6 +678,29 @@ export default function CreateAdminRole() {
                 <Switch
                   checked={prixerBan}
                   onChange={handleChangePrixerBan}
+                  name="checkedA"
+                  color="primary"
+                />
+              </FormControl>
+            </div>
+            <div>
+              <FormControl
+                className={clsx(classes.margin, classes.textField)}
+                variant="outlined"
+                style={{
+                  width: "90%",
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Typography>
+                  Permiso para modificar balance de Prixer
+                </Typography>
+                <Switch
+                  checked={setPrixerBalance}
+                  onChange={handleChangeSetPrixerBalance}
                   name="checkedA"
                   color="primary"
                 />

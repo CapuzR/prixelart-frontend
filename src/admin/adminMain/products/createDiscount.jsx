@@ -121,7 +121,7 @@ export default function CreateDiscount() {
         setName();
         setDescription();
         setType();
-        setValue("");
+        setValue();
         setAppliedProducts([]);
         history.push("/admin/product/read");
       }
@@ -255,6 +255,7 @@ export default function CreateDiscount() {
                   variant="outlined"
                   required
                   fullWidth
+                  type="number"
                   label="Valor"
                   InputProps={{
                     startAdornment: (

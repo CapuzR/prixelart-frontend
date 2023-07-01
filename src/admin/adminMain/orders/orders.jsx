@@ -293,9 +293,26 @@ export default function Orders(props) {
   const [currency, setCurrency] = useState(false);
   const [dollarValue, setDollarValue] = useState(1);
   const [shippingList, setShippingList] = useState();
-
+  const [account, setAccount] = useState();
   const [errorMessage, setErrorMessage] = useState();
   const [snackBarError, setSnackBarError] = useState(false);
+  const [discountList, setDiscountList] = useState([]);
+
+  const getDiscounts = async () => {
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/discount/read-allv2";
+    await axios
+      .post(base_url)
+      .then((response) => {
+        setDiscountList(response.data.discounts);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  useEffect(() => {
+    getDiscounts();
+  }, []);
 
   useEffect(() => {
     const base_url =
@@ -340,7 +357,6 @@ export default function Orders(props) {
       });
     setLoading(false);
   };
-
   const getTotalCombinedItems = (state) => {
     const totalNotCompleted = state.filter(
       (item) => !item.art || !item.product
@@ -575,8 +591,9 @@ export default function Orders(props) {
     return total;
   };
 
-  const handleChangeStatus = async (id, status) => {
-    const URI = process.env.REACT_APP_BACKEND_URL + "/order/update/" + id;
+  const handleChangeStatus = async (order, status) => {
+    const URI =
+      process.env.REACT_APP_BACKEND_URL + "/order/update/" + order.orderId;
     const body = {
       adminToken: localStorage.getItem("adminTokenV"),
       status: status,
@@ -587,12 +604,68 @@ export default function Orders(props) {
         setSnackBarError(true);
       }
     });
+    if (order.payStatus === "Pagado" && status === "Concretado") {
+      payComission(order);
+    }
     readOrders();
   };
 
-  const handleChangePayStatus = async (id, payStatus) => {
+  const payComission = (order) => {
+    order.requests.map(async (item) => {
+      let unitPrice =
+        item.product?.prixerEquation ||
+        item.product?.prixerPrice?.from ||
+        item.product?.publicEquation ||
+        item.product.publicPrice.from;
+
+      let discount;
+      if (typeof item.product.discount === "String") {
+        discount = discountList.find(
+          ({ _id }) => _id === item.product.discount
+        );
+        if (discount?.type === "Porcentaje") {
+          let op = Number(
+            ((unitPrice - (unitPrice / 100) * discount.value) / 10) *
+              item.quantity
+          );
+          unitPrice = op;
+        } else if (discount?.type === "Monto") {
+          let op = Number(((unitPrice - discount.value) / 10) * item.quantity);
+          unitPrice = op;
+        }
+      } else {
+        let op = Number((unitPrice / 10) * item.quantity);
+        unitPrice = op;
+      }
+
+      const url1 = process.env.REACT_APP_BACKEND_URL + "/prixer/read";
+      await axios
+        .post(url1, { username: item.art.prixerUsername })
+        .then((res) => {
+          setAccount(res.data.account);
+        });
+      const url = process.env.REACT_APP_BACKEND_URL + "/movement/create";
+      const data = {
+        _id: nanoid(),
+        createdOn: new Date(),
+        createdBy: JSON.parse(localStorage.getItem("adminToken")).username,
+        date: new Date(),
+        destinatary: account,
+        description: `Comisión de la orden #${order.orderId}`,
+        type: "Depósito",
+        value: unitPrice,
+        adminToken: localStorage.getItem("adminTokenV"),
+      };
+      await axios.post(url, data);
+      setAccount();
+    });
+  };
+
+  const handleChangePayStatus = async (order, payStatus) => {
     const URI =
-      process.env.REACT_APP_BACKEND_URL + "/order/updatePayStatus/" + id;
+      process.env.REACT_APP_BACKEND_URL +
+      "/order/updatePayStatus/" +
+      order.orderId;
     const body = {
       adminToken: localStorage.getItem("adminTokenV"),
       payStatus: payStatus,
@@ -603,6 +676,9 @@ export default function Orders(props) {
         setSnackBarError(true);
       }
     });
+    if (payStatus === "Pagado" && order.status === "Concretado") {
+      payComission(order);
+    }
     readOrders();
   };
 
@@ -842,7 +918,7 @@ export default function Orders(props) {
                       <div style={{ display: "flex", justifyContent: "end" }}>
                         <FormControl className={classes.formControl}>
                           <InputLabel id="demo-simple-select-label">
-                            Fecha{" "}
+                            Fecha
                           </InputLabel>
                           <Select
                             labelId="demo-simple-select-label"
@@ -856,10 +932,22 @@ export default function Orders(props) {
                         </FormControl>
                       </div>
                     </TableCell>
+                    <TableCell align="center">
+                      <div style={{ display: "flex", justifyContent: "end" }}>
+                        <FormControl className={classes.formControl}>
+                          <InputLabel>Fecha de entrega</InputLabel>
+                          <Select value={filter} onChange={handleChange}>
+                            <MenuItem value={"recent"}>Próximos</MenuItem>
+                            <MenuItem value={"previous"}>Lejanos</MenuItem>
+                          </Select>
+                        </FormControl>
+                      </div>
+                    </TableCell>
                     <TableCell align="center">Nombre</TableCell>
                     <TableCell align="center">Productos</TableCell>
                     <TableCell align="center">Status de Pago</TableCell>
                     <TableCell align="center">Status</TableCell>
+                    <TableCell align="center">Asesor</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -870,6 +958,9 @@ export default function Orders(props) {
                           <TableCell align="center">{row.orderId}</TableCell>
                           <TableCell align="center">
                             {row.createdOn.substring(0, 10)}
+                          </TableCell>
+                          <TableCell align="center">
+                            {row.shippingData?.shippingDate?.substring(0, 10)}
                           </TableCell>
                           <TableCell align="center">
                             {row.basicData?.firstname} {row.basicData?.lastname}
@@ -907,10 +998,7 @@ export default function Orders(props) {
                                 SelectClassKey
                                 value={row.payStatus || "Pendiente"}
                                 onChange={(e) => {
-                                  handleChangePayStatus(
-                                    row.orderId,
-                                    e.target.value
-                                  );
+                                  handleChangePayStatus(row, e.target.value);
                                 }}
                               >
                                 <MenuItem value={"Pendiente"}>
@@ -926,20 +1014,17 @@ export default function Orders(props) {
 
                           <TableCell align="center">
                             <FormControl
-                              disabled={
-                                !props.permissions?.orderStatus ||
-                                row.status === "Cancelada" ||
-                                row.status === "Completada"
-                              }
+                            // disabled={
+                            // !props.permissions?.orderStatus ||
+                            // row.status === "Cancelada" ||
+                            // row.status === "Concretado"
+                            // }
                             >
                               <Select
                                 SelectClassKey
                                 value={row.status}
                                 onChange={(e) => {
-                                  handleChangeStatus(
-                                    row.orderId,
-                                    e.target.value
-                                  );
+                                  handleChangeStatus(row, e.target.value);
                                 }}
                               >
                                 <MenuItem value={"Por producir"}>
@@ -976,6 +1061,9 @@ export default function Orders(props) {
                             >
                               <DeleteIcon />
                             </Fab> */}
+                          </TableCell>
+                          <TableCell align="center">
+                            {row.createdBy.username}
                           </TableCell>
                         </TableRow>
                       </>
@@ -1117,6 +1205,14 @@ export default function Orders(props) {
                                 </p>
                               );
                             })}
+                            <div>
+                              {item.product.discount &&
+                                "Descuento: " +
+                                  discountList?.find(
+                                    ({ _id }) => _id === item.product.discount
+                                  ).name}
+                            </div>
+
                             <div style={{ marginTop: 10 }}>
                               {"Cantidad: " + item.quantity}
                             </div>
@@ -1210,6 +1306,12 @@ export default function Orders(props) {
                               </div>
                             )
                           )}
+                          {modalContent.shippingData?.shippingDate && (
+                            <div>
+                              {"Fecha de entrega: " +
+                                modalContent?.shippingData?.shippingDate}
+                            </div>
+                          )}
                         </Grid>
                       )}
 
@@ -1227,8 +1329,9 @@ export default function Orders(props) {
                         >
                           <strong>Datos de facturación</strong>
                           <div>
-                            {"Pedido creado por: " +
-                              modalContent.createdBy.username}
+                            {modalContent.createdBy.username !== undefined &&
+                              "Pedido creado por: " +
+                                modalContent.createdBy.username}
                           </div>
                           {modalContent.billingData.name &&
                             modalContent.billingData.lastname && (
@@ -1938,6 +2041,40 @@ export default function Orders(props) {
                         </Select>
                       </FormControl>
                     </Grid>
+                    {/* <Grid                       item
+                      lg={6}
+                      md={6}
+                      sm={12}
+                      xs={12}
+                      className={classes.gridInput}
+>
+                    <FormControl style={{ minWidth: "100%" }} variant="outlined">
+                    <TextField
+                      style={{
+                        width: "100%",
+                      }}
+                      label="Fecha de Entrega"
+                      type="date"
+                      variant="outlined"
+                      // required
+                      format="dd-MM-yyyy"
+                      defaultValue={stringReadyDate}
+                      value={props.values.today}
+                      error={props.values.today < stringReadyDate}
+                      min={stringReadyDate}
+                      className={classes.textField}
+                      InputLabelProps={{
+                        shrink: true,
+                      }}
+                      onChange={(e) => {
+                        // if (e.target.value < new Date()) {
+                        //   console.log("x");
+                        // } else {
+                        selectShDate(e.target.value);
+                      }}
+                    />
+                  </FormControl>
+                    </Grid> */}
                   </Grid>
                 </Grid>
 

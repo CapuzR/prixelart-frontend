@@ -147,6 +147,23 @@ export default function ShoppingPage(props) {
   const [dollarValue, setDollarValue] = useState(1);
   const [currency, setCurrency] = useState(false);
   const [paymentVoucher, setPaymentVoucher] = useState();
+  const [discountList, setDiscountList] = useState([]);
+
+  const getDiscounts = async () => {
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/discount/read-allv2";
+    await axios
+      .post(base_url)
+      .then((response) => {
+        setDiscountList(response.data.discounts);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  useEffect(() => {
+    getDiscounts();
+  }, []);
   // useEffect(() => {
   //   {
   //     JSON.parse(localStorage.getItem("token")) && TermsAgreeModal();
@@ -333,6 +350,7 @@ export default function ShoppingPage(props) {
                 phone: props.valuesConsumerForm?.shippingPhone,
                 address: props.valuesConsumerForm?.shippingAddress,
                 shippingMethod: props.valuesConsumerForm?.shippingMethod,
+                shippingDate: props.valuesConsumerForm?.shippingDate,
               },
               billingData: {
                 name: props.valuesConsumerForm?.billingShName,
@@ -343,12 +361,13 @@ export default function ShoppingPage(props) {
                 address: props.valuesConsumerForm?.billingAddress,
                 orderPaymentMethod: orderPaymentMethod.name,
               },
+              dollarValue: dollarValue,
               tax: getTotalPrice(props.buyState) * 0.16,
               subtotal: getTotalPrice(props.buyState),
               shippingCost: shippingCost,
               total: getTotal(props.buyState),
               createdOn: new Date(),
-              createdBy: response.data.newConsumer,
+              createdBy: "Prixelart Page",
               orderType: "Particular",
               // consumerId: consumer.data.newConsumer._id,
               status: "Por producir",
@@ -360,6 +379,37 @@ export default function ShoppingPage(props) {
               })
               .then(async (response) => {
                 if (response.status == 200) {
+                  if (
+                    JSON.parse(localStorage.getItem("token")) &&
+                    JSON.parse(localStorage.getItem("token")).username &&
+                    orderPaymentMethod?.name === "Balance Prixer"
+                  ) {
+                    let prixer;
+                    const url1 =
+                      process.env.REACT_APP_BACKEND_URL + "/prixer/read";
+                    await axios
+                      .post(url1, {
+                        username: JSON.parse(localStorage.getItem("token"))
+                          .username,
+                      })
+                      .then((res) => {
+                        prixer = res.data.account;
+                      });
+                    const url =
+                      process.env.REACT_APP_BACKEND_URL + "/movement/createv2";
+                    const data = {
+                      _id: nanoid(),
+                      createdOn: new Date(),
+                      createdBy: "Prixelart Page",
+                      date: new Date(),
+                      destinatary: prixer,
+                      description: `Pago de la orden #${input.orderId}`,
+                      type: "Retiro",
+                      value: getTotal(props.buyState),
+                      // adminToken: localStorage.getItem("adminTokenV"),
+                    };
+                    await axios.post(url, data);
+                  }
                   if (paymentVoucher !== undefined) {
                     const formData = new FormData();
                     formData.append("paymentVoucher", paymentVoucher);
@@ -377,7 +427,91 @@ export default function ShoppingPage(props) {
                   props.setMessage(
                     "¡Gracias por tu compra! te redireccionaremos a Whatsapp para ser atendido por nuestro departamento de ventas."
                   );
-
+                  // Cambiando el precio con el descuento
+                  orderLines.map((item) => {
+                    if (typeof item.product.discount === "string") {
+                      let dis = discountList?.find(
+                        ({ _id }) => _id === item.product.discount
+                      );
+                      if (
+                        JSON.parse(localStorage.getItem("token")) &&
+                        JSON.parse(localStorage.getItem("token")).username &&
+                        dis?.type === "Porcentaje"
+                      ) {
+                        item.product.finalPrice = Number(
+                          ((item.product.prixerEquation ||
+                            item.product.prixerPrice.from.replace(
+                              /[,]/gi,
+                              "."
+                            )) -
+                            ((item.product.prixerEquation ||
+                              item.product.prixerPrice.from.replace(
+                                /[,]/gi,
+                                "."
+                              )) /
+                              100) *
+                              dis.value) *
+                            (item.quantity || 1)
+                        );
+                        item.product.discount = dis.name + " %" + dis.value;
+                      } else if (
+                        JSON.parse(localStorage.getItem("token")) &&
+                        JSON.parse(localStorage.getItem("token")).username &&
+                        dis?.type === "Monto"
+                      ) {
+                        item.product.finalPrice = Number(
+                          ((item.product.prixerEquation ||
+                            item.product.prixerPrice.from.replace(
+                              /[,]/gi,
+                              "."
+                            )) -
+                            dis.value) *
+                            (item.quantity || 1)
+                        );
+                        item.product.discount = dis.name + " $" + dis.value;
+                      } else if (dis?.type === "Porcentaje") {
+                        item.product.finalPrice = Number(
+                          ((item.product.publicEquation ||
+                            item.product.publicPrice.from.replace(
+                              /[,]/gi,
+                              "."
+                            )) -
+                            ((item.product.publicEquation ||
+                              item.product.publicPrice.from.replace(
+                                /[,]/gi,
+                                "."
+                              )) /
+                              100) *
+                              dis.value) *
+                            (item.quantity || 1)
+                        );
+                        item.product.discount = dis.name + " %" + dis.value;
+                      } else if (dis?.type === "Monto") {
+                        item.product.finalPrice = Number(
+                          ((item.product.publicEquation ||
+                            item.product.publicPrice.from.replace(
+                              /[,]/gi,
+                              "."
+                            )) -
+                            dis.value) *
+                            (item.quantity || 1)
+                        );
+                        item.product.discount = dis.name + " $" + dis.value;
+                      }
+                    } else if (
+                      JSON.parse(localStorage.getItem("token")) &&
+                      JSON.parse(localStorage.getItem("token")).username
+                    ) {
+                      item.product.finalPrice =
+                        item.product.prixerEquation ||
+                        item.product.prixerPrice.from;
+                    } else {
+                      item.product.finalPrice =
+                        item.product.publicEquation ||
+                        item.product.publicPrice.from;
+                    }
+                  });
+                  input.requests = orderLines;
                   const base_url3 =
                     process.env.REACT_APP_BACKEND_URL + "/order/sendEmail";
                   await axios.post(base_url3, input).then(async (response) => {

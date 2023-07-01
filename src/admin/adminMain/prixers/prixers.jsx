@@ -22,6 +22,8 @@ import Modal from "@material-ui/core/Modal";
 import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
 import TextField from "@material-ui/core/TextField";
+import InputAdornment from "@material-ui/core/InputAdornment";
+
 // import validations from "../../shoppingCart/validations";
 import SaveIcon from "@material-ui/icons/Save";
 import Fab from "@material-ui/core/Fab";
@@ -75,11 +77,27 @@ const useStyles = makeStyles((theme) => ({
   },
   paper2: {
     position: "fixed",
-    right: "40%",
+    right: "30%",
     top: "38%",
     bottom: "37%",
     left: "40%",
-    width: 310,
+    width: 300,
+    backgroundColor: "white",
+    boxShadow: theme.shadows[2],
+    padding: "16px 32px 24px",
+    textAlign: "justify",
+    minWidth: 320,
+    borderRadius: 10,
+    display: "flex",
+    flexDirection: "row",
+  },
+  paper3: {
+    position: "fixed",
+    right: "40%",
+    top: "38%",
+    bottom: "37%",
+    left: "22%",
+    width: 800,
     backgroundColor: "white",
     boxShadow: theme.shadows[2],
     padding: "16px 32px 24px",
@@ -105,10 +123,16 @@ export default function Prixers(props) {
     checkedA: true,
   });
   const [openNewBalance, setOpenNewBalance] = useState(false);
+  const [openNewMovement, setOpenNewMovement] = useState(false);
   const [selectedPrixer, setSelectedPrixer] = useState();
   const [balance, setBalance] = useState(0);
+  const [type, setType] = useState();
+  const [date, setDate] = useState(new Date());
+  const [description, setDescription] = useState();
+  const [accounts, setAccounts] = useState();
   const [message, setMessage] = useState();
   const [open, setOpen] = useState(false);
+
   const readPrixers = async () => {
     try {
       setLoading(true);
@@ -123,6 +147,22 @@ export default function Prixers(props) {
       console.log(error);
     }
   };
+
+  const getBalance = () => {
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/account/readAll";
+    axios
+      .post(base_url, {
+        adminToken: localStorage.getItem("adminTokenV"),
+      })
+      .then((res) => {
+        setAccounts(res.data.accounts);
+      });
+  };
+
+  useEffect(() => {
+    readPrixers();
+    getBalance();
+  }, []);
 
   const handleChange = (event) => {
     setState({ ...state, [event.target.name]: event.target.checked });
@@ -140,36 +180,85 @@ export default function Prixers(props) {
         e.target.value === "false" || e.target.value === "" ? true : false,
       adminToken: localStorage.getItem("adminTokenV"),
     };
-    const response = await axios.put(base_url, body, {
+    await axios.put(base_url, body, {
       "Content-Type": "multipart/form-data",
     });
     await readPrixers();
     setLoading(false);
   };
 
-  useEffect(() => {
-    readPrixers();
-  }, []);
-
   const openNewAccount = () => {
+    let ID;
     const data = {
       _id: nanoid(24),
-      balance: balance || 0,
+      balance: 0,
       email: selectedPrixer.email,
+      adminToken: localStorage.getItem("adminTokenV"),
     };
     const base_url = process.env.REACT_APP_BACKEND_URL + "/account/create";
-    axios.post(base_url, data, {
-      "Content-Type": "multipart/form-data",
+    axios.post(base_url, data).then((response) => {
+      if (response.status === 200) {
+        ID = response.data.createAccount.newAccount._id;
+        const data2 = {
+          _id: nanoid(),
+          createdOn: new Date(),
+          createdBy: JSON.parse(localStorage.getItem("adminToken")).username,
+          date: date,
+          destinatary: ID,
+          description: "Saldo inicial",
+          type: "Depósito",
+          value: balance,
+          adminToken: localStorage.getItem("adminTokenV"),
+        };
+        const base_url2 =
+          process.env.REACT_APP_BACKEND_URL + "/movement/create";
+        axios.post(base_url2, data2);
+      }
     });
+
     setOpen(true);
     setMessage("Cartera creada y balance actualizado exitosamente.");
     handleClose();
     setSelectedPrixer();
     setBalance(0);
+    setTimeout(() => {
+      readPrixers();
+      getBalance();
+    }, 1000);
+  };
+
+  const createPayMovement = () => {
+    const data = {
+      _id: nanoid(),
+      createdOn: new Date(),
+      createdBy: JSON.parse(localStorage.getItem("adminToken")).username,
+      date: date,
+      destinatary: selectedPrixer.account,
+      description: description,
+      type: type,
+      value: balance,
+      adminToken: localStorage.getItem("adminTokenV"),
+    };
+    const url = process.env.REACT_APP_BACKEND_URL + "/movement/create";
+    axios.post(url, data);
+    setOpen(true);
+    setMessage("Balance actualizado exitosamente.");
+    handleClose();
+    setSelectedPrixer();
+    setBalance(0);
+    setTimeout(() => {
+      readPrixers();
+      getBalance();
+    }, 1000);
   };
 
   const handleClose = () => {
     setOpenNewBalance(false);
+    setOpenNewMovement(false);
+    setBalance(0);
+    setSelectedPrixer();
+    setDate();
+    setDescription();
   };
 
   return (
@@ -236,25 +325,76 @@ export default function Prixers(props) {
                             )}
                         </Typography>
                       </CardContent>
-                      {tile.account ? (
-                        <Typography>{tile.account}</Typography>
-                      ) : (
-                        <Button
-                          variant="contained"
-                          color="primary"
+                      {tile.account !== undefined &&
+                      props.permissions?.setPrixerBalance ? (
+                        <div
                           style={{
-                            width: 160,
-                            alignSelf: "center",
-                            fontWeight: "bold",
-                          }}
-                          onClick={(e) => {
-                            // openNewAccount(tile);
-                            setSelectedPrixer(tile);
-                            setOpenNewBalance(true);
+                            borderStyle: "solid",
+                            borderWidth: "thin",
+                            borderRadius: "10px",
+                            borderColor: "#e5e7e9",
+                            margin: "5px",
+                            paddingBottom: "5px",
                           }}
                         >
-                          Crear Cartera
-                        </Button>
+                          <Typography variant="h6" align="center">
+                            Balance $
+                            {accounts &&
+                              accounts?.find((acc) => acc._id === tile.account)
+                                .balance}
+                          </Typography>
+                          <div
+                            style={{
+                              display: "flex",
+                              justifyContent: "space-evenly",
+                            }}
+                          >
+                            <Button
+                              onClick={(e) => {
+                                setSelectedPrixer(tile);
+                                setType("Depósito");
+                                setOpenNewMovement(true);
+                              }}
+                              style={{
+                                width: "40%",
+                                backgroundColor: "#e5e7e9",
+                              }}
+                            >
+                              Depósito
+                            </Button>
+                            <Button
+                              onClick={(e) => {
+                                setSelectedPrixer(tile);
+                                setType("Retiro");
+                                setOpenNewMovement(true);
+                              }}
+                              style={{
+                                width: "40%",
+                                backgroundColor: "#e5e7e9",
+                              }}
+                            >
+                              Retiro
+                            </Button>
+                          </div>
+                        </div>
+                      ) : (
+                        props.permissions?.setPrixerBalance && (
+                          <Button
+                            variant="contained"
+                            color="primary"
+                            style={{
+                              width: 160,
+                              alignSelf: "center",
+                              fontWeight: "bold",
+                            }}
+                            onClick={(e) => {
+                              setSelectedPrixer(tile);
+                              setOpenNewBalance(true);
+                            }}
+                          >
+                            Crear Cartera
+                          </Button>
+                        )
                       )}
                       {props.permissions?.prixerBan && (
                         <Box
@@ -369,7 +509,10 @@ export default function Prixers(props) {
             >
               <Typography>
                 Balance de
-                {selectedPrixer?.firstName + " " + selectedPrixer?.lastName}:
+                {" " +
+                  selectedPrixer?.firstName +
+                  " " +
+                  selectedPrixer?.lastName}
               </Typography>
 
               <IconButton onClick={handleClose}>
@@ -386,7 +529,7 @@ export default function Prixers(props) {
           >
             <TextField
               variant="outlined"
-              value={props.dollarValue}
+              value={balance}
               onChange={(e) => {
                 setBalance(e.target.value);
               }}
@@ -406,11 +549,115 @@ export default function Prixers(props) {
           </div>
         </Grid>
       </Modal>
+      <Modal open={openNewMovement}>
+        <Grid container className={classes.paper3}>
+          <Grid
+            item
+            style={{
+              width: "100%",
+              display: "flex",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                width: "100%",
+
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <Typography>
+                {type} de
+                {" " +
+                  selectedPrixer?.firstName +
+                  " " +
+                  selectedPrixer?.lastName}
+              </Typography>
+
+              <IconButton onClick={handleClose}>
+                <CloseIcon />
+              </IconButton>
+            </div>
+          </Grid>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              width: "100%",
+            }}
+          >
+            <Grid
+              container
+              style={{
+                display: "flex",
+              }}
+            >
+              <Grid item sm={3} style={{ flexBasis: "0" }}>
+                <TextField
+                  variant="outlined"
+                  label="Fecha"
+                  value={date}
+                  onChange={(e) => {
+                    setDate(e.target.value);
+                  }}
+                  type={"date"}
+                />
+              </Grid>
+              <Grid
+                item
+                sm={6}
+                style={{ paddingRight: "-20px", marginLeft: "10px" }}
+              >
+                <TextField
+                  fullWidth
+                  variant="outlined"
+                  label="descripción"
+                  value={description}
+                  onChange={(e) => {
+                    setDescription(e.target.value);
+                  }}
+                />
+              </Grid>
+              <Grid item sm={3} style={{ marginLeft: "10px" }}>
+                <TextField
+                  variant="outlined"
+                  label="Monto"
+                  value={balance}
+                  onChange={(e) => {
+                    setBalance(e.target.value);
+                  }}
+                  type="number"
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">$</InputAdornment>
+                    ),
+                  }}
+                />
+              </Grid>
+            </Grid>
+            <Button
+              variant="contained"
+              color="primary"
+              size="small"
+              onClick={() => {
+                // openNewAccount();
+                createPayMovement();
+              }}
+              style={{ marginRight: 10, marginLeft: 10, marginTop: 5 }}
+            >
+              Guardar
+            </Button>
+          </div>
+        </Grid>
+      </Modal>
       <Snackbar
         open={open}
-        autoHideDuration={1000}
+        autoHideDuration={3000}
         message={message}
         className={classes.snackbar}
+        onClose={() => setOpen(false)}
       />
     </div>
   );

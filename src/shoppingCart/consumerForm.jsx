@@ -206,16 +206,18 @@ function ConsumerForm(props) {
   };
 
   const selectShDate = (value) => {
-    if (value < stringReadyDate) {
-      props.setOpen(true);
-      props.setMessage(
-        "Si lo requieres antes, coméntalo en el campo de observaciones y un asesor se comunicará contigo."
-      );
-    } else
-      props.setValues({
-        ...props.values,
-        today: value,
-      });
+    // let date = Date(value);
+    // console.log(date)
+    // if (value < stringReadyDate) {
+    props.setOpen(true);
+    props.setMessage(
+      "Si lo requieres antes, coméntalo en el campo de observaciones y un asesor se comunicará contigo."
+    );
+    // } else
+    props.setValues({
+      ...props.values,
+      shippingDate: value,
+    });
   };
 
   return (
@@ -737,6 +739,9 @@ function ConsumerForm(props) {
                         shrink: true,
                       }}
                       onChange={(e) => {
+                        // if (e.target.value < new Date()) {
+                        //   console.log("x");
+                        // } else {
                         selectShDate(e.target.value);
                       }}
                     />

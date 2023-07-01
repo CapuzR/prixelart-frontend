@@ -952,10 +952,10 @@ export default function Orders(props) {
                       <div style={{ display: "flex", justifyContent: "end" }}>
                         <FormControl className={classes.formControl}>
                           <InputLabel>Fecha de entrega</InputLabel>
-                          <Select value={filter} onChange={handleChange}>
+                          {/* <Select value={filter} onChange={handleChange}>
                             <MenuItem value={"recent"}>Próximos</MenuItem>
                             <MenuItem value={"previous"}>Lejanos</MenuItem>
-                          </Select>
+                          </Select> */}
                         </FormControl>
                       </div>
                     </TableCell>

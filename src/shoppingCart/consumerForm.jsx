@@ -733,7 +733,7 @@ function ConsumerForm(props) {
                       defaultValue={stringReadyDate}
                       value={props.values.today}
                       error={props.values.today < stringReadyDate}
-                      min={stringReadyDate}
+                      // min={stringReadyDate}
                       className={classes.textField}
                       InputLabelProps={{
                         shrink: true,

@@ -53,6 +53,7 @@ import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import GetAppIcon from "@material-ui/icons/GetApp";
 import Switch from "@material-ui/core/Switch";
 import Snackbar from "@material-ui/core/Snackbar";
+import FilterListIcon from "@material-ui/icons/FilterList";
 
 import utils from "../../../utils/utils";
 import { nanoid } from "nanoid";
@@ -860,7 +861,7 @@ export default function Orders(props) {
                 justifyContent: "space-between",
               }}
             >
-              <Title>Pedidos</Title>
+              <Title variant="h1">Pedidos</Title>
               <div>
                 {/* <Tooltip
                   title="Descargar listado"
@@ -902,10 +903,25 @@ export default function Orders(props) {
                     onClick={() => {
                       readOrders();
                     }}
+                    style={{ marginRight: 10 }}
                   >
                     <RefreshIcon />
                   </Fab>
                 </Tooltip>
+                {/* <Tooltip
+                  title="Filtrar listado"
+                  style={{ height: 40, width: 40 }}
+                >
+                  <Fab
+                    color="primary"
+                    size="small"
+                    onClick={() => {
+                      readOrders();
+                    }}
+                  >
+                    <FilterListIcon />
+                  </Fab>
+                </Tooltip> */}
               </div>
             </div>
 
@@ -1380,16 +1396,42 @@ export default function Orders(props) {
                       >
                         <strong>Datos de pago</strong>
                         <div>
-                          {"Subtotal: $" + modalContent?.subtotal.toFixed(2)}
+                          {"Subtotal: $" +
+                            Number(modalContent?.subtotal).toLocaleString(
+                              "de-DE",
+                              {
+                                minimumFractionDigits: 2,
+                                // maximumSignificantDigits: 2,
+                              }
+                            )}
                         </div>
-                        <div>{"IVA: $" + modalContent?.tax.toFixed(2)}</div>
+                        <div>
+                          {"IVA: $" +
+                            Number(modalContent?.tax).toLocaleString("de-DE", {
+                              minimumFractionDigits: 2,
+                              // maximumSignificantDigits: 2,
+                            })}
+                        </div>
                         <div>
                           {modalContent.shippingData?.shippingMethod &&
                             "Envío: $" +
-                              modalContent?.shippingData?.shippingMethod?.price}
+                              Number(
+                                modalContent?.shippingData?.shippingMethod
+                                  ?.price
+                              ).toLocaleString("de-DE", {
+                                minimumFractionDigits: 2,
+                                // maximumSignificantDigits: 2,
+                              })}
                         </div>
                         <div style={{ marginBottom: 10 }}>
-                          {"Total: $" + modalContent?.total.toFixed(2)}
+                          {"Total: $" +
+                            Number(modalContent?.total).toLocaleString(
+                              "de-DE",
+                              {
+                                minimumFractionDigits: 2,
+                                // maximumSignificantDigits: 2,
+                              }
+                            )}
                         </div>
                         <div>
                           {"Forma de pago: " +

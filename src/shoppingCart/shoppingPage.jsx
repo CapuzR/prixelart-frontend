@@ -228,27 +228,97 @@ export default function ShoppingPage(props) {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
   };
 
+  let shippingCost = Number(props.valuesConsumerForm?.shippingMethod?.price);
+
   const getTotalPrice = (state) => {
-    let prices = [];
-    state.map((item) =>
-      item.product &&
-      item.art &&
-      JSON.parse(localStorage.getItem("token")) &&
-      JSON.parse(localStorage.getItem("token")).username
-        ? prices.push(
-            (item.product.prixerEquation ||
-              item.product.prixerPrice.from.replace(/[$]/gi, "")) *
-              (item.quantity || 1)
-          )
-        : item.product &&
-          item.art &&
+    let prices = [0];
+    state.map((item) => {
+      if (
+        item.product &&
+        item.art &&
+        (JSON.parse(localStorage?.getItem("token")) ||
+          JSON.parse(localStorage?.getItem("adminToken"))) &&
+        (JSON.parse(localStorage?.getItem("token"))?.username ||
+          JSON.parse(localStorage?.getItem("adminToken"))?.username) &&
+        typeof item.product.discount === "string"
+      ) {
+        let dis = discountList?.filter(
+          (dis) => dis._id === item.product.discount
+        )[0];
+        if (dis?.type === "Porcentaje") {
           prices.push(
-            (item.product.publicEquation ||
-              item.product.publicPrice.from.replace(/[$]/gi, "")) *
+            Number(
+              ((item.product?.prixerEquation ||
+                item.product?.prixerPrice?.from) -
+                ((item.product?.prixerEquation ||
+                  item.product?.prixerPrice?.from) /
+                  100) *
+                  dis.value) *
+                (item.quantity || 1)
+            )
+          );
+        } else if (dis?.type === "Monto") {
+          prices.push(
+            Number(
+              ((item.product?.prixerEquation ||
+                item.product?.prixerPrice?.from) -
+                dis.value) *
+                (item.quantity || 1)
+            )
+          );
+        }
+      } else if (
+        item.product &&
+        item.art &&
+        (JSON.parse(localStorage?.getItem("token")) ||
+          JSON.parse(localStorage?.getItem("adminToken"))) &&
+        (JSON.parse(localStorage?.getItem("token"))?.username ||
+          JSON.parse(localStorage?.getItem("adminToken"))?.username)
+      ) {
+        prices.push(
+          Number(
+            (item.product?.prixerEquation || item.product?.prixerPrice?.from) *
               (item.quantity || 1)
           )
-    );
-    let total = prices.reduce(function (a, b) {
+        );
+      } else if (
+        item.product &&
+        item.art &&
+        typeof item.product.discount === "string"
+      ) {
+        let dis = discountList?.find(
+          ({ _id }) => _id === item.product.discount
+        );
+        if (dis?.type === "Porcentaje") {
+          prices.push(
+            Number(
+              ((item.product?.publicEquation ||
+                item.product?.publicPrice?.from.replace(/[,]/gi, ".")) -
+                ((item.product?.publicEquation ||
+                  item.product?.publicPrice?.from.replace(/[,]/gi, ".")) /
+                  100) *
+                  dis.value) *
+                (item.quantity || 1)
+            )
+          );
+        } else if (dis?.type === "Monto") {
+          prices.push(
+            Number(
+              ((item.product?.publicEquation ||
+                item.product?.publicPrice?.from.replace(/[,]/gi, ".")) -
+                dis.value) *
+                (item.quantity || 1)
+            )
+          );
+        }
+      } else if (item.product && item.art) {
+        prices.push(
+          (item.product?.publicEquation || item.product?.publicPrice?.from) *
+            (item.quantity || 1)
+        );
+      }
+    });
+    let total = prices?.reduce(function (a, b) {
       return a + b;
     });
     return total;
@@ -263,8 +333,8 @@ export default function ShoppingPage(props) {
     let n = [];
     n.push(getTotalPrice(props.buyState));
     n.push(getIvaCost(props.buyState));
-    {
-      props.valuesConsumerForm.shippingMethod && n.push(shippingCost);
+    if (props.valuesConsumerForm?.shippingMethod) {
+      n.push(shippingCost);
     }
     let total = n.reduce(function (a, b) {
       return a + b;
@@ -303,7 +373,6 @@ export default function ShoppingPage(props) {
           item.product.prixerPrice = undefined;
         });
       }
-
       const consumer = await axios
         .post(process.env.REACT_APP_BACKEND_URL + "/consumer/create", {
           active: true,
@@ -536,8 +605,6 @@ export default function ShoppingPage(props) {
       props.setMessage("Por favor selecciona una forma de pago.");
     }
   };
-
-  let shippingCost = Number(props.valuesConsumerForm?.shippingMethod?.price);
 
   const readDollarValue = async () => {
     const base_url = process.env.REACT_APP_BACKEND_URL + "/dollarValue/read";

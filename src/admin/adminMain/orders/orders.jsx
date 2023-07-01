@@ -949,15 +949,17 @@ export default function Orders(props) {
                       </div>
                     </TableCell>
                     <TableCell align="center">
-                      <div style={{ display: "flex", justifyContent: "end" }}>
-                        <FormControl className={classes.formControl}>
-                          <InputLabel>Fecha de entrega</InputLabel>
-                          {/* <Select value={filter} onChange={handleChange}>
+                      {/* <div style={{ display: "flex", justifyContent: "end" }}> */}
+                      {/* <FormControl className={classes.formControl}> */}
+                      {/* <InputLabel> */}
+                      Fecha de entrega
+                      {/* </InputLabel> */}
+                      {/* <Select value={filter} onChange={handleChange}>
                             <MenuItem value={"recent"}>Próximos</MenuItem>
                             <MenuItem value={"previous"}>Lejanos</MenuItem>
                           </Select> */}
-                        </FormControl>
-                      </div>
+                      {/* </FormControl> */}
+                      {/* </div> */}
                     </TableCell>
                     <TableCell align="center">Nombre</TableCell>
                     <TableCell align="center">Productos</TableCell>

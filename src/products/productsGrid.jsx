@@ -289,9 +289,8 @@ export default function ProductGrid(props) {
             <div>
               PVM: Bs
               {Number(
-                (item.prixerEquation.replace(/[,]/gi, ".") -
-                  (item.prixerEquation.replace(/[,]/gi, ".") / 100) *
-                    dis?.value) *
+                (item.prixerEquation -
+                  (item.prixerEquation / 100) * dis?.value) *
                   props.dollarValue
               ).toLocaleString("de-DE", {
                 minimumFractionDigits: 2,
@@ -346,8 +345,7 @@ export default function ProductGrid(props) {
             <div>
               PVM: $
               {Number(
-                item.prixerEquation.replace(/[,]/gi, ".") -
-                  (item.prixerEquation.replace(/[,]/gi, ".") / 100) * dis?.value
+                item.prixerEquation - (item.prixerEquation / 100) * dis?.value
               ).toLocaleString("de-DE", {
                 minimumFractionDigits: 2,
               })}
@@ -558,9 +556,8 @@ export default function ProductGrid(props) {
             <div>
               PVP: Bs
               {Number(
-                (item.publicEquation.replace(/[,]/gi, ".") -
-                  (item.publicEquation.replace(/[,]/gi, ".") / 100) *
-                    dis?.value) *
+                (item.publicEquation -
+                  (item.publicEquation / 100) * dis?.value) *
                   props.dollarValue
               ).toLocaleString("de-DE", {
                 minimumFractionDigits: 2,
@@ -611,8 +608,7 @@ export default function ProductGrid(props) {
             <div>
               PVP: $
               {Number(
-                item.publicEquation.replace(/[,]/gi, ".") -
-                  (item.publicEquation.replace(/[,]/gi, ".") / 100) * dis?.value
+                item.publicEquation - (item.publicEquation / 100) * dis?.value
               ).toLocaleString("de-DE", {
                 minimumFractionDigits: 2,
               })}
@@ -623,7 +619,7 @@ export default function ProductGrid(props) {
               PVP: $
               {Number(
                 item.publicEquation -
-                  // .replace(/[,]/gi, ".") -
+                  //  -
                   dis?.value
               ).toLocaleString("de-DE", {
                 minimumFractionDigits: 2,
@@ -638,17 +634,19 @@ export default function ProductGrid(props) {
         <>
           <del>
             PVP: Bs
-            {Number(
-              item.publicPrice.from.replace(/[,]/gi, ".") * props.dollarValue
-            ).toLocaleString("de-DE", {
-              minimumFractionDigits: 2,
-            }) +
-              " - " +
-              Number(
-                item.publicPrice?.to?.replace(/[,]/gi, ".") * props.dollarValue
-              ).toLocaleString("de-DE", {
+            {Number(item.publicPrice.from * props.dollarValue).toLocaleString(
+              "de-DE",
+              {
                 minimumFractionDigits: 2,
-              })}
+              }
+            ) +
+              " - " +
+              Number(item.publicPrice?.to * props.dollarValue).toLocaleString(
+                "de-DE",
+                {
+                  minimumFractionDigits: 2,
+                }
+              )}
           </del>
 
           <div
@@ -675,18 +673,16 @@ export default function ProductGrid(props) {
             <div>
               PVP: Bs
               {Number(
-                (item.publicPrice.from.replace(/[,]/gi, ".") -
-                  (item.publicPrice.from.replace(/[,]/gi, ".") / 100) *
-                    dis?.value) *
+                (item.publicPrice.from -
+                  (item.publicPrice.from / 100) * dis?.value) *
                   props.dollarValue
               ).toLocaleString("de-DE", {
                 minimumFractionDigits: 2,
               }) +
                 " - " +
                 Number(
-                  (item.publicPrice?.to?.replace(/[,]/gi, ".") -
-                    (item.publicPrice?.to?.replace(/[,]/gi, ".") / 100) *
-                      dis?.value) *
+                  (item.publicPrice.to -
+                    (item.publicPrice.to / 100) * dis?.value) *
                     props.dollarValue
                 ).toLocaleString("de-DE", {
                   minimumFractionDigits: 2,
@@ -697,15 +693,13 @@ export default function ProductGrid(props) {
             <div>
               PVP: $
               {Number(
-                (item.publicPrice.from.replace(/[,]/gi, ".") - dis?.value) *
-                  props.dollarValue
+                (item.publicPrice.from - dis?.value) * props.dollarValue
               ).toLocaleString("de-DE", {
                 minimumFractionDigits: 2,
               }) +
                 " - " +
                 Number(
-                  (item.publicPrice?.to?.replace(/[,]/gi, ".") - dis?.value) *
-                    props.dollarValue
+                  (item.publicPrice?.to - dis?.value) * props.dollarValue
                 ).toLocaleString("de-DE", {
                   minimumFractionDigits: 2,
                 })}
@@ -719,16 +713,11 @@ export default function ProductGrid(props) {
         <>
           <del>
             PVP: $
-            {Number(item.publicPrice.from.replace(/[,]/gi, ".")).toLocaleString(
-              "de-DE",
-              {
-                minimumFractionDigits: 2,
-              }
-            ) +
+            {Number(item.publicPrice.from).toLocaleString("de-DE", {
+              minimumFractionDigits: 2,
+            }) +
               " - " +
-              Number(
-                item.publicPrice?.to?.replace(/[,]/gi, ".")
-              ).toLocaleString("de-DE", {
+              Number(item.publicPrice?.to).toLocaleString("de-DE", {
                 minimumFractionDigits: 2,
               })}
           </del>
@@ -753,17 +742,15 @@ export default function ProductGrid(props) {
             <div>
               PVP: $
               {Number(
-                item.publicPrice.from.replace(/[,]/gi, ".") -
-                  (item.publicPrice.from.replace(/[,]/gi, ".") / 100) *
-                    dis?.value
+                item.publicPrice.from -
+                  (item.publicPrice.from / 100) * dis?.value
               ).toLocaleString("de-DE", {
                 minimumFractionDigits: 2,
               }) +
                 " - " +
                 Number(
-                  item.publicPrice?.to?.replace(/[,]/gi, ".") -
-                    (item.publicPrice?.to?.replace(/[,]/gi, ".") / 100) *
-                      dis?.value
+                  item.publicPrice?.to -
+                    (item.publicPrice?.to / 100) * dis?.value
                 ).toLocaleString("de-DE", {
                   minimumFractionDigits: 2,
                 })}
@@ -772,17 +759,19 @@ export default function ProductGrid(props) {
           {dis?.type === "Monto" && (
             <div>
               PVP: $
-              {Number(
-                item.publicPrice.from?.replace(/[,]/gi, ".") - dis?.value
-              ).toLocaleString("de-DE", {
-                minimumFractionDigits: 2,
-              }) +
-                " - " +
-                Number(
-                  item.publicPrice?.to?.replace(/[,]/gi, ".") - dis?.value
-                ).toLocaleString("de-DE", {
+              {Number(item.publicPrice.from - dis?.value).toLocaleString(
+                "de-DE",
+                {
                   minimumFractionDigits: 2,
-                })}
+                }
+              ) +
+                " - " +
+                Number(item.publicPrice?.to - dis?.value).toLocaleString(
+                  "de-DE",
+                  {
+                    minimumFractionDigits: 2,
+                  }
+                )}
             </div>
           )}
         </>
@@ -827,18 +816,19 @@ export default function ProductGrid(props) {
     ) {
       return (
         "PVM: Bs" +
-        (
-          Number(item.prixerPrice.from.replace(/[,]/gi, ".")) *
-          props.dollarValue
-        ).toLocaleString("de-DE", {
-          minimumFractionDigits: 2,
-        }) +
+        (Number(item.prixerPrice.from) * props.dollarValue).toLocaleString(
+          "de-DE",
+          {
+            minimumFractionDigits: 2,
+          }
+        ) +
         " - " +
-        Number(
-          item.prixerPrice?.to?.replace(/[,]/gi, ".") * props.dollarValue
-        ).toLocaleString("de-DE", {
-          minimumFractionDigits: 2,
-        })
+        Number(item.prixerPrice?.to * props.dollarValue).toLocaleString(
+          "de-DE",
+          {
+            minimumFractionDigits: 2,
+          }
+        )
       );
     } else if (
       (JSON.parse(localStorage.getItem("token")) ||
@@ -852,19 +842,13 @@ export default function ProductGrid(props) {
     ) {
       return (
         "PVM: $" +
-        Number(item.prixerPrice.from.replace(/[,]/gi, ".")).toLocaleString(
-          "de-DE",
-          {
-            minimumFractionDigits: 2,
-          }
-        ) +
+        Number(item.prixerPrice.from).toLocaleString("de-DE", {
+          minimumFractionDigits: 2,
+        }) +
         " - " +
-        Number(item.prixerPrice?.to?.replace(/[,]/gi, ".")).toLocaleString(
-          "de-DE",
-          {
-            minimumFractionDigits: 2,
-          }
-        )
+        Number(item.prixerPrice?.to).toLocaleString("de-DE", {
+          minimumFractionDigits: 2,
+        })
       );
     } else if (
       (JSON.parse(localStorage.getItem("token")) ||

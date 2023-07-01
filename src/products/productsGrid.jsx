@@ -628,7 +628,12 @@ export default function ProductGrid(props) {
           )}
         </>
       );
-    } else if (typeof item.discount === "string" && currency) {
+    } else if (
+      typeof item.discount === "string" &&
+      currency &&
+      item.publicPrice.to !== "" &&
+      item.publicPrice.to !== null
+    ) {
       let dis = discountList?.filter((dis) => dis._id === item.discount)[0];
       return (
         <>
@@ -707,7 +712,11 @@ export default function ProductGrid(props) {
           )}
         </>
       );
-    } else if (typeof item.discount === "string") {
+    } else if (
+      typeof item.discount === "string" &&
+      item.publicPrice.to !== "" &&
+      item.publicPrice.to !== null
+    ) {
       let dis = discountList?.filter((dis) => dis._id === item.discount)[0];
       return (
         <>
@@ -772,6 +781,115 @@ export default function ProductGrid(props) {
                     minimumFractionDigits: 2,
                   }
                 )}
+            </div>
+          )}
+        </>
+      );
+    } else if (typeof item.discount === "string" && currency) {
+      let dis = discountList?.filter((dis) => dis._id === item.discount)[0];
+      return (
+        <>
+          <del>
+            PVP: Bs
+            {Number(item.publicPrice.from * props.dollarValue).toLocaleString(
+              "de-DE",
+              {
+                minimumFractionDigits: 2,
+              }
+            )}
+          </del>
+
+          <div
+            style={{
+              backgroundColor: "#d33f49",
+              padding: 3,
+              width: 180,
+              textAlign: "center",
+              color: "white",
+              fontWeight: "bold",
+              borderRadius: 8,
+            }}
+          >
+            Descuento de
+            {dis?.type === "Porcentaje" && " %" + dis?.value}
+            {dis?.type === "Monto" &&
+              " Bs" +
+                Number(dis?.value * props.dollarValue).toLocaleString("de-DE", {
+                  minimumFractionDigits: 2,
+                })}
+          </div>
+
+          {dis?.type === "Porcentaje" && (
+            <div>
+              PVP: Bs
+              {Number(
+                (item.publicPrice.from -
+                  (item.publicPrice.from / 100) * dis?.value) *
+                  props.dollarValue
+              ).toLocaleString("de-DE", {
+                minimumFractionDigits: 2,
+              })}
+            </div>
+          )}
+          {dis?.type === "Monto" && (
+            <div>
+              PVP: $
+              {Number(
+                (item.publicPrice.from - dis?.value) * props.dollarValue
+              ).toLocaleString("de-DE", {
+                minimumFractionDigits: 2,
+              })}
+            </div>
+          )}
+        </>
+      );
+    } else if (typeof item.discount === "string") {
+      let dis = discountList?.filter((dis) => dis._id === item.discount)[0];
+      return (
+        <>
+          <del>
+            PVP: $
+            {Number(item.publicPrice.from).toLocaleString("de-DE", {
+              minimumFractionDigits: 2,
+            })}
+          </del>
+
+          <div
+            style={{
+              backgroundColor: "#d33f49",
+              padding: 3,
+              width: 180,
+              textAlign: "center",
+              color: "white",
+              fontWeight: "bold",
+              borderRadius: 8,
+            }}
+          >
+            Descuento de
+            {dis?.type === "Porcentaje" && " %" + dis?.value}
+            {dis?.type === "Monto" && " $" + dis?.value}
+          </div>
+
+          {dis?.type === "Porcentaje" && (
+            <div>
+              PVP: $
+              {Number(
+                item.publicPrice.from -
+                  (item.publicPrice.from / 100) * dis?.value
+              ).toLocaleString("de-DE", {
+                minimumFractionDigits: 2,
+              })}
+            </div>
+          )}
+          {dis?.type === "Monto" && (
+            <div>
+              PVP: $
+              {Number(item.publicPrice.from - dis?.value).toLocaleString(
+                "de-DE",
+                {
+                  minimumFractionDigits: 2,
+                }
+              )}
             </div>
           )}
         </>

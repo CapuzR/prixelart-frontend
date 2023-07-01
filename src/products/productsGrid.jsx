@@ -534,6 +534,7 @@ export default function ProductGrid(props) {
               "de-DE",
               {
                 minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
               }
             )}
           </del>
@@ -565,6 +566,7 @@ export default function ProductGrid(props) {
                   props.dollarValue
               ).toLocaleString("de-DE", {
                 minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
               })}
             </div>
           )}
@@ -575,6 +577,7 @@ export default function ProductGrid(props) {
                 (item.publicEquation - dis?.value) * props.dollarValue
               ).toLocaleString("de-DE", {
                 minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
               })}
             </div>
           )}
@@ -591,6 +594,7 @@ export default function ProductGrid(props) {
             PVP: $
             {item.publicEquation.toLocaleString("de-DE", {
               minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
             })}
           </del>
           <div
@@ -615,6 +619,7 @@ export default function ProductGrid(props) {
                 item.publicEquation - (item.publicEquation / 100) * dis?.value
               ).toLocaleString("de-DE", {
                 minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
               })}
             </div>
           )}
@@ -627,6 +632,7 @@ export default function ProductGrid(props) {
                   dis?.value
               ).toLocaleString("de-DE", {
                 minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
               })}
             </div>
           )}
@@ -647,6 +653,7 @@ export default function ProductGrid(props) {
               "de-DE",
               {
                 minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
               }
             ) +
               " - " +
@@ -654,6 +661,7 @@ export default function ProductGrid(props) {
                 "de-DE",
                 {
                   minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
                 }
               )}
           </del>
@@ -687,6 +695,7 @@ export default function ProductGrid(props) {
                   props.dollarValue
               ).toLocaleString("de-DE", {
                 minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
               }) +
                 " - " +
                 Number(
@@ -695,6 +704,7 @@ export default function ProductGrid(props) {
                     props.dollarValue
                 ).toLocaleString("de-DE", {
                   minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
                 })}
             </div>
           )}
@@ -705,12 +715,14 @@ export default function ProductGrid(props) {
                 (item.publicPrice.from - dis?.value) * props.dollarValue
               ).toLocaleString("de-DE", {
                 minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
               }) +
                 " - " +
                 Number(
                   (item.publicPrice?.to - dis?.value) * props.dollarValue
                 ).toLocaleString("de-DE", {
                   minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
                 })}
             </div>
           )}
@@ -728,10 +740,12 @@ export default function ProductGrid(props) {
             PVP: $
             {Number(item.publicPrice.from).toLocaleString("de-DE", {
               minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
             }) +
               " - " +
               Number(item.publicPrice?.to).toLocaleString("de-DE", {
                 minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
               })}
           </del>
 
@@ -759,6 +773,7 @@ export default function ProductGrid(props) {
                   (item.publicPrice.from / 100) * dis?.value
               ).toLocaleString("de-DE", {
                 minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
               }) +
                 " - " +
                 Number(
@@ -766,6 +781,7 @@ export default function ProductGrid(props) {
                     (item.publicPrice?.to / 100) * dis?.value
                 ).toLocaleString("de-DE", {
                   minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
                 })}
             </div>
           )}
@@ -776,6 +792,7 @@ export default function ProductGrid(props) {
                 "de-DE",
                 {
                   minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
                 }
               ) +
                 " - " +
@@ -783,6 +800,7 @@ export default function ProductGrid(props) {
                   "de-DE",
                   {
                     minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
                   }
                 )}
             </div>
@@ -799,6 +817,7 @@ export default function ProductGrid(props) {
               "de-DE",
               {
                 minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
               }
             )}
           </del>
@@ -820,6 +839,7 @@ export default function ProductGrid(props) {
               " Bs" +
                 Number(dis?.value * props.dollarValue).toLocaleString("de-DE", {
                   minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
                 })}
           </div>
 
@@ -832,6 +852,7 @@ export default function ProductGrid(props) {
                   props.dollarValue
               ).toLocaleString("de-DE", {
                 minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
               })}
             </div>
           )}
@@ -842,6 +863,7 @@ export default function ProductGrid(props) {
                 (item.publicPrice.from - dis?.value) * props.dollarValue
               ).toLocaleString("de-DE", {
                 minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
               })}
             </div>
           )}
@@ -855,6 +877,7 @@ export default function ProductGrid(props) {
             PVP: $
             {Number(item.publicPrice.from).toLocaleString("de-DE", {
               minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
             })}
           </del>
 
@@ -882,6 +905,7 @@ export default function ProductGrid(props) {
                   (item.publicPrice.from / 100) * dis?.value
               ).toLocaleString("de-DE", {
                 minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
               })}
             </div>
           )}
@@ -892,6 +916,7 @@ export default function ProductGrid(props) {
                 "de-DE",
                 {
                   minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
                 }
               )}
             </div>
@@ -910,6 +935,7 @@ export default function ProductGrid(props) {
         "PVM: Bs" +
         (item.prixerEquation * props.dollarValue).toLocaleString("de-DE", {
           minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
         })
       );
     } else if (
@@ -923,6 +949,7 @@ export default function ProductGrid(props) {
         "PVP: $" +
         item.prixerEquation.toLocaleString("de-DE", {
           minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
         })
       );
     } else if (
@@ -942,6 +969,7 @@ export default function ProductGrid(props) {
           "de-DE",
           {
             minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
           }
         ) +
         " - " +
@@ -949,6 +977,7 @@ export default function ProductGrid(props) {
           "de-DE",
           {
             minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
           }
         )
       );
@@ -966,10 +995,12 @@ export default function ProductGrid(props) {
         "PVM: $" +
         Number(item.prixerPrice.from).toLocaleString("de-DE", {
           minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
         }) +
         " - " +
         Number(item.prixerPrice?.to).toLocaleString("de-DE", {
           minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
         })
       );
     } else if (
@@ -985,6 +1016,7 @@ export default function ProductGrid(props) {
           "de-DE",
           {
             minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
           }
         )
       );

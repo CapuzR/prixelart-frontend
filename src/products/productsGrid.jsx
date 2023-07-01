@@ -245,278 +245,282 @@ export default function ProductGrid(props) {
   };
 
   const priceSelect = (item) => {
+    // if (
+    //   typeof item.discount === "string" &&
+    //   item.prixerEquation !== "" &&
+    //   (JSON.parse(localStorage?.getItem("token")) ||
+    //     JSON.parse(localStorage?.getItem("adminToken"))) &&
+    //   (JSON.parse(localStorage?.getItem("token"))?.username ||
+    //     JSON.parse(localStorage?.getItem("adminToken"))?.username) &&
+    //   currency
+    // ) {
+    //   let dis = discountList?.filter((dis) => dis._id === item.discount)[0];
+    //   return (
+    //     <>
+    //       <del>
+    //         PVM: Bs
+    //         {Number(props.dollarValue * item.prixerEquation).toLocaleString(
+    //           "de-DE",
+    //           {
+    //             minimumFractionDigits: 2,
+    //           }
+    //         )}
+    //       </del>
+    //       <div
+    //         style={{
+    //           backgroundColor: "#d33f49",
+    //           padding: 3,
+    //           width: 180,
+    //           textAlign: "center",
+    //           color: "white",
+    //           fontWeight: "bold",
+    //           borderRadius: 8,
+    //         }}
+    //       >
+    //         Descuento de
+    //         {dis?.type === "Porcentaje" && " %" + dis?.value}
+    //         {dis?.type === "Monto" &&
+    //           " Bs" +
+    //             Number(dis?.value * props.dollarValue).toLocaleString("de-DE", {
+    //               minimumFractionDigits: 2,
+    //             })}
+    //       </div>
+    //       {dis?.type === "Porcentaje" && (
+    //         <div>
+    //           PVM: Bs
+    //           {Number(
+    //             (item.prixerEquation -
+    //               (item.prixerEquation / 100) * dis?.value) *
+    //               props.dollarValue
+    //           ).toLocaleString("de-DE", {
+    //             minimumFractionDigits: 2,
+    //           })}
+    //         </div>
+    //       )}
+    //       {dis?.type === "Monto" && (
+    //         <div>
+    //           PVM: Bs
+    //           {Number(
+    //             (item.prixerEquation - dis?.value) * props.dollarValue
+    //           ).toLocaleString("de-DE", {
+    //             minimumFractionDigits: 2,
+    //           })}
+    //         </div>
+    //       )}
+    //     </>
+    //   );
+    // }
+    //  else if (
+    //   typeof item.discount === "string" &&
+    //   item.prixerEquation !== "" &&
+    //   (JSON.parse(localStorage?.getItem("token")) ||
+    //     JSON.parse(localStorage?.getItem("adminToken"))) &&
+    //   (JSON.parse(localStorage?.getItem("token"))?.username ||
+    //     JSON.parse(localStorage?.getItem("adminToken"))?.username)
+    // ) {
+    //   let dis = discountList?.filter((dis) => dis._id === item.discount)[0];
+    //   return (
+    //     <>
+    //       <del>
+    //         PVM: $
+    //         {item.prixerEquation.toLocaleString("de-DE", {
+    //           minimumFractionDigits: 2,
+    //         })}
+    //       </del>
+    //       <div
+    //         style={{
+    //           backgroundColor: "#d33f49",
+    //           padding: 3,
+    //           width: 180,
+    //           textAlign: "center",
+    //           color: "white",
+    //           fontWeight: "bold",
+    //           borderRadius: 8,
+    //         }}
+    //       >
+    //         Descuento de
+    //         {dis?.type === "Porcentaje" && " %" + dis?.value}
+    //         {dis?.type === "Monto" && " $" + Number(dis?.value)}
+    //       </div>
+    //       {dis?.type === "Porcentaje" && (
+    //         <div>
+    //           PVM: $
+    //           {Number(
+    //             item.prixerEquation - (item.prixerEquation / 100) * dis?.value
+    //           ).toLocaleString("de-DE", {
+    //             minimumFractionDigits: 2,
+    //           })}
+    //         </div>
+    //       )}
+    //       {dis?.type === "Monto" && (
+    //         <div>
+    //           PVM: $
+    //           {Number(item.prixerEquation - dis?.value).toLocaleString(
+    //             "de-DE",
+    //             {
+    //               minimumFractionDigits: 2,
+    //             }
+    //           )}
+    //         </div>
+    //       )}
+    //     </>
+    //   );
+    // }
+    // else if (
+    //   typeof item.discount === "string" &&
+    //   (JSON.parse(localStorage?.getItem("token")) ||
+    //     JSON.parse(localStorage?.getItem("adminToken"))) &&
+    //   (JSON.parse(localStorage?.getItem("token"))?.username ||
+    //     JSON.parse(localStorage?.getItem("adminToken"))?.username) &&
+    //   item.attributes !== [] &&
+    //   item.prixerPrice.to !== item.prixerPrice.from &&
+    //   item.prixerPrice.to !== "" &&
+    //   item.prixerPrice.to !== null &&
+    //   currency
+    // ) {
+    //   let dis = discountList?.filter((dis) => dis._id === item.discount)[0];
+    //   return (
+    //     <>
+    //       <del>
+    //         {"PVM: Bs" +
+    //           Number(item.prixerPrice.from * props.dollarValue).toLocaleString(
+    //             "de-DE",
+    //             {
+    //               minimumFractionDigits: 2,
+    //             }
+    //           ) +
+    //           " - " +
+    //           Number(item.prixerPrice.to * props.dollarValue).toLocaleString(
+    //             "de-DE",
+    //             {
+    //               minimumFractionDigits: 2,
+    //             }
+    //           )}
+    //       </del>
+    //       <div
+    //         style={{
+    //           backgroundColor: "#d33f49",
+    //           padding: 3,
+    //           width: 180,
+    //           textAlign: "center",
+    //           color: "white",
+    //           fontWeight: "bold",
+    //           borderRadius: 8,
+    //         }}
+    //       >
+    //         Descuento de
+    //         {dis?.type === "Porcentaje" && " %" + dis?.value}
+    //         {dis?.type === "Monto" &&
+    //           " Bs" +
+    //             Number(dis?.value * props.dollarValue).toLocaleString("de-DE", {
+    //               // minimumFractionDigits: 2,
+    //             })}
+    //       </div>
+    //       {dis?.type === "Porcentaje" &&
+    //         " Bs" +
+    //           Number(
+    //             (item.prixerPrice.from -
+    //               (item.prixerEquation / 100) * dis?.value) *
+    //               props.dollarValue
+    //           ).toLocaleString("de-DE", {
+    //             minimumFractionDigits: 2,
+    //           }) +
+    //           " - " +
+    //           Number(
+    //             (item.prixerPrice?.to -
+    //               (item.prixerPrice.to / 100) * dis?.value) *
+    //               props.dollarValue
+    //           ).toLocaleString("de-DE", {
+    //             minimumFractionDigits: 2,
+    //           })}
+    //       {dis?.type === "Monto" &&
+    //         "PVM: Bs" +
+    //           Number(
+    //             (item.prixerPrice.from - dis?.value) * props.dollarValue
+    //           ).toLocaleString("de-DE", {
+    //             minimumFractionDigits: 2,
+    //           }) +
+    //           " - " +
+    //           Number(
+    //             (item.prixerPrice.to - dis?.value) * props.dollarValue
+    //           ).toLocaleString("de-DE", {
+    //             minimumFractionDigits: 2,
+    //           })}
+    //     </>
+    //   );
+    // }
+    //  else if (
+    //   typeof item.discount === "string" &&
+    //   (JSON.parse(localStorage?.getItem("token")) ||
+    //     JSON.parse(localStorage?.getItem("adminToken"))) &&
+    //   (JSON.parse(localStorage?.getItem("token"))?.username ||
+    //     JSON.parse(localStorage?.getItem("adminToken"))?.username) &&
+    //   item.attributes !== [] &&
+    //   item.prixerPrice.to !== item.prixerPrice.from &&
+    //   item.prixerPrice.to !== "" &&
+    //   item.prixerPrice.to !== null
+    // ) {
+    //   let dis = discountList?.filter((dis) => dis._id === item.discount)[0];
+    //   return (
+    //     <>
+    //       <del>
+    //         {"PVM: $" +
+    //           Number(item.prixerPrice.from).toLocaleString("de-DE", {
+    //             minimumFractionDigits: 2,
+    //           }) +
+    //           " - " +
+    //           Number(item.prixerPrice.to).toLocaleString("de-DE", {
+    //             minimumFractionDigits: 2,
+    //           })}
+    //       </del>
+    //       <div
+    //         style={{
+    //           backgroundColor: "#d33f49",
+    //           padding: 3,
+    //           width: 180,
+    //           textAlign: "center",
+    //           color: "white",
+    //           fontWeight: "bold",
+    //           borderRadius: 8,
+    //         }}
+    //       >
+    //         Descuento de
+    //         {dis?.type === "Porcentaje" && " %" + dis?.value}
+    //         {dis?.type === "Monto" &&
+    //           " $" +
+    //             Number(dis?.value).toLocaleString("de-DE", {
+    //               // minimumFractionDigits: 2,
+    //             })}
+    //       </div>
+    //       {dis?.type === "Porcentaje" &&
+    //         " $" +
+    //           Number(
+    //             item.prixerPrice.from - (item.prixerEquation / 100) * dis?.value
+    //           ).toLocaleString("de-DE", {
+    //             minimumFractionDigits: 2,
+    //           }) +
+    //           " - " +
+    //           Number(
+    //             item.prixerPrice?.to - (item.prixerPrice.to / 100) * dis?.value
+    //           ).toLocaleString("de-DE", {
+    //             minimumFractionDigits: 2,
+    //           })}
+    //       {dis?.type === "Monto" &&
+    //         "PVM: $" +
+    //           Number(item.prixerPrice.from - dis?.value).toLocaleString(
+    //             "de-DE",
+    //             {
+    //               minimumFractionDigits: 2,
+    //             }
+    //           ) +
+    //           " - " +
+    //           Number(item.prixerPrice.to - dis?.value).toLocaleString("de-DE", {
+    //             minimumFractionDigits: 2,
+    //           })}
+    //     </>
+    //   );
+    // }
     if (
-      typeof item.discount === "string" &&
-      item.prixerEquation !== "" &&
-      (JSON.parse(localStorage?.getItem("token")) ||
-        JSON.parse(localStorage?.getItem("adminToken"))) &&
-      (JSON.parse(localStorage?.getItem("token"))?.username ||
-        JSON.parse(localStorage?.getItem("adminToken"))?.username) &&
-      currency
-    ) {
-      let dis = discountList?.filter((dis) => dis._id === item.discount)[0];
-      return (
-        <>
-          <del>
-            PVM: Bs
-            {Number(props.dollarValue * item.prixerEquation).toLocaleString(
-              "de-DE",
-              {
-                minimumFractionDigits: 2,
-              }
-            )}
-          </del>
-          <div
-            style={{
-              backgroundColor: "#d33f49",
-              padding: 3,
-              width: 180,
-              textAlign: "center",
-              color: "white",
-              fontWeight: "bold",
-              borderRadius: 8,
-            }}
-          >
-            Descuento de
-            {dis?.type === "Porcentaje" && " %" + dis?.value}
-            {dis?.type === "Monto" &&
-              " Bs" +
-                Number(dis?.value * props.dollarValue).toLocaleString("de-DE", {
-                  minimumFractionDigits: 2,
-                })}
-          </div>
-          {dis?.type === "Porcentaje" && (
-            <div>
-              PVM: Bs
-              {Number(
-                (item.prixerEquation -
-                  (item.prixerEquation / 100) * dis?.value) *
-                  props.dollarValue
-              ).toLocaleString("de-DE", {
-                minimumFractionDigits: 2,
-              })}
-            </div>
-          )}
-          {dis?.type === "Monto" && (
-            <div>
-              PVM: Bs
-              {Number(
-                (item.prixerEquation - dis?.value) * props.dollarValue
-              ).toLocaleString("de-DE", {
-                minimumFractionDigits: 2,
-              })}
-            </div>
-          )}
-        </>
-      );
-    } else if (
-      typeof item.discount === "string" &&
-      item.prixerEquation !== "" &&
-      (JSON.parse(localStorage?.getItem("token")) ||
-        JSON.parse(localStorage?.getItem("adminToken"))) &&
-      (JSON.parse(localStorage?.getItem("token"))?.username ||
-        JSON.parse(localStorage?.getItem("adminToken"))?.username)
-    ) {
-      let dis = discountList?.filter((dis) => dis._id === item.discount)[0];
-      return (
-        <>
-          <del>
-            PVM: $
-            {item.prixerEquation.toLocaleString("de-DE", {
-              minimumFractionDigits: 2,
-            })}
-          </del>
-          <div
-            style={{
-              backgroundColor: "#d33f49",
-              padding: 3,
-              width: 180,
-              textAlign: "center",
-              color: "white",
-              fontWeight: "bold",
-              borderRadius: 8,
-            }}
-          >
-            Descuento de
-            {dis?.type === "Porcentaje" && " %" + dis?.value}
-            {dis?.type === "Monto" && " $" + Number(dis?.value)}
-          </div>
-          {dis?.type === "Porcentaje" && (
-            <div>
-              PVM: $
-              {Number(
-                item.prixerEquation - (item.prixerEquation / 100) * dis?.value
-              ).toLocaleString("de-DE", {
-                minimumFractionDigits: 2,
-              })}
-            </div>
-          )}
-          {dis?.type === "Monto" && (
-            <div>
-              PVM: $
-              {Number(item.prixerEquation - dis?.value).toLocaleString(
-                "de-DE",
-                {
-                  minimumFractionDigits: 2,
-                }
-              )}
-            </div>
-          )}
-        </>
-      );
-    } else if (
-      typeof item.discount === "string" &&
-      (JSON.parse(localStorage?.getItem("token")) ||
-        JSON.parse(localStorage?.getItem("adminToken"))) &&
-      (JSON.parse(localStorage?.getItem("token"))?.username ||
-        JSON.parse(localStorage?.getItem("adminToken"))?.username) &&
-      item.attributes !== [] &&
-      item.prixerPrice.to !== item.prixerPrice.from &&
-      item.prixerPrice.to !== "" &&
-      item.prixerPrice.to !== null &&
-      currency
-    ) {
-      let dis = discountList?.filter((dis) => dis._id === item.discount)[0];
-      return (
-        <>
-          <del>
-            {"PVM: Bs" +
-              Number(item.prixerPrice.from * props.dollarValue).toLocaleString(
-                "de-DE",
-                {
-                  minimumFractionDigits: 2,
-                }
-              ) +
-              " - " +
-              Number(item.prixerPrice.to * props.dollarValue).toLocaleString(
-                "de-DE",
-                {
-                  minimumFractionDigits: 2,
-                }
-              )}
-          </del>
-          <div
-            style={{
-              backgroundColor: "#d33f49",
-              padding: 3,
-              width: 180,
-              textAlign: "center",
-              color: "white",
-              fontWeight: "bold",
-              borderRadius: 8,
-            }}
-          >
-            Descuento de
-            {dis?.type === "Porcentaje" && " %" + dis?.value}
-            {dis?.type === "Monto" &&
-              " Bs" +
-                Number(dis?.value * props.dollarValue).toLocaleString("de-DE", {
-                  // minimumFractionDigits: 2,
-                })}
-          </div>
-          {dis?.type === "Porcentaje" &&
-            " Bs" +
-              Number(
-                (item.prixerPrice.from -
-                  (item.prixerEquation / 100) * dis?.value) *
-                  props.dollarValue
-              ).toLocaleString("de-DE", {
-                minimumFractionDigits: 2,
-              }) +
-              " - " +
-              Number(
-                (item.prixerPrice?.to -
-                  (item.prixerPrice.to / 100) * dis?.value) *
-                  props.dollarValue
-              ).toLocaleString("de-DE", {
-                minimumFractionDigits: 2,
-              })}
-          {dis?.type === "Monto" &&
-            "PVM: Bs" +
-              Number(
-                (item.prixerPrice.from - dis?.value) * props.dollarValue
-              ).toLocaleString("de-DE", {
-                minimumFractionDigits: 2,
-              }) +
-              " - " +
-              Number(
-                (item.prixerPrice.to - dis?.value) * props.dollarValue
-              ).toLocaleString("de-DE", {
-                minimumFractionDigits: 2,
-              })}
-        </>
-      );
-    } else if (
-      typeof item.discount === "string" &&
-      (JSON.parse(localStorage?.getItem("token")) ||
-        JSON.parse(localStorage?.getItem("adminToken"))) &&
-      (JSON.parse(localStorage?.getItem("token"))?.username ||
-        JSON.parse(localStorage?.getItem("adminToken"))?.username) &&
-      item.attributes !== [] &&
-      item.prixerPrice.to !== item.prixerPrice.from &&
-      item.prixerPrice.to !== "" &&
-      item.prixerPrice.to !== null
-    ) {
-      let dis = discountList?.filter((dis) => dis._id === item.discount)[0];
-      return (
-        <>
-          <del>
-            {"PVM: $" +
-              Number(item.prixerPrice.from).toLocaleString("de-DE", {
-                minimumFractionDigits: 2,
-              }) +
-              " - " +
-              Number(item.prixerPrice.to).toLocaleString("de-DE", {
-                minimumFractionDigits: 2,
-              })}
-          </del>
-          <div
-            style={{
-              backgroundColor: "#d33f49",
-              padding: 3,
-              width: 180,
-              textAlign: "center",
-              color: "white",
-              fontWeight: "bold",
-              borderRadius: 8,
-            }}
-          >
-            Descuento de
-            {dis?.type === "Porcentaje" && " %" + dis?.value}
-            {dis?.type === "Monto" &&
-              " $" +
-                Number(dis?.value).toLocaleString("de-DE", {
-                  // minimumFractionDigits: 2,
-                })}
-          </div>
-          {dis?.type === "Porcentaje" &&
-            " $" +
-              Number(
-                item.prixerPrice.from - (item.prixerEquation / 100) * dis?.value
-              ).toLocaleString("de-DE", {
-                minimumFractionDigits: 2,
-              }) +
-              " - " +
-              Number(
-                item.prixerPrice?.to - (item.prixerPrice.to / 100) * dis?.value
-              ).toLocaleString("de-DE", {
-                minimumFractionDigits: 2,
-              })}
-          {dis?.type === "Monto" &&
-            "PVM: $" +
-              Number(item.prixerPrice.from - dis?.value).toLocaleString(
-                "de-DE",
-                {
-                  minimumFractionDigits: 2,
-                }
-              ) +
-              " - " +
-              Number(item.prixerPrice.to - dis?.value).toLocaleString("de-DE", {
-                minimumFractionDigits: 2,
-              })}
-        </>
-      );
-    } else if (
       typeof item.discount === "string" &&
       item.publicEquation !== "" &&
       currency
@@ -994,17 +998,28 @@ export default function ProductGrid(props) {
         "PVM: $" +
         Number(item?.prixerPrice?.from).toLocaleString("de-DE", {
           minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
         })
       );
     } else if (item.publicEquation !== "" && currency) {
       return (
         "PVP: Bs" +
-        (item.publicEquation * props.dollarValue).toLocaleString("de-DE", {
-          minimumFractionDigits: 2,
-        })
+        Number(item.publicEquation * props.dollarValue).toLocaleString(
+          "de-DE",
+          {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          }
+        )
       );
     } else if (item.publicEquation !== "") {
-      return "PVP: $" + item.publicEquation;
+      return (
+        "PVP: $" +
+        Number(item.publicEquation).toLocaleString("de-DE", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })
+      );
     } else if (
       item.attributes !== [] &&
       item.publicPrice.to !== item.publicPrice.from &&
@@ -1014,13 +1029,21 @@ export default function ProductGrid(props) {
     ) {
       return (
         "PVP: Bs" +
-        (item.publicPrice.from * props.dollarValue).toLocaleString("de-DE", {
-          minimumFractionDigits: 2,
-        }) +
+        Number(item.publicPrice.from * props.dollarValue).toLocaleString(
+          "de-DE",
+          {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          }
+        ) +
         " - " +
-        (item.publicPrice.to * props.dollarValue).toLocaleString("de-DE", {
-          minimumFractionDigits: 2,
-        })
+        Number(item.publicPrice.to * props.dollarValue).toLocaleString(
+          "de-DE",
+          {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          }
+        )
       );
     } else if (
       item.attributes !== [] &&
@@ -1028,16 +1051,37 @@ export default function ProductGrid(props) {
       item.publicPrice.to !== "" &&
       item.publicPrice.to !== null
     ) {
-      return "PVP: $" + item.publicPrice.from + " - " + item.publicPrice.to;
+      return (
+        "PVP: $" +
+        Number(item.publicPrice.from).toLocaleString("de-DE", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        }) +
+        " - " +
+        item.publicPrice.to.toLocaleString("de-DE", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })
+      );
     } else if (currency) {
       return (
         "PVP: Bs" +
-        (item.publicPrice.from * props.dollarValue).toLocaleString("de-DE", {
-          minimumFractionDigits: 2,
-        })
+        Number(item.publicPrice.from * props.dollarValue).toLocaleString(
+          "de-DE",
+          {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          }
+        )
       );
     } else {
-      return "PVP: $" + item.publicPrice.from;
+      return (
+        "PVP: $" +
+        Number(item.publicPrice.from).toLocaleString("de-DE", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })
+      );
     }
   };
 

@@ -2041,6 +2041,40 @@ export default function Orders(props) {
                         </Select>
                       </FormControl>
                     </Grid>
+                    {/* <Grid                       item
+                      lg={6}
+                      md={6}
+                      sm={12}
+                      xs={12}
+                      className={classes.gridInput}
+>
+                    <FormControl style={{ minWidth: "100%" }} variant="outlined">
+                    <TextField
+                      style={{
+                        width: "100%",
+                      }}
+                      label="Fecha de Entrega"
+                      type="date"
+                      variant="outlined"
+                      // required
+                      format="dd-MM-yyyy"
+                      defaultValue={stringReadyDate}
+                      value={props.values.today}
+                      error={props.values.today < stringReadyDate}
+                      min={stringReadyDate}
+                      className={classes.textField}
+                      InputLabelProps={{
+                        shrink: true,
+                      }}
+                      onChange={(e) => {
+                        // if (e.target.value < new Date()) {
+                        //   console.log("x");
+                        // } else {
+                        selectShDate(e.target.value);
+                      }}
+                    />
+                  </FormControl>
+                    </Grid> */}
                   </Grid>
                 </Grid>
 

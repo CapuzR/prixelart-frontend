@@ -775,9 +775,7 @@ export default function CartReview(props) {
                         </p>
                       )}
                       <strong>Precio Unitario:</strong>
-                      {PriceSelect(buy.product).toLocaleString("de-DE", {
-                        minimumFractionDigits: 2,
-                      })}
+                      {PriceSelect(buy.product)}
                     </div>
                     <div
                       style={{

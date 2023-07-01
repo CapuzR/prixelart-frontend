@@ -58,7 +58,7 @@ export default function OrderForm(props) {
 
   const getBalance = async () => {
     const url = process.env.REACT_APP_BACKEND_URL + "/account/readById";
-    const data = { _id: JSON.parse(localStorage.getItem("token")).account };
+    const data = { _id: JSON.parse(localStorage.getItem("token"))?.account };
     await axios
       .post(url, data)
       .then((response) => setBalance(response.data.balance));
@@ -87,7 +87,12 @@ export default function OrderForm(props) {
   }, []);
 
   useEffect(() => {
-    getBalance();
+    if (
+      JSON.parse(localStorage.getItem("token")) &&
+      JSON.parse(localStorage.getItem("token")).username
+    ) {
+      getBalance();
+    }
   }, []);
 
   const onImageChange = async (e) => {
@@ -115,9 +120,10 @@ export default function OrderForm(props) {
         if (dis?.type === "Porcentaje") {
           prices.push(
             Number(
-              ((item.product.prixerEquation || item.product.prixerPrice.from) -
-                ((item.product.prixerEquation ||
-                  item.product.prixerPrice.from) /
+              ((item.product?.prixerEquation ||
+                item.product?.prixerPrice?.from) -
+                ((item.product?.prixerEquation ||
+                  item.product?.prixerPrice?.from) /
                   100) *
                   dis.value) *
                 (item.quantity || 1)
@@ -126,7 +132,8 @@ export default function OrderForm(props) {
         } else if (dis?.type === "Monto") {
           prices.push(
             Number(
-              ((item.product.prixerEquation || item.product.prixerPrice.from) -
+              ((item.product?.prixerEquation ||
+                item.product?.prixerPrice?.from) -
                 dis.value) *
                 (item.quantity || 1)
             )
@@ -142,7 +149,7 @@ export default function OrderForm(props) {
       ) {
         prices.push(
           Number(
-            (item.product.prixerEquation || item.product.prixerPrice.from) *
+            (item.product?.prixerEquation || item.product?.prixerPrice?.from) *
               (item.quantity || 1)
           )
         );
@@ -157,10 +164,10 @@ export default function OrderForm(props) {
         if (dis?.type === "Porcentaje") {
           prices.push(
             Number(
-              ((item.product.publicEquation ||
-                item.product.publicPrice.from.replace(/[,]/gi, ".")) -
-                ((item.product.publicEquation ||
-                  item.product.publicPrice.from.replace(/[,]/gi, ".")) /
+              ((item.product?.publicEquation ||
+                item.product?.publicPrice?.from.replace(/[,]/gi, ".")) -
+                ((item.product?.publicEquation ||
+                  item.product?.publicPrice?.from.replace(/[,]/gi, ".")) /
                   100) *
                   dis.value) *
                 (item.quantity || 1)
@@ -169,8 +176,8 @@ export default function OrderForm(props) {
         } else if (dis?.type === "Monto") {
           prices.push(
             Number(
-              ((item.product.publicEquation ||
-                item.product.publicPrice.from.replace(/[,]/gi, ".")) -
+              ((item.product?.publicEquation ||
+                item.product?.publicPrice?.from.replace(/[,]/gi, ".")) -
                 dis.value) *
                 (item.quantity || 1)
             )
@@ -178,7 +185,7 @@ export default function OrderForm(props) {
         }
       } else if (item.product && item.art) {
         prices.push(
-          (item.product.publicEquation || item.product.publicPrice.from) *
+          (item.product?.publicEquation || item.product?.publicPrice?.from) *
             (item.quantity || 1)
         );
       }

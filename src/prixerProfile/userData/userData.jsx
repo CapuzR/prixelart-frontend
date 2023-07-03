@@ -140,42 +140,46 @@ export default function UserData(props) {
     const data = {
       username: props.prixerUsername,
     };
-
-    axios
-      .post(base_url, data)
-      .then((response) => {
-        if (!response.data.status) {
-          return history.push("/");
-        }
-        setUsername(response.data.username);
-        setEmail(response.data.email);
-        setFirstName(response.data.firstName);
-        setLastName(response.data.lastName);
-        setSpecialtyArt(response.data.specialtyArt);
-        setInstagram(response.data.instagram);
-        setFacebook(response.data.facebook);
-        setTwitter(response.data.twitter);
-        setDescription(response.data.description);
-        setDateOfBirth(response.data.dateOfBirth);
-        setPhone(response.data.phone);
-        setCountry(response.data.country);
-        setCity(response.data.city);
-        setAvatarObj(response.data.avatar);
-        setProfilePic(response.data.avatar);
-        setPrixer(response.data);
-        setReady(true);
-        setBackdrop(false);
-        setPrixerExists(true);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    if (typeof props.prixerUsername === "string") {
+      axios
+        .post(base_url, data)
+        .then((response) => {
+          if (!response.data.status) {
+            return history.push("/");
+          }
+          setUsername(response.data.username);
+          setEmail(response.data.email);
+          setFirstName(response.data.firstName);
+          setLastName(response.data.lastName);
+          setSpecialtyArt(response.data.specialtyArt);
+          setInstagram(response.data.instagram);
+          setFacebook(response.data.facebook);
+          setTwitter(response.data.twitter);
+          setDescription(response.data.description);
+          setDateOfBirth(response.data.dateOfBirth);
+          setPhone(response.data.phone);
+          setCountry(response.data.country);
+          setCity(response.data.city);
+          setAvatarObj(response.data.avatar);
+          setProfilePic(response.data.avatar);
+          setPrixer(response.data);
+          setReady(true);
+          setBackdrop(false);
+          setPrixerExists(true);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
   }, [props.prixerUsername]);
 
   const handleProfileDataEdit = async () => {
     if (prixerDataState === "edit") {
       setBackdrop(true);
       var formData = new FormData();
+      // if (profilePic !== "") {
+      //   formData.append("avatar", profilePic);
+      // }
       formData.append("avatar", profilePic || avatarObj);
       formData.append("username", username);
       formData.append("firstName", firstName);

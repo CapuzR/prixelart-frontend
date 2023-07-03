@@ -329,12 +329,12 @@ export default function MenuAppBar(props) {
                 <Tab
                   className={classes.button}
                   onClick={handleMyAccount}
-                  label="Mi Cuenta"
+                  label="Mi Perfil"
                 />
                 <Tab
                   className={classes.button}
                   onClick={handleMyStats}
-                  label="Mi Resumen"
+                  label="Mi Cuenta"
                 />
                 <Tab
                   className={classes.button}
@@ -448,8 +448,8 @@ export default function MenuAppBar(props) {
                   open={open}
                   onClose={handleClose}
                 >
-                  <MenuItem onClick={handleMyAccount}>Mi Cuenta</MenuItem>
-                  <MenuItem onClick={handleMyStats}>Mi Resumen</MenuItem>
+                  <MenuItem onClick={handleMyAccount}>Mi Perfil</MenuItem>
+                  <MenuItem onClick={handleMyStats}>Mi Cuenta</MenuItem>
 
                   <MenuItem onClick={handlePasswordChange}>
                     Cambiar contraseña

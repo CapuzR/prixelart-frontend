@@ -105,12 +105,12 @@ function App() {
       newState[input.index].product = input.item;
       newState[input.index].quantity = 1;
       setBuyState(newState);
-    } else {
+    } else if (input.type === "art") {
       newState[input.index].art = input.item;
       newState[input.index].quantity = 1;
       setBuyState(newState);
     }
-    setBuyState(newState);
+    // setBuyState(newState);
     localStorage.setItem("buyState", JSON.stringify(newState));
     setOpen(true);
     setMessage(

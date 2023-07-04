@@ -693,6 +693,7 @@ function ConsumerForm(props) {
                   <FormControl style={{ minWidth: "100%" }} variant="outlined">
                     <InputLabel>Método de entrega</InputLabel>
                     <Select
+                      label="Método de entrega"
                       className={classes.textField}
                       value={props.values?.shippingMethod || ""}
                       onChange={(e) => {

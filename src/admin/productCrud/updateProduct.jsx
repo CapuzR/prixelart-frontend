@@ -94,22 +94,22 @@ export default function UpdateAdmin(props) {
   const [description, setDescription] = useState(props?.product?.description);
   const [category, setCategory] = useState(props?.product?.category);
   const [considerations, setConsiderations] = useState(
-    props?.product?.considerations
+    props?.product?.considerations || undefined
   );
   const [productionTime, setProductionTime] = useState(
-    props.product?.productionTime
+    props.product?.productionTime || undefined
   );
   const [fromPublicPrice, setFromPublicPrice] = useState(
     props?.product?.publicPrice?.from
   );
   const [toPublicPrice, setToPublicPrice] = useState(
-    props?.product?.publicPrice?.to
+    props?.product?.publicPrice?.to || undefined
   );
   const [fromPrixerPrice, setFromPrixerPrice] = useState(
     props?.product?.prixerPrice?.from
   );
   const [toPrixerPrice, setToPrixerPrice] = useState(
-    props?.product?.prixerPrice?.to
+    props?.product?.prixerPrice?.to || undefined
   );
   const [loading, setLoading] = useState(false);
   const [buttonState, setButtonState] = useState(false);
@@ -229,7 +229,7 @@ export default function UpdateAdmin(props) {
     ) {
       setLoaDOpen(true);
     } else {
-      if (images.images.length === 0 && imagesList.length === 0) {
+      if (images?.images.length === 0 && imagesList?.length === 0) {
         setMustImages(true);
         setTimeout(() => {
           setMustImages(false);
@@ -273,9 +273,13 @@ export default function UpdateAdmin(props) {
           newFormData.append("name", productName);
           newFormData.append("description", description);
           newFormData.append("category", category);
+          newFormData.append("thumbUrl", thumbUrl);
+
           newFormData.append("variants", JSON.stringify(variants));
           newFormData.append("considerations", considerations);
-          newFormData.append("productionTime", productionTime);
+          if (productionTime !== undefined && productionTime !== "") {
+            newFormData.append("productionTime", productionTime);
+          }
           newFormData.append("publicPriceFrom", data.publicPrice.from);
           if (toPublicPrice) {
             newFormData.append("publicPriceTo", data.publicPrice.to);
@@ -287,7 +291,7 @@ export default function UpdateAdmin(props) {
             newFormData.append("prixerPriceTo", data.prixerPrice.to);
           }
           newFormData.append("hasSpecialVar", hasSpecialVar);
-          if (imagesList !== []) {
+          if (imagesList !== [] && imagesList[0] !== null) {
             const images = [];
 
             imagesList?.map((img) => {
@@ -297,7 +301,6 @@ export default function UpdateAdmin(props) {
             });
             newFormData.append("images", images);
           } else newFormData.append("images", []);
-
           if (images.images) {
             images.images.map((file) => {
               newFormData.append("newProductImages", file);

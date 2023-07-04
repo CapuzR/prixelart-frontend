@@ -377,7 +377,7 @@ export default function Orders(props) {
     n.push(getTotalPrice(props.buyState));
     n.push(getIvaCost(props.buyState));
     {
-      props.values.shippingMethod && n.push(shippingCost);
+      props.values?.shippingMethod && n.push(shippingCost);
     }
     let total = n.reduce(function (a, b) {
       return a + b;
@@ -529,6 +529,7 @@ export default function Orders(props) {
         phone: props.values?.shippingPhone,
         address: props.values?.shippingAddress,
         shippingMethod: props.values?.shippingMethod,
+        shippingDate: props.values?.shippingDate,
       },
       billingData: {
         name: props.values?.billingShName,
@@ -539,6 +540,7 @@ export default function Orders(props) {
         address: props.values?.billingAddress,
         orderPaymentMethod: orderPaymentMethod.name,
       },
+      dollarValue: dollarValue,
       observations: props.values.observations,
       tax: getTotalPrice(props.buyState) * 0.16,
       subtotal: getTotalPrice(props.buyState),
@@ -574,16 +576,14 @@ export default function Orders(props) {
   };
 
   const getTotalPrice = (state) => {
-    let prices = [];
+    let prices = [0];
     state.map(
       (item) =>
         item.product &&
         item.art &&
         prices.push(
-          (item.product.publicEquation.replace(/[,]/gi, ".") ||
-            item.product.publicPrice.from
-              .replace(/[,]/gi, ".")
-              .replace(/[$]/gi, "")) * (item.quantity || 1)
+          (item.product.publicEquation || item.product.publicPrice.from) *
+            (item.quantity || 1)
         )
     );
     let total = prices.reduce(function (a, b) {
@@ -792,21 +792,18 @@ export default function Orders(props) {
   };
 
   const handleVariantProduct = (variant, index, art, product) => {
-    props.setSelectedArtToAssociate({
-      index,
-      item: art,
-      previous: true,
-    });
+    let v = variant.split(",");
+
     let selectedVariant = product.variants.find(
-      (result) => result.name === variant
+      (result) => result.name === v[0] && result.attributes[1].value === v[1]
     );
-    product.selection = selectedVariant;
-    product.publicEquation = selectedVariant.publicPrice.equation;
-    props.AssociateProduct({
-      index: index,
-      item: product,
-      type: "product",
-    });
+    // product.selection = selectedVariant;
+    // product.publicEquation = selectedVariant.publicPrice.equation;
+    // props.AssociateProduct({
+    //   index: index,
+    //   item: product,
+    //   type: "product",
+    // });
   };
 
   const modifyPrice = (product, index, newPrice) => {
@@ -842,6 +839,69 @@ export default function Orders(props) {
   const closeAd = () => {
     setSnackBarError(false);
   };
+  let today = new Date();
+  const months = [
+    "Enero",
+    "Febrero",
+    "Marzo",
+    "Abril",
+    "Mayo",
+    "Junio",
+    "Julio",
+    "Agosto",
+    "Septiembre",
+    "Octubre",
+    "Noviembre",
+    "Diciembre",
+  ];
+  const monthsOrder = [
+    "01",
+    "02",
+    "03",
+    "04",
+    "05",
+    "06",
+    "07",
+    "08",
+    "09",
+    "10",
+    "11",
+    "12",
+  ];
+  const days = [
+    "domingo",
+    "lunes",
+    "martes",
+    "miércoles",
+    "jueves",
+    "viernes",
+    "sábado",
+  ];
+  let ProdTimes = props.buyState.map((item) => {
+    if (item.product && item.art && item.product.productionTime !== undefined) {
+      return item.product.productionTime;
+    }
+  });
+
+  let orderedProdT = ProdTimes.sort(function (a, b) {
+    if (a.toLowerCase() > b.toLowerCase()) {
+      return 1;
+    }
+    if (a.toLowerCase() < b.toLowerCase()) {
+      return -1;
+    }
+    return 0;
+  });
+
+  let readyDate = new Date(
+    today.setDate(today.getDate() + Number(orderedProdT[0]))
+  );
+  const stringReadyDate =
+    readyDate.getFullYear() +
+    "-" +
+    monthsOrder[readyDate.getMonth()] +
+    "-" +
+    readyDate.getDate();
 
   return (
     <>
@@ -1026,6 +1086,7 @@ export default function Orders(props) {
                                 <MenuItem value={"Abonado"}>Abonado</MenuItem>
                                 <MenuItem value={"Giftcard"}>Giftcard</MenuItem>
                                 <MenuItem value={"Obsequio"}>Obsequio</MenuItem>
+                                <MenuItem value={"Obsequio"}>Anulado</MenuItem>
                               </Select>
                             </FormControl>
                           </TableCell>
@@ -1223,13 +1284,13 @@ export default function Orders(props) {
                                 </p>
                               );
                             })}
-                            <div>
-                              {item.product.discount &&
+                            {/* <div>
+                              {item.product?.discount &&
                                 "Descuento: " +
                                   discountList?.find(
                                     ({ _id }) => _id === item.product.discount
                                   ).name}
-                            </div>
+                            </div> */}
 
                             <div style={{ marginTop: 10 }}>
                               {"Cantidad: " + item.quantity}
@@ -1290,7 +1351,7 @@ export default function Orders(props) {
                             padding: 15,
                           }}
                         >
-                          <strong>Datos de envío</strong>
+                          <strong>Datos de entrega</strong>
                           {modalContent.shippingData?.name &&
                             modalContent.shippingData?.lastname && (
                               <div>
@@ -1307,7 +1368,7 @@ export default function Orders(props) {
                           )}
                           {modalContent.shippingData?.shippingMethod && (
                             <div>
-                              {"Método de envío: " +
+                              {"Método de entrega: " +
                                 modalContent?.shippingData?.shippingMethod.name}
                             </div>
                           )}
@@ -1876,7 +1937,7 @@ export default function Orders(props) {
 
                 <Grid container spacing={2}>
                   <Grid container style={{ marginTop: 20 }}>
-                    <Title>Datos de envío</Title>
+                    <Title>Datos de entrega</Title>
                   </Grid>
                   <Grid container>
                     <Grid
@@ -1927,7 +1988,6 @@ export default function Orders(props) {
                             shippingName: e.target.value,
                           })
                         }
-                        required
                         margin="normal"
                       />
                     </Grid>
@@ -1953,7 +2013,6 @@ export default function Orders(props) {
                               : ""
                             : props.values.shippingLastName
                         }
-                        required
                         onChange={(e) =>
                           props.setValues({
                             ...props.values,
@@ -1999,7 +2058,6 @@ export default function Orders(props) {
                             shippingPhone: e.target.value,
                           });
                         }}
-                        required
                         margin="normal"
                         InputProps={{
                           startAdornment: (
@@ -2035,7 +2093,6 @@ export default function Orders(props) {
                               : ""
                             : props.values.shippingAddress
                         }
-                        required
                         onChange={(e) =>
                           props.setValues({
                             ...props.values,
@@ -2064,8 +2121,9 @@ export default function Orders(props) {
                         style={{ minWidth: "100%" }}
                         variant="outlined"
                       >
-                        <InputLabel>Método de envío</InputLabel>
+                        <InputLabel>Método de entrega</InputLabel>
                         <Select
+                          label="Método de entrega"
                           className={classes.textField}
                           value={props.values?.shippingMethod || ""}
                           onChange={(e) => {
@@ -2085,40 +2143,55 @@ export default function Orders(props) {
                         </Select>
                       </FormControl>
                     </Grid>
-                    {/* <Grid                       item
+                    <Grid
+                      item
                       lg={6}
                       md={6}
                       sm={12}
                       xs={12}
                       className={classes.gridInput}
->
-                    <FormControl style={{ minWidth: "100%" }} variant="outlined">
-                    <TextField
-                      style={{
-                        width: "100%",
-                      }}
-                      label="Fecha de Entrega"
-                      type="date"
-                      variant="outlined"
-                      // required
-                      format="dd-MM-yyyy"
-                      defaultValue={stringReadyDate}
-                      value={props.values.today}
-                      error={props.values.today < stringReadyDate}
-                      min={stringReadyDate}
-                      className={classes.textField}
-                      InputLabelProps={{
-                        shrink: true,
-                      }}
-                      onChange={(e) => {
-                        // if (e.target.value < new Date()) {
-                        //   console.log("x");
-                        // } else {
-                        selectShDate(e.target.value);
-                      }}
-                    />
-                  </FormControl>
-                    </Grid> */}
+                    >
+                      <FormControl
+                        style={{ minWidth: "100%" }}
+                        variant="outlined"
+                      >
+                        <TextField
+                          style={{
+                            width: "100%",
+                          }}
+                          label="Fecha de Entrega"
+                          type="date"
+                          variant="outlined"
+                          //
+                          format="dd-MM-yyyy"
+                          defaultValue={stringReadyDate}
+                          value={props.values.today}
+                          error={props.values.today < stringReadyDate}
+                          min={stringReadyDate}
+                          className={classes.textField}
+                          InputLabelProps={{
+                            shrink: true,
+                          }}
+                          onChange={(e) => {
+                            props.setValues({
+                              ...props.values,
+                              shippingDate: e.target.value,
+                            });
+                          }}
+                        />
+                      </FormControl>
+                    </Grid>
+                    <Grid>
+                      <div style={{ marginTop: 10, marginLeft: 10 }}>
+                        {"El pedido estará listo el día " +
+                          days[readyDate.getDay()] +
+                          " " +
+                          readyDate.getDate() +
+                          " de " +
+                          months[readyDate.getMonth()] +
+                          "."}
+                      </div>
+                    </Grid>
                   </Grid>
                 </Grid>
 
@@ -2158,7 +2231,7 @@ export default function Orders(props) {
                             }}
                           />
                         }
-                        label="Igual a Datos de envío"
+                        label="Igual a Datos de entrega"
                       />
                     </Grid>
                     <Grid
@@ -2177,15 +2250,15 @@ export default function Orders(props) {
                         className={classes.textField}
                         disabled={billingDataCheck || billingShDataCheck}
                         value={
-                          billingShDataCheck
-                            ? props.values?.shippingName
-                              ? props.values.shippingName
-                              : ""
-                            : billingDataCheck
+                          billingDataCheck
                             ? props.values?.name
                               ? props.values.name
                               : ""
-                            : props.values.billingShName
+                            : billingShDataCheck
+                            ? props.values?.shippingName
+                              ? props.values.shippingName
+                              : ""
+                            : props.values.billingShName || ""
                         }
                         onChange={(e) =>
                           props.setValues({
@@ -2193,7 +2266,6 @@ export default function Orders(props) {
                             billingShName: e.target.value,
                           })
                         }
-                        required
                         margin="normal"
                       />
                     </Grid>
@@ -2213,17 +2285,16 @@ export default function Orders(props) {
                         className={classes.textField}
                         disabled={billingDataCheck || billingShDataCheck}
                         value={
-                          billingShDataCheck
-                            ? props.values?.shippingLastName
-                              ? props.values.shippingLastName
-                              : ""
-                            : billingDataCheck
+                          billingDataCheck
                             ? props.values?.lastName
                               ? props.values.lastName
                               : ""
-                            : props.values.billingShLastName
+                            : billingShDataCheck
+                            ? props.values?.shippingLastName
+                              ? props.values.shippingLastName
+                              : ""
+                            : props.values.billingShLastName || ""
                         }
-                        required
                         onChange={(e) =>
                           props.setValues({
                             ...props.values,
@@ -2250,35 +2321,22 @@ export default function Orders(props) {
                         className={classes.textField}
                         helperText="ej: 584141234567 o +584141234567 o 04143201028"
                         value={
-                          billingShDataCheck
-                            ? props.values?.shippingPhone
-                              ? props.values.shippingPhone
-                              : ""
-                            : billingDataCheck
+                          billingDataCheck
                             ? props.values?.phone
                               ? props.values.phone
                               : ""
-                            : props.values.billingShPhone
+                            : billingShDataCheck
+                            ? props.values?.shippingPhone
+                              ? props.values.shippingPhone
+                              : ""
+                            : props.values.billingShPhone || ""
                         }
-                        // error={
-                        //   billingDataCheck
-                        //     ? props.values?.phone != undefined &&
-                        //       !UtilVals.isAValidPhoneNum(props.values?.phone)
-                        //     : billingShDataCheck
-                        //     ? (props.values?.billingPhone != undefined ||
-                        //         (shippingDataCheck &&
-                        //           props.values?.phone != undefined)) &&
-                        //       !UtilVals.isAValidPhoneNum(props.values?.billingPhone)
-                        //     : props.values?.billingShPhone != undefined &&
-                        //       !UtilVals.isAValidPhoneNum(props.values?.billingShPhone)
-                        // }
                         onChange={(e) =>
                           props.setValues({
                             ...props.values,
                             billingShPhone: e.target.value,
                           })
                         }
-                        required
                         margin="normal"
                         InputProps={{
                           startAdornment: (
@@ -2287,6 +2345,69 @@ export default function Orders(props) {
                             </InputAdornment>
                           ),
                         }}
+                      />
+                    </Grid>
+                    <Grid
+                      item
+                      lg={8}
+                      md={8}
+                      sm={8}
+                      xs={12}
+                      className={classes.gridInput}
+                    >
+                      <TextField
+                        variant="outlined"
+                        id="standard-name"
+                        label="Razón Social"
+                        fullWidth
+                        className={classes.textField}
+                        disabled={billingDataCheck || billingShDataCheck}
+                        value={props.values?.billingCompany || ""}
+                        onChange={(e) =>
+                          props.setValues({
+                            ...props.values,
+                            billingCompany: e.target.value,
+                          })
+                        }
+                        required
+                        margin="normal"
+                      />
+                    </Grid>
+                    <Grid
+                      item
+                      lg={4}
+                      md={4}
+                      sm={4}
+                      xs={12}
+                      className={classes.gridInput}
+                    >
+                      <TextField
+                        variant="outlined"
+                        id="standard-name"
+                        label="RIF"
+                        fullWidth
+                        disabled={billingDataCheck || billingShDataCheck}
+                        className={classes.textField}
+                        helperText="ej: V-12345679 o V-1234567-0"
+                        value={
+                          billingDataCheck
+                            ? props.values?.ci
+                              ? props.values.ci
+                              : ""
+                            : // billingShDataCheck
+                              //   ? props.values?.shippingPhone
+                              //     ? props.values.shippingPhone
+                              //     : ""
+                              //   :
+                              props.values.billingCi || ""
+                        }
+                        onChange={(e) =>
+                          props.setValues({
+                            ...props.values,
+                            billingCi: e.target.value,
+                          })
+                        }
+                        margin="normal"
                       />
                     </Grid>
                     <Grid
@@ -2307,17 +2428,16 @@ export default function Orders(props) {
                         disabled={billingDataCheck || billingShDataCheck}
                         className={classes.textField}
                         value={
-                          billingShDataCheck
-                            ? props.values?.shippingAddress
-                              ? props.values.shippingAddress
-                              : ""
-                            : billingDataCheck
+                          billingDataCheck
                             ? props.values?.address
                               ? props.values.address
                               : ""
-                            : props.values.billingShAddress
+                            : billingShDataCheck
+                            ? props.values?.shippingAddress
+                              ? props.values.shippingAddress
+                              : ""
+                            : props.values.billingShAddress || ""
                         }
-                        required
                         onChange={(e) =>
                           props.setValues({
                             ...props.values,
@@ -2458,7 +2578,13 @@ export default function Orders(props) {
                                       >
                                         {buy.product.variants.map((a) => {
                                           return (
-                                            <MenuItem value={a.name}>
+                                            <MenuItem
+                                              value={
+                                                a.name +
+                                                "," +
+                                                a.attributes[1]?.value
+                                              }
+                                            >
                                               {a.name}
                                               {a.attributes[1]?.value &&
                                                 " " + a.attributes[1]?.value}
@@ -2588,7 +2714,7 @@ export default function Orders(props) {
                                     <TextField
                                       variant="outlined"
                                       label="Precio"
-                                      style={{ width: 120 }}
+                                      style={{ width: 120, height: 80 }}
                                       defaultValue={
                                         buy.product?.publicEquation ||
                                         buy.product?.publicPrice.from.replace(
@@ -2858,21 +2984,12 @@ export default function Orders(props) {
                                                   ? " Bs" +
                                                     (
                                                       (Number(
-                                                        item.product.publicEquation.replace(
-                                                          /[,]/gi,
-                                                          "."
-                                                        )
+                                                        item.product
+                                                          .publicEquation
                                                       ) ||
                                                         Number(
-                                                          item.product.publicPrice.from
-                                                            .replace(
-                                                              /[$]/gi,
-                                                              ""
-                                                            )
-                                                            .replace(
-                                                              /[,]/gi,
-                                                              "."
-                                                            )
+                                                          item.product
+                                                            .publicPrice.from
                                                         )) *
                                                       dollarValue *
                                                       (item.quantity || 1)
@@ -2883,21 +3000,12 @@ export default function Orders(props) {
                                                   : " $" +
                                                     (
                                                       (Number(
-                                                        item.product.publicEquation.replace(
-                                                          /[,]/gi,
-                                                          "."
-                                                        )
+                                                        item.product
+                                                          .publicEquation
                                                       ) ||
                                                         Number(
-                                                          item.product.publicPrice.from
-                                                            .replace(
-                                                              /[$]/gi,
-                                                              ""
-                                                            )
-                                                            .replace(
-                                                              /[,]/gi,
-                                                              "."
-                                                            )
+                                                          item.product
+                                                            .publicPrice.from
                                                         )) *
                                                       (item.quantity || 1)
                                                     ).toLocaleString("de-DE", {

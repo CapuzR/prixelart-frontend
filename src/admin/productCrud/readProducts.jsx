@@ -266,17 +266,16 @@ export default function ReadProducts(props) {
                     </TableCell>
                     <TableCell align="center">{row.category}</TableCell>
                     <TableCell align="center">
-                      ${row.publicPrice.from?.replace(/[$]/gi, "")}
-                      {row.publicPrice.to &&
-                        " - " + row.publicPrice.to?.replace(/[$]/gi, "")}
+                      ${row.publicPrice.from}
+                      {row.publicPrice.to && " - " + row.publicPrice.to}
                     </TableCell>
                     <TableCell align="center">
                       {row.prixerPrice &&
                         row.prixerPrice.from &&
-                        "$" + row.prixerPrice?.from?.replace(/[$]/gi, "")}
+                        "$" + row.prixerPrice?.from}
                       {row.prixerPrice &&
                         row.prixerPrice.to &&
-                        " - " + row.prixerPrice.to?.replace(/[$]/gi, "")}
+                        " - " + row.prixerPrice.to}
                     </TableCell>
                     <TableCell>
                       {row.discount &&

@@ -273,7 +273,11 @@ export default function Orders(props) {
   const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const isIphone = useMediaQuery(theme.breakpoints.down("xs"));
+  let custom = {
+    title: "Personalizado",
+  };
 
+  // setArtList({ ...artList, custom });
   const [isShowDetails, setIsShowDetails] = useState(false);
   const [showVoucher, setShowVoucher] = useState(false);
   const [rows, setRows] = useState();
@@ -577,16 +581,41 @@ export default function Orders(props) {
 
   const getTotalPrice = (state) => {
     let prices = [0];
-    state.map(
-      (item) =>
+    state.map((item) => {
+      if (
         item.product &&
         item.art &&
+        typeof item.product.discount === "string"
+      ) {
+        let dis = discountList?.find(
+          ({ _id }) => _id === item.product.discount
+        );
+        if (dis?.type === "Porcentaje") {
+          prices.push(
+            ((item.product?.publicEquation ||
+              item.product?.publicPrice?.from.replace(/[,]/gi, ".")) -
+              ((item.product?.publicEquation ||
+                item.product?.publicPrice?.from.replace(/[,]/gi, ".")) /
+                100) *
+                dis.value) *
+              (item.quantity || 1)
+          );
+        } else if (dis?.type === "Monto") {
+          prices.push(
+            ((item.product?.publicEquation ||
+              item.product?.publicPrice?.from.replace(/[,]/gi, ".")) -
+              dis.value) *
+              (item.quantity || 1)
+          );
+        }
+      } else if (item.product && item.art) {
         prices.push(
-          (item.product.publicEquation || item.product.publicPrice.from) *
+          (item.product?.publicEquation || item.product?.publicPrice?.from) *
             (item.quantity || 1)
-        )
-    );
-    let total = prices.reduce(function (a, b) {
+        );
+      }
+    });
+    let total = prices?.reduce(function (a, b) {
       return a + b;
     });
     return total;
@@ -605,7 +634,12 @@ export default function Orders(props) {
         setSnackBarError(true);
       }
     });
-    if (order.payStatus === "Pagado" && status === "Concretado") {
+    if (
+      (order.payStatus === "Pagado" ||
+        order.payStatus === "Giftcard" ||
+        order.payStatus === "Obsequio") &&
+      status === "Concretado"
+    ) {
       payComission(order);
     }
     readOrders();
@@ -641,7 +675,7 @@ export default function Orders(props) {
 
       const url1 = process.env.REACT_APP_BACKEND_URL + "/prixer/read";
       await axios
-        .post(url1, { username: item.art.prixerUsername })
+        .post(url1, { username: item.art?.prixerUsername })
         .then((res) => {
           setAccount(res.data.account);
         });
@@ -677,7 +711,12 @@ export default function Orders(props) {
         setSnackBarError(true);
       }
     });
-    if (payStatus === "Pagado" && order.status === "Concretado") {
+    if (
+      (payStatus === "Pagado" ||
+        payStatus === "Giftcard" ||
+        payStatus === "Obsequio") &&
+      order.status === "Concretado"
+    ) {
       payComission(order);
     }
     readOrders();
@@ -793,17 +832,20 @@ export default function Orders(props) {
 
   const handleVariantProduct = (variant, index, art, product) => {
     let v = variant.split(",");
-
-    let selectedVariant = product.variants.find(
-      (result) => result.name === v[0] && result.attributes[1].value === v[1]
-    );
-    // product.selection = selectedVariant;
-    // product.publicEquation = selectedVariant.publicPrice.equation;
-    // props.AssociateProduct({
-    //   index: index,
-    //   item: product,
-    //   type: "product",
-    // });
+    let selectedVariant = product.variants.find((result) => {
+      if (v[1] !== "undefined") {
+        return result?.name === v[0] && result.attributes[1]?.value === v[1];
+      } else {
+        return result?.name === v[0];
+      }
+    });
+    product.selection = selectedVariant;
+    product.publicEquation = selectedVariant?.publicPrice.equation;
+    props.AssociateProduct({
+      index: index,
+      item: product,
+      type: "product",
+    });
   };
 
   const modifyPrice = (product, index, newPrice) => {
@@ -811,7 +853,7 @@ export default function Orders(props) {
     let item = props.buyState[index];
     item.product.publicEquation = newPrice;
     purchase.splice(index, 1, item);
-    product.publicEquation = newPrice;
+    product.publicEquation = newPrice.replace(/[,]/gi, ".");
     localStorage.setItem("buyState", JSON.stringify(purchase));
     props.setBuyState(purchase);
   };
@@ -902,6 +944,222 @@ export default function Orders(props) {
     monthsOrder[readyDate.getMonth()] +
     "-" +
     readyDate.getDate();
+
+  const PriceSelect = (product, quantity) => {
+    if (
+      typeof product.discount === "string" &&
+      product.publicEquation !== "" &&
+      props.currency
+    ) {
+      let dis = discountList?.filter((dis) => dis._id === product.discount)[0];
+      return (
+        <>
+          {dis?.type === "Porcentaje" &&
+            " Bs" +
+              Number(
+                (product.publicEquation -
+                  (product.publicEquation / 100) * dis?.value) *
+                  props.dollarValue *
+                  quantity
+              ).toLocaleString("de-DE", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}
+          {dis?.type === "Monto" &&
+            " Bs" +
+              Number(
+                (product.publicEquation - dis?.value) *
+                  props.dollarValue *
+                  quantity
+              ).toLocaleString("de-DE", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}
+        </>
+      );
+    } else if (
+      typeof product.discount === "string" &&
+      product.publicEquation !== ""
+    ) {
+      let dis = discountList?.filter((dis) => dis._id === product.discount)[0];
+      return (
+        <>
+          {dis?.type === "Porcentaje" &&
+            " $" +
+              Number(
+                (product.publicEquation -
+                  (product.publicEquation / 100) * dis?.value) *
+                  quantity
+              ).toLocaleString("de-DE", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}
+          {dis?.type === "Monto" &&
+            " $" +
+              Number(
+                (product.publicEquation - dis?.value) * quantity
+              ).toLocaleString("de-DE", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}
+        </>
+      );
+    } else if (typeof product.discount === "string" && props.currency) {
+      let dis = discountList?.filter((dis) => dis._id === product.discount)[0];
+      return (
+        <>
+          {dis?.type === "Porcentaje" &&
+            " Bs" +
+              Number(
+                (product.publicPrice.from -
+                  (product.publicPrice.from / 100) * dis?.value) *
+                  props.dollarValue *
+                  quantity
+              ).toLocaleString("de-DE", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}
+          {dis?.type === "Monto" &&
+            " Bs" +
+              Number(
+                (product.publicPrice.from - dis?.value) *
+                  props.dollarValue *
+                  quantity
+              ).toLocaleString("de-DE", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}
+        </>
+      );
+    } else if (typeof product.discount === "string") {
+      let dis = discountList?.filter((dis) => dis._id === product.discount)[0];
+      return (
+        <>
+          {dis?.type === "Porcentaje" &&
+            " $" +
+              Number(
+                (product.publicPrice.from -
+                  (product.publicPrice.from / 100) * dis?.value) *
+                  quantity
+              ).toLocaleString("de-DE", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}
+          {dis?.type === "Monto" &&
+            " $" +
+              Number(
+                (product.publicPrice.from - dis?.value) * quantity
+              ).toLocaleString("de-DE", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}
+        </>
+      );
+    } else if (product.publicEquation !== "" && props.currency) {
+      return (
+        " Bs" +
+        Number(
+          product.publicPriceEquation * props.dollarValue * quantity
+        ).toLocaleString("de-DE", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })
+      );
+    } else if (product.publicEquation !== "") {
+      return (
+        " $" +
+        Number(product.publicEquation * quantity).toLocaleString("de-DE", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })
+      );
+    } else if (props.currency) {
+      return (
+        " Bs" +
+        Number(
+          product.publicPrice.from * props.dollarValue * quantity
+        ).toLocaleString("de-DE", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })
+      );
+    } else {
+      return (
+        " $" +
+        Number(
+          product.publicPrice.from.replace(/[$]/gi, "") * quantity
+        ).toLocaleString("de-DE", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })
+      );
+    }
+  };
+  const UnitPrice = (product) => {
+    if (
+      typeof product.discount === "string" &&
+      product.publicEquation !== "" &&
+      props.currency
+    ) {
+      let dis = discountList?.filter((dis) => dis._id === product.discount)[0];
+      if (dis?.type === "Porcentaje") {
+        return Number(
+          (product.publicEquation -
+            (product.publicEquation / 100) * dis?.value) *
+            props.dollarValue
+        );
+      } else if (dis?.type === "Monto") {
+        return Number(
+          (product.publicEquation - dis?.value) * props.dollarValue
+        );
+      }
+    } else if (
+      typeof product.discount === "string" &&
+      product.publicEquation !== ""
+    ) {
+      let dis = discountList?.filter((dis) => dis._id === product.discount)[0];
+      if (dis?.type === "Porcentaje") {
+        return Number(
+          product.publicEquation - (product.publicEquation / 100) * dis?.value
+        );
+      } else if (dis?.type === "Monto") {
+        return Number(product.publicEquation - dis?.value);
+      }
+    } else if (typeof product.discount === "string" && props.currency) {
+      let dis = discountList?.filter((dis) => dis._id === product.discount)[0];
+      if (dis?.type === "Porcentaje") {
+        return Number(
+          (product.publicPrice.from -
+            (product.publicPrice.from / 100) * dis?.value) *
+            props.dollarValue
+        );
+      }
+      if (dis?.type === "Monto") {
+        return Number(
+          (product.publicPrice.from - dis?.value) * props.dollarValue
+        );
+      }
+    } else if (typeof product.discount === "string") {
+      let dis = discountList?.filter((dis) => dis._id === product.discount)[0];
+      if (dis?.type === "Porcentaje") {
+        return Number(
+          product.publicPrice.from -
+            (product.publicPrice.from / 100) * dis?.value
+        );
+      }
+      if (dis?.type === "Monto") {
+        return Number(product.publicPrice.from - dis?.value);
+      }
+    } else if (product.publicEquation !== "" && props.currency) {
+      return Number(product.publicPriceEquation * props.dollarValue);
+    } else if (product.publicEquation !== "") {
+      return Number(product.publicEquation?.replace(/[,]/gi, "."));
+    } else if (props.currency) {
+      return Number(product.publicPrice.from * props.dollarValue);
+    } else {
+      return Number(product.publicPrice.from);
+    }
+  };
 
   return (
     <>
@@ -1086,7 +1344,7 @@ export default function Orders(props) {
                                 <MenuItem value={"Abonado"}>Abonado</MenuItem>
                                 <MenuItem value={"Giftcard"}>Giftcard</MenuItem>
                                 <MenuItem value={"Obsequio"}>Obsequio</MenuItem>
-                                <MenuItem value={"Obsequio"}>Anulado</MenuItem>
+                                <MenuItem value={"Anulado"}>Anulado</MenuItem>
                               </Select>
                             </FormControl>
                           </TableCell>
@@ -1229,7 +1487,7 @@ export default function Orders(props) {
                               elevation={3}
                             >
                               <Img
-                                src={item.art.squareThumbUrl}
+                                src={item.art?.squareThumbUrl}
                                 style={{
                                   maxWidth: 150,
                                   maxHeight: 150,
@@ -1263,10 +1521,10 @@ export default function Orders(props) {
                             </Paper>
                           </div>
                           <div style={{ padding: 10 }}>
-                            <div>{"Arte: " + item.art.title}</div>
-                            <div>{"Id: " + item.art.artId}</div>
+                            <div>{"Arte: " + item.art?.title}</div>
+                            <div>{"Id: " + item.art?.artId}</div>
                             <div style={{ marginBottom: 10 }}>
-                              {"Prixer: " + item.art.prixerUsername}
+                              {"Prixer: " + item.art?.prixerUsername}
                             </div>
                             <div>{"Producto: " + item.product.name}</div>
                             <div>{"Id: " + item.product._id}</div>
@@ -1592,7 +1850,7 @@ export default function Orders(props) {
                               elevation={3}
                             >
                               <Img
-                                src={item.art.squareThumbUrl}
+                                src={item.art?.squareThumbUrl}
                                 style={{
                                   maxWidth: 150,
                                   maxHeight: 150,
@@ -1602,9 +1860,9 @@ export default function Orders(props) {
                             </Paper>
                             <div>
                               <div>{"Arte: " + item.art.title}</div>
-                              <div>{"Id: " + item.art.artId}</div>
+                              <div>{"Id: " + item.art?.artId}</div>
                               <div style={{ marginBottom: 10 }}>
-                                {"Prixer: " + item.art.prixerUsername}
+                                {"Prixer: " + item.art?.prixerUsername}
                               </div>
                             </div>
                           </div>
@@ -2165,7 +2423,7 @@ export default function Orders(props) {
                           //
                           format="dd-MM-yyyy"
                           defaultValue={stringReadyDate}
-                          value={props.values.today}
+                          value={props.values?.today}
                           error={props.values.today < stringReadyDate}
                           min={stringReadyDate}
                           className={classes.textField}
@@ -2555,7 +2813,7 @@ export default function Orders(props) {
                                         })}
                                     </Select>
                                   </FormControl>
-
+                                  {console.log(buy.product.selection.name)}
                                   {buy.product.attributes.length > 0 && (
                                     <FormControl
                                       className={classes.formControl}
@@ -2565,8 +2823,8 @@ export default function Orders(props) {
                                         {buy.product.attributes[0]?.name}
                                       </InputLabel>
                                       <Select
-                                        variant="outlined"
                                         value={buy.product.selection.name}
+                                        variant="outlined"
                                         onChange={(e) => {
                                           handleVariantProduct(
                                             e.target.value,
@@ -2593,6 +2851,33 @@ export default function Orders(props) {
                                         })}
                                       </Select>
                                     </FormControl>
+                                  )}
+                                  {typeof buy.product.discount === "string" && (
+                                    <Typography
+                                      variant="p"
+                                      style={{ paddingTop: 5, color: "grey" }}
+                                    >
+                                      Este producto tiene aplicado un descuento
+                                      de
+                                      {discountList.find(
+                                        ({ _id }) =>
+                                          _id === buy.product.discount
+                                      ).type === "Porcentaje"
+                                        ? " %" +
+                                          discountList.find(
+                                            ({ _id }) =>
+                                              _id === buy.product.discount
+                                          ).value
+                                        : discountList.find(
+                                            ({ _id }) =>
+                                              _id === buy.product.discount
+                                          ).type === "Monto" &&
+                                          " $" +
+                                            discountList.find(
+                                              ({ _id }) =>
+                                                _id === buy.product.discount
+                                            ).value}
+                                    </Typography>
                                   )}
                                 </div>
                               </div>
@@ -2627,12 +2912,12 @@ export default function Orders(props) {
                                       maxHeight: 120,
                                       borderRadius: 10,
                                     }}
-                                    src={buy.art ? buy.art.squareThumbUrl : ""}
+                                    src={buy.art ? buy.art?.squareThumbUrl : ""}
                                     debounce={1000}
                                     cache
                                     error="/imgError.svg"
                                     alt={buy.art && buy.art.title}
-                                    id={buy.art && buy.art.artId}
+                                    id={buy.art && buy.art?.artId}
                                   />
                                 </div>
                               )}
@@ -2670,7 +2955,7 @@ export default function Orders(props) {
                                         return (
                                           <MenuItem value={art.title}>
                                             {art.title.substring(0, 22)} -{" "}
-                                            {art.prixerUsername}
+                                            {art?.prixerUsername}
                                           </MenuItem>
                                         );
                                       })}
@@ -2687,7 +2972,7 @@ export default function Orders(props) {
                                         marginTop: -2,
                                       }}
                                     >
-                                      <strong> Arte: </strong> {buy.art.artId}
+                                      <strong> Arte: </strong> {buy.art?.artId}
                                     </p>
                                     {/* <p
                                           style={{
@@ -2714,14 +2999,12 @@ export default function Orders(props) {
                                     <TextField
                                       variant="outlined"
                                       label="Precio"
+                                      // type="Number"
                                       style={{ width: 120, height: 80 }}
-                                      defaultValue={
-                                        buy.product?.publicEquation ||
-                                        buy.product?.publicPrice.from.replace(
-                                          /[$]/gi,
-                                          ""
-                                        )
-                                      }
+                                      // defaultValue={
+                                      //   UnitPrice(buy.product)
+                                      // }
+                                      value={UnitPrice(buy.product)}
                                       onChange={(e) => {
                                         modifyPrice(
                                           buy.product,
@@ -2980,38 +3263,10 @@ export default function Orders(props) {
                                                 }}
                                               >
                                                 Precio:
-                                                {currency
-                                                  ? " Bs" +
-                                                    (
-                                                      (Number(
-                                                        item.product
-                                                          .publicEquation
-                                                      ) ||
-                                                        Number(
-                                                          item.product
-                                                            .publicPrice.from
-                                                        )) *
-                                                      dollarValue *
-                                                      (item.quantity || 1)
-                                                    ).toLocaleString("de-DE", {
-                                                      minimumFractionDigits: 2,
-                                                      // maximumSignificantDigits: 2,
-                                                    })
-                                                  : " $" +
-                                                    (
-                                                      (Number(
-                                                        item.product
-                                                          .publicEquation
-                                                      ) ||
-                                                        Number(
-                                                          item.product
-                                                            .publicPrice.from
-                                                        )) *
-                                                      (item.quantity || 1)
-                                                    ).toLocaleString("de-DE", {
-                                                      minimumFractionDigits: 2,
-                                                      // maximumSignificantDigits: 2,
-                                                    })}
+                                                {PriceSelect(
+                                                  item.product,
+                                                  item.quantity
+                                                )}
                                               </div>
                                             </Grid>
                                           </Grid>
@@ -3101,19 +3356,19 @@ export default function Orders(props) {
                                 Subtotal:
                                 {currency
                                   ? " Bs" +
-                                    (
+                                    Number(
                                       getTotalPrice(props.buyState) *
-                                      dollarValue
+                                        dollarValue
                                     ).toLocaleString("de-DE", {
                                       minimumFractionDigits: 2,
-                                      // maximumSignificantDigits: 2,
+                                      maximumFractionDigits: 2,
                                     })
                                   : " $" +
-                                    getTotalPrice(
-                                      props.buyState
+                                    Number(
+                                      getTotalPrice(props.buyState)
                                     ).toLocaleString("de-DE", {
                                       minimumFractionDigits: 2,
-                                      // maximumSignificantDigits: 2,
+                                      maximumFractionDigits: 2,
                                     })}
                               </strong>
 
@@ -3121,20 +3376,19 @@ export default function Orders(props) {
                                 IVA:
                                 {currency
                                   ? " Bs" +
-                                    (
+                                    Number(
                                       getIvaCost(props.buyState) * dollarValue
                                     ).toLocaleString("de-DE", {
                                       minimumFractionDigits: 2,
-                                      // maximumSignificantDigits: 2,
+                                      maximumFractionDigits: 2,
                                     })
                                   : " $" +
-                                    getIvaCost(props.buyState).toLocaleString(
-                                      "de-DE",
-                                      {
-                                        minimumFractionDigits: 2,
-                                        // maximumSignificantDigits: 2,
-                                      }
-                                    )}
+                                    Number(
+                                      getIvaCost(props.buyState)
+                                    ).toLocaleString("de-DE", {
+                                      minimumFractionDigits: 2,
+                                      maximumFractionDigits: 2,
+                                    })}
                               </strong>
 
                               {props?.values?.shippingMethod && (
@@ -3142,16 +3396,16 @@ export default function Orders(props) {
                                   Envío:
                                   {currency
                                     ? " Bs" +
-                                      (
+                                      Number(
                                         shippingCost * dollarValue
                                       ).toLocaleString("de-DE", {
                                         minimumFractionDigits: 2,
-                                        // maximumSignificantDigits: 2,
+                                        maximumFractionDigits: 2,
                                       })
                                     : " $" +
                                       shippingCost.toLocaleString("de-DE", {
                                         minimumFractionDigits: 2,
-                                        // maximumSignificantDigits: 2,
+                                        maximumFractionDigits: 2,
                                       })}
                                 </strong>
                               )}
@@ -3159,20 +3413,19 @@ export default function Orders(props) {
                                 Total:
                                 {currency
                                   ? " Bs" +
-                                    (
+                                    Number(
                                       getTotal(props.buyState) * dollarValue
                                     ).toLocaleString("de-DE", {
                                       minimumFractionDigits: 2,
-                                      // maximumSignificantDigits: 2,
+                                      maximumFractionDigits: 2,
                                     })
                                   : " $" +
-                                    getTotal(props.buyState).toLocaleString(
-                                      "de-DE",
-                                      {
-                                        minimumFractionDigits: 2,
-                                        // maximumSignificantDigits: 2,
-                                      }
-                                    )}
+                                    Number(
+                                      getTotal(props.buyState)
+                                    ).toLocaleString("de-DE", {
+                                      minimumFractionDigits: 2,
+                                      maximumFractionDigits: 2,
+                                    })}
                               </strong>
                               <br />
                             </>

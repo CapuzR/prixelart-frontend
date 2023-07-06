@@ -266,16 +266,45 @@ export default function ReadProducts(props) {
                     </TableCell>
                     <TableCell align="center">{row.category}</TableCell>
                     <TableCell align="center">
-                      ${row.publicPrice.from}
-                      {row.publicPrice.to && " - " + row.publicPrice.to}
+                      $
+                      {Number(row.publicPrice.from).toLocaleString("de-DE", {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}
+                      {Number(row.publicPrice.to).toLocaleString("de-DE", {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      }) &&
+                        " - " +
+                          Number(row.publicPrice.to).toLocaleString("de-DE", {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })}
                     </TableCell>
                     <TableCell align="center">
                       {row.prixerPrice &&
-                        row.prixerPrice.from &&
-                        "$" + row.prixerPrice?.from}
+                        Number(row.prixerPrice.from).toLocaleString("de-DE", {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        }) &&
+                        "$" +
+                          Number(row.prixerPrice?.from).toLocaleString(
+                            "de-DE",
+                            {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                            }
+                          )}
                       {row.prixerPrice &&
-                        row.prixerPrice.to &&
-                        " - " + row.prixerPrice.to}
+                        Number(row.prixerPrice.to).toLocaleString("de-DE", {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        }) &&
+                        " - " +
+                          Number(row.prixerPrice.to).toLocaleString("de-DE", {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })}
                     </TableCell>
                     <TableCell>
                       {row.discount &&

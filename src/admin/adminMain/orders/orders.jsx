@@ -944,7 +944,6 @@ export default function Orders(props) {
     monthsOrder[readyDate.getMonth()] +
     "-" +
     readyDate.getDate();
-
   const PriceSelect = (product, quantity) => {
     if (
       typeof product.discount === "string" &&
@@ -1326,8 +1325,10 @@ export default function Orders(props) {
                           <TableCell align="center">
                             <FormControl
                               disabled={
-                                !props.permissions?.detailPay ||
-                                row.payStatus === "Pagado"
+                                JSON.parse(localStorage.getItem("adminToken"))
+                                  .area !== "Master" &&
+                                (!props.permissions?.detailPay ||
+                                  row.payStatus === "Pagado")
                               }
                             >
                               <Select
@@ -1351,11 +1352,13 @@ export default function Orders(props) {
 
                           <TableCell align="center">
                             <FormControl
-                            // disabled={
-                            // !props.permissions?.orderStatus ||
-                            // row.status === "Cancelada" ||
-                            // row.status === "Concretado"
-                            // }
+                              disabled={
+                                JSON.parse(localStorage.getItem("adminToken"))
+                                  .area !== "Master" &&
+                                (!props.permissions?.orderStatus ||
+                                  row.status === "Cancelada" ||
+                                  row.status === "Concretado")
+                              }
                             >
                               <Select
                                 SelectClassKey
@@ -1744,7 +1747,7 @@ export default function Orders(props) {
                                 // maximumSignificantDigits: 2,
                               })}
                         </div>
-                        <div style={{ marginBottom: 10 }}>
+                        <div>
                           {"Total: $" +
                             Number(modalContent?.total).toLocaleString(
                               "de-DE",
@@ -1754,6 +1757,18 @@ export default function Orders(props) {
                               }
                             )}
                         </div>
+                        {modalContent?.dollarValue && (
+                          <div style={{ marginBottom: 10 }}>
+                            {"Tasa del dólar: Bs" +
+                              Number(modalContent?.dollarValue).toLocaleString(
+                                "de-DE",
+                                {
+                                  minimumFractionDigits: 2,
+                                  // maximumSignificantDigits: 2,
+                                }
+                              )}
+                          </div>
+                        )}
                         <div>
                           {"Forma de pago: " +
                             modalContent?.billingData.orderPaymentMethod}
@@ -2424,7 +2439,7 @@ export default function Orders(props) {
                           format="dd-MM-yyyy"
                           defaultValue={stringReadyDate}
                           value={props.values?.today}
-                          error={props.values.today < stringReadyDate}
+                          error={props.values?.today < stringReadyDate}
                           min={stringReadyDate}
                           className={classes.textField}
                           InputLabelProps={{
@@ -2439,17 +2454,19 @@ export default function Orders(props) {
                         />
                       </FormControl>
                     </Grid>
-                    <Grid>
-                      <div style={{ marginTop: 10, marginLeft: 10 }}>
-                        {"El pedido estará listo el día " +
-                          days[readyDate.getDay()] +
-                          " " +
-                          readyDate.getDate() +
-                          " de " +
-                          months[readyDate.getMonth()] +
-                          "."}
-                      </div>
-                    </Grid>
+                    {readyDate !== "Invalid Date" && (
+                      <Grid>
+                        <div style={{ marginTop: 10, marginLeft: 10 }}>
+                          {"El pedido estará listo el día " +
+                            days[readyDate.getDay()] +
+                            " " +
+                            readyDate.getDate() +
+                            " de " +
+                            months[readyDate.getMonth()] +
+                            "."}
+                        </div>
+                      </Grid>
+                    )}
                   </Grid>
                 </Grid>
 
@@ -2813,7 +2830,6 @@ export default function Orders(props) {
                                         })}
                                     </Select>
                                   </FormControl>
-                                  {console.log(buy.product.selection.name)}
                                   {buy.product.attributes.length > 0 && (
                                     <FormControl
                                       className={classes.formControl}
@@ -2823,7 +2839,15 @@ export default function Orders(props) {
                                         {buy.product.attributes[0]?.name}
                                       </InputLabel>
                                       <Select
-                                        value={buy.product.selection.name}
+                                        value={
+                                          buy.product.selection.attributes
+                                            .length > 1
+                                            ? buy.product.selection.name +
+                                              "," +
+                                              buy.product.selection
+                                                .attributes[1].value
+                                            : buy.product.selection.name
+                                        }
                                         variant="outlined"
                                         onChange={(e) => {
                                           handleVariantProduct(
@@ -3001,10 +3025,8 @@ export default function Orders(props) {
                                       label="Precio"
                                       // type="Number"
                                       style={{ width: 120, height: 80 }}
-                                      // defaultValue={
-                                      //   UnitPrice(buy.product)
-                                      // }
-                                      value={UnitPrice(buy.product)}
+                                      defaultValue={UnitPrice(buy.product)}
+                                      // value={UnitPrice(buy.product)}
                                       onChange={(e) => {
                                         modifyPrice(
                                           buy.product,

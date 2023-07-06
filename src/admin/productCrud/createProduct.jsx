@@ -214,12 +214,12 @@ export default function CreateProduct() {
           const formData = new FormData();
           const data = {
             publicPrice: {
-              from: fromPublicPrice,
-              to: toPublicPrice,
+              from: fromPublicPrice.replace(/[,]/gi, "."),
+              to: toPublicPrice.replace(/[,]/gi, "."),
             },
             prixerPrice: {
-              from: fromPrixerPrice,
-              to: toPrixerPrice,
+              from: fromPrixerPrice.replace(/[,]/gi, "."),
+              to: toPrixerPrice.replace(/[,]/gi, "."),
             },
             specialVars: [
               {

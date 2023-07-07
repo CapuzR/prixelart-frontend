@@ -641,8 +641,8 @@ export default function ProductGrid(props) {
     } else if (
       typeof item.discount === "string" &&
       currency &&
-      item.publicPrice.to !== "" &&
-      item.publicPrice.to !== null
+      item.publicPrice?.to !== "" &&
+      item.publicPrice?.to !== null
     ) {
       let dis = discountList?.filter((dis) => dis._id === item.discount)[0];
       return (
@@ -1069,7 +1069,7 @@ export default function ProductGrid(props) {
           }
         ) +
         " - " +
-        Number(item.publicPrice.to * props.dollarValue).toLocaleString(
+        Number(item.publicPrice?.to * props.dollarValue).toLocaleString(
           "de-DE",
           {
             minimumFractionDigits: 2,
@@ -1090,7 +1090,7 @@ export default function ProductGrid(props) {
           maximumFractionDigits: 2,
         }) +
         " - " +
-        item.publicPrice?.to.toLocaleString("de-DE", {
+        Number(item.publicPrice?.to)?.toLocaleString("de-DE", {
           minimumFractionDigits: 2,
           maximumFractionDigits: 2,
         })

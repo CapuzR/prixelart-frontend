@@ -1090,7 +1090,7 @@ export default function ProductGrid(props) {
           maximumFractionDigits: 2,
         }) +
         " - " +
-        item.publicPrice.to.toLocaleString("de-DE", {
+        item.publicPrice?.to.toLocaleString("de-DE", {
           minimumFractionDigits: 2,
           maximumFractionDigits: 2,
         })

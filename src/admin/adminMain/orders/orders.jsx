@@ -582,7 +582,9 @@ export default function Orders(props) {
   const getTotalPrice = (state) => {
     let prices = [0];
     state.map((item) => {
-      if (
+      if (item.product.modifyPrice) {
+        prices.push(Number(item.product.publicEquation));
+      } else if (
         item.product &&
         item.art &&
         typeof item.product.discount === "string"
@@ -821,7 +823,7 @@ export default function Orders(props) {
     });
     let selectedArt = art;
     let selectedArtFull = artList.find(
-      (result) => result.title === selectedArt
+      (result) => result.artId === selectedArt.artId
     );
     props.AssociateProduct({
       index: index,
@@ -858,6 +860,7 @@ export default function Orders(props) {
     let item = props.buyState[index];
     item.product.publicEquation = newPrice;
     purchase.splice(index, 1, item);
+    product.modifyPrice = true;
     product.publicEquation = newPrice.replace(/[,]/gi, ".");
     localStorage.setItem("buyState", JSON.stringify(purchase));
     props.setBuyState(purchase);
@@ -949,8 +952,17 @@ export default function Orders(props) {
     monthsOrder[readyDate.getMonth()] +
     "-" +
     readyDate.getDate();
+
   const PriceSelect = (product, quantity) => {
-    if (
+    if (product.modifyPrice) {
+      return (
+        " $" +
+        Number(product.publicEquation).toLocaleString("de-DE", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })
+      );
+    } else if (
       typeof product.discount === "string" &&
       product.publicEquation !== "" &&
       props.currency
@@ -1100,7 +1112,12 @@ export default function Orders(props) {
     }
   };
   const UnitPrice = (product) => {
-    if (
+    if (product.modifyPrice) {
+      return Number(product.publicEquation).toLocaleString("de-DE", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
+    } else if (
       typeof product.discount === "string" &&
       product.publicEquation !== "" &&
       props.currency
@@ -1165,36 +1182,36 @@ export default function Orders(props) {
     }
   };
 
-  const handleChangeSeller = async (order, seller) => {
-    const url =
-      process.env.REACT_APP_BACKEND_URL +
-      "/order/updateSeller/" +
-      order.orderId;
-    const body = {
-      adminToken: localStorage.getItem("adminTokenV"),
-      seller: { username: seller },
-    };
-    await axios.put(url, body, { withCredentials: true }).then((res) => {
-      if (res.data.message) {
-        setErrorMessage(res.data.message);
-        setSnackBarError(true);
-      }
-    });
-    readOrders();
-  };
+  // const handleChangeSeller = async (order, seller) => {
+  //   const url =
+  //     process.env.REACT_APP_BACKEND_URL +
+  //     "/order/updateSeller/" +
+  //     order.orderId;
+  //   const body = {
+  //     adminToken: localStorage.getItem("adminTokenV"),
+  //     seller: { username: seller },
+  //   };
+  //   await axios.put(url, body, { withCredentials: true }).then((res) => {
+  //     if (res.data.message) {
+  //       setErrorMessage(res.data.message);
+  //       setSnackBarError(true);
+  //     }
+  //   });
+  //   readOrders();
+  // };
 
-  setTimeout(() => {
-    if (props.admins) {
-      const selectAdmins = props.admins.filter(
-        (admin) => admin.area === "Ventas"
-      );
-      let sellers = [];
-      selectAdmins.map((admin) => {
-        sellers.push(admin.firstname + " " + admin.lastname);
-      });
-      setSellers(sellers);
-    }
-  }, 100);
+  // setTimeout(() => {
+  //   if (props.admins) {
+  //     const selectAdmins = props.admins.filter(
+  //       (admin) => admin.area === "Ventas"
+  //     );
+  //     let sellers = [];
+  //     selectAdmins.map((admin) => {
+  //       sellers.push(admin.firstname + " " + admin.lastname);
+  //     });
+  //     setSellers(sellers);
+  //   }
+  // }, 100);
 
   return (
     <>
@@ -1368,6 +1385,7 @@ export default function Orders(props) {
                               }
                             >
                               <Select
+                                id="payStatus"
                                 SelectClassKey
                                 value={row.payStatus || "Pendiente"}
                                 onChange={(e) => {
@@ -1397,6 +1415,7 @@ export default function Orders(props) {
                               }
                             >
                               <Select
+                                id="status"
                                 SelectClassKey
                                 value={row.status}
                                 onChange={(e) => {
@@ -1439,7 +1458,7 @@ export default function Orders(props) {
                             </Fab> */}
                           </TableCell>
                           <TableCell align="center">
-                            <Select
+                            {/* <Select
                               disabled={
                                 JSON.parse(localStorage.getItem("adminToken"))
                                   .area !== "Master"
@@ -1449,15 +1468,15 @@ export default function Orders(props) {
                                 handleChangeSeller(row, e.target.value);
                               }}
                             >
-                              <MenuItem value={row.createdBy.username}>
-                                {row.createdBy.username}
-                              </MenuItem>
+                              <MenuItem value={row.createdBy.username}> */}
+                            {row.createdBy.username}
+                            {/* </MenuItem> */}
 
-                              {sellers &&
+                            {/* {sellers &&
                                 sellers.map((seller) => (
                                   <MenuItem value={seller}>{seller}</MenuItem>
                                 ))}
-                            </Select>
+                            </Select> */}
                           </TableCell>
                         </TableRow>
                       </>
@@ -2457,6 +2476,7 @@ export default function Orders(props) {
                       >
                         <InputLabel>Método de entrega</InputLabel>
                         <Select
+                          id="shippingMethod"
                           label="Método de entrega"
                           className={classes.textField}
                           value={props.values?.shippingMethod || ""}
@@ -2499,7 +2519,7 @@ export default function Orders(props) {
                           //
                           format="dd-MM-yyyy"
                           defaultValue={stringReadyDate}
-                          value={props.values?.today}
+                          value={props.values?.shippingDate}
                           error={props.values?.today < stringReadyDate}
                           min={stringReadyDate}
                           className={classes.textField}
@@ -2875,6 +2895,7 @@ export default function Orders(props) {
                                         : "Agrega un producto"}
                                     </InputLabel>
                                     <Select
+                                      id={"product " + index}
                                       variant="outlined"
                                       value={buy.product.name}
                                       onChange={(e) =>
@@ -2900,15 +2921,19 @@ export default function Orders(props) {
                                         {buy.product.attributes[0]?.name}
                                       </InputLabel>
                                       <Select
+                                        id={"variant " + index}
                                         value={
-                                          buy.product.selection.attributes &&
-                                          buy.product.selection.attributes
-                                            .length > 1
-                                            ? buy.product.selection.name +
-                                              "," +
-                                              buy.product.selection
-                                                .attributes[1].value
-                                            : buy.product.selection.name
+                                          // buy.product?.selection[0] !== null
+                                          //   ? buy.product?.selection?.attributes
+                                          //       .length > 1
+                                          //     ? buy.product.selection.name +
+                                          //       "," +
+                                          //       buy.product.selection
+                                          //         .attributes[1].value
+                                          //     : buy.product.selection.attributes
+                                          //         .length === 1 &&
+                                          buy.product.selection.name
+                                          // : ""
                                         }
                                         variant="outlined"
                                         onChange={(e) => {
@@ -3026,8 +3051,13 @@ export default function Orders(props) {
                                     {buy.art ? "Arte" : "título del arte"}
                                   </InputLabel>
                                   <Select
+                                    id={"Art " + index}
                                     variant="outlined"
-                                    value={buy.art?.title || ""}
+                                    value={
+                                      buy.art?.title.substring(0, 22) +
+                                      " - " +
+                                      buy.art?.prixerUsername
+                                    }
                                     onChange={(e) =>
                                       changeArt(
                                         e.target.value,
@@ -3039,15 +3069,15 @@ export default function Orders(props) {
                                     {artList !== "" &&
                                       artList.map((art) => {
                                         return (
-                                          <MenuItem value={art.title}>
-                                            {art.title.substring(0, 22)} -{" "}
-                                            {art?.prixerUsername}
+                                          <MenuItem value={art}>
+                                            {art.title.substring(0, 22) +
+                                              " - " +
+                                              art?.prixerUsername}
                                           </MenuItem>
                                         );
                                       })}
                                   </Select>
                                 </FormControl>
-
                                 {buy.art && (
                                   <>
                                     <p
@@ -3060,16 +3090,6 @@ export default function Orders(props) {
                                     >
                                       <strong> Arte: </strong> {buy.art?.artId}
                                     </p>
-                                    {/* <p
-                                          style={{
-                                            fontSize: "12px",
-                                            padding: 0,
-                                            margin: 0,
-                                          }}
-                                        >
-                                          <strong> Prixer: </strong>{" "}
-                                          {buy.art?.prixerUsername}
-                                        </p> */}
                                   </>
                                 )}
                                 {buy.product && (
@@ -3084,11 +3104,17 @@ export default function Orders(props) {
                                   >
                                     <TextField
                                       variant="outlined"
-                                      label="Precio"
+                                      label={
+                                        buy.product.selection
+                                          ? "Precio variante: " +
+                                            UnitPrice(buy.product)
+                                          : "Precio base: " +
+                                            UnitPrice(buy.product)
+                                      }
                                       // type="Number"
-                                      style={{ width: 120, height: 80 }}
+                                      style={{ width: 200, height: 80 }}
                                       defaultValue={UnitPrice(buy.product)}
-                                      // value={UnitPrice(buy.product)}
+                                      // value={UnitPrice(buy.product) || ""}
                                       onChange={(e) => {
                                         modifyPrice(
                                           buy.product,
@@ -3325,6 +3351,12 @@ export default function Orders(props) {
                                               {item.product.name +
                                                 " X " +
                                                 item.art.title}
+                                              <br></br>
+                                              {item.product.selection.name}{" "}
+                                              {item.product.selection.attributes
+                                                .length > 1 &&
+                                                item.product.selection
+                                                  .attributes[1].value}
                                             </Grid>
                                             <Grid
                                               item

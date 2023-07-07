@@ -373,232 +373,206 @@ export default function ShoppingPage(props) {
           item.product.prixerPrice = undefined;
         });
       }
-      const consumer = await axios
-        .post(process.env.REACT_APP_BACKEND_URL + "/consumer/create", {
-          active: true,
-          createdBy: {
-            username: "web",
-          },
-          consumerType: "Particular",
-          firstname: props.valuesConsumerForm?.name,
-          lastname: props.valuesConsumerForm?.lastName,
-          username: props.valuesConsumerForm?.username,
-          ci: props.valuesConsumerForm?.ci,
-          phone: props.valuesConsumerForm?.phone,
-          email: props.valuesConsumerForm?.email,
-          address: props.valuesConsumerForm?.address,
-          billingAddress:
-            props.valuesConsumerForm?.billingAddress ||
-            props.valuesConsumerForm?.address,
-          shippingAddress:
-            props.valuesConsumerForm?.shippingAddress ||
-            props.valuesConsumerForm?.address,
+      const consumerData = {
+        active: true,
+        _id: nanoid(6),
+        createdBy: {
+          username: "web",
+        },
+        consumerType: "Particular",
+        firstname: props.valuesConsumerForm?.name,
+        lastname: props.valuesConsumerForm?.lastName,
+        username: props.valuesConsumerForm?.username,
+        ci: props.valuesConsumerForm?.ci,
+        phone: props.valuesConsumerForm?.phone,
+        email: props.valuesConsumerForm?.email,
+        address: props.valuesConsumerForm?.address,
+        billingAddress:
+          props.valuesConsumerForm?.billingAddress ||
+          props.valuesConsumerForm?.address,
+        shippingAddress:
+          props.valuesConsumerForm?.shippingAddress ||
+          props.valuesConsumerForm?.address,
+      };
+      const consumer = await axios.post(
+        process.env.REACT_APP_BACKEND_URL + "/consumer/create",
+        consumerData
+      );
+
+      // window.open(utils.generateWaBuyMessage(orderLines), "_blank");
+      const base_url = process.env.REACT_APP_BACKEND_URL + "/order/create";
+
+      const input = {
+        orderId: nanoid(6),
+        requests: orderLines,
+        basicData: {
+          firstname: consumerData.firstname,
+          lastname: consumerData.lastname,
+          ci: consumerData.ci,
+          email: consumerData.email,
+          phone: consumerData.phone,
+          address: consumerData.address,
+        },
+        shippingData: {
+          name: props.valuesConsumerForm?.shippingName,
+          lastname: props.valuesConsumerForm?.shippingLastName,
+          phone: props.valuesConsumerForm?.shippingPhone,
+          address: props.valuesConsumerForm?.shippingAddress,
+          shippingMethod: props.valuesConsumerForm?.shippingMethod,
+          shippingDate: props.valuesConsumerForm?.shippingDate,
+        },
+        billingData: {
+          name: props.valuesConsumerForm?.billingShName,
+          lastname: props.valuesConsumerForm?.billingShLastName,
+          ci: props.valuesConsumerForm?.billingCi,
+          company: props.valuesConsumerForm?.billingCompany,
+          phone: props.valuesConsumerForm?.billingPhone,
+          address: props.valuesConsumerForm?.billingAddress,
+          orderPaymentMethod: orderPaymentMethod.name,
+        },
+        dollarValue: dollarValue,
+        tax: getTotalPrice(props.buyState) * 0.16,
+        subtotal: getTotalPrice(props.buyState),
+        shippingCost: shippingCost,
+        total: getTotal(props.buyState),
+        createdOn: new Date(),
+        createdBy: "Prixelart Page",
+        orderType: "Particular",
+        consumerId: consumerData._id,
+        status: "Por producir",
+        observations: observations,
+      };
+      await axios
+        .post(base_url, input, {
+          "Content-Type": "multipart/form-data",
         })
         .then(async (response) => {
-          if (!response.data.res.success) {
-            props.setMessage(response.data);
-          } else {
-            // window.open(utils.generateWaBuyMessage(orderLines), "_blank");
-            const base_url =
-              process.env.REACT_APP_BACKEND_URL + "/order/create";
-
-            const input = {
-              orderId: nanoid(6),
-              requests: orderLines,
-              basicData: {
-                firstname: response.data.newConsumer.firstname,
-                lastname: response.data.newConsumer.lastname,
-                ci: response.data.newConsumer.ci,
-                email: response.data.newConsumer.email,
-                phone: response.data.newConsumer.phone,
-                address: response.data.newConsumer.address,
-              },
-              shippingData: {
-                name: props.valuesConsumerForm?.shippingName,
-                lastname: props.valuesConsumerForm?.shippingLastName,
-                phone: props.valuesConsumerForm?.shippingPhone,
-                address: props.valuesConsumerForm?.shippingAddress,
-                shippingMethod: props.valuesConsumerForm?.shippingMethod,
-                shippingDate: props.valuesConsumerForm?.shippingDate,
-              },
-              billingData: {
-                name: props.valuesConsumerForm?.billingShName,
-                lastname: props.valuesConsumerForm?.billingShLastName,
-                ci: props.valuesConsumerForm?.billingCi,
-                company: props.valuesConsumerForm?.billingCompany,
-                phone: props.valuesConsumerForm?.billingPhone,
-                address: props.valuesConsumerForm?.billingAddress,
-                orderPaymentMethod: orderPaymentMethod.name,
-              },
-              dollarValue: dollarValue,
-              tax: getTotalPrice(props.buyState) * 0.16,
-              subtotal: getTotalPrice(props.buyState),
-              shippingCost: shippingCost,
-              total: getTotal(props.buyState),
-              createdOn: new Date(),
-              createdBy: "Prixelart Page",
-              orderType: "Particular",
-              // consumerId: consumer.data.newConsumer._id,
-              status: "Por producir",
-              observations: observations,
-            };
-            await axios
-              .post(base_url, input, {
+          if (response.status == 200) {
+            if (
+              JSON.parse(localStorage.getItem("token")) &&
+              JSON.parse(localStorage.getItem("token")).username &&
+              orderPaymentMethod?.name === "Balance Prixer"
+            ) {
+              let prixer;
+              const url1 = process.env.REACT_APP_BACKEND_URL + "/prixer/read";
+              await axios
+                .post(url1, {
+                  username: JSON.parse(localStorage.getItem("token")).username,
+                })
+                .then((res) => {
+                  prixer = res.data.account;
+                });
+              const url =
+                process.env.REACT_APP_BACKEND_URL + "/movement/createv2";
+              const data = {
+                _id: nanoid(),
+                createdOn: new Date(),
+                createdBy: "Prixelart Page",
+                date: new Date(),
+                destinatary: prixer,
+                description: `Pago de la orden #${input.orderId}`,
+                type: "Retiro",
+                value: getTotal(props.buyState),
+                // adminToken: localStorage.getItem("adminTokenV"),
+              };
+              await axios.post(url, data);
+            }
+            if (paymentVoucher !== undefined) {
+              const formData = new FormData();
+              formData.append("paymentVoucher", paymentVoucher);
+              let ID = response.data.newOrder.orderId;
+              const base_url2 =
+                process.env.REACT_APP_BACKEND_URL + "/order/addVoucher/" + ID;
+              await axios.put(base_url2, formData, {
                 "Content-Type": "multipart/form-data",
-              })
-              .then(async (response) => {
-                if (response.status == 200) {
-                  if (
-                    JSON.parse(localStorage.getItem("token")) &&
-                    JSON.parse(localStorage.getItem("token")).username &&
-                    orderPaymentMethod?.name === "Balance Prixer"
-                  ) {
-                    let prixer;
-                    const url1 =
-                      process.env.REACT_APP_BACKEND_URL + "/prixer/read";
-                    await axios
-                      .post(url1, {
-                        username: JSON.parse(localStorage.getItem("token"))
-                          .username,
-                      })
-                      .then((res) => {
-                        prixer = res.data.account;
-                      });
-                    const url =
-                      process.env.REACT_APP_BACKEND_URL + "/movement/createv2";
-                    const data = {
-                      _id: nanoid(),
-                      createdOn: new Date(),
-                      createdBy: "Prixelart Page",
-                      date: new Date(),
-                      destinatary: prixer,
-                      description: `Pago de la orden #${input.orderId}`,
-                      type: "Retiro",
-                      value: getTotal(props.buyState),
-                      // adminToken: localStorage.getItem("adminTokenV"),
-                    };
-                    await axios.post(url, data);
-                  }
-                  if (paymentVoucher !== undefined) {
-                    const formData = new FormData();
-                    formData.append("paymentVoucher", paymentVoucher);
-                    let ID = response.data.newOrder.orderId;
-                    const base_url2 =
-                      process.env.REACT_APP_BACKEND_URL +
-                      "/order/addVoucher/" +
-                      ID;
-                    await axios.put(base_url2, formData, {
-                      "Content-Type": "multipart/form-data",
-                    });
-                  }
-
-                  props.setMessage(response.data.info);
-                  props.setMessage(
-                    "¡Gracias por tu compra! te redireccionaremos a Whatsapp para ser atendido por nuestro departamento de ventas."
-                  );
-                  // Cambiando el precio con el descuento
-                  orderLines.map((item) => {
-                    if (typeof item.product.discount === "string") {
-                      let dis = discountList?.find(
-                        ({ _id }) => _id === item.product.discount
-                      );
-                      if (
-                        JSON.parse(localStorage.getItem("token")) &&
-                        JSON.parse(localStorage.getItem("token")).username &&
-                        dis?.type === "Porcentaje"
-                      ) {
-                        item.product.finalPrice = Number(
-                          ((item.product.prixerEquation ||
-                            item.product.prixerPrice.from.replace(
-                              /[,]/gi,
-                              "."
-                            )) -
-                            ((item.product.prixerEquation ||
-                              item.product.prixerPrice.from.replace(
-                                /[,]/gi,
-                                "."
-                              )) /
-                              100) *
-                              dis.value) *
-                            (item.quantity || 1)
-                        );
-                        item.product.discount = dis.name + " %" + dis.value;
-                      } else if (
-                        JSON.parse(localStorage.getItem("token")) &&
-                        JSON.parse(localStorage.getItem("token")).username &&
-                        dis?.type === "Monto"
-                      ) {
-                        item.product.finalPrice = Number(
-                          ((item.product.prixerEquation ||
-                            item.product.prixerPrice.from.replace(
-                              /[,]/gi,
-                              "."
-                            )) -
-                            dis.value) *
-                            (item.quantity || 1)
-                        );
-                        item.product.discount = dis.name + " $" + dis.value;
-                      } else if (dis?.type === "Porcentaje") {
-                        item.product.finalPrice = Number(
-                          ((item.product.publicEquation ||
-                            item.product.publicPrice.from.replace(
-                              /[,]/gi,
-                              "."
-                            )) -
-                            ((item.product.publicEquation ||
-                              item.product.publicPrice.from.replace(
-                                /[,]/gi,
-                                "."
-                              )) /
-                              100) *
-                              dis.value) *
-                            (item.quantity || 1)
-                        );
-                        item.product.discount = dis.name + " %" + dis.value;
-                      } else if (dis?.type === "Monto") {
-                        item.product.finalPrice = Number(
-                          ((item.product.publicEquation ||
-                            item.product.publicPrice.from.replace(
-                              /[,]/gi,
-                              "."
-                            )) -
-                            dis.value) *
-                            (item.quantity || 1)
-                        );
-                        item.product.discount = dis.name + " $" + dis.value;
-                      }
-                    } else if (
-                      JSON.parse(localStorage.getItem("token")) &&
-                      JSON.parse(localStorage.getItem("token")).username
-                    ) {
-                      item.product.finalPrice =
-                        item.product.prixerEquation ||
-                        item.product.prixerPrice.from;
-                    } else {
-                      item.product.finalPrice =
-                        item.product.publicEquation ||
-                        item.product.publicPrice.from;
-                    }
-                  });
-                  input.requests = orderLines;
-                  const base_url3 =
-                    process.env.REACT_APP_BACKEND_URL + "/order/sendEmail";
-                  await axios.post(base_url3, input).then(async (response) => {
-                    if (response.data.success === false) {
-                      await axios.post(base_url3, input);
-                    } else return;
-                  });
-                }
-              })
-              .catch((error) => {
-                console.log(error.response);
               });
-            history.push({ pathname: "/" });
-            props.setValuesConsumerForm(undefined);
-            localStorage.removeItem("buyState");
-            props.setBuyState([]);
+            }
+
+            props.setMessage(response.data.info);
+            props.setMessage(
+              "¡Gracias por tu compra! te redireccionaremos a Whatsapp para ser atendido por nuestro departamento de ventas."
+            );
+            // Cambiando el precio con el descuento
+            orderLines.map((item) => {
+              if (typeof item.product.discount === "string") {
+                let dis = discountList?.find(
+                  ({ _id }) => _id === item.product.discount
+                );
+                if (
+                  JSON.parse(localStorage.getItem("token")) &&
+                  JSON.parse(localStorage.getItem("token")).username &&
+                  dis?.type === "Porcentaje"
+                ) {
+                  item.product.finalPrice = Number(
+                    ((item.product.prixerEquation ||
+                      item.product.prixerPrice.from.replace(/[,]/gi, ".")) -
+                      ((item.product.prixerEquation ||
+                        item.product.prixerPrice.from.replace(/[,]/gi, ".")) /
+                        100) *
+                        dis.value) *
+                      (item.quantity || 1)
+                  );
+                  item.product.discount = dis.name + " %" + dis.value;
+                } else if (
+                  JSON.parse(localStorage.getItem("token")) &&
+                  JSON.parse(localStorage.getItem("token")).username &&
+                  dis?.type === "Monto"
+                ) {
+                  item.product.finalPrice = Number(
+                    ((item.product.prixerEquation ||
+                      item.product.prixerPrice.from.replace(/[,]/gi, ".")) -
+                      dis.value) *
+                      (item.quantity || 1)
+                  );
+                  item.product.discount = dis.name + " $" + dis.value;
+                } else if (dis?.type === "Porcentaje") {
+                  item.product.finalPrice = Number(
+                    ((item.product.publicEquation ||
+                      item.product.publicPrice.from.replace(/[,]/gi, ".")) -
+                      ((item.product.publicEquation ||
+                        item.product.publicPrice.from.replace(/[,]/gi, ".")) /
+                        100) *
+                        dis.value) *
+                      (item.quantity || 1)
+                  );
+                  item.product.discount = dis.name + " %" + dis.value;
+                } else if (dis?.type === "Monto") {
+                  item.product.finalPrice = Number(
+                    ((item.product.publicEquation ||
+                      item.product.publicPrice.from.replace(/[,]/gi, ".")) -
+                      dis.value) *
+                      (item.quantity || 1)
+                  );
+                  item.product.discount = dis.name + " $" + dis.value;
+                }
+              } else if (
+                JSON.parse(localStorage.getItem("token")) &&
+                JSON.parse(localStorage.getItem("token")).username
+              ) {
+                item.product.finalPrice =
+                  item.product.prixerEquation || item.product.prixerPrice.from;
+              } else {
+                item.product.finalPrice =
+                  item.product.publicEquation || item.product.publicPrice.from;
+              }
+            });
+            input.requests = orderLines;
+            const base_url3 =
+              process.env.REACT_APP_BACKEND_URL + "/order/sendEmail";
+            await axios.post(base_url3, input).then(async (response) => {
+              if (response.data.success === false) {
+                await axios.post(base_url3, input);
+              } else return;
+            });
           }
+        })
+        .catch((error) => {
+          console.log(error.response);
         });
+      history.push({ pathname: "/" });
+      props.setValuesConsumerForm(undefined);
+      localStorage.removeItem("buyState");
+      props.setBuyState([]);
       setLoading(false);
     } else {
       props.setOpen(true);

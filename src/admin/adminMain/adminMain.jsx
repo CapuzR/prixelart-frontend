@@ -291,7 +291,7 @@ export default function AdminMain(props) {
             <div className={classes.appBarSpacer} />
             <Container maxWidth="lg" className={classes.container}>
               {active === "user" ? (
-                <AdminUser permissions={permissions} />
+                <AdminUser permissions={permissions} admins={props.admins} />
               ) : active === "dashboard" ? (
                 <Dashboard />
               ) : active === "product" ? (
@@ -304,6 +304,7 @@ export default function AdminMain(props) {
                 <ShippingMethods permissions={permissions} />
               ) : active === "order" ? (
                 <Orders
+                  admins={props.admins}
                   buyState={props.buyState}
                   setBuyState={props.setBuyState}
                   permissions={permissions}

@@ -302,6 +302,8 @@ export default function Orders(props) {
   const [errorMessage, setErrorMessage] = useState();
   const [snackBarError, setSnackBarError] = useState(false);
   const [discountList, setDiscountList] = useState([]);
+  const [count, setCount] = useState(0);
+  const [sellers, setSellers] = useState([]);
 
   const getDiscounts = async () => {
     const base_url = process.env.REACT_APP_BACKEND_URL + "/discount/read-allv2";
@@ -476,7 +478,6 @@ export default function Orders(props) {
     setErrorMessage("Archivo descargado exitosamente");
     setSnackBarError(true);
   };
-
   const createOrder = async () => {
     setLoading(true);
 
@@ -491,28 +492,27 @@ export default function Orders(props) {
           quantity: s.quantity,
         });
     });
+    const consumerData = {
+      _id: nanoid(6),
+      active: true,
+      contactedBy:
+        JSON.parse(localStorage.getItem("adminToken")).firstname +
+        " " +
+        JSON.parse(localStorage.getItem("adminToken")).lastname,
+      consumerType: "Particular",
+      firstname: props.values?.name,
+      lastname: props.values?.lastName,
+      ci: props.values?.ci,
+      phone: props.values?.phone,
+      email: props.values?.email,
+      address: props.values?.address,
+      billingAddress: props.values?.billingAddress || props.values?.address,
+      shippingAddress: props.values?.shippingAddress || props.values?.address,
+    };
 
     const consumer = await axios.post(
       process.env.REACT_APP_BACKEND_URL + "/consumer/create",
-      {
-        active: true,
-        contactedBy: {
-          username: "web",
-          id: 1,
-          phone: "",
-          email: "hola@prixelart.com",
-        },
-        consumerType: "Particular",
-        firstname: props.values?.name,
-        lastname: props.values?.lastName,
-        username: props.values?.username,
-        ci: props.values?.ci,
-        phone: props.values?.phone,
-        email: props.values?.email,
-        address: props.values?.address,
-        billingAddress: props.values?.billingAddress || props.values?.address,
-        shippingAddress: props.values?.shippingAddress || props.values?.address,
-      }
+      consumerData
     );
 
     const base_url = process.env.REACT_APP_BACKEND_URL + "/order/create";
@@ -520,12 +520,12 @@ export default function Orders(props) {
       orderId: nanoid(6),
       requests: orderLines,
       basicData: {
-        firstname: consumer.data.newConsumer.firstname,
-        lastname: consumer.data.newConsumer.lastname,
-        ci: consumer.data.newConsumer.ci,
-        email: consumer.data.newConsumer.email,
-        phone: consumer.data.newConsumer.phone,
-        address: consumer.data.newConsumer.address,
+        firstname: consumerData.firstname,
+        lastname: consumerData.lastname,
+        ci: consumerData.ci,
+        email: consumerData.email,
+        phone: consumerData.phone,
+        address: consumerData.address,
       },
       shippingData: {
         name: props.values?.shippingName,
@@ -557,9 +557,9 @@ export default function Orders(props) {
           " " +
           JSON.parse(localStorage.getItem("adminToken")).lastname,
       },
+      consumerId: consumerData._id,
       orderType: "Particular",
       status: "Por producir",
-      orderPaymentMethod: orderPaymentMethod,
     };
     const base_url3 = process.env.REACT_APP_BACKEND_URL + "/order/sendEmail";
 
@@ -841,11 +841,16 @@ export default function Orders(props) {
     });
     product.selection = selectedVariant;
     product.publicEquation = selectedVariant?.publicPrice.equation;
-    props.AssociateProduct({
-      index: index,
-      item: product,
-      type: "product",
-    });
+    const prev = props.buyState;
+    prev[index].product = product;
+    setCount(count + 1);
+    localStorage.setItem("buyState", JSON.stringify(prev));
+    props.setBuyState(prev);
+    // props.AssociateProduct({
+    //   index: index,
+    //   item: product,
+    //   type: "product",
+    // });
   };
 
   const modifyPrice = (product, index, newPrice) => {
@@ -1160,6 +1165,37 @@ export default function Orders(props) {
     }
   };
 
+  const handleChangeSeller = async (order, seller) => {
+    const url =
+      process.env.REACT_APP_BACKEND_URL +
+      "/order/updateSeller/" +
+      order.orderId;
+    const body = {
+      adminToken: localStorage.getItem("adminTokenV"),
+      seller: { username: seller },
+    };
+    await axios.put(url, body, { withCredentials: true }).then((res) => {
+      if (res.data.message) {
+        setErrorMessage(res.data.message);
+        setSnackBarError(true);
+      }
+    });
+    readOrders();
+  };
+
+  setTimeout(() => {
+    if (props.admins) {
+      const selectAdmins = props.admins.filter(
+        (admin) => admin.area === "Ventas"
+      );
+      let sellers = [];
+      selectAdmins.map((admin) => {
+        sellers.push(admin.firstname + " " + admin.lastname);
+      });
+      setSellers(sellers);
+    }
+  }, 100);
+
   return (
     <>
       <Backdrop
@@ -1403,7 +1439,25 @@ export default function Orders(props) {
                             </Fab> */}
                           </TableCell>
                           <TableCell align="center">
-                            {row.createdBy.username}
+                            <Select
+                              disabled={
+                                JSON.parse(localStorage.getItem("adminToken"))
+                                  .area !== "Master"
+                              }
+                              defaultValue={row.createdBy.username}
+                              onChange={(e) => {
+                                handleChangeSeller(row, e.target.value);
+                              }}
+                            >
+                              <MenuItem value={row.createdBy.username}>
+                                {row.createdBy.username}
+                              </MenuItem>
+
+                              {sellers &&
+                                sellers.map((seller) => (
+                                  <MenuItem value={seller}>{seller}</MenuItem>
+                                ))}
+                            </Select>
                           </TableCell>
                         </TableRow>
                       </>
@@ -1531,20 +1585,25 @@ export default function Orders(props) {
                             </div>
                             <div>{"Producto: " + item.product.name}</div>
                             <div>{"Id: " + item.product._id}</div>
-                            {item.product.attributes.map((a, i) => {
-                              return (
-                                <p
-                                  style={{
-                                    // fontSize: 12,
-                                    padding: 0,
-                                    margin: 0,
-                                  }}
-                                >
-                                  {a.name + ": "}
-                                  {item.product.selection[i]}
-                                </p>
-                              );
-                            })}
+                            {item.product.selection &&
+                              item.product.selection.attributes &&
+                              item.product.attributes.map((a, i) => {
+                                return (
+                                  <p
+                                    style={{
+                                      // fontSize: 12,
+                                      padding: 0,
+                                      margin: 0,
+                                    }}
+                                  >
+                                    {item.product?.selection?.attributes[i]
+                                      .name +
+                                      ": " +
+                                      item.product?.selection?.attributes[i]
+                                        .value}
+                                  </p>
+                                );
+                              })}
                             {/* <div>
                               {item.product?.discount &&
                                 "Descuento: " +
@@ -1921,8 +1980,10 @@ export default function Orders(props) {
                                       margin: 0,
                                     }}
                                   >
-                                    {a.name + ": "}
-                                    {item.product.selection.name}
+                                    {item.product.selection.attributes[i].name +
+                                      ": " +
+                                      item.product.selection.attributes[i]
+                                        .value}
                                   </p>
                                 );
                               })}
@@ -2840,6 +2901,7 @@ export default function Orders(props) {
                                       </InputLabel>
                                       <Select
                                         value={
+                                          buy.product.selection.attributes &&
                                           buy.product.selection.attributes
                                             .length > 1
                                             ? buy.product.selection.name +

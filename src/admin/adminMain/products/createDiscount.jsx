@@ -102,7 +102,7 @@ export default function CreateDiscount() {
         active: active,
         description: description,
         type: type,
-        value: value,
+        value: value.replace(/[,]/gi, "."),
         appliedProducts: appliedProducts,
       };
       const base_url = process.env.REACT_APP_BACKEND_URL + "/discount/create";

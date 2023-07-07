@@ -170,6 +170,7 @@ export default function AdminUsers(props) {
                 setActiveCrud={setActiveCrud}
                 handleCallback2={Callback2}
                 permissions={props.permissions}
+                admins={props.admins}
               />
             ) : activeCrud === "update" ? (
               <UpdateAdmin admin={admin} />

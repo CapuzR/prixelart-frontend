@@ -302,6 +302,8 @@ export default function Orders(props) {
   const [errorMessage, setErrorMessage] = useState();
   const [snackBarError, setSnackBarError] = useState(false);
   const [discountList, setDiscountList] = useState([]);
+  const [count, setCount] = useState(0);
+  const [sellers, setSellers] = useState([]);
 
   const getDiscounts = async () => {
     const base_url = process.env.REACT_APP_BACKEND_URL + "/discount/read-allv2";
@@ -476,7 +478,6 @@ export default function Orders(props) {
     setErrorMessage("Archivo descargado exitosamente");
     setSnackBarError(true);
   };
-
   const createOrder = async () => {
     setLoading(true);
 
@@ -491,28 +492,27 @@ export default function Orders(props) {
           quantity: s.quantity,
         });
     });
+    const consumerData = {
+      _id: nanoid(6),
+      active: true,
+      contactedBy:
+        JSON.parse(localStorage.getItem("adminToken")).firstname +
+        " " +
+        JSON.parse(localStorage.getItem("adminToken")).lastname,
+      consumerType: "Particular",
+      firstname: props.values?.name,
+      lastname: props.values?.lastName,
+      ci: props.values?.ci,
+      phone: props.values?.phone,
+      email: props.values?.email,
+      address: props.values?.address,
+      billingAddress: props.values?.billingAddress || props.values?.address,
+      shippingAddress: props.values?.shippingAddress || props.values?.address,
+    };
 
     const consumer = await axios.post(
       process.env.REACT_APP_BACKEND_URL + "/consumer/create",
-      {
-        active: true,
-        contactedBy: {
-          username: "web",
-          id: 1,
-          phone: "",
-          email: "hola@prixelart.com",
-        },
-        consumerType: "Particular",
-        firstname: props.values?.name,
-        lastname: props.values?.lastName,
-        username: props.values?.username,
-        ci: props.values?.ci,
-        phone: props.values?.phone,
-        email: props.values?.email,
-        address: props.values?.address,
-        billingAddress: props.values?.billingAddress || props.values?.address,
-        shippingAddress: props.values?.shippingAddress || props.values?.address,
-      }
+      consumerData
     );
 
     const base_url = process.env.REACT_APP_BACKEND_URL + "/order/create";
@@ -520,12 +520,12 @@ export default function Orders(props) {
       orderId: nanoid(6),
       requests: orderLines,
       basicData: {
-        firstname: consumer.data.newConsumer.firstname,
-        lastname: consumer.data.newConsumer.lastname,
-        ci: consumer.data.newConsumer.ci,
-        email: consumer.data.newConsumer.email,
-        phone: consumer.data.newConsumer.phone,
-        address: consumer.data.newConsumer.address,
+        firstname: consumerData.firstname,
+        lastname: consumerData.lastname,
+        ci: consumerData.ci,
+        email: consumerData.email,
+        phone: consumerData.phone,
+        address: consumerData.address,
       },
       shippingData: {
         name: props.values?.shippingName,
@@ -557,9 +557,9 @@ export default function Orders(props) {
           " " +
           JSON.parse(localStorage.getItem("adminToken")).lastname,
       },
+      consumerId: consumerData._id,
       orderType: "Particular",
       status: "Por producir",
-      orderPaymentMethod: orderPaymentMethod,
     };
     const base_url3 = process.env.REACT_APP_BACKEND_URL + "/order/sendEmail";
 
@@ -841,11 +841,16 @@ export default function Orders(props) {
     });
     product.selection = selectedVariant;
     product.publicEquation = selectedVariant?.publicPrice.equation;
-    props.AssociateProduct({
-      index: index,
-      item: product,
-      type: "product",
-    });
+    const prev = props.buyState;
+    prev[index].product = product;
+    setCount(count + 1);
+    localStorage.setItem("buyState", JSON.stringify(prev));
+    props.setBuyState(prev);
+    // props.AssociateProduct({
+    //   index: index,
+    //   item: product,
+    //   type: "product",
+    // });
   };
 
   const modifyPrice = (product, index, newPrice) => {
@@ -944,7 +949,6 @@ export default function Orders(props) {
     monthsOrder[readyDate.getMonth()] +
     "-" +
     readyDate.getDate();
-
   const PriceSelect = (product, quantity) => {
     if (
       typeof product.discount === "string" &&
@@ -1161,6 +1165,37 @@ export default function Orders(props) {
     }
   };
 
+  const handleChangeSeller = async (order, seller) => {
+    const url =
+      process.env.REACT_APP_BACKEND_URL +
+      "/order/updateSeller/" +
+      order.orderId;
+    const body = {
+      adminToken: localStorage.getItem("adminTokenV"),
+      seller: { username: seller },
+    };
+    await axios.put(url, body, { withCredentials: true }).then((res) => {
+      if (res.data.message) {
+        setErrorMessage(res.data.message);
+        setSnackBarError(true);
+      }
+    });
+    readOrders();
+  };
+
+  setTimeout(() => {
+    if (props.admins) {
+      const selectAdmins = props.admins.filter(
+        (admin) => admin.area === "Ventas"
+      );
+      let sellers = [];
+      selectAdmins.map((admin) => {
+        sellers.push(admin.firstname + " " + admin.lastname);
+      });
+      setSellers(sellers);
+    }
+  }, 100);
+
   return (
     <>
       <Backdrop
@@ -1326,8 +1361,10 @@ export default function Orders(props) {
                           <TableCell align="center">
                             <FormControl
                               disabled={
-                                !props.permissions?.detailPay ||
-                                row.payStatus === "Pagado"
+                                JSON.parse(localStorage.getItem("adminToken"))
+                                  .area !== "Master" &&
+                                (!props.permissions?.detailPay ||
+                                  row.payStatus === "Pagado")
                               }
                             >
                               <Select
@@ -1351,11 +1388,13 @@ export default function Orders(props) {
 
                           <TableCell align="center">
                             <FormControl
-                            // disabled={
-                            // !props.permissions?.orderStatus ||
-                            // row.status === "Cancelada" ||
-                            // row.status === "Concretado"
-                            // }
+                              disabled={
+                                JSON.parse(localStorage.getItem("adminToken"))
+                                  .area !== "Master" &&
+                                (!props.permissions?.orderStatus ||
+                                  row.status === "Cancelada" ||
+                                  row.status === "Concretado")
+                              }
                             >
                               <Select
                                 SelectClassKey
@@ -1400,7 +1439,25 @@ export default function Orders(props) {
                             </Fab> */}
                           </TableCell>
                           <TableCell align="center">
-                            {row.createdBy.username}
+                            <Select
+                              disabled={
+                                JSON.parse(localStorage.getItem("adminToken"))
+                                  .area !== "Master"
+                              }
+                              defaultValue={row.createdBy.username}
+                              onChange={(e) => {
+                                handleChangeSeller(row, e.target.value);
+                              }}
+                            >
+                              <MenuItem value={row.createdBy.username}>
+                                {row.createdBy.username}
+                              </MenuItem>
+
+                              {sellers &&
+                                sellers.map((seller) => (
+                                  <MenuItem value={seller}>{seller}</MenuItem>
+                                ))}
+                            </Select>
                           </TableCell>
                         </TableRow>
                       </>
@@ -1528,20 +1585,25 @@ export default function Orders(props) {
                             </div>
                             <div>{"Producto: " + item.product.name}</div>
                             <div>{"Id: " + item.product._id}</div>
-                            {item.product.attributes.map((a, i) => {
-                              return (
-                                <p
-                                  style={{
-                                    // fontSize: 12,
-                                    padding: 0,
-                                    margin: 0,
-                                  }}
-                                >
-                                  {a.name + ": "}
-                                  {item.product.selection[i]}
-                                </p>
-                              );
-                            })}
+                            {item.product.selection &&
+                              item.product.selection.attributes &&
+                              item.product.attributes.map((a, i) => {
+                                return (
+                                  <p
+                                    style={{
+                                      // fontSize: 12,
+                                      padding: 0,
+                                      margin: 0,
+                                    }}
+                                  >
+                                    {item.product?.selection?.attributes[i]
+                                      .name +
+                                      ": " +
+                                      item.product?.selection?.attributes[i]
+                                        .value}
+                                  </p>
+                                );
+                              })}
                             {/* <div>
                               {item.product?.discount &&
                                 "Descuento: " +
@@ -1744,7 +1806,7 @@ export default function Orders(props) {
                                 // maximumSignificantDigits: 2,
                               })}
                         </div>
-                        <div style={{ marginBottom: 10 }}>
+                        <div>
                           {"Total: $" +
                             Number(modalContent?.total).toLocaleString(
                               "de-DE",
@@ -1754,6 +1816,18 @@ export default function Orders(props) {
                               }
                             )}
                         </div>
+                        {modalContent?.dollarValue && (
+                          <div style={{ marginBottom: 10 }}>
+                            {"Tasa del dólar: Bs" +
+                              Number(modalContent?.dollarValue).toLocaleString(
+                                "de-DE",
+                                {
+                                  minimumFractionDigits: 2,
+                                  // maximumSignificantDigits: 2,
+                                }
+                              )}
+                          </div>
+                        )}
                         <div>
                           {"Forma de pago: " +
                             modalContent?.billingData.orderPaymentMethod}
@@ -1906,8 +1980,10 @@ export default function Orders(props) {
                                       margin: 0,
                                     }}
                                   >
-                                    {a.name + ": "}
-                                    {item.product.selection.name}
+                                    {item.product.selection.attributes[i].name +
+                                      ": " +
+                                      item.product.selection.attributes[i]
+                                        .value}
                                   </p>
                                 );
                               })}
@@ -2424,7 +2500,7 @@ export default function Orders(props) {
                           format="dd-MM-yyyy"
                           defaultValue={stringReadyDate}
                           value={props.values?.today}
-                          error={props.values.today < stringReadyDate}
+                          error={props.values?.today < stringReadyDate}
                           min={stringReadyDate}
                           className={classes.textField}
                           InputLabelProps={{
@@ -2439,17 +2515,19 @@ export default function Orders(props) {
                         />
                       </FormControl>
                     </Grid>
-                    <Grid>
-                      <div style={{ marginTop: 10, marginLeft: 10 }}>
-                        {"El pedido estará listo el día " +
-                          days[readyDate.getDay()] +
-                          " " +
-                          readyDate.getDate() +
-                          " de " +
-                          months[readyDate.getMonth()] +
-                          "."}
-                      </div>
-                    </Grid>
+                    {readyDate !== "Invalid Date" && (
+                      <Grid>
+                        <div style={{ marginTop: 10, marginLeft: 10 }}>
+                          {"El pedido estará listo el día " +
+                            days[readyDate.getDay()] +
+                            " " +
+                            readyDate.getDate() +
+                            " de " +
+                            months[readyDate.getMonth()] +
+                            "."}
+                        </div>
+                      </Grid>
+                    )}
                   </Grid>
                 </Grid>
 
@@ -2813,7 +2891,6 @@ export default function Orders(props) {
                                         })}
                                     </Select>
                                   </FormControl>
-                                  {console.log(buy.product.selection.name)}
                                   {buy.product.attributes.length > 0 && (
                                     <FormControl
                                       className={classes.formControl}
@@ -2823,7 +2900,16 @@ export default function Orders(props) {
                                         {buy.product.attributes[0]?.name}
                                       </InputLabel>
                                       <Select
-                                        value={buy.product.selection.name}
+                                        value={
+                                          buy.product.selection.attributes &&
+                                          buy.product.selection.attributes
+                                            .length > 1
+                                            ? buy.product.selection.name +
+                                              "," +
+                                              buy.product.selection
+                                                .attributes[1].value
+                                            : buy.product.selection.name
+                                        }
                                         variant="outlined"
                                         onChange={(e) => {
                                           handleVariantProduct(
@@ -3001,10 +3087,8 @@ export default function Orders(props) {
                                       label="Precio"
                                       // type="Number"
                                       style={{ width: 120, height: 80 }}
-                                      // defaultValue={
-                                      //   UnitPrice(buy.product)
-                                      // }
-                                      value={UnitPrice(buy.product)}
+                                      defaultValue={UnitPrice(buy.product)}
+                                      // value={UnitPrice(buy.product)}
                                       onChange={(e) => {
                                         modifyPrice(
                                           buy.product,

@@ -280,15 +280,27 @@ export default function UpdateAdmin(props) {
           if (productionTime !== undefined && productionTime !== "") {
             newFormData.append("productionTime", productionTime);
           }
-          newFormData.append("publicPriceFrom", data.publicPrice.from);
+          newFormData.append(
+            "publicPriceFrom",
+            data.publicPrice.from.replace(/[,]/gi, ".")
+          );
           if (toPublicPrice) {
-            newFormData.append("publicPriceTo", data.publicPrice.to);
+            newFormData.append(
+              "publicPriceTo",
+              data.publicPrice.to.replace(/[,]/gi, ".")
+            );
           }
           if (fromPrixerPrice) {
-            newFormData.append("prixerPriceFrom", data.prixerPrice.from);
+            newFormData.append(
+              "prixerPriceFrom",
+              data.prixerPrice.from.replace(/[,]/gi, ".")
+            );
           }
           if (toPrixerPrice) {
-            newFormData.append("prixerPriceTo", data.prixerPrice.to);
+            newFormData.append(
+              "prixerPriceTo",
+              data.prixerPrice.to.replace(/[,]/gi, ".")
+            );
           }
           newFormData.append("hasSpecialVar", hasSpecialVar);
           if (imagesList !== [] && imagesList[0] !== null) {

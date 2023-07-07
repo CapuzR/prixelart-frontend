@@ -44,19 +44,6 @@ export default function ReadAdmins(props) {
   const [message, setMessage] = useState();
   const [snackbar, setSnackbar] = useState(false);
   const [up, setUp] = useState();
-  const loadAdmins = async () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + "/admin/read-all";
-    try {
-      const rowState = await axios.post(
-        base_url,
-        { adminToken: localStorage.getItem("adminTokenV") },
-        { withCredentials: true }
-      );
-      setRows(rowState.data);
-    } catch (e) {
-      console.log(e);
-    }
-  };
 
   const loadRoles = async () => {
     const base_url = process.env.REACT_APP_BACKEND_URL + "/admin/read-roles";
@@ -73,9 +60,12 @@ export default function ReadAdmins(props) {
   };
 
   useEffect(() => {
-    loadAdmins();
     loadRoles();
   }, []);
+
+  useEffect(() => {
+    setRows(props.admins);
+  }, [props.admins]);
 
   const deleteMethod = async (username) => {
     setLoading(true);
@@ -90,7 +80,7 @@ export default function ReadAdmins(props) {
       .then((response) => {
         setSnackbar(true);
         setMessage("Administrador eliminado con éxito");
-        loadAdmins();
+        // loadAdmins();
       });
     setLoading(false);
   };
@@ -148,7 +138,6 @@ export default function ReadAdmins(props) {
       </div>
     );
   }
-
   return (
     <React.Fragment>
       {loading && (

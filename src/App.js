@@ -41,7 +41,7 @@ function App() {
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("");
   const [searchResult, setSearchResult] = useState([]);
-
+  const [admins, setAdmins] = useState();
   const [dollarValue, setDollarValue] = useState("1");
   document.addEventListener("contextmenu", (event) => {
     event.preventDefault();
@@ -55,9 +55,22 @@ function App() {
       } else return;
     });
   };
-
+  const loadAdmins = async () => {
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/admin/read-all";
+    try {
+      const rowState = await axios.post(
+        base_url,
+        { adminToken: localStorage.getItem("adminTokenV") },
+        { withCredentials: true }
+      );
+      setAdmins(rowState.data);
+    } catch (e) {
+      console.log(e);
+    }
+  };
   useEffect(() => {
     readDollarValue();
+    loadAdmins();
   }, []);
 
   useEffect(() => {
@@ -100,7 +113,7 @@ function App() {
     );
   }
   function AssociateProduct(input) {
-    const newState = [...buyState];
+    const newState = buyState;
     if (input.type === "product") {
       newState[input.index].product = input.item;
       newState[input.index].quantity = 1;
@@ -110,7 +123,6 @@ function App() {
       newState[input.index].quantity = 1;
       setBuyState(newState);
     }
-    // setBuyState(newState);
     localStorage.setItem("buyState", JSON.stringify(newState));
     setOpen(true);
     setMessage(
@@ -209,6 +221,7 @@ function App() {
             dollarValue={dollarValue}
             setDollarValue={setDollarValue}
             updateDollarValue={updateDollarValue}
+            admins={admins}
           />
         </Route>
 

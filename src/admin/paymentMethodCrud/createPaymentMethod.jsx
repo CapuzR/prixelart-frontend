@@ -12,7 +12,7 @@ import FormControl from "@material-ui/core/FormControl";
 import clsx from "clsx";
 import Checkbox from "@material-ui/core/Checkbox";
 import Backdrop from "@material-ui/core/Backdrop";
-import { useHistory, useLocation } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   seeMore: {

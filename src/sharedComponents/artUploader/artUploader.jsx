@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback } from "react";
+import React, { useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
@@ -187,7 +187,7 @@ export default function ArtUploader(props) {
 
   const [title, setTitle] = useState("");
   const [artUrl, setArtUrl] = useState();
-  const [thumbnailUrl, setThumbnailUrl] = useState();
+  // const [thumbnailUrl, setThumbnailUrl] = useState();
   const [category, setCategory] = useState("");
   const [description, setDescription] = useState("");
   const [tags, setTags] = useState(["foto", "arte"]);

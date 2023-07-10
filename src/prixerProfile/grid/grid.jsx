@@ -1,10 +1,8 @@
 //[]      17. Búsqueda de Prixers.
-//[]      16. Filtros para las búsquedas (Por etiqueta).
 
 import React, { useState, useEffect } from "react";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 import { useTheme } from "@material-ui/core/styles";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
 import axios from "axios";
 import { useHistory } from "react-router-dom";
 import TextField from "@material-ui/core/TextField";
@@ -139,11 +137,11 @@ export default function Grid(props) {
   const [open, setOpen] = useState(false);
   const [openV, setOpenV] = useState(false);
   const [openFullArt, setOpenFullArt] = useState(false);
-  const [fullArt, setFullArt] = useState(null);
-  const [fullPrixer, setFullPrixer] = useState(null);
+  // const [fullArt, setFullArt] = useState(null);
+  // const [fullPrixer, setFullPrixer] = useState(null);
   const [disabledReason, setDisabledReason] = useState("");
   const [visible, setVisible] = useState(true);
-  const [visibles, setVisibles] = useState([]);
+  // const [visibles, setVisibles] = useState([]);
 
   const handleClickVisible = () => {
     setOpenV(true);

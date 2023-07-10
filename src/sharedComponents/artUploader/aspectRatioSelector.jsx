@@ -1,4 +1,4 @@
-import React, { useEffect, useImperativeHandle } from "react";
+import React, { useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { useState, useCallback } from "react";
 import EasyCropper from "./easyCropper";
@@ -69,9 +69,9 @@ export default function AspectRatioSelector(props) {
     checkedA: false,
   });
   //Error states.
-  const [errorMessage, setErrorMessage] = useState();
-  const [snackBarAction, setSnackBarAction] = useState();
-  const [snackBarError, setSnackBarError] = useState(false);
+  // const [errorMessage, setErrorMessage] = useState();
+  // const [snackBarAction, setSnackBarAction] = useState();
+  // const [snackBarError, setSnackBarError] = useState(false);
 
   useEffect(() => {});
 

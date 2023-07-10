@@ -17,7 +17,7 @@ import Button from "@material-ui/core/Button";
 import MDEditor from "@uiw/react-md-editor";
 import Dialog from "@material-ui/core/Dialog";
 import Typography from "@material-ui/core/Typography";
-import { useHistory, useParams } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import CartReview from "../shoppingCart/cartReview";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { useTheme } from "@material-ui/core/styles";
@@ -70,9 +70,6 @@ export default function PrixerProfile(props) {
   const prixerUsername = new URLSearchParams(window.location)
     .get("pathname")
     .replace(/[/]/gi, "");
-  // let prixer = globalParams.get("pathname");
-  // const [prixer, setPrixer] = useState(globalParams.values("username") || null);
-  // const prixerUsername = props.match.params.username.toLowerCase();
   const [termsAgreeVar, setTermsAgreeVar] = useState(true);
   const [value, setValue] = useState("");
   const [openShoppingCart, setOpenShoppingCart] = useState(false);

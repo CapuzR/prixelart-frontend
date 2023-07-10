@@ -3,7 +3,7 @@ import axios from "axios";
 
 import Button from "@material-ui/core/Button";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
-import utils from "../utils/utils";
+// import utils from "../utils/utils";
 
 import Grid from "@material-ui/core/Grid";
 import Tooltip from "@material-ui/core/Tooltip";
@@ -15,7 +15,6 @@ import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { useHistory } from "react-router-dom";
 import IconButton from "@material-ui/core/IconButton";
 import { Typography } from "@material-ui/core";
-import { BorderStyle } from "@material-ui/icons";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -40,7 +39,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function CartReview(props) {
-  const prixerUsername = "all";
+  // const prixerUsername = "all";
   const classes = useStyles();
   const history = useHistory();
   const theme = useTheme();

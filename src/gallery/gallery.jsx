@@ -75,8 +75,6 @@ export default function Gallery(props) {
 
   const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
   const isDeskTop = useMediaQuery(theme.breakpoints.up("sm"));
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-
   const classes = useStyles();
 
   useEffect(() => {

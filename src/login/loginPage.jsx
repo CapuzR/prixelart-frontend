@@ -18,7 +18,6 @@ import { useState } from "react";
 import Snackbar from "@material-ui/core/Snackbar";
 import validations from "../utils/validations";
 import jwt from "jwt-decode";
-
 import clsx from "clsx";
 import IconButton from "@material-ui/core/IconButton";
 import OutlinedInput from "@material-ui/core/OutlinedInput";

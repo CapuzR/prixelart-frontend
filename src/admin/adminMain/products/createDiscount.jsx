@@ -23,7 +23,6 @@ import Checkbox from "@material-ui/core/Checkbox";
 import Backdrop from "@material-ui/core/Backdrop";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import { Typography } from "@material-ui/core";
-import { CheckBox } from "@material-ui/icons";
 import { nanoid } from "nanoid";
 
 const useStyles = makeStyles((theme) => ({

@@ -11,23 +11,15 @@ import Typography from "@material-ui/core/Typography";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import Snackbar from "@material-ui/core/Snackbar";
 import Backdrop from "@material-ui/core/Backdrop";
-import PrixerGrid from "../../../sharedComponents/prixerGrid/prixerGrid";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import CardMedia from "@material-ui/core/CardMedia";
-import utils from "../../../utils/utils";
-import logo from "../../../logo.svg";
 import { Button } from "@material-ui/core";
 import Modal from "@material-ui/core/Modal";
 import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
 import TextField from "@material-ui/core/TextField";
 import InputAdornment from "@material-ui/core/InputAdornment";
-
-// import validations from "../../shoppingCart/validations";
-import SaveIcon from "@material-ui/icons/Save";
-import Fab from "@material-ui/core/Fab";
-
 import { nanoid } from "nanoid";
 
 const useStyles = makeStyles((theme) => ({

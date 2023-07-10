@@ -2,30 +2,14 @@ import React, { useEffect } from "react";
 import axios from "axios";
 
 import AppBar from "../sharedComponents/appBar/appBar";
-import FloatingAddButton from "../sharedComponents/floatingAddButton/floatingAddButton";
-import UserData from "./userData/userData";
-import PrixerOptions from "./prixerOptions/prixerOptions";
-import ArtsGrid from "./grid/grid";
 import Container from "@material-ui/core/Container";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Grid from "@material-ui/core/Grid";
 import { makeStyles } from "@material-ui/core/styles";
 import { useState } from "react";
-import ArtUploader from "../sharedComponents/artUploader/artUploader";
-import Modal from "@material-ui/core/Modal";
-import Button from "@material-ui/core/Button";
-import MDEditor from "@uiw/react-md-editor";
-import Dialog from "@material-ui/core/Dialog";
 import Typography from "@material-ui/core/Typography";
-import { useHistory, useParams } from "react-router-dom";
-import CartReview from "../shoppingCart/cartReview";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { useTheme } from "@material-ui/core/styles";
-import DialogActions from "@material-ui/core/DialogActions";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogContentText from "@material-ui/core/DialogContentText";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import Img from "react-cool-img";
 import Paper from "@material-ui/core/Paper";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
@@ -52,7 +36,7 @@ export default function PrixerProfile() {
   const [balance, setBalance] = useState(0);
   const [movements, setMovements] = useState([]);
   const [tab, setTab] = useState("balance");
-  const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
+  // const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
 
   const getBalance = () => {
     const url = process.env.REACT_APP_BACKEND_URL + "/account/readById";

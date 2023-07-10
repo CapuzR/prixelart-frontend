@@ -14,7 +14,7 @@ import Select from "@material-ui/core/Select";
 import InputLabel from "@material-ui/core/InputLabel";
 import FormControl from "@material-ui/core/FormControl";
 import Button from "@material-ui/core/Button";
-import Tooltip from "@material-ui/core/Tooltip";
+// import Tooltip from "@material-ui/core/Tooltip";
 import { Typography } from "@material-ui/core";
 import TextField from "@material-ui/core/TextField";
 import { useEffect, useState } from "react";
@@ -35,7 +35,7 @@ export default function OrderForm(props) {
   const theme = useTheme();
   const [paymentMethods, setPaymentMethods] = useState([]);
   const [previewVoucher, setPreviewVoucher] = useState();
-  const isIphone = useMediaQuery(theme.breakpoints.down("xs"));
+  // const isIphone = useMediaQuery(theme.breakpoints.down("xs"));
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const [balance, setBalance] = useState(0);
   const [discountList, setDiscountList] = useState([]);

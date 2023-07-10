@@ -1,7 +1,6 @@
 import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Fab from "@material-ui/core/Fab";
-import axios from "axios";
 import AddPhotoAlternateIcon from "@material-ui/icons/AddPhotoAlternate";
 import ShoppingCartOutlinedIcon from "@material-ui/icons/ShoppingCartOutlined";
 

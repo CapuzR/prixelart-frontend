@@ -140,7 +140,7 @@ export default function FullscreenPhoto(props) {
 
   const [ready, setReady] = useState(false);
   const [tiles, setTiles] = useState(props.searchResult);
-  const [newTag, setNewTag] = useState([]);
+  // const [newTag, setNewTag] = useState([]);
   const [updatedTile, setUpdatedTile] = useState([]);
   const [loading, setLoading] = useState(false);
   const [artDataState, setArtDataState] = useState();
@@ -249,13 +249,6 @@ export default function FullscreenPhoto(props) {
     let result = await originalPhotoIsoEdit(tempTiles, tile, e);
     setTiles(result);
   };
-
-  // const handleArtTagsEdit = async (e, tile) => {
-  //   let tempTiles = tiles;
-  //   // setNewTag(tile.tags);
-  //   // let result = await tagsEdit(tempTiles, tile, e);
-  //   setTiles(result);
-  // };
 
   const handleArtLocationEdit = async (e, tile) => {
     let tempTiles = tiles;

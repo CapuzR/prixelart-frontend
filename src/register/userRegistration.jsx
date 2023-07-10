@@ -28,9 +28,6 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 import FormControl from "@material-ui/core/FormControl";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
-import { FormControlLabel } from "@material-ui/core";
-import Checkbox from "@material-ui/core/Checkbox";
-import Modal from "@material-ui/core/Modal";
 import { useTheme } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import InfoIcon from "@material-ui/icons/Info";
@@ -97,18 +94,18 @@ export default function SignUp() {
   const [showPassword, setShowPassword] = useState(false);
   const [openTooltip, setOpenTooltip] = useState(false);
   const [buttonState, setButtonState] = useState(true);
-  const [isChecked, setIsChecked] = useState(false);
+  // const [isChecked, setIsChecked] = useState(false);
   // const [termsAgree, setTermsAgree] = useState(false);
   const theme = useTheme();
-  const [value, setValue] = useState("");
+  // const [value, setValue] = useState("");
 
-  const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
+  // const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
 
-  const styles = useStyles();
-  const [modal, setModal] = useState(false);
-  const openModal = () => {
-    setModal(!modal);
-  };
+  // const styles = useStyles();
+  // const [modal, setModal] = useState(false);
+  // const openModal = () => {
+  //   setModal(!modal);
+  // };
 
   //Error states.
   const [usernameError, setUsernameError] = useState(false);

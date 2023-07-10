@@ -23,8 +23,6 @@ import Checkbox from "@material-ui/core/Checkbox";
 import Backdrop from "@material-ui/core/Backdrop";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import { Typography } from "@material-ui/core";
-import { CheckBox } from "@material-ui/icons";
-import { nanoid } from "nanoid";
 
 const useStyles = makeStyles((theme) => ({
   seeMore: {
@@ -72,7 +70,7 @@ export default function UpdateDiscount(props) {
   const theme = useTheme();
   const history = useHistory();
 
-  const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
+  // const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
   const [active, setActive] = useState(props.discount.active || true);
   const [name, setName] = useState(props.discount.name || undefined);
   const [description, setDescription] = useState(

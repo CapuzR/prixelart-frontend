@@ -17,7 +17,7 @@ import MDEditor from "@uiw/react-md-editor";
 
 import CreateProduct from "../../productCrud/createProduct";
 import UpdateProduct from "../../productCrud/updateProduct";
-import DisableProduct from "../../productCrud/disableProduct";
+// import DisableProduct from "../../productCrud/disableProduct";
 import ReadProducts from "../../productCrud/readProducts";
 import CreateDiscount from "./createDiscount";
 import UpdateDiscount from "./updateDiscount";
@@ -325,12 +325,12 @@ export default function Products(props) {
                 <div style={{ height: "155vh" }}>
                   <CreateDiscount />
                 </div>
-              ) : activeCrud === "updateDiscount" ? (
-                <div style={{ height: "155vh" }}>
-                  <UpdateDiscount discount={discount} />
-                </div>
               ) : (
-                <DisableProduct />
+                activeCrud === "updateDiscount" && (
+                  <div style={{ height: "155vh" }}>
+                    <UpdateDiscount discount={discount} />
+                  </div>
+                )
               )}
             </Paper>
           </Grid>

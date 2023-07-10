@@ -1,17 +1,10 @@
 import { React, useState, useEffect } from "react";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
-import ViewCarouselIcon from "@material-ui/icons/ViewCarousel";
-import { Button, InputLabel, Typography } from "@material-ui/core";
+import { Button, Typography } from "@material-ui/core";
 import Box from "@material-ui/core/Box";
 import Grid from "@material-ui/core/Grid";
-import {
-  FormControl,
-  FormGroup,
-  FilledInput,
-  Input,
-  TextField,
-} from "@material-ui/core";
+import { FormControl } from "@material-ui/core";
 import Tooltip from "@material-ui/core/Tooltip";
 import ImageListItem from "@material-ui/core/ImageListItem";
 import ImageList from "@material-ui/core/ImageList";
@@ -29,7 +22,7 @@ import axios from "axios";
 import AppBar from "@material-ui/core/AppBar";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
-import AspectRatioSelector from "../../../sharedComponents/artUploader/aspectRatioSelector";
+// import AspectRatioSelector from "../../../sharedComponents/artUploader/aspectRatioSelector";
 
 const useStyle = makeStyles((theme) => ({
   images: {

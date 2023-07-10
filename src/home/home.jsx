@@ -34,15 +34,11 @@ import Img from "react-cool-img";
 import { useHistory } from "react-router-dom";
 
 import MDEditor from "@uiw/react-md-editor";
-
-import WhatsAppIcon from "@material-ui/icons/WhatsApp";
 import MaximizeIcon from "@material-ui/icons/Maximize";
 import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
 import ArrowForwardIosIcon from "@material-ui/icons/ArrowForwardIos";
 
-// import { useHistory } from "react-router-dom";
 import ArtUploader from "../sharedComponents/artUploader/artUploader";
-// import utils from "../utils/utils";
 import TestimonialsFeed from "../admin/TestimonialsCrud/TestimonialsFeed";
 import CartReview from "../shoppingCart/cartReview";
 
@@ -144,7 +140,6 @@ export default function Home(props) {
   const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
   const isDeskTop = useMediaQuery(theme.breakpoints.up("sm"));
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  // const isPhone5 =
   const classes = useStyles();
   const prixerUsername = "all";
   const [imagesDesktop, newImagesDesktop] = useState({ images: [] });
@@ -156,10 +151,8 @@ export default function Home(props) {
   const [openTestimonials, setOpenTestimonials] = useState(false);
   const [selectedArt, setSelectedArt] = useState(undefined);
 
-  // const [scrolledTop, setScrolledTop] = useState(false);
   const [openArtFormDialog, setOpenArtFormDialog] = useState(false);
   const [openShoppingCart, setOpenShoppingCart] = useState(false);
-  // const rootRef = React.useRef(null);
   const [termsAgreeVar, setTermsAgreeVar] = useState(true);
   const [value, setValue] = useState("");
   const history = useHistory();

@@ -3,13 +3,8 @@ import axios from "axios";
 import AppBar from "../sharedComponents/appBar/appBar";
 import Button from "@material-ui/core/Button";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
-import utils from "../utils/utils";
-
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
-import AddIcon from "@material-ui/icons/Add";
-import DeleteIcon from "@material-ui/icons/Delete";
-import Img from "react-cool-img";
 import Container from "@material-ui/core/Container";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
@@ -17,10 +12,7 @@ import Stepper from "@material-ui/core/Stepper";
 import Step from "@material-ui/core/Step";
 import StepLabel from "@material-ui/core/StepLabel";
 import { useHistory } from "react-router-dom";
-import TextField from "@material-ui/core/TextField";
-import IconButton from "@material-ui/core/IconButton";
 import { Typography } from "@material-ui/core";
-import WhatsAppIcon from "@material-ui/icons/WhatsApp";
 import { Backdrop } from "@material-ui/core";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import ConsumerForm from "./consumerForm";
@@ -30,6 +22,7 @@ import { nanoid } from "nanoid";
 import validations from "./validations";
 import Switch from "@material-ui/core/Switch";
 import { Alert } from "@material-ui/lab";
+
 const useStyles = makeStyles((theme) => ({
   paper: {
     display: "flex",
@@ -137,8 +130,6 @@ export default function ShoppingPage(props) {
   const classes = useStyles();
   const history = useHistory();
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
-  const isIphone = useMediaQuery(theme.breakpoints.down("xs"));
   const [orderPaymentMethod, setOrderPaymentMethod] = useState(undefined);
   const [observations, setObservations] = useState();
   const [activeStep, setActiveStep] = React.useState(0);

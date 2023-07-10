@@ -3,7 +3,7 @@ import { useTheme } from "@material-ui/core/styles";
 import { makeStyles } from "@material-ui/core/styles";
 import axios from "axios";
 import { useHistory } from "react-router-dom";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
+// import useMediaQuery from "@material-ui/core/useMediaQuery";
 import Card from "@material-ui/core/Card";
 import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
@@ -61,8 +61,8 @@ const useStyles = makeStyles((theme) => ({
 export default function PrixerGrid(props) {
   const theme = useTheme();
   const classes = useStyles();
-  const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
-  const isDeskTop = useMediaQuery(theme.breakpoints.up("sm"));
+  // const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
+  // const isDeskTop = useMediaQuery(theme.breakpoints.up("sm"));
   const [tiles, setTiles] = useState([]);
   const history = useHistory();
   const [backdrop, setBackdrop] = useState(true);

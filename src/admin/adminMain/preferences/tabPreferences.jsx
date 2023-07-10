@@ -1,4 +1,4 @@
-import { React, useState, useEffect } from "react";
+import { React, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Tabs from "@material-ui/core/Tabs";
@@ -7,7 +7,6 @@ import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
 import CarouselAdmin from "./preferencesCarousel";
 import TermsAndConditions from "./preferenceTerms";
-import axios from "axios";
 
 function TabPanel(props) {
   const { children, value, index } = props;

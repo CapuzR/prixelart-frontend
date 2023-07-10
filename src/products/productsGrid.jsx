@@ -1,14 +1,9 @@
 //[]      17. Búsqueda de Prixers.
-//[]      16. Filtros para las búsquedas (Por etiqueta).
-//[]      25. Editar datos de la imagen en la tarjeta del grid grande.
 
 import React, { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import { isWidthUp } from "@material-ui/core/withWidth";
-import CircularProgress from "@material-ui/core/CircularProgress";
 import Carousel from "react-material-ui-carousel";
 import Card from "@material-ui/core/Card";
-import CardActionArea from "@material-ui/core/CardActionArea";
 import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
 import CardMedia from "@material-ui/core/CardMedia";
@@ -159,7 +154,7 @@ export default function ProductGrid(props) {
   const [tiles, setTiles] = useState([]);
   const [discountList, setDiscountList] = useState([]);
   const [imagesVariants, setImagesVariants] = useState([]);
-  const [imagesProducts, setImagesProducts] = useState();
+  // const [imagesProducts, setImagesProducts] = useState();
   const [width, setWidth] = useState([]);
   const [height, setHeight] = useState([]);
   const [order, setOrder] = useState("");

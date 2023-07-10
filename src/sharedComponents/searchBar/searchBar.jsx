@@ -94,14 +94,14 @@ export default function CustomizedInputBase(props) {
     }
   }, []);
 
-  function getStyles(category, categories, theme) {
-    return {
-      fontWeight:
-        categories.indexOf(category) === -1
-          ? theme.typography.fontWeightRegular
-          : theme.typography.fontWeightMedium,
-    };
-  }
+  // function getStyles(category, categories, theme) {
+  //   return {
+  //     fontWeight:
+  //       categories.indexOf(category) === -1
+  //         ? theme.typography.fontWeightRegular
+  //         : theme.typography.fontWeightMedium,
+  //   };
+  // }
 
   // const handleChange = (event) => {
   //   setCategories(event);

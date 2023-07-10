@@ -23,15 +23,11 @@ import { useTheme } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import HighlightOffOutlinedIcon from "@material-ui/icons/HighlightOffOutlined";
 import EditIcon from "@material-ui/icons/Edit";
-import Box from "@material-ui/core/Box";
 import MDEditor from "@uiw/react-md-editor";
 import Variants from "../adminMain/products/variants";
 import Backdrop from "@material-ui/core/Backdrop";
 import validations from "../../shoppingCart/validations";
 import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
-import { ImageList } from "@material-ui/core";
-import { SkipPrevious } from "@material-ui/icons";
-import ReadProducts from "./readProducts";
 import Paper from "@material-ui/core/Paper";
 
 const useStyles = makeStyles((theme) => ({
@@ -83,7 +79,6 @@ export default function UpdateAdmin(props) {
   const history = useHistory();
   const theme = useTheme();
   const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
-  const isDeskTop = useMediaQuery(theme.breakpoints.up("sm"));
   const [productId, setProductId] = useState(props?.product?._id);
   const [images, newImages] = useState({ images: [] });
   const [thumbUrl, setThumbUrl] = useState(props.product?.thumbUrl);

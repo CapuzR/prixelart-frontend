@@ -144,7 +144,7 @@ export default function PrixerRegistration() {
   const [country, setCountry] = useState("");
   const [city, setCity] = useState("");
   const [description, setDescription] = useState("");
-  const [avatar, setAvatar] = useState({ file: "", _id: "" });
+  // const [avatar, setAvatar] = useState({ file: "", _id: "" });
   const [avatarObj, setAvatarObj] = useState("");
   const [avatarPic, setAvatarPic] = useState("");
   const [buttonState, setButtonState] = useState(true);
@@ -153,10 +153,10 @@ export default function PrixerRegistration() {
   const [isChecked, setIsChecked] = useState(false);
   const theme = useTheme();
   const [specialty, setSpecialty] = React.useState([]);
-  const [change, setChange] = useState(false);
+  // const [change, setChange] = useState(false);
   const [inputChange, setInputChange] = useState(false);
 
-  const isDesktop = useMediaQuery(theme.breakpoints.up("sm"));
+  // const isDesktop = useMediaQuery(theme.breakpoints.up("sm"));
   const status = true;
 
   const handleOnChange = () => {

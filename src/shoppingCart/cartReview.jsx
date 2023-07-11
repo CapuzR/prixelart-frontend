@@ -675,7 +675,8 @@ export default function CartReview(props) {
                             }}
                           >
                             <strong>{a.name + ": "} </strong>{" "}
-                            {buy.product.selection[i]}
+                            {buy?.product?.selection?.attributes &&
+                              buy?.product?.selection?.attributes[i]?.value}
                           </p>
                         );
                       })}

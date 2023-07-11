@@ -911,37 +911,6 @@ export default function Orders(props) {
     }
   };
 
-  // const handleChangeSeller = async (order, seller) => {
-  //   const url =
-  //     process.env.REACT_APP_BACKEND_URL +
-  //     "/order/updateSeller/" +
-  //     order.orderId;
-  //   const body = {
-  //     adminToken: localStorage.getItem("adminTokenV"),
-  //     seller: { username: seller },
-  //   };
-  //   await axios.put(url, body, { withCredentials: true }).then((res) => {
-  //     if (res.data.message) {
-  //       setErrorMessage(res.data.message);
-  //       setSnackBarError(true);
-  //     }
-  //   });
-  //   readOrders();
-  // };
-
-  // setTimeout(() => {
-  //   if (props.admins) {
-  //     const selectAdmins = props.admins.filter(
-  //       (admin) => admin.area === "Ventas"
-  //     );
-  //     let sellers = [];
-  //     selectAdmins.map((admin) => {
-  //       sellers.push(admin.firstname + " " + admin.lastname);
-  //     });
-  //     setSellers(sellers);
-  //   }
-  // }, 100);
-
   return (
     <>
       <Backdrop
@@ -1033,6 +1002,10 @@ export default function Orders(props) {
               handleChangePayStatus={handleChangePayStatus}
               handleChangeStatus={handleChangeStatus}
               permissions={props.permissions}
+              admins={props.admins}
+              setErrorMessage={setErrorMessage}
+              setSnackBarError={setSnackBarError}
+              readOrders={readOrders}
             ></ReadOrders>
           </Paper>
         </Grid>
@@ -1055,6 +1028,7 @@ export default function Orders(props) {
           buyState={props.buyState}
           setBuyState={props.setBuyState}
           discountList={discountList}
+          deleteItemInBuyState={props.deleteItemInBuyState}
           setSelectedArtToAssociate={props.setSelectedArtToAssociate}
           setSelectedProductToAssociate={props.setSelectedProductToAssociate}
           AssociateProduct={props.AssociateProduct}

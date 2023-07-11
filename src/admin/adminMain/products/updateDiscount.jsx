@@ -71,7 +71,7 @@ export default function UpdateDiscount(props) {
   const history = useHistory();
 
   // const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
-  const [active, setActive] = useState(props.discount.active || true);
+  const [active, setActive] = useState(props.discount.active);
   const [name, setName] = useState(props.discount.name || undefined);
   const [description, setDescription] = useState(
     props.discount.description || undefined
@@ -104,7 +104,7 @@ export default function UpdateDiscount(props) {
         active: active,
         description: description,
         type: type,
-        value: value.replace(/[,]/gi, "."),
+        value: value,
         appliedProducts: appliedProducts,
       };
       const base_url = process.env.REACT_APP_BACKEND_URL + "/discount/update";
@@ -151,7 +151,8 @@ export default function UpdateDiscount(props) {
   useEffect(() => {
     getProducts();
   }, []);
-
+  console.log(active);
+  console.log(value);
   return (
     <React.Fragment>
       {
@@ -173,7 +174,7 @@ export default function UpdateDiscount(props) {
               color="primary"
               inputProps={{ "aria-label": "secondary checkbox" }}
               onChange={() => {
-                active ? setActive(false) : setActive(true);
+                setActive(!active);
               }}
             />
             Habilitado

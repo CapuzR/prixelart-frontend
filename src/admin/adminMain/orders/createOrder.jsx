@@ -449,6 +449,7 @@ export default function CreateOrder(props) {
             setBuyState={props.setBuyState}
             addItemToBuyState={props.addItemToBuyState}
             changeQuantity={props.changeQuantity}
+            deleteItemInBuyState={props.deleteItemInBuyState}
           />
         )}
         {activeStep === 2 && (

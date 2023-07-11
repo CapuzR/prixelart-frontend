@@ -372,7 +372,7 @@ export default function ReadProducts(props) {
                     <TableCell align="center">
                       <Checkbox
                         disabled
-                        checked={dis.active || true}
+                        checked={dis.active}
                         color="primary"
                         inputProps={{ "aria-label": "secondary checkbox" }}
                       />

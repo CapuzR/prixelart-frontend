@@ -189,7 +189,7 @@ export default function Prixers(props) {
     };
     const base_url = process.env.REACT_APP_BACKEND_URL + "/account/create";
     axios.post(base_url, data).then((response) => {
-      if (response.status === 200) {
+      if (response.status === 200 && balance > 0) {
         ID = response.data.createAccount.newAccount._id;
         const data2 = {
           _id: nanoid(),
@@ -332,8 +332,12 @@ export default function Prixers(props) {
                           <Typography variant="h6" align="center">
                             Balance $
                             {accounts &&
-                              accounts?.find((acc) => acc._id === tile.account)
-                                .balance}
+                              accounts
+                                ?.find((acc) => acc._id === tile.account)
+                                ?.balance.toLocaleString("de-DE", {
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 2,
+                                })}
                           </Typography>
                           <div
                             style={{

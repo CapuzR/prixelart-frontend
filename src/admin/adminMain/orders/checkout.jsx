@@ -357,6 +357,8 @@ export default function Checkout(props) {
   };
 
   const PriceSelect = (product, quantity) => {
+    let dis = discountList?.filter((dis) => dis._id === product.discount)[0];
+
     if (product.modifyPrice && currency) {
       return (
         " Bs" +
@@ -380,37 +382,36 @@ export default function Checkout(props) {
       product.publicEquation !== "" &&
       currency
     ) {
-      let dis = discountList?.filter((dis) => dis._id === product.discount)[0];
-      return (
-        <>
-          {dis?.type === "Porcentaje" &&
-            " Bs" +
-              Number(
-                (product.publicEquation -
-                  (product.publicEquation / 100) * dis?.value) *
-                  props.dollarValue *
-                  quantity
-              ).toLocaleString("de-DE", {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              })}
-          {dis?.type === "Monto" &&
-            " Bs" +
-              Number(
-                (product.publicEquation - dis?.value) *
-                  props.dollarValue *
-                  quantity
-              ).toLocaleString("de-DE", {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              })}
-        </>
-      );
+      if (dis?.type === "Porcentaje") {
+        return (
+          " Bs" +
+          Number(
+            (product.publicEquation -
+              (product.publicEquation / 100) * dis?.value) *
+              props.dollarValue *
+              quantity
+          ).toLocaleString("de-DE", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })
+        );
+      }
+      if (dis?.type === "Monto") {
+        return (
+          " Bs" +
+          Number(
+            (product.publicEquation - dis?.value) * props.dollarValue * quantity
+          ).toLocaleString("de-DE", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })
+        );
+      }
     } else if (
       typeof product.discount === "string" &&
       product.publicEquation !== ""
     ) {
-      let dis = discountList?.filter((dis) => dis._id === product.discount)[0];
+      // console.log("ecuación + descuento"); AQUI ES
       return (
         <>
           {dis?.type === "Porcentaje" &&
@@ -434,7 +435,6 @@ export default function Checkout(props) {
         </>
       );
     } else if (typeof product.discount === "string" && currency) {
-      let dis = discountList?.filter((dis) => dis._id === product.discount)[0];
       return (
         <>
           {dis?.type === "Porcentaje" &&
@@ -461,7 +461,6 @@ export default function Checkout(props) {
         </>
       );
     } else if (typeof product.discount === "string") {
-      let dis = discountList?.filter((dis) => dis._id === product.discount)[0];
       return (
         <>
           {dis?.type === "Porcentaje" &&
@@ -633,10 +632,10 @@ export default function Checkout(props) {
                                     {item.product.name + " X " + item.art.title}
                                     <br></br>
                                     {item.product.selection.name}{" "}
-                                    {item.product.selection.attributes.length >
+                                    {item.product.selection.attributes?.length >
                                       1 &&
                                       item.product.selection.attributes[1]
-                                        .value}
+                                        ?.value}
                                   </Grid>
                                   <Grid
                                     item
@@ -659,6 +658,9 @@ export default function Checkout(props) {
                                       Precio:
                                       {PriceSelect(item.product, item.quantity)}
                                     </div>
+                                    {console.log(
+                                      PriceSelect(item.product, item.quantity)
+                                    )}
                                   </Grid>
                                 </Grid>
                               }
@@ -667,29 +669,29 @@ export default function Checkout(props) {
                         </List>
                       </Collapse>
                       <Divider />
-                      {getTotalCombinedItems(props.buyState).totalNotCompleted
-                        ?.length >= 1 && (
-                        <Typography
-                          style={{
-                            fontSize: "11px",
-                            // color: "primary",
-                          }}
-                        >
-                          {getTotalCombinedItems(props.buyState)
-                            .totalNotCompleted?.length > 1
-                            ? `Faltan ${
-                                getTotalCombinedItems(props.buyState)
-                                  .totalNotCompleted.length
-                              } productos por definir.`
-                            : `Falta 1 producto por definir.`}
-                        </Typography>
-                      )}
                     </>
                   )}
                 </>
               ))
             ) : (
               <Typography>No has seleccionado nada aún.</Typography>
+            )}
+            {getTotalCombinedItems(props.buyState).totalNotCompleted?.length >=
+              1 && (
+              <Typography
+                style={{
+                  fontSize: "11px",
+                  // color: "primary",
+                }}
+              >
+                {getTotalCombinedItems(props.buyState).totalNotCompleted
+                  ?.length > 1
+                  ? `Faltan ${
+                      getTotalCombinedItems(props.buyState).totalNotCompleted
+                        .length
+                    } productos por definir.`
+                  : `Falta 1 producto por definir.`}
+              </Typography>
             )}
             <div
               style={{

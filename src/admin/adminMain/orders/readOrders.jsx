@@ -322,7 +322,7 @@ export default function ReadOrders(props) {
                       </Fab> */}
                     </TableCell>
                     <TableCell align="center">
-                      {/* <Select
+                      <Select
                         disabled={
                           JSON.parse(localStorage.getItem("adminToken"))
                             .area !== "Master"
@@ -332,15 +332,15 @@ export default function ReadOrders(props) {
                           handleChangeSeller(row, e.target.value);
                         }}
                       >
-                        <MenuItem value={row.createdBy.username}> */}
-                      {row.createdBy.username}
-                      {/* </MenuItem>
+                        <MenuItem value={row.createdBy.username}>
+                          {row.createdBy.username}
+                        </MenuItem>
 
                         {sellers &&
                           sellers.map((seller) => (
                             <MenuItem value={seller}>{seller}</MenuItem>
                           ))}
-                      </Select> */}
+                      </Select>
                     </TableCell>
                   </TableRow>
                 </>

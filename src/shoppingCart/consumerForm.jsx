@@ -208,11 +208,12 @@ function ConsumerForm(props) {
   const selectShDate = (value) => {
     // let date = Date(value);
     // console.log(date)
-    // if (value < stringReadyDate) {
-    props.setOpen(true);
-    props.setMessage(
-      "Si lo requieres antes, coméntalo en el campo de observaciones y un asesor se comunicará contigo."
-    );
+    if (value < stringReadyDate) {
+      props.setOpen(true);
+      props.setMessage(
+        "Si lo requieres antes, coméntalo en el campo de observaciones y un asesor se comunicará contigo."
+      );
+    }
     // } else
     props.setValues({
       ...props.values,

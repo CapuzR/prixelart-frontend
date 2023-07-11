@@ -196,7 +196,6 @@ export default function AdminMain(props) {
         console.log(error);
       });
   };
-
   useEffect(() => {
     checkP();
   }, []);

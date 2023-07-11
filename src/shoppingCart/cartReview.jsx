@@ -520,12 +520,12 @@ export default function CartReview(props) {
                         marginLeft: "20px",
                       }}
                       src={
-                        buy.product.sources?.images[0]?.url
-                          ? buy.product?.thumbUrl
-                          : ""
+                        buy.product?.sources?.images[0]?.url ||
+                        buy.product?.thumbUrl ||
+                        ""
                       }
                       debounce={1000}
-                      cache
+                      // cache
                       error="/imgError.svg"
                       alt={buy.product && buy.product.name}
                       id={index}
@@ -675,7 +675,8 @@ export default function CartReview(props) {
                             }}
                           >
                             <strong>{a.name + ": "} </strong>{" "}
-                            {buy.product.selection[i]}
+                            {buy?.product?.selection?.attributes &&
+                              buy?.product?.selection?.attributes[i]?.value}
                           </p>
                         );
                       })}

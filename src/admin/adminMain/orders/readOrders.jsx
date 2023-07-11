@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useState } from "react";
+import axios from "axios";
 import { makeStyles } from "@material-ui/core/styles";
 import { TableCell, TableHead, TableRow, TableBody } from "@material-ui/core";
 import Table from "@material-ui/core/Table";
@@ -126,11 +127,42 @@ const useStyles = makeStyles((theme) => ({
 
 export default function ReadOrders(props) {
   const classes = useStyles();
-
+  const [sellers, setSellers] = useState();
   const handleChange = (event) => {
     props.setFilter(event.target.value);
     props.filterOrders(event.target.value);
   };
+
+  const handleChangeSeller = async (order, seller) => {
+    const url =
+      process.env.REACT_APP_BACKEND_URL +
+      "/order/updateSeller/" +
+      order.orderId;
+    const body = {
+      adminToken: localStorage.getItem("adminTokenV"),
+      seller: { username: seller },
+    };
+    await axios.put(url, body, { withCredentials: true }).then((res) => {
+      if (res.data.message) {
+        props.setErrorMessage(res.data.message);
+        props.setSnackBarError(true);
+      }
+    });
+    props.readOrders();
+  };
+
+  setTimeout(() => {
+    if (props.admins) {
+      const selectAdmins = props.admins.filter(
+        (admin) => admin.area === "Ventas"
+      );
+      let sellers = [];
+      selectAdmins.map((admin) => {
+        sellers.push(admin.firstname + " " + admin.lastname);
+      });
+      setSellers(sellers);
+    }
+  }, 100);
 
   return (
     <>
@@ -290,7 +322,7 @@ export default function ReadOrders(props) {
                       </Fab> */}
                     </TableCell>
                     <TableCell align="center">
-                      {/* <Select
+                      <Select
                         disabled={
                           JSON.parse(localStorage.getItem("adminToken"))
                             .area !== "Master"
@@ -300,15 +332,15 @@ export default function ReadOrders(props) {
                           handleChangeSeller(row, e.target.value);
                         }}
                       >
-                        <MenuItem value={row.createdBy.username}> */}
-                      {row.createdBy.username}
-                      {/* </MenuItem> */}
+                        <MenuItem value={row.createdBy.username}>
+                          {row.createdBy.username}
+                        </MenuItem>
 
-                      {/* {sellers &&
+                        {sellers &&
                           sellers.map((seller) => (
                             <MenuItem value={seller}>{seller}</MenuItem>
                           ))}
-                      </Select> */}
+                      </Select>
                     </TableCell>
                   </TableRow>
                 </>

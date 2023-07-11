@@ -403,6 +403,7 @@ export default function ShoppingCart(props) {
       previous: true,
     });
     let selectedProduct = event.target.value;
+
     let selectedProductFull = productList.find(
       (result) => result.name === selectedProduct
     );
@@ -454,6 +455,8 @@ export default function ShoppingCart(props) {
     let selectedProductFull = productList.find(
       (result) => result.name === selectedProduct
     );
+    selectedProductFull.selection = [null, null];
+    console.log(selectedProductFull.selection);
     props.addItemToBuyState({
       type: "product",
       item: selectedProductFull,
@@ -511,7 +514,11 @@ export default function ShoppingCart(props) {
                           marginRight: "20px",
                           marginLeft: "20px",
                         }}
-                        src={buy.product ? buy.product.thumbUrl : ""}
+                        src={
+                          buy.product?.sources?.images[0]?.url ||
+                          buy.product.thumbUrl ||
+                          ""
+                        }
                         debounce={1000}
                         cache
                         error="/imgError.svg"
@@ -532,82 +539,96 @@ export default function ShoppingCart(props) {
                             marginBottom: 10,
                           }}
                         >
-                          <InputLabel style={{ paddingLeft: 15 }}>
-                            {buy.product
-                              ? "Producto: " + buy.product.name
-                              : "Agrega un producto"}
-                          </InputLabel>
-                          <Select
-                            id={"product " + index}
-                            variant="outlined"
-                            // value={buy.product.name}
-                            onChange={(e) => changeProduct(e, buy.art, index)}
-                          >
-                            {productList !== "" &&
-                              productList.map((product) => {
-                                return (
-                                  <MenuItem value={product.name}>
-                                    {product.name}
-                                  </MenuItem>
-                                );
-                              })}
-                          </Select>
+                          {buy.product ? (
+                            <Typography
+                              variant="h6"
+                              style={{ fontWeight: 300, fontSize: 18 }}
+                            >
+                              {buy.product.name}
+                            </Typography>
+                          ) : (
+                            <>
+                              <InputLabel style={{ paddingLeft: 15 }}>
+                                Agrega un producto
+                              </InputLabel>
+                              <Select
+                                id={"product " + index}
+                                variant="outlined"
+                                onChange={(e) => {
+                                  changeProduct(e, buy.art, index);
+                                }}
+                              >
+                                {productList !== "" &&
+                                  productList.map((product) => {
+                                    return (
+                                      <MenuItem value={product.name}>
+                                        {product.name}
+                                      </MenuItem>
+                                    );
+                                  })}
+                              </Select>
+                            </>
+                          )}
                         </FormControl>
-                        {buy.product.attributes.length > 0 && (
+                        {buy.product.variants.length > 0 && (
                           <FormControl
                             className={classes.formControl}
                             style={{ minWidth: 200 }}
                           >
-                            <InputLabel style={{ paddingLeft: 15 }}>
-                              {buy.product.attributes[0]?.name}{" "}
-                              {buy.product.selection.name &&
-                                ": " + buy.product.selection.name}
-                              {buy.product.selection?.attributes?.length > 1 &&
-                                buy.product.selection?.attributes[1]?.value !==
-                                  undefined &&
-                                " " + buy.product.selection.attributes[1].value}
-                            </InputLabel>
-                            <Select
-                              id={"variant " + index}
-                              //   value={
-                              // buy.product?.selection[0] !== null
-                              //   ? buy.product?.selection?.attributes
-                              //       .length > 1
-                              //     ? buy.product.selection.name +
-                              //       "," +
-                              //       buy.product.selection
-                              //         .attributes[1].value
-                              //     : buy.product.selection.attributes
-                              //         .length === 1 &&
-                              // buy.product.selection.name || ""
-                              //   }
-                              variant="outlined"
-                              onChange={(e) => {
-                                handleVariantProduct(
-                                  e.target.value,
-                                  index,
-                                  buy.art,
-                                  buy.product
-                                );
-                              }}
-                            >
-                              {buy.product.variants.map((a) => {
-                                return (
-                                  <MenuItem
-                                    value={
-                                      a.name + "," + a.attributes[1]?.value
-                                    }
-                                  >
-                                    {a.name}
-                                    {a.attributes[1]?.value &&
-                                      " " + a.attributes[1]?.value}
-                                  </MenuItem>
-                                );
-                              })}
-                            </Select>
+                            {typeof buy.product.selection?._id === "string" ? (
+                              <Typography
+                                variant="h6"
+                                style={{
+                                  fontWeight: 300,
+                                  fontSize: 18,
+                                  marginTop: -10,
+                                }}
+                              >
+                                {buy.product.selection.name}
+                                {buy.product.selection?.attributes?.length >
+                                  1 &&
+                                  buy.product.selection?.attributes[1]
+                                    ?.value !== undefined &&
+                                  " " +
+                                    buy.product.selection.attributes[1].value}
+                              </Typography>
+                            ) : (
+                              <>
+                                <InputLabel style={{ paddingLeft: 15 }}>
+                                  {buy.product.attributes[0]?.name}
+                                </InputLabel>
+                                <Select
+                                  id={"variant " + index}
+                                  variant="outlined"
+                                  onChange={(e) => {
+                                    handleVariantProduct(
+                                      e.target.value,
+                                      index,
+                                      buy.art,
+                                      buy.product
+                                    );
+                                  }}
+                                >
+                                  {buy.product.variants.map((a) => {
+                                    return (
+                                      <MenuItem
+                                        value={
+                                          a.name + "," + a.attributes[1]?.value
+                                        }
+                                      >
+                                        {a.name}
+                                        {a.attributes[1]?.value &&
+                                          " " + a.attributes[1]?.value}
+                                      </MenuItem>
+                                    );
+                                  })}
+                                </Select>
+                              </>
+                            )}
                           </FormControl>
                         )}
                         {props.discountList !== undefined &&
+                          props.discountList !== null &&
                           typeof buy.product.discount === "string" && (
                             <Typography
                               variant="p"
@@ -687,37 +708,40 @@ export default function ShoppingCart(props) {
                           marginBottom: 10,
                         }}
                       >
-                        <InputLabel style={{ paddingLeft: 15 }}>
-                          {buy.art
-                            ? "Arte: " +
-                              buy.art.title.substring(0, 27) +
-                              " - " +
-                              buy.art?.prixerUsername
-                            : "título del arte"}
-                        </InputLabel>
-                        <Select
-                          id={"Art " + index}
-                          variant="outlined"
-                          //   value={
-                          //     buy.art?.title.substring(0, 22) +
-                          //     " - " +
-                          //     buy.art?.prixerUsername
-                          //   }
-                          onChange={(e) =>
-                            changeArt(e.target.value, buy.product, index)
-                          }
-                        >
-                          {artList !== "" &&
-                            artList.map((art) => {
-                              return (
-                                <MenuItem value={art}>
-                                  {art.title.substring(0, 22) +
-                                    " - " +
-                                    art?.prixerUsername}
-                                </MenuItem>
-                              );
-                            })}
-                        </Select>
+                        {buy.art ? (
+                          <Typography
+                            variant="h6"
+                            style={{ fontWeight: 300, fontSize: 18 }}
+                          >
+                            {buy.art.title.substring(0, 22)}
+                            <br></br>
+                            {buy.art.prixerUsername}
+                          </Typography>
+                        ) : (
+                          <>
+                            <InputLabel style={{ paddingLeft: 15 }}>
+                              {"Agrega un arte"}
+                            </InputLabel>
+                            <Select
+                              id={"Art " + index}
+                              variant="outlined"
+                              onChange={(e) =>
+                                changeArt(e.target.value, buy.product, index)
+                              }
+                            >
+                              {artList !== "" &&
+                                artList.map((art) => {
+                                  return (
+                                    <MenuItem value={art}>
+                                      {art.title.substring(0, 22) +
+                                        " - " +
+                                        art?.prixerUsername}
+                                    </MenuItem>
+                                  );
+                                })}
+                            </Select>
+                          </>
+                        )}
                       </FormControl>
                       {buy.art && (
                         <>
@@ -729,7 +753,7 @@ export default function ShoppingCart(props) {
                               marginTop: -2,
                             }}
                           >
-                            <strong> Arte: </strong> {buy.art?.artId}
+                            Arte: {buy.art?.artId}
                           </p>
                         </>
                       )}
@@ -740,7 +764,6 @@ export default function ShoppingCart(props) {
                           style={{
                             display: "flex",
                             justifyContent: "space-between",
-                            // margin: "10px 0",
                           }}
                         >
                           <TextField
@@ -758,7 +781,7 @@ export default function ShoppingCart(props) {
                               ),
                             }}
                             // type="Number"
-                            style={{ width: 200, height: 80 }}
+                            style={{ width: 160, height: 80 }}
                             defaultValue={UnitPrice(buy.product)}
                             // value={UnitPrice(buy.product) || ""}
                             onChange={(e) => {
@@ -779,7 +802,7 @@ export default function ShoppingCart(props) {
                                 marginBottom: "10px",
                               }}
                             >
-                              <strong>Cantidad: </strong>
+                              Cantidad:
                               <input
                                 style={{
                                   width: 80,

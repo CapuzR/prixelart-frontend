@@ -520,12 +520,12 @@ export default function CartReview(props) {
                         marginLeft: "20px",
                       }}
                       src={
-                        buy.product.sources?.images[0]?.url
-                          ? buy.product?.thumbUrl
-                          : ""
+                        buy.product?.sources?.images[0]?.url ||
+                        buy.product?.thumbUrl ||
+                        ""
                       }
                       debounce={1000}
-                      cache
+                      // cache
                       error="/imgError.svg"
                       alt={buy.product && buy.product.name}
                       id={index}

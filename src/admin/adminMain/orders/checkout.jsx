@@ -631,9 +631,11 @@ export default function Checkout(props) {
                                   <Grid item xs={12} md={8}>
                                     {item.product.name + " X " + item.art.title}
                                     <br></br>
-                                    {item.product.selection.name}{" "}
-                                    {item.product.selection.attributes?.length >
-                                      1 &&
+                                    {item.product?.selection &&
+                                      item.product?.selection?.name}
+                                    {item.product?.selection?.attributes &&
+                                      item.product.selection.attributes
+                                        ?.length > 1 &&
                                       item.product.selection.attributes[1]
                                         ?.value}
                                   </Grid>

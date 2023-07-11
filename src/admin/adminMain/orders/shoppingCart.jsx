@@ -514,7 +514,11 @@ export default function ShoppingCart(props) {
                           marginRight: "20px",
                           marginLeft: "20px",
                         }}
-                        src={buy.product ? buy.product.thumbUrl : ""}
+                        src={
+                          buy.product?.sources?.images[0]?.url ||
+                          buy.product.thumbUrl ||
+                          ""
+                        }
                         debounce={1000}
                         cache
                         error="/imgError.svg"

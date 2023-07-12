@@ -128,6 +128,7 @@ const useStyles = makeStyles((theme) => ({
 export default function ReadOrders(props) {
   const classes = useStyles();
   const [sellers, setSellers] = useState();
+
   const handleChange = (event) => {
     props.setFilter(event.target.value);
     props.filterOrders(event.target.value);
@@ -188,23 +189,81 @@ export default function ReadOrders(props) {
                 </div>
               </TableCell>
               <TableCell align="center">
-                {/* <div style={{ display: "flex", justifyContent: "end" }}> */}
-                {/* <FormControl className={classes.formControl}> */}
-                {/* <InputLabel> */}
-                Fecha de entrega
-                {/* </InputLabel> */}
-                {/* <Select value={filter} onChange={handleChange}>
-                      <MenuItem value={"recent"}>Próximos</MenuItem>
-                      <MenuItem value={"previous"}>Lejanos</MenuItem>
-                    </Select> */}
-                {/* </FormControl> */}
-                {/* </div> */}
+                <div style={{ display: "flex", justifyContent: "end" }}>
+                  <FormControl className={classes.formControl}>
+                    <InputLabel>Fecha de entrega</InputLabel>
+                    <Select value={props.filter} onChange={handleChange}>
+                      <MenuItem value={"coming"}>Próximos</MenuItem>
+                      <MenuItem value={"later"}>Lejanos</MenuItem>
+                    </Select>
+                  </FormControl>
+                </div>
               </TableCell>
-              <TableCell align="center">Nombre</TableCell>
+              <TableCell align="center">Cliente</TableCell>
               <TableCell align="center">Productos</TableCell>
-              <TableCell align="center">Status de Pago</TableCell>
-              <TableCell align="center">Status</TableCell>
-              <TableCell align="center">Asesor</TableCell>
+              <TableCell align="center">
+                <div style={{ display: "flex", justifyContent: "end" }}>
+                  <FormControl className={classes.formControl}>
+                    <InputLabel> Status de Pago</InputLabel>
+                    <Select value={props.filter} onChange={handleChange}>
+                      <MenuItem value={"Pendiente"}>Pendiente</MenuItem>
+                      <MenuItem value={"Pagado"}>Pagado</MenuItem>
+                      <MenuItem value={"Abonado"}>Abonado</MenuItem>
+                      <MenuItem value={"Giftcard"}>Giftcard</MenuItem>
+                      <MenuItem value={"Obsequio"}>Obsequio</MenuItem>
+                      <MenuItem value={"Anulado"}>Anulado</MenuItem>
+                    </Select>
+                  </FormControl>
+                </div>
+              </TableCell>
+              <TableCell align="center">
+                <div style={{ display: "flex", justifyContent: "end" }}>
+                  <FormControl className={classes.formControl}>
+                    <InputLabel>Status</InputLabel>
+                    <Select value={props.filter} onChange={handleChange}>
+                      <MenuItem value={"Por producir"}>Por producir</MenuItem>
+                      <MenuItem value={"En impresión"}>En impresión</MenuItem>
+                      <MenuItem value={"En producción"}>En producción</MenuItem>
+                      <MenuItem value={"Por entregar"}>Por entregar</MenuItem>
+                      <MenuItem value={"Entregado"}>Entregado</MenuItem>
+                      <MenuItem value={"Concretado"}>Concretado</MenuItem>
+                      <MenuItem value={"Detenido"}>Detenido</MenuItem>
+                      <MenuItem value={"Anulado"}>Anulado</MenuItem>
+                    </Select>
+                  </FormControl>
+                </div>
+              </TableCell>
+              <TableCell align="center">
+                <div style={{ display: "flex", justifyContent: "end" }}>
+                  <FormControl className={classes.formControl}>
+                    <InputLabel>Asesor</InputLabel>
+                    <Select value={props.filter} onChange={handleChange}>
+                      <MenuItem
+                        value={{
+                          seller:
+                            JSON.parse(localStorage.getItem("adminToken"))
+                              .firstname +
+                            " " +
+                            JSON.parse(localStorage.getItem("adminToken"))
+                              .lastname,
+                        }}
+                      >
+                        {JSON.parse(localStorage.getItem("adminToken"))
+                          .firstname +
+                          " " +
+                          JSON.parse(localStorage.getItem("adminToken"))
+                            .lastname}
+                      </MenuItem>
+                      {sellers &&
+                        sellers.map((seller) => (
+                          <MenuItem value={{ seller: seller }}>
+                            {seller}
+                          </MenuItem>
+                        ))}
+                    </Select>
+                  </FormControl>
+                </div>
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>

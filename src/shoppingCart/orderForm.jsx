@@ -422,8 +422,10 @@ export default function OrderForm(props) {
         </>
       );
     } else if (
-      JSON.parse(localStorage.getItem("token")) &&
-      JSON.parse(localStorage.getItem("token")).username &&
+      (JSON.parse(localStorage?.getItem("token")) ||
+        JSON.parse(localStorage?.getItem("adminToken"))) &&
+      (JSON.parse(localStorage?.getItem("token"))?.username ||
+        JSON.parse(localStorage?.getItem("adminToken"))?.username) &&
       product.prixerEquation !== "" &&
       props.currency
     ) {
@@ -436,14 +438,18 @@ export default function OrderForm(props) {
         })
       );
     } else if (
-      JSON.parse(localStorage.getItem("token")) &&
-      JSON.parse(localStorage.getItem("token")).username &&
+      (JSON.parse(localStorage?.getItem("token")) ||
+        JSON.parse(localStorage?.getItem("adminToken"))) &&
+      (JSON.parse(localStorage?.getItem("token"))?.username ||
+        JSON.parse(localStorage?.getItem("adminToken"))?.username) &&
       product.prixerEquation !== ""
     ) {
       return " $" + product.prixerEquation * quantity;
     } else if (
-      JSON.parse(localStorage.getItem("token")) &&
-      JSON.parse(localStorage.getItem("token")).username &&
+      (JSON.parse(localStorage?.getItem("token")) ||
+        JSON.parse(localStorage?.getItem("adminToken"))) &&
+      (JSON.parse(localStorage?.getItem("token"))?.username ||
+        JSON.parse(localStorage?.getItem("adminToken"))?.username) &&
       props.currency
     ) {
       return (
@@ -455,8 +461,10 @@ export default function OrderForm(props) {
         })
       );
     } else if (
-      JSON.parse(localStorage.getItem("token")) &&
-      JSON.parse(localStorage.getItem("token")).username
+      (JSON.parse(localStorage?.getItem("token")) ||
+        JSON.parse(localStorage?.getItem("adminToken"))) &&
+      (JSON.parse(localStorage?.getItem("token"))?.username ||
+        JSON.parse(localStorage?.getItem("adminToken"))?.username)
     ) {
       return (
         " $" +
@@ -798,7 +806,13 @@ export default function OrderForm(props) {
                           })}`}</strong>
                         ) : (
                           props.valuesConsumer.shippingMethod && (
-                            <strong>{`Envío: $${shippingCost}`}</strong>
+                            <strong>{`Envío: $${shippingCost.toLocaleString(
+                              "de-DE",
+                              {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2,
+                              }
+                            )}`}</strong>
                           )
                         )}
                         <strong>

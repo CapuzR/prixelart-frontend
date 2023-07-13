@@ -271,26 +271,26 @@ export default function ShoppingCart(props) {
   const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const [productList, setProductList] = useState([]);
+  // const [products, setProducts] = useState([]);
   const [artList, setArtList] = useState([]);
-  const [imagesVariants, setImagesVariants] = useState([]);
-
-  const [count, setCount] = useState(0);
   let custom = {
     title: "Personalizado",
   };
-
-  useEffect(() => {
+  const getProducts = () => {
     const base_url = process.env.REACT_APP_BACKEND_URL + "/product/read-all";
     axios.get(base_url).then(async (response) => {
       let productsAttTemp1 = response.data.products;
       await productsAttTemp1.map(async (p, iProd, pArr) => {
-        p.variants.map((variant) => {
-          imagesVariants.push(variant.variantImage);
-        });
         productsAttTemp1 = await getEquation(p, iProd, pArr);
       });
       setProductList(getAttributes(productsAttTemp1));
+      // setTimeout(() => {
+      // setProducts(getAttributes(productsAttTemp1));
+      // }, 100);
     });
+  };
+  useEffect(() => {
+    getProducts();
   }, []);
 
   useEffect(() => {
@@ -396,47 +396,52 @@ export default function ShoppingCart(props) {
     });
   };
 
-  const changeProduct = (event, art, index, variant) => {
+  const changeProduct = (event, art, index) => {
     props.setSelectedArtToAssociate({
       index,
       item: art,
       previous: true,
     });
     let selectedProduct = event.target.value;
-
     let selectedProductFull = productList.find(
       (result) => result.name === selectedProduct
     );
-    if (variant) {
-      props.AssociateProduct({
-        index: index,
-        item: selectedProductFull.push({ selection: variant }),
-        type: "product",
-      });
-    } else
-      props.AssociateProduct({
-        index: index,
-        item: selectedProductFull,
-        type: "product",
-      });
+    props.AssociateProduct({
+      index: index,
+      item: selectedProductFull,
+      type: "product",
+    });
   };
 
-  const handleVariantProduct = (variant, index, art, product) => {
-    let v = variant.split(",");
-    let selectedVariant = product.variants.find((result) => {
-      if (v[1] !== "undefined") {
-        return result?.name === v[0] && result.attributes[1]?.value === v[1];
-      } else {
-        return result?.name === v[0];
-      }
-    });
-    const prev = props.buyState;
+  const handleVariantProduct = (variant, index, product) => {
+    // let v = variant.split(",");
+    // let selectedVariant = product.variants.find((result) => {
+    //   if (v[1] !== "undefined") {
+    //     return result?.name === v[0] && result.attributes[1]?.value === v[1];
+    //   } else {
+    //     return result?.name === v[0];
+    //   }
+    // });
+    let prod = product;
+    prod.selection = variant;
+    prod.publicEquation = variant?.publicPrice?.equation;
+    // const prev = props.buyState;
 
-    prev[index].product.selection = selectedVariant;
-    prev[index].product.publicEquation = selectedVariant?.publicPrice.equation;
-    setCount(count + 1);
-    localStorage.setItem("buyState", JSON.stringify(prev));
-    props.setBuyState(prev);
+    // prev[index].product.selection = selectedVariant;
+    // prev[index].product.publicEquation = selectedVariant?.publicPrice.equation;
+    props.AssociateProduct({
+      index: index,
+      item: prod,
+      type: "product",
+    });
+    // setCount(count + 1);
+    // localStorage.setItem("buyState", JSON.stringify(prev));
+    // props.setBuyState(prev);
+    props.buyState.map((item) => {
+      console.log(item.product?.selection?.name);
+    });
+    // setProductList(products);
+    getProducts();
   };
 
   const modifyPrice = (product, index, newPrice) => {
@@ -452,16 +457,14 @@ export default function ShoppingCart(props) {
 
   const handleProduct = (event) => {
     let selectedProduct = event.target.value;
-    let selectedProductFull = productList.find(
-      (result) => result.name === selectedProduct
-    );
-    selectedProductFull.selection = [null, null];
-    console.log(selectedProductFull.selection);
     props.addItemToBuyState({
       type: "product",
-      item: selectedProductFull,
+      item: selectedProduct,
     });
+    console.log(selectedProduct?.selection?.name);
   };
+
+  console.log(productList[35]?.selection);
 
   return (
     <Grid container style={{ display: "flex", justifyContent: "center" }}>
@@ -558,7 +561,7 @@ export default function ShoppingCart(props) {
                                   changeProduct(e, buy.art, index);
                                 }}
                               >
-                                {productList !== "" &&
+                                {productList !== [] &&
                                   productList.map((product) => {
                                     return (
                                       <MenuItem value={product.name}>
@@ -604,18 +607,13 @@ export default function ShoppingCart(props) {
                                     handleVariantProduct(
                                       e.target.value,
                                       index,
-                                      buy.art,
                                       buy.product
                                     );
                                   }}
                                 >
                                   {buy.product.variants.map((a) => {
                                     return (
-                                      <MenuItem
-                                        value={
-                                          a.name + "," + a.attributes[1]?.value
-                                        }
-                                      >
+                                      <MenuItem value={a}>
                                         {a.name}
                                         {a.attributes[1]?.value &&
                                           " " + a.attributes[1]?.value}
@@ -902,9 +900,7 @@ export default function ShoppingCart(props) {
             >
               {productList !== "" &&
                 productList.map((product, index) => {
-                  return (
-                    <MenuItem value={product.name}>{product.name}</MenuItem>
-                  );
+                  return <MenuItem value={product}>{product.name}</MenuItem>;
                 })}
             </Select>
           </FormControl>

@@ -222,16 +222,15 @@ export default function CreateOrder(props) {
   const classes = useStyles();
   const theme = useTheme();
 
-  const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  // const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
+  // const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
   const [activeStep, setActiveStep] = React.useState(0);
   const [basicData, setBasicData] = useState();
   const [shippingData, setShippingData] = useState();
   const [billingData, setBillingData] = useState();
-  const [isShowDetails, setIsShowDetails] = useState(false);
   const [openCreateOrder, setOpenCreateOrder] = useState(false);
-  const [count, setCount] = useState(0);
+  const [loadingOrder, setLoadingOrder] = useState(false);
   const [orderPaymentMethod, setOrderPaymentMethod] = useState(undefined);
   const [observations, setObservations] = useState();
   const steps = [`Datos del comprador`, `Productos`, `Orden de compra`];
@@ -305,6 +304,7 @@ export default function CreateOrder(props) {
   };
 
   const createOrder = async () => {
+    setLoadingOrder(true);
     props.setLoading(true);
 
     let orderLines = [];
@@ -384,6 +384,8 @@ export default function CreateOrder(props) {
     props.setBuyState([]);
     props.readOrders();
     props.setLoading(false);
+    setLoadingOrder(false);
+    props.handleClose();
   };
 
   return (
@@ -465,6 +467,8 @@ export default function CreateOrder(props) {
             createOrder={createOrder}
             orderPaymentMethod={orderPaymentMethod}
             setOrderPaymentMethod={setOrderPaymentMethod}
+            discountList={props.discountList}
+            loadingOrder={loadingOrder}
           ></Checkout>
         )}
       </div>

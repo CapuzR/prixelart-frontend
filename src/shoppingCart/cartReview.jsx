@@ -277,8 +277,10 @@ export default function CartReview(props) {
         </>
       );
     } else if (
-      JSON.parse(localStorage.getItem("token")) &&
-      JSON.parse(localStorage.getItem("token")).username &&
+      (JSON.parse(localStorage?.getItem("token")) ||
+        JSON.parse(localStorage?.getItem("adminToken"))) &&
+      (JSON.parse(localStorage?.getItem("token"))?.username ||
+        JSON.parse(localStorage?.getItem("adminToken"))?.username) &&
       product.prixerEquation !== "" &&
       props.currency
     ) {
@@ -292,8 +294,10 @@ export default function CartReview(props) {
         )
       );
     } else if (
-      JSON.parse(localStorage.getItem("token")) &&
-      JSON.parse(localStorage.getItem("token")).username &&
+      (JSON.parse(localStorage?.getItem("token")) ||
+        JSON.parse(localStorage?.getItem("adminToken"))) &&
+      (JSON.parse(localStorage?.getItem("token"))?.username ||
+        JSON.parse(localStorage?.getItem("adminToken"))?.username) &&
       product.prixerEquation !== ""
     ) {
       return (
@@ -303,8 +307,10 @@ export default function CartReview(props) {
         })
       );
     } else if (
-      JSON.parse(localStorage.getItem("token")) &&
-      JSON.parse(localStorage.getItem("token")).username &&
+      (JSON.parse(localStorage?.getItem("token")) ||
+        JSON.parse(localStorage?.getItem("adminToken"))) &&
+      (JSON.parse(localStorage?.getItem("token"))?.username ||
+        JSON.parse(localStorage?.getItem("adminToken"))?.username) &&
       props.currency
     ) {
       return (
@@ -317,8 +323,10 @@ export default function CartReview(props) {
         )
       );
     } else if (
-      JSON.parse(localStorage.getItem("token")) &&
-      JSON.parse(localStorage.getItem("token")).username
+      (JSON.parse(localStorage?.getItem("token")) ||
+        JSON.parse(localStorage?.getItem("adminToken"))) &&
+      (JSON.parse(localStorage?.getItem("token"))?.username ||
+        JSON.parse(localStorage?.getItem("adminToken"))?.username)
     ) {
       return (
         " $" +

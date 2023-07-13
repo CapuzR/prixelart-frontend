@@ -207,7 +207,6 @@ function ConsumerForm(props) {
 
   const selectShDate = (value) => {
     // let date = Date(value);
-    // console.log(date)
     if (value < stringReadyDate) {
       props.setOpen(true);
       props.setMessage(
@@ -733,7 +732,7 @@ function ConsumerForm(props) {
                       // required
                       format="dd-MM-yyyy"
                       defaultValue={stringReadyDate}
-                      value={props.values.today}
+                      value={props.values?.today}
                       error={props.values.today < stringReadyDate}
                       // min={stringReadyDate}
                       className={classes.textField}

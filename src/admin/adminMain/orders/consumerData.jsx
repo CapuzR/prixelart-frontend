@@ -681,7 +681,7 @@ export default function ConsumerData(props) {
                 variant="outlined"
                 //
                 format="dd-MM-yyyy"
-                defaultValue={stringReadyDate}
+                // defaultValue={stringReadyDate}
                 value={props.shippingData?.shippingDate}
                 error={props.values?.today < stringReadyDate}
                 min={stringReadyDate}

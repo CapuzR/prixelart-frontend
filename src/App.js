@@ -95,7 +95,7 @@ function App() {
         art: undefined,
         product: input.item,
       });
-    } else {
+    } else if (input.type === "art") {
       newState.push({
         art: input.item,
         product: undefined,

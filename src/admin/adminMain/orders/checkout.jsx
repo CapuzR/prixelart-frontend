@@ -272,9 +272,8 @@ export default function Checkout(props) {
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
   const [currency, setCurrency] = useState(false);
-  const [discountList, setDiscountList] = useState([]);
   const [paymentMethods, setPaymentMethods] = useState(undefined);
-  const [orderPaymentMethod, setOrderPaymentMethod] = useState(undefined);
+
   let shippingCost = Number(props.shippingData?.shippingMethod?.price);
 
   useEffect(() => {
@@ -312,13 +311,13 @@ export default function Checkout(props) {
     let prices = [0];
     state.map((item) => {
       if (item.product.modifyPrice) {
-        prices.push(Number(item.product.publicEquation));
+        prices.push(Number(item.product.publicEquation * (item.quantity || 1)));
       } else if (
         item.product &&
         item.art &&
         typeof item.product.discount === "string"
       ) {
-        let dis = discountList?.find(
+        let dis = props.discountList?.find(
           ({ _id }) => _id === item.product.discount
         );
         if (dis?.type === "Porcentaje") {
@@ -357,13 +356,17 @@ export default function Checkout(props) {
   };
 
   const PriceSelect = (product, quantity) => {
-    let dis = discountList?.filter((dis) => dis._id === product.discount)[0];
+    let dis = props.discountList?.filter(
+      (dis) => dis._id === product.discount
+    )[0];
 
     if (product.modifyPrice && currency) {
       return (
         " Bs" +
         Number(
-          product.publicEquation.replace(/[,]/gi, ".") * props.dollarValue
+          product.publicEquation.replace(/[,]/gi, ".") *
+            (quantity || 1) *
+            props.dollarValue
         ).toLocaleString("de-DE", {
           minimumFractionDigits: 2,
           maximumFractionDigits: 2,
@@ -372,10 +375,13 @@ export default function Checkout(props) {
     } else if (product.modifyPrice) {
       return (
         " $" +
-        Number(product.publicEquation).toLocaleString("de-DE", {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        })
+        Number(product.publicEquation * (quantity || 1)).toLocaleString(
+          "de-DE",
+          {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          }
+        )
       );
     } else if (
       typeof product.discount === "string" &&
@@ -411,7 +417,6 @@ export default function Checkout(props) {
       typeof product.discount === "string" &&
       product.publicEquation !== ""
     ) {
-      // console.log("ecuación + descuento"); AQUI ES
       return (
         <>
           {dis?.type === "Porcentaje" &&
@@ -660,9 +665,6 @@ export default function Checkout(props) {
                                       Precio:
                                       {PriceSelect(item.product, item.quantity)}
                                     </div>
-                                    {console.log(
-                                      PriceSelect(item.product, item.quantity)
-                                    )}
                                   </Grid>
                                 </Grid>
                               }
@@ -839,7 +841,7 @@ export default function Checkout(props) {
         }}
       >
         <Button
-          disabled={props.buyState.length == 0}
+          disabled={props.loadingOrder || props.buyState.length == 0}
           variant="contained"
           color={"primary"}
           onClick={props.createOrder}

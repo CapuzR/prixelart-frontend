@@ -251,7 +251,7 @@ export default function Orders(props) {
   const [errorMessage, setErrorMessage] = useState();
   const [snackBarError, setSnackBarError] = useState(false);
   const [discountList, setDiscountList] = useState([]);
-  const [sellers, setSellers] = useState([]);
+  const [orders, setOrders] = useState([]);
 
   const getDiscounts = async () => {
     const base_url = process.env.REACT_APP_BACKEND_URL + "/discount/read-allv2";
@@ -280,6 +280,7 @@ export default function Orders(props) {
       )
       .then((response) => {
         setRows(response.data.orders);
+        setOrders(response.data.orders);
       })
       .catch((error) => {
         console.log(error);
@@ -309,31 +310,8 @@ export default function Orders(props) {
 
   const filterOrders = (filter) => {
     setLoading(true);
-
-    if (filter === "finished") {
-      let ordersv2 = rows.sort(function (a, b) {
-        if (a.status.toLowerCase() > b.status.toLowerCase()) {
-          return 1;
-        }
-        if (a.status.toLowerCase() < b.status.toLowerCase()) {
-          return -1;
-        }
-        return 0;
-      });
-      setRows(ordersv2);
-    } else if (filter === "processing") {
-      let ordersv2 = rows.sort(function (a, b) {
-        if (a.status.toLowerCase() < b.status.toLowerCase()) {
-          return 1;
-        }
-        if (a.status.toLowerCase() > b.status.toLowerCase()) {
-          return -1;
-        }
-        return 0;
-      });
-      setRows(ordersv2);
-    } else if (filter === "recent") {
-      let ordersv2 = rows.sort(function (a, b) {
+    if (filter === "recent") {
+      let ordersv2 = orders.sort(function (a, b) {
         if (a.createdOn.toLowerCase() < b.createdOn.toLowerCase()) {
           return 1;
         }
@@ -344,7 +322,7 @@ export default function Orders(props) {
       });
       setRows(ordersv2);
     } else if (filter === "previous") {
-      let ordersv2 = rows.sort(function (a, b) {
+      let ordersv2 = orders.sort(function (a, b) {
         if (a.createdOn.toLowerCase() > b.createdOn.toLowerCase()) {
           return 1;
         }
@@ -354,19 +332,103 @@ export default function Orders(props) {
         return 0;
       });
       setRows(ordersv2);
+    } else if (filter === "coming") {
+      let toDeliver = orders.filter(
+        (row) =>
+          row.shippingData && row.shippingData?.shippingDate !== undefined
+      );
+      let ordersv2 = toDeliver.sort(function (a, b) {
+        if (
+          a.shippingData?.shippingDate !== undefined &&
+          b.shippingData?.shippingDate !== undefined &&
+          a.shippingData?.shippingDate > b.shippingData?.shippingDate
+        ) {
+          return 1;
+        }
+        if (
+          a.shippingData?.shippingDate !== undefined &&
+          b.shippingData?.shippingDate !== undefined &&
+          a.shippingData?.shippingDate < b.shippingData?.shippingDate
+        ) {
+          return -1;
+        }
+        if (a.shippingData?.shippingDate === undefined) {
+          return -1;
+        }
+        return 0;
+      });
+      setRows(ordersv2);
+    } else if (filter === "later") {
+      let toDeliver = orders.filter(
+        (row) =>
+          row.shippingData && row.shippingData?.shippingDate !== undefined
+      );
+      let ordersv2 = toDeliver.sort(function (a, b) {
+        if (
+          a.shippingData?.shippingDate !== undefined &&
+          b.shippingData?.shippingDate !== undefined &&
+          a.shippingData?.shippingDate < b.shippingData?.shippingDate
+        ) {
+          return 1;
+        }
+        if (
+          a.shippingData?.shippingDate !== undefined &&
+          b.shippingData?.shippingDate !== undefined &&
+          a.shippingData?.shippingDate > b.shippingData?.shippingDate
+        ) {
+          return -1;
+        }
+        if (a.shippingData?.shippingDate === undefined) {
+          return -1;
+        }
+        return 0;
+      });
+      setRows(ordersv2);
+    } else if (
+      filter === "Pagado" ||
+      filter === "Abonado" ||
+      filter === "Giftcard" ||
+      filter === "Obsequio" ||
+      filter === "Anulado"
+    ) {
+      let ordersv2 = orders.filter((row) => row.payStatus === filter);
+      setRows(ordersv2);
+    } else if (filter === "Pendiente") {
+      let ordersv2 = orders.filter(
+        (row) => row.payStatus === filter || row.payStatus === undefined
+      );
+      setRows(ordersv2);
+    } else if (
+      filter === "Por producir" ||
+      filter === "En impresión" ||
+      filter === "En producción" ||
+      filter === "Por entregar" ||
+      filter === "Entregado" ||
+      filter === "Concretado" ||
+      filter === "Detenido" ||
+      filter === "Anulado"
+    ) {
+      let ordersv2 = orders.filter((row) => row.status === filter);
+      setRows(ordersv2);
+    } else if (typeof filter === "object") {
+      console.log(filter);
+      let ordersv2 = orders.filter(
+        (row) => row.createdBy.username === filter.seller
+      );
+      setRows(ordersv2);
     }
     setLoading(false);
   };
 
-  const deleteOrder = async (id) => {
-    const URI = process.env.REACT_APP_BACKEND_URL + "/order/delete/" + id;
-    await axios.delete(
-      URI,
-      { adminToken: localStorage.getItem("adminTokenV") },
-      { withCredentials: true }
-    );
-    filterOrders();
-  };
+  // const deleteOrder = async (id) => {
+  //   const URI = process.env.REACT_APP_BACKEND_URL + "/order/delete/" + id;
+  //   await axios.delete(
+  //     URI,
+  //     { adminToken: localStorage.getItem("adminTokenV") },
+  //     { withCredentials: true }
+  //   );
+  //   filterOrders();
+  // };
 
   const handleClose = () => {
     setIsShowDetails(false);
@@ -636,11 +698,6 @@ export default function Orders(props) {
       payComission(order);
     }
     readOrders();
-  };
-
-  const handleChange = (event) => {
-    setFilter(event.target.value);
-    filterOrders(event.target.value);
   };
 
   useEffect(() => {
@@ -996,6 +1053,7 @@ export default function Orders(props) {
               rows={rows}
               setFilter={setFilter}
               filter={filter}
+              filterOrders={filterOrders}
               setModalContent={setModalContent}
               setIsShowDetails={setIsShowDetails}
               isShowDetails={isShowDetails}

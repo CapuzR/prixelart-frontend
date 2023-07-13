@@ -152,7 +152,7 @@ export default function ReadShippingMethod(props) {
         id: shippingMethod._id,
         active: active,
         name: name,
-        price: price,
+        price: price.replace(/[,]/gi, "."),
         adminToken: localStorage.getItem("adminTokenV"),
       };
 

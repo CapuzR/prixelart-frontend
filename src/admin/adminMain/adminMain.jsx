@@ -28,6 +28,7 @@ import Preferences from "./preferences/Preferences";
 import Testimonials from "../TestimonialsCrud/Testimonials";
 import Prixers from "./prixers/prixers";
 import ShippingMethods from "./shippingMethodCrud/readShippingMethod";
+import Movements from "./movements/readMovements";
 import Fab from "@material-ui/core/Fab";
 import AttachMoneyIcon from "@material-ui/icons/AttachMoney";
 import Modal from "@material-ui/core/Modal";
@@ -296,6 +297,8 @@ export default function AdminMain(props) {
                 <Products permissions={permissions} />
               ) : active === "consumer" ? (
                 <Consumers permissions={permissions} />
+              ) : active === "movements" ? (
+                <Movements permissions={permissions} />
               ) : active === "payment-method" ? (
                 <PaymentMethods permissions={permissions} />
               ) : active === "shipping-method" ? (

@@ -41,6 +41,10 @@ import ArrowForwardIosIcon from "@material-ui/icons/ArrowForwardIos";
 import ArtUploader from "../sharedComponents/artUploader/artUploader";
 import TestimonialsFeed from "../admin/TestimonialsCrud/TestimonialsFeed";
 import CartReview from "../shoppingCart/cartReview";
+import ReactGA from "react-ga";
+
+ReactGA.initialize("G-0RWP9B33D8");
+ReactGA.pageview("/");
 
 function Copyright() {
   return (

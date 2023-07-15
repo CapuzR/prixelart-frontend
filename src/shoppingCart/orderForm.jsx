@@ -39,6 +39,7 @@ export default function OrderForm(props) {
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const [balance, setBalance] = useState(0);
   const [discountList, setDiscountList] = useState([]);
+  const [sellers, setSellers] = useState([]);
 
   const getDiscounts = async () => {
     const base_url = process.env.REACT_APP_BACKEND_URL + "/discount/read-allv2";
@@ -82,8 +83,16 @@ export default function OrderForm(props) {
         console.log(error);
       });
   };
+  const getSellers = () => {
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/admin/getSellers";
+    axios.get(base_url).then((response) => {
+      // console.log(response.data);
+      setSellers(response.data);
+    });
+  };
   useEffect(() => {
     getPaymentMethod();
+    getSellers();
   }, []);
 
   useEffect(() => {
@@ -565,6 +574,30 @@ export default function OrderForm(props) {
                 padding: "8px",
               }}
             >
+              <div style={{ width: "100%" }}>
+                <FormControl
+                  variant="outlined"
+                  fullWidth
+                  style={{ marginTop: 25 }}
+                  required
+                >
+                  <InputLabel htmlFor="outlined-age-simple">Asesor </InputLabel>
+                  <Select
+                    input={<OutlinedInput />}
+                    value={props.createdBy}
+                    onChange={(event) => props.setSeller(event.target.value)}
+                  >
+                    <MenuItem value={undefined}></MenuItem>
+                    {sellers &&
+                      sellers.map((m) => (
+                        <MenuItem value={m.firstname + " " + m.lastname}>
+                          {m.firstname + " " + m.lastname}
+                        </MenuItem>
+                      ))}
+                  </Select>
+                </FormControl>
+              </div>
+
               <div style={{ width: "100%" }}>
                 <div style={{ fontWeight: "bold" }}>Items:</div>
                 <div>

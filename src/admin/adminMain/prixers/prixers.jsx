@@ -20,6 +20,7 @@ import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
 import TextField from "@material-ui/core/TextField";
 import InputAdornment from "@material-ui/core/InputAdornment";
+import DehazeIcon from "@material-ui/icons/Dehaze";
 import { nanoid } from "nanoid";
 
 const useStyles = makeStyles((theme) => ({
@@ -370,6 +371,21 @@ export default function Prixers(props) {
                               }}
                             >
                               Retiro
+                            </Button>
+                          </div>
+                          <div
+                            style={{
+                              width: "100%",
+                              display: "flex",
+                              justifyContent: "center",
+                              textTransform: "lowercase",
+                              marginTop: 5,
+                            }}
+                          >
+                            <Button
+                            >
+                              <DehazeIcon />
+                              Detalles
                             </Button>
                           </div>
                         </div>

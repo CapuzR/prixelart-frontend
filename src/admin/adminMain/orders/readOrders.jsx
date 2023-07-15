@@ -135,7 +135,6 @@ export default function ReadOrders(props) {
   const [pageNumber, setPageNumber] = useState(1);
   const itemsToSkip = (pageNumber - 1) * itemsPerPage;
   const rowsv2 = props.rows?.slice(itemsToSkip, itemsPerPage + itemsToSkip);
-  // console.log(rowsv2);
 
   const handleChange = (event) => {
     props.setFilter(event.target.value);
@@ -268,7 +267,7 @@ export default function ReadOrders(props) {
                               .lastname}
                         </MenuItem>
                         {sellers &&
-                          sellers.map((seller) => (
+                          sellers?.map((seller) => (
                             <MenuItem value={{ seller: seller }}>
                               {seller}
                             </MenuItem>
@@ -399,13 +398,25 @@ export default function ReadOrders(props) {
                             JSON.parse(localStorage.getItem("adminToken"))
                               .area !== "Master"
                           }
-                          defaultValue={row.createdBy.username}
+                          value={row.createdBy?.username}
                           onChange={(e) => {
                             handleChangeSeller(row, e.target.value);
                           }}
                         >
-                          <MenuItem value={row.createdBy.username}>
-                            {row.createdBy.username}
+                          <MenuItem
+                            value={
+                              JSON.parse(localStorage.getItem("adminToken"))
+                                .firstname +
+                              " " +
+                              JSON.parse(localStorage.getItem("adminToken"))
+                                .lastname
+                            }
+                          >
+                            {JSON.parse(localStorage.getItem("adminToken"))
+                              .firstname +
+                              " " +
+                              JSON.parse(localStorage.getItem("adminToken"))
+                                .lastname}
                           </MenuItem>
 
                           {sellers &&

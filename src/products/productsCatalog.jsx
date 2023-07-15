@@ -22,6 +22,10 @@ import { useHistory } from "react-router-dom";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { useTheme } from "@material-ui/core/styles";
 import CartReview from "../shoppingCart/cartReview";
+import ReactGA from "react-ga";
+
+ReactGA.initialize("G-0RWP9B33D8");
+ReactGA.pageview("/productos");
 
 const useStyles = makeStyles((theme) => ({
   paper: {

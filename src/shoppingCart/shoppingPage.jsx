@@ -139,6 +139,7 @@ export default function ShoppingPage(props) {
   const [currency, setCurrency] = useState(false);
   const [paymentVoucher, setPaymentVoucher] = useState();
   const [discountList, setDiscountList] = useState([]);
+  const [seller, setSeller] = useState();
 
   const getDiscounts = async () => {
     const base_url = process.env.REACT_APP_BACKEND_URL + "/discount/read-allv2";
@@ -427,7 +428,7 @@ export default function ShoppingPage(props) {
         shippingCost: shippingCost,
         total: getTotal(props.buyState),
         createdOn: new Date(),
-        createdBy: "Prixelart Page",
+        createdBy: seller ? { username: seller } : "Prixelart Page",
         orderType: "Particular",
         consumerId: consumerData._id,
         status: "Por producir",
@@ -717,6 +718,7 @@ export default function ShoppingPage(props) {
                       paymentVoucher={paymentVoucher}
                       dollarValue={dollarValue}
                       currency={currency}
+                      setSeller={setSeller}
                     />
                   )}
                 </div>

@@ -254,9 +254,9 @@ export default function Orders(props) {
   const [orders, setOrders] = useState([]);
 
   const getDiscounts = async () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + "/discount/read-allv2";
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/discount/read-allv1";
     await axios
-      .post(base_url)
+      .post(base_url, { adminToken: localStorage.getItem("adminTokenV") })
       .then((response) => {
         setDiscountList(response.data.discounts);
       })
@@ -623,19 +623,21 @@ export default function Orders(props) {
     readOrders();
   };
 
-  const payComission = (order) => {
-    order.requests.map(async (item) => {
-      let unitPrice =
-        item.product?.prixerEquation ||
-        item.product?.prixerPrice?.from ||
-        item.product?.publicEquation ||
-        item.product.publicPrice.from;
+  const payComission = async (order) => {
+    for (let item of order.requests) {
+      let unitPrice;
+      let discount = discountList.find(
+        (dis) => dis._id === item.product.discount
+      );
 
-      let discount;
-      if (typeof item.product.discount === "String") {
-        discount = discountList.find(
-          ({ _id }) => _id === item.product.discount
-        );
+      if (item.product.modifyPrice) {
+        unitPrice = Number((item.product.publicEquation / 10) * item.quantity);
+      } else if (typeof item.product.discount === "string") {
+        unitPrice =
+          // item.product?.prixerEquation ||
+          // item.product?.prixerPrice?.from ||
+          item.product?.publicEquation || item.product.publicPrice.from;
+
         if (discount?.type === "Porcentaje") {
           let op = Number(
             ((unitPrice - (unitPrice / 100) * discount.value) / 10) *
@@ -647,31 +649,35 @@ export default function Orders(props) {
           unitPrice = op;
         }
       } else {
+        unitPrice =
+          item.product?.prixerEquation ||
+          item.product?.prixerPrice?.from ||
+          item.product?.publicEquation ||
+          item.product.publicPrice.from;
         let op = Number((unitPrice / 10) * item.quantity);
         unitPrice = op;
       }
-
       const url1 = process.env.REACT_APP_BACKEND_URL + "/prixer/read";
       await axios
         .post(url1, { username: item.art?.prixerUsername })
-        .then((res) => {
+        .then(async (res) => {
           setAccount(res.data.account);
+          const url = process.env.REACT_APP_BACKEND_URL + "/movement/create";
+          const data = {
+            _id: nanoid(),
+            createdOn: new Date(),
+            createdBy: JSON.parse(localStorage.getItem("adminToken")).username,
+            date: new Date(),
+            destinatary: res.data.account,
+            description: `Comisión de la orden #${order.orderId}`,
+            type: "Depósito",
+            value: unitPrice,
+            adminToken: localStorage.getItem("adminTokenV"),
+          };
+          await axios.post(url, data);
         });
-      const url = process.env.REACT_APP_BACKEND_URL + "/movement/create";
-      const data = {
-        _id: nanoid(),
-        createdOn: new Date(),
-        createdBy: JSON.parse(localStorage.getItem("adminToken")).username,
-        date: new Date(),
-        destinatary: account,
-        description: `Comisión de la orden #${order.orderId}`,
-        type: "Depósito",
-        value: unitPrice,
-        adminToken: localStorage.getItem("adminTokenV"),
-      };
-      await axios.post(url, data);
       setAccount();
-    });
+    }
   };
 
   const handleChangePayStatus = async (order, payStatus) => {

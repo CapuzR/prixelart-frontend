@@ -22,11 +22,13 @@ import { Backdrop } from "@material-ui/core";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import validations from "../../../shoppingCart/validations";
 import axios from "axios";
+import InputLabel from "@material-ui/core/InputLabel";
+import Select from "@material-ui/core/Select";
+import MenuItem from "@material-ui/core/MenuItem";
+
 // import CircularProgress from '@material-ui/core/CircularProgress';
 // import Backdrop from '@material-ui/core/Backdrop';
 import Checkbox from "@material-ui/core/Checkbox";
-import EditIcon from "@material-ui/icons/Edit";
-import DeleteIcon from "@material-ui/icons/Delete";
 
 import Fab from "@material-ui/core/Fab";
 // import Button from '@material-ui/core/Button';
@@ -42,6 +44,10 @@ const useStyles = makeStyles((theme) => ({
     height: "auto",
     overflow: "none",
   },
+  formControl: {
+    margin: theme.spacing(1),
+    minWidth: 120,
+  },
 }));
 
 export default function ReadMovements(props) {
@@ -49,34 +55,32 @@ export default function ReadMovements(props) {
   const location = useLocation();
 
   const classes = useStyles();
-  const [activeCrud, setActiveCrud] = useState("read");
+  // const [activeCrud, setActiveCrud] = useState("read");
 
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
   const [rows, setRows] = useState();
+  const [movements, setMovements] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [active, setActive] = useState(true);
-  const [name, setName] = useState();
-  const [price, setPrice] = useState();
-  const [shippingMethod, setShippingMethod] = useState();
+  // const [active, setActive] = useState(true);
+  // const [name, setName] = useState();
+  // const [price, setPrice] = useState();
+  const [filter, setFilter] = useState();
+  const [prixers, setPrixers] = useState([]);
 
   //Error states.
   const [errorMessage, setErrorMessage] = useState();
   const [snackBarError, setSnackBarError] = useState(false);
 
-  const handleAction = (action) => {
-    history.push({ pathname: "/admin/shipping-method/" + action });
-  };
-
-  useEffect(() => {
-    location.pathname.split("/").length === 5
-      ? setActiveCrud(
-          location.pathname.split("/")[location.pathname.split("/").length - 2]
-        )
-      : location.pathname.split("/").length === 4 &&
-        setActiveCrud(
-          location.pathname.split("/")[location.pathname.split("/").length - 1]
-        );
-  }, [location.pathname]);
+  // useEffect(() => {
+  //   location.pathname.split("/").length === 5
+  //     ? setActiveCrud(
+  //         location.pathname.split("/")[location.pathname.split("/").length - 2]
+  //       )
+  //     : location.pathname.split("/").length === 4 &&
+  //       setActiveCrud(
+  //         location.pathname.split("/")[location.pathname.split("/").length - 1]
+  //       );
+  // }, [location.pathname]);
 
   const readMovements = () => {
     const base_url =
@@ -89,106 +93,41 @@ export default function ReadMovements(props) {
       )
       .then((response) => {
         setRows(response.data.movements);
+        setMovements(response.data.movements);
+        response.data.movements.map((mov) => {
+          if (prixers.includes(mov.destinatary)) {
+            return;
+          } else {
+            prixers.push(mov.destinatary);
+          }
+        });
+        setPrixers(prixers);
       })
       .catch((error) => {
         console.log(error);
       });
   };
-
   useEffect(() => {
     readMovements();
   }, []);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleChange = (event) => {
+    console.log(event.target.value);
+    setFilter(event.target.value);
+    filterMovements(event.target.value);
+  };
+
+  const filterMovements = (filter) => {
     setLoading(true);
-
-    const data = {
-      active: active,
-      name: name,
-      createdOn: new Date(),
-      createdBy: JSON.parse(localStorage.getItem("adminToken")),
-      price: price,
-      adminToken: localStorage.getItem("adminTokenV"),
-    };
-    const base_url =
-      process.env.REACT_APP_BACKEND_URL + "/shipping-method/create";
-    const response = await axios.post(base_url, data, {
-      withCredentials: true,
-    });
-    if (response.data.success === false) {
-      setLoading(false);
-      setErrorMessage(response.data.message);
-      setSnackBarError(true);
+    if (filter === undefined) {
+      setRows(movements);
     } else {
-      setErrorMessage("Registro del método de envío exitoso.");
-      setSnackBarError(true);
-      setActive(true);
-      setName("");
-      setPrice("");
-      history.push({ pathname: "/admin/shipping-method/read" });
-      readMovements();
-      setLoading(false);
+      let movementsv2 = movements.filter((row) => row.destinatary === filter);
+      setRows(movementsv2);
     }
-  };
-
-  const handleActive = (shippingMethod, action) => {
-    setShippingMethod(shippingMethod);
-    setName(shippingMethod.name);
-    setPrice(shippingMethod.price);
-    setActive(shippingMethod.active);
-    history.push("/admin/shipping-method/" + action + "/" + shippingMethod._id);
-  };
-
-  const updateShippingMethod = async (e) => {
-    e.preventDefault();
-    if (!name || !price) {
-      setErrorMessage("Por favor completa todos los campos requeridos.");
-      setSnackBarError(true);
-    } else {
-      setLoading(true);
-
-      const data = {
-        id: shippingMethod._id,
-        active: active,
-        name: name,
-        price: price.replace(/[,]/gi, "."),
-        adminToken: localStorage.getItem("adminTokenV"),
-      };
-
-      const base_url =
-        process.env.REACT_APP_BACKEND_URL + "/shipping-method/update";
-      const response = await axios.put(base_url, data, {
-        withCredentials: true,
-      });
-      if (response.data.success === false) {
-        setLoading(false);
-        setErrorMessage(response.data.message);
-        setSnackBarError(true);
-      } else {
-        setErrorMessage("Actualización de método de envío exitosa.");
-        setSnackBarError(true);
-        setActive(true);
-        setName("");
-        setPrice("");
-        history.push("/admin/shipping-method/read");
-        readMovements();
-        setLoading(false);
-      }
-    }
-  };
-  const deleteMethod = async (id) => {
-    setLoading(true);
-
-    const URI =
-      process.env.REACT_APP_BACKEND_URL + "/shipping-method/delete/" + id;
-    const body = { adminToken: localStorage.getItem("adminTokenV") };
-    await axios.put(URI, body, { withCredentials: true });
-    setErrorMessage("Método de envío eliminado exitosamente.");
-    setSnackBarError(true);
-    readMovements();
     setLoading(false);
   };
+
   return (
     <React.Fragment>
       <Backdrop
@@ -200,7 +139,7 @@ export default function ReadMovements(props) {
       </Backdrop>
       <div style={{ position: "relative" }}>
         <div style={{ position: "absolute", right: 10, marginTop: 15 }}>
-          <Fab
+          {/* <Fab
             color="default"
             aria-label="edit"
             style={{ marginRight: 10 }}
@@ -220,58 +159,79 @@ export default function ReadMovements(props) {
             >
               <AddIcon />
             </Fab>
-          )}
+          )} */}
         </div>
 
         <Grid container spacing={3}>
           <Grid item xs={12} md={12} lg={12}>
             <Paper className={fixedHeightPaper}>
-              {activeCrud === "read" ? (
-                <>
-                  <Title>Movimientos</Title>
-                  <Table size="small">
-                    <TableHead>
-                      <TableRow>
-                        <TableCell align="center">ID</TableCell>
-                        <TableCell align="center">Fecha efectiva</TableCell>
-                        <TableCell align="center">Destinatario</TableCell>
-                        <TableCell align="center">Descripción</TableCell>
-                        <TableCell align="center">Monto</TableCell>
-                        <TableCell align="center">Fecha</TableCell>
-                        <TableCell align="center">Creado por</TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {rows &&
-                        rows.map((row) => (
-                          <TableRow key={row._id}>
-                            <TableCell align="center">{row._id}</TableCell>
-                            <TableCell align="center">
-                              {row?.date?.substring(0, 10) ||
-                                row.createdOn.substring(0, 10)}
-                            </TableCell>
-                            <TableCell align="center">
-                              {row.destinatary}
-                            </TableCell>
+              {/* {activeCrud === "read" ? ( */}
+              <>
+                <Title>Movimientos</Title>
+                <Table size="small">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell align="center">ID</TableCell>
+                      <TableCell align="center">Fecha efectiva</TableCell>
 
-                            <TableCell align="center">
-                              {row.description}
-                            </TableCell>
-                            <TableCell align="center">
-                              {row.type === "Retiro" && "-"}${row.value}
-                            </TableCell>
-                            <TableCell align="center">
-                              {row.createdOn.substring(0, 10)}
-                            </TableCell>
-                            <TableCell align="center">
-                              {row.createdBy}
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                    </TableBody>
-                  </Table>
-                </>
-              ) : activeCrud === "create" ? (
+                      <TableCell align="center">
+                        <FormControl className={classes.formControl}>
+                          <InputLabel id="demo-simple-select-label">
+                            Destinatario
+                          </InputLabel>
+                          <Select
+                            labelId="demo-simple-select-label"
+                            id="demo-simple-select"
+                            value={filter}
+                            onChange={handleChange}
+                          >
+                            <MenuItem key={"none"} value={undefined}>
+                              {""}
+                            </MenuItem>
+                            {prixers !== [] &&
+                              prixers.map((prixer, i) => (
+                                <MenuItem key={i} value={prixer}>
+                                  {prixer}
+                                </MenuItem>
+                              ))}
+                          </Select>
+                        </FormControl>
+                      </TableCell>
+                      <TableCell align="center">Descripción</TableCell>
+                      <TableCell align="center">Monto</TableCell>
+                      <TableCell align="center">Fecha</TableCell>
+                      <TableCell align="center">Creado por</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {rows &&
+                      rows.map((row) => (
+                        <TableRow key={row._id}>
+                          <TableCell align="center">{row._id}</TableCell>
+                          <TableCell align="center">
+                            {row?.date?.substring(0, 10) ||
+                              row.createdOn.substring(0, 10)}
+                          </TableCell>
+                          <TableCell align="center">
+                            {row.destinatary}
+                          </TableCell>
+
+                          <TableCell align="center">
+                            {row.description}
+                          </TableCell>
+                          <TableCell align="center">
+                            {row.type === "Retiro" && "-"}${row.value}
+                          </TableCell>
+                          <TableCell align="center">
+                            {row.createdOn.substring(0, 10)}
+                          </TableCell>
+                          <TableCell align="center">{row.createdBy}</TableCell>
+                        </TableRow>
+                      ))}
+                  </TableBody>
+                </Table>
+              </>
+              {/* ) : activeCrud === "create" ? (
                 <>
                   {" "}
                   <Title>Agregar método de envío</Title>
@@ -442,7 +402,7 @@ export default function ReadMovements(props) {
                     </Grid>
                   </form>
                 </>
-              )}
+              )} */}
             </Paper>
           </Grid>
         </Grid>

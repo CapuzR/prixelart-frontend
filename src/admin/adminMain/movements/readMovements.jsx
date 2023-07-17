@@ -94,14 +94,7 @@ export default function ReadMovements(props) {
       .then((response) => {
         setRows(response.data.movements);
         setMovements(response.data.movements);
-        response.data.movements.map((mov) => {
-          if (prixers.includes(mov.destinatary)) {
-            return;
-          } else {
-            prixers.push(mov.destinatary);
-          }
-        });
-        setPrixers(prixers);
+        getPrixers(response.data.movements);
       })
       .catch((error) => {
         console.log(error);
@@ -110,6 +103,20 @@ export default function ReadMovements(props) {
   useEffect(() => {
     readMovements();
   }, []);
+
+  const getPrixers = (list) => {
+    let prix = [];
+    list.map((mov) => {
+      if (prix === []) {
+        prix = [mov.destinatary];
+      } else if (prix.includes(mov.destinatary)) {
+        return;
+      } else {
+        prix.push(mov.destinatary);
+      }
+    });
+    setPrixers(prix);
+  };
 
   const handleChange = (event) => {
     console.log(event.target.value);
@@ -188,8 +195,8 @@ export default function ReadMovements(props) {
                             <MenuItem key={"none"} value={undefined}>
                               {""}
                             </MenuItem>
-                            {prixers !== [] &&
-                              prixers.map((prixer, i) => (
+                            {prixers?.length > 0 &&
+                              prixers?.map((prixer, i) => (
                                 <MenuItem key={i} value={prixer}>
                                   {prixer}
                                 </MenuItem>

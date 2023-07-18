@@ -44,7 +44,7 @@ export default function CreateAdminRole() {
   const [deleteTestimonial, setDeleteTestimonial] = useState(false);
   const [modifyAdmins, setModifyAdmins] = useState(false);
   const [setPrixerBalance, setSetPrixerBalance] = useState(false);
-
+  const [readMovements, setReadMovements] = useState(false);
   const [loading, setLoading] = useState(false);
   const [buttonState, setButtonState] = useState(false);
 
@@ -83,6 +83,7 @@ export default function CreateAdminRole() {
         deleteTestimonial: deleteTestimonial,
         modifyAdmins: modifyAdmins,
         setPrixerBalance: setPrixerBalance,
+        readMovements: readMovements,
       };
       const base_url = process.env.REACT_APP_BACKEND_URL + "/adminRole/create";
       const response = await axios.post(
@@ -180,6 +181,10 @@ export default function CreateAdminRole() {
 
   const handleChangeSetPrixerBalance = () => {
     setSetPrixerBalance(!setPrixerBalance);
+  };
+
+  const handleChangeSetReadMovements = () => {
+    setReadMovements(!readMovements);
   };
 
   return (
@@ -701,6 +706,27 @@ export default function CreateAdminRole() {
                 <Switch
                   checked={setPrixerBalance}
                   onChange={handleChangeSetPrixerBalance}
+                  name="checkedA"
+                  color="primary"
+                />
+              </FormControl>
+            </div>
+            <div>
+              <FormControl
+                className={clsx(classes.margin, classes.textField)}
+                variant="outlined"
+                style={{
+                  width: "90%",
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Typography>Permiso para leer movimientos</Typography>
+                <Switch
+                  checked={readMovements}
+                  onChange={handleChangeSetReadMovements}
                   name="checkedA"
                   color="primary"
                 />

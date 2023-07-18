@@ -83,6 +83,10 @@ export default function UpdateAdminRole(props) {
     props.admin.setPrixerBalance || false
   );
 
+  const [readMovements, setReadMovements] = useState(
+    props.admin.readMovements || false
+  );
+
   const [loading, setLoading] = useState(false);
   const [buttonState, setButtonState] = useState(false);
 
@@ -121,6 +125,7 @@ export default function UpdateAdminRole(props) {
         deleteTestimonial: deleteTestimonial,
         modifyAdmins: modifyAdmins,
         setPrixerBalance: setPrixerBalance,
+        readMovements: readMovements,
       };
       const base_url =
         process.env.REACT_APP_BACKEND_URL +
@@ -221,6 +226,10 @@ export default function UpdateAdminRole(props) {
 
   const handleChangeSetPrixerBalance = () => {
     setSetPrixerBalance(!setPrixerBalance);
+  };
+
+  const handleChangeSetReadMovements = () => {
+    setReadMovements(!readMovements);
   };
 
   return (
@@ -746,6 +755,27 @@ export default function UpdateAdminRole(props) {
                 <Switch
                   checked={setPrixerBalance}
                   onChange={handleChangeSetPrixerBalance}
+                  name="checkedA"
+                  color="primary"
+                />
+              </FormControl>
+            </div>
+            <div>
+              <FormControl
+                className={clsx(classes.margin, classes.textField)}
+                variant="outlined"
+                style={{
+                  width: "90%",
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Typography>Permiso para leer movimientos</Typography>
+                <Switch
+                  checked={readMovements}
+                  onChange={handleChangeSetReadMovements}
                   name="checkedA"
                   color="primary"
                 />

@@ -437,10 +437,7 @@ export default function ShoppingCart(props) {
     // setCount(count + 1);
     // localStorage.setItem("buyState", JSON.stringify(prev));
     // props.setBuyState(prev);
-    props.buyState.map((item) => {
-      console.log(item.product?.selection?.name);
-    });
-    // setProductList(products);
+    props.buyState.map((item) => {});
     getProducts();
   };
 
@@ -450,6 +447,7 @@ export default function ShoppingCart(props) {
     item.product.publicEquation = newPrice;
     purchase.splice(index, 1, item);
     product.modifyPrice = true;
+    // product.comission = newPrice/10;
     product.publicEquation = newPrice.replace(/[,]/gi, ".");
     localStorage.setItem("buyState", JSON.stringify(purchase));
     props.setBuyState(purchase);
@@ -461,10 +459,7 @@ export default function ShoppingCart(props) {
       type: "product",
       item: selectedProduct,
     });
-    console.log(selectedProduct?.selection?.name);
   };
-
-  console.log(productList[35]?.selection);
 
   return (
     <Grid container style={{ display: "flex", justifyContent: "center" }}>

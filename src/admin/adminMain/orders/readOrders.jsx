@@ -128,14 +128,12 @@ const useStyles = makeStyles((theme) => ({
 
 export default function ReadOrders(props) {
   const classes = useStyles();
-  const [sellers, setSellers] = useState();
   const totalOrders = props.rows?.length;
   const itemsPerPage = 20;
   const noOfPages = Math.ceil(totalOrders / itemsPerPage);
   const [pageNumber, setPageNumber] = useState(1);
   const itemsToSkip = (pageNumber - 1) * itemsPerPage;
   const rowsv2 = props.rows?.slice(itemsToSkip, itemsPerPage + itemsToSkip);
-  // console.log(rowsv2);
 
   const handleChange = (event) => {
     props.setFilter(event.target.value);
@@ -159,19 +157,6 @@ export default function ReadOrders(props) {
     });
     props.readOrders();
   };
-
-  setTimeout(() => {
-    if (props.admins) {
-      const selectAdmins = props.admins.filter(
-        (admin) => admin.area === "Ventas"
-      );
-      let sellers = [];
-      selectAdmins.map((admin) => {
-        sellers.push(admin.firstname + " " + admin.lastname);
-      });
-      setSellers(sellers);
-    }
-  }, 100);
 
   return (
     <>
@@ -267,8 +252,8 @@ export default function ReadOrders(props) {
                             JSON.parse(localStorage.getItem("adminToken"))
                               .lastname}
                         </MenuItem>
-                        {sellers &&
-                          sellers.map((seller) => (
+                        {props.sellers &&
+                          props.sellers?.map((seller) => (
                             <MenuItem value={{ seller: seller }}>
                               {seller}
                             </MenuItem>
@@ -399,17 +384,29 @@ export default function ReadOrders(props) {
                             JSON.parse(localStorage.getItem("adminToken"))
                               .area !== "Master"
                           }
-                          defaultValue={row.createdBy.username}
+                          value={row.createdBy?.username}
                           onChange={(e) => {
                             handleChangeSeller(row, e.target.value);
                           }}
                         >
-                          <MenuItem value={row.createdBy.username}>
-                            {row.createdBy.username}
+                          <MenuItem
+                            value={
+                              JSON.parse(localStorage.getItem("adminToken"))
+                                .firstname +
+                              " " +
+                              JSON.parse(localStorage.getItem("adminToken"))
+                                .lastname
+                            }
+                          >
+                            {JSON.parse(localStorage.getItem("adminToken"))
+                              .firstname +
+                              " " +
+                              JSON.parse(localStorage.getItem("adminToken"))
+                                .lastname}
                           </MenuItem>
 
-                          {sellers &&
-                            sellers.map((seller) => (
+                          {props.sellers &&
+                            props.sellers.map((seller) => (
                               <MenuItem value={seller}>{seller}</MenuItem>
                             ))}
                         </Select>

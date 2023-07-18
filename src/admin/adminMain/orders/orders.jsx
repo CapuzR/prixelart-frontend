@@ -254,9 +254,9 @@ export default function Orders(props) {
   const [orders, setOrders] = useState([]);
 
   const getDiscounts = async () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + "/discount/read-allv2";
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/discount/read-allv1";
     await axios
-      .post(base_url)
+      .post(base_url, { adminToken: localStorage.getItem("adminTokenV") })
       .then((response) => {
         setDiscountList(response.data.discounts);
       })
@@ -623,19 +623,21 @@ export default function Orders(props) {
     readOrders();
   };
 
-  const payComission = (order) => {
-    order.requests.map(async (item) => {
-      let unitPrice =
-        item.product?.prixerEquation ||
-        item.product?.prixerPrice?.from ||
-        item.product?.publicEquation ||
-        item.product.publicPrice.from;
+  const payComission = async (order) => {
+    for (let item of order.requests) {
+      let unitPrice;
+      let discount = discountList.find(
+        (dis) => dis._id === item.product.discount
+      );
 
-      let discount;
-      if (typeof item.product.discount === "String") {
-        discount = discountList.find(
-          ({ _id }) => _id === item.product.discount
-        );
+      if (item.product.modifyPrice) {
+        unitPrice = Number((item.product.publicEquation / 10) * item.quantity);
+      } else if (typeof item.product.discount === "string") {
+        unitPrice =
+          // item.product?.prixerEquation ||
+          // item.product?.prixerPrice?.from ||
+          item.product?.publicEquation || item.product.publicPrice.from;
+
         if (discount?.type === "Porcentaje") {
           let op = Number(
             ((unitPrice - (unitPrice / 100) * discount.value) / 10) *
@@ -647,31 +649,35 @@ export default function Orders(props) {
           unitPrice = op;
         }
       } else {
+        unitPrice =
+          item.product?.prixerEquation ||
+          item.product?.prixerPrice?.from ||
+          item.product?.publicEquation ||
+          item.product.publicPrice.from;
         let op = Number((unitPrice / 10) * item.quantity);
         unitPrice = op;
       }
-
       const url1 = process.env.REACT_APP_BACKEND_URL + "/prixer/read";
       await axios
         .post(url1, { username: item.art?.prixerUsername })
-        .then((res) => {
+        .then(async (res) => {
           setAccount(res.data.account);
+          const url = process.env.REACT_APP_BACKEND_URL + "/movement/create";
+          const data = {
+            _id: nanoid(),
+            createdOn: new Date(),
+            createdBy: JSON.parse(localStorage.getItem("adminToken")).username,
+            date: new Date(),
+            destinatary: res.data.account,
+            description: `Comisión de la orden #${order.orderId}`,
+            type: "Depósito",
+            value: unitPrice,
+            adminToken: localStorage.getItem("adminTokenV"),
+          };
+          await axios.post(url, data);
         });
-      const url = process.env.REACT_APP_BACKEND_URL + "/movement/create";
-      const data = {
-        _id: nanoid(),
-        createdOn: new Date(),
-        createdBy: JSON.parse(localStorage.getItem("adminToken")).username,
-        date: new Date(),
-        destinatary: account,
-        description: `Comisión de la orden #${order.orderId}`,
-        type: "Depósito",
-        value: unitPrice,
-        adminToken: localStorage.getItem("adminTokenV"),
-      };
-      await axios.post(url, data);
       setAccount();
-    });
+    }
   };
 
   const handleChangePayStatus = async (order, payStatus) => {
@@ -704,22 +710,6 @@ export default function Orders(props) {
     readOrders();
   }, []);
 
-  const modifyPrice = (product, index, newPrice) => {
-    const purchase = props.buyState;
-    let item = props.buyState[index];
-    item.product.publicEquation = newPrice;
-    purchase.splice(index, 1, item);
-    product.modifyPrice = true;
-    product.publicEquation = newPrice.replace(/[,]/gi, ".");
-    localStorage.setItem("buyState", JSON.stringify(purchase));
-    props.setBuyState(purchase);
-  };
-
-  const setOpen = () => {
-    // setIsShowDetails(false);
-    setShowVoucher(!showVoucher);
-  };
-
   const readDollarValue = async () => {
     const base_url = process.env.REACT_APP_BACKEND_URL + "/dollarValue/read";
     await axios.get(base_url).then((response) => {
@@ -731,241 +721,8 @@ export default function Orders(props) {
     readDollarValue();
   }, []);
 
-  const changeCurrency = () => {
-    setCurrency(!currency);
-  };
-
   const closeAd = () => {
     setSnackBarError(false);
-  };
-
-  const PriceSelect = (product, quantity) => {
-    if (product.modifyPrice) {
-      return (
-        " $" +
-        Number(product.publicEquation).toLocaleString("de-DE", {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        })
-      );
-    } else if (
-      typeof product.discount === "string" &&
-      product.publicEquation !== "" &&
-      props.currency
-    ) {
-      let dis = discountList?.filter((dis) => dis._id === product.discount)[0];
-      return (
-        <>
-          {dis?.type === "Porcentaje" &&
-            " Bs" +
-              Number(
-                (product.publicEquation -
-                  (product.publicEquation / 100) * dis?.value) *
-                  props.dollarValue *
-                  quantity
-              ).toLocaleString("de-DE", {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              })}
-          {dis?.type === "Monto" &&
-            " Bs" +
-              Number(
-                (product.publicEquation - dis?.value) *
-                  props.dollarValue *
-                  quantity
-              ).toLocaleString("de-DE", {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              })}
-        </>
-      );
-    } else if (
-      typeof product.discount === "string" &&
-      product.publicEquation !== ""
-    ) {
-      let dis = discountList?.filter((dis) => dis._id === product.discount)[0];
-      return (
-        <>
-          {dis?.type === "Porcentaje" &&
-            " $" +
-              Number(
-                (product.publicEquation -
-                  (product.publicEquation / 100) * dis?.value) *
-                  quantity
-              ).toLocaleString("de-DE", {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              })}
-          {dis?.type === "Monto" &&
-            " $" +
-              Number(
-                (product.publicEquation - dis?.value) * quantity
-              ).toLocaleString("de-DE", {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              })}
-        </>
-      );
-    } else if (typeof product.discount === "string" && props.currency) {
-      let dis = discountList?.filter((dis) => dis._id === product.discount)[0];
-      return (
-        <>
-          {dis?.type === "Porcentaje" &&
-            " Bs" +
-              Number(
-                (product.publicPrice.from -
-                  (product.publicPrice.from / 100) * dis?.value) *
-                  props.dollarValue *
-                  quantity
-              ).toLocaleString("de-DE", {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              })}
-          {dis?.type === "Monto" &&
-            " Bs" +
-              Number(
-                (product.publicPrice.from - dis?.value) *
-                  props.dollarValue *
-                  quantity
-              ).toLocaleString("de-DE", {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              })}
-        </>
-      );
-    } else if (typeof product.discount === "string") {
-      let dis = discountList?.filter((dis) => dis._id === product.discount)[0];
-      return (
-        <>
-          {dis?.type === "Porcentaje" &&
-            " $" +
-              Number(
-                (product.publicPrice.from -
-                  (product.publicPrice.from / 100) * dis?.value) *
-                  quantity
-              ).toLocaleString("de-DE", {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              })}
-          {dis?.type === "Monto" &&
-            " $" +
-              Number(
-                (product.publicPrice.from - dis?.value) * quantity
-              ).toLocaleString("de-DE", {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              })}
-        </>
-      );
-    } else if (product.publicEquation !== "" && props.currency) {
-      return (
-        " Bs" +
-        Number(
-          product.publicPriceEquation * props.dollarValue * quantity
-        ).toLocaleString("de-DE", {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        })
-      );
-    } else if (product.publicEquation !== "") {
-      return (
-        " $" +
-        Number(product.publicEquation * quantity).toLocaleString("de-DE", {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        })
-      );
-    } else if (props.currency) {
-      return (
-        " Bs" +
-        Number(
-          product.publicPrice.from * props.dollarValue * quantity
-        ).toLocaleString("de-DE", {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        })
-      );
-    } else {
-      return (
-        " $" +
-        Number(
-          product.publicPrice.from.replace(/[$]/gi, "") * quantity
-        ).toLocaleString("de-DE", {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        })
-      );
-    }
-  };
-  const UnitPrice = (product) => {
-    if (product.modifyPrice) {
-      return Number(product.publicEquation).toLocaleString("de-DE", {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      });
-    } else if (
-      typeof product.discount === "string" &&
-      product.publicEquation !== "" &&
-      props.currency
-    ) {
-      let dis = discountList?.filter((dis) => dis._id === product.discount)[0];
-      if (dis?.type === "Porcentaje") {
-        return Number(
-          (product.publicEquation -
-            (product.publicEquation / 100) * dis?.value) *
-            props.dollarValue
-        );
-      } else if (dis?.type === "Monto") {
-        return Number(
-          (product.publicEquation - dis?.value) * props.dollarValue
-        );
-      }
-    } else if (
-      typeof product.discount === "string" &&
-      product.publicEquation !== ""
-    ) {
-      let dis = discountList?.filter((dis) => dis._id === product.discount)[0];
-      if (dis?.type === "Porcentaje") {
-        return Number(
-          product.publicEquation - (product.publicEquation / 100) * dis?.value
-        );
-      } else if (dis?.type === "Monto") {
-        return Number(product.publicEquation - dis?.value);
-      }
-    } else if (typeof product.discount === "string" && props.currency) {
-      let dis = discountList?.filter((dis) => dis._id === product.discount)[0];
-      if (dis?.type === "Porcentaje") {
-        return Number(
-          (product.publicPrice.from -
-            (product.publicPrice.from / 100) * dis?.value) *
-            props.dollarValue
-        );
-      }
-      if (dis?.type === "Monto") {
-        return Number(
-          (product.publicPrice.from - dis?.value) * props.dollarValue
-        );
-      }
-    } else if (typeof product.discount === "string") {
-      let dis = discountList?.filter((dis) => dis._id === product.discount)[0];
-      if (dis?.type === "Porcentaje") {
-        return Number(
-          product.publicPrice.from -
-            (product.publicPrice.from / 100) * dis?.value
-        );
-      }
-      if (dis?.type === "Monto") {
-        return Number(product.publicPrice.from - dis?.value);
-      }
-    } else if (product.publicEquation !== "" && props.currency) {
-      return Number(product.publicPriceEquation * props.dollarValue);
-    } else if (product.publicEquation !== "") {
-      return Number(product.publicEquation?.replace(/[,]/gi, "."));
-    } else if (props.currency) {
-      return Number(product.publicPrice.from * props.dollarValue);
-    } else {
-      return Number(product.publicPrice.from);
-    }
   };
 
   return (
@@ -1064,6 +821,7 @@ export default function Orders(props) {
               setErrorMessage={setErrorMessage}
               setSnackBarError={setSnackBarError}
               readOrders={readOrders}
+              sellers={props.sellers}
             ></ReadOrders>
           </Paper>
         </Grid>

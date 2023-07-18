@@ -139,6 +139,7 @@ export default function ShoppingPage(props) {
   const [currency, setCurrency] = useState(false);
   const [paymentVoucher, setPaymentVoucher] = useState();
   const [discountList, setDiscountList] = useState([]);
+  const [seller, setSeller] = useState();
 
   const getDiscounts = async () => {
     const base_url = process.env.REACT_APP_BACKEND_URL + "/discount/read-allv2";
@@ -324,8 +325,8 @@ export default function ShoppingPage(props) {
     let n = [];
     n.push(getTotalPrice(props.buyState));
     n.push(getIvaCost(props.buyState));
-    if (props.valuesConsumerForm?.shippingMethod) {
-      n.push(shippingCost);
+    {
+      props.valuesConsumer?.shippingMethod && n.push(shippingCost);
     }
     let total = n.reduce(function (a, b) {
       return a + b;
@@ -339,6 +340,9 @@ export default function ShoppingPage(props) {
       props.setOpen(true);
 
       let orderLines = [];
+      let taxv2 = getTotalPrice(props.buyState) * 0.16;
+      let subtotalv2 = getTotalPrice(props.buyState);
+      let totalv2 = getTotal(props.buyState);
 
       props.buyState.map((s) => {
         s.product &&
@@ -422,12 +426,12 @@ export default function ShoppingPage(props) {
           orderPaymentMethod: orderPaymentMethod.name,
         },
         dollarValue: dollarValue,
-        tax: getTotalPrice(props.buyState) * 0.16,
-        subtotal: getTotalPrice(props.buyState),
+        tax: taxv2,
+        subtotal: subtotalv2,
         shippingCost: shippingCost,
-        total: getTotal(props.buyState),
+        total: totalv2,
         createdOn: new Date(),
-        createdBy: "Prixelart Page",
+        createdBy: seller ? { username: seller } : "Prixelart Page",
         orderType: "Particular",
         consumerId: consumerData._id,
         status: "Por producir",
@@ -464,7 +468,6 @@ export default function ShoppingPage(props) {
                 description: `Pago de la orden #${input.orderId}`,
                 type: "Retiro",
                 value: getTotal(props.buyState),
-                // adminToken: localStorage.getItem("adminTokenV"),
               };
               await axios.post(url, data);
             }
@@ -585,6 +588,10 @@ export default function ShoppingPage(props) {
   const changeCurrency = () => {
     setCurrency(!currency);
   };
+
+  // console.log(getTotal(props.buyState));
+  // console.log(getIvaCost(props.buyState));
+  // console.log(getTotalPrice(props.buyState));
 
   return (
     <>
@@ -717,6 +724,7 @@ export default function ShoppingPage(props) {
                       paymentVoucher={paymentVoucher}
                       dollarValue={dollarValue}
                       currency={currency}
+                      setSeller={setSeller}
                     />
                   )}
                 </div>

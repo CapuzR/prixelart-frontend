@@ -42,6 +42,7 @@ function App() {
   const [message, setMessage] = useState("");
   const [searchResult, setSearchResult] = useState([]);
   const [admins, setAdmins] = useState();
+  const [sellers, setSellers] = useState();
   const [dollarValue, setDollarValue] = useState("1");
   document.addEventListener("contextmenu", (event) => {
     event.preventDefault();
@@ -64,6 +65,15 @@ function App() {
         { withCredentials: true }
       );
       setAdmins(rowState.data);
+
+      let sellersTeam = rowState.data.filter(
+        (admin) => admin.area === "Ventas"
+      );
+      let team = [];
+      sellersTeam.map((admin) => {
+        team.push(admin.firstname + " " + admin.lastname);
+      });
+      setSellers(team);
     } catch (e) {
       console.log(e);
     }
@@ -222,6 +232,7 @@ function App() {
             setDollarValue={setDollarValue}
             updateDollarValue={updateDollarValue}
             admins={admins}
+            sellers={sellers}
           />
         </Route>
 

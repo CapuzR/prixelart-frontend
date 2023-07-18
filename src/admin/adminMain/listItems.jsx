@@ -14,7 +14,7 @@ import ReceiptIcon from "@material-ui/icons/Receipt";
 import WebAssetIcon from "@material-ui/icons/WebAsset";
 import { InsertEmoticon } from "@material-ui/icons";
 import LocalShippingIcon from "@material-ui/icons/LocalShipping";
-
+import AccountBalanceIcon from "@material-ui/icons/AccountBalance";
 export default function MainListItems(props) {
   const history = useHistory();
 
@@ -62,6 +62,20 @@ export default function MainListItems(props) {
           <ListItemText primary="Consumidores" />
           {/* <ListItemText primary="Consumidores" onClick={(e)=>{handleClick('consumer')}}  /> */}
         </ListItem>
+        {props.permissions?.readMovements && (
+          <ListItem button selected={props.active === "movements"}>
+            <ListItemIcon>
+              <AccountBalanceIcon />
+            </ListItemIcon>
+            <ListItemText
+              primary="Movimientos"
+              onClick={(e) => {
+                handleClick("movements");
+              }}
+              selected={props.active === "movements"}
+            />
+          </ListItem>
+        )}
         <ListItem button selected={props.active === "payment-method"}>
           <ListItemIcon>
             <PaymentIcon />

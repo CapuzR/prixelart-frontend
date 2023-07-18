@@ -350,7 +350,9 @@ export default function ReadAdmins(props) {
                               )}
                             </ul>
                           )}
-                          {role.prixerBan && (
+                          {(role.prixerBan ||
+                            role.setPrixerBalance ||
+                            role.readMovements) && (
                             <ul style={{ paddingLeft: 20 }}>
                               <Typography variant="p" color="secondary">
                                 Prixers
@@ -359,6 +361,7 @@ export default function ReadAdmins(props) {
                               {role.setPrixerBalance && (
                                 <li>Modificar Balance de Prixers</li>
                               )}
+                              {role.readMovements && <li>Leer movimientos</li>}
                             </ul>
                           )}
                         </div>

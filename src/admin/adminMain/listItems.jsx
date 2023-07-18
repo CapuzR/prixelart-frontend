@@ -62,18 +62,20 @@ export default function MainListItems(props) {
           <ListItemText primary="Consumidores" />
           {/* <ListItemText primary="Consumidores" onClick={(e)=>{handleClick('consumer')}}  /> */}
         </ListItem>
-        <ListItem button selected={props.active === "movements"}>
-          <ListItemIcon>
-            <AccountBalanceIcon />
-          </ListItemIcon>
-          <ListItemText
-            primary="Movimientos"
-            onClick={(e) => {
-              handleClick("movements");
-            }}
-            selected={props.active === "movements"}
-          />
-        </ListItem>
+        {props.permissions?.readMovements && (
+          <ListItem button selected={props.active === "movements"}>
+            <ListItemIcon>
+              <AccountBalanceIcon />
+            </ListItemIcon>
+            <ListItemText
+              primary="Movimientos"
+              onClick={(e) => {
+                handleClick("movements");
+              }}
+              selected={props.active === "movements"}
+            />
+          </ListItem>
+        )}
         <ListItem button selected={props.active === "payment-method"}>
           <ListItemIcon>
             <PaymentIcon />

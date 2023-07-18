@@ -729,20 +729,14 @@ function ConsumerForm(props) {
                       label="Fecha de Entrega"
                       type="date"
                       variant="outlined"
-                      // required
                       format="dd-MM-yyyy"
-                      defaultValue={stringReadyDate}
                       value={props.values?.today}
-                      error={props.values.today < stringReadyDate}
-                      // min={stringReadyDate}
+                      error={props.values?.today < stringReadyDate}
                       className={classes.textField}
                       InputLabelProps={{
                         shrink: true,
                       }}
                       onChange={(e) => {
-                        // if (e.target.value < new Date()) {
-                        //   console.log("x");
-                        // } else {
                         selectShDate(e.target.value);
                       }}
                     />

@@ -821,6 +821,7 @@ export default function Orders(props) {
               setErrorMessage={setErrorMessage}
               setSnackBarError={setSnackBarError}
               readOrders={readOrders}
+              sellers={props.sellers}
             ></ReadOrders>
           </Paper>
         </Grid>

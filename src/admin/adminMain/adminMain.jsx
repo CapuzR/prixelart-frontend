@@ -305,6 +305,7 @@ export default function AdminMain(props) {
                 <ShippingMethods permissions={permissions} />
               ) : active === "order" ? (
                 <Orders
+                  sellers={props.sellers}
                   admins={props.admins}
                   buyState={props.buyState}
                   setBuyState={props.setBuyState}

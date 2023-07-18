@@ -128,7 +128,6 @@ const useStyles = makeStyles((theme) => ({
 
 export default function ReadOrders(props) {
   const classes = useStyles();
-  const [sellers, setSellers] = useState();
   const totalOrders = props.rows?.length;
   const itemsPerPage = 20;
   const noOfPages = Math.ceil(totalOrders / itemsPerPage);
@@ -158,19 +157,6 @@ export default function ReadOrders(props) {
     });
     props.readOrders();
   };
-
-  setTimeout(() => {
-    if (props.admins) {
-      const selectAdmins = props.admins.filter(
-        (admin) => admin.area === "Ventas"
-      );
-      let sellers = [];
-      selectAdmins.map((admin) => {
-        sellers.push(admin.firstname + " " + admin.lastname);
-      });
-      setSellers(sellers);
-    }
-  }, 100);
 
   return (
     <>
@@ -266,8 +252,8 @@ export default function ReadOrders(props) {
                             JSON.parse(localStorage.getItem("adminToken"))
                               .lastname}
                         </MenuItem>
-                        {sellers &&
-                          sellers?.map((seller) => (
+                        {props.sellers &&
+                          props.sellers?.map((seller) => (
                             <MenuItem value={{ seller: seller }}>
                               {seller}
                             </MenuItem>
@@ -419,8 +405,8 @@ export default function ReadOrders(props) {
                                 .lastname}
                           </MenuItem>
 
-                          {sellers &&
-                            sellers.map((seller) => (
+                          {props.sellers &&
+                            props.sellers.map((seller) => (
                               <MenuItem value={seller}>{seller}</MenuItem>
                             ))}
                         </Select>

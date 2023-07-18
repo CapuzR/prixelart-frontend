@@ -19,6 +19,8 @@ import { Typography } from "@material-ui/core";
 import TextField from "@material-ui/core/TextField";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import InfoIcon from "@material-ui/icons/Info";
+import Tooltip from "@material-ui/core/Tooltip";
 
 const useStyles = makeStyles((theme) => ({
   gridInput: {
@@ -453,7 +455,12 @@ export default function OrderForm(props) {
         JSON.parse(localStorage?.getItem("adminToken"))?.username) &&
       product.prixerEquation !== ""
     ) {
-      return " $" + product.prixerEquation * quantity;
+      return (
+        " $" +
+        Number(product.prixerEquation * quantity).toLocaleString("de-DE", {
+          minimumFractionDigits: 2,
+        })
+      );
     } else if (
       (JSON.parse(localStorage?.getItem("token")) ||
         JSON.parse(localStorage?.getItem("adminToken"))) &&
@@ -572,32 +579,9 @@ export default function OrderForm(props) {
               style={{
                 display: "flex",
                 padding: "8px",
+                flexDirection: "column",
               }}
             >
-              <div style={{ width: "100%" }}>
-                <FormControl
-                  variant="outlined"
-                  fullWidth
-                  style={{ marginTop: 25 }}
-                  required
-                >
-                  <InputLabel htmlFor="outlined-age-simple">Asesor </InputLabel>
-                  <Select
-                    input={<OutlinedInput />}
-                    value={props.createdBy}
-                    onChange={(event) => props.setSeller(event.target.value)}
-                  >
-                    <MenuItem value={undefined}></MenuItem>
-                    {sellers &&
-                      sellers.map((m) => (
-                        <MenuItem value={m.firstname + " " + m.lastname}>
-                          {m.firstname + " " + m.lastname}
-                        </MenuItem>
-                      ))}
-                  </Select>
-                </FormControl>
-              </div>
-
               <div style={{ width: "100%" }}>
                 <div style={{ fontWeight: "bold" }}>Items:</div>
                 <div>
@@ -868,6 +852,63 @@ export default function OrderForm(props) {
                         <br />
                       </Grid>
                     </div>
+                    <Grid
+                      item
+                      lg={12}
+                      md={12}
+                      sm={12}
+                      xs={12}
+                      style={{ paddingLeft: 0, marginTop: 30 }}
+                    >
+                      <div
+                        style={{
+                          width: "100%",
+                          display: "flex",
+                          marginTop: 25,
+                          alignItems: "center",
+                        }}
+                      >
+                        <Tooltip
+                          // onClick={(e) => setOpenTooltip(!openTooltip)}
+                          // open={openTooltip}
+                          // onClose={(leaveDelay) => setOpenTooltip(false)}
+                          title={
+                            "¿Alguno de nuestros asesores te ayudó en el proceso de compra?"
+                          }
+                          style={{ marginLeft: 5, marginRight: 20 }}
+                        >
+                          <InfoIcon color="secondary" />
+                        </Tooltip>
+                        <FormControl
+                          variant="outlined"
+                          fullWidth
+                          // style={{  }}
+                          required
+                        >
+                          <InputLabel htmlFor="outlined-age-simple">
+                            Asesor
+                          </InputLabel>
+
+                          <Select
+                            input={<OutlinedInput />}
+                            value={props.createdBy}
+                            onChange={(event) =>
+                              props.setSeller(event.target.value)
+                            }
+                          >
+                            <MenuItem value={undefined}></MenuItem>
+                            {sellers &&
+                              sellers.map((m) => (
+                                <MenuItem
+                                  value={m.firstname + " " + m.lastname}
+                                >
+                                  {m.firstname + " " + m.lastname}
+                                </MenuItem>
+                              ))}
+                          </Select>
+                        </FormControl>
+                      </div>
+                    </Grid>
                     <Grid
                       item
                       lg={12}

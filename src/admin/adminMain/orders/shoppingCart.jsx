@@ -447,6 +447,7 @@ export default function ShoppingCart(props) {
     item.product.publicEquation = newPrice;
     purchase.splice(index, 1, item);
     product.modifyPrice = true;
+    // product.comission = newPrice/10;
     product.publicEquation = newPrice.replace(/[,]/gi, ".");
     localStorage.setItem("buyState", JSON.stringify(purchase));
     props.setBuyState(purchase);

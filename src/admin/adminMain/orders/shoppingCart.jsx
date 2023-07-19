@@ -371,7 +371,7 @@ export default function ShoppingCart(props) {
     } else if (product.publicEquation !== "" && props.currency) {
       return Number(product.publicPriceEquation * props.dollarValue);
     } else if (product.publicEquation !== "") {
-      return Number(product.publicEquation?.replace(/[,]/gi, "."));
+      return Number(product.publicEquation);
     } else if (props.currency) {
       return Number(product.publicPrice.from * props.dollarValue);
     } else {

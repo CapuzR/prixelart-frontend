@@ -629,14 +629,17 @@ export default function Orders(props) {
       let discount = discountList.find(
         (dis) => dis._id === item.product.discount
       );
-
       if (item.product.modifyPrice) {
-        unitPrice = Number((item.product.publicEquation / 10) * item.quantity);
+        unitPrice = Number(
+          (item.product.publicEquation?.replace(/[,]/gi, ".") / 10) *
+            item.quantity
+        );
       } else if (typeof item.product.discount === "string") {
         unitPrice =
           // item.product?.prixerEquation ||
           // item.product?.prixerPrice?.from ||
-          item.product?.publicEquation || item.product.publicPrice.from;
+          Number(item.product?.publicEquation?.replace(/[,]/gi, ".")) ||
+          Number(item.product.publicPrice.from?.replace(/[,]/gi, "."));
 
         if (discount?.type === "Porcentaje") {
           let op = Number(
@@ -650,10 +653,11 @@ export default function Orders(props) {
         }
       } else {
         unitPrice =
-          item.product?.prixerEquation ||
-          item.product?.prixerPrice?.from ||
-          item.product?.publicEquation ||
-          item.product.publicPrice.from;
+          // item.product?.prixerEquation?.replace(/[,]/gi, ".") ||
+          // item.product?.prixerPrice?.from?.replace(/[,]/gi, ".") ||
+          item.product?.publicEquation?.replace(/[,]/gi, ".") ||
+          item.product.publicPrice.from?.replace(/[,]/gi, ".");
+
         let op = Number((unitPrice / 10) * item.quantity);
         unitPrice = op;
       }

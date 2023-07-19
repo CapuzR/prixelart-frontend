@@ -332,7 +332,6 @@ export default function ConsumerData(props) {
       shippingDate: stringReadyDate,
     });
   }, []);
-
   return (
     <>
       <Grid container spacing={2}>
@@ -684,7 +683,7 @@ export default function ConsumerData(props) {
                 // defaultValue={stringReadyDate}
                 value={props.shippingData?.shippingDate}
                 error={props.values?.today < stringReadyDate}
-                min={stringReadyDate}
+                // min={stringReadyDate}
                 className={classes.textField}
                 InputLabelProps={{
                   shrink: true,
@@ -698,19 +697,20 @@ export default function ConsumerData(props) {
               />
             </FormControl>
           </Grid>
-          {readyDate !== "Invalid Date" && (
-            <Grid>
-              <div style={{ marginTop: 10, marginLeft: 10 }}>
-                {"El pedido estará listo el día " +
-                  days[readyDate.getDay()] +
-                  " " +
-                  readyDate.getDate() +
-                  " de " +
-                  months[readyDate.getMonth()] +
-                  "."}
-              </div>
-            </Grid>
-          )}
+          {props.buyState !== [] ||
+            (readyDate !== "Invalid Date" && (
+              <Grid>
+                <div style={{ marginTop: 10, marginLeft: 10 }}>
+                  {"El pedido estará listo el día " +
+                    days[readyDate.getDay()] +
+                    " " +
+                    readyDate.getDate() +
+                    " de " +
+                    months[readyDate.getMonth()] +
+                    "."}
+                </div>
+              </Grid>
+            ))}
         </Grid>
       </Grid>
 

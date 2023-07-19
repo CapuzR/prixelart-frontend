@@ -343,9 +343,9 @@ export default function OrderDetails(props) {
                                   margin: 0,
                                 }}
                               >
-                                {item.product?.selection?.attributes[i].name +
+                                {item.product?.selection?.attributes[i]?.name +
                                   ": " +
-                                  item.product?.selection?.attributes[i].value}
+                                  item.product?.selection?.attributes[i]?.value}
                               </p>
                             );
                           })}
@@ -580,7 +580,7 @@ export default function OrderDetails(props) {
                     )}
                     <div>
                       {"Forma de pago: " +
-                        props.modalContent?.billingData.orderPaymentMethod}
+                        props.modalContent?.billingData?.orderPaymentMethod}
                     </div>
                     {props.modalContent.paymentVoucher && (
                       <Paper

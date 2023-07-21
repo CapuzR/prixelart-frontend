@@ -294,7 +294,7 @@ export default function Checkout(props) {
     n.push(getTotalPrice(props.buyState));
     n.push(getIvaCost(props.buyState));
     {
-      props.values?.shippingMethod && n.push(shippingCost);
+      props.shippingData?.shippingMethod && n.push(shippingCost);
     }
     let total = n.reduce(function (a, b) {
       return a + b;

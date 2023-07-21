@@ -14,13 +14,19 @@ import { makeStyles } from "@material-ui/core/styles";
 import clsx from "clsx";
 import FormControl from "@material-ui/core/FormControl";
 import Snackbar from "@material-ui/core/Snackbar";
-import { Backdrop } from "@material-ui/core";
+import { Backdrop, Button } from "@material-ui/core";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import axios from "axios";
 import InputLabel from "@material-ui/core/InputLabel";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import Typography from "@material-ui/core/Typography";
+import MovOrder from "./movementForOrder";
+import Modal from "@material-ui/core/Modal";
+import Menu from "@material-ui/core/Menu";
+import ClickAwayListener from "@material-ui/core/ClickAwayListener";
+import Grow from "@material-ui/core/Grow";
+import Popper from "@material-ui/core/Popper";
 // import CircularProgress from '@material-ui/core/CircularProgress';
 // import Backdrop from '@material-ui/core/Backdrop';
 // import Button from '@material-ui/core/Button';
@@ -52,11 +58,20 @@ export default function ReadMovements(props) {
   const [movements, setMovements] = useState([]);
   const [loading, setLoading] = useState(false);
   const [filter, setFilter] = useState();
-  const [prixers, setPrixers] = useState([]);
+  const [prixersNames, setPrixersNames] = useState([]);
+  const [openOrderDetails, setOpenOrderDetails] = useState(false);
+  const [orderId, setOrderId] = useState();
+  const [prixers, setPrixers] = useState();
+  const [selectedPrixer, setSelectedPrixer] = useState();
 
   //Error states.
   const [errorMessage, setErrorMessage] = useState();
   const [snackBarError, setSnackBarError] = useState(false);
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const anchorRef = React.useRef(null);
+  const handleClick = (event) => {
+    setAnchorEl(true);
+  };
 
   const readMovements = () => {
     const base_url =
@@ -70,17 +85,51 @@ export default function ReadMovements(props) {
       .then((response) => {
         setRows(response.data.movements);
         setMovements(response.data.movements);
-        getPrixers(response.data.movements);
+        getPrixersNames(response.data.movements);
       })
       .catch((error) => {
         console.log(error);
       });
   };
+
+  const readPrixers = async () => {
+    try {
+      // setLoading(true);
+      const base_url =
+        process.env.REACT_APP_BACKEND_URL + "/prixer/read-all-full";
+
+      const response = await axios.get(base_url);
+      setPrixers(response.data.prixers);
+      // setBackdrop(false);
+      // setLoading(false);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     readMovements();
+    readPrixers();
   }, []);
 
-  const getPrixers = (list) => {
+  const getUsername = (fullname) => {
+    const prixer = fullname.split(" ");
+    let selected;
+    if (prixer.length === 2) {
+      selected = prixers?.find(
+        (p) => p.firstName === prixer[0] && p.lastName === prixer[1]
+      );
+    } else if (prixer.length === 3) {
+      selected = prixers?.find(
+        (p) =>
+          p.firstName === prixer[0] &&
+          p.lastName === prixer[1] + " " + prixer[2]
+      );
+    }
+    setSelectedPrixer(selected?.username);
+  };
+
+  const getPrixersNames = (list) => {
     let prix = [];
     list.map((mov) => {
       if (prix === []) {
@@ -91,11 +140,10 @@ export default function ReadMovements(props) {
         prix.push(mov.destinatary);
       }
     });
-    setPrixers(prix);
+    setPrixersNames(prix);
   };
 
   const handleChange = (event) => {
-    console.log(event.target.value);
     setFilter(event.target.value);
     filterMovements(event.target.value);
   };
@@ -109,6 +157,13 @@ export default function ReadMovements(props) {
       setRows(movementsv2);
     }
     setLoading(false);
+  };
+
+  const handleClose = () => {
+    setOpenOrderDetails(false);
+    setSelectedPrixer(undefined);
+    setAnchorEl(null);
+    // handleToggle();
   };
 
   return (
@@ -147,8 +202,8 @@ export default function ReadMovements(props) {
                               <MenuItem key={"none"} value={undefined}>
                                 {""}
                               </MenuItem>
-                              {prixers?.length > 0 &&
-                                prixers?.map((prixer, i) => (
+                              {prixersNames?.length > 0 &&
+                                prixersNames?.map((prixer, i) => (
                                   <MenuItem key={i} value={prixer}>
                                     {prixer}
                                   </MenuItem>
@@ -176,8 +231,27 @@ export default function ReadMovements(props) {
                             </TableCell>
 
                             <TableCell align="center">
-                              {row.description}
+                              {row.description.includes("#") ? (
+                                <div>
+                                  <Typography>
+                                    {row.description.slice(0, 20)}
+                                  </Typography>
+                                  <Button
+                                    onClick={() => {
+                                      setOpenOrderDetails(true);
+                                      setOrderId(row.description.slice(22));
+                                      getUsername(row.destinatary);
+                                      handleClick();
+                                    }}
+                                  >
+                                    {row.description.slice(21)}
+                                  </Button>
+                                </div>
+                              ) : (
+                                <Typography>{row.description}</Typography>
+                              )}
                             </TableCell>
+
                             <TableCell align="center">
                               {row.type === "Retiro" && "-"}${row.value}
                             </TableCell>
@@ -212,6 +286,39 @@ export default function ReadMovements(props) {
         message={errorMessage}
         className={classes.snackbar}
       />
+      <Menu
+        id="simple-menu"
+        anchorEl={anchorEl}
+        keepMounted
+        open={Boolean(anchorEl)}
+        onClose={handleClose}
+      >
+        <Popper
+          open={openOrderDetails}
+          anchorEl={anchorRef.current}
+          role={undefined}
+          transition
+          disablePortal
+        >
+          {({ TransitionProps, placement }) => (
+            <Grow
+              {...TransitionProps}
+              style={{
+                transformOrigin:
+                  placement === "bottom" ? "center top" : "center bottom",
+              }}
+            >
+              <ClickAwayListener onClickAway={handleClose}>
+                <MovOrder
+                  orderId={orderId}
+                  selectedPrixer={selectedPrixer}
+                  handleClose={handleClose}
+                />
+              </ClickAwayListener>
+            </Grow>
+          )}
+        </Popper>
+      </Menu>
     </React.Fragment>
   );
 }

@@ -7,6 +7,8 @@ import { useTheme } from "@material-ui/core/styles";
 import { makeStyles } from "@material-ui/core/styles";
 import Fab from "@material-ui/core/Fab";
 import AddIcon from "@material-ui/icons/Add";
+import GetAppIcon from "@material-ui/icons/GetApp";
+
 import Title from "../Title";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import Modal from "@material-ui/core/Modal";
@@ -21,7 +23,7 @@ import ReadOrders from "./readOrders";
 import OrderDetails from "./orderDetails";
 import CreateOrder from "./createOrder";
 import { nanoid } from "nanoid";
-
+import Button from "@material-ui/core/Button";
 const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
@@ -252,6 +254,7 @@ export default function Orders(props) {
   const [snackBarError, setSnackBarError] = useState(false);
   const [discountList, setDiscountList] = useState([]);
   const [orders, setOrders] = useState([]);
+  const [excel, setExcel] = useState();
 
   const getDiscounts = async () => {
     const base_url = process.env.REACT_APP_BACKEND_URL + "/discount/read-allv1";
@@ -441,6 +444,7 @@ export default function Orders(props) {
 
   const downloadOrders = async () => {
     setLoading(true);
+
     const url = process.env.REACT_APP_BACKEND_URL + "/downloadOrders";
     await axios
       .get(url, { adminToken: localStorage.getItem("adminTokenV") })
@@ -448,11 +452,17 @@ export default function Orders(props) {
         if (res.data.message) {
           setErrorMessage(res.data.message);
           setSnackBarError(true);
+          setExcel(res.data.orders);
+          // const element = document.createElement("Pedidos");
+          // element.href = URL.createObjectURL(excel);
+          excel.download = "Pedidos" + Date.now() + ".xlsx";
+          document.body.appendChild(excel);
+          excel.click();
         }
       });
     setLoading(false);
-    setErrorMessage("Archivo descargado exitosamente");
-    setSnackBarError(true);
+    // setErrorMessage("Archivo descargado exitosamente");
+    // setSnackBarError(true);
   };
   const createOrder = async () => {
     setLoading(true);
@@ -753,14 +763,16 @@ export default function Orders(props) {
                   title="Descargar listado"
                   style={{ height: 40, width: 40 }}
                 >
-                  <Fab
+                  <Button
                     color="primary"
                     size="small"
                     onClick={downloadOrders}
                     style={{ marginRight: 10 }}
+                    download
+                    // href="/files/Pedidos.xlsx"
                   >
                     <GetAppIcon />
-                  </Fab>
+                  </Button>
                 </Tooltip> */}
                 {props.permissions?.createOrder && (
                   <Tooltip
@@ -831,8 +843,9 @@ export default function Orders(props) {
         </Grid>
       </Grid>
 
-      <Modal open={isShowDetails}>
+      <Modal open={isShowDetails} onClose={handleClose}>
         <OrderDetails
+          permissions={props.permissions}
           modalContent={modalContent}
           showVoucher={showVoucher}
           setShowVoucher={setShowVoucher}

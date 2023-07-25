@@ -24,6 +24,7 @@ import OrderDetails from "./orderDetails";
 import CreateOrder from "./createOrder";
 import { nanoid } from "nanoid";
 import Button from "@material-ui/core/Button";
+
 const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
@@ -255,6 +256,7 @@ export default function Orders(props) {
   const [discountList, setDiscountList] = useState([]);
   const [orders, setOrders] = useState([]);
   const [excel, setExcel] = useState();
+  const [url, setUrl] = useState();
 
   const getDiscounts = async () => {
     const base_url = process.env.REACT_APP_BACKEND_URL + "/discount/read-allv1";
@@ -441,10 +443,8 @@ export default function Orders(props) {
   const handleCloseVoucher = () => {
     setShowVoucher(!showVoucher);
   };
-
   const downloadOrders = async () => {
     setLoading(true);
-
     const url = process.env.REACT_APP_BACKEND_URL + "/downloadOrders";
     await axios
       .get(url, { adminToken: localStorage.getItem("adminTokenV") })
@@ -452,18 +452,11 @@ export default function Orders(props) {
         if (res.data.message) {
           setErrorMessage(res.data.message);
           setSnackBarError(true);
-          setExcel(res.data.orders);
-          // const element = document.createElement("Pedidos");
-          // element.href = URL.createObjectURL(excel);
-          excel.download = "Pedidos" + Date.now() + ".xlsx";
-          document.body.appendChild(excel);
-          excel.click();
         }
       });
     setLoading(false);
-    // setErrorMessage("Archivo descargado exitosamente");
-    // setSnackBarError(true);
   };
+
   const createOrder = async () => {
     setLoading(true);
 
@@ -744,7 +737,7 @@ export default function Orders(props) {
       <Backdrop
         className={classes.backdrop}
         open={loading}
-        transitionDuration={1000}
+        transitionDuration={500}
       >
         <CircularProgress />
       </Backdrop>
@@ -759,21 +752,19 @@ export default function Orders(props) {
             >
               <Title variant="h1">Pedidos</Title>
               <div>
-                {/* <Tooltip
+                <Tooltip
                   title="Descargar listado"
                   style={{ height: 40, width: 40 }}
                 >
-                  <Button
+                  <Fab
                     color="primary"
                     size="small"
                     onClick={downloadOrders}
                     style={{ marginRight: 10 }}
-                    download
-                    // href="/files/Pedidos.xlsx"
                   >
                     <GetAppIcon />
-                  </Button>
-                </Tooltip> */}
+                  </Fab>
+                </Tooltip>
                 {props.permissions?.createOrder && (
                   <Tooltip
                     title="Crear pedido"
@@ -806,20 +797,6 @@ export default function Orders(props) {
                     <RefreshIcon />
                   </Fab>
                 </Tooltip>
-                {/* <Tooltip
-                  title="Filtrar listado"
-                  style={{ height: 40, width: 40 }}
-                >
-                  <Fab
-                    color="primary"
-                    size="small"
-                    onClick={() => {
-                      readOrders();
-                    }}
-                  >
-                    <FilterListIcon />
-                  </Fab>
-                </Tooltip> */}
               </div>
             </div>
             <ReadOrders

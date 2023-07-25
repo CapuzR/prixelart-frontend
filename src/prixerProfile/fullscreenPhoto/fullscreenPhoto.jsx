@@ -166,7 +166,7 @@ export default function FullscreenPhoto(props) {
   const isDeskTop = useMediaQuery(theme.breakpoints.up("sm"));
 
   const totalArts = tiles?.length;
-  const itemsPerPage = 10;
+  const itemsPerPage = 40;
   const noOfPages = Math.ceil(totalArts / itemsPerPage);
   const [pageNumber, setPageNumber] = useState(1);
   const itemsToSkip = (pageNumber - 1) * itemsPerPage;
@@ -454,7 +454,7 @@ export default function FullscreenPhoto(props) {
   }, []);
 
   const accurateLocation = () => {
-    document.getElementById(fullArt).scrollIntoView({
+    document.getElementById(fullArt)?.scrollIntoView({
       behavior: "smooth",
       block: "center",
     });

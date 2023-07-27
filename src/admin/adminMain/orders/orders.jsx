@@ -24,6 +24,7 @@ import OrderDetails from "./orderDetails";
 import CreateOrder from "./createOrder";
 import { nanoid } from "nanoid";
 import Button from "@material-ui/core/Button";
+const excelJS = require("exceljs");
 
 const drawerWidth = 240;
 
@@ -293,6 +294,143 @@ export default function Orders(props) {
     setLoading(false);
   };
 
+  const downloadOrders = async () => {
+    const workbook = new excelJS.Workbook();
+    const worksheet = workbook.addWorksheet("Pedidos");
+    worksheet.columns = [
+      { header: "status", key: "status", width: 20 },
+      { header: "Fecha de solicitud", key: "createdOn", width: 10 },
+      { header: "Nombre del cliente", key: "basicData", width: 24 },
+      { header: "Fecha de entrega", key: "shippingDate", width: 10 },
+      { header: "certificado", key: "", width: 10 },
+      { header: "Prixer", key: "prixer", width: 18 },
+      { header: "Arte", key: "art", width: 24 },
+      { header: "Producto", key: "product", width: 20 },
+      { header: "Atributo", key: "attribute", width: 20 },
+      { header: "Cantidad", key: "quantity", width: 5 },
+      { header: "Observación", key: "observations", width: 18 },
+      { header: "Vendedor", key: "createdBy", width: 20 },
+      { header: "Método de entrega", key: "shippingData", width: 15 },
+      { header: "Validación del pago", key: "payStatus", width: 10 },
+      { header: "Costo unitario", key: "price", width: 10 },
+    ];
+    worksheet.getRow(1).eachCell((cell) => {
+      cell.font = { bold: true };
+      cell.border = {
+        top: { style: "thin" },
+        left: { style: "thin" },
+        bottom: { style: "thin" },
+        right: { style: "thin" },
+      };
+    });
+    orders.map((order, i) => {
+      const v2 = {
+        status: order?.status,
+        createdOn: order.createdOn,
+        basicData: order.basicData?.firstname + " " + order.basicData?.lastname,
+        shippingDate: "",
+        // Certificado
+        prixer: "",
+        art: "",
+        product: "",
+        attributes: "",
+        quantity: "",
+        observations: order?.observations,
+        createdBy: order.createdBy?.username,
+        shippingData: "",
+        payDate: "",
+        month: "",
+        payStatus: order.payStatus,
+        price: "",
+      };
+
+      let shippingData = " ";
+      if (order.shippingData?.shippingMethod !== undefined) {
+        shippingData = shippingData.concat(
+          order.shippingData?.shippingMethod?.name
+        );
+      }
+      let shippingDate;
+      if (order.shippingData?.shippingDate !== undefined) {
+        shippingDate = order.shippingData?.shippingDate;
+      }
+      let prixer = "";
+      let art = "";
+      let product = "";
+      let attributes = "";
+      let quantity = "";
+      let price = "";
+      order.requests.map((item) => {
+        prixer = prixer.concat(item.art.prixerUsername, ". ");
+
+        art = art.concat(item.art.title, ". ");
+
+        product = product.concat(item.product.name, ". ");
+
+        if (
+          item.product.selection?.attributes &&
+          item.product.selection?.attributes[1]?.value
+        ) {
+          attributes = attributes.concat(
+            item.product.selection?.attributes[0]?.value,
+            ", ",
+            item.product.selection?.attributes[1]?.value,
+            ". "
+          );
+        } else if (
+          item.product.selection?.attributes &&
+          item.product.selection?.attributes[0]?.value
+        ) {
+          attributes = attributes.concat(
+            item.product.selection.attributes[0].value,
+            ". "
+          );
+        }
+
+        quantity = quantity.concat(item.quantity, "| ");
+        if (
+          item.product.publicEquation !== undefined &&
+          item.product.publicEquation !== ""
+        ) {
+          price = price.concat("$", item.product.publicEquation, "| ");
+        } else if (
+          item.product.prixerEquation !== undefined &&
+          item.product.prixerEquation !== ""
+        ) {
+          price = item.product.prixerEquation;
+        } else price = price.concat("$", item.product.publicPrice.from, "| ");
+      });
+      v2.prixer = prixer;
+      v2.art = art;
+      v2.product = product;
+      v2.attributes = attributes;
+      v2.quantity = quantity;
+      v2.price = price;
+      v2.shippingData = shippingData;
+      v2.shippingDate = shippingDate;
+      worksheet.addRow(v2).eachCell({ includeEmpty: true }, (cell) => {
+        cell.border = {
+          top: { style: "thin" },
+          left: { style: "thin" },
+          bottom: { style: "thin" },
+          right: { style: "thin" },
+        };
+        cell.alignment = { vertical: "middle", horizontal: "left" };
+      });
+    });
+
+    workbook.xlsx.writeBuffer().then((buffer) => {
+      const blob = new Blob([buffer], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
+
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "Pedidos.xlsx";
+      link.click();
+    });
+  };
+
   const getIvaCost = (state) => {
     let iva = getTotalPrice(state) * 0.16;
     return iva;
@@ -416,7 +554,6 @@ export default function Orders(props) {
       let ordersv2 = orders.filter((row) => row.status === filter);
       setRows(ordersv2);
     } else if (typeof filter === "object") {
-      console.log(filter);
       let ordersv2 = orders.filter(
         (row) => row.createdBy.username === filter.seller
       );
@@ -443,19 +580,19 @@ export default function Orders(props) {
   const handleCloseVoucher = () => {
     setShowVoucher(!showVoucher);
   };
-  const downloadOrders = async () => {
-    setLoading(true);
-    const url = process.env.REACT_APP_BACKEND_URL + "/downloadOrders";
-    await axios
-      .get(url, { adminToken: localStorage.getItem("adminTokenV") })
-      .then((res) => {
-        if (res.data.message) {
-          setErrorMessage(res.data.message);
-          setSnackBarError(true);
-        }
-      });
-    setLoading(false);
-  };
+  // const downloadOrders = async () => {
+  //   setLoading(true);
+  //   const url = process.env.REACT_APP_BACKEND_URL + "/downloadOrders";
+  //   await axios
+  //     .get(url, { adminToken: localStorage.getItem("adminTokenV") })
+  //     .then((res) => {
+  //       if (res.data.message) {
+  //         setErrorMessage(res.data.message);
+  //         setSnackBarError(true);
+  //       }
+  //     });
+  //   setLoading(false);
+  // };
 
   const createOrder = async () => {
     setLoading(true);
@@ -761,6 +898,8 @@ export default function Orders(props) {
                     size="small"
                     onClick={downloadOrders}
                     style={{ marginRight: 10 }}
+                    download
+                    // href={url}
                   >
                     <GetAppIcon />
                   </Fab>

@@ -298,21 +298,21 @@ export default function Orders(props) {
     const workbook = new excelJS.Workbook();
     const worksheet = workbook.addWorksheet("Pedidos");
     worksheet.columns = [
-      { header: "status", key: "status", width: 20 },
-      { header: "Fecha de solicitud", key: "createdOn", width: 10 },
+      { header: "status", key: "status", width: 16 },
+      { header: "Fecha de solicitud", key: "createdOn", width: 11 },
       { header: "Nombre del cliente", key: "basicData", width: 24 },
-      { header: "Fecha de entrega", key: "shippingDate", width: 10 },
+      { header: "Fecha de entrega", key: "shippingDate", width: 11 },
       { header: "certificado", key: "", width: 10 },
       { header: "Prixer", key: "prixer", width: 18 },
       { header: "Arte", key: "art", width: 24 },
       { header: "Producto", key: "product", width: 20 },
-      { header: "Atributo", key: "attribute", width: 20 },
-      { header: "Cantidad", key: "quantity", width: 5 },
+      { header: "Atributo", key: "attributes", width: 20 },
+      { header: "Cantidad", key: "quantity", width: 10 },
       { header: "Observación", key: "observations", width: 18 },
-      { header: "Vendedor", key: "createdBy", width: 20 },
-      { header: "Método de entrega", key: "shippingData", width: 15 },
+      { header: "Vendedor", key: "createdBy", width: 16 },
+      { header: "Método de entrega", key: "shippingData", width: 14 },
       { header: "Validación del pago", key: "payStatus", width: 10 },
-      { header: "Costo unitario", key: "price", width: 10 },
+      { header: "Costo unitario", key: "price", width: 8 },
     ];
     worksheet.getRow(1).eachCell((cell) => {
       cell.font = { bold: true };
@@ -322,12 +322,20 @@ export default function Orders(props) {
         bottom: { style: "thin" },
         right: { style: "thin" },
       };
+      cell.alignment = {
+        vertical: "middle",
+        horizontal: "center",
+        wrapText: true,
+      };
     });
     orders.map((order, i) => {
       const v2 = {
         status: order?.status,
-        createdOn: order.createdOn,
-        basicData: order.basicData?.firstname + " " + order.basicData?.lastname,
+        createdOn: order.createdOn?.substring(0, 10),
+        basicData:
+          (order.basicData?.name || order.basicData?.firstname) +
+          " " +
+          order.basicData?.lastname,
         shippingDate: "",
         // Certificado
         prixer: "",
@@ -368,6 +376,7 @@ export default function Orders(props) {
         product = product.concat(item.product.name, ". ");
 
         if (
+          item.product.selection &&
           item.product.selection?.attributes &&
           item.product.selection?.attributes[1]?.value
         ) {
@@ -378,8 +387,8 @@ export default function Orders(props) {
             ". "
           );
         } else if (
-          item.product.selection?.attributes &&
-          item.product.selection?.attributes[0]?.value
+          item.product.selection &&
+          item.product.selection?.attributes
         ) {
           attributes = attributes.concat(
             item.product.selection.attributes[0].value,
@@ -415,7 +424,11 @@ export default function Orders(props) {
           bottom: { style: "thin" },
           right: { style: "thin" },
         };
-        cell.alignment = { vertical: "middle", horizontal: "left" };
+        cell.alignment = {
+          vertical: "middle",
+          horizontal: "left",
+          wrapText: true,
+        };
       });
     });
 

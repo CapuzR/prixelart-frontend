@@ -263,7 +263,7 @@ export default function CreateOrder(props) {
     let prices = [0];
     state.map((item) => {
       if (item.product.modifyPrice) {
-        prices.push(Number(item.product.publicEquation));
+        prices.push(Number(item.product.publicEquation * item.quantity || 1));
       } else if (
         item.product &&
         item.art &&

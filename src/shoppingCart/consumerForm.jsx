@@ -220,6 +220,12 @@ function ConsumerForm(props) {
     });
   };
 
+  if (props?.values?.shippingDate === undefined) {
+    props.setValues({
+      ...props.values,
+      shippingDate: stringReadyDate,
+    });
+  }
   return (
     <>
       <div>

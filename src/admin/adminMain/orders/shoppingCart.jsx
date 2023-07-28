@@ -59,6 +59,8 @@ import OrderDetails from "./orderDetails";
 import ConsumerData from "./consumerData";
 import utils from "../../../utils/utils";
 import { nanoid } from "nanoid";
+import x from "../../../apple-touch-icon-180x180.png";
+
 const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
@@ -296,7 +298,9 @@ export default function ShoppingCart(props) {
   useEffect(() => {
     const base_url = process.env.REACT_APP_BACKEND_URL + "/art/read-all";
     axios.get(base_url).then((response) => {
-      setArtList(response.data.arts);
+      const arts = response.data.arts;
+      arts.unshift({ title: "Personalizado" });
+      setArtList(arts);
     });
   }, []);
 
@@ -677,7 +681,13 @@ export default function ShoppingCart(props) {
                             maxHeight: 120,
                             borderRadius: 10,
                           }}
-                          src={buy.art ? buy.art?.squareThumbUrl : ""}
+                          src={
+                            buy.art
+                              ? buy.art.title === "Personalizado"
+                                ? x
+                                : buy.art?.squareThumbUrl
+                              : ""
+                          }
                           debounce={1000}
                           cache
                           error="/imgError.svg"
@@ -708,7 +718,7 @@ export default function ShoppingCart(props) {
                           >
                             {buy.art.title.substring(0, 22)}
                             <br></br>
-                            {buy.art.prixerUsername}
+                            {buy.art.prixerUsername && buy.art.prixerUsername}
                           </Typography>
                         ) : (
                           <>
@@ -726,9 +736,9 @@ export default function ShoppingCart(props) {
                                 artList.map((art) => {
                                   return (
                                     <MenuItem value={art}>
-                                      {art.title.substring(0, 22) +
-                                        " - " +
-                                        art?.prixerUsername}
+                                      {art.title.substring(0, 22)}
+                                      {art?.prixerUsername &&
+                                        " - " + art?.prixerUsername}
                                     </MenuItem>
                                   );
                                 })}

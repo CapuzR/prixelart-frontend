@@ -240,7 +240,6 @@ export default function CreateOrder(props) {
   };
 
   let shippingCost = Number(props.values?.shippingMethod?.price);
-
   const getIvaCost = (state) => {
     let iva = getTotalPrice(state) * 0.16;
     return iva;
@@ -366,15 +365,16 @@ export default function CreateOrder(props) {
       status: "Por producir",
     };
     const base_url3 = process.env.REACT_APP_BACKEND_URL + "/order/sendEmail";
-
-    await axios.post(base_url, input).then(async () => {
-      console.log("Orden generada correctamente. Por favor, revisa tu email");
-      //   await axios.post(base_url3, input).then(async (response) => {
-      //     if (response.data.success === false) {
-      //       await axios.post(base_url3, input);
-      //     } else return;
-      //   });
-    });
+    if (basicData.email) {
+      await axios.post(base_url, input).then(async () => {
+        console.log("Orden generada correctamente. Por favor, revisa tu email");
+        //   await axios.post(base_url3, input).then(async (response) => {
+        //     if (response.data.success === false) {
+        //       await axios.post(base_url3, input);
+        //     } else return;
+        //   });
+      });
+    }
     setOpenCreateOrder(false);
     setBasicData();
     setShippingData();

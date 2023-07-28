@@ -326,12 +326,14 @@ export default function ConsumerData(props) {
     setShippingDataCheck(!shippingDataCheck);
   };
 
-  useEffect(() => {
+  // useEffect(() => {
+  if (props?.shippingData?.shippingDate === undefined) {
     props.setShippingData({
       ...props.shippingData,
       shippingDate: stringReadyDate,
     });
-  }, []);
+  }
+  // }, []);
   return (
     <>
       <Grid container spacing={2}>

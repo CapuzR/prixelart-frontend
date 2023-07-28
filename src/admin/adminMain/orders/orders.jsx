@@ -299,10 +299,11 @@ export default function Orders(props) {
     const worksheet = workbook.addWorksheet("Pedidos");
     worksheet.columns = [
       { header: "status", key: "status", width: 16 },
+      { header: "ID", key: "ID", width: 10 },
       { header: "Fecha de solicitud", key: "createdOn", width: 11 },
       { header: "Nombre del cliente", key: "basicData", width: 24 },
       { header: "Fecha de entrega", key: "shippingDate", width: 11 },
-      { header: "certificado", key: "", width: 10 },
+      { header: "certificado", key: "", width: 12 },
       { header: "Prixer", key: "prixer", width: 18 },
       { header: "Arte", key: "art", width: 24 },
       { header: "Producto", key: "product", width: 20 },
@@ -311,7 +312,7 @@ export default function Orders(props) {
       { header: "Observación", key: "observations", width: 18 },
       { header: "Vendedor", key: "createdBy", width: 16 },
       { header: "Método de entrega", key: "shippingData", width: 14 },
-      { header: "Validación del pago", key: "payStatus", width: 10 },
+      { header: "Validación del pago", key: "payStatus", width: 12 },
       { header: "Costo unitario", key: "price", width: 8 },
     ];
     worksheet.getRow(1).eachCell((cell) => {
@@ -331,9 +332,10 @@ export default function Orders(props) {
     orders.map((order, i) => {
       const v2 = {
         status: order?.status,
+        ID: order.orderId,
         createdOn: order.createdOn?.substring(0, 10),
         basicData:
-          (order.basicData?.name || order.basicData?.firstname) +
+          (order.basicData?.firstname || order.basicData?.name) +
           " " +
           order.basicData?.lastname,
         shippingDate: "",
@@ -369,66 +371,61 @@ export default function Orders(props) {
       let quantity = "";
       let price = "";
       order.requests.map((item) => {
-        prixer = prixer.concat(item.art.prixerUsername, ". ");
+        prixer = item.art.prixerUsername;
 
-        art = art.concat(item.art.title, ". ");
+        art = item.art.title;
 
-        product = product.concat(item.product.name, ". ");
+        product = item.product.name;
 
         if (
           item.product.selection &&
           item.product.selection?.attributes &&
           item.product.selection?.attributes[1]?.value
         ) {
-          attributes = attributes.concat(
-            item.product.selection?.attributes[0]?.value,
+          attributes =
+            (item.product.selection?.attributes[0]?.value,
             ", ",
-            item.product.selection?.attributes[1]?.value,
-            ". "
-          );
+            item.product.selection?.attributes[1]?.value);
         } else if (
           item.product.selection &&
           item.product.selection?.attributes
         ) {
-          attributes = attributes.concat(
-            item.product.selection.attributes[0].value,
-            ". "
-          );
+          attributes = item.product.selection.attributes[0].value;
         }
 
-        quantity = quantity.concat(item.quantity, "| ");
+        quantity = item.quantity;
         if (
           item.product.publicEquation !== undefined &&
           item.product.publicEquation !== ""
         ) {
-          price = price.concat("$", item.product.publicEquation, "| ");
+          price = ("$", item.product.publicEquation);
         } else if (
           item.product.prixerEquation !== undefined &&
           item.product.prixerEquation !== ""
         ) {
-          price = item.product.prixerEquation;
-        } else price = price.concat("$", item.product.publicPrice.from, "| ");
-      });
-      v2.prixer = prixer;
-      v2.art = art;
-      v2.product = product;
-      v2.attributes = attributes;
-      v2.quantity = quantity;
-      v2.price = price;
-      v2.shippingData = shippingData;
-      v2.shippingDate = shippingDate;
-      worksheet.addRow(v2).eachCell({ includeEmpty: true }, (cell) => {
-        cell.border = {
-          top: { style: "thin" },
-          left: { style: "thin" },
-          bottom: { style: "thin" },
-          right: { style: "thin" },
-        };
-        cell.alignment = {
-          vertical: "middle",
-          horizontal: "left",
-          wrapText: true,
-        };
+          price = ("$", item.product.prixerEquation);
+        } else price = ("$", item.product.publicPrice.from);
+        v2.prixer = prixer;
+        v2.art = art;
+        v2.product = product;
+        v2.attributes = attributes;
+        v2.quantity = quantity;
+        v2.price = price;
+        v2.shippingData = shippingData;
+        v2.shippingDate = shippingDate;
+        worksheet.addRow(v2).eachCell({ includeEmpty: true }, (cell) => {
+          cell.border = {
+            top: { style: "thin" },
+            left: { style: "thin" },
+            bottom: { style: "thin" },
+            right: { style: "thin" },
+          };
+          cell.alignment = {
+            vertical: "middle",
+            horizontal: "left",
+            wrapText: true,
+          };
+        });
       });
     });
 
@@ -815,24 +812,29 @@ export default function Orders(props) {
         unitPrice = op;
       }
       const url1 = process.env.REACT_APP_BACKEND_URL + "/prixer/read";
-      await axios
-        .post(url1, { username: item.art?.prixerUsername })
-        .then(async (res) => {
-          setAccount(res.data.account);
-          const url = process.env.REACT_APP_BACKEND_URL + "/movement/create";
-          const data = {
-            _id: nanoid(),
-            createdOn: new Date(),
-            createdBy: JSON.parse(localStorage.getItem("adminToken")).username,
-            date: new Date(),
-            destinatary: res.data.account,
-            description: `Comisión de la orden #${order.orderId}`,
-            type: "Depósito",
-            value: unitPrice,
-            adminToken: localStorage.getItem("adminTokenV"),
-          };
-          await axios.post(url, data);
-        });
+      if (item.art.title === "Personalizado") {
+        return;
+      } else {
+        await axios
+          .post(url1, { username: item.art?.prixerUsername })
+          .then(async (res) => {
+            setAccount(res.data.account);
+            const url = process.env.REACT_APP_BACKEND_URL + "/movement/create";
+            const data = {
+              _id: nanoid(),
+              createdOn: new Date(),
+              createdBy: JSON.parse(localStorage.getItem("adminToken"))
+                .username,
+              date: new Date(),
+              destinatary: res.data.account,
+              description: `Comisión de la orden #${order.orderId}`,
+              type: "Depósito",
+              value: unitPrice,
+              adminToken: localStorage.getItem("adminTokenV"),
+            };
+            await axios.post(url, data);
+          });
+      }
       setAccount();
     }
   };

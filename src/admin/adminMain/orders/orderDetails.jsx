@@ -7,7 +7,7 @@ import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
 import Img from "react-cool-img";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
-
+import x from "../../../apple-touch-icon-180x180.png";
 const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
@@ -291,7 +291,11 @@ export default function OrderDetails(props) {
                           elevation={3}
                         >
                           <Img
-                            src={item.art?.squareThumbUrl}
+                            src={
+                              item.art.title === "Personalizado"
+                                ? x
+                                : item.art?.squareThumbUrl
+                            }
                             style={{
                               maxWidth: 150,
                               maxHeight: 150,
@@ -326,10 +330,14 @@ export default function OrderDetails(props) {
                       </div>
                       <div style={{ padding: 10 }}>
                         <div>{"Arte: " + item.art?.title}</div>
-                        <div>{"Id: " + item.art?.artId}</div>
-                        <div style={{ marginBottom: 10 }}>
-                          {"Prixer: " + item.art?.prixerUsername}
-                        </div>
+                        {item.art?.title !== "Personalizado" && (
+                          <>
+                            <div>{"Id: " + item.art?.artId}</div>
+                            <div style={{ marginBottom: 10 }}>
+                              {"Prixer: " + item.art?.prixerUsername}
+                            </div>
+                          </>
+                        )}
                         <div>{"Producto: " + item.product.name}</div>
                         <div>{"Id: " + item.product._id}</div>
                         {item.product.selection &&

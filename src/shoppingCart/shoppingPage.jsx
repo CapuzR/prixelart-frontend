@@ -484,9 +484,8 @@ export default function ShoppingPage(props) {
 
             props.setMessage(response.data.info);
             props.setMessage(
-              "¡Gracias por tu compra! te redireccionaremos a Whatsapp para ser atendido por nuestro departamento de ventas."
+              "¡Gracias por tu compra! Por favor revisa tu correo"
             );
-            // Cambiando el precio con el descuento
             orderLines.map((item) => {
               if (typeof item.product.discount === "string") {
                 let dis = discountList?.find(
@@ -588,10 +587,6 @@ export default function ShoppingPage(props) {
   const changeCurrency = () => {
     setCurrency(!currency);
   };
-
-  // console.log(getTotal(props.buyState));
-  // console.log(getIvaCost(props.buyState));
-  // console.log(getTotalPrice(props.buyState));
 
   return (
     <>

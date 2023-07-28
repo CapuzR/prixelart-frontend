@@ -253,7 +253,11 @@ export default function ReadMovements(props) {
                             </TableCell>
 
                             <TableCell align="center">
-                              {row.type === "Retiro" && "-"}${row.value}
+                              {row.type === "Retiro" && "-"}$
+                              {row.value.toLocaleString("de-DE", {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2,
+                              })}
                             </TableCell>
                             <TableCell align="center">
                               {row.createdOn.substring(0, 10)}

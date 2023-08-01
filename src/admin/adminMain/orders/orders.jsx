@@ -8,7 +8,6 @@ import { makeStyles } from "@material-ui/core/styles";
 import Fab from "@material-ui/core/Fab";
 import AddIcon from "@material-ui/icons/Add";
 import GetAppIcon from "@material-ui/icons/GetApp";
-
 import Title from "../Title";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import Modal from "@material-ui/core/Modal";
@@ -16,14 +15,11 @@ import RefreshIcon from "@material-ui/icons/Refresh";
 import { Backdrop } from "@material-ui/core";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Tooltip from "@material-ui/core/Tooltip";
-import { getAttributes, getEquation } from "../../../products/services";
-import { useHistory } from "react-router-dom";
 import Snackbar from "@material-ui/core/Snackbar";
 import ReadOrders from "./readOrders";
 import OrderDetails from "./orderDetails";
 import CreateOrder from "./createOrder";
 import { nanoid } from "nanoid";
-import Button from "@material-ui/core/Button";
 const excelJS = require("exceljs");
 
 const drawerWidth = 240;
@@ -590,120 +586,6 @@ export default function Orders(props) {
   const handleCloseVoucher = () => {
     setShowVoucher(!showVoucher);
   };
-  // const downloadOrders = async () => {
-  //   setLoading(true);
-  //   const url = process.env.REACT_APP_BACKEND_URL + "/downloadOrders";
-  //   await axios
-  //     .get(url, { adminToken: localStorage.getItem("adminTokenV") })
-  //     .then((res) => {
-  //       if (res.data.message) {
-  //         setErrorMessage(res.data.message);
-  //         setSnackBarError(true);
-  //       }
-  //     });
-  //   setLoading(false);
-  // };
-
-  const createOrder = async () => {
-    setLoading(true);
-
-    let orderLines = [];
-
-    props.buyState.map((s) => {
-      s.product &&
-        s.art &&
-        orderLines.push({
-          product: s.product,
-          art: s.art,
-          quantity: s.quantity,
-        });
-    });
-    const consumerData = {
-      _id: nanoid(6),
-      active: true,
-      contactedBy:
-        JSON.parse(localStorage.getItem("adminToken")).firstname +
-        " " +
-        JSON.parse(localStorage.getItem("adminToken")).lastname,
-      consumerType: "Particular",
-      firstname: props.values?.name,
-      lastname: props.values?.lastName,
-      ci: props.values?.ci,
-      phone: props.values?.phone,
-      email: props.values?.email,
-      address: props.values?.address,
-      billingAddress: props.values?.billingAddress || props.values?.address,
-      shippingAddress: props.values?.shippingAddress || props.values?.address,
-    };
-
-    const consumer = await axios.post(
-      process.env.REACT_APP_BACKEND_URL + "/consumer/create",
-      consumerData
-    );
-
-    const base_url = process.env.REACT_APP_BACKEND_URL + "/order/create";
-    let input = {
-      orderId: nanoid(6),
-      requests: orderLines,
-      basicData: {
-        firstname: consumerData.firstname,
-        lastname: consumerData.lastname,
-        ci: consumerData.ci,
-        email: consumerData.email,
-        phone: consumerData.phone,
-        address: consumerData.address,
-      },
-      shippingData: {
-        name: props.values?.shippingName,
-        lastname: props.values?.shippingLastName,
-        phone: props.values?.shippingPhone,
-        address: props.values?.shippingAddress,
-        shippingMethod: props.values?.shippingMethod,
-        shippingDate: props.values?.shippingDate,
-      },
-      billingData: {
-        name: props.values?.billingShName,
-        lastname: props.values?.billingShLastName,
-        ci: props.values?.billingCi,
-        company: props.values?.billingCompany,
-        phone: props.values?.billingPhone,
-        address: props.values?.billingAddress,
-        orderPaymentMethod: orderPaymentMethod.name,
-      },
-      dollarValue: dollarValue,
-      observations: props.values.observations,
-      tax: getTotalPrice(props.buyState) * 0.16,
-      subtotal: getTotalPrice(props.buyState),
-      shippingCost: shippingCost,
-      total: getTotal(props.buyState),
-      createdOn: new Date(),
-      createdBy: {
-        username:
-          JSON.parse(localStorage.getItem("adminToken")).firstname +
-          " " +
-          JSON.parse(localStorage.getItem("adminToken")).lastname,
-      },
-      consumerId: consumerData._id,
-      orderType: "Particular",
-      status: "Por producir",
-    };
-    const base_url3 = process.env.REACT_APP_BACKEND_URL + "/order/sendEmail";
-
-    const order = await axios.post(base_url, input).then(async () => {
-      console.log("Orden generada correctamente. Por favor, revisa tu email");
-      await axios.post(base_url3, input).then(async (response) => {
-        if (response.data.success === false) {
-          await axios.post(base_url3, input);
-        } else return;
-      });
-    });
-    setOpenCreateOrder(false);
-    props.setValues(undefined);
-    localStorage.removeItem("buyState");
-    props.setBuyState([]);
-    readOrders();
-    setLoading(false);
-  };
 
   const getTotalPrice = (state) => {
     let prices = [0];
@@ -1000,6 +882,8 @@ export default function Orders(props) {
           changeQuantity={props.changeQuantity}
           handleClose={handleClose}
           dollarValue={dollarValue}
+          setErrorMessage={setErrorMessage}
+          setSnackBarError={setSnackBarError}
         ></CreateOrder>
       </Modal>
       <Snackbar

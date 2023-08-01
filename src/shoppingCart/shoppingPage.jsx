@@ -7,7 +7,6 @@ import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
 import Container from "@material-ui/core/Container";
 import CssBaseline from "@material-ui/core/CssBaseline";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
 import Stepper from "@material-ui/core/Stepper";
 import Step from "@material-ui/core/Step";
 import StepLabel from "@material-ui/core/StepLabel";
@@ -395,7 +394,7 @@ export default function ShoppingPage(props) {
       );
 
       // window.open(utils.generateWaBuyMessage(orderLines), "_blank");
-      const base_url = process.env.REACT_APP_BACKEND_URL + "/order/create";
+      const base_url = process.env.REACT_APP_BACKEND_URL + "/order/createv2";
 
       const input = {
         orderId: nanoid(6),

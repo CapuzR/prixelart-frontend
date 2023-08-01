@@ -60,7 +60,6 @@ const generateArtMessage = (tile, type) => {
 
 const generateWaBuyMessage = (buy) => {
   const waNumber = "584126377748";
-  // const waNumber = "584149153069";
   const message =
     "Hola, quiero conocer el proceso para continuar con la compra de los items que seleccioné: " +
     buy.map(

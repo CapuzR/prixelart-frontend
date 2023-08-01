@@ -4,7 +4,6 @@ import Grid from "@material-ui/core/Grid";
 import { useTheme } from "@material-ui/core/styles";
 import { makeStyles } from "@material-ui/core/styles";
 import { Typography } from "@material-ui/core";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
 import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
 import Stepper from "@material-ui/core/Stepper";
@@ -342,6 +341,7 @@ export default function CreateOrder(props) {
 
     const base_url = process.env.REACT_APP_BACKEND_URL + "/order/create";
     let input = {
+      adminToken: localStorage.getItem("adminTokenV"),
       orderId: nanoid(6),
       requests: orderLines,
       basicData: basicData,
@@ -365,21 +365,24 @@ export default function CreateOrder(props) {
       status: "Por producir",
     };
     const base_url3 = process.env.REACT_APP_BACKEND_URL + "/order/sendEmail";
-    if (basicData.email) {
-      await axios.post(base_url, input).then(async () => {
-        console.log("Orden generada correctamente. Por favor, revisa tu email");
-        //   await axios.post(base_url3, input).then(async (response) => {
-        //     if (response.data.success === false) {
-        //       await axios.post(base_url3, input);
-        //     } else return;
-        //   });
-      });
-    }
+    await axios.post(base_url, input).then(async () => {
+      if (basicData.email.length > 8) {
+        await axios.post(base_url3, input).then(async (response) => {
+          props.setErrorMessage(response.data.info);
+          props.setSnackBarError(true);
+          if (response.data.success === false) {
+            await axios.post(base_url3, input).then((res) => {
+              props.setErrorMessage(res.data.info);
+              props.setSnackBarError(true);
+            });
+          } else return;
+        });
+      }
+    });
     setOpenCreateOrder(false);
     setBasicData();
     setShippingData();
     setBillingData();
-    // Falta borrar dato por dato creo
     localStorage.removeItem("buyState");
     props.setBuyState([]);
     props.readOrders();

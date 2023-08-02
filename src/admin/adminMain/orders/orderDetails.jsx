@@ -226,6 +226,16 @@ export default function OrderDetails(props) {
           justifyContent: "flex-end",
         }}
       >
+        <Typography
+          variant="h6"
+          style={{ display: "flex", width: "100%", justifyContent: "center" }}
+        >
+          Pedido de{" "}
+          {(props.modalContent.basicData.firstname ||
+            props.modalContent.basicData.name) +
+            " " +
+            props.modalContent.basicData.lastname}
+        </Typography>
         {props.showVoucher && (
           <IconButton onClick={props.handleCloseVoucher}>
             <ArrowBackIcon />
@@ -727,6 +737,7 @@ export default function OrderDetails(props) {
                           <div>{"Producto: " + item.product.name}</div>
                           <div>{"Id: " + item.product._id}</div>
                           {item.product.attributes &&
+                            item.product.selection &&
                             item.product.attributes.map((a, i) => {
                               return (
                                 <p
@@ -735,9 +746,9 @@ export default function OrderDetails(props) {
                                     margin: 0,
                                   }}
                                 >
-                                  {item.product.selection.attributes[i].name +
+                                  {item.product.selection.attributes[i]?.name +
                                     ": " +
-                                    item.product.selection.attributes[i].value}
+                                    item.product.selection.attributes[i]?.value}
                                 </p>
                               );
                             })}

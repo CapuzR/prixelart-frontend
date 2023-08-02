@@ -166,7 +166,7 @@ export default function FullscreenPhoto(props) {
   const isDeskTop = useMediaQuery(theme.breakpoints.up("sm"));
 
   const totalArts = tiles?.length;
-  const itemsPerPage = 40;
+  const itemsPerPage = 8;
   const noOfPages = Math.ceil(totalArts / itemsPerPage);
   const [pageNumber, setPageNumber] = useState(1);
   const itemsToSkip = (pageNumber - 1) * itemsPerPage;
@@ -434,8 +434,24 @@ export default function FullscreenPhoto(props) {
   const readArt = async () => {
     setLoading(true);
     setTiles(props.searchResult);
+
+    const search = () => {
+      const s = tilesv2.find((art) => art.artId === artId);
+      if (typeof s === "object") {
+        return true;
+      } else {
+        let y = pageNumber;
+        let x = ++y;
+        setPageNumber(x);
+      }
+    };
+
     const artId = globalParams.get("/art");
 
+    let result = false;
+    while (result === false) {
+      result = search();
+    }
     if (props.fullArt) {
     } else {
       const URI = process.env.REACT_APP_BACKEND_URL + "/art/read-by-id";

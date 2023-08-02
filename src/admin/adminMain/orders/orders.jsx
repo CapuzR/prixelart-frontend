@@ -244,16 +244,12 @@ export default function Orders(props) {
   const [loading, setLoading] = useState(false);
   const [filter, setFilter] = useState("recent");
   const [openCreateOrder, setOpenCreateOrder] = useState(false);
-  const [orderPaymentMethod, setOrderPaymentMethod] = useState(undefined);
-  const [currency, setCurrency] = useState(false);
   const [dollarValue, setDollarValue] = useState(1);
   const [account, setAccount] = useState();
   const [errorMessage, setErrorMessage] = useState();
   const [snackBarError, setSnackBarError] = useState(false);
   const [discountList, setDiscountList] = useState([]);
   const [orders, setOrders] = useState([]);
-  const [excel, setExcel] = useState();
-  const [url, setUrl] = useState();
 
   const getDiscounts = async () => {
     const base_url = process.env.REACT_APP_BACKEND_URL + "/discount/read-allv1";
@@ -436,26 +432,6 @@ export default function Orders(props) {
       link.click();
     });
   };
-
-  const getIvaCost = (state) => {
-    let iva = getTotalPrice(state) * 0.16;
-    return iva;
-  };
-
-  const getTotal = (x) => {
-    let n = [];
-    n.push(getTotalPrice(props.buyState));
-    n.push(getIvaCost(props.buyState));
-    {
-      props.values?.shippingMethod && n.push(shippingCost);
-    }
-    let total = n.reduce(function (a, b) {
-      return a + b;
-    });
-    return total;
-  };
-
-  let shippingCost = Number(props.values?.shippingMethod?.price);
 
   const filterOrders = (filter) => {
     setLoading(true);

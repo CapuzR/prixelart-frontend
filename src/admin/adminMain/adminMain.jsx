@@ -191,7 +191,12 @@ export default function AdminMain(props) {
     axios
       .post(base_url, { adminToken: localStorage.getItem("adminTokenV") })
       .then((response) => {
-        setPermissions(response.data.readedRole);
+        if (response.data.auth === false) {
+          localStorage.removeItem("adminToken");
+          localStorage.removeItem("adminTokenV");
+        } else {
+          setPermissions(response.data.readedRole);
+        }
       })
       .catch((error) => {
         console.log(error);

@@ -14,13 +14,19 @@ import Backdrop from "@material-ui/core/Backdrop";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import CardMedia from "@material-ui/core/CardMedia";
-import { Button } from "@material-ui/core";
+import Button from "@material-ui/core/Button";
 import Modal from "@material-ui/core/Modal";
 import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
 import TextField from "@material-ui/core/TextField";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import DehazeIcon from "@material-ui/icons/Dehaze";
+import Table from "@material-ui/core/Table";
+import TableBody from "@material-ui/core/TableBody";
+import TableCell from "@material-ui/core/TableCell";
+import TableHead from "@material-ui/core/TableHead";
+import TableRow from "@material-ui/core/TableRow";
+
 import { nanoid } from "nanoid";
 
 const useStyles = makeStyles((theme) => ({
@@ -67,6 +73,21 @@ const useStyles = makeStyles((theme) => ({
   backdrop: {
     zIndex: theme.zIndex.drawer + 1,
     color: theme.palette.primary.main,
+  },
+  paper1: {
+    position: "absolute",
+    width: 800,
+    maxHeight: "90%",
+    overflowY: "auto",
+    right: "33%",
+    top: "10%",
+    left: "25%",
+    backgroundColor: "white",
+    boxShadow: theme.shadows[2],
+    padding: "16px 32px 24px",
+    textAlign: "justify",
+    minWidth: 320,
+    borderRadius: 10,
   },
   paper2: {
     position: "fixed",
@@ -117,12 +138,14 @@ export default function Prixers(props) {
   });
   const [openNewBalance, setOpenNewBalance] = useState(false);
   const [openNewMovement, setOpenNewMovement] = useState(false);
+  const [openList, setOpenList] = useState(false);
   const [selectedPrixer, setSelectedPrixer] = useState();
   const [balance, setBalance] = useState(0);
   const [type, setType] = useState();
   const [date, setDate] = useState(new Date());
   const [description, setDescription] = useState();
   const [accounts, setAccounts] = useState();
+  const [movements, setMovements] = useState();
   const [message, setMessage] = useState();
   const [open, setOpen] = useState(false);
 
@@ -152,6 +175,18 @@ export default function Prixers(props) {
       });
   };
 
+  const getMovements = async (account) => {
+    const base_url =
+      process.env.REACT_APP_BACKEND_URL + "/movement/readByPrixer";
+    axios
+      .post(base_url, {
+        adminToken: localStorage.getItem("adminTokenV"),
+        _id: account,
+      })
+      .then((res) => {
+        setMovements(res.data.movements);
+      });
+  };
   useEffect(() => {
     readPrixers();
     getBalance();
@@ -248,12 +283,14 @@ export default function Prixers(props) {
   const handleClose = () => {
     setOpenNewBalance(false);
     setOpenNewMovement(false);
+    setOpenList(false);
     setBalance(0);
     setSelectedPrixer();
     setDate();
     setDescription();
+    setMovements();
   };
-
+  console.log(movements);
   return (
     <div>
       <Backdrop className={classes.backdrop} open={loading}>
@@ -383,6 +420,11 @@ export default function Prixers(props) {
                             }}
                           >
                             <Button
+                              onClick={() => {
+                                setSelectedPrixer(tile);
+                                getMovements(tile.account);
+                                setOpenList(true);
+                              }}
                             >
                               <DehazeIcon />
                               Detalles
@@ -501,7 +543,7 @@ export default function Prixers(props) {
               )}
         </Grid>
       </Paper>
-      <Modal open={openNewBalance}>
+      <Modal open={openNewBalance} onClose={handleClose}>
         <Grid container className={classes.paper2}>
           <Grid
             item
@@ -561,7 +603,7 @@ export default function Prixers(props) {
           </div>
         </Grid>
       </Modal>
-      <Modal open={openNewMovement}>
+      <Modal open={openNewMovement} onClose={handleClose}>
         <Grid container className={classes.paper3}>
           <Grid
             item
@@ -579,7 +621,7 @@ export default function Prixers(props) {
                 alignItems: "center",
               }}
             >
-              <Typography>
+              <Typography variant="h6">
                 {type} de
                 {" " +
                   selectedPrixer?.firstName +
@@ -662,6 +704,68 @@ export default function Prixers(props) {
               Guardar
             </Button>
           </div>
+        </Grid>
+      </Modal>
+      <Modal open={openList} onClose={handleClose}>
+        <Grid container className={classes.paper1}>
+          <div
+            style={{
+              display: "flex",
+              width: "100%",
+
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <Typography variant="h6">
+              Historial de
+              {" " + selectedPrixer?.firstName + " " + selectedPrixer?.lastName}
+            </Typography>
+
+            <IconButton onClick={handleClose}>
+              <CloseIcon />
+            </IconButton>
+          </div>
+
+          {movements?.length > 0 ? (
+            <Table size="small">
+              <TableHead>
+                <TableRow>
+                  <TableCell align="center">Fecha efectiva</TableCell>
+                  <TableCell align="center">Descripción</TableCell>
+                  <TableCell align="center">Monto</TableCell>
+                  <TableCell align="center">Fecha</TableCell>
+                  <TableCell align="center">Creado por</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {movements.map((mov) => (
+                  <TableRow>
+                    <TableCell>
+                      {mov?.date?.substring(0, 10) ||
+                        mov.createdOn.substring(0, 10)}
+                    </TableCell>
+                    <TableCell>{mov.description}</TableCell>
+                    <TableCell>
+                      {mov.type === "Retiro" && "-"}$
+                      {mov.value.toLocaleString("de-DE", {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}
+                    </TableCell>
+                    <TableCell align="center">
+                      {mov.createdOn.substring(0, 10)}
+                    </TableCell>
+                    <TableCell align="center">{mov.createdBy}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          ) : (
+            <Typography style={{ display: "flex", justifyContent: "center" }}>
+              Aún no hay movimientos registrados para este Prixer.
+            </Typography>
+          )}
         </Grid>
       </Modal>
       <Snackbar

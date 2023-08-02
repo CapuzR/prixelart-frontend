@@ -159,48 +159,157 @@ export default function ReadOrders(props) {
   };
   return (
     <>
-      {props.rows && (
-        <>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell align="center">ID</TableCell>
-                <TableCell align="center">
-                  <div style={{ display: "flex", justifyContent: "end" }}>
-                    <FormControl className={classes.formControl}>
-                      <InputLabel id="demo-simple-select-label">
-                        Fecha
-                      </InputLabel>
-                      <Select
-                        labelId="demo-simple-select-label"
-                        id="demo-simple-select"
-                        value={props.filter}
-                        onChange={handleChange}
+      <Table>
+        <TableHead>
+          <TableRow>
+            <TableCell align="center">ID</TableCell>
+            <TableCell align="center">
+              <div style={{ display: "flex", justifyContent: "end" }}>
+                <FormControl className={classes.formControl}>
+                  <InputLabel id="demo-simple-select-label">Fecha</InputLabel>
+                  <Select
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    value={props.filter}
+                    onChange={handleChange}
+                  >
+                    <MenuItem value={"recent"}>Recientes</MenuItem>
+                    <MenuItem value={"previous"}>Anteriores</MenuItem>
+                  </Select>
+                </FormControl>
+              </div>
+            </TableCell>
+            <TableCell align="center">
+              <div style={{ display: "flex", justifyContent: "end" }}>
+                <FormControl className={classes.formControl}>
+                  <InputLabel>Fecha de entrega</InputLabel>
+                  <Select value={props.filter} onChange={handleChange}>
+                    <MenuItem value={"coming"}>Próximos</MenuItem>
+                    <MenuItem value={"later"}>Lejanos</MenuItem>
+                  </Select>
+                </FormControl>
+              </div>
+            </TableCell>
+            <TableCell align="center">Cliente</TableCell>
+            <TableCell align="center">Productos</TableCell>
+            <TableCell align="center">
+              <div style={{ display: "flex", justifyContent: "end" }}>
+                <FormControl className={classes.formControl}>
+                  <InputLabel> Status de Pago</InputLabel>
+                  <Select value={props.filter} onChange={handleChange}>
+                    <MenuItem value={"Pendiente"}>Pendiente</MenuItem>
+                    <MenuItem value={"Pagado"}>Pagado</MenuItem>
+                    <MenuItem value={"Abonado"}>Abonado</MenuItem>
+                    <MenuItem value={"Giftcard"}>Giftcard</MenuItem>
+                    <MenuItem value={"Obsequio"}>Obsequio</MenuItem>
+                    <MenuItem value={"Anulado"}>Anulado</MenuItem>
+                  </Select>
+                </FormControl>
+              </div>
+            </TableCell>
+            <TableCell align="center">
+              <div style={{ display: "flex", justifyContent: "end" }}>
+                <FormControl className={classes.formControl}>
+                  <InputLabel>Status</InputLabel>
+                  <Select value={props.filter} onChange={handleChange}>
+                    <MenuItem value={"Por producir"}>Por producir</MenuItem>
+                    <MenuItem value={"En impresión"}>En impresión</MenuItem>
+                    <MenuItem value={"En producción"}>En producción</MenuItem>
+                    <MenuItem value={"Por entregar"}>Por entregar</MenuItem>
+                    <MenuItem value={"Entregado"}>Entregado</MenuItem>
+                    <MenuItem value={"Concretado"}>Concretado</MenuItem>
+                    <MenuItem value={"Detenido"}>Detenido</MenuItem>
+                    <MenuItem value={"Anulado"}>Anulado</MenuItem>
+                  </Select>
+                </FormControl>
+              </div>
+            </TableCell>
+            <TableCell align="center">
+              <div style={{ display: "flex", justifyContent: "end" }}>
+                <FormControl className={classes.formControl}>
+                  <InputLabel>Asesor</InputLabel>
+                  <Select value={props.filter} onChange={handleChange}>
+                    <MenuItem
+                      value={{
+                        seller:
+                          JSON.parse(localStorage.getItem("adminToken"))
+                            .firstname +
+                          " " +
+                          JSON.parse(localStorage.getItem("adminToken"))
+                            .lastname,
+                      }}
+                    >
+                      {JSON.parse(localStorage.getItem("adminToken"))
+                        .firstname +
+                        " " +
+                        JSON.parse(localStorage.getItem("adminToken")).lastname}
+                    </MenuItem>
+                    {props.sellers &&
+                      props.sellers?.map((seller) => (
+                        <MenuItem value={{ seller: seller }}>{seller}</MenuItem>
+                      ))}
+                  </Select>
+                </FormControl>
+              </div>
+            </TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {rowsv2 &&
+            rowsv2.map((row, index) => (
+              <>
+                <TableRow key={index}>
+                  <TableCell align="center">{row.orderId}</TableCell>
+                  <TableCell align="center">
+                    {row.createdOn.substring(0, 10)}
+                  </TableCell>
+                  <TableCell align="center">
+                    {row.shippingData?.shippingDate?.substring(0, 10)}
+                  </TableCell>
+                  <TableCell align="center">
+                    {row.basicData?.firstname || row.basicData?.name}{" "}
+                    {row.basicData?.lastname}
+                  </TableCell>
+                  <TableCell align="center">
+                    <Button
+                      onClick={() => {
+                        console.log(row);
+                        props.setModalContent(row);
+                        props.setIsShowDetails(!props.isShowDetails);
+                      }}
+                      style={{
+                        padding: 10,
+                        textTransform: "none",
+                        backgroundColor: "#eee",
+                      }}
+                    >
+                      <div
+                        style={{
+                          display: "flex",
+                          flexDirection: "column",
+                        }}
                       >
-                        <MenuItem value={"recent"}>Recientes</MenuItem>
-                        <MenuItem value={"previous"}>Anteriores</MenuItem>
-                      </Select>
-                    </FormControl>
-                  </div>
-                </TableCell>
-                <TableCell align="center">
-                  <div style={{ display: "flex", justifyContent: "end" }}>
-                    <FormControl className={classes.formControl}>
-                      <InputLabel>Fecha de entrega</InputLabel>
-                      <Select value={props.filter} onChange={handleChange}>
-                        <MenuItem value={"coming"}>Próximos</MenuItem>
-                        <MenuItem value={"later"}>Lejanos</MenuItem>
-                      </Select>
-                    </FormControl>
-                  </div>
-                </TableCell>
-                <TableCell align="center">Cliente</TableCell>
-                <TableCell align="center">Productos</TableCell>
-                <TableCell align="center">
-                  <div style={{ display: "flex", justifyContent: "end" }}>
-                    <FormControl className={classes.formControl}>
-                      <InputLabel> Status de Pago</InputLabel>
-                      <Select value={props.filter} onChange={handleChange}>
+                        Detalles
+                      </div>
+                    </Button>
+                  </TableCell>
+                  <TableCell align="center">
+                    <FormControl
+                      disabled={
+                        JSON.parse(localStorage.getItem("adminToken")).area !==
+                          "Master" &&
+                        (!props.permissions?.detailPay ||
+                          row.payStatus === "Pagado")
+                      }
+                    >
+                      <Select
+                        id="payStatus"
+                        SelectClassKey
+                        value={row.payStatus || "Pendiente"}
+                        onChange={(e) => {
+                          props.handleChangePayStatus(row, e.target.value);
+                        }}
+                      >
                         <MenuItem value={"Pendiente"}>Pendiente</MenuItem>
                         <MenuItem value={"Pagado"}>Pagado</MenuItem>
                         <MenuItem value={"Abonado"}>Abonado</MenuItem>
@@ -209,13 +318,26 @@ export default function ReadOrders(props) {
                         <MenuItem value={"Anulado"}>Anulado</MenuItem>
                       </Select>
                     </FormControl>
-                  </div>
-                </TableCell>
-                <TableCell align="center">
-                  <div style={{ display: "flex", justifyContent: "end" }}>
-                    <FormControl className={classes.formControl}>
-                      <InputLabel>Status</InputLabel>
-                      <Select value={props.filter} onChange={handleChange}>
+                  </TableCell>
+
+                  <TableCell align="center">
+                    <FormControl
+                      disabled={
+                        !props.permissions?.orderStatus ||
+                        (JSON.parse(localStorage.getItem("adminToken")).area !==
+                          "Master" &&
+                          (row.status === "Cancelada" ||
+                            row.status === "Concretado"))
+                      }
+                    >
+                      <Select
+                        id="status"
+                        SelectClassKey
+                        value={row.status}
+                        onChange={(e) => {
+                          props.handleChangeStatus(row, e.target.value);
+                        }}
+                      >
                         <MenuItem value={"Por producir"}>Por producir</MenuItem>
                         <MenuItem value={"En impresión"}>En impresión</MenuItem>
                         <MenuItem value={"En producción"}>
@@ -228,143 +350,7 @@ export default function ReadOrders(props) {
                         <MenuItem value={"Anulado"}>Anulado</MenuItem>
                       </Select>
                     </FormControl>
-                  </div>
-                </TableCell>
-                <TableCell align="center">
-                  <div style={{ display: "flex", justifyContent: "end" }}>
-                    <FormControl className={classes.formControl}>
-                      <InputLabel>Asesor</InputLabel>
-                      <Select value={props.filter} onChange={handleChange}>
-                        <MenuItem
-                          value={{
-                            seller:
-                              JSON.parse(localStorage.getItem("adminToken"))
-                                .firstname +
-                              " " +
-                              JSON.parse(localStorage.getItem("adminToken"))
-                                .lastname,
-                          }}
-                        >
-                          {JSON.parse(localStorage.getItem("adminToken"))
-                            .firstname +
-                            " " +
-                            JSON.parse(localStorage.getItem("adminToken"))
-                              .lastname}
-                        </MenuItem>
-                        {props.sellers &&
-                          props.sellers?.map((seller) => (
-                            <MenuItem value={{ seller: seller }}>
-                              {seller}
-                            </MenuItem>
-                          ))}
-                      </Select>
-                    </FormControl>
-                  </div>
-                </TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {props.rows &&
-                rowsv2.map((row, index) => (
-                  <>
-                    <TableRow key={index}>
-                      <TableCell align="center">{row.orderId}</TableCell>
-                      <TableCell align="center">
-                        {row.createdOn.substring(0, 10)}
-                      </TableCell>
-                      <TableCell align="center">
-                        {row.shippingData?.shippingDate?.substring(0, 10)}
-                      </TableCell>
-                      <TableCell align="center">
-                        {row.basicData?.firstname || row.basicData?.name}{" "}
-                        {row.basicData?.lastname}
-                      </TableCell>
-                      <TableCell align="center">
-                        <Button
-                          onClick={() => {
-                            props.setModalContent(row);
-                            props.setIsShowDetails(!props.isShowDetails);
-                          }}
-                          style={{
-                            padding: 10,
-                            textTransform: "none",
-                            backgroundColor: "#eee",
-                          }}
-                        >
-                          <div
-                            style={{
-                              display: "flex",
-                              flexDirection: "column",
-                            }}
-                          >
-                            Detalles
-                          </div>
-                        </Button>
-                      </TableCell>
-                      <TableCell align="center">
-                        <FormControl
-                          disabled={
-                            JSON.parse(localStorage.getItem("adminToken"))
-                              .area !== "Master" &&
-                            (!props.permissions?.detailPay ||
-                              row.payStatus === "Pagado")
-                          }
-                        >
-                          <Select
-                            id="payStatus"
-                            SelectClassKey
-                            value={row.payStatus || "Pendiente"}
-                            onChange={(e) => {
-                              props.handleChangePayStatus(row, e.target.value);
-                            }}
-                          >
-                            <MenuItem value={"Pendiente"}>Pendiente</MenuItem>
-                            <MenuItem value={"Pagado"}>Pagado</MenuItem>
-                            <MenuItem value={"Abonado"}>Abonado</MenuItem>
-                            <MenuItem value={"Giftcard"}>Giftcard</MenuItem>
-                            <MenuItem value={"Obsequio"}>Obsequio</MenuItem>
-                            <MenuItem value={"Anulado"}>Anulado</MenuItem>
-                          </Select>
-                        </FormControl>
-                      </TableCell>
-
-                      <TableCell align="center">
-                        <FormControl
-                          disabled={
-                            !props.permissions?.orderStatus ||
-                            (JSON.parse(localStorage.getItem("adminToken"))
-                              .area !== "Master" &&
-                              (row.status === "Cancelada" ||
-                                row.status === "Concretado"))
-                          }
-                        >
-                          <Select
-                            id="status"
-                            SelectClassKey
-                            value={row.status}
-                            onChange={(e) => {
-                              props.handleChangeStatus(row, e.target.value);
-                            }}
-                          >
-                            <MenuItem value={"Por producir"}>
-                              Por producir
-                            </MenuItem>
-                            <MenuItem value={"En impresión"}>
-                              En impresión
-                            </MenuItem>
-                            <MenuItem value={"En producción"}>
-                              En producción
-                            </MenuItem>
-                            <MenuItem value={"Por entregar"}>
-                              Por entregar
-                            </MenuItem>
-                            <MenuItem value={"Entregado"}>Entregado</MenuItem>
-                            <MenuItem value={"Concretado"}>Concretado</MenuItem>
-                            <MenuItem value={"Detenido"}>Detenido</MenuItem>
-                            <MenuItem value={"Anulado"}>Anulado</MenuItem>
-                          </Select>
-                        </FormControl>
-                        {/* <Fab
+                    {/* <Fab
                         color="default"
                         style={{ width: 35, height: 35 }}
                         aria-label="Delete"
@@ -376,154 +362,152 @@ export default function ReadOrders(props) {
                       >
                         <DeleteIcon />
                       </Fab> */}
-                      </TableCell>
-                      <TableCell align="center">
-                        <Select
-                          disabled={
-                            JSON.parse(localStorage.getItem("adminToken"))
-                              .area !== "Master"
-                          }
-                          value={row.createdBy?.username}
-                          onChange={(e) => {
-                            handleChangeSeller(row, e.target.value);
-                          }}
-                        >
-                          <MenuItem
-                            value={
-                              JSON.parse(localStorage.getItem("adminToken"))
-                                .firstname +
-                              " " +
-                              JSON.parse(localStorage.getItem("adminToken"))
-                                .lastname
-                            }
-                          >
-                            {JSON.parse(localStorage.getItem("adminToken"))
-                              .firstname +
-                              " " +
-                              JSON.parse(localStorage.getItem("adminToken"))
-                                .lastname}
-                          </MenuItem>
+                  </TableCell>
+                  <TableCell align="center">
+                    <Select
+                      disabled={
+                        JSON.parse(localStorage.getItem("adminToken")).area !==
+                        "Master"
+                      }
+                      value={row.createdBy?.username}
+                      onChange={(e) => {
+                        handleChangeSeller(row, e.target.value);
+                      }}
+                    >
+                      <MenuItem
+                        value={
+                          JSON.parse(localStorage.getItem("adminToken"))
+                            .firstname +
+                          " " +
+                          JSON.parse(localStorage.getItem("adminToken"))
+                            .lastname
+                        }
+                      >
+                        {JSON.parse(localStorage.getItem("adminToken"))
+                          .firstname +
+                          " " +
+                          JSON.parse(localStorage.getItem("adminToken"))
+                            .lastname}
+                      </MenuItem>
 
-                          {props.sellers &&
-                            props.sellers.map((seller) => (
-                              <MenuItem value={seller}>{seller}</MenuItem>
-                            ))}
-                        </Select>
-                      </TableCell>
-                    </TableRow>
-                  </>
-                ))}
-            </TableBody>
-          </Table>
-          <Box
-            style={{
-              display: "flex",
-              alignSelf: "center",
-              paddingTop: 5,
-              marginBottom: 4,
+                      {props.sellers &&
+                        props.sellers.map((seller) => (
+                          <MenuItem value={seller}>{seller}</MenuItem>
+                        ))}
+                    </Select>
+                  </TableCell>
+                </TableRow>
+              </>
+            ))}
+        </TableBody>
+      </Table>
+      <Box
+        style={{
+          display: "flex",
+          alignSelf: "center",
+          paddingTop: 5,
+          marginBottom: 4,
+        }}
+      >
+        {pageNumber - 3 > 0 && (
+          <Button
+            style={{ minWidth: 30, marginRight: 5 }}
+            onClick={() => {
+              setPageNumber(1);
             }}
           >
-            {pageNumber - 3 > 0 && (
-              <Button
-                style={{ minWidth: 30, marginRight: 5 }}
-                onClick={() => {
-                  setPageNumber(1);
-                }}
-              >
-                {1}
-              </Button>
-            )}
-            {pageNumber - 3 > 0 && (
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  marginRight: 5,
-                }}
-              >
-                ...
-              </div>
-            )}
-            {pageNumber - 2 > 0 && (
-              <Button
-                style={{ minWidth: 30, marginRight: 5 }}
-                onClick={() => {
-                  setPageNumber(pageNumber - 2);
-                }}
-              >
-                {pageNumber - 2}
-              </Button>
-            )}
-            {pageNumber - 1 > 0 && (
-              <Button
-                style={{ minWidth: 30, marginRight: 5 }}
-                onClick={() => {
-                  setPageNumber(pageNumber - 1);
-                }}
-              >
-                {pageNumber - 1}
-              </Button>
-            )}
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                width: 80,
-                marginRight: 5,
-                backgroundColor: "rgb(238, 238, 238)",
-                borderRadius: 4,
-              }}
-            >
-              Página {pageNumber}
-            </div>
-            {pageNumber + 1 <= noOfPages && (
-              <Button
-                style={{ minWidth: 30, marginRight: 5 }}
-                onClick={() => {
-                  setPageNumber(pageNumber + 1);
-                }}
-              >
-                {pageNumber + 1}
-              </Button>
-            )}
+            {1}
+          </Button>
+        )}
+        {pageNumber - 3 > 0 && (
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              marginRight: 5,
+            }}
+          >
+            ...
+          </div>
+        )}
+        {pageNumber - 2 > 0 && (
+          <Button
+            style={{ minWidth: 30, marginRight: 5 }}
+            onClick={() => {
+              setPageNumber(pageNumber - 2);
+            }}
+          >
+            {pageNumber - 2}
+          </Button>
+        )}
+        {pageNumber - 1 > 0 && (
+          <Button
+            style={{ minWidth: 30, marginRight: 5 }}
+            onClick={() => {
+              setPageNumber(pageNumber - 1);
+            }}
+          >
+            {pageNumber - 1}
+          </Button>
+        )}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            width: 80,
+            marginRight: 5,
+            backgroundColor: "rgb(238, 238, 238)",
+            borderRadius: 4,
+          }}
+        >
+          Página {pageNumber}
+        </div>
+        {pageNumber + 1 <= noOfPages && (
+          <Button
+            style={{ minWidth: 30, marginRight: 5 }}
+            onClick={() => {
+              setPageNumber(pageNumber + 1);
+            }}
+          >
+            {pageNumber + 1}
+          </Button>
+        )}
 
-            {pageNumber + 2 <= noOfPages && (
-              <Button
-                style={{ minWidth: 30, marginRight: 5 }}
-                onClick={() => {
-                  setPageNumber(pageNumber + 2);
-                }}
-              >
-                {pageNumber + 2}
-              </Button>
-            )}
-            {pageNumber + 3 <= noOfPages && (
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  marginRight: 5,
-                }}
-              >
-                ...
-              </div>
-            )}
-            {pageNumber + 3 <= noOfPages && (
-              <Button
-                style={{ minWidth: 30, marginRight: 5 }}
-                onClick={() => {
-                  setPageNumber(noOfPages);
-                }}
-              >
-                {noOfPages}
-              </Button>
-            )}
-          </Box>
-        </>
-      )}
+        {pageNumber + 2 <= noOfPages && (
+          <Button
+            style={{ minWidth: 30, marginRight: 5 }}
+            onClick={() => {
+              setPageNumber(pageNumber + 2);
+            }}
+          >
+            {pageNumber + 2}
+          </Button>
+        )}
+        {pageNumber + 3 <= noOfPages && (
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              marginRight: 5,
+            }}
+          >
+            ...
+          </div>
+        )}
+        {pageNumber + 3 <= noOfPages && (
+          <Button
+            style={{ minWidth: 30, marginRight: 5 }}
+            onClick={() => {
+              setPageNumber(noOfPages);
+            }}
+          >
+            {noOfPages}
+          </Button>
+        )}
+      </Box>
     </>
   );
 }

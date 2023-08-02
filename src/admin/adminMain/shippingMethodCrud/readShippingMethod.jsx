@@ -228,7 +228,7 @@ export default function ReadShippingMethod(props) {
             <Paper className={fixedHeightPaper}>
               {activeCrud === "read" ? (
                 <>
-                  <Title>Métodos de envío</Title>
+                  <Title>Métodos de entrega</Title>
                   <Table size="small">
                     <TableHead>
                       <TableRow>

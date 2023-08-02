@@ -44,6 +44,7 @@ function App() {
   const [admins, setAdmins] = useState();
   const [sellers, setSellers] = useState();
   const [dollarValue, setDollarValue] = useState("1");
+
   document.addEventListener("contextmenu", (event) => {
     event.preventDefault();
   });

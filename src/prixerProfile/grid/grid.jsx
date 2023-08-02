@@ -143,7 +143,7 @@ export default function Grid(props) {
   const [visible, setVisible] = useState(true);
   // const [visibles, setVisibles] = useState([]);
   const totalOrders = tiles?.length;
-  const itemsPerPage = 40;
+  const itemsPerPage = 30;
   const noOfPages = Math.ceil(totalOrders / itemsPerPage);
   const [pageNumber, setPageNumber] = useState(1);
   const itemsToSkip = (pageNumber - 1) * itemsPerPage;

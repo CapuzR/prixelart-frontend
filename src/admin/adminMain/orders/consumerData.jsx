@@ -326,14 +326,8 @@ export default function ConsumerData(props) {
     setShippingDataCheck(!shippingDataCheck);
   };
 
-  // useEffect(() => {
-  if (props?.shippingData?.shippingDate === undefined) {
-    props.setShippingData({
-      ...props.shippingData,
-      shippingDate: stringReadyDate,
-    });
-  }
-  // }, []);
+  console.log(props.shippingData?.shippingDate);
+
   return (
     <>
       <Grid container spacing={2}>
@@ -341,6 +335,20 @@ export default function ConsumerData(props) {
           <Title>Información del cliente</Title>
         </Grid>
         <Grid container>
+          {/* <Grid item lg={4} md={4} sm={4} xs={12} className={classes.gridInput}>
+            <TextField
+              variant="outlined"
+              id="standard-name"
+              label="Prixer"
+              fullWidth
+              className={classes.textField}
+              value={props.basicData?.firstname}
+              onChange={(e) =>
+                props.setBasicData({ ...props.basicData, name: e.target.value })
+              }
+              margin="normal"
+            />
+          </Grid> */}
           <Grid item lg={4} md={4} sm={4} xs={12} className={classes.gridInput}>
             <TextField
               variant="outlined"
@@ -682,7 +690,7 @@ export default function ConsumerData(props) {
                 variant="outlined"
                 //
                 format="dd-MM-yyyy"
-                // defaultValue={stringReadyDate}
+                defaultValue={stringReadyDate}
                 value={props.shippingData?.shippingDate}
                 error={props.values?.today < stringReadyDate}
                 // min={stringReadyDate}

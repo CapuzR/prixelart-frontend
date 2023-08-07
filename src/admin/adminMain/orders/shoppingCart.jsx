@@ -273,8 +273,10 @@ export default function ShoppingCart(props) {
   const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const [productList, setProductList] = useState([]);
-  // const [products, setProducts] = useState([]);
+  const [artist, setArtist] = useState([]);
   const [artList, setArtList] = useState([]);
+  const [artList0, setArtList0] = useState([]);
+  const [artistFilter, setArtistFilter] = useState();
   let custom = {
     title: "Personalizado",
   };
@@ -301,8 +303,31 @@ export default function ShoppingCart(props) {
       const arts = response.data.arts;
       arts.unshift({ title: "Personalizado" });
       setArtList(arts);
+      setArtList0(arts);
+      let artist = [];
+      arts.map((art) => {
+        if (artist.includes(art.prixerUsername)) {
+          return;
+        } else {
+          artist.push(art.prixerUsername);
+        }
+      });
+      setArtist(artist);
     });
   }, []);
+
+  const changeArtistFilter = (artist) => {
+    setArtistFilter(artist);
+    if (artist === undefined) {
+      setArtList(artList0);
+    } else {
+      const filteredArt = artList0.filter(
+        (art) => art.prixerUsername === artist
+      );
+      filteredArt.unshift({ title: "Personalizado", prixerUsername: artist });
+      setArtList(filteredArt);
+    }
+  };
 
   const UnitPrice = (product) => {
     if (product.modifyPrice) {
@@ -398,6 +423,7 @@ export default function ShoppingCart(props) {
       item: selectedArtFull,
       type: "art",
     });
+    setArtistFilter(undefined);
   };
 
   const changeProduct = (event, art, index) => {
@@ -418,29 +444,14 @@ export default function ShoppingCart(props) {
   };
 
   const handleVariantProduct = (variant, index, product) => {
-    // let v = variant.split(",");
-    // let selectedVariant = product.variants.find((result) => {
-    //   if (v[1] !== "undefined") {
-    //     return result?.name === v[0] && result.attributes[1]?.value === v[1];
-    //   } else {
-    //     return result?.name === v[0];
-    //   }
-    // });
     let prod = product;
     prod.selection = variant;
     prod.publicEquation = variant?.publicPrice?.equation;
-    // const prev = props.buyState;
-
-    // prev[index].product.selection = selectedVariant;
-    // prev[index].product.publicEquation = selectedVariant?.publicPrice.equation;
     props.AssociateProduct({
       index: index,
       item: prod,
       type: "product",
     });
-    // setCount(count + 1);
-    // localStorage.setItem("buyState", JSON.stringify(prev));
-    // props.setBuyState(prev);
     props.buyState.map((item) => {});
     getProducts();
   };
@@ -499,7 +510,7 @@ export default function ShoppingCart(props) {
                     display: "flex",
                   }}
                 >
-                  <Grid item xs={5} sm={5} md={5} lg={5} xl={5}>
+                  <Grid item xs={5}>
                     <div
                       style={{
                         display: "flex",
@@ -651,28 +662,20 @@ export default function ShoppingCart(props) {
                       </div>
                     </div>
                   </Grid>
-                  <Grid
-                    item
-                    xs={5}
-                    sm={5}
-                    md={6}
-                    lg={6}
-                    xl={6}
-                    style={{ display: "flex" }}
-                  >
-                    {buy.art && (
-                      <div
-                        style={{
-                          backgroundColor: "#eeeeee",
-                          width: 120,
-                          height: 120,
-                          borderRadius: "10px",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          marginRight: 20,
-                        }}
-                      >
+                  <Grid item xs={7} style={{ display: "flex" }}>
+                    <div
+                      style={{
+                        backgroundColor: "#eeeeee",
+                        width: 120,
+                        height: 120,
+                        borderRadius: "10px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        marginRight: 20,
+                      }}
+                    >
+                      {buy.art && (
                         <Img
                           placeholder="/imgLoading.svg"
                           style={{
@@ -694,59 +697,100 @@ export default function ShoppingCart(props) {
                           alt={buy.art && buy.art.title}
                           id={buy.art && buy.art?.artId}
                         />
-                      </div>
-                    )}
+                      )}
+                    </div>
                     <div
                       style={{
-                        width: "100%",
+                        // width: "100%",
                         // height: 200,
                         display: "flex",
                         flexDirection: "column",
                         alignContent: "space-between",
                       }}
                     >
-                      <FormControl
-                        className={classes.formControl}
-                        style={{
-                          marginBottom: 10,
-                        }}
-                      >
-                        {buy.art ? (
-                          <Typography
-                            variant="h6"
-                            style={{ fontWeight: 300, fontSize: 18 }}
+                      <div style={{ display: "flex", flexDirection: "row" }}>
+                        <FormControl
+                          className={classes.formControl}
+                          style={{
+                            marginBottom: 10,
+                            display: "flex",
+                            flexDirection: "row",
+                            justifyContent: "space-between",
+                          }}
+                        >
+                          <InputLabel style={{ paddingLeft: 15 }}>
+                            {buy.art || artistFilter
+                              ? buy.art.prixerUsername?.substring(0, 22)
+                              : "Selecciona un Prixer"}
+                          </InputLabel>
+                          <Select
+                            variant="outlined"
+                            onChange={(e) => changeArtistFilter(e.target.value)}
+                            style={{ width: 180, marginRight: 10 }}
                           >
-                            {buy.art.title.substring(0, 22)}
-                            <br></br>
-                            {buy.art.prixerUsername && buy.art.prixerUsername}
-                          </Typography>
-                        ) : (
-                          <>
-                            <InputLabel style={{ paddingLeft: 15 }}>
-                              {"Agrega un arte"}
-                            </InputLabel>
-                            <Select
-                              id={"Art " + index}
-                              variant="outlined"
-                              onChange={(e) =>
-                                changeArt(e.target.value, buy.product, index)
-                              }
-                            >
-                              {artList !== "" &&
-                                artList.map((art) => {
-                                  return (
-                                    <MenuItem value={art}>
-                                      {art.title.substring(0, 22)}
-                                      {art?.prixerUsername &&
-                                        " - " + art?.prixerUsername}
-                                    </MenuItem>
-                                  );
-                                })}
-                            </Select>
-                          </>
-                        )}
-                      </FormControl>
-                      {buy.art && (
+                            <MenuItem value={undefined}>Todos</MenuItem>
+                            {artist !== "" &&
+                              artist.map((art) => {
+                                return <MenuItem value={art}>{art}</MenuItem>;
+                              })}
+                          </Select>
+                        </FormControl>
+                        <FormControl
+                          className={classes.formControl}
+                          style={{
+                            marginBottom: 10,
+                            display: "flex",
+                            flexDirection: "row",
+                            justifyContent: "space-between",
+                          }}
+                        >
+                          <InputLabel style={{ paddingLeft: 15 }}>
+                            {buy.art
+                              ? buy.art.title.substring(0, 22)
+                              : "Agrega un arte"}
+                          </InputLabel>
+                          <Select
+                            id={"Art " + index}
+                            variant="outlined"
+                            onChange={(e) =>
+                              changeArt(e.target.value, buy.product, index)
+                            }
+                            style={{ width: 210 }}
+                          >
+                            {artList !== "" &&
+                              artList.map((art) => {
+                                return (
+                                  <MenuItem value={art}>
+                                    <Img
+                                      placeholder="/imgLoading.svg"
+                                      style={{
+                                        backgroundColor: "#eeeeee",
+                                        maxWidth: 40,
+                                        maxHeight: 40,
+                                        borderRadius: 3,
+                                        marginRight: 10,
+                                      }}
+                                      src={
+                                        art.title === "Personalizado"
+                                          ? x
+                                          : art?.squareThumbUrl
+                                      }
+                                      debounce={1000}
+                                      cache
+                                      error="/imgError.svg"
+                                      alt={art.title}
+                                      id={art?.artId}
+                                    />
+                                    {art.title.substring(0, 22)}
+                                    {/* {art?.prixerUsername &&
+                                        " - " + art?.prixerUsername} */}
+                                  </MenuItem>
+                                );
+                              })}
+                          </Select>
+                        </FormControl>
+                      </div>
+                      {buy.art && buy.art.title !== "Personalizado" && (
                         <>
                           <p
                             style={{
@@ -763,7 +807,7 @@ export default function ShoppingCart(props) {
                       {buy.product && (
                         <Grid
                           item
-                          xs={12}
+                          xs
                           style={{
                             display: "flex",
                             justifyContent: "space-between",
@@ -833,19 +877,29 @@ export default function ShoppingCart(props) {
                         </Grid>
                       )}
                     </div>
+                    <Tooltip
+                      title="Eliminar item"
+                      style={{ height: 40, width: 40 }}
+                    >
+                      <IconButton
+                        size="small"
+                        onClick={() =>
+                          props.deleteItemInBuyState({ id: index })
+                        }
+                        color="primary"
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    </Tooltip>
                   </Grid>
 
-                  <Grid
+                  {/* <Grid
                     item
-                    xs={1}
-                    sm={1}
-                    md={1}
-                    lg={1}
-                    xl={1}
                     style={{
                       display: "flex",
                       justifyContent: "end",
                       height: 160,
+                      width: 50,
                     }}
                   >
                     <Tooltip
@@ -862,7 +916,7 @@ export default function ShoppingCart(props) {
                         <DeleteIcon />
                       </IconButton>
                     </Tooltip>
-                  </Grid>
+                  </Grid> */}
                 </Grid>
               </Paper>
             </Grid>

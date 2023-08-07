@@ -290,7 +290,25 @@ export default function Prixers(props) {
     setDescription();
     setMovements();
   };
-  console.log(movements);
+  if (movements) {
+    const july = movements.filter(
+      (mov) =>
+        mov.date?.substring(5, 7) === "07" ||
+        mov.createdOn.substring(5, 7) === "07"
+    );
+    let comissions = [];
+    july.map(
+      (mov) =>
+        mov.description.substring(0, 20) === "Comisión de la orden" &&
+        comissions.push(mov.value)
+    );
+    console.log(
+      comissions?.reduce(
+        (accumulator, currentValue) => accumulator + currentValue,
+        0
+      )
+    );
+  }
   return (
     <div>
       <Backdrop className={classes.backdrop} open={loading}>

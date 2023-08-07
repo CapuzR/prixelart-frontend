@@ -339,10 +339,16 @@ export default function OrderDetails(props) {
                         </Paper>
                       </div>
                       <div style={{ padding: 10 }}>
-                        <div>{"Arte: " + item.art?.title}</div>
-                        {item.art?.title !== "Personalizado" && (
+                        {item.art?.title !== "Personalizado" ? (
                           <>
                             <div>{"Id: " + item.art?.artId}</div>
+                            <div style={{ marginBottom: 10 }}>
+                              {"Prixer: " + item.art?.prixerUsername}
+                            </div>
+                          </>
+                        ) : (
+                          <>
+                            <div>{"Arte: " + item.art?.title}</div>
                             <div style={{ marginBottom: 10 }}>
                               {"Prixer: " + item.art?.prixerUsername}
                             </div>

@@ -205,11 +205,11 @@ export default function CreateProduct() {
           const data = {
             publicPrice: {
               from: fromPublicPrice.replace(/[,]/gi, "."),
-              to: toPublicPrice.replace(/[,]/gi, "."),
+              to: toPublicPrice?.replace(/[,]/gi, "."),
             },
             prixerPrice: {
               from: fromPrixerPrice.replace(/[,]/gi, "."),
-              to: toPrixerPrice.replace(/[,]/gi, "."),
+              to: toPrixerPrice?.replace(/[,]/gi, "."),
             },
             specialVars: [
               {

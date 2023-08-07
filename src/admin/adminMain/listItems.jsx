@@ -51,16 +51,16 @@ export default function MainListItems(props) {
             }}
           />
         </ListItem>
-        <ListItem
-          button
-          selected={props.active === "consumer"}
-          style={{ color: "gray" }}
-        >
+        <ListItem button selected={props.active === "consumer"}>
           <ListItemIcon>
             <PeopleIcon />
           </ListItemIcon>
-          <ListItemText primary="Consumidores" />
-          {/* <ListItemText primary="Consumidores" onClick={(e)=>{handleClick('consumer')}}  /> */}
+          <ListItemText
+            primary="Consumidores"
+            onClick={(e) => {
+              handleClick("consumer");
+            }}
+          />
         </ListItem>
         {props.permissions?.readMovements && (
           <ListItem button selected={props.active === "movements"}>

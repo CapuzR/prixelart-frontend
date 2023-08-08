@@ -232,13 +232,16 @@ export default function CreateOrder(props) {
   const [loadingOrder, setLoadingOrder] = useState(false);
   const [orderPaymentMethod, setOrderPaymentMethod] = useState(undefined);
   const [observations, setObservations] = useState();
+  const [selectedPrixer, setSelectedPrixer] = useState();
+  const [shippingMethod, setShippingMethod] = useState();
+
   const steps = [`Datos del comprador`, `Productos`, `Orden de compra`];
 
   const handleStep = (step) => () => {
     setActiveStep(step);
   };
 
-  let shippingCost = Number(props.values?.shippingMethod?.price);
+  let shippingCost = Number(shippingMethod?.price);
   const getIvaCost = (state) => {
     let iva = getTotalPrice(state) * 0.16;
     return iva;
@@ -249,7 +252,7 @@ export default function CreateOrder(props) {
     n.push(getTotalPrice(props.buyState));
     n.push(getIvaCost(props.buyState));
     {
-      props.values?.shippingMethod && n.push(shippingCost);
+      shippingData?.shippingMethod && n.push(shippingCost);
     }
     let total = n.reduce(function (a, b) {
       return a + b;
@@ -364,8 +367,26 @@ export default function CreateOrder(props) {
       orderType: "Particular",
       status: "Por producir",
     };
+
     const base_url3 = process.env.REACT_APP_BACKEND_URL + "/order/sendEmail";
     await axios.post(base_url, input).then(async () => {
+      if (billingData?.orderPaymentMethod === "Balance Prixer") {
+        const url = process.env.REACT_APP_BACKEND_URL + "/movement/createv2";
+        const data = {
+          _id: nanoid(),
+          createdOn: new Date(),
+          createdBy:
+            JSON.parse(localStorage.getItem("adminToken")).firstname +
+            " " +
+            JSON.parse(localStorage.getItem("adminToken")).lastname,
+          date: new Date(),
+          destinatary: selectedPrixer.account,
+          description: `Pago de la orden #${input.orderId}`,
+          type: "Retiro",
+          value: getTotal(props.buyState),
+        };
+        await axios.post(url, data);
+      }
       if (basicData.email.length > 8) {
         await axios.post(base_url3, input).then(async (response) => {
           props.setErrorMessage(response.data.info);
@@ -512,6 +533,7 @@ export default function CreateOrder(props) {
             setBasicData={setBasicData}
             setShippingData={setShippingData}
             setBillingData={setBillingData}
+            setShippingMethod={setShippingMethod}
           />
         )}
         {activeStep === 1 && (
@@ -529,6 +551,8 @@ export default function CreateOrder(props) {
         )}
         {activeStep === 2 && (
           <Checkout
+            selectedPrixer={selectedPrixer}
+            setSelectedPrixer={setSelectedPrixer}
             basicData={basicData}
             shippingData={shippingData}
             billingAddress={billingData}

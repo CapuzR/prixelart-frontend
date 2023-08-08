@@ -267,6 +267,7 @@ export default function ConsumerData(props) {
     "viernes",
     "sábado",
   ];
+
   let ProdTimes = props.buyState.map((item) => {
     if (item.product && item.art && item.product.productionTime !== undefined) {
       return item.product.productionTime;
@@ -375,7 +376,7 @@ export default function ConsumerData(props) {
               label="Nombre"
               fullWidth
               className={classes.textField}
-              value={props.basicData?.firstname}
+              value={props.basicData?.name}
               onChange={(e) =>
                 props.setBasicData({ ...props.basicData, name: e.target.value })
               }
@@ -679,6 +680,7 @@ export default function ConsumerData(props) {
                     ...props.shippingData,
                     shippingMethod: e.target.value,
                   });
+                  props.setShippingMethod(e.target.value);
                 }}
               >
                 <MenuItem value="">

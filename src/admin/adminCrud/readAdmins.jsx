@@ -68,7 +68,7 @@ export default function ReadAdmins(props) {
     const base_url =
       process.env.REACT_APP_BACKEND_URL + "/admin/delete/" + username;
     axios
-      .delete(
+      .put(
         base_url,
         { adminToken: localStorage.getItem("adminTokenV") },
         { withCredentials: true }
@@ -76,7 +76,6 @@ export default function ReadAdmins(props) {
       .then((response) => {
         setSnackbar(true);
         setMessage("Administrador eliminado con éxito");
-        // loadAdmins();
       });
     setLoading(false);
   };
@@ -86,7 +85,7 @@ export default function ReadAdmins(props) {
     const base_url =
       process.env.REACT_APP_BACKEND_URL + "/adminRole/delete/" + id;
     axios
-      .delete(
+      .put(
         base_url,
         { adminToken: localStorage.getItem("adminTokenV") },
         { withCredentials: true }

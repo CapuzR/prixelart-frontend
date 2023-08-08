@@ -75,16 +75,14 @@ export default function UpAdmin(props) {
         lastname: lastname,
         email: email.toLowerCase(),
         phone: phone,
+        adminToken: localStorage.getItem("adminTokenV"),
       };
 
       const base_url =
         process.env.REACT_APP_BACKEND_URL + "/admin/update/" + props.admin._id;
-      const response = await axios.put(
-        base_url,
-        data,
-        { adminToken: localStorage.getItem("adminTokenV") },
-        { withCredentials: true }
-      );
+      const response = await axios.put(base_url, data, {
+        withCredentials: true,
+      });
       if (response.data.success === false) {
         setLoading(false);
         setButtonState(false);

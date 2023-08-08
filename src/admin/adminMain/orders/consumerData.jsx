@@ -15,6 +15,7 @@ import LocalPhoneIcon from "@material-ui/icons/LocalPhone";
 import EmailIcon from "@material-ui/icons/Email";
 import HomeIcon from "@material-ui/icons/Home";
 import BusinessIcon from "@material-ui/icons/Business";
+import Autocomplete from "@material-ui/lab/Autocomplete";
 
 const drawerWidth = 240;
 
@@ -226,6 +227,7 @@ export default function ConsumerData(props) {
   const [shippingList, setShippingList] = useState();
   const [billingDataCheck, setBillingDataCheck] = useState(true);
   const [billingShDataCheck, setBillingShDataCheck] = useState(false);
+  const [prixers, setPrixers] = useState([]);
 
   let today = new Date();
   const months = [
@@ -304,6 +306,15 @@ export default function ConsumerData(props) {
       });
   }, []);
 
+  useEffect(() => {
+    const base_url =
+      process.env.REACT_APP_BACKEND_URL + "/prixer/read-all-full";
+
+    axios.get(base_url).then((response) => {
+      setPrixers(response.data.prixers);
+    });
+  }, []);
+
   const handleShippingDataCheck = () => {
     if (shippingDataCheck) {
       props.setShippingData({
@@ -326,8 +337,6 @@ export default function ConsumerData(props) {
     setShippingDataCheck(!shippingDataCheck);
   };
 
-  console.log(props.shippingData?.shippingDate);
-
   return (
     <>
       <Grid container spacing={2}>
@@ -335,21 +344,31 @@ export default function ConsumerData(props) {
           <Title>Información del cliente</Title>
         </Grid>
         <Grid container>
-          {/* <Grid item lg={4} md={4} sm={4} xs={12} className={classes.gridInput}>
-            <TextField
-              variant="outlined"
-              id="standard-name"
-              label="Prixer"
-              fullWidth
-              className={classes.textField}
-              value={props.basicData?.firstname}
-              onChange={(e) =>
-                props.setBasicData({ ...props.basicData, name: e.target.value })
-              }
-              margin="normal"
-            />
-          </Grid> */}
           <Grid item lg={4} md={4} sm={4} xs={12} className={classes.gridInput}>
+            {/* <Autocomplete
+              id="free-solo-demo"
+              freeSolo
+              options={prixers.map((prixer) => prixer.firstName)}
+              fullWidth
+              style={{ marginRight: 8 }}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Nombre"
+                  margin="normal"
+                  variant="outlined"
+                  fullWidth
+                  className={classes.textField}
+                  value={props.basicData?.firstname}
+                  onChange={(e) =>
+                    props.setBasicData({
+                      ...props.basicData,
+                      name: e.target.value,
+                    })
+                  }
+                />
+              )}
+            /> */}
             <TextField
               variant="outlined"
               id="standard-name"

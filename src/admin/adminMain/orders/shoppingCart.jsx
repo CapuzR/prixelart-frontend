@@ -719,9 +719,10 @@ export default function ShoppingCart(props) {
                           }}
                         >
                           <InputLabel style={{ paddingLeft: 15 }}>
-                            {buy.art || artistFilter
-                              ? buy.art.prixerUsername?.substring(0, 22)
-                              : "Selecciona un Prixer"}
+                            {(buy.art &&
+                              buy.art.prixerUsername?.substring(0, 22)) ||
+                              artistFilter ||
+                              "Selecciona un Prixer"}
                           </InputLabel>
                           <Select
                             variant="outlined"
@@ -782,8 +783,6 @@ export default function ShoppingCart(props) {
                                       id={art?.artId}
                                     />
                                     {art.title.substring(0, 22)}
-                                    {/* {art?.prixerUsername &&
-                                        " - " + art?.prixerUsername} */}
                                   </MenuItem>
                                 );
                               })}

@@ -1,65 +1,23 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Grid from "@material-ui/core/Grid";
-import Paper from "@material-ui/core/Paper";
-import clsx from "clsx";
 import { useTheme } from "@material-ui/core/styles";
-import Checkbox from "@material-ui/core/Checkbox";
 import { makeStyles } from "@material-ui/core/styles";
-import Fab from "@material-ui/core/Fab";
-import AddIcon from "@material-ui/icons/Add";
-import Title from "../Title";
-import {
-  TableCell,
-  TableHead,
-  TableRow,
-  TableBody,
-  Typography,
-} from "@material-ui/core";
+import Typography from "@material-ui/core/Typography";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
-import Table from "@material-ui/core/Table";
 import Button from "@material-ui/core/Button";
-import IconButton from "@material-ui/core/IconButton";
-import Modal from "@material-ui/core/Modal";
-import CloseIcon from "@material-ui/icons/Close";
 import MenuItem from "@material-ui/core/MenuItem";
 import Select from "@material-ui/core/Select";
-import DeleteIcon from "@material-ui/icons/Delete";
-import RefreshIcon from "@material-ui/icons/Refresh";
-import { Backdrop } from "@material-ui/core";
-import CircularProgress from "@material-ui/core/CircularProgress";
 import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
 import TextField from "@material-ui/core/TextField";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import InputAdornment from "@material-ui/core/InputAdornment";
-import LocalPhoneIcon from "@material-ui/icons/LocalPhone";
-import EmailIcon from "@material-ui/icons/Email";
-import HomeIcon from "@material-ui/icons/Home";
-import Stepper from "@material-ui/core/Stepper";
-import Step from "@material-ui/core/Step";
-import StepButton from "@material-ui/core/StepButton";
-import BusinessIcon from "@material-ui/icons/Business";
-import Img from "react-cool-img";
-import Tooltip from "@material-ui/core/Tooltip";
-import { getAttributes, getEquation } from "../../../products/services";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import Collapse from "@material-ui/core/Collapse";
 import Divider from "@material-ui/core/Divider";
-import { useHistory } from "react-router-dom";
-import ArrowBackIcon from "@material-ui/icons/ArrowBack";
-import GetAppIcon from "@material-ui/icons/GetApp";
 import Switch from "@material-ui/core/Switch";
-import Snackbar from "@material-ui/core/Snackbar";
-import FilterListIcon from "@material-ui/icons/FilterList";
-import ReadOrders from "./readOrders";
-import OrderDetails from "./orderDetails";
-import ConsumerData from "./consumerData";
-import ShoppingCart from "./shoppingCart";
-import utils from "../../../utils/utils";
-import { nanoid } from "nanoid";
+
 const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
@@ -273,8 +231,19 @@ export default function Checkout(props) {
 
   const [currency, setCurrency] = useState(false);
   const [paymentMethods, setPaymentMethods] = useState(undefined);
+  const [prixers, setPrixers] = useState([]);
+  // const [selectedPrixer, setSelectedPrixer] = useState();
 
   let shippingCost = Number(props.shippingData?.shippingMethod?.price);
+
+  useEffect(() => {
+    const base_url =
+      process.env.REACT_APP_BACKEND_URL + "/prixer/read-all-full";
+
+    axios.get(base_url).then((response) => {
+      setPrixers(response.data.prixers);
+    });
+  }, []);
 
   useEffect(() => {
     const base_url =
@@ -282,12 +251,16 @@ export default function Checkout(props) {
     axios
       .get(base_url)
       .then((response) => {
-        setPaymentMethods(response.data);
+        let prev = response.data;
+        if (props.selectedPrixer) {
+          prev.unshift({ name: "Balance Prixer" });
+        }
+        setPaymentMethods(prev);
       })
       .catch((error) => {
         console.log(error);
       });
-  }, []);
+  }, [props.selectedPrixer]);
 
   const getTotal = (x) => {
     let n = [];
@@ -537,6 +510,22 @@ export default function Checkout(props) {
       totalNotCompleted,
     };
   };
+
+  useEffect(() => {
+    if (props.basicData && props.basicData.name && props.basicData.lastname) {
+      prixers.map((prixer) => {
+        if (
+          prixer.firstName.toLowerCase() ===
+            props.basicData.name.toLowerCase().trim() &&
+          prixer.lastName.toLowerCase() ===
+            props.basicData.lastname.toLowerCase().trim()
+        ) {
+          props.setSelectedPrixer(prixer);
+        } else return;
+      });
+    }
+  }, [prixers]);
+
   return (
     <Grid
       container

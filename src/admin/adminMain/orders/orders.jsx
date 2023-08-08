@@ -661,8 +661,6 @@ export default function Orders(props) {
         }
       } else {
         unitPrice =
-          // item.product?.prixerEquation?.replace(/[,]/gi, ".") ||
-          // item.product?.prixerPrice?.from?.replace(/[,]/gi, ".") ||
           item.product?.publicEquation?.replace(/[,]/gi, ".") ||
           item.product.publicPrice.from?.replace(/[,]/gi, ".");
 
@@ -670,29 +668,26 @@ export default function Orders(props) {
         unitPrice = op;
       }
       const url1 = process.env.REACT_APP_BACKEND_URL + "/prixer/read";
-      if (item.art.title === "Personalizado") {
-        return;
-      } else {
-        await axios
-          .post(url1, { username: item.art?.prixerUsername })
-          .then(async (res) => {
-            setAccount(res.data.account);
-            const url = process.env.REACT_APP_BACKEND_URL + "/movement/create";
-            const data = {
-              _id: nanoid(),
-              createdOn: new Date(),
-              createdBy: JSON.parse(localStorage.getItem("adminToken"))
-                .username,
-              date: new Date(),
-              destinatary: res.data.account,
-              description: `Comisión de la orden #${order.orderId}`,
-              type: "Depósito",
-              value: unitPrice,
-              adminToken: localStorage.getItem("adminTokenV"),
-            };
-            await axios.post(url, data);
-          });
-      }
+
+      await axios
+        .post(url1, { username: item.art?.prixerUsername })
+        .then(async (res) => {
+          setAccount(res.data.account);
+          const url = process.env.REACT_APP_BACKEND_URL + "/movement/create";
+          const data = {
+            _id: nanoid(),
+            createdOn: new Date(),
+            createdBy: JSON.parse(localStorage.getItem("adminToken")).username,
+            date: new Date(),
+            destinatary: res.data.account,
+            description: `Comisión de la orden #${order.orderId}`,
+            type: "Depósito",
+            value: unitPrice,
+            adminToken: localStorage.getItem("adminTokenV"),
+          };
+          await axios.post(url, data);
+        });
+
       setAccount();
     }
   };

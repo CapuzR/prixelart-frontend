@@ -273,7 +273,6 @@ export default function ReadOrders(props) {
                   <TableCell align="center">
                     <Button
                       onClick={() => {
-                        console.log(row);
                         props.setModalContent(row);
                         props.setIsShowDetails(!props.isShowDetails);
                       }}

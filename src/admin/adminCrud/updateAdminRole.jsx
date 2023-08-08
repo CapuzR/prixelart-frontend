@@ -126,17 +126,15 @@ export default function UpdateAdminRole(props) {
         modifyAdmins: modifyAdmins,
         setPrixerBalance: setPrixerBalance,
         readMovements: readMovements,
+        adminToken: localStorage.getItem("adminTokenV"),
       };
       const base_url =
         process.env.REACT_APP_BACKEND_URL +
         "/adminRole/update/" +
         props.admin._id;
-      const response = await axios.put(
-        base_url,
-        data,
-        { adminToken: localStorage.getItem("adminTokenV") },
-        { withCredentials: true }
-      );
+      const response = await axios.put(base_url, data, {
+        withCredentials: true,
+      });
       if (response.data.success === false) {
         setLoading(false);
         setButtonState(false);

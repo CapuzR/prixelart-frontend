@@ -84,14 +84,12 @@ export default function CreateAdminRole() {
         modifyAdmins: modifyAdmins,
         setPrixerBalance: setPrixerBalance,
         readMovements: readMovements,
+        adminToken: localStorage.getItem("adminTokenV"),
       };
       const base_url = process.env.REACT_APP_BACKEND_URL + "/adminRole/create";
-      const response = await axios.post(
-        base_url,
-        data,
-        { adminToken: localStorage.getItem("adminTokenV") },
-        { withCredentials: true }
-      );
+      const response = await axios.post(base_url, data, {
+        withCredentials: true,
+      });
       if (response.data.success === false) {
         setLoading(false);
         setButtonState(false);

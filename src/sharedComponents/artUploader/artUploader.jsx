@@ -330,39 +330,23 @@ export default function ArtUploader(props) {
     }
   };
 
-  const allCrops = () => {
-    const sum = croppedArt.reduce((prev, art, i) => {
-      if (art.cropped) {
-        return prev + 1;
-      } else {
-        return prev + 0;
-      }
-    }, 0);
-    if (sum == croppedArt.length) {
-      return [null, true];
-    } else {
-      return [croppedArt.length - sum, false];
-    }
-  };
+  // const allCrops = () => {
+  //   const sum = croppedArt.reduce((prev, art, i) => {
+  //     if (art.cropped) {
+  //       return prev + 1;
+  //     } else {
+  //       return prev + 0;
+  //     }
+  //   }, 0);
+  //   if (sum == croppedArt.length) {
+  //     return [null, true];
+  //   } else {
+  //     return [croppedArt.length - sum, false];
+  //   }
+  // };
 
   const handleSubmit = async () => {
     try {
-      // const [pendingCrops, isCrops] = allCrops();
-      // if (!isCrops) {
-      //   setErrorMessage(
-      //     "Por favor realiza los " +
-      //       pendingCrops +
-      //       " recortes restantes de tu arte antes de continuar."
-      //   );
-      //   if (pendingCrops == 1) {
-      //     setErrorMessage(
-      //       "Tu arte está casi listo, solo falta realizar " +
-      //         pendingCrops +
-      //         " recorte para continuar."
-      //     );
-      //   }
-      //   setSnackBarError(true);
-      // } else {
       if (title && description && category && tags) {
         if (
           artType === "Diseño" ||
@@ -383,7 +367,6 @@ export default function ArtUploader(props) {
         setErrorMessage("Por favor completa el todos los campos.");
         setSnackBarError(true);
       }
-      // }
     } catch (err) {
       console.log(err);
       setBackdrop(false);
@@ -425,12 +408,12 @@ export default function ArtUploader(props) {
     fileReader.readAsArrayBuffer(img);
   };
 
-  function blobToFile(theBlob, fileName) {
-    //A Blob() is almost a File() - it's just missing the two properties below which we will add
-    theBlob.lastModifiedDate = new Date();
-    theBlob.name = fileName;
-    return theBlob;
-  }
+  // function blobToFile(theBlob, fileName) {
+  //   //A Blob() is almost a File() - it's just missing the two properties below which we will add
+  //   theBlob.lastModifiedDate = new Date();
+  //   theBlob.name = fileName;
+  //   return theBlob;
+  // }
 
   const handleArtChange = async (e) => {
     let artMeta = {};
@@ -481,11 +464,11 @@ export default function ArtUploader(props) {
     }
   };
 
-  const removeCrops = () => {
-    croppedArt.map((n) => {
-      delete n.thumb;
-    });
-  };
+  // const removeCrops = () => {
+  //   croppedArt.map((n) => {
+  //     delete n.thumb;
+  //   });
+  // };
 
   async function newArtPost() {
     var formData = new FormData();

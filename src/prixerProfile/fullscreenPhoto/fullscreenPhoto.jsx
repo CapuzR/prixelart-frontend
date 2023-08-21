@@ -431,35 +431,27 @@ export default function FullscreenPhoto(props) {
     setSelectedArt(undefined);
     readArt();
   };
+
   const readArt = async () => {
     setLoading(true);
-    setTiles(props.searchResult);
-
-    const search = () => {
-      const s = tilesv2.find((art) => art.artId === artId);
-      if (typeof s === "object") {
-        return true;
-      } else {
-        let y = pageNumber;
-        let x = ++y;
-        setPageNumber(x);
-      }
-    };
-
-    const artId = globalParams.get("/art");
-
-    let result = false;
-    while (result === false) {
-      result = search();
-    }
     if (props.fullArt) {
+      // const search = () => {
+      let index;
+      const s = tiles.find((art, i) => {
+        if (art.artId === fullArt) {
+          index = i;
+        }
+      });
+      index = Number(index) / itemsPerPage;
+      const newPage = Math.floor(index + 1);
+      setPageNumber(newPage);
     } else {
       const URI = process.env.REACT_APP_BACKEND_URL + "/art/read-by-id";
-      await axios.post(URI, { _id: artId }).then((response) => {
+      await axios.post(URI, { _id: fullArt }).then((response) => {
         setTiles([response.data.arts]);
+        setPageNumber(1);
       });
     }
-    setFullArt(artId);
     setReady(true);
     setLoading(false);
     setTimeout(accurateLocation, 1000);

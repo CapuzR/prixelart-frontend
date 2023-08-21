@@ -153,6 +153,7 @@ export default function Testimonials(props) {
       formData.append("value", value);
       formData.append("footer", footer);
       formData.append("status", state.checkedA);
+      formData.append("adminToken", localStorage.getItem("adminTokenV"));
 
       const base_url =
         process.env.REACT_APP_BACKEND_URL + "/testimonial/create";
@@ -203,7 +204,9 @@ export default function Testimonials(props) {
     setLoading(true);
     const base_url =
       process.env.REACT_APP_BACKEND_URL + "/testimonial/read/" + DeleteId;
-    let res = await axios.delete(base_url);
+    let res = await axios.put(base_url, {
+      adminToken: localStorage.getItem("adminTokenV"),
+    });
     setErrorMessage("Testimonio eliminado exitosamente");
     setSnackBarError(true);
     setLoading(false);
@@ -218,7 +221,10 @@ export default function Testimonials(props) {
       process.env.REACT_APP_BACKEND_URL + "/testimonial/update-home/" + GetId;
     const response = await axios.put(
       base_url,
-      { status: e.target.checked },
+      {
+        status: e.target.checked,
+        adminToken: localStorage.getItem("adminTokenV"),
+      },
       {
         "Content-Type": "multipart/form-data",
       }
@@ -270,6 +276,7 @@ export default function Testimonials(props) {
     formData.append("value", value);
     formData.append("footer", footer);
     formData.append("status", state.checkedA);
+    formData.append("adminToken", localStorage.getItem("adminTokenV"));
 
     const response = await axios.put(base_url, formData, {
       "Content-Type": "multipart/form-data",

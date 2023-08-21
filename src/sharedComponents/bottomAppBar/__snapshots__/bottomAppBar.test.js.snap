@@ -39,7 +39,7 @@ Array [
           className="MuiListItemAvatar-root"
         >
           <div
-            className="MuiAvatar-root MuiAvatar-circle"
+            className="MuiAvatar-root MuiAvatar-circular"
           >
             <img
               alt="Profile Picture"
@@ -84,7 +84,7 @@ Array [
           className="MuiListItemAvatar-root"
         >
           <div
-            className="MuiAvatar-root MuiAvatar-circle"
+            className="MuiAvatar-root MuiAvatar-circular"
           >
             <img
               alt="Profile Picture"
@@ -135,7 +135,7 @@ Array [
           className="MuiListItemAvatar-root"
         >
           <div
-            className="MuiAvatar-root MuiAvatar-circle"
+            className="MuiAvatar-root MuiAvatar-circular"
           >
             <img
               alt="Profile Picture"
@@ -180,7 +180,7 @@ Array [
           className="MuiListItemAvatar-root"
         >
           <div
-            className="MuiAvatar-root MuiAvatar-circle"
+            className="MuiAvatar-root MuiAvatar-circular"
           >
             <img
               alt="Profile Picture"
@@ -225,7 +225,7 @@ Array [
           className="MuiListItemAvatar-root"
         >
           <div
-            className="MuiAvatar-root MuiAvatar-circle"
+            className="MuiAvatar-root MuiAvatar-circular"
           >
             <img
               alt="Profile Picture"
@@ -270,7 +270,7 @@ Array [
           className="MuiListItemAvatar-root"
         >
           <div
-            className="MuiAvatar-root MuiAvatar-circle"
+            className="MuiAvatar-root MuiAvatar-circular"
           >
             <img
               alt="Profile Picture"
@@ -317,7 +317,7 @@ Array [
           className="MuiListItemAvatar-root"
         >
           <div
-            className="MuiAvatar-root MuiAvatar-circle"
+            className="MuiAvatar-root MuiAvatar-circular"
           >
             <img
               alt="Profile Picture"

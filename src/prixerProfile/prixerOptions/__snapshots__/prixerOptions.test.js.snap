@@ -6,6 +6,11 @@ exports[`Login renders correctly 1`] = `
 >
   <div
     className="MuiPaper-root makeStyles-paper-2 MuiPaper-elevation1 MuiPaper-rounded"
+    style={
+      Object {
+        "width": "400px",
+      }
+    }
   >
     <div
       aria-label="text primary button group"
@@ -33,29 +38,6 @@ exports[`Login renders correctly 1`] = `
           className="MuiButton-label"
         >
           Artes
-        </span>
-      </button>
-      <button
-        className="MuiButtonBase-root MuiButton-root MuiButton-text MuiButtonGroup-grouped MuiButtonGroup-groupedHorizontal MuiButtonGroup-groupedText MuiButtonGroup-groupedTextHorizontal MuiButtonGroup-groupedTextPrimary MuiButton-textPrimary"
-        disabled={false}
-        onBlur={[Function]}
-        onDragLeave={[Function]}
-        onFocus={[Function]}
-        onKeyDown={[Function]}
-        onKeyUp={[Function]}
-        onMouseDown={[Function]}
-        onMouseLeave={[Function]}
-        onMouseUp={[Function]}
-        onTouchEnd={[Function]}
-        onTouchMove={[Function]}
-        onTouchStart={[Function]}
-        tabIndex={0}
-        type="button"
-      >
-        <span
-          className="MuiButton-label"
-        >
-          Servicios
         </span>
       </button>
     </div>

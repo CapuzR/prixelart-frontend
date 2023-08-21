@@ -89,7 +89,7 @@ function ConsumerForm(props) {
     "sábado",
   ];
 
-  let ProdTimes = props.buyState.map((item) => {
+  let ProdTimes = props.buyState?.map((item) => {
     if (item.product && item.art && item.product.productionTime !== undefined) {
       return item.product.productionTime;
     }
@@ -253,6 +253,7 @@ function ConsumerForm(props) {
                 >
                   <TextField
                     variant="outlined"
+                    id="Nombre"
                     label="Nombre"
                     fullWidth
                     className={classes.textField}

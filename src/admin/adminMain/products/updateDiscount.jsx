@@ -106,11 +106,10 @@ export default function UpdateDiscount(props) {
         type: type,
         value: value,
         appliedProducts: appliedProducts,
+        adminToken: localStorage.getItem("adminTokenV"),
       };
       const base_url = process.env.REACT_APP_BACKEND_URL + "/discount/update";
-      const response = await axios.put(base_url, data, {
-        adminToken: localStorage.getItem("adminTokenV"),
-      });
+      const response = await axios.put(base_url, data);
       if (response.data.success === false) {
         setLoading(false);
         setButtonState(false);

@@ -51,17 +51,19 @@ export default function MainListItems(props) {
             }}
           />
         </ListItem>
-        <ListItem button selected={props.active === "consumer"}>
-          <ListItemIcon>
-            <PeopleIcon />
-          </ListItemIcon>
-          <ListItemText
-            primary="Consumidores"
-            onClick={(e) => {
-              handleClick("consumer");
-            }}
-          />
-        </ListItem>
+        {props.permissions?.readConsumers && (
+          <ListItem button selected={props.active === "consumer"}>
+            <ListItemIcon>
+              <PeopleIcon />
+            </ListItemIcon>
+            <ListItemText
+              primary="Consumidores"
+              onClick={(e) => {
+                handleClick("consumer");
+              }}
+            />
+          </ListItem>
+        )}
         {props.permissions?.readMovements && (
           <ListItem button selected={props.active === "movements"}>
             <ListItemIcon>

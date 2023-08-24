@@ -45,6 +45,9 @@ export default function CreateAdminRole() {
   const [modifyAdmins, setModifyAdmins] = useState(false);
   const [setPrixerBalance, setSetPrixerBalance] = useState(false);
   const [readMovements, setReadMovements] = useState(false);
+  const [createConsumer, setCreateConsumer] = useState(false);
+  const [readConsumers, setReadConsumers] = useState(false);
+  const [deleteConsumer, setDeleteConsumer] = useState(false);
   const [loading, setLoading] = useState(false);
   const [buttonState, setButtonState] = useState(false);
 
@@ -84,6 +87,9 @@ export default function CreateAdminRole() {
         modifyAdmins: modifyAdmins,
         setPrixerBalance: setPrixerBalance,
         readMovements: readMovements,
+        createConsumer: createConsumer,
+        readConsumers: readConsumers,
+        deleteConsumer: deleteConsumer,
         adminToken: localStorage.getItem("adminTokenV"),
       };
       const base_url = process.env.REACT_APP_BACKEND_URL + "/adminRole/create";
@@ -183,6 +189,18 @@ export default function CreateAdminRole() {
 
   const handleChangeSetReadMovements = () => {
     setReadMovements(!readMovements);
+  };
+
+  const handleChangeCreateConsumer = () => {
+    setCreateConsumer(!createConsumer);
+  };
+
+  const handleChangeReadConsumers = () => {
+    setReadConsumers(!readConsumers);
+  };
+
+  const handleChangeDeleteConsumer = () => {
+    setDeleteConsumer(!deleteConsumer);
   };
 
   return (
@@ -834,6 +852,91 @@ export default function CreateAdminRole() {
                 <Switch
                   checked={modifyAdmins}
                   onChange={handleChangeModifyAdmins}
+                  name="checkedA"
+                  color="primary"
+                />
+              </FormControl>
+            </div>
+          </Grid>
+          <Grid
+            item
+            xs={12}
+            md={5}
+            style={{
+              border: "2px",
+              borderStyle: "solid",
+              borderColor: "silver",
+              borderRadius: "10px",
+              marginRight: "20px",
+              marginLeft: "20px",
+              marginTop: "20px",
+            }}
+          >
+            <Typography
+              varaint="p"
+              color="secondary"
+              style={{ marginLeft: "20px" }}
+            >
+              Clientes frecuentes
+            </Typography>
+            <div>
+              <FormControl
+                className={clsx(classes.margin, classes.textField)}
+                variant="outlined"
+                style={{
+                  width: "90%",
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Typography>
+                  Permiso para crear y modificar clientes frecuentes
+                </Typography>
+                <Switch
+                  checked={createConsumer}
+                  onChange={handleChangeCreateConsumer}
+                  name="checkedA"
+                  color="primary"
+                />
+              </FormControl>
+              <FormControl
+                className={clsx(classes.margin, classes.textField)}
+                variant="outlined"
+                style={{
+                  width: "90%",
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Typography>Permiso para leer clientes frecuentes</Typography>
+                <Switch
+                  checked={readConsumers}
+                  onChange={handleChangeReadConsumers}
+                  name="checkedA"
+                  color="primary"
+                />
+              </FormControl>
+              <FormControl
+                className={clsx(classes.margin, classes.textField)}
+                variant="outlined"
+                style={{
+                  width: "90%",
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Typography>
+                  Permiso para eliminar clientes frecuentes
+                </Typography>
+                <Switch
+                  checked={deleteConsumer}
+                  onChange={handleChangeDeleteConsumer}
                   name="checkedA"
                   color="primary"
                 />

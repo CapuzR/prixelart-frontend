@@ -264,7 +264,7 @@ export default function CreateOrder(props) {
     let prices = [0];
     state.map((item) => {
       if (item.product.modifyPrice) {
-        prices.push(Number(item.product.publicEquation * item.quantity || 1));
+        prices.push(Number(item.product.publicEquation * (item.quantity || 1)));
       } else if (
         item.product &&
         item.art &&
@@ -303,7 +303,6 @@ export default function CreateOrder(props) {
     });
     return total;
   };
-
   const createOrder = async () => {
     setLoadingOrder(true);
     props.setLoading(true);

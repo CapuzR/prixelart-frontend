@@ -556,6 +556,7 @@ export default function OrderDetails(props) {
                           "de-DE",
                           {
                             minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
                             // maximumSignificantDigits: 2,
                           }
                         )}
@@ -566,6 +567,8 @@ export default function OrderDetails(props) {
                           "de-DE",
                           {
                             minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+
                             // maximumSignificantDigits: 2,
                           }
                         )}
@@ -578,6 +581,8 @@ export default function OrderDetails(props) {
                               ?.price
                           ).toLocaleString("de-DE", {
                             minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+
                             // maximumSignificantDigits: 2,
                           })}
                     </div>
@@ -587,6 +592,8 @@ export default function OrderDetails(props) {
                           "de-DE",
                           {
                             minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+
                             // maximumSignificantDigits: 2,
                           }
                         )}
@@ -598,6 +605,8 @@ export default function OrderDetails(props) {
                             props.modalContent?.dollarValue
                           ).toLocaleString("de-DE", {
                             minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+
                             // maximumSignificantDigits: 2,
                           })}
                       </div>

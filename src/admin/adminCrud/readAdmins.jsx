@@ -15,7 +15,7 @@ import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
-
+import Grid from "@material-ui/core/Grid";
 import Fab from "@material-ui/core/Fab";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import UpdateAdmin from "./updateAdmin";
@@ -227,172 +227,198 @@ export default function ReadAdmins(props) {
                       <TableCell
                         style={{ display: "flex", flexDirection: "row" }}
                       >
-                        {(role.detailOrder ||
-                          role.detailPay ||
-                          role.orderStatus ||
-                          role.createOrder) && (
-                          <ul style={{ paddingLeft: 20 }}>
-                            <Typography variant="p" color="secondary">
-                              Pedidos
-                            </Typography>
-                            {role.detailOrder && (
-                              <li>Ver detalles de pedido</li>
+                        <Grid container>
+                          <Grid item xs={3}>
+                            {(role.detailOrder ||
+                              role.detailPay ||
+                              role.orderStatus ||
+                              role.createOrder) && (
+                              <ul style={{ paddingLeft: 20 }}>
+                                <Typography variant="p" color="secondary">
+                                  Pedidos
+                                </Typography>
+                                {role.detailOrder && (
+                                  <li>Ver detalles de pedido</li>
+                                )}
+                                {role.detailPay && (
+                                  <li> Modificar detalles de pago</li>
+                                )}
+                                {role.orderStatus && (
+                                  <li> Modificar status de pedido</li>
+                                )}
+                                {role.createOrder && (
+                                  <li> Crear y modificar pedido</li>
+                                )}
+                              </ul>
                             )}
-                            {role.detailPay && (
-                              <li> Modificar detalles de pago</li>
+                          </Grid>
+                          <Grid item xs={3} style={{ flexDirection: "row" }}>
+                            {(role.createProduct ||
+                              role.deleteProduct ||
+                              role.createDiscount ||
+                              role.deleteDiscount) && (
+                              <ul style={{ paddingLeft: 20 }}>
+                                <Typography variant="p" color="secondary">
+                                  Productos
+                                </Typography>
+                                {role.createProduct && (
+                                  <li>Crear y modificar productos</li>
+                                )}
+                                {role.deleteProduct && (
+                                  <li> Eliminar productos</li>
+                                )}
+                                {role.createDiscount && (
+                                  <li>Crear y modificar descuentos</li>
+                                )}
+                                {role.deleteDiscount && (
+                                  <li> Eliminar descuentos</li>
+                                )}
+                              </ul>
                             )}
-                            {role.orderStatus && (
-                              <li> Modificar status de pedido</li>
+                            {(role.createPaymentMethod ||
+                              role.deletePaymentMethod) && (
+                              <ul style={{ paddingLeft: 20 }}>
+                                <Typography variant="p" color="secondary">
+                                  Métodos de pago
+                                </Typography>
+                                {role.createPaymentMethod && (
+                                  <li>Crear y modificar métodos de pago</li>
+                                )}
+                                {role.deletePaymentMethod && (
+                                  <li>Eliminar método de pago</li>
+                                )}
+                              </ul>
                             )}
-                            {role.createOrder && (
-                              <li> Crear y modificar pedido</li>
+                            {(role.createShippingMethod ||
+                              role.deleteShippingMethod) && (
+                              <ul style={{ paddingLeft: 20 }}>
+                                <Typography variant="p" color="secondary">
+                                  Métodos de envío
+                                </Typography>
+                                {role.createShippingMethod && (
+                                  <li>Crear y modificar métodos de envío</li>
+                                )}
+                                {role.deleteShippingMethod && (
+                                  <li>Eliminar método de envío</li>
+                                )}
+                              </ul>
                             )}
-                          </ul>
-                        )}
-                        <div style={{ flexDirection: "row" }}>
-                          {(role.createProduct ||
-                            role.deleteProduct ||
-                            role.createDiscount ||
-                            role.deleteDiscount) && (
-                            <ul style={{ paddingLeft: 20 }}>
-                              <Typography variant="p" color="secondary">
-                                Productos
-                              </Typography>
-                              {role.createProduct && (
-                                <li>Crear y modificar productos</li>
-                              )}
-                              {role.deleteProduct && (
-                                <li> Eliminar productos</li>
-                              )}
-                              {role.createDiscount && (
-                                <li>Crear y modificar descuentos</li>
-                              )}
-                              {role.deleteDiscount && (
-                                <li> Eliminar descuentos</li>
-                              )}
-                            </ul>
-                          )}
-                        </div>
-                        <div style={{ flexDirection: "row" }}>
-                          {(role.modifyBanners ||
-                            role.modifyTermsAndCo ||
-                            role.modifyDollar) && (
-                            <ul style={{ paddingLeft: 20 }}>
-                              <Typography variant="p" color="secondary">
-                                Preferencias
-                              </Typography>
-                              {role.modifyBanners && <li>Modificar banners</li>}
-                              {role.modifyTermsAndCo && (
-                                <li>Modificar términos y condiciones</li>
-                              )}
-                              {role.modifyDollar && (
-                                <li>Modificar valor del dolar</li>
-                              )}
-                            </ul>
-                          )}
-                          {(role.createTestimonial ||
-                            role.deleteTestimonial) && (
-                            <ul style={{ paddingLeft: 20 }}>
-                              <Typography variant="p" color="secondary">
-                                Testimonios
-                              </Typography>
-                              {role.createTestimonial && (
-                                <li>
-                                  Crear, modificar, mostrar y ordenar
-                                  testimonios
-                                </li>
-                              )}
-                              {role.deleteTestimonial && (
-                                <li>Eliminar testimonios</li>
-                              )}
-                            </ul>
-                          )}
-                        </div>
-                        <div style={{ flexDirection: "row" }}>
-                          {(role.createPaymentMethod ||
-                            role.deletePaymentMethod) && (
-                            <ul style={{ paddingLeft: 20 }}>
-                              <Typography variant="p" color="secondary">
-                                Métodos de pago
-                              </Typography>
-                              {role.createPaymentMethod && (
-                                <li>Crear y modificar métodos de pago</li>
-                              )}
-                              {role.deletePaymentMethod && (
-                                <li>Eliminar método de pago</li>
-                              )}
-                            </ul>
-                          )}
-                          {(role.createShippingMethod ||
-                            role.deleteShippingMethod) && (
-                            <ul style={{ paddingLeft: 20 }}>
-                              <Typography variant="p" color="secondary">
-                                Métodos de envío
-                              </Typography>
-                              {role.createShippingMethod && (
-                                <li>Crear y modificar métodos de envío</li>
-                              )}
-                              {role.deleteShippingMethod && (
-                                <li>Eliminar método de envío</li>
-                              )}
-                            </ul>
-                          )}
-                        </div>
-                        <div style={{ flexDirection: "row" }}>
-                          {role.modifyAdmins && (
-                            <ul style={{ paddingLeft: 20 }}>
-                              <Typography variant="p" color="secondary">
-                                Usuarios
-                              </Typography>
-                              {role.modifyAdmins && (
-                                <li>Crear, modificar y eliminar Admins</li>
-                              )}
-                            </ul>
-                          )}
-                          {(role.prixerBan ||
-                            role.setPrixerBalance ||
-                            role.readMovements) && (
-                            <ul style={{ paddingLeft: 20 }}>
-                              <Typography variant="p" color="secondary">
-                                Prixers
-                              </Typography>
-                              {role.prixerBan && <li>Banear a Prixers</li>}
-                              {role.setPrixerBalance && (
-                                <li>Modificar Balance de Prixers</li>
-                              )}
-                              {role.readMovements && <li>Leer movimientos</li>}
-                            </ul>
-                          )}
-                        </div>
+                          </Grid>
+                          <Grid item xs={3} style={{ flexDirection: "row" }}>
+                            {(role.modifyBanners ||
+                              role.modifyTermsAndCo ||
+                              role.modifyDollar) && (
+                              <ul style={{ paddingLeft: 20 }}>
+                                <Typography variant="p" color="secondary">
+                                  Preferencias
+                                </Typography>
+                                {role.modifyBanners && (
+                                  <li>Modificar banners</li>
+                                )}
+                                {role.modifyTermsAndCo && (
+                                  <li>Modificar términos y condiciones</li>
+                                )}
+                                {role.modifyDollar && (
+                                  <li>Modificar valor del dolar</li>
+                                )}
+                              </ul>
+                            )}
+                            {(role.createTestimonial ||
+                              role.deleteTestimonial) && (
+                              <ul style={{ paddingLeft: 20 }}>
+                                <Typography variant="p" color="secondary">
+                                  Testimonios
+                                </Typography>
+                                {role.createTestimonial && (
+                                  <li>
+                                    Crear, modificar, mostrar y ordenar
+                                    testimonios
+                                  </li>
+                                )}
+                                {role.deleteTestimonial && (
+                                  <li>Eliminar testimonios</li>
+                                )}
+                              </ul>
+                            )}
+                          </Grid>
+                          <Grid item xs={3} style={{ flexDirection: "row" }}>
+                            {role.modifyAdmins && (
+                              <ul style={{ paddingLeft: 20 }}>
+                                <Typography variant="p" color="secondary">
+                                  Usuarios
+                                </Typography>
+                                {role.modifyAdmins && (
+                                  <li>Crear, modificar y eliminar Admins</li>
+                                )}
+                              </ul>
+                            )}
+                            {(role.prixerBan ||
+                              role.setPrixerBalance ||
+                              role.readMovements) && (
+                              <ul style={{ paddingLeft: 20 }}>
+                                <Typography variant="p" color="secondary">
+                                  Prixers
+                                </Typography>
+                                {role.prixerBan && <li>Banear a Prixers</li>}
+                                {role.setPrixerBalance && (
+                                  <li>Modificar Balance de Prixers</li>
+                                )}
+                                {role.readMovements && (
+                                  <li>Leer movimientos</li>
+                                )}
+                              </ul>
+                            )}
+                            {(role.createConsumer ||
+                              role.readConsumers ||
+                              role.deleteConsumer) && (
+                              <ul style={{ paddingLeft: 20 }}>
+                                <Typography variant="p" color="secondary">
+                                  Clientes frecuentes
+                                </Typography>
+                                {role.createConsumer && (
+                                  <li>Crear y modificar clientes frecuentes</li>
+                                )}
+                                {role.readConsumers && (
+                                  <li>Leer clientes frecuentes</li>
+                                )}
+                                {role.deleteConsumer && (
+                                  <li>Eliminar clientes frecuentes</li>
+                                )}
+                              </ul>
+                            )}
+                          </Grid>
+                        </Grid>
                       </TableCell>
                       {props.permissions?.modifyAdmins && (
                         <TableCell align="right">
-                          <Fab
-                            color="default"
-                            style={{
-                              width: 35,
-                              height: 35,
-                              marginRight: 16,
-                            }}
-                            onClick={(e) => {
-                              handleActiveRole(role);
-                            }}
-                          >
-                            <EditIcon />
-                          </Fab>
-                          <Fab
-                            color="default"
-                            style={{
-                              width: 35,
-                              height: 35,
-                            }}
-                            onClick={(e) => {
-                              e.preventDefault();
-                              deleteRole(role._id);
-                            }}
-                          >
-                            <DeleteIcon />
-                          </Fab>
+                          <Grid style={{ display: "flex" }}>
+                            <Fab
+                              color="default"
+                              style={{
+                                width: 35,
+                                height: 35,
+                                marginRight: 16,
+                              }}
+                              onClick={(e) => {
+                                handleActiveRole(role);
+                              }}
+                            >
+                              <EditIcon />
+                            </Fab>
+                            <Fab
+                              color="default"
+                              style={{
+                                width: 35,
+                                height: 35,
+                              }}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                deleteRole(role._id);
+                              }}
+                            >
+                              <DeleteIcon />
+                            </Fab>
+                          </Grid>
                         </TableCell>
                       )}
                     </TableRow>

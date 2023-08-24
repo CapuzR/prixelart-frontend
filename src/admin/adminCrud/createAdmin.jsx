@@ -152,7 +152,7 @@ export default function CreateAdmin() {
   return (
     <React.Fragment>
       {loading && (
-        <div class={classes.loading}>
+        <div className={classes.loading}>
           <CircularProgress />
         </div>
       )}
@@ -170,6 +170,7 @@ export default function CreateAdmin() {
                 required
                 fullWidth
                 id="username"
+                aria-label="username"
                 label="Nombre de usuario"
                 name="username"
                 autoComplete="username"
@@ -189,7 +190,9 @@ export default function CreateAdmin() {
             >
               <InputLabel>Área</InputLabel>
               <Select
-                input={<OutlinedInput />}
+                name="Área"
+                id="Área"
+                aria-label="Área"
                 value={area}
                 onChange={(e) => {
                   setArea(e.target.value);
@@ -214,7 +217,8 @@ export default function CreateAdmin() {
                 required
                 fullWidth
                 id="firstname"
-                label="Nombre"
+                label="firstname"
+                aria-label="firstname"
                 name="firstname"
                 autoComplete="firstname"
                 value={firstname}
@@ -237,6 +241,7 @@ export default function CreateAdmin() {
                 fullWidth
                 id="lastname"
                 label="Apellido"
+                aria-label="Apellido"
                 name="lastname"
                 autoComplete="lastname"
                 value={lastname}
@@ -260,6 +265,7 @@ export default function CreateAdmin() {
                 fullWidth
                 id="email"
                 label="Correo electrónico"
+                aria-label="Correo electrónico"
                 name="email"
                 autoComplete="email"
                 value={email}
@@ -269,6 +275,7 @@ export default function CreateAdmin() {
               />
             </FormControl>
           </Grid>
+
           <Grid item xs={4}>
             <FormControl
               className={clsx(classes.margin, classes.textField)}
@@ -282,6 +289,7 @@ export default function CreateAdmin() {
                 fullWidth
                 id="phone"
                 label="Teléfono"
+                aria-label="Teléfono"
                 name="phone"
                 autoComplete="phone"
                 value={phone}
@@ -298,29 +306,30 @@ export default function CreateAdmin() {
               variant="outlined"
               xs={12}
             >
-              <InputLabel htmlFor="outlined-adornment-password">
-                Contraseña
-              </InputLabel>
-              <OutlinedInput
-                id="outlined-adornment-password"
+              <TextField
+                variant="outlined"
+                id="Contraseña"
+                label="Contraseña"
+                aria-label="Contraseña"
+                name="Contraseña"
                 type={showPassword ? "text" : "password"}
                 value={password}
-                label="Contraseña"
                 error={passwordError}
                 onChange={handlePasswordChange}
-                endAdornment={
-                  <InputAdornment position="end">
-                    <IconButton
-                      aria-label="toggle password visibility"
-                      onClick={handleClickShowPassword}
-                      onMouseDown={handleMouseDownPassword}
-                      edge="end"
-                    >
-                      {showPassword ? <Visibility /> : <VisibilityOff />}
-                    </IconButton>
-                  </InputAdornment>
-                }
-                labelWidth={100}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        // aria-label="toggle password visibility"
+                        onClick={handleClickShowPassword}
+                        onMouseDown={handleMouseDownPassword}
+                        edge="end"
+                      >
+                        {showPassword ? <Visibility /> : <VisibilityOff />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
               />
             </FormControl>
           </Grid>

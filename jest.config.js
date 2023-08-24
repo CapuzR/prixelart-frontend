@@ -1,8 +1,11 @@
-const { defaults } = require("jest-config");
+// const { defaults } = require("jest-config");
 
-const config = {
-  moduleFileExtensions: ["js", "json", "es6", "jsx"],
-  unmockedModulePathPatterns: ["/node_modules/react"],
+module.exports = {
+  testEnvironment: "jsdom",
+  moduleFileExtensions: ["js", "jsx", "json", "es6"],
+  moduleDirectories: ["node_modules", "src"],
+  // moduleNameMapper: {
+  //   "\\.(css|less)$": "identity-obj-proxy",
+  // },
+  // setupFilesAfterEnv: ["./setupTests.js"],
 };
-
-module.exports = config;

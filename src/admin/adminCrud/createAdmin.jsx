@@ -188,19 +188,28 @@ export default function CreateAdmin() {
               style={{ width: "50%" }}
               required
             >
-              <InputLabel>Área</InputLabel>
+              {/* <InputLabel>Área</InputLabel> */}
               <Select
                 name="Área"
                 id="Área"
+                label="Área"
                 aria-label="Área"
+                // data-testid="Área"
                 value={area}
                 onChange={(e) => {
                   setArea(e.target.value);
                 }}
+                // inputProps={{ name: "Área" }}
               >
                 {roles &&
                   roles.map((role) => (
-                    <MenuItem value={role.area}>{role.area}</MenuItem>
+                    <MenuItem
+                      value={role.area}
+                      data-testid={role.area}
+                      name={role.area}
+                    >
+                      {role.area}{" "}
+                    </MenuItem>
                   ))}
               </Select>
             </FormControl>

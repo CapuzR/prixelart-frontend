@@ -8,9 +8,11 @@ export const setProductAtts = async (
   height
 ) => {
   let att = productsArr;
+
   if (att && att.length > 0 && att[iProd]) {
     att[iProd].selection = attValue;
     att[iProd].attributes = attributesArr;
+
     const pAtt = await getEquation(att[iProd], iProd, att, width, height);
     return { pAtt: pAtt, att: att };
   }
@@ -164,30 +166,28 @@ export const getEquation = async (
         return;
       }
     });
+
     if (filteredVars.length != 0) {
       if (
         filteredVars[0].publicPrice.equation &&
         filteredVars[0].prixerPrice?.equation
       ) {
         productArr[iProd].needsEquation = true;
-
-        productArr[iProd].publicEquation = eval(
+        productArr[iProd].publicEquation =
           structureEquation(
             filteredVars[0].publicPrice.equation,
 
             iProd,
             width,
             height
-          ) || 0
-        );
-        productArr[iProd].prixerEquation = eval(
+          ) || 0;
+        productArr[iProd].prixerEquation =
           structureEquation(
             filteredVars[0].prixerPrice.equation,
             iProd,
             width,
             height
-          ) || 0
-        );
+          ) || 0;
       } else if (filteredVars[0].publicPrice.equation) {
         productArr[iProd].needsEquation = true;
         productArr[iProd].publicEquation = eval(

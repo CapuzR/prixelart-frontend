@@ -1,26 +1,50 @@
 import React from "react";
 import axios from "axios";
-import { render, screen, fireEvent } from "@testing-library/react";
+import {
+  render,
+  screen,
+  fireEvent,
+  getByRole,
+  within,
+  getByText,
+  waitFor,
+} from "@testing-library/react";
 import CreateAdmin from "./createAdmin";
 import adminRoles from "./adminRoles.json";
+import areaMock from "./__mocks__/createAdmin";
+import { act } from "react-dom/test-utils";
 
 // jest.mock("axios");
 
-test("Se llenan correctamente los campos y se acciona el botón Crear", () => {
+test("Se llenan correctamente los campos y se acciona el botón Crear", async () => {
   //   const roles = adminRoles;
   //   axios.post.mockResolvedValueOnce({ data: roles });
   //   axios.post.mockResolvedValueOnce(() => Promise.resolve({ data: roles }));
-  render(<CreateAdmin />);
+
+  await act(async () => {
+    render(<CreateAdmin />);
+    await waitFor(() => {
+      expect(areaMock).toHaveBeenCalledTimes(1);
+    });
+  });
 
   const usernameInput = screen.getByRole("textbox", {
     name: /nombre de usuario/i,
   });
   fireEvent.change(usernameInput, { target: { value: "john.doe" } });
 
-  //   const areaSelect = screen.getByLabelText("Área");
-  //   fireEvent.mouseDown(areaSelect);
-  //   const option = screen.getByText("Ventas");
-  //   fireEvent.click(option);
+  const areaSelect = screen.getByTestId("Área");
+
+  // const areaSelect = getByTestId("Área");
+  // fireEvent.change(areaSelect, { target: { value: 1 } });
+  // fireEvent.mouseDown(areaSelect);
+  console.log(getByRole(areaSelect, "option", { name: "Ventas" }));
+  // const listbox = within(getByText("Área"));
+  // console.log(areaSelect.querySelectorAll("option"));
+
+  // fireEvent.mouseDown(areaSelect);
+  // fireEvent.click(getByRole("option", { name: "Ventas" }));
+  // fireEvent.click(listbox.getByText(/Ventas/i));
 
   const nombreInput = screen.getByRole("textbox", {
     name: /firstname/i,

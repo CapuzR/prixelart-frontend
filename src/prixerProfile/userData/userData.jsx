@@ -371,7 +371,7 @@ export default function UserData(props) {
                       target="_blank"
                       href={
                         "https://www.instagram.com/" +
-                        instagram.replace(/[@]/gi, "")
+                        instagram?.replace(/[@]/gi, "")
                       }
                       style={{ textDecoration: "none", color: "#d33f49" }}
                     >
@@ -414,7 +414,7 @@ export default function UserData(props) {
                           target="_blank"
                           href={
                             "https://www.twitter.com/" +
-                            twitter.replace(/[@]/gi, "")
+                            twitter?.replace(/[@]/gi, "")
                           }
                           style={{ textDecoration: "none", color: "#d33f49" }}
                         >

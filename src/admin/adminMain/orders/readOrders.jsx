@@ -173,8 +173,12 @@ export default function ReadOrders(props) {
                     value={props.filter}
                     onChange={handleChange}
                   >
-                    <MenuItem value={"recent"}>Recientes</MenuItem>
-                    <MenuItem value={"previous"}>Anteriores</MenuItem>
+                    <MenuItem key={0} value={"recent"}>
+                      Recientes
+                    </MenuItem>
+                    <MenuItem key={1} value={"previous"}>
+                      Anteriores
+                    </MenuItem>
                   </Select>
                 </FormControl>
               </div>
@@ -184,8 +188,12 @@ export default function ReadOrders(props) {
                 <FormControl className={classes.formControl}>
                   <InputLabel>Fecha de entrega</InputLabel>
                   <Select value={props.filter} onChange={handleChange}>
-                    <MenuItem value={"coming"}>Próximos</MenuItem>
-                    <MenuItem value={"later"}>Lejanos</MenuItem>
+                    <MenuItem key={0} value={"coming"}>
+                      Próximos
+                    </MenuItem>
+                    <MenuItem key={1} value={"later"}>
+                      Lejanos
+                    </MenuItem>
                   </Select>
                 </FormControl>
               </div>
@@ -197,12 +205,24 @@ export default function ReadOrders(props) {
                 <FormControl className={classes.formControl}>
                   <InputLabel> Status de Pago</InputLabel>
                   <Select value={props.filter} onChange={handleChange}>
-                    <MenuItem value={"Pendiente"}>Pendiente</MenuItem>
-                    <MenuItem value={"Pagado"}>Pagado</MenuItem>
-                    <MenuItem value={"Abonado"}>Abonado</MenuItem>
-                    <MenuItem value={"Giftcard"}>Giftcard</MenuItem>
-                    <MenuItem value={"Obsequio"}>Obsequio</MenuItem>
-                    <MenuItem value={"Anulado"}>Anulado</MenuItem>
+                    <MenuItem key={0} value={"Pendiente"}>
+                      Pendiente
+                    </MenuItem>
+                    <MenuItem key={1} value={"Pagado"}>
+                      Pagado
+                    </MenuItem>
+                    <MenuItem key={2} value={"Abonado"}>
+                      Abonado
+                    </MenuItem>
+                    <MenuItem key={3} value={"Giftcard"}>
+                      Giftcard
+                    </MenuItem>
+                    <MenuItem key={4} value={"Obsequio"}>
+                      Obsequio
+                    </MenuItem>
+                    <MenuItem key={5} value={"Anulado"}>
+                      Anulado
+                    </MenuItem>
                   </Select>
                 </FormControl>
               </div>
@@ -212,14 +232,30 @@ export default function ReadOrders(props) {
                 <FormControl className={classes.formControl}>
                   <InputLabel>Status</InputLabel>
                   <Select value={props.filter} onChange={handleChange}>
-                    <MenuItem value={"Por producir"}>Por producir</MenuItem>
-                    <MenuItem value={"En impresión"}>En impresión</MenuItem>
-                    <MenuItem value={"En producción"}>En producción</MenuItem>
-                    <MenuItem value={"Por entregar"}>Por entregar</MenuItem>
-                    <MenuItem value={"Entregado"}>Entregado</MenuItem>
-                    <MenuItem value={"Concretado"}>Concretado</MenuItem>
-                    <MenuItem value={"Detenido"}>Detenido</MenuItem>
-                    <MenuItem value={"Anulado"}>Anulado</MenuItem>
+                    <MenuItem key={0} value={"Por producir"}>
+                      Por producir
+                    </MenuItem>
+                    <MenuItem key={1} value={"En impresión"}>
+                      En impresión
+                    </MenuItem>
+                    <MenuItem key={2} value={"En producción"}>
+                      En producción
+                    </MenuItem>
+                    <MenuItem key={3} value={"Por entregar"}>
+                      Por entregar
+                    </MenuItem>
+                    <MenuItem key={4} value={"Entregado"}>
+                      Entregado
+                    </MenuItem>
+                    <MenuItem key={5} value={"Concretado"}>
+                      Concretado
+                    </MenuItem>
+                    <MenuItem key={6} value={"Detenido"}>
+                      Detenido
+                    </MenuItem>
+                    <MenuItem key={7} value={"Anulado"}>
+                      Anulado
+                    </MenuItem>
                   </Select>
                 </FormControl>
               </div>
@@ -230,6 +266,7 @@ export default function ReadOrders(props) {
                   <InputLabel>Asesor</InputLabel>
                   <Select value={props.filter} onChange={handleChange}>
                     <MenuItem
+                      key={0}
                       value={{
                         seller:
                           JSON.parse(localStorage.getItem("adminToken"))
@@ -245,8 +282,10 @@ export default function ReadOrders(props) {
                         JSON.parse(localStorage.getItem("adminToken")).lastname}
                     </MenuItem>
                     {props.sellers &&
-                      props.sellers?.map((seller) => (
-                        <MenuItem value={{ seller: seller }}>{seller}</MenuItem>
+                      props.sellers?.map((seller, index) => (
+                        <MenuItem key={index} value={{ seller: seller }}>
+                          {seller}
+                        </MenuItem>
                       ))}
                   </Select>
                 </FormControl>
@@ -303,18 +342,29 @@ export default function ReadOrders(props) {
                     >
                       <Select
                         id="payStatus"
-                        SelectClassKey
                         value={row.payStatus || "Pendiente"}
                         onChange={(e) => {
                           props.handleChangePayStatus(row, e.target.value);
                         }}
                       >
-                        <MenuItem value={"Pendiente"}>Pendiente</MenuItem>
-                        <MenuItem value={"Pagado"}>Pagado</MenuItem>
-                        <MenuItem value={"Abonado"}>Abonado</MenuItem>
-                        <MenuItem value={"Giftcard"}>Giftcard</MenuItem>
-                        <MenuItem value={"Obsequio"}>Obsequio</MenuItem>
-                        <MenuItem value={"Anulado"}>Anulado</MenuItem>
+                        <MenuItem key={0} value={"Pendiente"}>
+                          Pendiente
+                        </MenuItem>
+                        <MenuItem key={1} value={"Pagado"}>
+                          Pagado
+                        </MenuItem>
+                        <MenuItem key={2} value={"Abonado"}>
+                          Abonado
+                        </MenuItem>
+                        <MenuItem key={3} value={"Giftcard"}>
+                          Giftcard
+                        </MenuItem>
+                        <MenuItem key={4} value={"Obsequio"}>
+                          Obsequio
+                        </MenuItem>
+                        <MenuItem key={5} value={"Anulado"}>
+                          Anulado
+                        </MenuItem>
                       </Select>
                     </FormControl>
                   </TableCell>
@@ -331,22 +381,35 @@ export default function ReadOrders(props) {
                     >
                       <Select
                         id="status"
-                        SelectClassKey
                         value={row.status}
                         onChange={(e) => {
                           props.handleChangeStatus(row, e.target.value);
                         }}
                       >
-                        <MenuItem value={"Por producir"}>Por producir</MenuItem>
-                        <MenuItem value={"En impresión"}>En impresión</MenuItem>
-                        <MenuItem value={"En producción"}>
+                        <MenuItem key={0} value={"Por producir"}>
+                          Por producir
+                        </MenuItem>
+                        <MenuItem key={1} value={"En impresión"}>
+                          En impresión
+                        </MenuItem>
+                        <MenuItem key={2} value={"En producción"}>
                           En producción
                         </MenuItem>
-                        <MenuItem value={"Por entregar"}>Por entregar</MenuItem>
-                        <MenuItem value={"Entregado"}>Entregado</MenuItem>
-                        <MenuItem value={"Concretado"}>Concretado</MenuItem>
-                        <MenuItem value={"Detenido"}>Detenido</MenuItem>
-                        <MenuItem value={"Anulado"}>Anulado</MenuItem>
+                        <MenuItem key={0} value={"Por entregar"}>
+                          Por entregar
+                        </MenuItem>
+                        <MenuItem key={1} value={"Entregado"}>
+                          Entregado
+                        </MenuItem>
+                        <MenuItem key={2} value={"Concretado"}>
+                          Concretado
+                        </MenuItem>
+                        <MenuItem key={3} value={"Detenido"}>
+                          Detenido
+                        </MenuItem>
+                        <MenuItem key={4} value={"Anulado"}>
+                          Anulado
+                        </MenuItem>
                       </Select>
                     </FormControl>
                     {/* <Fab
@@ -374,6 +437,7 @@ export default function ReadOrders(props) {
                       }}
                     >
                       <MenuItem
+                        key={0}
                         value={
                           JSON.parse(localStorage.getItem("adminToken"))
                             .firstname +
@@ -391,7 +455,9 @@ export default function ReadOrders(props) {
 
                       {props.sellers &&
                         props.sellers.map((seller) => (
-                          <MenuItem value={seller}>{seller}</MenuItem>
+                          <MenuItem key={seller} value={seller}>
+                            {seller}
+                          </MenuItem>
                         ))}
                     </Select>
                   </TableCell>

@@ -18,6 +18,7 @@ import { Snackbar } from "@material-ui/core";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Box from "@material-ui/core/Box";
 import Button from "@material-ui/core/Button";
+
 export default function ReadConsumers(props) {
   const history = useHistory();
   const [rows, setRows] = useState();
@@ -82,7 +83,7 @@ export default function ReadConsumers(props) {
       )}
       {props?.permissions?.readConsumers ? (
         <>
-          <Title>Consumidor</Title>
+          <Title>Clientes frecuentes</Title>
           {rows && (
             <>
               <Table size="small">

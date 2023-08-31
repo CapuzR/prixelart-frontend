@@ -1,5 +1,5 @@
 import React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Title from "../adminMain/Title";
 import axios from "axios";
@@ -47,24 +47,15 @@ export default function CreateConsumer(props) {
   const [gender, setGender] = useState("");
   const [loading, setLoading] = useState(false);
   const [buttonState, setButtonState] = useState(false);
-
+  const [prixers, setPrixers] = useState();
+  const [selectedPrixer, setSelectedPrixer] = useState();
   //Error states.
   const [errorMessage, setErrorMessage] = useState();
   const [snackBarError, setSnackBarError] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (
-      !active &&
-      !consumerFirstname &&
-      !consumerLastname &&
-      !username &&
-      !phone &&
-      !email &&
-      !billingAddress &&
-      !shippingAddress &&
-      !consumerType
-    ) {
+    if (!consumerFirstname && !consumerLastname && !consumerType) {
       setErrorMessage("Por favor completa todos los campos requeridos.");
       setSnackBarError(true);
       e.preventDefault();
@@ -118,6 +109,33 @@ export default function CreateConsumer(props) {
     }
   };
 
+  const readPrixers = async () => {
+    try {
+      setLoading(true);
+      const base_url =
+        process.env.REACT_APP_BACKEND_URL + "/prixer/read-all-full";
+
+      const response = await axios.get(base_url);
+      setPrixers(response.data.prixers);
+      setLoading(false);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    readPrixers();
+  }, []);
+
+  useEffect(() => {
+    setActive(true);
+    setConsumerFirstname(selectedPrixer?.firstName);
+    setConsumerLastname(selectedPrixer?.lastName);
+    setPhone(selectedPrixer?.phone);
+    setEmail(selectedPrixer?.email);
+    setInstagram(selectedPrixer?.instagram);
+  }, [selectedPrixer]);
+
   return (
     <React.Fragment>
       {
@@ -130,22 +148,22 @@ export default function CreateConsumer(props) {
         <Grid container spacing={2}>
           <Grid container spacing={2}>
             <Grid item xs={12}>
-              <Grid container xs={6}>
+              <Grid container>
                 <Grid item xs={12}>
                   <Checkbox
                     checked={active}
                     color="primary"
                     inputProps={{ "aria-label": "secondary checkbox" }}
                     onChange={() => {
-                      active ? setActive(false) : setActive(true);
+                      setActive(!active);
                     }}
-                  />{" "}
+                  />
                   Habilitado
                 </Grid>
               </Grid>
             </Grid>
-            <Grid item xs={12} sm={2}>
-              <FormControl variant="outlined">
+            <Grid item md>
+              <FormControl variant="outlined" fullWidth={true}>
                 <InputLabel required id="consumerTypeLabel">
                   Tipo de consumidor
                 </InputLabel>
@@ -169,7 +187,7 @@ export default function CreateConsumer(props) {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item xs={12} md={4}>
+            <Grid item xs={12} md={5}>
               <FormControl variant="outlined" xs={12} fullWidth={true}>
                 <TextField
                   variant="outlined"
@@ -187,7 +205,7 @@ export default function CreateConsumer(props) {
                 />
               </FormControl>
             </Grid>
-            <Grid item xs={12} md={6}>
+            <Grid item xs={12} md={5}>
               <FormControl
                 className={clsx(classes.margin, classes.textField)}
                 variant="outlined"
@@ -210,30 +228,71 @@ export default function CreateConsumer(props) {
                 />
               </FormControl>
             </Grid>
-            <Grid item xs={12} md={6}>
+            {consumerType === "Prixer" && (
+              <Grid item xs={12} md={6}>
+                <FormControl
+                  className={clsx(classes.margin, classes.textField)}
+                  variant="outlined"
+                  xs={12}
+                  fullWidth={true}
+                >
+                  <InputLabel>Prixer</InputLabel>
+                  <Select
+                    labelId="username"
+                    id="username"
+                    variant="outlined"
+                    value={username}
+                    onChange={(e) => {
+                      setUsername(e.target.value);
+                      setSelectedPrixer(
+                        prixers.find(
+                          (prixer) => prixer.username === e.target.value
+                        )
+                      );
+                    }}
+                    label="Prixer"
+                  >
+                    <MenuItem value="">
+                      <em></em>
+                    </MenuItem>
+                    {prixers.map((n) => (
+                      <MenuItem key={n.username} value={n.username}>
+                        {n.username}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+            )}
+            <Grid item xs={12} md={2}>
               <FormControl
                 className={clsx(classes.margin, classes.textField)}
                 variant="outlined"
                 xs={12}
                 fullWidth={true}
               >
-                <TextField
+                <InputLabel id="consumerTypeLabel">Género</InputLabel>
+                <Select
+                  labelId="gender"
+                  id="gender"
                   variant="outlined"
-                  required
-                  fullWidth
-                  rows={2}
-                  id="username"
-                  label="Nombre de usuario"
-                  name="username"
-                  autoComplete="username"
-                  value={username}
-                  onChange={(e) => {
-                    setUsername(e.target.value);
-                  }}
-                />
+                  value={gender}
+                  defaultValue=""
+                  onChange={(e) => setGender(e.target.value)}
+                  label="Género"
+                >
+                  <MenuItem value="">
+                    <em></em>
+                  </MenuItem>
+                  {["Masculino", "Femenino"].map((n) => (
+                    <MenuItem key={n} value={n}>
+                      {n}
+                    </MenuItem>
+                  ))}
+                </Select>
               </FormControl>
             </Grid>
-            <Grid item xs={12} md={6}>
+            <Grid item xs={12} md={4}>
               <FormControl
                 className={clsx(classes.margin, classes.textField)}
                 variant="outlined"
@@ -242,7 +301,6 @@ export default function CreateConsumer(props) {
               >
                 <TextField
                   variant="outlined"
-                  required
                   fullWidth
                   rows={2}
                   id="phone"
@@ -265,7 +323,6 @@ export default function CreateConsumer(props) {
               >
                 <TextField
                   variant="outlined"
-                  required
                   fullWidth
                   rows={2}
                   id="email"
@@ -279,7 +336,7 @@ export default function CreateConsumer(props) {
                 />
               </FormControl>
             </Grid>
-            <Grid item xs={12} md={6}>
+            <Grid item xs={12} md={4}>
               <FormControl
                 className={clsx(classes.margin, classes.textField)}
                 variant="outlined"
@@ -288,7 +345,6 @@ export default function CreateConsumer(props) {
               >
                 <TextField
                   variant="outlined"
-                  required
                   fullWidth
                   type="date"
                   InputLabelProps={{
@@ -308,28 +364,7 @@ export default function CreateConsumer(props) {
                 />
               </FormControl>
             </Grid>
-            <Grid item xs={3} sm={2}>
-              {/* <FormControl variant="outlined"> */}
-              <Select
-                labelId="nationalIdType"
-                variant="outlined"
-                id="nationalIdType"
-                value={nationalIdType}
-                onChange={(e) => setNationalIdType(e.target.value)}
-                label="nationalIdType"
-              >
-                <MenuItem value="">
-                  <em></em>
-                </MenuItem>
-                {["J", "V", "E"].map((n) => (
-                  <MenuItem key={n} value={n}>
-                    {n}
-                  </MenuItem>
-                ))}
-              </Select>
-              {/* </FormControl> */}
-            </Grid>
-            <Grid item xs={9} md={4}>
+            <Grid item xs={12} md={4}>
               <FormControl
                 className={clsx(classes.margin, classes.textField)}
                 variant="outlined"
@@ -338,13 +373,11 @@ export default function CreateConsumer(props) {
               >
                 <TextField
                   variant="outlined"
-                  required
                   fullWidth
-                  rows={2}
-                  id="nationalId"
-                  label="ID nacional"
-                  name="nationalId"
-                  autoComplete="nationalId"
+                  minRows={2}
+                  // id="nationalId"
+                  label="Cédula o RIF"
+                  // name="nationalId"
                   value={nationalId}
                   onChange={(e) => {
                     setNationalId(e.target.value);
@@ -352,7 +385,8 @@ export default function CreateConsumer(props) {
                 />
               </FormControl>
             </Grid>
-            <Grid item xs={12} md={6}>
+
+            <Grid item xs={12} md={4}>
               <FormControl
                 className={clsx(classes.margin, classes.textField)}
                 variant="outlined"
@@ -361,30 +395,6 @@ export default function CreateConsumer(props) {
               >
                 <TextField
                   variant="outlined"
-                  required
-                  fullWidth
-                  rows={2}
-                  id="gender"
-                  label="Género"
-                  name="gender"
-                  autoComplete="gender"
-                  value={gender}
-                  onChange={(e) => {
-                    setGender(e.target.value);
-                  }}
-                />
-              </FormControl>
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <FormControl
-                className={clsx(classes.margin, classes.textField)}
-                variant="outlined"
-                xs={12}
-                fullWidth={true}
-              >
-                <TextField
-                  variant="outlined"
-                  required
                   fullWidth
                   id="instagram"
                   label="Instagram"
@@ -401,17 +411,16 @@ export default function CreateConsumer(props) {
           <Grid container style={{ marginTop: 20 }}>
             <Title>Direcciones</Title>
           </Grid>
-          <Grid container spacing={6}>
-            <Grid item xs={12} md={5}>
+          <Grid container spacing={2}>
+            <Grid item xs={12} md={6}>
               <FormControl
-                className={clsx(classes.margin, classes.textField)}
+                // className={clsx(classes.margin, classes.textField)}
                 variant="outlined"
                 xs={12}
                 fullWidth={true}
               >
                 <TextField
                   variant="outlined"
-                  required
                   multiline
                   fullWidth
                   id="billingAddress"
@@ -427,14 +436,13 @@ export default function CreateConsumer(props) {
             </Grid>
             <Grid item xs={12} md={6}>
               <FormControl
-                className={clsx(classes.margin, classes.textField)}
+                // className={clsx(classes.margin, classes.textField)}
                 variant="outlined"
                 xs={12}
                 fullWidth={true}
               >
                 <TextField
                   variant="outlined"
-                  required
                   multiline
                   fullWidth
                   id="shippingAddress"

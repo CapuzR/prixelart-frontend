@@ -57,7 +57,7 @@ export default function MainListItems(props) {
               <PeopleIcon />
             </ListItemIcon>
             <ListItemText
-              primary="Consumidores"
+              primary="Clientes"
               onClick={(e) => {
                 handleClick("consumer");
               }}

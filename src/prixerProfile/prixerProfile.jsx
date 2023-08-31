@@ -100,7 +100,7 @@ export default function PrixerProfile(props) {
     axios
       .get(base_url)
       .then((response) => {
-        setValue(response.data.terms.termsAndConditions);
+        setValue(response?.data?.terms?.termsAndConditions);
       })
       .catch((error) => {
         console.log(error);

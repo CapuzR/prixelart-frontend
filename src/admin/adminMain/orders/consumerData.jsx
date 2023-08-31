@@ -15,6 +15,11 @@ import LocalPhoneIcon from "@material-ui/icons/LocalPhone";
 import EmailIcon from "@material-ui/icons/Email";
 import HomeIcon from "@material-ui/icons/Home";
 import BusinessIcon from "@material-ui/icons/Business";
+import ClickAwayListener from "@material-ui/core/ClickAwayListener";
+import Grow from "@material-ui/core/Grow";
+import Paper from "@material-ui/core/Paper";
+import Popper from "@material-ui/core/Popper";
+import MenuList from "@material-ui/core/MenuList";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 
 const drawerWidth = 240;
@@ -228,7 +233,10 @@ export default function ConsumerData(props) {
   const [billingDataCheck, setBillingDataCheck] = useState(true);
   const [billingShDataCheck, setBillingShDataCheck] = useState(false);
   const [prixers, setPrixers] = useState([]);
-
+  const [consumers, setConsumers] = useState([]);
+  const [options, setOptions] = useState([]);
+  const [open, setOpen] = React.useState(false);
+  const anchorRef = React.useRef(null);
   let today = new Date();
   const months = [
     "Enero",
@@ -308,12 +316,21 @@ export default function ConsumerData(props) {
   }, []);
 
   useEffect(() => {
-    const base_url =
-      process.env.REACT_APP_BACKEND_URL + "/prixer/read-all-full";
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/consumer/read-all";
+    axios
+      .post(base_url)
+      .then((response) => {
+        setConsumers(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+    // const base_url =
+    //   process.env.REACT_APP_BACKEND_URL + "/prixer/read-all-full";
 
-    axios.get(base_url).then((response) => {
-      setPrixers(response.data.prixers);
-    });
+    // axios.get(base_url).then((response) => {
+    //   setPrixers(response.data.prixers);
+    // });
   }, []);
 
   const handleShippingDataCheck = () => {
@@ -338,6 +355,70 @@ export default function ConsumerData(props) {
     setShippingDataCheck(!shippingDataCheck);
   };
 
+  useEffect(() => {
+    let updatedv2 = [];
+    const updated = consumers?.filter((consumer) =>
+      consumer.firstname.includes(props?.basicData?.name)
+    );
+    updated.map((p) => {
+      updatedv2.push(p.firstname + ", " + p.lastname);
+    });
+
+    setOptions(updatedv2);
+  }, [props?.basicData?.name]);
+
+  const handleInputChange = (event, value) => {
+    if (event?.type === "change") {
+      props.setBasicData({
+        ...props.basicData,
+        name: value,
+      });
+    } else if (event?.type === "click") {
+      const valuev2 = value.split(",");
+      let selected = consumers.find(
+        (consumer) =>
+          consumer.firstname === valuev2[0] &&
+          consumer.lastname === valuev2[1]?.trim()
+      );
+      props.setSelectedConsumer(selected);
+      props.setBasicData({
+        ...props.basicData,
+        name: valuev2[0],
+        lastname: valuev2[1]?.trim(),
+        phone: selected?.phone,
+        email: selected?.email,
+        address: selected?.address,
+        ci: selected?.ci,
+      });
+    } else return;
+  };
+
+  const handleOptionClick = (event, value) => {
+    props.setBasicData({
+      ...props.basicData,
+      name: value,
+    });
+  };
+
+  const handleToggle = () => {
+    setOpen((prevOpen) => !prevOpen);
+  };
+
+  const handleClose = (event) => {
+    if (anchorRef.current && anchorRef.current.contains(event.target)) {
+      return;
+    }
+
+    setOpen(false);
+  };
+
+  function handleListKeyDown(event) {
+    if (event.key === "Tab") {
+      event.preventDefault();
+      setOpen(false);
+    }
+  }
+
   return (
     <>
       <Grid container spacing={2}>
@@ -346,10 +427,12 @@ export default function ConsumerData(props) {
         </Grid>
         <Grid container>
           <Grid item lg={4} md={4} sm={4} xs={12} className={classes.gridInput}>
-            {/* <Autocomplete
-              id="free-solo-demo"
+            <Autocomplete
               freeSolo
-              options={prixers.map((prixer) => prixer.firstName)}
+              options={options}
+              getOptionLabel={(option) => option}
+              onInputChange={handleInputChange}
+              value={props.basicData?.name}
               fullWidth
               style={{ marginRight: 8 }}
               renderInput={(params) => (
@@ -360,7 +443,7 @@ export default function ConsumerData(props) {
                   variant="outlined"
                   fullWidth
                   className={classes.textField}
-                  value={props.basicData?.firstname}
+                  value={props.basicData?.name}
                   onChange={(e) =>
                     props.setBasicData({
                       ...props.basicData,
@@ -369,8 +452,8 @@ export default function ConsumerData(props) {
                   }
                 />
               )}
-            /> */}
-            <TextField
+            />
+            {/* <TextField
               variant="outlined"
               id="standard-name"
               label="Nombre"
@@ -382,6 +465,7 @@ export default function ConsumerData(props) {
               }
               margin="normal"
             />
+            */}
           </Grid>
           <Grid item lg={4} md={4} sm={4} xs={12} className={classes.gridInput}>
             <TextField
@@ -683,12 +767,14 @@ export default function ConsumerData(props) {
                   props.setShippingMethod(e.target.value);
                 }}
               >
-                <MenuItem value="">
+                <MenuItem value="" key={"vacío"}>
                   <em></em>
                 </MenuItem>
                 {shippingList &&
                   shippingList.map((n) => (
-                    <MenuItem value={n}>{n.name}</MenuItem>
+                    <MenuItem key={n.name} value={n}>
+                      {n.name}
+                    </MenuItem>
                   ))}
               </Select>
             </FormControl>

@@ -187,6 +187,7 @@ export default function Prixers(props) {
         setMovements(res.data.movements);
       });
   };
+
   useEffect(() => {
     readPrixers();
     getBalance();

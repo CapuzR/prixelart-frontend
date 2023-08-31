@@ -144,9 +144,9 @@ export default function UserData(props) {
       axios
         .post(base_url, data)
         .then((response) => {
-          if (!response.data.status) {
-            return history.push("/");
-          }
+          // if (!response.data.status) {
+          //   return history.push("/");
+          // }
           setUsername(response.data.username);
           setEmail(response.data.email);
           setFirstName(response.data.firstName);

@@ -93,7 +93,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: "rgba(102, 102, 102, 0.1)",
   },
   toolbar: {
-    paddingRight: 24, // keep right padding when drawer closed
+    paddingRight: 24,
   },
   toolbarIcon: {
     display: "flex",
@@ -265,7 +265,7 @@ export default function AdminMain(props) {
                 Administración
               </Typography>
               <IconButton color="inherit">
-                <Badge badgeContent={4} color="secondary">
+                <Badge overlap="rectangular" badgeContent={4} color="secondary">
                   <NotificationsIcon />
                 </Badge>
               </IconButton>

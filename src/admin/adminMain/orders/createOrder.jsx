@@ -13,6 +13,7 @@ import ConsumerData from "./consumerData";
 import ShoppingCart from "./shoppingCart";
 import Checkout from "./checkout";
 import { nanoid } from "nanoid";
+
 const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
@@ -234,7 +235,7 @@ export default function CreateOrder(props) {
   const [observations, setObservations] = useState();
   const [selectedPrixer, setSelectedPrixer] = useState();
   const [shippingMethod, setShippingMethod] = useState();
-
+  const [selectedConsumer, setSelectedConsumer] = useState();
   const steps = [`Datos del comprador`, `Productos`, `Orden de compra`];
 
   const handleStep = (step) => () => {
@@ -319,7 +320,7 @@ export default function CreateOrder(props) {
         });
     });
     const consumerData = {
-      _id: nanoid(6),
+      _id: selectedConsumer._id || nanoid(6),
       active: true,
       contactedBy:
         JSON.parse(localStorage.getItem("adminToken")).firstname +
@@ -481,6 +482,13 @@ export default function CreateOrder(props) {
     "-" +
     readyDate.getDate();
 
+  function handleKeyDown(event) {
+    if (event.key === "Escape") {
+      props.handleClose();
+    } else return;
+  }
+  document.addEventListener("keydown", handleKeyDown);
+
   return (
     <Grid
       container
@@ -533,6 +541,8 @@ export default function CreateOrder(props) {
             setShippingData={setShippingData}
             setBillingData={setBillingData}
             setShippingMethod={setShippingMethod}
+            setSelectedConsumer={setSelectedConsumer}
+            selectedConsumer={selectedConsumer}
           />
         )}
         {activeStep === 1 && (

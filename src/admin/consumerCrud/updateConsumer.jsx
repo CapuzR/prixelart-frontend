@@ -93,6 +93,7 @@ export default function UpdateConsumer(props) {
         nationalIdType: nationalIdType,
         nationalId: nationalId,
         gender: gender,
+        _id: props.consumer._id,
       };
 
       const base_url = process.env.REACT_APP_BACKEND_URL + "/consumer/update";
@@ -302,9 +303,8 @@ export default function UpdateConsumer(props) {
               >
                 <TextField
                   variant="outlined"
-                  required
                   fullWidth
-                  rows={2}
+                  minRows={2}
                   id="phone"
                   label="Teléfono"
                   name="phone"

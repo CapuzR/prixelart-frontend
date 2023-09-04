@@ -304,6 +304,7 @@ export default function CreateOrder(props) {
     });
     return total;
   };
+
   const createOrder = async () => {
     setLoadingOrder(true);
     props.setLoading(true);
@@ -320,7 +321,7 @@ export default function CreateOrder(props) {
         });
     });
     const consumerData = {
-      _id: selectedConsumer._id || nanoid(6),
+      _id: selectedConsumer?._id || nanoid(6),
       active: true,
       contactedBy:
         JSON.parse(localStorage.getItem("adminToken")).firstname +
@@ -467,7 +468,11 @@ export default function CreateOrder(props) {
   });
 
   useEffect(() => {
-    if (props.buyState[0] && props.buyState[0].art) {
+    if (
+      props?.buyState[0] &&
+      props?.buyState[0].art &&
+      shippingData?.shippingDate === undefined
+    ) {
       setShippingData({ ...shippingData, shippingDate: stringReadyDate });
     }
   }, [props.buyState]);
@@ -543,6 +548,7 @@ export default function CreateOrder(props) {
             setShippingMethod={setShippingMethod}
             setSelectedConsumer={setSelectedConsumer}
             selectedConsumer={selectedConsumer}
+            setSelectedPrixer={setSelectedPrixer}
           />
         )}
         {activeStep === 1 && (

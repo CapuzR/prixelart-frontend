@@ -15,6 +15,9 @@ import Backdrop from "@material-ui/core/Backdrop";
 import MenuItem from "@material-ui/core/MenuItem";
 import Select from "@material-ui/core/Select";
 import InputLabel from "@material-ui/core/InputLabel";
+import { useHistory } from "react-router-dom";
+
+import { nanoid } from "nanoid";
 
 const useStyles = makeStyles((theme) => ({
   seeMore: {
@@ -31,6 +34,8 @@ const useStyles = makeStyles((theme) => ({
 
 export default function CreateConsumer(props) {
   const classes = useStyles();
+  const history = useHistory();
+
   const [active, setActive] = useState(false);
   const [consumerType, setConsumerType] = useState("Particular");
   const [consumerFirstname, setConsumerFirstname] = useState("");
@@ -64,6 +69,7 @@ export default function CreateConsumer(props) {
       setButtonState(true);
 
       const data = {
+        _id: nanoid(8),
         active: active,
         consumerType: consumerType,
         firstname: consumerFirstname,
@@ -105,6 +111,7 @@ export default function CreateConsumer(props) {
         setNationalId("");
         setGender("");
         setLoading(false);
+        history.push({ pathname: "/admin/consumer/read" });
       }
     }
   };
@@ -302,7 +309,7 @@ export default function CreateConsumer(props) {
                 <TextField
                   variant="outlined"
                   fullWidth
-                  rows={2}
+                  minRows={2}
                   id="phone"
                   label="Teléfono"
                   name="phone"

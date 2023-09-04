@@ -119,7 +119,7 @@ export default function PrixerProfile() {
                     style={{ display: "flex", justifyContent: "center" }}
                   >
                     $
-                    {balance.toLocaleString("de-DE", {
+                    {balance?.toLocaleString("de-DE", {
                       minimumFractionDigits: 2,
                       // maximumSignificantDigits: 2,
                     })}
@@ -164,7 +164,7 @@ export default function PrixerProfile() {
                         {mov.type === "Depósito" ? (
                           <Grid style={{ color: "green", fontWeight: "bold" }}>
                             + $
-                            {mov.value.toLocaleString("de-DE", {
+                            {mov.value?.toLocaleString("de-DE", {
                               minimumFractionDigits: 2,
                               // maximumSignificantDigits: 2,
                             })}
@@ -173,7 +173,7 @@ export default function PrixerProfile() {
                           mov.type === "Retiro" && (
                             <Grid style={{ color: "red", fontWeight: "bold" }}>
                               - $
-                              {mov.value.toLocaleString("de-DE", {
+                              {mov.value?.toLocaleString("de-DE", {
                                 minimumFractionDigits: 2,
                                 // maximumSignificantDigits: 2,
                               })}

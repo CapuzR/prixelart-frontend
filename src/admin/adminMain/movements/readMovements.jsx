@@ -244,7 +244,7 @@ export default function ReadMovements(props) {
                                       handleClick();
                                     }}
                                   >
-                                    {row.description.slice(21)}
+                                    {row.description.split("#")?.[1]}
                                   </Button>
                                 </div>
                               ) : (

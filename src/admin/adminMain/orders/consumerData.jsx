@@ -232,7 +232,6 @@ export default function ConsumerData(props) {
   const [shippingList, setShippingList] = useState();
   const [billingDataCheck, setBillingDataCheck] = useState(true);
   const [billingShDataCheck, setBillingShDataCheck] = useState(false);
-  const [prixers, setPrixers] = useState([]);
   const [consumers, setConsumers] = useState([]);
   const [options, setOptions] = useState([]);
   const [open, setOpen] = React.useState(false);
@@ -325,12 +324,6 @@ export default function ConsumerData(props) {
       .catch((error) => {
         console.log(error);
       });
-    // const base_url =
-    //   process.env.REACT_APP_BACKEND_URL + "/prixer/read-all-full";
-
-    // axios.get(base_url).then((response) => {
-    //   setPrixers(response.data.prixers);
-    // });
   }, []);
 
   const handleShippingDataCheck = () => {

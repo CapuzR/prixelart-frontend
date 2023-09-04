@@ -57,6 +57,7 @@
     ]
   },
   "devDependencies": {
+    "@babel/preset-react": "^7.22.5",
     "@commitlint/cli": "^17.0.3",
     "@commitlint/config-conventional": "^17.0.3",
     "eslint-plugin-react-hooks": "^4.2.0",

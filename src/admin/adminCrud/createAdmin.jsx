@@ -205,8 +205,8 @@ export default function CreateAdmin() {
                   roles.map((role) => (
                     <MenuItem
                       value={role.area}
-                      data-testid={role.area}
                       name={role.area}
+                      key={role.area}
                     >
                       {role.area}{" "}
                     </MenuItem>

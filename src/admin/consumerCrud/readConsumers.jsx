@@ -57,13 +57,14 @@ export default function ReadConsumers(props) {
     const base_url =
       process.env.REACT_APP_BACKEND_URL + "/consumer/delete/" + id;
     axios
-      .put(
-        base_url,
-        { adminToken: localStorage.getItem("adminTokenV") },
-        { withCredentials: true }
-      )
+      .put(base_url, {
+        adminToken: localStorage.getItem("adminTokenV"),
+        id: id,
+      })
       .then((response) => {
         setSnackbar(true);
+        console.log(response);
+
         setMessage("Cliente eliminado con éxito");
         readConsumers();
       });

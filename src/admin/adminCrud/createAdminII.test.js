@@ -14,11 +14,11 @@ import adminRoles from "./adminRoles.json";
 import areaMock from "./__mocks__/createAdmin";
 import { act } from "react-dom/test-utils";
 
-// jest.mock("axios");
+jest.mock("axios");
 
-test("Se llenan correctamente los campos y se acciona el botón Crear", async () => {
-  //   const roles = adminRoles;
-  //   axios.post.mockResolvedValueOnce({ data: roles });
+test("Encontrar el Select", async () => {
+  const roles = adminRoles;
+  axios.post.mockResolvedValueOnce({ data: roles });
   //   axios.post.mockResolvedValueOnce(() => Promise.resolve({ data: roles }));
 
   //   await act(async () => {
@@ -33,7 +33,8 @@ test("Se llenan correctamente los campos y se acciona el botón Crear", async ()
   //   });
   //   fireEvent.change(usernameInput, { target: { value: "john.doe" } });
 
-  const areaSelect = screen.getByRole("button", { name: "Área" });
+  const areaSelect = screen.getByRole("button", { name: "" });
+  fireEvent.click(areaSelect);
   console.log(areaSelect);
   // const areaSelect = getByTestId("Área");
   // fireEvent.change(areaSelect, { target: { value: 1 } });

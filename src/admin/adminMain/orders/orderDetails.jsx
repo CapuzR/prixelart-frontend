@@ -1,4 +1,6 @@
 import React from "react";
+import axios from "axios";
+
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
 import { makeStyles } from "@material-ui/core/styles";
@@ -215,6 +217,21 @@ const useStyles = makeStyles((theme) => ({
 
 export default function OrderDetails(props) {
   const classes = useStyles();
+  const moment = require("moment-timezone");
+
+  const checkMov = async (Id) => {
+    const url =
+      process.env.REACT_APP_BACKEND_URL + "/movement/readMovementByOrderId";
+
+    const body = {
+      adminToken: localStorage.getItem("adminTokenV"),
+      order: Id,
+    };
+    await axios.post(url, body).then((res) => {
+      const oDate = res.data.createdOn;
+      const Datev2 = moment(oDate).tz("America/Caracas").format();
+    });
+  };
 
   return (
     <Grid container className={classes.paper2}>

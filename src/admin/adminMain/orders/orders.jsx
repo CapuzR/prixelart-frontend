@@ -232,6 +232,7 @@ export default function Orders(props) {
   // const history = useHistory();
   // const location = useLocation();
   const theme = useTheme();
+  const moment = require("moment-timezone");
 
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
   const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
@@ -250,6 +251,7 @@ export default function Orders(props) {
   const [snackBarError, setSnackBarError] = useState(false);
   const [discountList, setDiscountList] = useState([]);
   const [orders, setOrders] = useState([]);
+  const [movements, setMovements] = useState([]);
 
   const getDiscounts = async () => {
     const base_url = process.env.REACT_APP_BACKEND_URL + "/discount/read-allv1";
@@ -286,6 +288,38 @@ export default function Orders(props) {
     setLoading(false);
   };
 
+  const readMovements = async () => {
+    const base_url2 =
+      process.env.REACT_APP_BACKEND_URL + "/movement/readAllMovements";
+    axios
+      .post(
+        base_url2,
+        { adminToken: localStorage.getItem("adminTokenV") },
+        { withCredentials: true }
+      )
+      .then((response) => {
+        setMovements(response.data.movements);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  const updateOrders = () => {
+    orders.map((order) => {
+      const findMov = movements.find((mov) =>
+        mov.description.includes(order.orderId)
+      );
+      if (findMov) {
+        const Datev2 = moment(findMov?.createdOn)
+          .tz("America/Caracas")
+          .format();
+        order.date = Datev2;
+      }
+    });
+    setOrders(orders);
+  };
+
   const downloadOrders = async () => {
     const workbook = new excelJS.Workbook();
     const worksheet = workbook.addWorksheet("Pedidos");
@@ -295,6 +329,7 @@ export default function Orders(props) {
       { header: "Fecha de solicitud", key: "createdOn", width: 11 },
       { header: "Nombre del cliente", key: "basicData", width: 24 },
       { header: "Fecha de entrega", key: "shippingDate", width: 11 },
+      { header: "Fecha concretada", key: "date", width: 12 },
       { header: "certificado", key: "", width: 12 },
       { header: "Prixer", key: "prixer", width: 18 },
       { header: "Arte", key: "art", width: 24 },
@@ -326,6 +361,7 @@ export default function Orders(props) {
         status: order?.status,
         ID: order.orderId,
         createdOn: order.createdOn?.substring(0, 10),
+        date: order.date?.substring(0, 10),
         basicData:
           (order.basicData?.firstname || order.basicData?.name) +
           " " +
@@ -405,6 +441,7 @@ export default function Orders(props) {
         v2.price = price;
         v2.shippingData = shippingData;
         v2.shippingDate = shippingDate;
+
         worksheet.addRow(v2).eachCell({ includeEmpty: true }, (cell) => {
           cell.border = {
             top: { style: "thin" },
@@ -720,7 +757,14 @@ export default function Orders(props) {
 
   useEffect(() => {
     readOrders();
+    readMovements();
   }, []);
+
+  useEffect(() => {
+    if (orders && movements) {
+      updateOrders();
+    }
+  }, [orders, movements]);
 
   const readDollarValue = async () => {
     const base_url = process.env.REACT_APP_BACKEND_URL + "/dollarValue/read";

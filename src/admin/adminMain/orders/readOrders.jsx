@@ -9,6 +9,7 @@ import Select from "@material-ui/core/Select";
 import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
 import Box from "@material-ui/core/Box";
+import Typography from "@material-ui/core/Typography";
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -157,6 +158,7 @@ export default function ReadOrders(props) {
     });
     props.readOrders();
   };
+
   return (
     <>
       <Table>
@@ -366,6 +368,11 @@ export default function ReadOrders(props) {
                           Anulado
                         </MenuItem>
                       </Select>
+                      {row.payStatus === "Pagado" && row.payDate && (
+                        <Typography variant="body2" color="secondary">
+                          el {row.payDate?.substring(0, 10)}
+                        </Typography>
+                      )}
                     </FormControl>
                   </TableCell>
 
@@ -411,6 +418,11 @@ export default function ReadOrders(props) {
                           Anulado
                         </MenuItem>
                       </Select>
+                      {row.status === "Concretado" && row.completionDate && (
+                        <Typography variant="body2" color="secondary">
+                          el {row?.completionDate?.substring(0, 10)}
+                        </Typography>
+                      )}
                     </FormControl>
                     {/* <Fab
                         color="default"

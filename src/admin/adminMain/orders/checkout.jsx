@@ -526,6 +526,83 @@ export default function Checkout(props) {
     }
   }, [prixers]);
 
+  let today = new Date();
+  const months = [
+    "Enero",
+    "Febrero",
+    "Marzo",
+    "Abril",
+    "Mayo",
+    "Junio",
+    "Julio",
+    "Agosto",
+    "Septiembre",
+    "Octubre",
+    "Noviembre",
+    "Diciembre",
+  ];
+  const monthsOrder = [
+    "01",
+    "02",
+    "03",
+    "04",
+    "05",
+    "06",
+    "07",
+    "08",
+    "09",
+    "10",
+    "11",
+    "12",
+  ];
+  const days = [
+    "domingo",
+    "lunes",
+    "martes",
+    "miércoles",
+    "jueves",
+    "viernes",
+    "sábado",
+  ];
+  let ProdTimes = props.buyState?.map((item) => {
+    if (item.product && item.art && item.product.productionTime !== undefined) {
+      return item.product.productionTime;
+    }
+  });
+
+  let orderedProdT = ProdTimes.sort(function (a, b) {
+    if (a.toLowerCase() > b.toLowerCase()) {
+      return 1;
+    }
+    if (a.toLowerCase() < b.toLowerCase()) {
+      return -1;
+    }
+    return 0;
+  });
+
+  let readyDate = new Date(
+    today.setDate(today.getDate() + Number(orderedProdT[0]))
+  );
+  const stringReadyDate =
+    readyDate.getFullYear() +
+    "-" +
+    monthsOrder[readyDate.getMonth()] +
+    "-" +
+    readyDate.getDate();
+
+  useEffect(() => {
+    if (
+      props?.buyState[0] &&
+      props?.buyState[0].art &&
+      props?.shippingData?.shippingDate === undefined
+    ) {
+      props?.setShippingData({
+        ...props?.shippingData,
+        shippingDate: stringReadyDate,
+      });
+    }
+  }, []);
+
   return (
     <Grid
       container

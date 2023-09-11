@@ -174,7 +174,6 @@ export default function UpdateConsumer(props) {
                   id="consumerType"
                   variant="outlined"
                   value={consumerType}
-                  defaultValue="Particular"
                   onChange={(e) => setConsumerType(e.target.value)}
                   label="consumerType"
                 >
@@ -257,7 +256,7 @@ export default function UpdateConsumer(props) {
                     <MenuItem value="">
                       <em></em>
                     </MenuItem>
-                    {prixers.map((n) => (
+                    {prixers?.map((n) => (
                       <MenuItem key={n.username} value={n.username}>
                         {n.username}
                       </MenuItem>
@@ -327,7 +326,7 @@ export default function UpdateConsumer(props) {
                   variant="outlined"
                   required
                   fullWidth
-                  rows={2}
+                  minRows={2}
                   id="email"
                   label="Correo electrónico"
                   name="email"
@@ -399,7 +398,7 @@ export default function UpdateConsumer(props) {
                   variant="outlined"
                   required
                   fullWidth
-                  minRowsrows={2}
+                  minRows={2}
                   id="nationalId"
                   label="Cédula o RIF"
                   name="nationalId"

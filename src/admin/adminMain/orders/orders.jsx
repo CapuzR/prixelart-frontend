@@ -340,7 +340,9 @@ export default function Orders(props) {
       { header: "Vendedor", key: "createdBy", width: 16 },
       { header: "Método de entrega", key: "shippingData", width: 14 },
       { header: "Validación del pago", key: "payStatus", width: 12 },
+      { header: "Fecha de pago", key: "payDate", width: 11 },
       { header: "Costo unitario", key: "price", width: 8 },
+      { header: "Fecha concretada", key: "completionDate", width: 11 },
     ];
     worksheet.getRow(1).eachCell((cell) => {
       cell.font = { bold: true };
@@ -376,9 +378,8 @@ export default function Orders(props) {
         observations: order?.observations,
         createdBy: order.createdBy?.username,
         shippingData: "",
-        payDate: "",
-        month: "",
         payStatus: order.payStatus,
+        payDate: order?.payDate?.substring(0, 10),
         price: "",
       };
 

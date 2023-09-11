@@ -52,14 +52,14 @@ export default function ReadConsumers(props) {
     history.push("/admin/consumer/" + action + "/" + consumer._id);
   };
 
-  const deleteConsumer = (id) => {
+  const deleteConsumer = (row) => {
     setLoading(true);
     const base_url =
-      process.env.REACT_APP_BACKEND_URL + "/consumer/delete/" + id;
+      process.env.REACT_APP_BACKEND_URL + "/consumer/delete/" + row._id;
     axios
       .put(base_url, {
         adminToken: localStorage.getItem("adminTokenV"),
-        id: id,
+        consumer: row,
       })
       .then((response) => {
         setSnackbar(true);
@@ -146,7 +146,7 @@ export default function ReadConsumers(props) {
                                   height: 35,
                                 }}
                                 onClick={() => {
-                                  deleteConsumer(row._id);
+                                  deleteConsumer(row);
                                 }}
                               >
                                 <DeleteIcon />

@@ -397,7 +397,7 @@ export default function ShoppingPage(props) {
       const base_url = process.env.REACT_APP_BACKEND_URL + "/order/createv2";
 
       const input = {
-        orderId: nanoid(6),
+        orderId: nanoid(8),
         requests: orderLines,
         basicData: {
           firstname: consumerData.firstname,

@@ -154,6 +154,7 @@ export default function Home(props) {
   const [openArts, setOpenArts] = useState(true);
   const [openTestimonials, setOpenTestimonials] = useState(false);
   const [selectedArt, setSelectedArt] = useState(undefined);
+  const [bestSellers, setBestSellers] = useState();
 
   const [openArtFormDialog, setOpenArtFormDialog] = useState(false);
   const [openShoppingCart, setOpenShoppingCart] = useState(false);
@@ -273,6 +274,17 @@ export default function Home(props) {
       .catch((err) => console.error(err));
   };
 
+  const getBestSellers = async () => {
+    const url = process.env.REACT_APP_BACKEND_URL + "/product/bestSellers";
+    try {
+      const bestS = await axios.get(url);
+      setBestSellers(bestS.data.products);
+      console.log(bestSellers);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const TermsAgreeModal = () => {
     const GetId = JSON.parse(localStorage.getItem("token")).username;
     const base_url = process.env.REACT_APP_BACKEND_URL + "/prixer/get/" + GetId;
@@ -284,6 +296,7 @@ export default function Home(props) {
 
   useEffect(() => {
     getImagesForTheCarousel();
+    getBestSellers();
     {
       JSON.parse(localStorage.getItem("token")) && TermsAgreeModal();
     }
@@ -297,7 +310,7 @@ export default function Home(props) {
 
         <main>
           <Card
-            className={classes.card}
+            // className={classes.card}
             style={{
               display: "flex",
               position: "relative",
@@ -307,12 +320,14 @@ export default function Home(props) {
               height: "100vh",
               marginTop: "60px",
             }}
+            elevation={0}
           >
             <div className={classes.CarouselContent}>
               <Carousel
-                stopAutoPlayOnHover={false}
                 animation="slide"
                 duration={500}
+                swipe={true}
+                stopAutoPlayOnHover={true}
                 fullHeightHover={false}
                 style={{ marginTop: isDesktop ? "0" : "-40px" }}
                 IndicatorIcon={<MaximizeIcon />}
@@ -421,6 +436,140 @@ export default function Home(props) {
               </div>
             </div>
           </Card>
+
+          {/* <Paper
+            // className={classes.card}
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              position: "relative",
+              width: "80%",
+              // marginTop: 10,
+              marginLeft: "10%",
+              height: 350,
+              borderRadius: 40,
+              // justifyContent: "center",
+              backgroundColor: "silver",
+            }}
+            elevation={5}
+          >
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-around",
+                color: "#fff",
+                width: "100%",
+                height: 50,
+                marginTop: 5,
+                marginBottom: 5,
+              }}
+            >
+              <div style={{ alignItems: "center" }}>
+                <Typography
+                  variant="h3"
+                  style={{
+                    paddingLeft: 10,
+                    textAlign: "center",
+                  }}
+                  gutterBottom
+                >
+                  Productos <strong>más</strong> vendidos
+                </Typography>
+              </div>
+            </div>
+            <div style={{ height: 550, width: "100%" }}>
+              <Carousel
+                stopAutoPlayOnHover={true}
+                animation="fade"
+                // duration={500}
+                // fullHeightHover={false} // style={{ marginTop: -100 }}
+                IndicatorIcon={<MaximizeIcon />}
+                NextIcon={<ArrowForwardIosIcon style={{ fontSize: "4rem" }} />}
+                PrevIcon={
+                  <ArrowBackIosIcon
+                    style={{
+                      fontSize: "4rem",
+                      paddingLeft: 20,
+                    }}
+                  />
+                }
+                navButtonsProps={{
+                  style: {
+                    backgroundColor: "rgba(0, 0, 0, 0.1)",
+                    borderRadius: 15,
+                    width: 100,
+                    height: 250,
+                    margin: 0,
+                    marginTop: "-120px",
+                  },
+                }}
+                indicatorContainerProps={{
+                  style: {
+                    // marginTop: -280,
+                    // position: "absolute",
+                  },
+                }}
+              >
+                {bestSellers?.map(
+                  (product, i) =>
+                    product.sources.images !== undefined && (
+                      <div
+                        style={{
+                          borderRadius: 40,
+                          display: "flex",
+                          flexDirection: "row",
+                          height: 250,
+                          width: 800,
+                          marginLeft: 100,
+                          justifyContent: "space-around",
+                          alignItems: "center",
+                        }}
+                      >
+                        <div
+                          // className={classes.heroContent}
+                          key={i}
+                          style={{
+                            backgroundImage:
+                              "url(" + product.sources.images[0]?.url + ")",
+                            height: 250,
+                            width: 250,
+                            backgroundSize: "cover",
+                            borderRadius: 40,
+                            backgroundPosition: "back",
+                          }}
+                        />
+                        <div
+                          style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            justifyContent: "center",
+                          }}
+                        >
+                          <Typography
+                            variant="h3"
+                            style={{ color: "white", fontWeight: "bold" }}
+                          >
+                            {product.name}
+                          </Typography>
+                          <Button
+                            style={{
+                              backgroundColor: "#d33f49",
+                              color: "white",
+                              borderRadius: 40,
+                              fontSize: 20,
+                            }}
+                          >
+                            Agregar al carrito
+                          </Button>
+                        </div>
+                      </div>
+                    )
+                )}
+              </Carousel>
+            </div>
+          </Paper>
+         */}
+
           <Container className={classes.cardGrid} maxWidth="xl">
             <Grid container spacing={1}>
               <Paper
@@ -444,6 +593,7 @@ export default function Home(props) {
                   <Tab
                     icon={<PhotoLibraryIcon />}
                     label="ARTES"
+                    value="0"
                     style={{
                       fontSize: isMobile ? "0.62rem" : "0.875rem",
                       width: "25%",
@@ -452,6 +602,7 @@ export default function Home(props) {
                   <Tab
                     icon={<FavoriteIcon />}
                     label="PRIXERS"
+                    value="1"
                     style={{
                       fontSize: isMobile ? "0.62rem" : "0.875rem",
                       width: "25%",
@@ -459,7 +610,8 @@ export default function Home(props) {
                   />
                   <Tab
                     icon={<InsertEmoticon />}
-                    label="TESTIMONIOS"
+                    label={"TESTIMONIOS"}
+                    value="3"
                     style={{
                       fontSize: isMobile ? "0.62rem" : "0.875rem",
                       width: "25%",
@@ -468,6 +620,7 @@ export default function Home(props) {
                   <Tab
                     icon={<PhoneIcon />}
                     label="TE ASESORAMOS"
+                    value="4"
                     style={{
                       fontSize: isMobile ? "0.62rem" : "0.875rem",
                       width: "25%",
@@ -476,7 +629,6 @@ export default function Home(props) {
                 </Tabs>
               </Paper>
             </Grid>
-            {/* } */}
             {
               openArts && (
                 // <Suspense fallback={<div>Loading...</div>}>

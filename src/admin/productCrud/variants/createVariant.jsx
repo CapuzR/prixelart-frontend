@@ -90,7 +90,7 @@ export default function CreateVariant(props) {
   const [snackBarError, setSnackBarError] = useState(false);
   const [mustImage, setMustImages] = useState(false);
 
-  if (loadeImage.loader[0] === undefined && image !== []) {
+  if (loadeImage.loader[0] === undefined && image[0] !== null) {
     image.map((url) => {
       url.type === "images"
         ? loadeImage.loader.push(url.url)
@@ -258,16 +258,13 @@ export default function CreateVariant(props) {
             variants.prixerPrice.equation
           );
         }
+        formData.append("adminToken", localStorage.getItem("adminTokenV"));
+
         const base_url =
           process.env.REACT_APP_BACKEND_URL +
           "/product/updateVariants/" +
           props.product._id;
-        const response = await axios.put(
-          base_url,
-          formData,
-          { adminToken: localStorage.getItem("adminTokenV") },
-          { withCredentials: true }
-        );
+        const response = await axios.put(base_url, formData);
 
         if (response.data.success === false) {
           setLoading(false);
@@ -356,7 +353,7 @@ export default function CreateVariant(props) {
                 xl={8}
                 style={{ display: "flex" }}
               >
-                {loadeImage.loader !== [] &&
+                {loadeImage.loader[0] !== null &&
                   loadeImage.loader.map((img, key_id) => {
                     return (
                       <div
@@ -514,10 +511,9 @@ export default function CreateVariant(props) {
               >
                 <TextField
                   variant="outlined"
-                  required
                   multiline
                   fullWidth
-                  rows={2}
+                  minRows={2}
                   id="description"
                   label="Descripción"
                   name="description"
@@ -538,10 +534,9 @@ export default function CreateVariant(props) {
               >
                 <TextField
                   variant="outlined"
-                  required
                   fullWidth
                   multiline
-                  rows={2}
+                  minRows={2}
                   id="considerations"
                   label="Consideraciones"
                   name="considerations"
@@ -581,6 +576,7 @@ export default function CreateVariant(props) {
               <TextField
                 variant="outlined"
                 fullWidth
+                required
                 id="prixerPriceEq"
                 label="Prixers"
                 name="prixerPriceEq"

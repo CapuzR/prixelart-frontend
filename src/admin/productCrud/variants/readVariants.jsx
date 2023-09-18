@@ -110,8 +110,11 @@ export default function ReadVariants(props) {
     axios
       .put(
         base_url,
-        { id, i },
-        { adminToken: localStorage.getItem("adminTokenV") },
+        {
+          product: id,
+          variant: i,
+          adminToken: localStorage.getItem("adminTokenV"),
+        },
         { withCredentials: true }
       )
       .then((response) => {

@@ -295,7 +295,8 @@ export default function CreateVariant(props) {
       }
     }
   };
-
+  console.log(props);
+  console.log("qlq");
   return (
     <React.Fragment>
       {
@@ -340,7 +341,7 @@ export default function CreateVariant(props) {
                     componenet="label"
                     onClick={handleClickOpen}
                   >
-                    Upload video
+                    Upload videox
                   </Button>
                 </FormControl>
               </Grid>

@@ -18,7 +18,7 @@ jest.mock("axios");
 
 test("Encontrar el Select", async () => {
   const roles = adminRoles;
-  axios.post.mockResolvedValueOnce({ data: roles });
+  // axios.post.mockResolvedValueOnce({ data: roles });
   //   axios.post.mockResolvedValueOnce(() => Promise.resolve({ data: roles }));
 
   //   await act(async () => {
@@ -32,10 +32,10 @@ test("Encontrar el Select", async () => {
   //     name: /nombre de usuario/i,
   //   });
   //   fireEvent.change(usernameInput, { target: { value: "john.doe" } });
-
-  const areaSelect = screen.getByRole("button", { name: "" });
-  fireEvent.click(areaSelect);
-  console.log(areaSelect);
+  // screen.debug();
+  // const areaSelect = screen.getByRole("button", { name: "" });
+  // fireEvent.click(areaSelect);
+  // console.log(areaSelect);
   // const areaSelect = getByTestId("Área");
   // fireEvent.change(areaSelect, { target: { value: 1 } });
   // fireEvent.mouseDown(areaSelect);

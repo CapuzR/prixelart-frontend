@@ -876,6 +876,7 @@ export default function Orders(props) {
         <OrderDetails
           permissions={props.permissions}
           modalContent={modalContent}
+          setModalContent={setModalContent}
           showVoucher={showVoucher}
           setShowVoucher={setShowVoucher}
           handleClose={handleClose}

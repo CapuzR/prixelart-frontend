@@ -158,7 +158,6 @@ export default function ReadOrders(props) {
     });
     props.readOrders();
   };
-
   return (
     <>
       <Table>

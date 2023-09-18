@@ -5,10 +5,15 @@ import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
 import { makeStyles } from "@material-ui/core/styles";
 import { Typography } from "@material-ui/core";
+import MenuItem from "@material-ui/core/MenuItem";
+import Select from "@material-ui/core/Select";
+import OutlinedInput from "@material-ui/core/OutlinedInput";
+
 import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
 import Img from "react-cool-img";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
+
 import x from "../../../apple-touch-icon-180x180.png";
 const drawerWidth = 240;
 
@@ -233,6 +238,24 @@ export default function OrderDetails(props) {
     });
   };
 
+  const updateItemStatus = async (newStatus, index, orderId) => {
+    const url = process.env.REACT_APP_BACKEND_URL + "/order/updateItemStatus";
+    const body = {
+      adminToken: localStorage.getItem("adminTokenV"),
+      status: newStatus,
+      index: index,
+      order: orderId,
+    };
+    await axios.put(url, body).then((res) => {
+      if (res.data.auth) {
+        props.setModalContent(res.data.order);
+        console.log(res.data.order.requests[0].product?.status);
+      }
+    });
+  };
+
+  console.log(props.modalContent.requests[0].product?.status);
+
   return (
     <Grid container className={classes.paper2}>
       <Grid
@@ -379,7 +402,6 @@ export default function OrderDetails(props) {
                             return (
                               <p
                                 style={{
-                                  // fontSize: 12,
                                   padding: 0,
                                   margin: 0,
                                 }}
@@ -391,15 +413,62 @@ export default function OrderDetails(props) {
                             );
                           })}
                         {/* <div>
-                        {item.product?.discount &&
-                          "Descuento: " +
-                            discountList?.find(
-                              ({ _id }) => _id === item.product.discount
-                            ).name}
-                      </div> */}
+                          {item.product?.discount &&
+                            "Descuento: " +
+                              discountList?.find(
+                                ({ _id }) => _id === item.product.discount
+                              ).name}
+                        </div> */}
 
-                        <div style={{ marginTop: 10 }}>
+                        <div
+                          style={{
+                            marginTop: 10,
+                            display: "flex",
+                            justifyContent: "space-between",
+                          }}
+                        >
                           {"Cantidad: " + item.quantity}
+                          <Select
+                            input={<OutlinedInput />}
+                            id="status"
+                            value={
+                              item.product?.status
+                                ? item.product?.status
+                                : "Por producir"
+                            }
+                            onChange={(e) => {
+                              updateItemStatus(
+                                e.target.value,
+                                index,
+                                props.modalContent.orderId
+                              );
+                            }}
+                          >
+                            <MenuItem key={0} value={"Por producir"}>
+                              Por producir
+                            </MenuItem>
+                            <MenuItem key={1} value={"En impresión"}>
+                              En impresión
+                            </MenuItem>
+                            <MenuItem key={2} value={"En producción"}>
+                              En producción
+                            </MenuItem>
+                            <MenuItem key={0} value={"Por entregar"}>
+                              Por entregar
+                            </MenuItem>
+                            <MenuItem key={1} value={"Entregado"}>
+                              Entregado
+                            </MenuItem>
+                            <MenuItem key={2} value={"Concretado"}>
+                              Concretado
+                            </MenuItem>
+                            <MenuItem key={3} value={"Detenido"}>
+                              Detenido
+                            </MenuItem>
+                            <MenuItem key={4} value={"Anulado"}>
+                              Anulado
+                            </MenuItem>
+                          </Select>
                         </div>
                       </div>
                     </div>

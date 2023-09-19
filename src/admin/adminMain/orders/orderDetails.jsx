@@ -288,7 +288,7 @@ export default function OrderDetails(props) {
       {!props.showVoucher ? (
         props.modalContent && (
           <>
-            {!props.permissions?.detailOrder ? (
+            {props.permissions?.detailOrder ? (
               <>
                 <Grid
                   style={{

@@ -284,7 +284,7 @@ function CarouselAdmin(props) {
         process.env.REACT_APP_BACKEND_URL +
         "/admin/preferences/carousel/" +
         image._id;
-      await axios.put(
+      await axios.delete(
         URI,
         { adminToken: localStorage.getItem("adminTokenV") },
         { withCredentials: true }

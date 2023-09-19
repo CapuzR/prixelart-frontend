@@ -4,6 +4,7 @@ import { useTheme } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import Carousel from "react-material-ui-carousel";
 import Card from "@material-ui/core/Card";
+import CardMedia from "@material-ui/core/CardMedia";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
@@ -42,6 +43,10 @@ import ArtUploader from "../sharedComponents/artUploader/artUploader";
 import TestimonialsFeed from "../admin/TestimonialsCrud/TestimonialsFeed";
 import CartReview from "../shoppingCart/cartReview";
 import ReactGA from "react-ga";
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+import backG from "../images/Rectangle108.png";
 
 ReactGA.initialize("G-0RWP9B33D8");
 ReactGA.pageview("/");
@@ -155,6 +160,8 @@ export default function Home(props) {
   const [openTestimonials, setOpenTestimonials] = useState(false);
   const [selectedArt, setSelectedArt] = useState(undefined);
   const [bestSellers, setBestSellers] = useState();
+  const [currentSet, setCurrentSet] = useState(bestSellers?.slice(0, 3));
+  const [startIndex, setStartIndex] = useState(0);
 
   const [openArtFormDialog, setOpenArtFormDialog] = useState(false);
   const [openShoppingCart, setOpenShoppingCart] = useState(false);
@@ -279,7 +286,6 @@ export default function Home(props) {
     try {
       const bestS = await axios.get(url);
       setBestSellers(bestS.data.products);
-      console.log(bestSellers);
     } catch (error) {
       console.log(error);
     }
@@ -301,6 +307,23 @@ export default function Home(props) {
       JSON.parse(localStorage.getItem("token")) && TermsAgreeModal();
     }
   }, []);
+
+  const settings = {
+    slidesToShow: 3,
+    slidesToScroll: 1,
+    autoplay: true,
+    autoplaySpeed: 4000,
+    speed: 2000,
+    infinite: true,
+    dots: true,
+    beforeChange: (current, next) => {
+      if (next === bestSellers?.length - 4) {
+        const newSet = bestSellers?.slice(next, next + 4);
+        setCurrentSet(newSet);
+        setStartIndex(next);
+      }
+    },
+  };
 
   return (
     <React.Fragment>
@@ -446,7 +469,7 @@ export default function Home(props) {
               width: "80%",
               // marginTop: 10,
               marginLeft: "10%",
-              height: 350,
+              height: isMobile ? 220 : 350,
               borderRadius: 40,
               // justifyContent: "center",
               backgroundColor: "silver",
@@ -460,22 +483,22 @@ export default function Home(props) {
                 color: "#fff",
                 width: "100%",
                 height: 50,
-                marginTop: 5,
                 marginBottom: 5,
+                alignItems: "center",
+                marginTop: 20,
               }}
             >
-              <div style={{ alignItems: "center" }}>
-                <Typography
-                  variant="h3"
-                  style={{
-                    paddingLeft: 10,
-                    textAlign: "center",
-                  }}
-                  gutterBottom
-                >
-                  Productos <strong>más</strong> vendidos
-                </Typography>
-              </div>
+              <Typography
+                variant="h3"
+                style={{
+                  paddingLeft: 10,
+                  fontSize: isMobile && "1.7rem",
+                  textAlign: "center",
+                }}
+                // gutterBottom
+              >
+                Productos <strong>más</strong> vendidos
+              </Typography>
             </div>
             <div style={{ height: 550, width: "100%" }}>
               <Carousel
@@ -497,8 +520,8 @@ export default function Home(props) {
                   style: {
                     backgroundColor: "rgba(0, 0, 0, 0.1)",
                     borderRadius: 15,
-                    width: 100,
-                    height: 250,
+                    width: isMobile ? 50 : 100,
+                    height: isMobile ? 150 : 250,
                     margin: 0,
                     marginTop: "-120px",
                   },
@@ -518,21 +541,23 @@ export default function Home(props) {
                           borderRadius: 40,
                           display: "flex",
                           flexDirection: "row",
-                          height: 250,
-                          width: 800,
-                          marginLeft: 100,
+                          height: isMobile ? 150 : 250,
+                          width: "80%",
+                          marginLeft: isMobile ? 35 : 100,
                           justifyContent: "space-around",
                           alignItems: "center",
                         }}
                       >
                         <div
-                          // className={classes.heroContent}
                           key={i}
                           style={{
                             backgroundImage:
-                              "url(" + product.sources.images[0]?.url + ")",
-                            height: 250,
-                            width: 250,
+                              product.sources.images[0] !== null
+                                ? "url(" + product.sources.images[0]?.url + ")"
+                                : "url(" + product.thumbUrl + ")",
+                            height: isMobile ? 120 : 250,
+                            width: isMobile ? 120 : 250,
+                            marginRight: 10,
                             backgroundSize: "cover",
                             borderRadius: 40,
                             backgroundPosition: "back",
@@ -547,7 +572,12 @@ export default function Home(props) {
                         >
                           <Typography
                             variant="h3"
-                            style={{ color: "white", fontWeight: "bold" }}
+                            style={{
+                              color: "white",
+                              fontWeight: "bold",
+                              fontSize: isMobile && "1rem",
+                              alignSelf: "center",
+                            }}
                           >
                             {product.name}
                           </Typography>
@@ -556,8 +586,9 @@ export default function Home(props) {
                               backgroundColor: "#d33f49",
                               color: "white",
                               borderRadius: 40,
-                              fontSize: 20,
+                              fontSize: isDesktop && 20,
                             }}
+                            size="small"
                           >
                             Agregar al carrito
                           </Button>
@@ -567,8 +598,213 @@ export default function Home(props) {
                 )}
               </Carousel>
             </div>
-          </Paper>
-         */}
+          </Paper> */}
+
+          {/* <Paper
+            style={{
+              backgroundImage: `url(${backG})`,
+              backgroundSize: "contain",
+              backgroundRepeat: "no-repeat",
+              backgroundPosition: "left",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "end",
+              justifyContent: "center",
+              position: "relative",
+              width: "80%",
+              height: 230,
+              marginLeft: "10%",
+              borderRadius: isMobile ? 30 : 52,
+              backgroundColor: "gainsboro",
+            }}
+            elevation={5}
+          >
+            <div
+              style={{
+                width: "64%",
+                display: "flex",
+                flexDirection: "column",
+                justifyItems: "center",
+                alignItems: "start",
+              }}
+            >
+              <Typography
+                variant="h4"
+                style={{ color: "#404e5c", marginBottom: 12 }}
+                fontWeight="bold"
+              >
+                <strong>¡Productos más vendidos! </strong>
+              </Typography>
+              <Typography
+                // variant="body1"
+                style={{ color: "#404e5c", marginBottom: 12, fontSize: 20 }}
+              >
+                ¡No te lo puedes perder! Descubre los favoritos de nuestros
+                clientes
+              </Typography>
+
+              <Button
+                style={{
+                  backgroundColor: "#d33f49",
+                  color: "white",
+                  borderRadius: 40,
+                  // fontSize: isDesktop && 20,
+                  textTransform: "none",
+                }}
+                size="medium"
+              >
+                Ver todos
+              </Button>
+            </div>
+          </Paper> */}
+
+          {/* <Paper
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              // alignItems: "end",
+              justifyContent: "center",
+              position: "relative",
+              width: "80%",
+              height: 250,
+              marginLeft: "10%",
+              marginTop: 30,
+              borderRadius: isMobile ? 30 : 52,
+              backgroundColor: "gainsboro",
+            }}
+            elevation={5}
+          >
+            <Slider {...settings}>
+              {currentSet?.map((product) => (
+                <div
+                  key={product._id}
+                  style={{
+                    borderRadius: 40,
+                    display: "flex",
+                    flexDirection: "row",
+                    height: isMobile ? 150 : 250,
+                    width: "80%",
+                    marginLeft: isMobile ? 35 : 100,
+                    justifyContent: "space-around",
+                    alignItems: "center",
+                  }}
+                >
+                  <div
+                    style={{
+                      backgroundImage:
+                        product.sources.images[0] !== null
+                          ? "url(" + product.sources.images[0]?.url + ")"
+                          : "url(" + product.thumbUrl + ")",
+                      height: isMobile ? 120 : 250,
+                      width: isMobile ? 120 : 250,
+                      marginRight: 10,
+                      backgroundSize: "cover",
+                      borderRadius: 40,
+                      backgroundPosition: "back",
+                    }}
+                  />
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Typography
+                      variant="h3"
+                      style={{
+                        color: "white",
+                        fontWeight: "bold",
+                        fontSize: isMobile && "1rem",
+                        alignSelf: "center",
+                      }}
+                    >
+                      {product.name}
+                    </Typography>
+                    <Button
+                      style={{
+                        backgroundColor: "#d33f49",
+                        color: "white",
+                        borderRadius: 40,
+                        fontSize: isDesktop && 20,
+                      }}
+                      size="small"
+                    >
+                      Agregar al carrito
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </Slider>
+            {/* <Carousel
+              stopAutoPlayOnHover={true}
+              animation="fade"
+              // duration={500}
+              // fullHeightHover={false} // style={{ marginTop: -100 }}
+              IndicatorIcon={<MaximizeIcon />}
+              NextIcon={<ArrowForwardIosIcon style={{ fontSize: "4rem" }} />}
+              PrevIcon={
+                <ArrowBackIosIcon
+                  style={{
+                    fontSize: "4rem",
+                    paddingLeft: 20,
+                  }}
+                />
+              }
+              navButtonsProps={{
+                style: {
+                  backgroundColor: "rgba(0, 0, 0, 0.1)",
+                  borderRadius: 15,
+                  width: isMobile ? 50 : 100,
+                  height: isMobile ? 150 : 250,
+                  margin: 0,
+                  marginTop: "-120px",
+                },
+              }}
+              indicatorContainerProps={{
+                style: {
+                  // marginTop: -280,
+                  // position: "absolute",
+                },
+              }}
+            >
+              {bestSellers?.map(
+                (product, i) =>
+                  product.sources.images !== undefined && (
+                    <div
+                      style={{
+                        borderRadius: 40,
+                        display: "flex",
+                        flexDirection: "row",
+                        height: isMobile ? 150 : 250,
+                        width: "80%",
+                        marginLeft: isMobile ? 35 : 100,
+                        justifyContent: "space-around",
+                        alignItems: "center",
+                      }}
+                    >
+                      <div
+                        key={i}
+                        style={{
+                          backgroundImage:
+                            product.sources.images[0] !== null
+                              ? "url(" + product.sources.images[0]?.url + ")"
+                              : "url(" + product.thumbUrl + ")",
+                          // height: isMobile ? 120 : 250,
+                          // width: isMobile ? 120 : 250,
+                          height: 180,
+                          width: 180,
+                          marginRight: 10,
+                          backgroundSize: "cover",
+                          borderRadius: 40,
+                          backgroundPosition: "back",
+                        }}
+                      />
+                    </div>
+                  )
+              )}
+            </Carousel>
+          </Paper> */}
 
           <Container className={classes.cardGrid} maxWidth="xl">
             <Grid container spacing={1}>
@@ -593,7 +829,6 @@ export default function Home(props) {
                   <Tab
                     icon={<PhotoLibraryIcon />}
                     label="ARTES"
-                    value="0"
                     style={{
                       fontSize: isMobile ? "0.62rem" : "0.875rem",
                       width: "25%",
@@ -602,7 +837,6 @@ export default function Home(props) {
                   <Tab
                     icon={<FavoriteIcon />}
                     label="PRIXERS"
-                    value="1"
                     style={{
                       fontSize: isMobile ? "0.62rem" : "0.875rem",
                       width: "25%",
@@ -611,7 +845,6 @@ export default function Home(props) {
                   <Tab
                     icon={<InsertEmoticon />}
                     label={"TESTIMONIOS"}
-                    value="3"
                     style={{
                       fontSize: isMobile ? "0.62rem" : "0.875rem",
                       width: "25%",
@@ -620,7 +853,6 @@ export default function Home(props) {
                   <Tab
                     icon={<PhoneIcon />}
                     label="TE ASESORAMOS"
-                    value="4"
                     style={{
                       fontSize: isMobile ? "0.62rem" : "0.875rem",
                       width: "25%",

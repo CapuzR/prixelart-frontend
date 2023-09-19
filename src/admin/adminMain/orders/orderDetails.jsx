@@ -834,7 +834,13 @@ export default function OrderDetails(props) {
                             }}
                           />
                         </Paper>
-                        <div>
+                        <div
+                          style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            width: 400,
+                          }}
+                        >
                           <div>{"Producto: " + item.product.name}</div>
                           <div>{"Id: " + item.product._id}</div>
                           {item.product.attributes &&
@@ -857,8 +863,55 @@ export default function OrderDetails(props) {
                                 </p>
                               );
                             })}
-                          <div style={{ marginTop: 10 }}>
+                          <div
+                            style={{
+                              marginTop: 10,
+                              display: "flex",
+                              justifyContent: "space-between",
+                            }}
+                          >
                             {"Cantidad: " + item.quantity}
+                            <Select
+                              input={<OutlinedInput />}
+                              id="status"
+                              value={
+                                item.product?.status
+                                  ? item.product?.status
+                                  : "Por producir"
+                              }
+                              onChange={(e) => {
+                                updateItemStatus(
+                                  e.target.value,
+                                  index,
+                                  props.modalContent.orderId
+                                );
+                              }}
+                            >
+                              <MenuItem key={0} value={"Por producir"}>
+                                Por producir
+                              </MenuItem>
+                              <MenuItem key={1} value={"En impresión"}>
+                                En impresión
+                              </MenuItem>
+                              <MenuItem key={2} value={"En producción"}>
+                                En producción
+                              </MenuItem>
+                              <MenuItem key={0} value={"Por entregar"}>
+                                Por entregar
+                              </MenuItem>
+                              <MenuItem key={1} value={"Entregado"}>
+                                Entregado
+                              </MenuItem>
+                              <MenuItem key={2} value={"Concretado"}>
+                                Concretado
+                              </MenuItem>
+                              <MenuItem key={3} value={"Detenido"}>
+                                Detenido
+                              </MenuItem>
+                              <MenuItem key={4} value={"Anulado"}>
+                                Anulado
+                              </MenuItem>
+                            </Select>
                           </div>
                         </div>
                       </div>

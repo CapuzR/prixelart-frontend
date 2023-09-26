@@ -49,6 +49,7 @@ const useStyles = makeStyles((theme) => ({
     padding: 10,
     marginTop: 10,
     backgroundColor: theme.palette.background.paper,
+    borderRadius: 30,
   },
   gridList: {
     overflow: "hidden",
@@ -240,281 +241,6 @@ export default function ProductGrid(props) {
   };
 
   const priceSelect = (item) => {
-    // if (
-    //   typeof item.discount === "string" &&
-    //   item.prixerEquation !== "" &&
-    //   (JSON.parse(localStorage?.getItem("token")) ||
-    //     JSON.parse(localStorage?.getItem("adminToken"))) &&
-    //   (JSON.parse(localStorage?.getItem("token"))?.username ||
-    //     JSON.parse(localStorage?.getItem("adminToken"))?.username) &&
-    //   currency
-    // ) {
-    //   let dis = discountList?.filter((dis) => dis._id === item.discount)[0];
-    //   return (
-    //     <>
-    //       <del>
-    //         PVM: Bs
-    //         {Number(props.dollarValue * item.prixerEquation).toLocaleString(
-    //           "de-DE",
-    //           {
-    //             minimumFractionDigits: 2,
-    //           }
-    //         )}
-    //       </del>
-    //       <div
-    //         style={{
-    //           backgroundColor: "#d33f49",
-    //           padding: 3,
-    //           width: 180,
-    //           textAlign: "center",
-    //           color: "white",
-    //           fontWeight: "bold",
-    //           borderRadius: 8,
-    //         }}
-    //       >
-    //         Descuento de
-    //         {dis?.type === "Porcentaje" && " %" + dis?.value}
-    //         {dis?.type === "Monto" &&
-    //           " Bs" +
-    //             Number(dis?.value * props.dollarValue).toLocaleString("de-DE", {
-    //               minimumFractionDigits: 2,
-    //             })}
-    //       </div>
-    //       {dis?.type === "Porcentaje" && (
-    //         <div>
-    //           PVM: Bs
-    //           {Number(
-    //             (item.prixerEquation -
-    //               (item.prixerEquation / 100) * dis?.value) *
-    //               props.dollarValue
-    //           ).toLocaleString("de-DE", {
-    //             minimumFractionDigits: 2,
-    //           })}
-    //         </div>
-    //       )}
-    //       {dis?.type === "Monto" && (
-    //         <div>
-    //           PVM: Bs
-    //           {Number(
-    //             (item.prixerEquation - dis?.value) * props.dollarValue
-    //           ).toLocaleString("de-DE", {
-    //             minimumFractionDigits: 2,
-    //           })}
-    //         </div>
-    //       )}
-    //     </>
-    //   );
-    // }
-    //  else if (
-    //   typeof item.discount === "string" &&
-    //   item.prixerEquation !== "" &&
-    //   (JSON.parse(localStorage?.getItem("token")) ||
-    //     JSON.parse(localStorage?.getItem("adminToken"))) &&
-    //   (JSON.parse(localStorage?.getItem("token"))?.username ||
-    //     JSON.parse(localStorage?.getItem("adminToken"))?.username)
-    // ) {
-    //   let dis = discountList?.filter((dis) => dis._id === item.discount)[0];
-    //   return (
-    //     <>
-    //       <del>
-    //         PVM: $
-    //         {item.prixerEquation.toLocaleString("de-DE", {
-    //           minimumFractionDigits: 2,
-    //         })}
-    //       </del>
-    //       <div
-    //         style={{
-    //           backgroundColor: "#d33f49",
-    //           padding: 3,
-    //           width: 180,
-    //           textAlign: "center",
-    //           color: "white",
-    //           fontWeight: "bold",
-    //           borderRadius: 8,
-    //         }}
-    //       >
-    //         Descuento de
-    //         {dis?.type === "Porcentaje" && " %" + dis?.value}
-    //         {dis?.type === "Monto" && " $" + Number(dis?.value)}
-    //       </div>
-    //       {dis?.type === "Porcentaje" && (
-    //         <div>
-    //           PVM: $
-    //           {Number(
-    //             item.prixerEquation - (item.prixerEquation / 100) * dis?.value
-    //           ).toLocaleString("de-DE", {
-    //             minimumFractionDigits: 2,
-    //           })}
-    //         </div>
-    //       )}
-    //       {dis?.type === "Monto" && (
-    //         <div>
-    //           PVM: $
-    //           {Number(item.prixerEquation - dis?.value).toLocaleString(
-    //             "de-DE",
-    //             {
-    //               minimumFractionDigits: 2,
-    //             }
-    //           )}
-    //         </div>
-    //       )}
-    //     </>
-    //   );
-    // }
-    // else if (
-    //   typeof item.discount === "string" &&
-    //   (JSON.parse(localStorage?.getItem("token")) ||
-    //     JSON.parse(localStorage?.getItem("adminToken"))) &&
-    //   (JSON.parse(localStorage?.getItem("token"))?.username ||
-    //     JSON.parse(localStorage?.getItem("adminToken"))?.username) &&
-    //   item.attributes !== [] &&
-    //   item.prixerPrice.to !== item.prixerPrice.from &&
-    //   item.prixerPrice.to !== "" &&
-    //   item.prixerPrice.to !== null &&
-    //   currency
-    // ) {
-    //   let dis = discountList?.filter((dis) => dis._id === item.discount)[0];
-    //   return (
-    //     <>
-    //       <del>
-    //         {"PVM: Bs" +
-    //           Number(item.prixerPrice.from * props.dollarValue).toLocaleString(
-    //             "de-DE",
-    //             {
-    //               minimumFractionDigits: 2,
-    //             }
-    //           ) +
-    //           " - " +
-    //           Number(item.prixerPrice.to * props.dollarValue).toLocaleString(
-    //             "de-DE",
-    //             {
-    //               minimumFractionDigits: 2,
-    //             }
-    //           )}
-    //       </del>
-    //       <div
-    //         style={{
-    //           backgroundColor: "#d33f49",
-    //           padding: 3,
-    //           width: 180,
-    //           textAlign: "center",
-    //           color: "white",
-    //           fontWeight: "bold",
-    //           borderRadius: 8,
-    //         }}
-    //       >
-    //         Descuento de
-    //         {dis?.type === "Porcentaje" && " %" + dis?.value}
-    //         {dis?.type === "Monto" &&
-    //           " Bs" +
-    //             Number(dis?.value * props.dollarValue).toLocaleString("de-DE", {
-    //               // minimumFractionDigits: 2,
-    //             })}
-    //       </div>
-    //       {dis?.type === "Porcentaje" &&
-    //         " Bs" +
-    //           Number(
-    //             (item.prixerPrice.from -
-    //               (item.prixerEquation / 100) * dis?.value) *
-    //               props.dollarValue
-    //           ).toLocaleString("de-DE", {
-    //             minimumFractionDigits: 2,
-    //           }) +
-    //           " - " +
-    //           Number(
-    //             (item.prixerPrice?.to -
-    //               (item.prixerPrice.to / 100) * dis?.value) *
-    //               props.dollarValue
-    //           ).toLocaleString("de-DE", {
-    //             minimumFractionDigits: 2,
-    //           })}
-    //       {dis?.type === "Monto" &&
-    //         "PVM: Bs" +
-    //           Number(
-    //             (item.prixerPrice.from - dis?.value) * props.dollarValue
-    //           ).toLocaleString("de-DE", {
-    //             minimumFractionDigits: 2,
-    //           }) +
-    //           " - " +
-    //           Number(
-    //             (item.prixerPrice.to - dis?.value) * props.dollarValue
-    //           ).toLocaleString("de-DE", {
-    //             minimumFractionDigits: 2,
-    //           })}
-    //     </>
-    //   );
-    // }
-    //  else if (
-    //   typeof item.discount === "string" &&
-    //   (JSON.parse(localStorage?.getItem("token")) ||
-    //     JSON.parse(localStorage?.getItem("adminToken"))) &&
-    //   (JSON.parse(localStorage?.getItem("token"))?.username ||
-    //     JSON.parse(localStorage?.getItem("adminToken"))?.username) &&
-    //   item.attributes !== [] &&
-    //   item.prixerPrice.to !== item.prixerPrice.from &&
-    //   item.prixerPrice.to !== "" &&
-    //   item.prixerPrice.to !== null
-    // ) {
-    //   let dis = discountList?.filter((dis) => dis._id === item.discount)[0];
-    //   return (
-    //     <>
-    //       <del>
-    //         {"PVM: $" +
-    //           Number(item.prixerPrice.from).toLocaleString("de-DE", {
-    //             minimumFractionDigits: 2,
-    //           }) +
-    //           " - " +
-    //           Number(item.prixerPrice.to).toLocaleString("de-DE", {
-    //             minimumFractionDigits: 2,
-    //           })}
-    //       </del>
-    //       <div
-    //         style={{
-    //           backgroundColor: "#d33f49",
-    //           padding: 3,
-    //           width: 180,
-    //           textAlign: "center",
-    //           color: "white",
-    //           fontWeight: "bold",
-    //           borderRadius: 8,
-    //         }}
-    //       >
-    //         Descuento de
-    //         {dis?.type === "Porcentaje" && " %" + dis?.value}
-    //         {dis?.type === "Monto" &&
-    //           " $" +
-    //             Number(dis?.value).toLocaleString("de-DE", {
-    //               // minimumFractionDigits: 2,
-    //             })}
-    //       </div>
-    //       {dis?.type === "Porcentaje" &&
-    //         " $" +
-    //           Number(
-    //             item.prixerPrice.from - (item.prixerEquation / 100) * dis?.value
-    //           ).toLocaleString("de-DE", {
-    //             minimumFractionDigits: 2,
-    //           }) +
-    //           " - " +
-    //           Number(
-    //             item.prixerPrice?.to - (item.prixerPrice.to / 100) * dis?.value
-    //           ).toLocaleString("de-DE", {
-    //             minimumFractionDigits: 2,
-    //           })}
-    //       {dis?.type === "Monto" &&
-    //         "PVM: $" +
-    //           Number(item.prixerPrice.from - dis?.value).toLocaleString(
-    //             "de-DE",
-    //             {
-    //               minimumFractionDigits: 2,
-    //             }
-    //           ) +
-    //           " - " +
-    //           Number(item.prixerPrice.to - dis?.value).toLocaleString("de-DE", {
-    //             minimumFractionDigits: 2,
-    //           })}
-    //     </>
-    //   );
-    // }
     if (
       typeof item.discount === "string" &&
       item.publicEquation !== "" &&
@@ -952,7 +678,7 @@ export default function ProductGrid(props) {
         JSON.parse(localStorage.getItem("adminToken"))) &&
       (JSON.parse(localStorage.getItem("token"))?.username ||
         JSON.parse(localStorage.getItem("adminToken"))?.username) &&
-      item.attributes !== [] &&
+      item.attributes[0] !== null &&
       item.prixerPrice.to !== item.prixerPrice.from &&
       item.prixerPrice.to !== "" &&
       item.prixerPrice.to !== null &&
@@ -981,7 +707,7 @@ export default function ProductGrid(props) {
         JSON.parse(localStorage.getItem("adminToken"))) &&
       (JSON.parse(localStorage.getItem("token"))?.username ||
         JSON.parse(localStorage.getItem("adminToken"))?.username) &&
-      item.attributes !== [] &&
+      item.attributes[0] !== null &&
       item.prixerPrice.to !== item.prixerPrice.from &&
       item.prixerPrice.to !== "" &&
       item.prixerPrice.to !== null
@@ -1048,7 +774,7 @@ export default function ProductGrid(props) {
         })
       );
     } else if (
-      item.attributes !== [] &&
+      item.attributes[0] !== null &&
       item.publicPrice.to !== item.publicPrice.from &&
       item.publicPrice.to !== "" &&
       item.publicPrice.to !== null &&
@@ -1073,7 +799,7 @@ export default function ProductGrid(props) {
         )
       );
     } else if (
-      item.attributes !== [] &&
+      item.attributes[0] !== null &&
       item.publicPrice.to !== item.publicPrice.from &&
       item.publicPrice.to !== "" &&
       item.publicPrice.to !== null
@@ -1111,7 +837,6 @@ export default function ProductGrid(props) {
       );
     }
   };
-
   return (
     <>
       <div style={{ display: "flex", justifyContent: "end" }}>
@@ -1163,7 +888,18 @@ export default function ProductGrid(props) {
         <Masonry style={{ columnGap: "30px" }}>
           {tiles ? (
             tiles.map((tile, iProd, productsArr) => (
-              <Card className={classes.root}>
+              <Card
+                className={classes.root}
+                id={tile.name}
+                style={{
+                  transition:
+                    tile.name === props.pointedProduct &&
+                    "box-shadow 0.3s ease-in-out",
+                  boxShadow:
+                    tile.name === props.pointedProduct &&
+                    " 0 0 10px 3px #d33f49",
+                }}
+              >
                 <CardMedia style={{ width: "110%" }}>
                   <Carousel
                     autoPlay={false}
@@ -1211,13 +947,14 @@ export default function ProductGrid(props) {
                               src={img.url}
                               className={classes.img}
                               alt="variant"
+                              style={{ borderRadius: 30 }}
                             />
                           ) : (
                             img.type === "video" &&
                             img.url !== null && (
                               <span
                                 key={"video"}
-                                style={{ width: "100%" }}
+                                style={{ width: "100%", borderRadius: 30 }}
                                 dangerouslySetInnerHTML={{
                                   __html: img.url,
                                 }}
@@ -1234,13 +971,14 @@ export default function ProductGrid(props) {
                             src={img.url?.replace(/[,]/gi, "") || tile.thumbUrl}
                             className={classes.img}
                             alt="product.png"
+                            style={{ borderRadius: 30 }}
                           />
                         ) : (
                           img.type === "video" &&
                           img.url !== null && (
                             <span
                               key={"video"}
-                              style={{ width: "100%" }}
+                              style={{ width: "100%", borderRadius: 30 }}
                               dangerouslySetInnerHTML={{
                                 __html: img.url,
                               }}
@@ -1253,6 +991,7 @@ export default function ProductGrid(props) {
                         src={tile.thumbUrl}
                         className={classes.img}
                         alt="*"
+                        style={{ borderRadius: 30 }}
                       />
                     )}
                   </Carousel>

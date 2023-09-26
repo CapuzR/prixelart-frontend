@@ -1,4 +1,5 @@
-import React from "react";
+import axios from "axios";
+import React, { useEffect } from "react";
 import AppBar from "../sharedComponents/appBar/appBar";
 import FloatingAddButton from "../sharedComponents/floatingAddButton/floatingAddButton";
 import ProductsGrid from "./productsGrid";
@@ -17,6 +18,14 @@ import DialogActions from "@material-ui/core/DialogActions";
 import Button from "@material-ui/core/Button";
 import Img from "react-cool-img";
 import Typography from "@material-ui/core/Typography";
+import Paper from "@material-ui/core/Paper";
+import Carousel from "react-material-ui-carousel";
+import MaximizeIcon from "@material-ui/icons/Maximize";
+import ArrowForwardIosIcon from "@material-ui/icons/ArrowForwardIos";
+import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 
 import { useHistory } from "react-router-dom";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
@@ -81,11 +90,42 @@ export default function ProductsCatalog(props) {
   const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
   const isDeskTop = useMediaQuery(theme.breakpoints.up("sm"));
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-
+  const [bestSellers, setBestSellers] = useState();
   const [selectedProduct, setSelectedProduct] = useState(undefined);
   const prixerUsername = "all";
   const classes = useStyles();
   const history = useHistory();
+
+  const getBestSellers = async () => {
+    const url = process.env.REACT_APP_BACKEND_URL + "/product/bestSellers";
+    try {
+      const bestS = await axios.get(url);
+      setBestSellers(bestS.data.products);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleProduct = async (product) => {
+    props.setPointedProduct(product.name);
+    document.getElementById(product.name)?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  };
+  useEffect(() => {
+    getBestSellers();
+  }, []);
+
+  const settings = {
+    slidesToShow: isMobile ? 2 : 4,
+    slidesToScroll: 1,
+    autoplay: true,
+    autoplaySpeed: 4000,
+    speed: 500,
+    infinite: true,
+    dots: true,
+  };
 
   return (
     <>
@@ -93,9 +133,112 @@ export default function ProductsCatalog(props) {
 
       <Container component="main" className={classes.paper}>
         <CssBaseline />
-        <Grid style={{ marginTop: 80 }}>
-          <h1>Productos Prix</h1>
+        <Grid style={{ marginTop: 90 }}>
+          <Typography
+            variant="h4"
+            style={{ color: "#404e5c" }}
+            fontWeight="bold"
+          >
+            <strong>Productos Prix </strong>
+          </Typography>
         </Grid>
+
+        {bestSellers && (
+          <Paper
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              position: "relative",
+              width: isDesktop ? "80%" : "96%",
+              height: isMobile ? 240 : 300,
+              marginTop: 20,
+              marginLeft: isDesktop ? "10%" : "2%",
+              borderRadius: isMobile ? 30 : 52,
+              backgroundColor: "gainsboro",
+              padding: isMobile ? 10 : 30,
+              paddingTop: isMobile ? 0 : 10,
+            }}
+            elevation={5}
+          >
+            <div>
+              <Typography
+                variant="h4"
+                style={{
+                  color: "#404e5c",
+                  fontSize: isMobile && "22px",
+                  alignSelf: "center",
+                }}
+                fontWeight="bold"
+              >
+                <strong>¡Productos más vendidos! </strong>
+              </Typography>
+            </div>
+            <Slider {...settings}>
+              {bestSellers?.map((product) => (
+                <div
+                  key={product._id}
+                  style={{
+                    borderRadius: 40,
+                    display: "flex",
+                    flexDirection: "column",
+                    height: isMobile ? 150 : 250,
+                    width: "80%",
+                    marginLeft: isMobile ? 35 : 100,
+                  }}
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                    }}
+                  >
+                    <div
+                      style={{
+                        backgroundImage:
+                          product.sources.images[0] !== null
+                            ? "url(" + product.sources.images[0]?.url + ")"
+                            : "url(" + product.thumbUrl + ")",
+                        height: isMobile ? 120 : 170,
+                        width: isMobile ? 120 : 170,
+                        marginRight: 10,
+                        backgroundSize: "cover",
+                        borderRadius: 40,
+                        backgroundPosition: "back",
+                      }}
+                    />
+                    <Typography
+                      variant="subtitle1"
+                      style={{
+                        color: "#404e5c",
+                        fontWeight: "bold",
+                        fontSize: isMobile && "1rem",
+                        alignSelf: "center",
+                      }}
+                    >
+                      {product.name}
+                    </Typography>
+                    <Button
+                      style={{
+                        backgroundColor: "#d33f49",
+                        color: "white",
+                        borderRadius: 40,
+                        width: 120,
+                        textTransform: "none",
+                      }}
+                      size="small"
+                      onClick={() => handleProduct(product)}
+                    >
+                      Ver detalles
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </Slider>
+          </Paper>
+        )}
+
         <ProductsGrid
           prixerUsername={null}
           buyState={props.buyState}
@@ -103,6 +246,7 @@ export default function ProductsCatalog(props) {
           setSelectedProduct={setSelectedProduct}
           setIsOpenAssociateArt={props.setIsOpenAssociateArt}
           dollarValue={props.dollarValue}
+          pointedProduct={props.pointedProduct}
         />
         {openArtFormDialog && (
           <ArtUploader

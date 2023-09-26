@@ -236,8 +236,8 @@ export default function Orders(props) {
 
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
   const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
-  // const isMobile = useMediaQuery(theme.breakpoints.down("md"));
-  // const isIphone = useMediaQuery(theme.breakpoints.down("xs"));
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const isIphone = useMediaQuery(theme.breakpoints.down("xs"));
   const [isShowDetails, setIsShowDetails] = useState(false);
   const [showVoucher, setShowVoucher] = useState(false);
   const [rows, setRows] = useState();
@@ -576,6 +576,11 @@ export default function Orders(props) {
     } else if (typeof filter === "object") {
       let ordersv2 = orders.filter(
         (row) => row.createdBy.username === filter.seller
+      );
+      setRows(ordersv2);
+    } else {
+      let ordersv2 = orders.filter((row) =>
+        row.orderId.toLowerCase().includes(filter.toLowerCase())
       );
       setRows(ordersv2);
     }

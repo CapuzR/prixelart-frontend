@@ -43,6 +43,7 @@ function App() {
   const [searchResult, setSearchResult] = useState([]);
   const [admins, setAdmins] = useState();
   const [sellers, setSellers] = useState();
+  const [pointedProduct, setPointedProduct] = useState();
   const [dollarValue, setDollarValue] = useState("1");
 
   document.addEventListener("contextmenu", (event) => {
@@ -316,6 +317,8 @@ function App() {
             deleteProductInItem={deleteProductInItem}
             AssociateProduct={AssociateProduct}
             dollarValue={dollarValue}
+            pointedProduct={pointedProduct}
+            setPointedProduct={setPointedProduct}
           />
         </Route>
 
@@ -447,6 +450,8 @@ function App() {
             setFullArt={setFullArt}
             setSearchResult={setSearchResult}
             dollarValue={dollarValue}
+            setPointedProduct={setPointedProduct}
+            pointedProduct={pointedProduct}
           />
         </Route>
         <Route component={Home} />

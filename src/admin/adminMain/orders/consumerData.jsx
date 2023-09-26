@@ -15,11 +15,6 @@ import LocalPhoneIcon from "@material-ui/icons/LocalPhone";
 import EmailIcon from "@material-ui/icons/Email";
 import HomeIcon from "@material-ui/icons/Home";
 import BusinessIcon from "@material-ui/icons/Business";
-import ClickAwayListener from "@material-ui/core/ClickAwayListener";
-import Grow from "@material-ui/core/Grow";
-import Paper from "@material-ui/core/Paper";
-import Popper from "@material-ui/core/Popper";
-import MenuList from "@material-ui/core/MenuList";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 
 const drawerWidth = 240;
@@ -351,7 +346,9 @@ export default function ConsumerData(props) {
   useEffect(() => {
     let updatedv2 = [];
     const updated = consumers?.filter((consumer) =>
-      consumer.firstname.includes(props?.basicData?.name)
+      consumer.firstname
+        ?.toLowerCase()
+        .includes(props?.basicData?.name?.toLowerCase())
     );
     updated.map((p) => {
       updatedv2.push(p.firstname + ", " + p.lastname);
@@ -385,32 +382,6 @@ export default function ConsumerData(props) {
       });
     } else return;
   };
-
-  const handleOptionClick = (event, value) => {
-    props.setBasicData({
-      ...props.basicData,
-      name: value,
-    });
-  };
-
-  const handleToggle = () => {
-    setOpen((prevOpen) => !prevOpen);
-  };
-
-  const handleClose = (event) => {
-    if (anchorRef.current && anchorRef.current.contains(event.target)) {
-      return;
-    }
-
-    setOpen(false);
-  };
-
-  function handleListKeyDown(event) {
-    if (event.key === "Tab") {
-      event.preventDefault();
-      setOpen(false);
-    }
-  }
 
   return (
     <>
@@ -446,19 +417,6 @@ export default function ConsumerData(props) {
                 />
               )}
             />
-            {/* <TextField
-              variant="outlined"
-              id="standard-name"
-              label="Nombre"
-              fullWidth
-              className={classes.textField}
-              value={props.basicData?.name}
-              onChange={(e) =>
-                props.setBasicData({ ...props.basicData, name: e.target.value })
-              }
-              margin="normal"
-            />
-            */}
           </Grid>
           <Grid item lg={4} md={4} sm={4} xs={12} className={classes.gridInput}>
             <TextField
@@ -589,14 +547,7 @@ export default function ConsumerData(props) {
           <Title>Datos de entrega</Title>
         </Grid>
         <Grid container>
-          <Grid
-            item
-            lg={12}
-            md={12}
-            sm={12}
-            xs={12}
-            // className={classes.gridInput}
-          >
+          <Grid item lg={12} md={12} sm={12} xs={12}>
             <FormControlLabel
               control={
                 <Checkbox
@@ -807,7 +758,7 @@ export default function ConsumerData(props) {
               />
             </FormControl>
           </Grid>
-          {props.buyState !== [] ||
+          {props.buyState[0] !== null ||
             (readyDate !== "Invalid Date" && (
               <Grid>
                 <div style={{ marginTop: 10, marginLeft: 10 }}>

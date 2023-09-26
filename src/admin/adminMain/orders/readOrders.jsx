@@ -10,6 +10,9 @@ import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
 import Box from "@material-ui/core/Box";
 import Typography from "@material-ui/core/Typography";
+import TextField from "@material-ui/core/TextField";
+import SearchIcon from "@material-ui/icons/Search";
+import InputAdornment from "@material-ui/core/InputAdornment";
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -163,7 +166,14 @@ export default function ReadOrders(props) {
       <Table>
         <TableHead>
           <TableRow>
-            <TableCell align="center">ID</TableCell>
+            <TableCell align="center">
+              <TextField
+                variant="outlined"
+                fullWidth
+                label="ID"
+                onChange={handleChange}
+              />
+            </TableCell>
             <TableCell align="center">
               <div style={{ display: "flex", justifyContent: "end" }}>
                 <FormControl className={classes.formControl}>
@@ -340,6 +350,7 @@ export default function ReadOrders(props) {
                         (!props.permissions?.detailPay ||
                           row.payStatus === "Pagado")
                       }
+                      variant="outlined"
                     >
                       <Select
                         id="payStatus"
@@ -384,6 +395,7 @@ export default function ReadOrders(props) {
                           (row.status === "Cancelada" ||
                             row.status === "Concretado"))
                       }
+                      variant="outlined"
                     >
                       <Select
                         id="status"
@@ -438,6 +450,7 @@ export default function ReadOrders(props) {
                   </TableCell>
                   <TableCell align="center">
                     <Select
+                      variant="outlined"
                       disabled={
                         JSON.parse(localStorage.getItem("adminToken")).area !==
                         "Master"

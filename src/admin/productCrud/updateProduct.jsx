@@ -1,34 +1,34 @@
 import React from "react";
 import { useState, useEffect } from "react";
-import { makeStyles } from "@material-ui/core/styles";
+import makeStyles from "@mui/styles/makeStyles";
 import Title from "../adminMain/Title";
 import axios from "axios";
-import InputLabel from "@material-ui/core/InputLabel";
-import TextField from "@material-ui/core/TextField";
-import Button from "@material-ui/core/Button";
-import IconButton from "@material-ui/core/IconButton";
-import Dialog from "@material-ui/core/Dialog";
-import DialogActions from "@material-ui/core/DialogActions";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogContentText from "@material-ui/core/DialogContentText";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import Grid from "@material-ui/core/Grid";
-import Snackbar from "@material-ui/core/Snackbar";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import FormControl from "@material-ui/core/FormControl";
-import clsx from "clsx";
-import Checkbox from "@material-ui/core/Checkbox";
-import { useHistory } from "react-router-dom";
-import { useTheme } from "@material-ui/core/styles";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
-import HighlightOffOutlinedIcon from "@material-ui/icons/HighlightOffOutlined";
-import EditIcon from "@material-ui/icons/Edit";
+import InputLabel from "@mui/material/InputLabel";
+import TextField from "@mui/material/TextField";
+import Button from "@mui/material/Button";
+import IconButton from "@mui/material/IconButton";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
+import Grid from "@mui/material/Grid";
+import Snackbar from "@mui/material/Snackbar";
+import CircularProgress from "@mui/material/CircularProgress";
+import FormControl from "@mui/material/FormControl";
+import clsx from "classnames";
+import Checkbox from "@mui/material/Checkbox";
+import { useNavigate } from "react-router-dom";
+import { useTheme } from "@mui/material/styles";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import HighlightOffOutlinedIcon from "@mui/icons-material/HighlightOffOutlined";
+import EditIcon from "@mui/icons-material/Edit";
 import MDEditor from "@uiw/react-md-editor";
 import Variants from "../adminMain/products/variants";
-import Backdrop from "@material-ui/core/Backdrop";
+import Backdrop from "@mui/material/Backdrop";
 import validations from "../../shoppingCart/validations";
-import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
-import Paper from "@material-ui/core/Paper";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import Paper from "@mui/material/Paper";
 
 const useStyles = makeStyles((theme) => ({
   seeMore: {
@@ -76,7 +76,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function UpdateAdmin(props) {
   const classes = useStyles();
-  const history = useHistory();
+  const history = useNavigate();
   const theme = useTheme();
   const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
   const [productId, setProductId] = useState(props?.product?._id);
@@ -473,6 +473,7 @@ export default function UpdateAdmin(props) {
                                 color: "#d33f49",
                               }}
                               component="label"
+                              size="large"
                             >
                               <input
                                 name="productImages"
@@ -502,6 +503,7 @@ export default function UpdateAdmin(props) {
                                 });
                                 newImages({ images: images.images });
                               }}
+                              size="large"
                             >
                               <HighlightOffOutlinedIcon />
                             </IconButton>
@@ -542,6 +544,7 @@ export default function UpdateAdmin(props) {
                             }}
                             component="label"
                             onClick={handleClickOpen}
+                            size="large"
                           >
                             <EditIcon />
                           </IconButton>
@@ -553,6 +556,7 @@ export default function UpdateAdmin(props) {
                             onClick={(d) => {
                               setVideoUrl(undefined);
                             }}
+                            size="large"
                           >
                             <HighlightOffOutlinedIcon />
                           </IconButton>
@@ -584,6 +588,7 @@ export default function UpdateAdmin(props) {
                     setImagesList([]);
                     setLoadImage({ loader: [], filename: "Subir imagenes" });
                   }}
+                  size="large"
                 >
                   <DeleteOutlineIcon style={{ width: 30, height: 30 }} />
                 </IconButton>

@@ -2,25 +2,25 @@ import React from "react";
 import AppBar from "../sharedComponents/appBar/appBar";
 import FloatingAddButton from "../sharedComponents/floatingAddButton/floatingAddButton";
 import ProductsGrid from "./productsGrid";
-import Container from "@material-ui/core/Container";
-import CssBaseline from "@material-ui/core/CssBaseline";
-import Grid from "@material-ui/core/Grid";
-import { makeStyles } from "@material-ui/core/styles";
+import Container from "@mui/material/Container";
+import CssBaseline from "@mui/material/CssBaseline";
+import Grid from "@mui/material/Grid";
+import makeStyles from "@mui/styles/makeStyles";
 import { useState } from "react";
 import ArtUploader from "../sharedComponents/artUploader/artUploader";
 
-import Dialog from "@material-ui/core/Dialog";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogContentText from "@material-ui/core/DialogContentText";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import DialogActions from "@material-ui/core/DialogActions";
-import Button from "@material-ui/core/Button";
+import Dialog from "@mui/material/Dialog";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogActions from "@mui/material/DialogActions";
+import Button from "@mui/material/Button";
 import Img from "react-cool-img";
-import Typography from "@material-ui/core/Typography";
+import Typography from "@mui/material/Typography";
 
-import { useHistory } from "react-router-dom";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
-import { useTheme } from "@material-ui/core/styles";
+import { useNavigate } from "react-router-dom";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import { useTheme } from "@mui/material/styles";
 import CartReview from "../shoppingCart/cartReview";
 import ReactGA from "react-ga";
 
@@ -51,7 +51,7 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: "95%",
   },
   img: {
-    [theme.breakpoints.down("sm")]: {
+    [theme.breakpoints.down("md")]: {
       maxHeight: 200,
       width: "100%",
     },
@@ -80,12 +80,12 @@ export default function ProductsCatalog(props) {
   const [openShoppingCart, setOpenShoppingCart] = useState(false);
   const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
   const isDeskTop = useMediaQuery(theme.breakpoints.up("sm"));
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
   const [selectedProduct, setSelectedProduct] = useState(undefined);
   const prixerUsername = "all";
   const classes = useStyles();
-  const history = useHistory();
+  const history = useNavigate();
 
   return (
     <>

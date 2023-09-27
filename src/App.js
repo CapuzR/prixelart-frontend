@@ -10,7 +10,7 @@ import PrixerRegistration from "./register/prixerRegistration";
 import PrixerProfile from "./prixerProfile/prixerProfile";
 import FullscreenPhoto from "./prixerProfile/fullscreenPhoto/fullscreenPhoto";
 import Home from "./home/home";
-import { Switch, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import Gallery from "./gallery/gallery";
 import Products from "./products/productsCatalog";
 import ShoppingPage from "./shoppingCart/shoppingPage";
@@ -19,7 +19,8 @@ import PasswordChange from "./prixerProfile/passwordChange/passwordChange";
 import ForgotPassword from "./prixerProfile/passwordReset/forgotPassword";
 import ResetPassword from "./prixerProfile/passwordReset/passwordReset";
 import PrixerStats from "../src/prixerProfile/prixerStats";
-import Snackbar from "@material-ui/core/Snackbar";
+
+import { Snackbar } from "@mui/material";
 import Orders from "./admin/adminMain/orders/orders";
 import OrderForm from "./shoppingCart/orderForm";
 
@@ -192,7 +193,7 @@ function App() {
 
   return (
     <>
-      <Switch>
+      <Routes>
         <Route path="/iniciar">
           <Login />
         </Route>
@@ -449,8 +450,9 @@ function App() {
             dollarValue={dollarValue}
           />
         </Route>
+
         <Route component={Home} />
-      </Switch>
+      </Routes>
       <Snackbar
         open={open}
         autoHideDuration={5000}

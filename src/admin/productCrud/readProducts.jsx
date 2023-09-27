@@ -1,25 +1,25 @@
 import React from "react";
 import { useEffect, useState } from "react";
-import { useHistory } from "react-router-dom";
-import { makeStyles } from "@material-ui/core/styles";
-import Tabs from "@material-ui/core/Tabs";
-import Tab from "@material-ui/core/Tab";
-import Table from "@material-ui/core/Table";
-import TableBody from "@material-ui/core/TableBody";
-import TableCell from "@material-ui/core/TableCell";
-import TableHead from "@material-ui/core/TableHead";
-import TableRow from "@material-ui/core/TableRow";
+import { useNavigate } from "react-router-dom";
+import makeStyles from "@mui/styles/makeStyles";
+import Tabs from "@mui/material/Tabs";
+import Tab from "@mui/material/Tab";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
 import axios from "axios";
-import Checkbox from "@material-ui/core/Checkbox";
-import EditIcon from "@material-ui/icons/Edit";
-import DeleteIcon from "@material-ui/icons/Delete";
-import Snackbar from "@material-ui/core/Snackbar";
-import Fab from "@material-ui/core/Fab";
-import Typography from "@material-ui/core/Typography";
-import Paper from "@material-ui/core/Paper";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import { Backdrop } from "@material-ui/core";
-import Box from "@material-ui/core/Box";
+import Checkbox from "@mui/material/Checkbox";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
+import Snackbar from "@mui/material/Snackbar";
+import Fab from "@mui/material/Fab";
+import Typography from "@mui/material/Typography";
+import Paper from "@mui/material/Paper";
+import CircularProgress from "@mui/material/CircularProgress";
+import { Backdrop } from "@mui/material";
+import Box from "@mui/material/Box";
 
 const useStyles = makeStyles((theme) => ({
   loading: {
@@ -37,7 +37,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function ReadProducts(props) {
-  const history = useHistory();
+  const history = useNavigate();
   const classes = useStyles();
   const [rows, setRows] = useState();
   const [discountList, setDiscountList] = useState([]);

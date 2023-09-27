@@ -1,30 +1,31 @@
 //[]      17. Búsqueda de Prixers.
 
 import React, { useState, useEffect } from "react";
-import { makeStyles, withStyles } from "@material-ui/core/styles";
-import { useTheme } from "@material-ui/core/styles";
+import makeStyles from "@mui/styles/makeStyles";
+import withStyles from "@mui/styles/withStyles";
+import { useTheme } from "@mui/material/styles";
 import axios from "axios";
-import { useHistory } from "react-router-dom";
-import TextField from "@material-ui/core/TextField";
-import Button from "@material-ui/core/Button";
-import Backdrop from "@material-ui/core/Backdrop";
-import CircularProgress from "@material-ui/core/CircularProgress";
+import { useNavigate } from "react-router-dom";
+import TextField from "@mui/material/TextField";
+import Button from "@mui/material/Button";
+import Backdrop from "@mui/material/Backdrop";
+import CircularProgress from "@mui/material/CircularProgress";
 import Img from "react-cool-img";
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
-import Dialog from "@material-ui/core/Dialog";
-import DialogActions from "@material-ui/core/DialogActions";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogContentText from "@material-ui/core/DialogContentText";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import Switch from "@material-ui/core/Switch";
-import Typography from "@material-ui/core/Typography";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
+import Switch from "@mui/material/Switch";
+import Typography from "@mui/material/Typography";
 import utils from "../../utils/utils";
 import SearchBar from "../../sharedComponents/searchBar/searchBar.jsx";
-import IconButton from "@material-ui/core/IconButton";
-import Tooltip from "@material-ui/core/Tooltip";
-import CardActionArea from "@material-ui/core/CardActionArea";
-import Box from "@material-ui/core/Box";
-import AddShoppingCartIcon from "@material-ui/icons/AddShoppingCart";
+import IconButton from "@mui/material/IconButton";
+import Tooltip from "@mui/material/Tooltip";
+import CardActionArea from "@mui/material/CardActionArea";
+import Box from "@mui/material/Box";
+import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 import FullscreenPhoto from "../fullscreenPhoto/fullscreenPhoto";
 const IOSSwitch = withStyles((theme) => ({
   root: {
@@ -91,7 +92,7 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: "20px",
   },
   img: {
-    [theme.breakpoints.down("sm")]: {
+    [theme.breakpoints.down("md")]: {
       maxHeight: 180,
     },
     [theme.breakpoints.up("sm")]: {
@@ -120,7 +121,7 @@ const useStyles = makeStyles((theme) => ({
 export default function Grid(props) {
   const classes = useStyles();
   const [tiles, setTiles] = useState([]);
-  const history = useHistory();
+  const history = useNavigate();
   let globalParams = new URLSearchParams(window.location.search);
   const [searchValue, setSearchValue] = useState(
     globalParams.get("name") || null

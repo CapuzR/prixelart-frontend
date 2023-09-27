@@ -1,20 +1,20 @@
 import React, { useEffect } from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import Button from "@material-ui/core/Button";
-import Dialog from "@material-ui/core/Dialog";
-import AppBar from "@material-ui/core/AppBar";
-import Toolbar from "@material-ui/core/Toolbar";
-import IconButton from "@material-ui/core/IconButton";
-import Typography from "@material-ui/core/Typography";
-import CloseIcon from "@material-ui/icons/Close";
-import Slide from "@material-ui/core/Slide";
-import MenuItem from "@material-ui/core/MenuItem";
-import Select from "@material-ui/core/Select";
+import makeStyles from '@mui/styles/makeStyles';
+import Button from "@mui/material/Button";
+import Dialog from "@mui/material/Dialog";
+import AppBar from "@mui/material/AppBar";
+import Toolbar from "@mui/material/Toolbar";
+import IconButton from "@mui/material/IconButton";
+import Typography from "@mui/material/Typography";
+import CloseIcon from "@mui/icons-material/Close";
+import Slide from "@mui/material/Slide";
+import MenuItem from "@mui/material/MenuItem";
+import Select from "@mui/material/Select";
 import utils from "../../utils/utils.js";
-import CloudUploadIcon from "@material-ui/icons/CloudUpload";
-import Tooltip from "@material-ui/core/Tooltip";
-import Backdrop from "@material-ui/core/Backdrop";
-import CircularProgress from "@material-ui/core/CircularProgress";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import Tooltip from "@mui/material/Tooltip";
+import Backdrop from "@mui/material/Backdrop";
+import CircularProgress from "@mui/material/CircularProgress";
 import AspectRatioSelector from "./aspectRatioSelector";
 import Cropper from "react-easy-crop";
 
@@ -24,18 +24,18 @@ import axios from "axios";
 import Copyright from "../Copyright/copyright";
 
 //material-ui
-import Grid from "@material-ui/core/Grid";
-import Box from "@material-ui/core/Box";
-import Container from "@material-ui/core/Container";
-import Snackbar from "@material-ui/core/Snackbar";
-import InputLabel from "@material-ui/core/InputLabel";
-import FormControl from "@material-ui/core/FormControl";
-import TextField from "@material-ui/core/TextField";
-import CssBaseline from "@material-ui/core/CssBaseline";
-import Paper from "@material-ui/core/Paper";
-import Chip from "@material-ui/core/Chip";
-import Autocomplete from "@material-ui/lab/Autocomplete";
-import InfoIcon from "@material-ui/icons/Info";
+import Grid from "@mui/material/Grid";
+import Box from "@mui/material/Box";
+import Container from "@mui/material/Container";
+import Snackbar from "@mui/material/Snackbar";
+import InputLabel from "@mui/material/InputLabel";
+import FormControl from "@mui/material/FormControl";
+import TextField from "@mui/material/TextField";
+import CssBaseline from "@mui/material/CssBaseline";
+import Paper from "@mui/material/Paper";
+import Chip from "@mui/material/Chip";
+import Autocomplete from '@mui/material/Autocomplete';
+import InfoIcon from "@mui/icons-material/Info";
 
 const useStyles = makeStyles((theme) => ({
   img: {
@@ -55,7 +55,7 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(0),
   },
   snackbar: {
-    [theme.breakpoints.down("xs")]: {
+    [theme.breakpoints.down('sm')]: {
       bottom: 90,
     },
     margin: {
@@ -529,7 +529,7 @@ export default function ArtUploader(props) {
               color="inherit"
               onClick={handleClose}
               aria-label="close"
-            >
+              size="large">
               <CloseIcon />
             </IconButton>
             <Typography variant="h6" className={classes.title}>

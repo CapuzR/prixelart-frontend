@@ -1,18 +1,18 @@
 import React from "react";
 import axios from "axios";
 
-import Grid from "@material-ui/core/Grid";
-import Paper from "@material-ui/core/Paper";
-import { makeStyles } from "@material-ui/core/styles";
-import { Typography } from "@material-ui/core";
-import MenuItem from "@material-ui/core/MenuItem";
-import Select from "@material-ui/core/Select";
-import OutlinedInput from "@material-ui/core/OutlinedInput";
+import Grid from "@mui/material/Grid";
+import Paper from "@mui/material/Paper";
+import makeStyles from '@mui/styles/makeStyles';
+import { Typography } from "@mui/material";
+import MenuItem from "@mui/material/MenuItem";
+import Select from "@mui/material/Select";
+import OutlinedInput from "@mui/material/OutlinedInput";
 
-import IconButton from "@material-ui/core/IconButton";
-import CloseIcon from "@material-ui/icons/Close";
+import IconButton from "@mui/material/IconButton";
+import CloseIcon from "@mui/icons-material/Close";
 import Img from "react-cool-img";
-import ArrowBackIcon from "@material-ui/icons/ArrowBack";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 import x from "../../../apple-touch-icon-180x180.png";
 const drawerWidth = 240;
@@ -205,7 +205,7 @@ const useStyles = makeStyles((theme) => ({
     padding: "1px",
   },
   snackbar: {
-    [theme.breakpoints.down("xs")]: {
+    [theme.breakpoints.down('sm')]: {
       bottom: 90,
     },
     margin: {
@@ -277,11 +277,11 @@ export default function OrderDetails(props) {
             props.modalContent.basicData.lastname}
         </Typography>
         {props.showVoucher && (
-          <IconButton onClick={props.handleCloseVoucher}>
+          <IconButton onClick={props.handleCloseVoucher} size="large">
             <ArrowBackIcon />
           </IconButton>
         )}
-        <IconButton onClick={props.handleClose}>
+        <IconButton onClick={props.handleClose} size="large">
           <CloseIcon />
         </IconButton>
       </Grid>

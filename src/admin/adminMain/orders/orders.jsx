@@ -1,21 +1,21 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import Grid from "@material-ui/core/Grid";
-import Paper from "@material-ui/core/Paper";
-import clsx from "clsx";
-import { useTheme } from "@material-ui/core/styles";
-import { makeStyles } from "@material-ui/core/styles";
-import Fab from "@material-ui/core/Fab";
-import AddIcon from "@material-ui/icons/Add";
-import GetAppIcon from "@material-ui/icons/GetApp";
+import Grid from "@mui/material/Grid";
+import Paper from "@mui/material/Paper";
+import clsx from "classnames";
+import { useTheme } from "@mui/material/styles";
+import makeStyles from "@mui/styles/makeStyles";
+import Fab from "@mui/material/Fab";
+import AddIcon from "@mui/icons-material/Add";
+import GetAppIcon from "@mui/icons-material/GetApp";
 import Title from "../Title";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
-import Modal from "@material-ui/core/Modal";
-import RefreshIcon from "@material-ui/icons/Refresh";
-import { Backdrop } from "@material-ui/core";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import Tooltip from "@material-ui/core/Tooltip";
-import Snackbar from "@material-ui/core/Snackbar";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import Modal from "@mui/material/Modal";
+import RefreshIcon from "@mui/icons-material/Refresh";
+import { Backdrop } from "@mui/material";
+import CircularProgress from "@mui/material/CircularProgress";
+import Tooltip from "@mui/material/Tooltip";
+import Snackbar from "@mui/material/Snackbar";
 import ReadOrders from "./readOrders";
 import OrderDetails from "./orderDetails";
 import CreateOrder from "./createOrder";
@@ -212,7 +212,7 @@ const useStyles = makeStyles((theme) => ({
     padding: "1px",
   },
   snackbar: {
-    [theme.breakpoints.down("xs")]: {
+    [theme.breakpoints.down("sm")]: {
       bottom: 90,
     },
     margin: {

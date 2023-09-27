@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from "react";
-import { useTheme } from "@material-ui/core/styles";
-import { makeStyles } from "@material-ui/core/styles";
+import { useTheme } from "@mui/material/styles";
+import makeStyles from "@mui/styles/makeStyles";
 import axios from "axios";
-import { useHistory } from "react-router-dom";
-// import useMediaQuery from "@material-ui/core/useMediaQuery";
-import Card from "@material-ui/core/Card";
-import CardActions from "@material-ui/core/CardActions";
-import CardContent from "@material-ui/core/CardContent";
-import CardMedia from "@material-ui/core/CardMedia";
-import Button from "@material-ui/core/Button";
-import Typography from "@material-ui/core/Typography";
-import Grid from "@material-ui/core/Grid";
-import Backdrop from "@material-ui/core/Backdrop";
-import CircularProgress from "@material-ui/core/CircularProgress";
+import { useNavigate } from "react-router-dom";
+// import useMediaQuery from "@mui/material/useMediaQuery";
+import Card from "@mui/material/Card";
+import CardActions from "@mui/material/CardActions";
+import CardContent from "@mui/material/CardContent";
+import CardMedia from "@mui/material/CardMedia";
+import Button from "@mui/material/Button";
+import Typography from "@mui/material/Typography";
+import Grid from "@mui/material/Grid";
+import Backdrop from "@mui/material/Backdrop";
+import CircularProgress from "@mui/material/CircularProgress";
 import utils from "../../utils/utils";
 
 const useStyles = makeStyles((theme) => ({
@@ -64,7 +64,7 @@ export default function PrixerGrid(props) {
   // const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
   // const isDeskTop = useMediaQuery(theme.breakpoints.up("sm"));
   const [tiles, setTiles] = useState([]);
-  const history = useHistory();
+  const history = useNavigate();
   const [backdrop, setBackdrop] = useState(true);
 
   useEffect(() => {

@@ -1,43 +1,40 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useTheme } from "@material-ui/core/styles";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
+import { useTheme, useMediaQuery, Card, CardMedia } from "@mui/material";
 import Carousel from "react-material-ui-carousel";
-import Card from "@material-ui/core/Card";
-import CardMedia from "@material-ui/core/CardMedia";
-import CssBaseline from "@material-ui/core/CssBaseline";
-import Grid from "@material-ui/core/Grid";
-import Typography from "@material-ui/core/Typography";
-import { makeStyles } from "@material-ui/core/styles";
-import Container from "@material-ui/core/Container";
-import Link from "@material-ui/core/Link";
+import CssBaseline from "@mui/material/CssBaseline";
+import Grid from "@mui/material/Grid";
+import Typography from "@mui/material/Typography";
+import makeStyles from "@mui/styles/makeStyles";
+import Container from "@mui/material/Container";
+import Link from "@mui/material/Link";
 import AppBar from "../sharedComponents/appBar/appBar";
-import Paper from "@material-ui/core/Paper";
-import Tabs from "@material-ui/core/Tabs";
-import Tab from "@material-ui/core/Tab";
-import PhoneIcon from "@material-ui/icons/Phone";
-import FavoriteIcon from "@material-ui/icons/Favorite";
-import PhotoLibraryIcon from "@material-ui/icons/PhotoLibrary";
+import Paper from "@mui/material/Paper";
+import Tabs from "@mui/material/Tabs";
+import Tab from "@mui/material/Tab";
+import PhoneIcon from "@mui/icons-material/Phone";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import PhotoLibraryIcon from "@mui/icons-material/PhotoLibrary";
 import ArtsGrid from "../prixerProfile/grid/grid";
 import PrixersGrid from "../sharedComponents/prixerGrid/prixerGrid";
-import { InsertEmoticon } from "@material-ui/icons";
-import InstagramIcon from "@material-ui/icons/Instagram";
+import { InsertEmoticon } from "@mui/icons-material";
+import InstagramIcon from "@mui/icons-material/Instagram";
 import SimpleDialog from "../sharedComponents/simpleDialog/simpleDialog";
 import FloatingAddButton from "../sharedComponents/floatingAddButton/floatingAddButton";
-import Modal from "@material-ui/core/Modal";
-import Button from "@material-ui/core/Button";
-import Dialog from "@material-ui/core/Dialog";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogContentText from "@material-ui/core/DialogContentText";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import DialogActions from "@material-ui/core/DialogActions";
+import Modal from "@mui/material/Modal";
+import Button from "@mui/material/Button";
+import Dialog from "@mui/material/Dialog";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogActions from "@mui/material/DialogActions";
 import Img from "react-cool-img";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import MDEditor from "@uiw/react-md-editor";
-import MaximizeIcon from "@material-ui/icons/Maximize";
-import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
-import ArrowForwardIosIcon from "@material-ui/icons/ArrowForwardIos";
+import MaximizeIcon from "@mui/icons-material/Maximize";
+import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
+import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 
 import ArtUploader from "../sharedComponents/artUploader/artUploader";
 import TestimonialsFeed from "../admin/TestimonialsCrud/TestimonialsFeed";
@@ -148,7 +145,7 @@ export default function Home(props) {
   const theme = useTheme();
   const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
   const isDeskTop = useMediaQuery(theme.breakpoints.up("sm"));
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const classes = useStyles();
   const prixerUsername = "all";
   const [imagesDesktop, newImagesDesktop] = useState({ images: [] });
@@ -167,7 +164,7 @@ export default function Home(props) {
   const [openShoppingCart, setOpenShoppingCart] = useState(false);
   const [termsAgreeVar, setTermsAgreeVar] = useState(true);
   const [value, setValue] = useState("");
-  const history = useHistory();
+  const history = useNavigate();
 
   const imgsMobile = [
     {

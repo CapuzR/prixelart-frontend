@@ -1,35 +1,35 @@
 import React, { useEffect, useState } from "react";
-import { useHistory, useLocation } from "react-router-dom";
-// import Link from '@material-ui/core/Link';
-// import { makeStyles } from '@material-ui/core/styles';
-import Table from "@material-ui/core/Table";
-import TableBody from "@material-ui/core/TableBody";
-import TableCell from "@material-ui/core/TableCell";
-import TableHead from "@material-ui/core/TableHead";
-import TableRow from "@material-ui/core/TableRow";
+import { useNavigate, useLocation } from "react-router-dom";
+// import Link from '@mui/material/Link';
+// import { makeStyles } from '@mui/material/styles';
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
 import Title from "../Title";
-import Grid from "@material-ui/core/Grid";
-import Paper from "@material-ui/core/Paper";
-import { makeStyles } from "@material-ui/core/styles";
-import clsx from "clsx";
-import FormControl from "@material-ui/core/FormControl";
-import Snackbar from "@material-ui/core/Snackbar";
-import { Backdrop, Button } from "@material-ui/core";
-import CircularProgress from "@material-ui/core/CircularProgress";
+import Grid from "@mui/material/Grid";
+import Paper from "@mui/material/Paper";
+import makeStyles from "@mui/styles/makeStyles";
+import clsx from "classnames";
+import FormControl from "@mui/material/FormControl";
+import Snackbar from "@mui/material/Snackbar";
+import { Backdrop, Button } from "@mui/material";
+import CircularProgress from "@mui/material/CircularProgress";
 import axios from "axios";
-import InputLabel from "@material-ui/core/InputLabel";
-import Select from "@material-ui/core/Select";
-import MenuItem from "@material-ui/core/MenuItem";
-import Typography from "@material-ui/core/Typography";
+import InputLabel from "@mui/material/InputLabel";
+import Select from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
+import Typography from "@mui/material/Typography";
 import MovOrder from "./movementForOrder";
-import Modal from "@material-ui/core/Modal";
-import Menu from "@material-ui/core/Menu";
-import ClickAwayListener from "@material-ui/core/ClickAwayListener";
-import Grow from "@material-ui/core/Grow";
-import Popper from "@material-ui/core/Popper";
-// import CircularProgress from '@material-ui/core/CircularProgress';
-// import Backdrop from '@material-ui/core/Backdrop';
-// import Button from '@material-ui/core/Button';
+import Modal from "@mui/material/Modal";
+import Menu from "@mui/material/Menu";
+import ClickAwayListener from "@mui/material/ClickAwayListener";
+import Grow from "@mui/material/Grow";
+import Popper from "@mui/material/Popper";
+// import CircularProgress from '@mui/material/CircularProgress';
+// import Backdrop from '@mui/material/Backdrop';
+// import Button from '@mui/material/Button';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -49,7 +49,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function ReadMovements(props) {
-  const history = useHistory();
+  const history = useNavigate();
   const location = useLocation();
 
   const classes = useStyles();
@@ -132,7 +132,7 @@ export default function ReadMovements(props) {
   const getPrixersNames = (list) => {
     let prix = [];
     list.map((mov) => {
-      if (prix === []) {
+      if (prix[0] === null) {
         prix = [mov.destinatary];
       } else if (prix.includes(mov.destinatary)) {
         return;

@@ -4,25 +4,25 @@ import axios from "axios";
 import AppBar from "../sharedComponents/appBar/appBar";
 import FloatingAddButton from "../sharedComponents/floatingAddButton/floatingAddButton";
 import ArtsGrid from "../prixerProfile/grid/grid";
-import Container from "@material-ui/core/Container";
-import CssBaseline from "@material-ui/core/CssBaseline";
-import Grid from "@material-ui/core/Grid";
-import { makeStyles } from "@material-ui/core/styles";
+import Container from "@mui/material/Container";
+import CssBaseline from "@mui/material/CssBaseline";
+import Grid from "@mui/material/Grid";
+import makeStyles from "@mui/styles/makeStyles";
 import { useState } from "react";
 import ArtUploader from "../sharedComponents/artUploader/artUploader";
-import Typography from "@material-ui/core/Typography";
-import Modal from "@material-ui/core/Modal";
-import Button from "@material-ui/core/Button";
+import Typography from "@mui/material/Typography";
+import Modal from "@mui/material/Modal";
+import Button from "@mui/material/Button";
 import MDEditor from "@uiw/react-md-editor";
-import Dialog from "@material-ui/core/Dialog";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogContentText from "@material-ui/core/DialogContentText";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import DialogActions from "@material-ui/core/DialogActions";
+import Dialog from "@mui/material/Dialog";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogActions from "@mui/material/DialogActions";
 import Img from "react-cool-img";
-import { useHistory } from "react-router-dom";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
-import { useTheme } from "@material-ui/core/styles";
+import { useNavigate } from "react-router-dom";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import { useTheme } from "@mui/material/styles";
 import CartReview from "../shoppingCart/cartReview";
 
 const useStyles = makeStyles((theme) => ({
@@ -70,7 +70,7 @@ export default function Gallery(props) {
   const [termsAgreeVar, setTermsAgreeVar] = useState(true);
   const [value, setValue] = useState("");
   const [selectedArt, setSelectedArt] = useState(undefined);
-  const history = useHistory();
+  const history = useNavigate();
   const theme = useTheme();
 
   const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
@@ -140,7 +140,13 @@ export default function Gallery(props) {
         <CssBaseline />
 
         <Grid style={{ marginTop: 90 }}>
-          <h1 style={{ margin: 0 }}>Galería</h1>
+          <Typography
+            variant="h4"
+            style={{ color: "#404e5c" }}
+            fontWeight="bold"
+          >
+            <strong> Galería </strong>
+          </Typography>{" "}
           <Typography
             variant="body2"
             color="textSecondary"

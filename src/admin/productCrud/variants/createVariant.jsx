@@ -1,29 +1,29 @@
 import React from "react";
 import { useState } from "react";
-import { useHistory } from "react-router-dom";
-import { makeStyles } from "@material-ui/core/styles";
+import { useNavigate } from "react-router-dom";
+import makeStyles from "@mui/styles/makeStyles";
 import Title from "../../adminMain/Title";
 import axios from "axios";
-import TextField from "@material-ui/core/TextField";
-import Button from "@material-ui/core/Button";
-import Grid from "@material-ui/core/Grid";
-import Snackbar from "@material-ui/core/Snackbar";
-import Backdrop from "@material-ui/core/Backdrop";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import IconButton from "@material-ui/core/IconButton";
-import EditIcon from "@material-ui/icons/Edit";
-import HighlightOffOutlinedIcon from "@material-ui/icons/HighlightOffOutlined";
-import FormControl from "@material-ui/core/FormControl";
-import clsx from "clsx";
-import Checkbox from "@material-ui/core/Checkbox";
-import Dialog from "@material-ui/core/Dialog";
-import DialogActions from "@material-ui/core/DialogActions";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogContentText from "@material-ui/core/DialogContentText";
-import DialogTitle from "@material-ui/core/DialogTitle";
+import TextField from "@mui/material/TextField";
+import Button from "@mui/material/Button";
+import Grid from "@mui/material/Grid";
+import Snackbar from "@mui/material/Snackbar";
+import Backdrop from "@mui/material/Backdrop";
+import CircularProgress from "@mui/material/CircularProgress";
+import IconButton from "@mui/material/IconButton";
+import EditIcon from "@mui/icons-material/Edit";
+import HighlightOffOutlinedIcon from "@mui/icons-material/HighlightOffOutlined";
+import FormControl from "@mui/material/FormControl";
+import clsx from "classnames";
+import Checkbox from "@mui/material/Checkbox";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
 import { nanoid } from "nanoid";
 import validations from "../../../shoppingCart/validations";
-import Paper from "@material-ui/core/Paper";
+import Paper from "@mui/material/Paper";
 const useStyles = makeStyles((theme) => ({
   seeMore: {
     marginTop: theme.spacing(3),
@@ -75,7 +75,7 @@ export default function CreateVariant(props) {
   );
   const [loading, setLoading] = useState(false);
   const [buttonState, setButtonState] = useState(false);
-  const history = useHistory();
+  const history = useNavigate();
   const [image, setImage] = useState(props?.variant?.variantImage || []);
   const [videoUrl, setVideoUrl] = useState(
     (props.variant && props.variant?.video) || undefined
@@ -372,6 +372,7 @@ export default function CreateVariant(props) {
                             className={classes.buttonImgLoader}
                             style={{ color: "#d33f49" }}
                             component="label"
+                            size="large"
                           >
                             <input
                               name="productImages"
@@ -395,6 +396,7 @@ export default function CreateVariant(props) {
                               setImage(image);
                               setLoadImage({ loader: loadeImage.loader });
                             }}
+                            size="large"
                           >
                             <HighlightOffOutlinedIcon />
                           </IconButton>
@@ -444,6 +446,7 @@ export default function CreateVariant(props) {
                           }}
                           component="label"
                           onClick={handleClickOpen}
+                          size="large"
                         >
                           <EditIcon />
                         </IconButton>
@@ -455,6 +458,7 @@ export default function CreateVariant(props) {
                           onClick={(d) => {
                             setVideoUrl(undefined);
                           }}
+                          size="large"
                         >
                           <HighlightOffOutlinedIcon />
                         </IconButton>
@@ -683,7 +687,6 @@ export default function CreateVariant(props) {
             <Grid item xs={12} align="center">
               <Button
                 variant="contained"
-                color="default"
                 onClick={() => {
                   setAttributes(
                     attributes

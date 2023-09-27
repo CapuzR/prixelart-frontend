@@ -1,25 +1,29 @@
-import React, { useEffect } from "react";
-import { useState } from "react";
-import { useHistory, useLocation } from "react-router-dom";
-import { makeStyles } from "@material-ui/core/styles";
-import Title from "../adminMain/Title";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import clsx from "classnames";
 import axios from "axios";
-import TextField from "@material-ui/core/TextField";
-import Button from "@material-ui/core/Button";
-import Grid from "@material-ui/core/Grid";
-import Snackbar from "@material-ui/core/Snackbar";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import IconButton from "@material-ui/core/IconButton";
-import OutlinedInput from "@material-ui/core/OutlinedInput";
-import InputLabel from "@material-ui/core/InputLabel";
-import InputAdornment from "@material-ui/core/InputAdornment";
-import FormControl from "@material-ui/core/FormControl";
-import Visibility from "@material-ui/icons/Visibility";
-import VisibilityOff from "@material-ui/icons/VisibilityOff";
-import MenuItem from "@material-ui/core/MenuItem";
-import Select from "@material-ui/core/Select";
 
-import clsx from "clsx";
+import makeStyles from "@mui/styles/makeStyles";
+
+import {
+  TextField,
+  Button,
+  Grid,
+  Snackbar,
+  CircularProgress,
+  IconButton,
+  OutlinedInput,
+  InputLabel,
+  InputAdornment,
+  FormControl,
+  Select,
+  MenuItem,
+} from "@mui/material";
+
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
+
+import Title from "../adminMain/Title";
 import validations from "../../utils/validations";
 
 const useStyles = makeStyles((theme) => ({
@@ -35,7 +39,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function CreateAdmin() {
   const classes = useStyles();
-  const history = useHistory();
+  const history = useNavigate();
   const [roles, setRoles] = useState([]);
   const [username, setUsername] = useState("");
   const [firstname, setFirstname] = useState("");

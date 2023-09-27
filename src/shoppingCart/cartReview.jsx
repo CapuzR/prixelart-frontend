@@ -1,20 +1,21 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
-import Button from "@material-ui/core/Button";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
+import Button from "@mui/material/Button";
+import { useTheme } from "@mui/material/styles";
+import makeStyles from "@mui/styles/makeStyles";
 // import utils from "../utils/utils";
 
-import Grid from "@material-ui/core/Grid";
-import Tooltip from "@material-ui/core/Tooltip";
-import Paper from "@material-ui/core/Paper";
-import AddIcon from "@material-ui/icons/Add";
-import DeleteIcon from "@material-ui/icons/Delete";
+import Grid from "@mui/material/Grid";
+import Tooltip from "@mui/material/Tooltip";
+import Paper from "@mui/material/Paper";
+import AddIcon from "@mui/icons-material/Add";
+import DeleteIcon from "@mui/icons-material/Delete";
 import Img from "react-cool-img";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
-import { useHistory } from "react-router-dom";
-import IconButton from "@material-ui/core/IconButton";
-import { Typography } from "@material-ui/core";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import { useNavigate } from "react-router-dom";
+import IconButton from "@mui/material/IconButton";
+import { Typography } from "@mui/material";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -41,10 +42,10 @@ const useStyles = makeStyles((theme) => ({
 export default function CartReview(props) {
   // const prixerUsername = "all";
   const classes = useStyles();
-  const history = useHistory();
+  const history = useNavigate();
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
-  const isIphone = useMediaQuery(theme.breakpoints.down("xs"));
+  const isMobile = useMediaQuery(theme.breakpoints.down("lg"));
+  const isIphone = useMediaQuery(theme.breakpoints.down("sm"));
   const [discountList, setDiscountList] = useState([]);
 
   const getDiscounts = async () => {
@@ -468,6 +469,7 @@ export default function CartReview(props) {
                             type: "art",
                           })
                         }
+                        size="large"
                       >
                         <DeleteIcon />
                       </IconButton>
@@ -482,6 +484,7 @@ export default function CartReview(props) {
                           });
                           history.push({ pathname: "/galeria" });
                         }}
+                        size="large"
                       >
                         <AddIcon fontSize="medium" />
                       </IconButton>
@@ -505,6 +508,7 @@ export default function CartReview(props) {
                         });
                         history.push({ pathname: "/galeria" });
                       }}
+                      size="large"
                     >
                       <AddIcon style={{ fontSize: 80 }} color="primary" />
                     </IconButton>
@@ -555,6 +559,7 @@ export default function CartReview(props) {
                             type: "product",
                           })
                         }
+                        size="large"
                       >
                         <DeleteIcon />
                       </IconButton>
@@ -569,6 +574,7 @@ export default function CartReview(props) {
                           });
                           history.push({ pathname: "/productos" });
                         }}
+                        size="large"
                       >
                         <AddIcon fontSize="medium" />
                       </IconButton>
@@ -594,6 +600,7 @@ export default function CartReview(props) {
                         });
                         history.push({ pathname: "/productos" });
                       }}
+                      size="large"
                     >
                       <AddIcon style={{ fontSize: 80 }} color="primary" />
                     </IconButton>
@@ -689,17 +696,17 @@ export default function CartReview(props) {
                         );
                       })}
                       {/* {buy.product.productionTime && (
-                        <p
-                          style={{
-                            fontSize: "12px",
-                            padding: 0,
-                            margin: 0,
-                          }}
-                        >
-                          <strong> Tiempo de producción estimado: </strong>{" "}
-                          {buy.product.productionTime} días
-                        </p>
-                      )} */}
+                      <p
+                        style={{
+                          fontSize: "12px",
+                          padding: 0,
+                          margin: 0,
+                        }}
+                      >
+                        <strong> Tiempo de producción estimado: </strong>{" "}
+                        {buy.product.productionTime} días
+                      </p>
+                    )} */}
                     </>
                   ) : (
                     <Button

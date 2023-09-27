@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
-import { useHistory, useLocation } from "react-router-dom";
-import Grid from "@material-ui/core/Grid";
-import Paper from "@material-ui/core/Paper";
-import clsx from "clsx";
-import { useTheme } from "@material-ui/core/styles";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
-import { makeStyles } from "@material-ui/core/styles";
-import Fab from "@material-ui/core/Fab";
-import AddIcon from "@material-ui/icons/Add";
-import ViewListIcon from "@material-ui/icons/ViewList";
-import Modal from "@material-ui/core/Modal";
-import Button from "@material-ui/core/Button";
+import { useNavigate, useLocation } from "react-router-dom";
+import Grid from "@mui/material/Grid";
+import Paper from "@mui/material/Paper";
+import clsx from "classnames";
+import { useTheme } from "@mui/material/styles";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import makeStyles from "@mui/styles/makeStyles";
+import Fab from "@mui/material/Fab";
+import AddIcon from "@mui/icons-material/Add";
+import ViewListIcon from "@mui/icons-material/ViewList";
+import Modal from "@mui/material/Modal";
+import Button from "@mui/material/Button";
 import MDEditor from "@uiw/react-md-editor";
 
 import CreateProduct from "../../productCrud/createProduct";
@@ -124,7 +124,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Products(props) {
   const classes = useStyles();
-  const history = useHistory();
+  const history = useNavigate();
   const location = useLocation();
   const theme = useTheme();
 

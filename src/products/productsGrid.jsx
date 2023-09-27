@@ -1,27 +1,27 @@
 //[]      17. Búsqueda de Prixers.
 
 import React, { useState, useEffect } from "react";
-import { makeStyles } from "@material-ui/core/styles";
+import makeStyles from "@mui/styles/makeStyles";
 import Carousel from "react-material-ui-carousel";
-import Card from "@material-ui/core/Card";
-import CardActions from "@material-ui/core/CardActions";
-import CardContent from "@material-ui/core/CardContent";
-import CardMedia from "@material-ui/core/CardMedia";
-import Button from "@material-ui/core/Button";
-import Typography from "@material-ui/core/Typography";
-import WhatsAppIcon from "@material-ui/icons/WhatsApp";
+import Card from "@mui/material/Card";
+import CardActions from "@mui/material/CardActions";
+import CardContent from "@mui/material/CardContent";
+import CardMedia from "@mui/material/CardMedia";
+import Button from "@mui/material/Button";
+import Typography from "@mui/material/Typography";
+import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 import utils from "../utils/utils";
 import axios from "axios";
-import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
-import ArrowForwardIosIcon from "@material-ui/icons/ArrowForwardIos";
-import MaximizeIcon from "@material-ui/icons/Maximize";
+import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
+import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+import MaximizeIcon from "@mui/icons-material/Maximize";
 import MDEditor from "@uiw/react-md-editor";
-import Grid from "@material-ui/core/Grid";
-import InputLabel from "@material-ui/core/InputLabel";
-import FormControl from "@material-ui/core/FormControl";
-import Select from "@material-ui/core/Select";
-import MenuItem from "@material-ui/core/MenuItem";
-import TextField from "@material-ui/core/TextField";
+import Grid from "@mui/material/Grid";
+import InputLabel from "@mui/material/InputLabel";
+import FormControl from "@mui/material/FormControl";
+import Select from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
+import TextField from "@mui/material/TextField";
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
 import {
   setProductAtts,
@@ -29,9 +29,9 @@ import {
   getAttributes,
   getEquation,
 } from "./services.js";
-import AddShoppingCartIcon from "@material-ui/icons/ShoppingCart";
-import { useHistory } from "react-router-dom";
-import Switch from "@material-ui/core/Switch";
+import AddShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import { useNavigate } from "react-router-dom";
+import Switch from "@mui/material/Switch";
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -158,7 +158,7 @@ export default function ProductGrid(props) {
   const [width, setWidth] = useState([]);
   const [height, setHeight] = useState([]);
   const [order, setOrder] = useState("");
-  const history = useHistory();
+  const history = useNavigate();
   // const [dollarValue, setDollarValue] = useState(1);
   const [currency, setCurrency] = useState(false);
 
@@ -952,7 +952,7 @@ export default function ProductGrid(props) {
         JSON.parse(localStorage.getItem("adminToken"))) &&
       (JSON.parse(localStorage.getItem("token"))?.username ||
         JSON.parse(localStorage.getItem("adminToken"))?.username) &&
-      item.attributes !== [] &&
+      item.attributes[0] !== null &&
       item.prixerPrice.to !== item.prixerPrice.from &&
       item.prixerPrice.to !== "" &&
       item.prixerPrice.to !== null &&
@@ -981,7 +981,7 @@ export default function ProductGrid(props) {
         JSON.parse(localStorage.getItem("adminToken"))) &&
       (JSON.parse(localStorage.getItem("token"))?.username ||
         JSON.parse(localStorage.getItem("adminToken"))?.username) &&
-      item.attributes !== [] &&
+      item.attributes[0] !== null &&
       item.prixerPrice.to !== item.prixerPrice.from &&
       item.prixerPrice.to !== "" &&
       item.prixerPrice.to !== null
@@ -1048,7 +1048,7 @@ export default function ProductGrid(props) {
         })
       );
     } else if (
-      item.attributes !== [] &&
+      item.attributes[0] !== null &&
       item.publicPrice.to !== item.publicPrice.from &&
       item.publicPrice.to !== "" &&
       item.publicPrice.to !== null &&
@@ -1073,7 +1073,7 @@ export default function ProductGrid(props) {
         )
       );
     } else if (
-      item.attributes !== [] &&
+      item.attributes[0] !== null &&
       item.publicPrice.to !== item.publicPrice.from &&
       item.publicPrice.to !== "" &&
       item.publicPrice.to !== null

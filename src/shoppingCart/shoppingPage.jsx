@@ -1,26 +1,27 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import AppBar from "../sharedComponents/appBar/appBar";
-import Button from "@material-ui/core/Button";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
-import Grid from "@material-ui/core/Grid";
-import Paper from "@material-ui/core/Paper";
-import Container from "@material-ui/core/Container";
-import CssBaseline from "@material-ui/core/CssBaseline";
-import Stepper from "@material-ui/core/Stepper";
-import Step from "@material-ui/core/Step";
-import StepLabel from "@material-ui/core/StepLabel";
-import { useHistory } from "react-router-dom";
-import { Typography } from "@material-ui/core";
-import { Backdrop } from "@material-ui/core";
-import CircularProgress from "@material-ui/core/CircularProgress";
+import Button from "@mui/material/Button";
+import { useTheme } from "@mui/material/styles";
+import makeStyles from "@mui/styles/makeStyles";
+import Grid from "@mui/material/Grid";
+import Paper from "@mui/material/Paper";
+import Container from "@mui/material/Container";
+import CssBaseline from "@mui/material/CssBaseline";
+import Stepper from "@mui/material/Stepper";
+import Step from "@mui/material/Step";
+import StepLabel from "@mui/material/StepLabel";
+import { useNavigate } from "react-router-dom";
+import { Typography } from "@mui/material";
+import { Backdrop } from "@mui/material";
+import CircularProgress from "@mui/material/CircularProgress";
 import ConsumerForm from "./consumerForm";
 import OrderForm from "./orderForm";
 import CartReview from "./cartReview";
 import { nanoid } from "nanoid";
 import validations from "./validations";
-import Switch from "@material-ui/core/Switch";
-import { Alert } from "@material-ui/lab";
+import Switch from "@mui/material/Switch";
+import { Alert } from "@mui/material";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -127,7 +128,7 @@ const useStyles = makeStyles((theme) => ({
 export default function ShoppingPage(props) {
   const prixerUsername = "all";
   const classes = useStyles();
-  const history = useHistory();
+  const history = useNavigate();
   const theme = useTheme();
   const [orderPaymentMethod, setOrderPaymentMethod] = useState(undefined);
   const [observations, setObservations] = useState();

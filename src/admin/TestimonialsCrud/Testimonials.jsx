@@ -1,28 +1,29 @@
 import { React, useState, useEffect } from "react";
 import axios from "axios";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
-import { Backdrop } from "@material-ui/core";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import Paper from "@material-ui/core/Paper";
-import Grid from "@material-ui/core/Grid";
-import Box from "@material-ui/core/Box";
-import TextField from "@material-ui/core/TextField";
-import AppBar from "@material-ui/core/AppBar";
-import Button from "@material-ui/core/Button";
-import InputLabel from "@material-ui/core/InputLabel";
-import Select from "@material-ui/core/Select";
-import MenuItem from "@material-ui/core/MenuItem";
-import Switch from "@material-ui/core/Switch";
-import Typography from "@material-ui/core/Typography";
-import Avatar from "@material-ui/core/Avatar";
-import AddIcon from "@material-ui/icons/Add";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
-import FormGroup from "@material-ui/core/FormGroup";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import DeleteIcon from "@material-ui/icons/Delete";
-import EditIcon from "@material-ui/icons/Edit";
-import Snackbar from "@material-ui/core/Snackbar";
-import IconButton from "@material-ui/core/IconButton";
+import { useTheme } from "@mui/material/styles";
+import makeStyles from '@mui/styles/makeStyles';
+import { Backdrop } from "@mui/material";
+import CircularProgress from "@mui/material/CircularProgress";
+import Paper from "@mui/material/Paper";
+import Grid from "@mui/material/Grid";
+import Box from "@mui/material/Box";
+import TextField from "@mui/material/TextField";
+import AppBar from "@mui/material/AppBar";
+import Button from "@mui/material/Button";
+import InputLabel from "@mui/material/InputLabel";
+import Select from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
+import Switch from "@mui/material/Switch";
+import Typography from "@mui/material/Typography";
+import Avatar from "@mui/material/Avatar";
+import AddIcon from "@mui/icons-material/Add";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import FormGroup from "@mui/material/FormGroup";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
+import Snackbar from "@mui/material/Snackbar";
+import IconButton from "@mui/material/IconButton";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
 function getStyles(type, theme) {
@@ -67,7 +68,7 @@ const useStyles = makeStyles((theme) => ({
     height: 80,
   },
   snackbar: {
-    [theme.breakpoints.down("xs")]: {
+    [theme.breakpoints.down('sm')]: {
       bottom: 90,
     },
     margin: {
@@ -291,7 +292,7 @@ export default function Testimonials(props) {
     setLoading(false);
     readTestimonial();
   };
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
   const reorder = (list, startIndex, endIndex) => {
     const result = [...list];
@@ -623,7 +624,7 @@ export default function Testimonials(props) {
                                                 tile._id
                                               )
                                             }
-                                          >
+                                            size="large">
                                             <EditIcon color={"secondary"} />
                                           </IconButton>
                                           {props.permissions
@@ -632,7 +633,7 @@ export default function Testimonials(props) {
                                               onClick={() =>
                                                 deleteTestimonial(tile._id)
                                               }
-                                            >
+                                              size="large">
                                               <DeleteIcon color={"secondary"} />
                                             </IconButton>
                                           )}

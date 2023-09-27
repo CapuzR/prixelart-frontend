@@ -1,22 +1,24 @@
-import { red } from "@material-ui/core/colors";
-import { createTheme } from "@material-ui/core/styles";
+import { red } from "@mui/material/colors";
+import { createTheme, adaptV4Theme } from "@mui/material/styles";
 
 // A custom theme for this app
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: "#d33f49",
+const theme = createTheme(
+  adaptV4Theme({
+    palette: {
+      primary: {
+        main: "#d33f49",
+      },
+      secondary: {
+        main: "#404e5c",
+      },
+      error: {
+        main: red.A400,
+      },
+      background: {
+        default: "#fff",
+      },
     },
-    secondary: {
-      main: "#404e5c",
-    },
-    error: {
-      main: red.A400,
-    },
-    background: {
-      default: "#fff",
-    },
-  },
-});
+  })
+);
 
 export default theme;

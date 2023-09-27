@@ -1,22 +1,22 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import Grid from "@material-ui/core/Grid";
-import { useTheme } from "@material-ui/core/styles";
-import { makeStyles } from "@material-ui/core/styles";
-import Typography from "@material-ui/core/Typography";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
-import Button from "@material-ui/core/Button";
-import MenuItem from "@material-ui/core/MenuItem";
-import Select from "@material-ui/core/Select";
-import FormControl from "@material-ui/core/FormControl";
-import InputLabel from "@material-ui/core/InputLabel";
-import TextField from "@material-ui/core/TextField";
-import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemText from "@material-ui/core/ListItemText";
-import Collapse from "@material-ui/core/Collapse";
-import Divider from "@material-ui/core/Divider";
-import Switch from "@material-ui/core/Switch";
+import Grid from "@mui/material/Grid";
+import { useTheme } from "@mui/material/styles";
+import makeStyles from '@mui/styles/makeStyles';
+import Typography from "@mui/material/Typography";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import Button from "@mui/material/Button";
+import MenuItem from "@mui/material/MenuItem";
+import Select from "@mui/material/Select";
+import FormControl from "@mui/material/FormControl";
+import InputLabel from "@mui/material/InputLabel";
+import TextField from "@mui/material/TextField";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemText from "@mui/material/ListItemText";
+import Collapse from "@mui/material/Collapse";
+import Divider from "@mui/material/Divider";
+import Switch from "@mui/material/Switch";
 
 const drawerWidth = 240;
 
@@ -208,7 +208,7 @@ const useStyles = makeStyles((theme) => ({
     padding: "1px",
   },
   snackbar: {
-    [theme.breakpoints.down("xs")]: {
+    [theme.breakpoints.down('sm')]: {
       bottom: 90,
     },
     margin: {
@@ -227,7 +227,7 @@ export default function Checkout(props) {
   const theme = useTheme();
 
   const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const isMobile = useMediaQuery(theme.breakpoints.down('lg'));
 
   const [currency, setCurrency] = useState(false);
   const [paymentMethods, setPaymentMethods] = useState(undefined);
@@ -334,17 +334,15 @@ export default function Checkout(props) {
     )[0];
 
     if (product.modifyPrice && currency) {
-      return (
-        " Bs" +
-        Number(
-          product.publicEquation.replace(/[,]/gi, ".") *
-            (quantity || 1) *
-            props.dollarValue
-        ).toLocaleString("de-DE", {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        })
-      );
+      return " Bs" +
+      Number(
+        product.publicEquation.replace(/[,]/gi, ".") *
+          (quantity || 1) *
+          props.dollarValue
+      ).toLocaleString("de-DE", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
     } else if (product.modifyPrice) {
       return (
         " $" +
@@ -490,15 +488,13 @@ export default function Checkout(props) {
         })
       );
     } else {
-      return (
-        " $" +
-        Number(
-          product.publicPrice.from.replace(/[$]/gi, "") * quantity
-        ).toLocaleString("de-DE", {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        })
-      );
+      return " $" +
+      Number(
+        product.publicPrice.from.replace(/[$]/gi, "") * quantity
+      ).toLocaleString("de-DE", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
     }
   };
 

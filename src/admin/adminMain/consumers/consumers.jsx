@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { useHistory, useLocation } from "react-router-dom";
-import Grid from "@material-ui/core/Grid";
-import Paper from "@material-ui/core/Paper";
-import clsx from "clsx";
-
-import { makeStyles } from "@material-ui/core/styles";
-import Fab from "@material-ui/core/Fab";
-import AddIcon from "@material-ui/icons/Add";
-import ViewListIcon from "@material-ui/icons/ViewList";
+import { useNavigate, useLocation } from "react-router-dom";
+import Grid from "@mui/material/Grid";
+import Paper from "@mui/material/Paper";
+import clsx from "classnames";
+import makeStyles from "@mui/styles/makeStyles";
+import Fab from "@mui/material/Fab";
+import AddIcon from "@mui/icons-material/Add";
+import ViewListIcon from "@mui/icons-material/ViewList";
 import CreateConsumer from "../../consumerCrud/createConsumer";
 import UpdateConsumer from "../../consumerCrud/updateConsumer";
 import ReadConsumers from "../../consumerCrud/readConsumers";
@@ -102,7 +101,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Consumers(props) {
   const classes = useStyles();
-  const history = useHistory();
+  const history = useNavigate();
   const location = useLocation();
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
   const [activeCrud, setActiveCrud] = useState("read");

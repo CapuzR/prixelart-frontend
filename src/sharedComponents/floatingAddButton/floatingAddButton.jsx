@@ -1,8 +1,8 @@
 import React from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import Fab from "@material-ui/core/Fab";
-import AddPhotoAlternateIcon from "@material-ui/icons/AddPhotoAlternate";
-import ShoppingCartOutlinedIcon from "@material-ui/icons/ShoppingCartOutlined";
+import makeStyles from '@mui/styles/makeStyles';
+import Fab from "@mui/material/Fab";
+import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
+import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
 
 const useStyles = makeStyles((theme) => ({
   root: {

@@ -1,32 +1,32 @@
 import React from "react";
 import { useState } from "react";
-import { makeStyles } from "@material-ui/core/styles";
+import makeStyles from "@mui/styles/makeStyles";
 import Title from "../adminMain/Title";
 import axios from "axios";
-import IconButton from "@material-ui/core/IconButton";
-import TextField from "@material-ui/core/TextField";
-import InputLabel from "@material-ui/core/InputLabel";
-import Button from "@material-ui/core/Button";
-import Grid from "@material-ui/core/Grid";
-import Snackbar from "@material-ui/core/Snackbar";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import EditIcon from "@material-ui/icons/Edit";
-import { useTheme } from "@material-ui/core/styles";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
-import Dialog from "@material-ui/core/Dialog";
-import DialogActions from "@material-ui/core/DialogActions";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogContentText from "@material-ui/core/DialogContentText";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import FormControl from "@material-ui/core/FormControl";
-import clsx from "clsx";
+import IconButton from "@mui/material/IconButton";
+import TextField from "@mui/material/TextField";
+import InputLabel from "@mui/material/InputLabel";
+import Button from "@mui/material/Button";
+import Grid from "@mui/material/Grid";
+import Snackbar from "@mui/material/Snackbar";
+import CircularProgress from "@mui/material/CircularProgress";
+import EditIcon from "@mui/icons-material/Edit";
+import { useTheme } from "@mui/material/styles";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
+import FormControl from "@mui/material/FormControl";
+import clsx from "classnames";
 import validations from "../../shoppingCart/validations";
-import HighlightOffOutlinedIcon from "@material-ui/icons/HighlightOffOutlined";
-import Checkbox from "@material-ui/core/Checkbox";
-import Backdrop from "@material-ui/core/Backdrop";
+import HighlightOffOutlinedIcon from "@mui/icons-material/HighlightOffOutlined";
+import Checkbox from "@mui/material/Checkbox";
+import Backdrop from "@mui/material/Backdrop";
 import MDEditor from "@uiw/react-md-editor";
-import { useHistory } from "react-router-dom";
-import Paper from "@material-ui/core/Paper";
+import { useNavigate } from "react-router-dom";
+import Paper from "@mui/material/Paper";
 
 const useStyles = makeStyles((theme) => ({
   seeMore: {
@@ -347,6 +347,7 @@ export default function CreateProduct() {
                           className={classes.buttonImgLoader}
                           style={{ color: "#d33f49" }}
                           component="label"
+                          size="large"
                         >
                           <input
                             name="productImages"
@@ -373,6 +374,7 @@ export default function CreateProduct() {
                             });
                             newImages({ images: images.images });
                           }}
+                          size="large"
                         >
                           <HighlightOffOutlinedIcon />
                         </IconButton>
@@ -413,6 +415,7 @@ export default function CreateProduct() {
                         }}
                         component="label"
                         onClick={handleClickOpen}
+                        size="large"
                       >
                         <EditIcon />
                       </IconButton>
@@ -424,6 +427,7 @@ export default function CreateProduct() {
                         onClick={(d) => {
                           setVideoUrl(undefined);
                         }}
+                        size="large"
                       >
                         <HighlightOffOutlinedIcon />
                       </IconButton>
@@ -565,7 +569,6 @@ export default function CreateProduct() {
                     ))}
                   <Button
                     variant="contained"
-                    color="default"
                     onClick={() => {
                       setSpecialVars(
                         specialVars.concat({

@@ -1,31 +1,32 @@
 import { React, useState, useEffect } from "react";
 import axios from "axios";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import Paper from "@material-ui/core/Paper";
-import AppBar from "@material-ui/core/AppBar";
-import Grid from "@material-ui/core/Grid";
-import Box from "@material-ui/core/Box";
-import Switch from "@material-ui/core/Switch";
-import Typography from "@material-ui/core/Typography";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
-import Snackbar from "@material-ui/core/Snackbar";
-import Backdrop from "@material-ui/core/Backdrop";
-import Card from "@material-ui/core/Card";
-import CardContent from "@material-ui/core/CardContent";
-import CardMedia from "@material-ui/core/CardMedia";
-import Button from "@material-ui/core/Button";
-import Modal from "@material-ui/core/Modal";
-import IconButton from "@material-ui/core/IconButton";
-import CloseIcon from "@material-ui/icons/Close";
-import TextField from "@material-ui/core/TextField";
-import InputAdornment from "@material-ui/core/InputAdornment";
-import DehazeIcon from "@material-ui/icons/Dehaze";
-import Table from "@material-ui/core/Table";
-import TableBody from "@material-ui/core/TableBody";
-import TableCell from "@material-ui/core/TableCell";
-import TableHead from "@material-ui/core/TableHead";
-import TableRow from "@material-ui/core/TableRow";
+import { useTheme } from "@mui/material/styles";
+import makeStyles from '@mui/styles/makeStyles';
+import CircularProgress from "@mui/material/CircularProgress";
+import Paper from "@mui/material/Paper";
+import AppBar from "@mui/material/AppBar";
+import Grid from "@mui/material/Grid";
+import Box from "@mui/material/Box";
+import Switch from "@mui/material/Switch";
+import Typography from "@mui/material/Typography";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import Snackbar from "@mui/material/Snackbar";
+import Backdrop from "@mui/material/Backdrop";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import CardMedia from "@mui/material/CardMedia";
+import Button from "@mui/material/Button";
+import Modal from "@mui/material/Modal";
+import IconButton from "@mui/material/IconButton";
+import CloseIcon from "@mui/icons-material/Close";
+import TextField from "@mui/material/TextField";
+import InputAdornment from "@mui/material/InputAdornment";
+import DehazeIcon from "@mui/icons-material/Dehaze";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
 
 import { nanoid } from "nanoid";
 
@@ -57,7 +58,7 @@ const useStyles = makeStyles((theme) => ({
     margin: "15px",
   },
   snackbar: {
-    [theme.breakpoints.down("xs")]: {
+    [theme.breakpoints.down('sm')]: {
       bottom: 90,
     },
     margin: {
@@ -130,7 +131,7 @@ export default function Prixers(props) {
   const [loading, setLoading] = useState(false);
   const [tiles, setTiles] = useState([]);
   const [backdrop, setBackdrop] = useState(true);
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
   // const isDeskTop = useMediaQuery(theme.breakpoints.up("sm"));
   const [state, setState] = useState({
@@ -588,7 +589,7 @@ export default function Prixers(props) {
                   selectedPrixer?.lastName}
               </Typography>
 
-              <IconButton onClick={handleClose}>
+              <IconButton onClick={handleClose} size="large">
                 <CloseIcon />
               </IconButton>
             </div>
@@ -648,7 +649,7 @@ export default function Prixers(props) {
                   selectedPrixer?.lastName}
               </Typography>
 
-              <IconButton onClick={handleClose}>
+              <IconButton onClick={handleClose} size="large">
                 <CloseIcon />
               </IconButton>
             </div>
@@ -741,7 +742,7 @@ export default function Prixers(props) {
               {" " + selectedPrixer?.firstName + " " + selectedPrixer?.lastName}
             </Typography>
 
-            <IconButton onClick={handleClose}>
+            <IconButton onClick={handleClose} size="large">
               <CloseIcon />
             </IconButton>
           </div>

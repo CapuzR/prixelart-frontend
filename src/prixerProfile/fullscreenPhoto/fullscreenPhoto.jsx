@@ -1,44 +1,45 @@
 import React, { useState, useEffect } from "react";
-import { useHistory } from "react-router-dom";
-import { makeStyles, withStyles } from "@material-ui/core/styles";
-import Card from "@material-ui/core/Card";
-import CardActionArea from "@material-ui/core/CardActionArea";
-import CardActions from "@material-ui/core/CardActions";
-import CardContent from "@material-ui/core/CardContent";
-import Button from "@material-ui/core/Button";
-import Typography from "@material-ui/core/Typography";
+import { useNavigate } from "react-router-dom";
+import makeStyles from "@mui/styles/makeStyles";
+import withStyles from "@mui/styles/withStyles";
+import Card from "@mui/material/Card";
+import CardActionArea from "@mui/material/CardActionArea";
+import CardActions from "@mui/material/CardActions";
+import CardContent from "@mui/material/CardContent";
+import Button from "@mui/material/Button";
+import Typography from "@mui/material/Typography";
 import axios from "axios";
 import AppBar from "../../sharedComponents/appBar/appBar";
-import Container from "@material-ui/core/Container";
-import Grid from "@material-ui/core/Grid";
-import TextField from "@material-ui/core/TextField";
-import Snackbar from "@material-ui/core/Snackbar";
-import Autocomplete from "@material-ui/lab/Autocomplete";
-import CircularProgress from "@material-ui/core/CircularProgress";
+import Container from "@mui/material/Container";
+import Grid from "@mui/material/Grid";
+import TextField from "@mui/material/TextField";
+import Snackbar from "@mui/material/Snackbar";
+import Autocomplete from "@mui/material/Autocomplete";
+import CircularProgress from "@mui/material/CircularProgress";
 import FloatingAddButton from "../../sharedComponents/floatingAddButton/floatingAddButton";
 import ArtUploader from "../../sharedComponents/artUploader/artUploader";
-import WhatsAppIcon from "@material-ui/icons/WhatsApp";
-import ShareIcon from "@material-ui/icons/Share";
+import WhatsAppIcon from "@mui/icons-material/WhatsApp";
+import ShareIcon from "@mui/icons-material/Share";
 import utils from "../../utils/utils";
-import MenuItem from "@material-ui/core/MenuItem";
-import FormControl from "@material-ui/core/FormControl";
-import InputLabel from "@material-ui/core/InputLabel";
-import Select from "@material-ui/core/Select";
+import MenuItem from "@mui/material/MenuItem";
+import FormControl from "@mui/material/FormControl";
+import InputLabel from "@mui/material/InputLabel";
+import Select from "@mui/material/Select";
 import Img from "react-cool-img";
-import Dialog from "@material-ui/core/Dialog";
-import DialogActions from "@material-ui/core/DialogActions";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogContentText from "@material-ui/core/DialogContentText";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import Switch from "@material-ui/core/Switch";
-import Chip from "@material-ui/core/Chip";
-import Modal from "@material-ui/core/Modal";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
+import Switch from "@mui/material/Switch";
+import Chip from "@mui/material/Chip";
+import Modal from "@mui/material/Modal";
 import MDEditor from "@uiw/react-md-editor";
-import AddShoppingCartIcon from "@material-ui/icons/AddShoppingCart";
+import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 import CartReview from "../../shoppingCart/cartReview";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
-import { useTheme } from "@material-ui/core/styles";
-import Box from "@material-ui/core/Box";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import { useTheme } from "@mui/material/styles";
+import Box from "@mui/material/Box";
 
 const IOSSwitch = withStyles((theme) => ({
   root: {
@@ -135,7 +136,7 @@ const photoIsos = ["100", "200", "400"];
 
 export default function FullscreenPhoto(props) {
   const classes = useStyles();
-  const history = useHistory();
+  const history = useNavigate();
   const theme = useTheme();
   const globalParams = new URLSearchParams(window.location.pathname);
 
@@ -610,7 +611,7 @@ export default function FullscreenPhoto(props) {
                               padding: 0,
                               margin: 0,
                             }}
-                            justify="space-between"
+                            justifyContent="space-between"
                           >
                             <Typography
                               style={{
@@ -678,7 +679,7 @@ export default function FullscreenPhoto(props) {
                             container
                             xs={12}
                             sm={12}
-                            justify="space-between"
+                            justifyContent="space-between"
                             style={{ textAlign: "left", padding: 0, margin: 0 }}
                           >
                             <Grid
@@ -988,7 +989,7 @@ export default function FullscreenPhoto(props) {
                               padding: 0,
                               margin: 0,
                             }}
-                            justify="space-between"
+                            justifyContent="space-between"
                           >
                             <Typography
                               style={{
@@ -1027,7 +1028,7 @@ export default function FullscreenPhoto(props) {
                             container
                             xs={12}
                             sm={12}
-                            justify="space-between"
+                            justifyContent="space-between"
                             style={{ textAlign: "left", padding: 0, margin: 0 }}
                           >
                             <Grid
@@ -1257,7 +1258,7 @@ export default function FullscreenPhoto(props) {
                                       xs={12}
                                       sm={12}
                                       style={{ paddingTop: 15 }}
-                                      justify="space-between"
+                                      justifyContent="space-between"
                                     >
                                       <Grid item xs={5} sm={5}>
                                         <TextField
@@ -1322,7 +1323,7 @@ export default function FullscreenPhoto(props) {
                                   xs={12}
                                   sm={12}
                                   style={{ paddingTop: 15 }}
-                                  justify="space-between"
+                                  justifyContent="space-between"
                                 >
                                   <Grid item xs={5} sm={5}>
                                     <TextField
@@ -1387,7 +1388,7 @@ export default function FullscreenPhoto(props) {
                                 item
                                 container
                                 xs={12}
-                                justify="space-between"
+                                justifyContent="space-between"
                               >
                                 <Grid
                                   item

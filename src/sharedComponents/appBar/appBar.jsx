@@ -1,26 +1,26 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import clsx from "clsx";
+import clsx from "classnames";
+import { useNavigate } from "react-router-dom";
 
-import { useHistory } from "react-router-dom";
-
-import { makeStyles, useTheme } from "@material-ui/core/styles";
-import AppBar from "@material-ui/core/AppBar";
-import Toolbar from "@material-ui/core/Toolbar";
-import IconButton from "@material-ui/core/IconButton";
-import AccountCircle from "@material-ui/icons/AccountCircle";
-import MenuItem from "@material-ui/core/MenuItem";
-import Menu from "@material-ui/core/Menu";
-import Tabs from "@material-ui/core/Tabs";
-import Tab from "@material-ui/core/Tab";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
+import { useTheme } from "@mui/material/styles";
+import makeStyles from "@mui/styles/makeStyles";
+import AppBar from "@mui/material/AppBar";
+import Toolbar from "@mui/material/Toolbar";
+import IconButton from "@mui/material/IconButton";
+import AccountCircle from "@mui/icons-material/AccountCircle";
+import MenuItem from "@mui/material/MenuItem";
+import Menu from "@mui/material/Menu";
+import Tabs from "@mui/material/Tabs";
+import Tab from "@mui/material/Tab";
+import useMediaQuery from "@mui/material/useMediaQuery";
 // import utils from "../../utils/utils";
-import Drawer from "@material-ui/core/Drawer";
-import Divider from "@material-ui/core/Divider";
-import MenuIcon from "@material-ui/icons/Menu";
-import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
-import ChevronRightIcon from "@material-ui/icons/ChevronRight";
-import ArrowBackIcon from "@material-ui/icons/ArrowBack";
+import Drawer from "@mui/material/Drawer";
+import Divider from "@mui/material/Divider";
+import MenuIcon from "@mui/icons-material/Menu";
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import logo from "./Logotipo_Prixelart_H#2.png";
 
 const drawerWidth = 240;
@@ -113,9 +113,9 @@ export default function MenuAppBar(props) {
   const theme = useTheme();
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const history = useHistory();
+  const history = useNavigate();
   const open = Boolean(anchorEl);
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const isMobile = useMediaQuery(theme.breakpoints.down("lg"));
   const [open2, setOpen] = React.useState(false);
   const [avatar, setAvatar] = useState("");
   const handleMenu = (event) => {
@@ -231,10 +231,15 @@ export default function MenuAppBar(props) {
                 aria-label="open drawer"
                 onClick={handleDrawerOpen}
                 className={clsx(classes.menuButton, open2 && classes.hide)}
+                size="large"
               >
                 <MenuIcon />
               </IconButton>
-              <IconButton className={classes.a} onClick={handleMain}>
+              <IconButton
+                className={classes.a}
+                onClick={handleMain}
+                size="large"
+              >
                 <img src={logo} alt="Prixelart logo" style={{ width: 100 }} />
               </IconButton>
               <IconButton
@@ -243,6 +248,7 @@ export default function MenuAppBar(props) {
                 aria-haspopup="true"
                 onClick={handleBack}
                 color="inherit"
+                size="large"
               >
                 <ArrowBackIcon edge="end" />
               </IconButton>
@@ -258,7 +264,7 @@ export default function MenuAppBar(props) {
             }}
           >
             <div className={classes.drawerHeader}>
-              <IconButton onClick={handleDrawerClose}>
+              <IconButton onClick={handleDrawerClose} size="large">
                 {theme.direction === "ltr" ? (
                   <ChevronLeftIcon />
                 ) : (
@@ -361,7 +367,7 @@ export default function MenuAppBar(props) {
       ) : (
         <AppBar position="fixed" color="secondary">
           <Toolbar style={{ display: "flex", justifyContent: "space-between" }}>
-            <IconButton className={classes.a} onClick={handleMain}>
+            <IconButton className={classes.a} onClick={handleMain} size="large">
               <img src={logo} alt="Prixelart logo" style={{ width: 100 }} />
             </IconButton>
 
@@ -405,6 +411,7 @@ export default function MenuAppBar(props) {
                 aria-haspopup="true"
                 onClick={handleBack}
                 color="inherit"
+                size="large"
               >
                 <ArrowBackIcon edge="end" />
               </IconButton>

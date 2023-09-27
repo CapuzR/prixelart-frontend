@@ -1,22 +1,22 @@
 import React, { useEffect, useState } from "react";
-import { useHistory, useLocation } from "react-router-dom";
-import clsx from "clsx";
-import { makeStyles } from "@material-ui/core/styles";
-import CssBaseline from "@material-ui/core/CssBaseline";
-import Drawer from "@material-ui/core/Drawer";
-import Box from "@material-ui/core/Box";
-import AppBar from "@material-ui/core/AppBar";
-import Toolbar from "@material-ui/core/Toolbar";
-import List from "@material-ui/core/List";
-import Typography from "@material-ui/core/Typography";
-import Divider from "@material-ui/core/Divider";
-import IconButton from "@material-ui/core/IconButton";
-import Badge from "@material-ui/core/Badge";
-import Container from "@material-ui/core/Container";
-import Link from "@material-ui/core/Link";
-import MenuIcon from "@material-ui/icons/Menu";
-import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
-import NotificationsIcon from "@material-ui/icons/Notifications";
+import { useNavigate, useLocation } from "react-router-dom";
+import clsx from "classnames";
+import makeStyles from "@mui/styles/makeStyles";
+import CssBaseline from "@mui/material/CssBaseline";
+import Drawer from "@mui/material/Drawer";
+import Box from "@mui/material/Box";
+import AppBar from "@mui/material/AppBar";
+import Toolbar from "@mui/material/Toolbar";
+import List from "@mui/material/List";
+import Typography from "@mui/material/Typography";
+import Divider from "@mui/material/Divider";
+import IconButton from "@mui/material/IconButton";
+import Badge from "@mui/material/Badge";
+import Container from "@mui/material/Container";
+import Link from "@mui/material/Link";
+import MenuIcon from "@mui/icons-material/Menu";
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import NotificationsIcon from "@mui/icons-material/Notifications";
 import MainListItems from "./listItems";
 import Dashboard from "./dashboard/dashboard";
 import AdminUser from "./adminUser/adminUser";
@@ -29,14 +29,14 @@ import Testimonials from "../TestimonialsCrud/Testimonials";
 import Prixers from "./prixers/prixers";
 import ShippingMethods from "./shippingMethodCrud/readShippingMethod";
 import Movements from "./movements/readMovements";
-import Fab from "@material-ui/core/Fab";
-import AttachMoneyIcon from "@material-ui/icons/AttachMoney";
-import Modal from "@material-ui/core/Modal";
-import CloseIcon from "@material-ui/icons/Close";
-import Grid from "@material-ui/core/Grid";
-import TextField from "@material-ui/core/TextField";
-import SaveIcon from "@material-ui/icons/Save";
-import Tooltip from "@material-ui/core/Tooltip";
+import Fab from "@mui/material/Fab";
+import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
+import Modal from "@mui/material/Modal";
+import CloseIcon from "@mui/icons-material/Close";
+import Grid from "@mui/material/Grid";
+import TextField from "@mui/material/TextField";
+import SaveIcon from "@mui/icons-material/Save";
+import Tooltip from "@mui/material/Tooltip";
 import validations from "../../shoppingCart/validations";
 import axios from "axios";
 
@@ -174,7 +174,7 @@ export default function AdminMain(props) {
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState("user");
   const location = useLocation();
-  const history = useHistory();
+  const history = useNavigate();
   const [permissions, setPermissions] = useState();
   const [openDollarView, setOpenDollarView] = useState(false);
 
@@ -252,6 +252,7 @@ export default function AdminMain(props) {
                   classes.menuButton,
                   open && classes.menuButtonHidden
                 )}
+                size="large"
               >
                 <MenuIcon />
               </IconButton>
@@ -264,7 +265,7 @@ export default function AdminMain(props) {
               >
                 Administración
               </Typography>
-              <IconButton color="inherit">
+              <IconButton color="inherit" size="large">
                 <Badge overlap="rectangular" badgeContent={4} color="secondary">
                   <NotificationsIcon />
                 </Badge>
@@ -282,7 +283,7 @@ export default function AdminMain(props) {
             open={open}
           >
             <div className={classes.toolbarIcon}>
-              <IconButton onClick={handleDrawerClose}>
+              <IconButton onClick={handleDrawerClose} size="large">
                 <ChevronLeftIcon />
               </IconButton>
             </div>
@@ -369,7 +370,7 @@ export default function AdminMain(props) {
                 <div style={{ display: "flex", alignItems: "center" }}>
                   <Typography color="primary">Tasa de cambio BCV</Typography>
 
-                  <IconButton onClick={handleClose}>
+                  <IconButton onClick={handleClose} size="large">
                     <CloseIcon />
                   </IconButton>
                 </div>

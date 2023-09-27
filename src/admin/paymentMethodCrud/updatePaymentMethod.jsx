@@ -1,18 +1,18 @@
 import React from "react";
 import { useState } from "react";
-import { makeStyles } from "@material-ui/core/styles";
+import makeStyles from "@mui/styles/makeStyles";
 import Title from "../adminMain/Title";
 import axios from "axios";
-import TextField from "@material-ui/core/TextField";
-import Button from "@material-ui/core/Button";
-import Grid from "@material-ui/core/Grid";
-import Snackbar from "@material-ui/core/Snackbar";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import FormControl from "@material-ui/core/FormControl";
-import clsx from "clsx";
-import Checkbox from "@material-ui/core/Checkbox";
-import { useHistory } from "react-router-dom";
-import Backdrop from "@material-ui/core/Backdrop";
+import TextField from "@mui/material/TextField";
+import Button from "@mui/material/Button";
+import Grid from "@mui/material/Grid";
+import Snackbar from "@mui/material/Snackbar";
+import CircularProgress from "@mui/material/CircularProgress";
+import FormControl from "@mui/material/FormControl";
+import clsx from "classnames";
+import Checkbox from "@mui/material/Checkbox";
+import { useNavigate } from "react-router-dom";
+import Backdrop from "@mui/material/Backdrop";
 
 const useStyles = makeStyles((theme) => ({
   seeMore: {
@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function UpdatePaymentMethod(props) {
   const classes = useStyles();
-  const history = useHistory();
+  const history = useNavigate();
   const [active, setActive] = useState(props.paymentMethod.active);
   // const [ id, setId ] = useState(props.paymentMethod._id);
   const [name, setName] = useState(props.paymentMethod.name);

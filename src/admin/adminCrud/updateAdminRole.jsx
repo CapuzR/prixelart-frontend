@@ -1,18 +1,23 @@
 import React from "react";
 import { useState } from "react";
-import { useHistory } from "react-router-dom";
-
-import { makeStyles } from "@material-ui/core/styles";
-import Title from "../adminMain/Title";
+import { useNavigate } from "react-router-dom";
+import clsx from "classnames";
 import axios from "axios";
-import TextField from "@material-ui/core/TextField";
-import Button from "@material-ui/core/Button";
-import Grid from "@material-ui/core/Grid";
-import Snackbar from "@material-ui/core/Snackbar";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import FormControl from "@material-ui/core/FormControl";
-import { Switch, Typography } from "@material-ui/core";
-import clsx from "clsx";
+
+import makeStyles from "@mui/styles/makeStyles";
+
+import {
+  TextField,
+  Button,
+  Grid,
+  Snackbar,
+  CircularProgress,
+  FormControl,
+  Switch,
+  Typography,
+} from "@mui/material";
+
+import Title from "../adminMain/Title";
 
 const useStyles = makeStyles((theme) => ({
   seeMore: {
@@ -22,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function UpdateAdminRole(props) {
   const classes = useStyles();
-  const history = useHistory();
+  const history = useNavigate();
   const [area, setArea] = useState(props.admin.area);
   const [detailOrder, setDetailOrder] = useState(
     props.admin.detailOrder || false

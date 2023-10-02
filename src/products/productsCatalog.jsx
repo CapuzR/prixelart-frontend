@@ -90,6 +90,8 @@ export default function ProductsCatalog(props) {
   const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
   const isDeskTop = useMediaQuery(theme.breakpoints.up("sm"));
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isTab = useMediaQuery(theme.breakpoints.down("md"));
+
   const [bestSellers, setBestSellers] = useState();
   const [selectedProduct, setSelectedProduct] = useState(undefined);
   const prixerUsername = "all";
@@ -118,7 +120,7 @@ export default function ProductsCatalog(props) {
   }, []);
 
   const settings = {
-    slidesToShow: isMobile ? 2 : 4,
+    slidesToShow: (isMobile && 2) || (isTab && 3) || (isDesktop && 4),
     slidesToScroll: 1,
     autoplay: true,
     autoplaySpeed: 4000,
@@ -197,7 +199,7 @@ export default function ProductsCatalog(props) {
                     <div
                       style={{
                         backgroundImage:
-                          product.sources.images[0] !== null
+                          product.sources.images.length > 0
                             ? "url(" + product.sources.images[0]?.url + ")"
                             : "url(" + product.thumbUrl + ")",
                         height: isMobile ? 120 : 170,

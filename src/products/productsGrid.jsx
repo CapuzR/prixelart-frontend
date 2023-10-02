@@ -678,7 +678,7 @@ export default function ProductGrid(props) {
         JSON.parse(localStorage.getItem("adminToken"))) &&
       (JSON.parse(localStorage.getItem("token"))?.username ||
         JSON.parse(localStorage.getItem("adminToken"))?.username) &&
-      item.attributes[0] !== null &&
+      item.attributes.length > 0 &&
       item.prixerPrice.to !== item.prixerPrice.from &&
       item.prixerPrice.to !== "" &&
       item.prixerPrice.to !== null &&
@@ -707,7 +707,7 @@ export default function ProductGrid(props) {
         JSON.parse(localStorage.getItem("adminToken"))) &&
       (JSON.parse(localStorage.getItem("token"))?.username ||
         JSON.parse(localStorage.getItem("adminToken"))?.username) &&
-      item.attributes[0] !== null &&
+      item.attributes.length > 0 &&
       item.prixerPrice.to !== item.prixerPrice.from &&
       item.prixerPrice.to !== "" &&
       item.prixerPrice.to !== null
@@ -774,7 +774,7 @@ export default function ProductGrid(props) {
         })
       );
     } else if (
-      item.attributes[0] !== null &&
+      item.attributes.length > 0 &&
       item.publicPrice.to !== item.publicPrice.from &&
       item.publicPrice.to !== "" &&
       item.publicPrice.to !== null &&
@@ -799,7 +799,7 @@ export default function ProductGrid(props) {
         )
       );
     } else if (
-      item.attributes[0] !== null &&
+      item.attributes.length > 0 &&
       item.publicPrice.to !== item.publicPrice.from &&
       item.publicPrice.to !== "" &&
       item.publicPrice.to !== null

@@ -325,7 +325,7 @@ export default function Grid(props) {
             "&name=" +
             queryValue,
         });
-      } else if ((categories[0] !== null && queryValue === null) || "") {
+      } else if ((categories.length > 0 && queryValue === null) || "") {
         history.push({
           pathname:
             "/galeria/s?prixer=" +
@@ -352,7 +352,7 @@ export default function Grid(props) {
         history.push({
           pathname: "/galeria/s?category=" + categories + "&name=" + queryValue,
         });
-      } else if ((categories[0] !== null && queryValue === null) || "") {
+      } else if ((categories.length > 0 && queryValue === null) || "") {
         history.push({
           pathname: "/galeria/s?category=" + categories,
         });

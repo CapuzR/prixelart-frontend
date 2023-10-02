@@ -17,7 +17,8 @@ import ListItemText from "@material-ui/core/ListItemText";
 import Collapse from "@material-ui/core/Collapse";
 import Divider from "@material-ui/core/Divider";
 import Switch from "@material-ui/core/Switch";
-
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
@@ -232,7 +233,11 @@ export default function Checkout(props) {
   const [currency, setCurrency] = useState(false);
   const [paymentMethods, setPaymentMethods] = useState(undefined);
   const [prixers, setPrixers] = useState([]);
-  // const [selectedPrixer, setSelectedPrixer] = useState();
+  const [content, setContent] = useState("");
+
+  const handleEditorChange = (value) => {
+    props.setObservations(value);
+  };
 
   let shippingCost = Number(props.shippingData?.shippingMethod?.price);
 
@@ -636,8 +641,8 @@ export default function Checkout(props) {
           style={{ marginRight: "-5px" }}
         />
       </Grid>
-      {props.basicData && (
-        <Grid item lg={4} md={4}>
+      <Grid item lg={4} md={4}>
+        {props.basicData && (
           <Typography>
             Pedido a nombre de{" "}
             <strong>
@@ -652,12 +657,13 @@ export default function Checkout(props) {
               {props.shippingData?.address || props.basicData?.address}
             </strong>
           </Typography>
+        )}
 
-          <FormControl
-            variant="outlined"
-            style={{ minWidth: "100%", marginTop: 20 }}
-          >
-            <TextField
+        <FormControl
+          variant="outlined"
+          style={{ minWidth: "100%", marginTop: 20 }}
+        >
+          {/* <TextField
               className={classes.textField}
               variant="outlined"
               minRows="3"
@@ -672,10 +678,14 @@ export default function Checkout(props) {
               onChange={(e) => {
                 props.setObservations(e.target.value);
               }}
-            />
-          </FormControl>
-        </Grid>
-      )}
+            /> */}
+          <ReactQuill
+            value={props.observations}
+            onChange={handleEditorChange}
+            placeholder="Escribe las observaciones aquí..."
+          />
+        </FormControl>
+      </Grid>
       <Grid item md={8} lg={8} style={{ paddingLeft: 40 }}>
         <div style={{ fontWeight: "bold" }}>Items:</div>
         <div>

@@ -758,7 +758,7 @@ export default function ConsumerData(props) {
               />
             </FormControl>
           </Grid>
-          {props.buyState[0] !== null ||
+          {props.buyState.length > 0 ||
             (readyDate !== "Invalid Date" && (
               <Grid>
                 <div style={{ marginTop: 10, marginLeft: 10 }}>

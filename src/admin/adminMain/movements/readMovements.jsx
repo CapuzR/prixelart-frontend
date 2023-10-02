@@ -132,7 +132,7 @@ export default function ReadMovements(props) {
   const getPrixersNames = (list) => {
     let prix = [];
     list.map((mov) => {
-      if (prix === []) {
+      if (prix[0] === null) {
         prix = [mov.destinatary];
       } else if (prix.includes(mov.destinatary)) {
         return;

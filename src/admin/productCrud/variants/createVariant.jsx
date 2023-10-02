@@ -90,7 +90,7 @@ export default function CreateVariant(props) {
   const [snackBarError, setSnackBarError] = useState(false);
   const [mustImage, setMustImages] = useState(false);
 
-  if (loadeImage.loader[0] === undefined && image[0] !== null) {
+  if (loadeImage.loader[0] === undefined && image.length > 0) {
     image.map((url) => {
       url.type === "images"
         ? loadeImage.loader.push(url.url)
@@ -353,7 +353,7 @@ export default function CreateVariant(props) {
                 xl={8}
                 style={{ display: "flex" }}
               >
-                {loadeImage.loader[0] !== null &&
+                {loadeImage.loader.length > 0 &&
                   loadeImage.loader.map((img, key_id) => {
                     return (
                       <div

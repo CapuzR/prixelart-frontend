@@ -298,7 +298,7 @@ export default function UpdateAdmin(props) {
             );
           }
           newFormData.append("hasSpecialVar", hasSpecialVar);
-          if (imagesList[0] !== undefined && imagesList[0] !== null) {
+          if (imagesList[0] !== undefined && imagesList.length > 0) {
             const images = [];
 
             imagesList?.map((img) => {

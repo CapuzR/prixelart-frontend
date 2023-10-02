@@ -495,7 +495,8 @@ export default function Home(props) {
                 display: "flex",
                 flexDirection: "column",
                 justifyItems: "center",
-                alignItems: "start",
+                marginRight: 5,
+                alignItems: isMobile ? "end" : "start",
               }}
             >
               <Typography
@@ -503,7 +504,7 @@ export default function Home(props) {
                 style={{
                   color: "#404e5c",
                   marginBottom: isDesktop && 12,
-                  fontSize: (isMobile && 15) || (isTab && 20),
+                  fontSize: (isMobile && 14) || (isTab && 20),
                 }}
                 fontWeight="bold"
               >
@@ -513,8 +514,9 @@ export default function Home(props) {
                 // variant="body1"
                 style={{
                   color: "#404e5c",
+                  textAlign: isMobile && "end",
                   marginBottom: isDesktop && 12,
-                  fontSize: isMobile ? 12 : 20,
+                  fontSize: isMobile ? 10 : 20,
                 }}
               >
                 ¡No te lo puedes perder! Descubre los favoritos de nuestros
@@ -579,7 +581,7 @@ export default function Home(props) {
                       <div
                         style={{
                           backgroundImage:
-                            product.sources.images[0] !== null
+                            product.sources.images.length > 0
                               ? "url(" + product.sources.images[0]?.url + ")"
                               : "url(" + product.thumbUrl + ")",
                           height: isMobile ? 120 : 170,
@@ -669,7 +671,7 @@ export default function Home(props) {
                         key={i}
                         style={{
                           backgroundImage:
-                            product.sources.images[0] !== null
+                            product.sources.images.length > 0
                               ? "url(" + product.sources.images[0]?.url + ")"
                               : "url(" + product.thumbUrl + ")",
                           // height: isMobile ? 120 : 250,

@@ -254,8 +254,18 @@ export default function OrderDetails(props) {
     });
   };
 
-  console.log(props.modalContent.requests[0].product?.status);
+  const RenderHTML = ({ htmlString }) => {
+    return <div dangerouslySetInnerHTML={{ __html: htmlString }} />;
+  };
 
+  function handleKeyDown(event) {
+    if (event.key === "Escape") {
+      props.handleClose();
+    } else return;
+  }
+  document.addEventListener("keydown", handleKeyDown);
+
+  console.log(props.modalContent.observations);
   return (
     <Grid container className={classes.paper2}>
       <Grid
@@ -736,7 +746,9 @@ export default function OrderDetails(props) {
                       }}
                     >
                       <strong>Observaciones</strong>
-                      <div> {props.modalContent.observations}</div>
+                      <RenderHTML
+                        htmlString={props.modalContent.observations}
+                      />
                     </Grid>
                   )}
                 </Grid>
@@ -931,7 +943,7 @@ export default function OrderDetails(props) {
                     }}
                   >
                     <strong>Observaciones</strong>
-                    <div> {props.modalContent.observations}</div>
+                    <RenderHTML htmlString={props.modalContent.observations} />
                   </Grid>
                 )}
               </Grid>

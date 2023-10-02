@@ -433,7 +433,7 @@ export default function Orders(props) {
           item.product.prixerEquation !== ""
         ) {
           price = ("$", item.product.prixerEquation);
-        } else price = ("$", item.product.publicPrice.from);
+        } else price = ("$", item.product?.publicPrice?.from);
         v2.prixer = prixer;
         v2.art = art;
         v2.product = product;

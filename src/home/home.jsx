@@ -579,7 +579,7 @@ export default function Home(props) {
                       <div
                         style={{
                           backgroundImage:
-                            product.sources.images.length > 0
+                            product?.sources?.images.length > 0
                               ? "url(" + product.sources.images[0]?.url + ")"
                               : "url(" + product.thumbUrl + ")",
                           height: isMobile ? 120 : 170,

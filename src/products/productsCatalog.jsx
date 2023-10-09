@@ -99,7 +99,7 @@ export default function ProductsCatalog(props) {
   const history = useHistory();
 
   const getBestSellers = async () => {
-    const url = process.env.REACT_APP_BACKEND_URL + "/product/bestSellers";
+    const url = process.env.REACT_APP_BACKEND_URL + "/getBestSellers";
     try {
       const bestS = await axios.get(url);
       setBestSellers(bestS.data.products);
@@ -199,7 +199,7 @@ export default function ProductsCatalog(props) {
                     <div
                       style={{
                         backgroundImage:
-                          product.sources.images.length > 0
+                          product?.sources?.images.length > 0
                             ? "url(" + product.sources.images[0]?.url + ")"
                             : "url(" + product.thumbUrl + ")",
                         height: isMobile ? 120 : 170,

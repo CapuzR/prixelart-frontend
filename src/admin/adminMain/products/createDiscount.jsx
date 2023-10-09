@@ -89,7 +89,7 @@ export default function CreateDiscount() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!name && !description && !type && !value) {
+    if (!name && !type && !value) {
       setErrorMessage("Por favor completa todos los campos requeridos.");
       setSnackBarError(true);
     } else {
@@ -157,12 +157,15 @@ export default function CreateDiscount() {
       }
       <Title>Crear Descuento</Title>
       <form
-        className={classes.form}
+        // className={classes.form}
+        style={{
+          height: "auto",
+        }}
         encType="multipart/form-data"
         noValidate
         onSubmit={handleSubmit}
       >
-        <Grid container spacing={2}>
+        <Grid container>
           <Grid item xs={12}>
             <Checkbox
               checked={active}
@@ -174,7 +177,7 @@ export default function CreateDiscount() {
             />
             Habilitado
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12} md={6} style={{ padding: 5 }}>
             <FormControl
               className={clsx(classes.margin, classes.textField)}
               variant="outlined"
@@ -193,7 +196,7 @@ export default function CreateDiscount() {
               />
             </FormControl>
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12} md={6} style={{ padding: 5 }}>
             <FormControl
               className={clsx(classes.margin, classes.textField)}
               variant="outlined"
@@ -214,7 +217,7 @@ export default function CreateDiscount() {
               />
             </FormControl>
           </Grid>
-          <Grid item xs={12} md={3} style={{ marginTop: "-75px" }}>
+          <Grid item xs={12} md={3} style={{ marginTop: "-75px", padding: 5 }}>
             <FormControl
               className={clsx(classes.margin, classes.textField)}
               variant="outlined"
@@ -240,7 +243,7 @@ export default function CreateDiscount() {
             item
             xs={12}
             md={3}
-            style={{ marginTop: "-75px", width: "50%" }}
+            style={{ marginTop: "-75px", width: "50%", padding: 5 }}
           >
             <FormControl
               className={clsx(classes.margin, classes.textField)}

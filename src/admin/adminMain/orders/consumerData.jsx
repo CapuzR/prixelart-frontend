@@ -808,20 +808,19 @@ export default function ConsumerData(props) {
               />
             </FormControl>
           </Grid>
-          {props.buyState.length > 0 ||
-            (readyDate !== "Invalid Date" && (
-              <Grid>
-                <div style={{ marginTop: 10, marginLeft: 10 }}>
-                  {"El pedido estará listo el día " +
-                    days[readyDate.getDay()] +
-                    " " +
-                    readyDate.getDate() +
-                    " de " +
-                    months[readyDate.getMonth()] +
-                    "."}
-                </div>
-              </Grid>
-            ))}
+          {props.buyState.length > 0 && readyDate !== "Invalid Date" && (
+            <Grid>
+              <div style={{ marginTop: 10, marginLeft: 10 }}>
+                {"El pedido estará listo el día " +
+                  days[readyDate.getDay()] +
+                  " " +
+                  readyDate.getDate() +
+                  " de " +
+                  months[readyDate.getMonth()] +
+                  "."}
+              </div>
+            </Grid>
+          )}
         </Grid>
       </Grid>
 

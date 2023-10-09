@@ -336,8 +336,11 @@ export default function CreateOrder(props) {
       address: basicData?.address,
       billingAddress: billingData?.address || basicData?.address,
       shippingAddress: shippingData?.address || basicData?.address,
-      prixerId: selectedPrixer.prixerId,
+      // prixerId: selectedPrixer?.prixerId,
     };
+    if (selectedPrixer) {
+      consumerData.prixerId = selectedPrixer.prixerId;
+    }
     await axios.post(
       process.env.REACT_APP_BACKEND_URL + "/consumer/create",
       consumerData

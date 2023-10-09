@@ -175,7 +175,6 @@ export default function AdminMain(props) {
   const [active, setActive] = useState("user");
   const location = useLocation();
   const history = useHistory();
-  const [permissions, setPermissions] = useState();
   const [openDollarView, setOpenDollarView] = useState(false);
 
   const handleDrawerOpen = () => {
@@ -184,27 +183,6 @@ export default function AdminMain(props) {
   const handleDrawerClose = () => {
     setOpen(false);
   };
-
-  const checkP = () => {
-    const base_url =
-      process.env.REACT_APP_BACKEND_URL + "/admin/CheckPermissions";
-    axios
-      .post(base_url, { adminToken: localStorage.getItem("adminTokenV") })
-      .then((response) => {
-        if (response.data.auth === false) {
-          localStorage.removeItem("adminToken");
-          localStorage.removeItem("adminTokenV");
-        } else {
-          setPermissions(response.data.readedRole);
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
-  useEffect(() => {
-    checkP();
-  }, []);
 
   useEffect(() => {
     location.pathname.split("/").length === 7
@@ -288,33 +266,41 @@ export default function AdminMain(props) {
             </div>
             <Divider />
             <List>
-              {<MainListItems active={active} permissions={permissions} />}
+              {
+                <MainListItems
+                  active={active}
+                  permissions={props.permissions}
+                />
+              }
             </List>
           </Drawer>
           <main className={classes.content}>
             <div className={classes.appBarSpacer} />
             <Container maxWidth="lg" className={classes.container}>
               {active === "user" ? (
-                <AdminUser permissions={permissions} admins={props.admins} />
+                <AdminUser
+                  permissions={props.permissions}
+                  admins={props.admins}
+                />
               ) : active === "dashboard" ? (
                 <Dashboard />
               ) : active === "product" ? (
-                <Products permissions={permissions} />
+                <Products permissions={props.permissions} />
               ) : active === "consumer" ? (
-                <Consumers permissions={permissions} />
+                <Consumers permissions={props.permissions} />
               ) : active === "movements" ? (
-                <Movements permissions={permissions} />
+                <Movements permissions={props.permissions} />
               ) : active === "payment-method" ? (
-                <PaymentMethods permissions={permissions} />
+                <PaymentMethods permissions={props.permissions} />
               ) : active === "shipping-method" ? (
-                <ShippingMethods permissions={permissions} />
+                <ShippingMethods permissions={props.permissions} />
               ) : active === "order" ? (
                 <Orders
                   sellers={props.sellers}
                   admins={props.admins}
                   buyState={props.buyState}
                   setBuyState={props.setBuyState}
-                  permissions={permissions}
+                  permissions={props.permissions}
                   changeQuantity={props.changeQuantity}
                   deleteItemInBuyState={props.deleteItemInBuyState}
                   deleteProductInItem={props.deleteProductInItem}
@@ -330,11 +316,11 @@ export default function AdminMain(props) {
                   setValuesConsumer={props.setValues}
                 />
               ) : active === "prixer" ? (
-                <Prixers permissions={permissions} />
+                <Prixers permissions={props.permissions} />
               ) : active === "preferences" ? (
-                <Preferences permissions={permissions} />
+                <Preferences permissions={props.permissions} />
               ) : active === "testimonials" ? (
-                <Testimonials permissions={permissions} />
+                <Testimonials permissions={props.permissions} />
               ) : (
                 <p>POONG</p>
               )}
@@ -343,7 +329,7 @@ export default function AdminMain(props) {
               </Box>
             </Container>
           </main>
-          {permissions?.modifyDollar && (
+          {props.permissions?.modifyDollar && (
             <Tooltip title="Actualizar tasa" style={{ height: 40, width: 40 }}>
               <Fab
                 color="primary"

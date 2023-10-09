@@ -8,8 +8,19 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import Button from "@material-ui/core/Button";
 import { makeStyles } from "@material-ui/core/styles";
 import Snackbar from "@material-ui/core/Snackbar";
-import MDEditor from "@uiw/react-md-editor";
 import { Typography, Checkbox } from "@material-ui/core";
+import {
+  VictoryChart,
+  VictoryLine,
+  VictoryBar,
+  VictoryAxis,
+  VictoryTooltip,
+  VictoryLegend,
+  VictoryLabel,
+  VictoryTheme,
+  VictoryGroup,
+  VictoryStack,
+} from "victory";
 
 const useStyles = makeStyles((theme) => ({
   backdrop: {
@@ -49,10 +60,27 @@ export default function BestSellers(props) {
   const [value, setValue] = useState("");
   const [products, setProducts] = useState();
   const [loading, setLoading] = useState(false);
-  const [bestSellers, setBestSellers] = useState([]);
+  const [bestSellers, setBestSellers] = useState();
+  const [mostSellers, setMostSellers] = useState();
   const [errorMessage, setErrorMessage] = useState();
   const [snackBarError, setSnackBarError] = useState(false);
 
+  const addMostSellerToBestSeller = (selectedMostSeller) => {
+    const prodv1 = products.find((prod) => prod.name === selectedMostSeller);
+    if (bestSellers.length === 0) {
+      setBestSellers([prodv1]);
+    } else if (bestSellers.some((p) => p.name === selectedMostSeller)) {
+      setSnackBarError(true);
+      setErrorMessage("Este producto ya está incluido en el banner.");
+    } else if (bestSellers.length === 9) {
+      setSnackBarError(true);
+      setErrorMessage(
+        "Has alcanzado el máximo de Productos a mostrar (9 productos)."
+      );
+    } else {
+      setBestSellers([...bestSellers, prodv1]);
+    }
+  };
   const getProducts = async () => {
     setLoading(true);
     const base_url = process.env.REACT_APP_BACKEND_URL + "/product/read-allv1";
@@ -76,7 +104,19 @@ export default function BestSellers(props) {
     await axios
       .get(base_url)
       .then((response) => {
-        setBestSellers(response.data.bestSellers);
+        setBestSellers(response.data.products);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  const getMostSellers = async () => {
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/product/bestSellers";
+    await axios
+      .get(base_url)
+      .then((response) => {
+        setMostSellers(response.data.products);
       })
       .catch((error) => {
         console.log(error);
@@ -86,6 +126,7 @@ export default function BestSellers(props) {
   useEffect(() => {
     getProducts();
     getBestSellers();
+    getMostSellers();
   }, []);
 
   const closeAd = () => {
@@ -121,101 +162,185 @@ export default function BestSellers(props) {
       <Backdrop className={classes.backdrop}>
         <CircularProgress color="inherit" />
       </Backdrop>
+
+      {mostSellers && (
+        <div
+          style={{
+            width: "90%",
+            height: 350,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            border: "1px solid gainsboro",
+            borderRadius: "10px",
+            marginBottom: 10,
+            paddingBottom: -10,
+            alignSelf: "center",
+          }}
+        >
+          <Typography variant="h6" style={{ color: "#404e5c", marginTop: 30 }}>
+            Productos más vendidos en el último año
+          </Typography>
+          <VictoryChart
+            theme={VictoryTheme.material}
+            padding={{ top: 20, bottom: 60, right: -100, left: -100 }}
+            horizontal
+          >
+            <VictoryAxis />
+
+            <VictoryAxis dependentAxis />
+            <VictoryBar
+              data={mostSellers}
+              x="name"
+              y="quantity"
+              style={{
+                data: { fill: "#d33f49", width: 25 },
+              }}
+              alignment="start"
+              animate={{
+                duration: 2000,
+                onLoad: { duration: 1000 },
+              }}
+              labels={({ datum }) => datum.quantity}
+              labelComponent={
+                <VictoryLabel
+                  dx={-24}
+                  dy={-10}
+                  style={[{ fill: "white", fontSize: 14 }]}
+                />
+              }
+              events={[
+                {
+                  target: "data",
+                  eventHandlers: {
+                    onClick: () => {
+                      return [
+                        {
+                          target: "data",
+                          mutation: ({ datum }) => {
+                            addMostSellerToBestSeller(datum.name);
+                          },
+                        },
+                      ];
+                    },
+                  },
+                },
+              ]}
+            />
+          </VictoryChart>
+        </div>
+      )}
       <Paper
         className={classes.paper}
         style={{
-          height: 150,
+          height: 160,
           width: "90%",
           backgroundColor: "gainsboro",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
+          flexDirection: "column",
         }}
         elevation={3}
       >
-        {bestSellers.length > 0 ? (
-          bestSellers.map((prod, i) => (
-            <div>
-              <div
-                key={i}
-                style={{
-                  backgroundImage:
-                    prod.sources.images.length > 0
-                      ? "url(" + prod.sources.images[0]?.url + ")"
-                      : "url(" + prod.thumbUrl + ")",
-                  width: 100,
-                  height: 100,
-                  backgroundSize: "cover",
-                  borderRadius: 10,
-                  marginTop: 5,
-                  marginRight: 10,
-                }}
-              />
-              <div
-                style={{
-                  color: "#404e5c",
-                  display: "flex",
-                  justifyContent: "center",
-                }}
-              >
-                {prod.name}
+        <Typography variant="h6" style={{ color: "#404e5c" }}>
+          Banner de la pantalla principal
+        </Typography>
+        <div style={{ display: "flex", flexDirection: "row" }}>
+          {bestSellers ? (
+            bestSellers.map((prod, i) => (
+              <div>
+                <div
+                  key={i}
+                  style={{
+                    backgroundImage:
+                      prod.sources.images.length > 0
+                        ? "url(" + prod.sources.images[0]?.url + ")"
+                        : "url(" + prod.thumbUrl + ")",
+                    width: 100,
+                    height: 100,
+                    backgroundSize: "cover",
+                    borderRadius: 10,
+                    marginTop: 5,
+                    marginRight: 10,
+                  }}
+                />
+                <div
+                  style={{
+                    color: "#404e5c",
+                    display: "flex",
+                    justifyContent: "center",
+                  }}
+                >
+                  {prod.name}
+                </div>
               </div>
-            </div>
-          ))
-        ) : (
-          <Typography
-            variant="h4"
-            style={{
-              color: "#404e5c",
-              textAlign: "center",
-            }}
-            fontWeight="bold"
-          >
-            No tienes productos seleccionados aún
-          </Typography>
-        )}
+            ))
+          ) : (
+            <Typography
+              variant="h4"
+              style={{
+                color: "#404e5c",
+                textAlign: "center",
+              }}
+              fontWeight="bold"
+            >
+              No tienes productos seleccionados aún
+            </Typography>
+          )}
+        </div>
       </Paper>
-      <div style={{ display: "flex", justifyContent: "center" }}>
-        <Button
-          variant="contained"
-          color="primary"
-          type="submit"
-          size="small"
-          style={{ marginTop: 20 }}
-          onClick={updateBestSellers}
-        >
-          Actualizar
-        </Button>
-      </div>
-      <Grid container style={{ marginTop: 20 }}>
-        {products &&
-          products.map((product) => (
-            <Grid item xs={3}>
-              <Checkbox
-                checked={bestSellers.some((p) => p.name === product.name)}
-                color="primary"
-                inputProps={{ "aria-label": "secondary checkbox" }}
-                onChange={() => {
-                  if (bestSellers.length === 0) {
-                    setBestSellers([product]);
-                  } else if (bestSellers.some((p) => p.name === product.name)) {
-                    setBestSellers(
-                      bestSellers.filter((item) => item.name !== product.name)
-                    );
-                  } else if (bestSellers.length === 9) {
-                    setSnackBarError(true);
-                    setErrorMessage(
-                      "Has alcanzado el máximo de Productos a mostrar (9 productos)."
-                    );
-                  } else {
-                    setBestSellers([...bestSellers, product]);
-                  }
-                }}
-              />
-              {product.name}
-            </Grid>
-          ))}
-      </Grid>
+      {props.permissions.modifyBestSellers && (
+        <>
+          <div style={{ display: "flex", justifyContent: "center" }}>
+            <Button
+              variant="contained"
+              color="primary"
+              type="submit"
+              size="small"
+              style={{ marginTop: 20 }}
+              onClick={updateBestSellers}
+            >
+              Actualizar
+            </Button>
+          </div>
+          <Grid container style={{ marginTop: 20 }}>
+            {products &&
+              bestSellers &&
+              products.map((product) => (
+                <Grid item xs={3}>
+                  <Checkbox
+                    checked={bestSellers?.some((p) => p.name === product.name)}
+                    color="primary"
+                    inputProps={{ "aria-label": "secondary checkbox" }}
+                    onChange={() => {
+                      if (bestSellers.length === 0) {
+                        setBestSellers([product]);
+                      } else if (
+                        bestSellers.some((p) => p.name === product.name)
+                      ) {
+                        setBestSellers(
+                          bestSellers.filter(
+                            (item) => item.name !== product.name
+                          )
+                        );
+                      } else if (bestSellers.length === 9) {
+                        setSnackBarError(true);
+                        setErrorMessage(
+                          "Has alcanzado el máximo de Productos a mostrar (9 productos)."
+                        );
+                      } else {
+                        setBestSellers([...bestSellers, product]);
+                      }
+                    }}
+                  />
+                  {product.name}
+                </Grid>
+              ))}
+          </Grid>
+        </>
+      )}
       <Snackbar
         open={snackBarError}
         autoHideDuration={1000}

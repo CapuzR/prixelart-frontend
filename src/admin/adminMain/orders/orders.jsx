@@ -358,6 +358,9 @@ export default function Orders(props) {
         wrapText: true,
       };
     });
+    function eliminarEtiquetasHTML(observations) {
+      return observations?.replace(/<[^>]+>/g, "");
+    }
     orders.map((order, i) => {
       const v2 = {
         status: order?.status,
@@ -375,7 +378,7 @@ export default function Orders(props) {
         product: "",
         attributes: "",
         quantity: "",
-        observations: order?.observations,
+        observations: eliminarEtiquetasHTML(order?.observations),
         createdBy: order.createdBy?.username,
         shippingData: "",
         payStatus: order.payStatus,

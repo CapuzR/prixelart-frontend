@@ -327,7 +327,7 @@ export default function CreateOrder(props) {
         JSON.parse(localStorage.getItem("adminToken")).firstname +
         " " +
         JSON.parse(localStorage.getItem("adminToken")).lastname,
-      consumerType: "Particular",
+      consumerType: selectedPrixer ? "Prixer" : "Particular",
       firstname: basicData?.name,
       lastname: basicData?.lastname,
       ci: basicData?.ci,
@@ -336,8 +336,8 @@ export default function CreateOrder(props) {
       address: basicData?.address,
       billingAddress: billingData?.address || basicData?.address,
       shippingAddress: shippingData?.address || basicData?.address,
+      prixerId: selectedPrixer.prixerId,
     };
-
     await axios.post(
       process.env.REACT_APP_BACKEND_URL + "/consumer/create",
       consumerData
@@ -370,24 +370,7 @@ export default function CreateOrder(props) {
     };
 
     const base_url3 = process.env.REACT_APP_BACKEND_URL + "/order/sendEmail";
-    await axios.post(base_url, input).then(async () => {
-      if (billingData?.orderPaymentMethod === "Balance Prixer") {
-        const url = process.env.REACT_APP_BACKEND_URL + "/movement/createv2";
-        const data = {
-          _id: nanoid(),
-          createdOn: new Date(),
-          createdBy:
-            JSON.parse(localStorage.getItem("adminToken")).firstname +
-            " " +
-            JSON.parse(localStorage.getItem("adminToken")).lastname,
-          date: new Date(),
-          destinatary: selectedPrixer.account,
-          description: `Pago de la orden #${input.orderId}`,
-          type: "Retiro",
-          value: getTotal(props.buyState),
-        };
-        await axios.post(url, data);
-      }
+    await axios.post(base_url, input).then(async (response) => {
       if (basicData.email.length > 8) {
         await axios.post(base_url3, input).then(async (response) => {
           props.setErrorMessage(response.data.info);
@@ -475,6 +458,7 @@ export default function CreateOrder(props) {
             setSelectedConsumer={setSelectedConsumer}
             selectedConsumer={selectedConsumer}
             setSelectedPrixer={setSelectedPrixer}
+            selectedPrixer={selectedPrixer}
           />
         )}
         {activeStep === 1 && (

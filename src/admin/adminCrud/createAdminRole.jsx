@@ -48,6 +48,8 @@ export default function CreateAdminRole() {
   const [createConsumer, setCreateConsumer] = useState(false);
   const [readConsumers, setReadConsumers] = useState(false);
   const [deleteConsumer, setDeleteConsumer] = useState(false);
+  const [artBan, setArtBan] = useState(false);
+  const [modifyBestSellers, setModifyBestSellers] = useState(false);
   const [loading, setLoading] = useState(false);
   const [buttonState, setButtonState] = useState(false);
 
@@ -90,6 +92,8 @@ export default function CreateAdminRole() {
         createConsumer: createConsumer,
         readConsumers: readConsumers,
         deleteConsumer: deleteConsumer,
+        artBan: artBan,
+        modifyBestSellers: modifyBestSellers,
         adminToken: localStorage.getItem("adminTokenV"),
       };
       const base_url = process.env.REACT_APP_BACKEND_URL + "/adminRole/create";
@@ -201,6 +205,14 @@ export default function CreateAdminRole() {
 
   const handleChangeDeleteConsumer = () => {
     setDeleteConsumer(!deleteConsumer);
+  };
+
+  const handleChangeArtBan = () => {
+    setArtBan(!artBan);
+  };
+
+  const handleChangeModifyBestSellers = () => {
+    setModifyBestSellers(!modifyBestSellers);
   };
 
   return (
@@ -519,11 +531,142 @@ export default function CreateAdminRole() {
                 }}
               >
                 <Typography>
+                  Permiso para modificar productos más vendidos
+                </Typography>
+                <Switch
+                  checked={modifyBestSellers}
+                  onChange={handleChangeModifyBestSellers}
+                  name="checkedA"
+                  color="primary"
+                />
+              </FormControl>
+            </div>
+            <div>
+              <FormControl
+                className={clsx(classes.margin, classes.textField)}
+                variant="outlined"
+                style={{
+                  width: "90%",
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Typography>
                   Permiso para modificar términos y condiciones
                 </Typography>
                 <Switch
                   checked={modifyTermsAndCo}
                   onChange={handleChangeModifyTermsAndCo}
+                  name="checkedA"
+                  color="primary"
+                />
+              </FormControl>
+            </div>
+          </Grid>
+          <Grid
+            item
+            xs={12}
+            md={5}
+            style={{
+              border: "2px",
+              borderStyle: "solid",
+              borderColor: "silver",
+              borderRadius: "10px",
+              marginRight: "20px",
+              marginLeft: "20px",
+              marginTop: "20px",
+            }}
+          >
+            <Typography
+              varaint="p"
+              color="secondary"
+              style={{ marginLeft: "20px" }}
+            >
+              Prixers
+            </Typography>
+            <div>
+              <FormControl
+                className={clsx(classes.margin, classes.textField)}
+                variant="outlined"
+                style={{
+                  width: "90%",
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Typography>Permiso para banear Prixer </Typography>
+                <Switch
+                  checked={prixerBan}
+                  onChange={handleChangePrixerBan}
+                  name="checkedA"
+                  color="primary"
+                />
+              </FormControl>
+            </div>
+            <div>
+              <FormControl
+                className={clsx(classes.margin, classes.textField)}
+                variant="outlined"
+                style={{
+                  width: "90%",
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Typography>
+                  Permiso para modificar balance de Prixer
+                </Typography>
+                <Switch
+                  checked={setPrixerBalance}
+                  onChange={handleChangeSetPrixerBalance}
+                  name="checkedA"
+                  color="primary"
+                />
+              </FormControl>
+            </div>
+            <div>
+              <FormControl
+                className={clsx(classes.margin, classes.textField)}
+                variant="outlined"
+                style={{
+                  width: "90%",
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Typography>Permiso para leer movimientos</Typography>
+                <Switch
+                  checked={readMovements}
+                  onChange={handleChangeSetReadMovements}
+                  name="checkedA"
+                  color="primary"
+                />
+              </FormControl>
+            </div>
+            <div>
+              <FormControl
+                className={clsx(classes.margin, classes.textField)}
+                variant="outlined"
+                style={{
+                  width: "90%",
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Typography>Permiso para banear artes</Typography>
+                <Switch
+                  checked={artBan}
+                  onChange={handleChangeArtBan}
                   name="checkedA"
                   color="primary"
                 />
@@ -662,93 +805,7 @@ export default function CreateAdminRole() {
               </FormControl>
             </div>
           </Grid>
-          <Grid
-            item
-            xs={12}
-            md={5}
-            style={{
-              border: "2px",
-              borderStyle: "solid",
-              borderColor: "silver",
-              borderRadius: "10px",
-              marginRight: "20px",
-              marginLeft: "20px",
-              marginTop: "20px",
-            }}
-          >
-            <Typography
-              varaint="p"
-              color="secondary"
-              style={{ marginLeft: "20px" }}
-            >
-              Prixers
-            </Typography>
-            <div>
-              <FormControl
-                className={clsx(classes.margin, classes.textField)}
-                variant="outlined"
-                style={{
-                  width: "90%",
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Typography>Permiso para banear Prixer </Typography>
-                <Switch
-                  checked={prixerBan}
-                  onChange={handleChangePrixerBan}
-                  name="checkedA"
-                  color="primary"
-                />
-              </FormControl>
-            </div>
-            <div>
-              <FormControl
-                className={clsx(classes.margin, classes.textField)}
-                variant="outlined"
-                style={{
-                  width: "90%",
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Typography>
-                  Permiso para modificar balance de Prixer
-                </Typography>
-                <Switch
-                  checked={setPrixerBalance}
-                  onChange={handleChangeSetPrixerBalance}
-                  name="checkedA"
-                  color="primary"
-                />
-              </FormControl>
-            </div>
-            <div>
-              <FormControl
-                className={clsx(classes.margin, classes.textField)}
-                variant="outlined"
-                style={{
-                  width: "90%",
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Typography>Permiso para leer movimientos</Typography>
-                <Switch
-                  checked={readMovements}
-                  onChange={handleChangeSetReadMovements}
-                  name="checkedA"
-                  color="primary"
-                />
-              </FormControl>
-            </div>
-          </Grid>
+
           <Grid
             item
             xs={12}

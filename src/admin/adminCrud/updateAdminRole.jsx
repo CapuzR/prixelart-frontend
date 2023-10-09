@@ -96,6 +96,10 @@ export default function UpdateAdminRole(props) {
   const [deleteConsumer, setDeleteConsumer] = useState(
     props.admin.deleteConsumer || false
   );
+  const [artBan, setArtBan] = useState(props.admin.artBan || false);
+  const [modifyBestSellers, setModifyBestSellers] = useState(
+    props.admin.modifyBestSellers || false
+  );
 
   const [loading, setLoading] = useState(false);
   const [buttonState, setButtonState] = useState(false);
@@ -139,6 +143,8 @@ export default function UpdateAdminRole(props) {
         createConsumer: createConsumer,
         readConsumers: readConsumers,
         deleteConsumer: deleteConsumer,
+        artBan: artBan,
+        modifyBestSellers: modifyBestSellers,
         adminToken: localStorage.getItem("adminTokenV"),
       };
       const base_url =
@@ -253,6 +259,14 @@ export default function UpdateAdminRole(props) {
 
   const handleChangeDeleteConsumer = () => {
     setDeleteConsumer(!deleteConsumer);
+  };
+
+  const handleChangeArtBan = () => {
+    setArtBan(!artBan);
+  };
+
+  const handleChangeModifyBestSellers = () => {
+    setModifyBestSellers(!modifyBestSellers);
   };
 
   return (
@@ -575,11 +589,142 @@ export default function UpdateAdminRole(props) {
                 }}
               >
                 <Typography>
+                  Permiso para modificar productos más vendidos
+                </Typography>
+                <Switch
+                  checked={modifyBestSellers}
+                  onChange={handleChangeModifyBestSellers}
+                  name="checkedA"
+                  color="primary"
+                />
+              </FormControl>
+            </div>
+            <div>
+              <FormControl
+                className={clsx(classes.margin, classes.textField)}
+                variant="outlined"
+                style={{
+                  width: "90%",
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Typography>
                   Permiso para modificar términos y condiciones
                 </Typography>
                 <Switch
                   checked={modifyTermsAndCo}
                   onChange={handleChangeModifyTermsAndCo}
+                  name="checkedA"
+                  color="primary"
+                />
+              </FormControl>
+            </div>
+          </Grid>
+          <Grid
+            item
+            xs={12}
+            md={5}
+            style={{
+              border: "2px",
+              borderStyle: "solid",
+              borderColor: "silver",
+              borderRadius: "10px",
+              marginRight: "20px",
+              marginLeft: "20px",
+              marginTop: "20px",
+            }}
+          >
+            <Typography
+              varaint="p"
+              color="secondary"
+              style={{ marginLeft: "20px" }}
+            >
+              Prixers
+            </Typography>
+            <div>
+              <FormControl
+                className={clsx(classes.margin, classes.textField)}
+                variant="outlined"
+                style={{
+                  width: "90%",
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Typography>Permiso para banear Prixer </Typography>
+                <Switch
+                  checked={prixerBan}
+                  onChange={handleChangePrixerBan}
+                  name="checkedA"
+                  color="primary"
+                />
+              </FormControl>
+            </div>
+            <div>
+              <FormControl
+                className={clsx(classes.margin, classes.textField)}
+                variant="outlined"
+                style={{
+                  width: "90%",
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Typography>
+                  Permiso para modificar balance de Prixer
+                </Typography>
+                <Switch
+                  checked={setPrixerBalance}
+                  onChange={handleChangeSetPrixerBalance}
+                  name="checkedA"
+                  color="primary"
+                />
+              </FormControl>
+            </div>
+            <div>
+              <FormControl
+                className={clsx(classes.margin, classes.textField)}
+                variant="outlined"
+                style={{
+                  width: "90%",
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Typography>Permiso para leer movimientos</Typography>
+                <Switch
+                  checked={readMovements}
+                  onChange={handleChangeSetReadMovements}
+                  name="checkedA"
+                  color="primary"
+                />
+              </FormControl>
+            </div>
+            <div>
+              <FormControl
+                className={clsx(classes.margin, classes.textField)}
+                variant="outlined"
+                style={{
+                  width: "90%",
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Typography>Permiso para banear artes</Typography>
+                <Switch
+                  checked={artBan}
+                  onChange={handleChangeArtBan}
                   name="checkedA"
                   color="primary"
                 />
@@ -712,93 +857,6 @@ export default function UpdateAdminRole(props) {
                 <Switch
                   checked={deleteShippingMethod}
                   onChange={handleChangeDeleteShippingMethod}
-                  name="checkedA"
-                  color="primary"
-                />
-              </FormControl>
-            </div>
-          </Grid>
-          <Grid
-            item
-            xs={12}
-            md={5}
-            style={{
-              border: "2px",
-              borderStyle: "solid",
-              borderColor: "silver",
-              borderRadius: "10px",
-              marginRight: "20px",
-              marginLeft: "20px",
-              marginTop: "20px",
-            }}
-          >
-            <Typography
-              varaint="p"
-              color="secondary"
-              style={{ marginLeft: "20px" }}
-            >
-              Prixers{" "}
-            </Typography>
-            <div>
-              <FormControl
-                className={clsx(classes.margin, classes.textField)}
-                variant="outlined"
-                style={{
-                  width: "90%",
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Typography>Permiso para banear Prixer </Typography>
-                <Switch
-                  checked={prixerBan}
-                  onChange={handleChangePrixerBan}
-                  name="checkedA"
-                  color="primary"
-                />
-              </FormControl>
-            </div>
-            <div>
-              <FormControl
-                className={clsx(classes.margin, classes.textField)}
-                variant="outlined"
-                style={{
-                  width: "90%",
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Typography>
-                  Permiso para modificar balance de Prixer
-                </Typography>
-                <Switch
-                  checked={setPrixerBalance}
-                  onChange={handleChangeSetPrixerBalance}
-                  name="checkedA"
-                  color="primary"
-                />
-              </FormControl>
-            </div>
-            <div>
-              <FormControl
-                className={clsx(classes.margin, classes.textField)}
-                variant="outlined"
-                style={{
-                  width: "90%",
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Typography>Permiso para leer movimientos</Typography>
-                <Switch
-                  checked={readMovements}
-                  onChange={handleChangeSetReadMovements}
                   name="checkedA"
                   color="primary"
                 />
@@ -1019,7 +1077,7 @@ export default function UpdateAdminRole(props) {
       </form>
       <Snackbar
         open={snackBarError}
-        autoHideDuration={1000}
+        autoHideDuration={6000}
         message={errorMessage}
         className={classes.snackbar}
       />

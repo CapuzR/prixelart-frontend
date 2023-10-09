@@ -779,11 +779,12 @@ export default function Checkout(props) {
                 justifyContent: "space-between",
               }}
             >
-              <Grid item lg={6} md={6} sm={6} xs={6} style={{ paddingLeft: 0 }}>
+              <Grid item lg={8} md={8} sm={6} xs={6} style={{ paddingLeft: 0 }}>
                 <FormControl
                   disabled={props.buyState.length == 0}
                   className={classes.formControl}
                   style={{ minWidth: 200, marginTop: 25 }}
+                  fullWidth
                 >
                   <InputLabel style={{ paddingLeft: 15 }}>
                     Método de pago
@@ -792,22 +793,41 @@ export default function Checkout(props) {
                     variant="outlined"
                     value={props.orderPaymentMethod}
                     onChange={(event) =>
-                      props.setBillingData({
-                        ...props.billingData,
-                        orderPaymentMethod: event.target.value.name,
-                      })
+                      event.target.value.name === "Balance Prixer"
+                        ? props.setBillingData({
+                            ...props.billingData,
+                            orderPaymentMethod: event.target.value.name,
+                            destinatary: props.selectedPrixer.account,
+                          })
+                        : props.setBillingData({
+                            ...props.billingData,
+                            orderPaymentMethod: event.target.value.name,
+                          })
                     }
                   >
                     {paymentMethods &&
-                      paymentMethods.map((m) => (
-                        <MenuItem value={m}>{m.name}</MenuItem>
-                      ))}
+                      paymentMethods.map((m) =>
+                        m.name === "Balance Prixer" ? (
+                          <MenuItem
+                            value={m}
+                            style={{
+                              backgroundColor: "#d33f49",
+                              color: "white",
+                              fontWeight: 600,
+                            }}
+                          >
+                            {m.name + " de " + props.selectedPrixer.username}
+                          </MenuItem>
+                        ) : (
+                          <MenuItem value={m}>{m.name}</MenuItem>
+                        )
+                      )}
                   </Select>
                 </FormControl>
               </Grid>
               <Grid
                 item
-                lg={6}
+                lg={4}
                 md={6}
                 sm={6}
                 xs={6}

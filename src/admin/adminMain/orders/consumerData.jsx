@@ -228,6 +228,7 @@ export default function ConsumerData(props) {
   const [billingDataCheck, setBillingDataCheck] = useState(true);
   const [billingShDataCheck, setBillingShDataCheck] = useState(false);
   const [consumers, setConsumers] = useState([]);
+  const [prixers, setPrixers] = useState([]);
   const [options, setOptions] = useState([]);
   const [open, setOpen] = React.useState(false);
   const anchorRef = React.useRef(null);
@@ -296,7 +297,7 @@ export default function ConsumerData(props) {
     "-" +
     readyDate.getDate();
 
-  useEffect(() => {
+  const getShippingMethods = () => {
     const base_url =
       process.env.REACT_APP_BACKEND_URL + "/shipping-method/read-all-v2";
     axios
@@ -307,9 +308,9 @@ export default function ConsumerData(props) {
       .catch((error) => {
         console.log(error);
       });
-  }, []);
+  };
 
-  useEffect(() => {
+  const getConsumers = () => {
     const base_url = process.env.REACT_APP_BACKEND_URL + "/consumer/read-all";
     axios
       .post(base_url)
@@ -319,6 +320,24 @@ export default function ConsumerData(props) {
       .catch((error) => {
         console.log(error);
       });
+  };
+
+  const getPrixers = () => {
+    const base_url =
+      process.env.REACT_APP_BACKEND_URL + "/prixer/read-all-full";
+    axios
+      .get(base_url)
+      .then((response) => {
+        setPrixers(response.data.prixers);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+  useEffect(() => {
+    getShippingMethods();
+    getConsumers();
+    getPrixers();
   }, []);
 
   const handleShippingDataCheck = () => {
@@ -354,6 +373,19 @@ export default function ConsumerData(props) {
       updatedv2.push(p.firstname + ", " + p.lastname);
     });
 
+    const updatedv3 = prixers?.filter((prixer) =>
+      prixer.firstName
+        ?.toLowerCase()
+        .includes(props?.basicData?.name?.toLowerCase())
+    );
+    updatedv3.map((p) => {
+      if (updatedv2.includes(p.firstName + ", " + p.lastName)) {
+        return;
+      } else {
+        updatedv2.push(p.firstName + ", " + p.lastName);
+      }
+    });
+
     setOptions(updatedv2);
   }, [props?.basicData?.name]);
 
@@ -370,16 +402,34 @@ export default function ConsumerData(props) {
           consumer.firstname === valuev2[0] &&
           consumer.lastname === valuev2[1]?.trim()
       );
-      props.setSelectedConsumer(selected);
-      props.setBasicData({
-        ...props.basicData,
-        name: valuev2[0],
-        lastname: valuev2[1]?.trim(),
-        phone: selected?.phone,
-        email: selected?.email,
-        address: selected?.address,
-        ci: selected?.ci,
-      });
+      let prixer = prixers.find(
+        (prixer) =>
+          prixer.firstName === valuev2[0] &&
+          prixer.lastName === valuev2[1]?.trim()
+      );
+      if (selected) {
+        props.setSelectedConsumer(selected);
+        props.setBasicData({
+          ...props.basicData,
+          name: valuev2[0],
+          lastname: valuev2[1]?.trim(),
+          phone: selected?.phone,
+          email: selected?.email,
+          address: selected?.address,
+          ci: selected?.ci,
+        });
+      } else if (prixer) {
+        props.setSelectedPrixer(prixer);
+        props.setBasicData({
+          ...props.basicData,
+          name: valuev2[0],
+          lastname: valuev2[1]?.trim(),
+          phone: prixer?.phone,
+          email: prixer?.email,
+          address: prixer?.address,
+          ci: prixer?.ci,
+        });
+      }
     } else return;
   };
 

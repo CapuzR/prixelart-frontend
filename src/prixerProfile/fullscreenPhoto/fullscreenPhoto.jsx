@@ -772,7 +772,7 @@ export default function FullscreenPhoto(props) {
                           </Button>
                           {JSON.parse(localStorage.getItem("token")) &&
                             JSON.parse(localStorage.getItem("token"))
-                              .username == tile.prixerUsername && (
+                              .username === tile.prixerUsername && (
                               <Button
                                 size="small"
                                 color="primary"
@@ -784,7 +784,7 @@ export default function FullscreenPhoto(props) {
                                 Editar
                               </Button>
                             )}
-                          {JSON.parse(localStorage.getItem("adminToken")) && (
+                          {props.permissions?.artBan && (
                             <IOSSwitch
                               color="primary"
                               size="normal"

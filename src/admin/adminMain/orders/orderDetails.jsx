@@ -265,7 +265,6 @@ export default function OrderDetails(props) {
   }
   document.addEventListener("keydown", handleKeyDown);
 
-  console.log(props.modalContent.observations);
   return (
     <Grid container className={classes.paper2}>
       <Grid

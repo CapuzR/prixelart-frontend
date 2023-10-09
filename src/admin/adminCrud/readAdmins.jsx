@@ -321,6 +321,9 @@ export default function ReadAdmins(props) {
                                 {role.modifyDollar && (
                                   <li>Modificar valor del dolar</li>
                                 )}
+                                {role.modifyBestSellers && (
+                                  <li>Modificar productos más vendidos</li>
+                                )}
                               </ul>
                             )}
                             {(role.createTestimonial ||
@@ -366,6 +369,7 @@ export default function ReadAdmins(props) {
                                 {role.readMovements && (
                                   <li>Leer movimientos</li>
                                 )}
+                                {role.artBan && <li>Banear artes</li>}
                               </ul>
                             )}
                             {(role.createConsumer ||

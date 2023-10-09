@@ -45,6 +45,7 @@ function App() {
   const [sellers, setSellers] = useState();
   const [pointedProduct, setPointedProduct] = useState();
   const [dollarValue, setDollarValue] = useState("1");
+  const [permissions, setPermissions] = useState();
 
   document.addEventListener("contextmenu", (event) => {
     event.preventDefault();
@@ -80,9 +81,28 @@ function App() {
       console.log(e);
     }
   };
+  const checkP = () => {
+    const base_url =
+      process.env.REACT_APP_BACKEND_URL + "/admin/CheckPermissions";
+    axios
+      .post(base_url, { adminToken: localStorage.getItem("adminTokenV") })
+      .then((response) => {
+        if (response.data.auth === false) {
+          localStorage.removeItem("adminToken");
+          localStorage.removeItem("adminTokenV");
+        } else {
+          setPermissions(response.data.readedRole);
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
   useEffect(() => {
     readDollarValue();
     loadAdmins();
+    checkP();
   }, []);
 
   useEffect(() => {
@@ -235,6 +255,7 @@ function App() {
             updateDollarValue={updateDollarValue}
             admins={admins}
             sellers={sellers}
+            permissions={permissions}
           />
         </Route>
 
@@ -398,6 +419,7 @@ function App() {
             changeQuantity={changeQuantity}
             setOpen={setOpen}
             setMessage={setMessage}
+            permissions={permissions}
           />
         </Route>
 
@@ -452,6 +474,7 @@ function App() {
             dollarValue={dollarValue}
             setPointedProduct={setPointedProduct}
             pointedProduct={pointedProduct}
+            permissions={permissions}
           />
         </Route>
         <Route component={Home} />

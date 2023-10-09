@@ -404,32 +404,30 @@ export default function Grid(props) {
               tile.visible ? (
                 <div>
                   {JSON.parse(localStorage.getItem("adminToken")) &&
-                  tile.visible ? (
-                    <Button
-                      size="small"
-                      color="primary"
-                      variant="contained"
-                      style={{
-                        position: "absolute",
-                        marginTop: "10px",
-                        marginLeft: "10px",
-                        color: "#fff",
-                      }}
-                      disabled
-                    >
-                      <Typography
+                    tile.visible && (
+                      <Button
+                        size="small"
+                        color="primary"
+                        variant="contained"
                         style={{
-                          opacity: 0.5,
-                          fontSize: "0.8rem",
-                          fontWeight: 100,
+                          position: "absolute",
+                          marginTop: "10px",
+                          marginLeft: "10px",
+                          color: "#fff",
                         }}
+                        disabled
                       >
-                        Puntos: {tile.points}
-                      </Typography>
-                    </Button>
-                  ) : (
-                    ""
-                  )}
+                        <Typography
+                          style={{
+                            opacity: 0.5,
+                            fontSize: "0.8rem",
+                            fontWeight: 100,
+                          }}
+                        >
+                          Puntos: {tile.points}
+                        </Typography>
+                      </Button>
+                    )}
 
                   <CardActionArea>
                     <Tooltip title="Agregar al carrito">
@@ -465,7 +463,7 @@ export default function Grid(props) {
                       key={tile.artId}
                     />
 
-                    {JSON.parse(localStorage.getItem("adminToken")) && (
+                    {props.permissions?.artBan && (
                       <IOSSwitch
                         color="primary"
                         size="normal"
@@ -571,7 +569,7 @@ export default function Grid(props) {
                       id={tile.artId}
                       key={tile.artId}
                     />
-                    {JSON.parse(localStorage.getItem("adminToken")) && (
+                    {props.permissions?.banArt && (
                       <IOSSwitch
                         color="primary"
                         size="normal"

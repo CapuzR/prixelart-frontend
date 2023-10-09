@@ -161,8 +161,6 @@ export default function Home(props) {
   const [openTestimonials, setOpenTestimonials] = useState(false);
   const [selectedArt, setSelectedArt] = useState(undefined);
   const [bestSellers, setBestSellers] = useState();
-  // const [currentSet, setCurrentSet] = useState(bestSellers?.slice(0, 3));
-  // const [startIndex, setStartIndex] = useState(0);
 
   const [openArtFormDialog, setOpenArtFormDialog] = useState(false);
   const [openShoppingCart, setOpenShoppingCart] = useState(false);
@@ -283,7 +281,7 @@ export default function Home(props) {
   };
 
   const getBestSellers = async () => {
-    const url = process.env.REACT_APP_BACKEND_URL + "/product/bestSellers";
+    const url = process.env.REACT_APP_BACKEND_URL + "/getBestSellers";
     try {
       const bestS = await axios.get(url);
       setBestSellers(bestS.data.products);
@@ -620,74 +618,6 @@ export default function Home(props) {
                   </div>
                 ))}
               </Slider>
-              {/* <Carousel
-              stopAutoPlayOnHover={true}
-              animation="fade"
-              // duration={500}
-              // fullHeightHover={false} // style={{ marginTop: -100 }}
-              IndicatorIcon={<MaximizeIcon />}
-              NextIcon={<ArrowForwardIosIcon style={{ fontSize: "4rem" }} />}
-              PrevIcon={
-                <ArrowBackIosIcon
-                  style={{
-                    fontSize: "4rem",
-                    paddingLeft: 20,
-                  }}
-                />
-              }
-              navButtonsProps={{
-                style: {
-                  backgroundColor: "rgba(0, 0, 0, 0.1)",
-                  borderRadius: 15,
-                  width: isMobile ? 50 : 100,
-                  height: isMobile ? 150 : 250,
-                  margin: 0,
-                  marginTop: "-120px",
-                },
-              }}
-              indicatorContainerProps={{
-                style: {
-                  // marginTop: -280,
-                  // position: "absolute",
-                },
-              }}
-            >
-              {bestSellers?.map(
-                (product, i) =>
-                  product.sources.images !== undefined && (
-                    <div
-                      style={{
-                        borderRadius: 40,
-                        display: "flex",
-                        flexDirection: "row",
-                        height: isMobile ? 150 : 250,
-                        width: "80%",
-                        marginLeft: isMobile ? 35 : 100,
-                        justifyContent: "space-around",
-                        alignItems: "center",
-                      }}
-                    >
-                      <div
-                        key={i}
-                        style={{
-                          backgroundImage:
-                            product.sources.images.length > 0
-                              ? "url(" + product.sources.images[0]?.url + ")"
-                              : "url(" + product.thumbUrl + ")",
-                          // height: isMobile ? 120 : 250,
-                          // width: isMobile ? 120 : 250,
-                          height: 180,
-                          width: 180,
-                          marginRight: 10,
-                          backgroundSize: "cover",
-                          borderRadius: 40,
-                          backgroundPosition: "back",
-                        }}
-                      />
-                    </div>
-                  )
-              )}
-                      </Carousel>*/}
             </Paper>
           )}
 
@@ -758,6 +688,7 @@ export default function Home(props) {
                   setPrixer={props.setPrixer}
                   setFullArt={props.setFullArt}
                   setSearchResult={props.setSearchResult}
+                  permissions={props.permissions}
                 />
               )
               // </Suspense>

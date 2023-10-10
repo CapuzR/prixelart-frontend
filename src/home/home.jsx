@@ -324,7 +324,7 @@ export default function Home(props) {
   };
 
   const settings = {
-    slidesToShow: (isMobile && 2) || (isTab && 3) || (isDesktop && 4),
+    slidesToShow: (isMobile && 1) || (isTab && 3) || (isDesktop && 4),
     slidesToScroll: 1,
     autoplay: true,
     autoplaySpeed: 4000,
@@ -547,7 +547,7 @@ export default function Home(props) {
                 justifyContent: "center",
                 position: "relative",
                 width: isDesktop ? "80%" : "90%",
-                height: isDesktop ? 280 : 210,
+                height: isDesktop ? 280 : 220,
                 marginTop: 20,
                 marginLeft: isDesktop ? "10%" : "5%",
                 borderRadius: isMobile ? 30 : 52,

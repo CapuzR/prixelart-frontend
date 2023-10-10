@@ -13,13 +13,14 @@ import FilterListIcon from "@material-ui/icons/FilterList";
 import Tooltip from "@material-ui/core/Tooltip";
 import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
+import useMediaQuery from "@material-ui/core/useMediaQuery";
 
 const useStyles = makeStyles((theme) => ({
   root: {
     padding: "2px 4px",
     display: "flex",
     alignItems: "center",
-    width: 450,
+    // width: isMobile ? "100%" : 600,
     marginTop: 5,
     marginBottom: 10,
   },
@@ -39,8 +40,10 @@ const useStyles = makeStyles((theme) => ({
 
 export default function CustomizedInputBase(props) {
   const classes = useStyles();
-  let params = new URLSearchParams(window.location.search);
   const theme = useTheme();
+  let params = new URLSearchParams(window.location.search);
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
   const categoriesList = [
     "Abstracto",
     "Animales",
@@ -109,7 +112,12 @@ export default function CustomizedInputBase(props) {
 
   return (
     <div>
-      <Paper component="form" className={classes.root} elevation={3}>
+      <Paper
+        component="form"
+        className={classes.root}
+        elevation={3}
+        style={{ width: isMobile ? "auto" : 650 }}
+      >
         <div style={{ display: "flex", width: "100%", alignItems: "center" }}>
           <IconButton
             type="submit"

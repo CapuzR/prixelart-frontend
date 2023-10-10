@@ -13,18 +13,23 @@ import { useTheme } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
+import { Button } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
     display: "flex",
     flexDirection: "column",
-    alignItems: "left",
+    // alignItems: "left",
     flexGrow: 1,
   },
   paper2: {
     display: "flex",
     justifyContent: "center",
     marginTop: 80,
+  },
+  tabs: {
+    borderRight: `1px solid ${theme.palette.divider}`,
+    // backgroundColor: "#d33f49",
   },
 }));
 
@@ -35,7 +40,7 @@ export default function PrixerProfile() {
   const account = JSON.parse(localStorage.getItem("token")).account;
   const [balance, setBalance] = useState(0);
   const [movements, setMovements] = useState([]);
-  const [tab, setTab] = useState("balance");
+  const [tab, setTab] = useState(0);
   // const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
 
   const getBalance = () => {
@@ -56,21 +61,10 @@ export default function PrixerProfile() {
     getMovements();
   }, []);
 
-  const handleBalance = (e) => {
-    e.preventDefault();
-    setTab("balance");
+  const handleChange = (event, newValue) => {
+    console.log(newValue);
+    setTab(newValue);
   };
-
-  const handleMovement = (e) => {
-    e.preventDefault();
-    setTab("movement");
-  };
-
-  const handleInteractions = (e) => {
-    e.preventDefault();
-    setTab("interactions");
-  };
-
   return (
     <Container component="main" maxWidth="xl" className={classes.paper}>
       <CssBaseline />
@@ -82,18 +76,51 @@ export default function PrixerProfile() {
           style={{ width: "70%", padding: 10, borderRadius: 10 }}
           elevation={3}
         >
-          <Typography color="primary" variant="h6" style={{ paddingLeft: 10 }}>
+          <Typography
+            color="primary"
+            variant="h4"
+            style={{ paddingLeft: 10, color: "#404e5c", textAlign: "center" }}
+          >
             Mi Resumen
           </Typography>
           <Grid container>
             <Grid item xs={4} sm={3}>
-              <Tabs orientation="vertical">
-                <Tab label="Balance General" onClick={handleBalance} />
-                <Tab label="Movimientos" onClick={handleMovement} />
-                <Tab label="Interacciones" onClick={handleInteractions} />
+              <Tabs
+                onChange={handleChange}
+                orientation="vertical"
+                value={tab}
+                indicatorColor="primary"
+                textColor="#404e5c"
+                className={classes.tabs}
+                variant="scrollable"
+              >
+                <Tab
+                  label="Balance General"
+                  style={{
+                    textTransform: "none",
+                    fontSize: 18,
+                    color: "#404e5c",
+                  }}
+                />
+                <Tab
+                  label="Movimientos"
+                  style={{
+                    textTransform: "none",
+                    fontSize: 18,
+                    color: "#404e5c",
+                  }}
+                />
+                <Tab
+                  label="Interacciones"
+                  style={{
+                    textTransform: "none",
+                    fontSize: 18,
+                    color: "#404e5c",
+                  }}
+                />
               </Tabs>
             </Grid>
-            <hr />
+            {/* <hr /> */}
 
             <Grid
               item
@@ -104,19 +131,28 @@ export default function PrixerProfile() {
                 justifyContent: "center",
                 flexDirection: "column",
                 minHeight: 200,
+                marginLeft: 10,
               }}
             >
-              {tab === "balance" && (
+              {tab === 0 && (
                 <Grid>
                   <Typography
                     variant="body1"
-                    style={{ display: "flex", justifyContent: "center" }}
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      color: "#404e5c",
+                    }}
                   >
                     Tu balance es de:
                   </Typography>
                   <Typography
                     variant="h2"
-                    style={{ display: "flex", justifyContent: "center" }}
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      color: "#404e5c",
+                    }}
                   >
                     $
                     {balance?.toLocaleString("de-DE", {
@@ -126,7 +162,7 @@ export default function PrixerProfile() {
                   </Typography>
                 </Grid>
               )}
-              {tab === "movement" && (
+              {tab === 1 && (
                 <Grid>
                   <Typography
                     variant="h6"
@@ -145,6 +181,7 @@ export default function PrixerProfile() {
                           padding: 10,
                           borderRadius: 10,
                           margin: "10px 0px 10px 0px",
+                          alignItems: "center",
                         }}
                       >
                         <Grid>
@@ -160,7 +197,18 @@ export default function PrixerProfile() {
                                 })
                                 .slice(0, 10)}
                         </Grid>
-                        <Grid>{mov.description}</Grid>
+                        <Grid>
+                          {mov.description.split("#")[0]}{" "}
+                          <Button
+                            style={{
+                              textTransform: "none",
+                              // fontSize: 18,
+                              color: "#404e5c",
+                            }}
+                          >
+                            {mov.description.split("#")[1]}
+                          </Button>
+                        </Grid>
                         {mov.type === "Depósito" ? (
                           <Grid style={{ color: "green", fontWeight: "bold" }}>
                             + $
@@ -191,7 +239,7 @@ export default function PrixerProfile() {
                   )}
                 </Grid>
               )}
-              {tab === "interactions" && (
+              {tab === 2 && (
                 // <div margin={"auto"}>
                 <Typography align="center" variant="h4">
                   Próximamente

@@ -324,6 +324,9 @@ export default function ReadAdmins(props) {
                                 {role.modifyBestSellers && (
                                   <li>Modificar productos más vendidos</li>
                                 )}
+                                {role.modifyArtBestSellers && (
+                                  <li>Modificar artes más vendidos</li>
+                                )}
                               </ul>
                             )}
                             {(role.createTestimonial ||

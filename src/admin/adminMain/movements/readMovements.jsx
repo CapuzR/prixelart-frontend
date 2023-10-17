@@ -27,6 +27,8 @@ import Menu from "@material-ui/core/Menu";
 import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 import Grow from "@material-ui/core/Grow";
 import Popper from "@material-ui/core/Popper";
+import Box from "@material-ui/core/Box";
+
 // import CircularProgress from '@material-ui/core/CircularProgress';
 // import Backdrop from '@material-ui/core/Backdrop';
 // import Button from '@material-ui/core/Button';
@@ -37,6 +39,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     overflow: "none",
     flexDirection: "column",
+    marginLeft: 30,
   },
   fixedHeight: {
     height: "auto",
@@ -45,6 +48,10 @@ const useStyles = makeStyles((theme) => ({
   formControl: {
     margin: theme.spacing(1),
     minWidth: 120,
+  },
+  backdrop: {
+    zIndex: theme.zIndex.drawer + 1,
+    color: theme.palette.primary.main,
   },
 }));
 
@@ -63,6 +70,14 @@ export default function ReadMovements(props) {
   const [orderId, setOrderId] = useState();
   const [prixers, setPrixers] = useState();
   const [selectedPrixer, setSelectedPrixer] = useState();
+  const [type, setType] = useState();
+
+  const totalMovements = rows?.length;
+  const itemsPerPage = 20;
+  const noOfPages = Math.ceil(totalMovements / itemsPerPage);
+  const [pageNumber, setPageNumber] = useState(1);
+  const itemsToSkip = (pageNumber - 1) * itemsPerPage;
+  const rowsv2 = rows?.slice(itemsToSkip, itemsPerPage + itemsToSkip);
 
   //Error states.
   const [errorMessage, setErrorMessage] = useState();
@@ -94,26 +109,25 @@ export default function ReadMovements(props) {
 
   const readPrixers = async () => {
     try {
-      // setLoading(true);
       const base_url =
         process.env.REACT_APP_BACKEND_URL + "/prixer/read-all-full";
 
       const response = await axios.get(base_url);
       setPrixers(response.data.prixers);
-      // setBackdrop(false);
-      // setLoading(false);
     } catch (error) {
       console.log(error);
     }
   };
 
   useEffect(() => {
+    setLoading(true);
     readMovements();
     readPrixers();
+    setLoading(false);
   }, []);
 
   const getUsername = (fullname) => {
-    const prixer = fullname.split(" ");
+    const prixer = fullname?.split(" ");
     let selected;
     if (prixer.length === 2) {
       selected = prixers?.find(
@@ -163,7 +177,6 @@ export default function ReadMovements(props) {
     setOpenOrderDetails(false);
     setSelectedPrixer(undefined);
     setAnchorEl(null);
-    // handleToggle();
   };
 
   return (
@@ -175,115 +188,224 @@ export default function ReadMovements(props) {
       >
         <CircularProgress />
       </Backdrop>
-      <div style={{ position: "relative" }}>
-        <Grid container spacing={3}>
-          <Grid item xs={12} md={12} lg={12}>
-            <Paper className={fixedHeightPaper}>
-              {props?.permissions?.readMovements ? (
-                <>
-                  <Title>Movimientos</Title>
-                  <Table size="small">
-                    <TableHead>
-                      <TableRow>
-                        <TableCell align="center">ID</TableCell>
-                        <TableCell align="center">Fecha efectiva</TableCell>
+      <Backdrop
+        className={classes.backdrop}
+        open={openOrderDetails}
+        transitionDuration={1000}
+      ></Backdrop>
+      <Grid container>
+        <Grid item xs={12} md={12} lg={12}>
+          <Paper className={fixedHeightPaper}>
+            {props?.permissions?.readMovements ? (
+              <>
+                <Title>Movimientos</Title>
+                <Table size="small">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell align="center">ID</TableCell>
+                      <TableCell align="center">Fecha efectiva</TableCell>
 
-                        <TableCell align="center">
-                          <FormControl className={classes.formControl}>
-                            <InputLabel id="demo-simple-select-label">
-                              Destinatario
-                            </InputLabel>
-                            <Select
-                              labelId="demo-simple-select-label"
-                              id="demo-simple-select"
-                              value={filter}
-                              onChange={handleChange}
-                            >
-                              <MenuItem key={"none"} value={undefined}>
-                                {""}
-                              </MenuItem>
-                              {prixersNames?.length > 0 &&
-                                prixersNames?.map((prixer, i) => (
-                                  <MenuItem key={i} value={prixer}>
-                                    {prixer}
-                                  </MenuItem>
-                                ))}
-                            </Select>
-                          </FormControl>
-                        </TableCell>
-                        <TableCell align="center">Descripción</TableCell>
-                        <TableCell align="center">Monto</TableCell>
-                        <TableCell align="center">Fecha</TableCell>
-                        <TableCell align="center">Creado por</TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {rows &&
-                        rows.map((row) => (
-                          <TableRow key={row._id}>
-                            <TableCell align="center">{row._id}</TableCell>
-                            <TableCell align="center">
-                              {row?.date?.substring(0, 10) ||
-                                row.createdOn.substring(0, 10)}
-                            </TableCell>
-                            <TableCell align="center">
-                              {row.destinatary}
-                            </TableCell>
+                      <TableCell align="center">
+                        <FormControl className={classes.formControl}>
+                          <InputLabel id="demo-simple-select-label">
+                            Destinatario
+                          </InputLabel>
+                          <Select
+                            labelId="demo-simple-select-label"
+                            id="demo-simple-select"
+                            value={filter}
+                            onChange={handleChange}
+                          >
+                            <MenuItem key={"none"} value={undefined}>
+                              {""}
+                            </MenuItem>
+                            {prixersNames?.length > 0 &&
+                              prixersNames?.map((prixer, i) => (
+                                <MenuItem key={i} value={prixer}>
+                                  {prixer}
+                                </MenuItem>
+                              ))}
+                          </Select>
+                        </FormControl>
+                      </TableCell>
+                      <TableCell align="center">Descripción</TableCell>
+                      <TableCell align="center">Monto</TableCell>
+                      <TableCell align="center">Fecha</TableCell>
+                      <TableCell align="center">Creado por</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {rows &&
+                      rowsv2.map((row) => (
+                        <TableRow key={row._id}>
+                          <TableCell align="center">{row._id}</TableCell>
+                          <TableCell align="center">
+                            {row?.date?.substring(0, 10) ||
+                              row.createdOn.substring(0, 10)}
+                          </TableCell>
+                          <TableCell align="center">
+                            {row.destinatary}
+                          </TableCell>
 
-                            <TableCell align="center">
-                              {row.description.includes("#") ? (
-                                <div>
-                                  <Typography>
-                                    {row.description.slice(0, 20)}
-                                  </Typography>
-                                  <Button
-                                    onClick={() => {
-                                      setOpenOrderDetails(true);
-                                      setOrderId(row.description.slice(22));
-                                      getUsername(row.destinatary);
-                                      handleClick();
-                                    }}
-                                  >
-                                    {row.description.split("#")?.[1]}
-                                  </Button>
-                                </div>
-                              ) : (
-                                <Typography>{row.description}</Typography>
-                              )}
-                            </TableCell>
+                          <TableCell align="center">
+                            {row.description.includes("#") ? (
+                              <div>
+                                <Typography>
+                                  {row.description.split("#")?.[0]}
+                                </Typography>
+                                <Button
+                                  onClick={() => {
+                                    setOpenOrderDetails(true);
+                                    setOrderId(row.description.split("#")?.[1]);
+                                    getUsername(row.destinatary);
+                                    handleClick();
+                                    setType(row.type);
+                                  }}
+                                >
+                                  {row.description.split("#")?.[1]}
+                                </Button>
+                              </div>
+                            ) : (
+                              <Typography>{row.description}</Typography>
+                            )}
+                          </TableCell>
 
-                            <TableCell align="center">
-                              {row.type === "Retiro" && "-"}$
-                              {row.value.toLocaleString("de-DE", {
-                                minimumFractionDigits: 2,
-                                maximumFractionDigits: 2,
-                              })}
-                            </TableCell>
-                            <TableCell align="center">
-                              {row.createdOn.substring(0, 10)}
-                            </TableCell>
-                            <TableCell align="center">
-                              {row.createdBy}
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                    </TableBody>
-                  </Table>
-                </>
-              ) : (
-                <Typography
-                  variant="h3"
-                  color="secondary"
-                  align="center"
-                  style={{ paddingTop: 30, marginTop: 60, marginBottom: 80 }}
+                          <TableCell align="center">
+                            {row.type === "Retiro" && "-"}$
+                            {row.value.toLocaleString("de-DE", {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                            })}
+                          </TableCell>
+                          <TableCell align="center">
+                            {row.createdOn.substring(0, 10)}
+                          </TableCell>
+                          <TableCell align="center">{row.createdBy}</TableCell>
+                        </TableRow>
+                      ))}
+                  </TableBody>
+                </Table>
+                <Box
+                  style={{
+                    display: "flex",
+                    alignSelf: "center",
+                    paddingTop: 5,
+                    marginBottom: 4,
+                  }}
                 >
-                  No tienes permiso para entrar a esta área.
-                </Typography>
-              )}
-            </Paper>
-          </Grid>
+                  {pageNumber - 3 > 0 && (
+                    <Button
+                      style={{ minWidth: 30, marginRight: 5 }}
+                      onClick={() => {
+                        setPageNumber(1);
+                      }}
+                    >
+                      {1}
+                    </Button>
+                  )}
+                  {pageNumber - 3 > 0 && (
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        marginRight: 5,
+                      }}
+                    >
+                      ...
+                    </div>
+                  )}
+                  {pageNumber - 2 > 0 && (
+                    <Button
+                      style={{ minWidth: 30, marginRight: 5 }}
+                      onClick={() => {
+                        setPageNumber(pageNumber - 2);
+                      }}
+                    >
+                      {pageNumber - 2}
+                    </Button>
+                  )}
+                  {pageNumber - 1 > 0 && (
+                    <Button
+                      style={{ minWidth: 30, marginRight: 5 }}
+                      onClick={() => {
+                        setPageNumber(pageNumber - 1);
+                      }}
+                    >
+                      {pageNumber - 1}
+                    </Button>
+                  )}
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      width: 80,
+                      marginRight: 5,
+                      backgroundColor: "rgb(238, 238, 238)",
+                      borderRadius: 4,
+                    }}
+                  >
+                    Página {pageNumber}
+                  </div>
+                  {pageNumber + 1 <= noOfPages && (
+                    <Button
+                      style={{ minWidth: 30, marginRight: 5 }}
+                      onClick={() => {
+                        setPageNumber(pageNumber + 1);
+                      }}
+                    >
+                      {pageNumber + 1}
+                    </Button>
+                  )}
+
+                  {pageNumber + 2 <= noOfPages && (
+                    <Button
+                      style={{ minWidth: 30, marginRight: 5 }}
+                      onClick={() => {
+                        setPageNumber(pageNumber + 2);
+                      }}
+                    >
+                      {pageNumber + 2}
+                    </Button>
+                  )}
+                  {pageNumber + 3 <= noOfPages && (
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        marginRight: 5,
+                      }}
+                    >
+                      ...
+                    </div>
+                  )}
+                  {pageNumber + 3 <= noOfPages && (
+                    <Button
+                      style={{ minWidth: 30, marginRight: 5 }}
+                      onClick={() => {
+                        setPageNumber(noOfPages);
+                      }}
+                    >
+                      {noOfPages}
+                    </Button>
+                  )}
+                </Box>
+              </>
+            ) : (
+              <Typography
+                variant="h3"
+                color="secondary"
+                align="center"
+                style={{ paddingTop: 30, marginTop: 60, marginBottom: 80 }}
+              >
+                No tienes permiso para entrar a esta área.
+              </Typography>
+            )}
+          </Paper>
         </Grid>
-      </div>
+      </Grid>
       <Snackbar
         open={snackBarError}
         autoHideDuration={1000}
@@ -308,14 +430,14 @@ export default function ReadMovements(props) {
             <Grow
               {...TransitionProps}
               style={{
-                transformOrigin:
-                  placement === "bottom" ? "center top" : "center bottom",
+                transformOrigin: "center",
               }}
             >
               <ClickAwayListener onClickAway={handleClose}>
                 <MovOrder
                   orderId={orderId}
                   selectedPrixer={selectedPrixer}
+                  type={type}
                   handleClose={handleClose}
                 />
               </ClickAwayListener>

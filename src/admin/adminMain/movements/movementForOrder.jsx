@@ -9,6 +9,8 @@ import Img from "react-cool-img";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import { Backdrop, Button } from "@material-ui/core";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import useMediaQuery from "@material-ui/core/useMediaQuery";
+import { useTheme } from "@material-ui/core/styles";
 
 import axios from "axios";
 import { useEffect } from "react";
@@ -117,16 +119,12 @@ const useStyles = makeStyles((theme) => ({
   paper2: {
     position: "absolute",
     width: "400px",
-    // maxHeight: "95%",
-    // overflowY: "auto",
     backgroundColor: "white",
-    boxShadow: theme.shadows[2],
-    padding: "16px 32px 24px",
-    // top: "50%",
-    // left: "65%",
+    boxShadow: theme.shadows[5],
+    padding: theme.spacing(2),
+
     transform: "translate(65%)",
     textAlign: "justify",
-    // minWidth: 320,
     borderRadius: 10,
     marginTop: "12px",
     display: "flex",
@@ -220,9 +218,12 @@ const useStyles = makeStyles((theme) => ({
 
 export default function MovOrder(props) {
   const classes = useStyles();
+  const theme = useTheme();
 
   const [order, setOrder] = useState();
   const [discountList, setDiscountList] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const isDeskTop = useMediaQuery(theme.breakpoints.up("sm"));
 
   const getDiscounts = async () => {
     const base_url = process.env.REACT_APP_BACKEND_URL + "/discount/read-allv1";
@@ -241,6 +242,7 @@ export default function MovOrder(props) {
   }, []);
 
   useEffect(() => {
+    setLoading(true);
     const url = process.env.REACT_APP_BACKEND_URL + "/order/read";
     axios
       .post(url, {
@@ -249,7 +251,7 @@ export default function MovOrder(props) {
       })
       .then((res) => {
         setOrder(res.data);
-        // console.log(res.data);
+        setLoading(false);
       });
   }, []);
 
@@ -298,9 +300,9 @@ export default function MovOrder(props) {
 
   return (
     <React.Fragment>
-      {/* <Backdrop className={classes.backdrop} open={true}>
+      <Backdrop className={classes.backdrop} open={loading}>
         <CircularProgress />
-      </Backdrop> */}
+      </Backdrop>
 
       <Grid container className={classes.paper2}>
         <Grid
@@ -315,16 +317,15 @@ export default function MovOrder(props) {
             <CloseIcon />
           </IconButton>
         </Grid>
-        {order?.requests?.map(
-          (item, index) =>
-            item.art.prixerUsername === props.selectedPrixer && (
+        {props.type === "Depósito"
+          ? order?.requests.map((item, index) => (
               <>
-                {/* {console.log(order)} */}
                 <div
                   style={{
                     display: "flex",
                     flexDirection: "column",
-                    margin: "0px 0px 20px 0px",
+                    marginBottom: 20,
+                    marginTop: -45,
                     borderWidth: "1px",
                     borderStyle: "solid",
                     borderRadius: 10,
@@ -396,18 +397,13 @@ export default function MovOrder(props) {
                   <div style={{ padding: 10 }}>
                     <div>{"Arte: " + item.art?.title}</div>
                     <div>{"Id: " + item.art?.artId}</div>
-                    {/* <div style={{ marginBottom: 10 }}>
-                    {"Prixer: " + item.art?.prixerUsername}
-                  </div> */}
                     <div>{"Producto: " + item.product.name}</div>
-                    {/* <div>{"Id: " + item.product._id}</div> */}
                     {item.product.selection &&
                       item.product.selection.attributes &&
                       item.product.attributes.map((a, i) => {
                         return (
                           <p
                             style={{
-                              // fontSize: 12,
                               padding: 0,
                               margin: 0,
                             }}
@@ -418,28 +414,19 @@ export default function MovOrder(props) {
                           </p>
                         );
                       })}
-
-                    <div style={{ marginTop: 10 }}>
-                      {"Cantidad: " + item.quantity}
-                    </div>
                   </div>
                 </div>
                 <Grid
                   item
                   xs={12}
                   sm={12}
-                  //   md={6}
-                  //   lg={6}
                   style={{
                     display: "flex",
                     flexDirection: "column",
-                    marginBottom: 20,
                   }}
                 >
                   <Grid
                     style={{
-                      //   marginBottom: 40,
-                      //   marginRight: 20,
                       borderWidth: "1px",
                       borderStyle: "solid",
                       borderRadius: 10,
@@ -488,8 +475,201 @@ export default function MovOrder(props) {
                   </Grid>
                 </Grid>
               </>
-            )
-        )}
+            ))
+          : order && (
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  width: "100%",
+                  marginTop: -42,
+                }}
+              >
+                <Typography
+                  variant="h6"
+                  style={{ marginTop: -38, margin: 5 }}
+                  color="secondary"
+                  align="center"
+                >
+                  {"Orden #"}
+                  {order?.orderId}
+                </Typography>
+                {order?.requests?.map((item, index) => (
+                  <>
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        // margin: "0px 0px 20px 0px",
+                        borderWidth: "1px",
+                        borderStyle: "solid",
+                        borderRadius: 10,
+                        // padding: 5,
+                        borderColor: "#d33f49",
+                        width: "100%",
+                      }}
+                    >
+                      <Typography
+                        color="secondary"
+                        variant="subtitle1"
+                        align="center"
+                      >
+                        Item #{index + 1}
+                      </Typography>
+                      <div
+                        style={{
+                          display: "flex",
+                          flexDirection: "row",
+                          justifyContent: "space-evenly",
+                        }}
+                      >
+                        <Paper
+                          style={{
+                            width: isDeskTop ? "150px" : "120px",
+                            height: isDeskTop ? "150px" : "120px",
+                            borderRadius: 10,
+                            backgroundColor: "#eeeeee",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                          }}
+                          elevation={3}
+                        >
+                          <Img
+                            src={item.art?.squareThumbUrl}
+                            style={{
+                              maxWidth: isDeskTop ? "150px" : "120px",
+                              maxHeight: isDeskTop ? "150px" : "120px",
+                              borderRadius: 10,
+                            }}
+                          />
+                        </Paper>
+                        <Paper
+                          style={{
+                            width: isDeskTop ? "150px" : "120px",
+                            height: isDeskTop ? "150px" : "120px",
+                            borderRadius: 10,
+                            backgroundColor: "#eeeeee",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                          }}
+                          elevation={3}
+                        >
+                          <Img
+                            src={
+                              item.product?.thumbUrl ||
+                              item.product?.sources?.images[0]?.url
+                            }
+                            style={{
+                              maxWidth: isDeskTop ? "150px" : "120px",
+                              maxHeight: isDeskTop ? "150px" : "120px",
+                              borderRadius: 10,
+                            }}
+                          />
+                        </Paper>
+                      </div>
+                      <div style={{ padding: 10 }}>
+                        <div>{"Arte: " + item.art?.title}</div>
+                        {/* <div>{"Id: " + item.art?.artId}</div> */}
+                        <div style={{ marginBottom: 10 }}>
+                          {"Prixer: " + item.art?.prixerUsername}
+                        </div>
+                        <div>{"Producto: " + item.product.name}</div>
+                        {item.product.selection &&
+                          item.product.selection.attributes &&
+                          item.product.attributes.map((a, i) => {
+                            return (
+                              <p
+                                style={{
+                                  padding: 0,
+                                  margin: 0,
+                                }}
+                              >
+                                {item.product?.selection?.attributes[i]?.name +
+                                  ": " +
+                                  item.product?.selection?.attributes[i]?.value}
+                              </p>
+                            );
+                          })}
+                        <div>{"Cantidad: " + item.quantity}</div>
+                        <div>
+                          {"Precio unitario: $" +
+                            Number(
+                              item.product?.publicEquation
+                                ? item.product?.publicEquation
+                                : item.product?.publicPrice?.from ||
+                                    item.product?.prixerEquation ||
+                                    item.product?.prixerPrice?.price
+                            ).toLocaleString("de-DE", {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                            })}
+                        </div>
+                        {typeof item.product.discount === "string" &&
+                          !item.product.modifyPrice && (
+                            <div>
+                              {"Descuento: " + getDis(item.product.discount)}
+                            </div>
+                          )}
+                      </div>
+                    </div>
+                  </>
+                ))}
+                <Grid
+                  item
+                  xs={12}
+                  sm={12}
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    marginTop: 10,
+                    borderWidth: "1px",
+                    borderStyle: "solid",
+                    borderRadius: 10,
+                    borderColor: "grey",
+                    padding: 10,
+                  }}
+                >
+                  <div>
+                    {"Subtotal: $" +
+                      order?.subtotal.toLocaleString("de-DE", {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}
+                  </div>
+                  <div>
+                    {"IVA: $" +
+                      order.tax.toLocaleString("de-DE", {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}
+                  </div>
+                  {(order.shippingCost ||
+                    order.shippingData?.shippingMethod?.price) && (
+                    <div>
+                      {"Envío: $" +
+                        (
+                          order.shippingCost ||
+                          order.shippingData?.shippingMethod?.price
+                        ).toLocaleString("de-DE", {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}
+                    </div>
+                  )}
+                  <div>
+                    <strong>
+                      {"Total: $" +
+                        order.total.toLocaleString("de-DE", {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}
+                    </strong>
+                  </div>
+                </Grid>
+              </div>
+            )}
       </Grid>
     </React.Fragment>
   );

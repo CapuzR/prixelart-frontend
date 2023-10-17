@@ -8,6 +8,7 @@ import Box from "@material-ui/core/Box";
 import CarouselAdmin from "./preferencesCarousel";
 import TermsAndConditions from "./preferenceTerms";
 import BestSellers from "./preferenceBestSellers";
+import ArtBestSellers from "./preferenceArtBestSellers";
 
 function TabPanel(props) {
   const { children, value, index } = props;
@@ -47,20 +48,40 @@ export default function SimpleTabs(props) {
     <div className={classes.root}>
       <AppBar position="static">
         <Tabs value={value} onChange={handleChange}>
-          <Tab label="Carrusel" />
-          <Tab label="Términos y condiciones" />
-
-          <Tab label="Más vendidos" />
+          <Tab
+            label="Carrusel"
+            style={{ textTransform: "none", fontWeight: "bold" }}
+          />
+          <Tab
+            label="Términos y condiciones"
+            style={{ textTransform: "none", fontWeight: "bold" }}
+          />
+          <Tab
+            label="Productos más vendidos"
+            style={{ textTransform: "none", fontWeight: "bold" }}
+          />
+          <Tab
+            label="Artes más vendidos"
+            style={{ textTransform: "none", fontWeight: "bold" }}
+          />
         </Tabs>
       </AppBar>
       <TabPanel value={value} index={0}>
         <CarouselAdmin permissions={props.permissions} />
       </TabPanel>
+      <TabPanel value={value} index={1}>
+        <TermsAndConditions permissions={props.permissions} />
+      </TabPanel>
       <TabPanel value={value} index={2}>
         <BestSellers permissions={props.permissions} />
       </TabPanel>
-      <TabPanel value={value} index={1}>
-        <TermsAndConditions permissions={props.permissions} />
+
+      <TabPanel value={value} index={3}>
+        <ArtBestSellers
+          permissions={props.permissions}
+          setSearchResult={props.setSearchResult}
+          searchResult={props.searchResult}
+        />
       </TabPanel>
     </div>
   );

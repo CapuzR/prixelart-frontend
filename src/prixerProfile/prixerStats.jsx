@@ -14,12 +14,17 @@ import Paper from "@material-ui/core/Paper";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import { Button } from "@material-ui/core";
+import MovDetails from "./movDetails";
+import Menu from "@material-ui/core/Menu";
+import ClickAwayListener from "@material-ui/core/ClickAwayListener";
+import Grow from "@material-ui/core/Grow";
+import Popper from "@material-ui/core/Popper";
+import Fade from "@material-ui/core/Fade";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
     display: "flex",
     flexDirection: "column",
-    // alignItems: "left",
     flexGrow: 1,
   },
   paper2: {
@@ -29,19 +34,32 @@ const useStyles = makeStyles((theme) => ({
   },
   tabs: {
     borderRight: `1px solid ${theme.palette.divider}`,
-    // backgroundColor: "#d33f49",
   },
 }));
 
 export default function PrixerProfile() {
   const classes = useStyles();
   const theme = useTheme();
+  const isDeskTop = useMediaQuery(theme.breakpoints.up("sm"));
+
   const prixerUsername = JSON.parse(localStorage.getItem("token")).username;
   const account = JSON.parse(localStorage.getItem("token")).account;
   const [balance, setBalance] = useState(0);
   const [movements, setMovements] = useState([]);
   const [tab, setTab] = useState(0);
-  // const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [openOrderDetails, setOpenOrderDetails] = useState(false);
+  const [orderId, setOrderId] = useState();
+  const [placement, setPlacement] = React.useState();
+  const [type, setType] = useState();
+
+  const handleClick = (newPlacement, orderId, type) => (event) => {
+    setAnchorEl(event.currentTarget);
+    setOpenOrderDetails((prev) => placement !== newPlacement || !prev);
+    setPlacement("right-start");
+    setOrderId(orderId);
+    setType(type);
+  };
 
   const getBalance = () => {
     const url = process.env.REACT_APP_BACKEND_URL + "/account/readById";
@@ -62,9 +80,14 @@ export default function PrixerProfile() {
   }, []);
 
   const handleChange = (event, newValue) => {
-    console.log(newValue);
     setTab(newValue);
   };
+
+  const handleClose = () => {
+    setOpenOrderDetails(false);
+    setAnchorEl(null);
+  };
+
   return (
     <Container component="main" maxWidth="xl" className={classes.paper}>
       <CssBaseline />
@@ -73,21 +96,30 @@ export default function PrixerProfile() {
       </Grid>
       <Grid className={classes.paper2}>
         <Paper
-          style={{ width: "70%", padding: 10, borderRadius: 10 }}
-          elevation={3}
+          style={{
+            width: isDeskTop ? "70%" : "100%",
+            padding: 10,
+            borderRadius: 10,
+          }}
+          elevation={2}
         >
           <Typography
             color="primary"
-            variant="h4"
-            style={{ paddingLeft: 10, color: "#404e5c", textAlign: "center" }}
+            variant={isDeskTop ? "h4" : "h5"}
+            style={{
+              color: "#404e5c",
+              textAlign: "center",
+              marginBottom: 10,
+              marginTop: isDeskTop ? "10px" : 0,
+            }}
           >
             Mi Resumen
           </Typography>
           <Grid container>
-            <Grid item xs={4} sm={3}>
+            <Grid item xs={12} sm={3}>
               <Tabs
                 onChange={handleChange}
-                orientation="vertical"
+                orientation={isDeskTop ? "vertical" : "horizontal"}
                 value={tab}
                 indicatorColor="primary"
                 textColor="#404e5c"
@@ -98,40 +130,42 @@ export default function PrixerProfile() {
                   label="Balance General"
                   style={{
                     textTransform: "none",
-                    fontSize: 18,
+                    fontSize: isDeskTop ? 18 : 11,
                     color: "#404e5c",
+                    padding: isDeskTop ? "6px 12px" : "6px 6px",
                   }}
                 />
                 <Tab
                   label="Movimientos"
                   style={{
                     textTransform: "none",
-                    fontSize: 18,
+                    fontSize: isDeskTop ? 18 : 11,
                     color: "#404e5c",
+                    padding: isDeskTop ? "6px 12px" : "6px 6px",
                   }}
                 />
                 <Tab
                   label="Interacciones"
                   style={{
                     textTransform: "none",
-                    fontSize: 18,
+                    fontSize: isDeskTop ? 18 : 11,
                     color: "#404e5c",
+                    padding: isDeskTop ? "6px 12px" : "6px 6px",
                   }}
                 />
               </Tabs>
             </Grid>
-            {/* <hr /> */}
 
             <Grid
               item
-              xs={8}
+              xs={12}
               sm={8}
               style={{
                 display: "flex",
                 justifyContent: "center",
                 flexDirection: "column",
                 minHeight: 200,
-                marginLeft: 10,
+                marginLeft: isDeskTop ? "10px" : 0,
               }}
             >
               {tab === 0 && (
@@ -157,19 +191,18 @@ export default function PrixerProfile() {
                     $
                     {balance?.toLocaleString("de-DE", {
                       minimumFractionDigits: 2,
-                      // maximumSignificantDigits: 2,
                     })}
                   </Typography>
                 </Grid>
               )}
               {tab === 1 && (
                 <Grid>
-                  <Typography
+                  {/* <Typography
                     variant="h6"
                     style={{ display: "flex", justifyContent: "center" }}
                   >
                     Tus Movimientos:
-                  </Typography>
+                  </Typography> */}
                   {movements ? (
                     movements.map((mov) => (
                       <Grid
@@ -184,7 +217,7 @@ export default function PrixerProfile() {
                           alignItems: "center",
                         }}
                       >
-                        <Grid>
+                        <Grid style={{ fontSize: isDeskTop ? "14px" : "9px" }}>
                           {mov.date
                             ? new Date(mov.date)
                                 .toLocaleString("en-GB", {
@@ -197,33 +230,49 @@ export default function PrixerProfile() {
                                 })
                                 .slice(0, 10)}
                         </Grid>
-                        <Grid>
+                        <Grid style={{ fontSize: isDeskTop ? "14px" : "9px" }}>
                           {mov.description.split("#")[0]}{" "}
                           <Button
                             style={{
                               textTransform: "none",
-                              // fontSize: 18,
                               color: "#404e5c",
+                              fontSize: isDeskTop ? "14px" : "9px",
+                              minWidth: 32,
                             }}
+                            onClick={handleClick(
+                              "right-start",
+                              mov.description.split("#")[1],
+                              mov.type
+                            )}
                           >
                             {mov.description.split("#")[1]}
                           </Button>
                         </Grid>
                         {mov.type === "Depósito" ? (
-                          <Grid style={{ color: "green", fontWeight: "bold" }}>
+                          <Grid
+                            style={{
+                              color: "green",
+                              fontWeight: "bold",
+                              fontSize: isDeskTop ? "14px" : "9px",
+                            }}
+                          >
                             + $
                             {mov.value?.toLocaleString("de-DE", {
                               minimumFractionDigits: 2,
-                              // maximumSignificantDigits: 2,
                             })}
                           </Grid>
                         ) : (
                           mov.type === "Retiro" && (
-                            <Grid style={{ color: "red", fontWeight: "bold" }}>
+                            <Grid
+                              style={{
+                                color: "red",
+                                fontWeight: "bold",
+                                fontSize: isDeskTop ? "14px" : "9px",
+                              }}
+                            >
                               - $
                               {mov.value?.toLocaleString("de-DE", {
                                 minimumFractionDigits: 2,
-                                // maximumSignificantDigits: 2,
                               })}
                             </Grid>
                           )
@@ -240,16 +289,34 @@ export default function PrixerProfile() {
                 </Grid>
               )}
               {tab === 2 && (
-                // <div margin={"auto"}>
-                <Typography align="center" variant="h4">
+                <Typography align="center" variant="h4" color="secondary">
                   Próximamente
                 </Typography>
-                // </div>
               )}
             </Grid>
           </Grid>
         </Paper>
       </Grid>
+      <div style={{ maxWidth: "80%" }}>
+        <Popper
+          open={openOrderDetails}
+          anchorEl={anchorEl}
+          placement={placement}
+          transition
+        >
+          {({ TransitionProps }) => (
+            <Fade {...TransitionProps} timeout={350}>
+              <ClickAwayListener onClickAway={handleClose}>
+                <MovDetails
+                  orderId={orderId}
+                  handleClose={handleClose}
+                  type={type}
+                />
+              </ClickAwayListener>
+            </Fade>
+          )}
+        </Popper>
+      </div>
     </Container>
   );
 }

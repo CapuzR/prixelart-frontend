@@ -100,6 +100,9 @@ export default function UpdateAdminRole(props) {
   const [modifyBestSellers, setModifyBestSellers] = useState(
     props.admin.modifyBestSellers || false
   );
+  const [modifyArtBestSellers, setModifyArtBestSellers] = useState(
+    props.admin.modifyArtBestSellers || false
+  );
 
   const [loading, setLoading] = useState(false);
   const [buttonState, setButtonState] = useState(false);
@@ -145,6 +148,7 @@ export default function UpdateAdminRole(props) {
         deleteConsumer: deleteConsumer,
         artBan: artBan,
         modifyBestSellers: modifyBestSellers,
+        modifyArtBestSellers: modifyArtBestSellers,
         adminToken: localStorage.getItem("adminTokenV"),
       };
       const base_url =
@@ -267,6 +271,10 @@ export default function UpdateAdminRole(props) {
 
   const handleChangeModifyBestSellers = () => {
     setModifyBestSellers(!modifyBestSellers);
+  };
+
+  const handleChangeModifyArtBestSellers = () => {
+    setModifyArtBestSellers(!modifyArtBestSellers);
   };
 
   return (
@@ -594,6 +602,29 @@ export default function UpdateAdminRole(props) {
                 <Switch
                   checked={modifyBestSellers}
                   onChange={handleChangeModifyBestSellers}
+                  name="checkedA"
+                  color="primary"
+                />
+              </FormControl>
+            </div>
+            <div>
+              <FormControl
+                className={clsx(classes.margin, classes.textField)}
+                variant="outlined"
+                style={{
+                  width: "90%",
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Typography>
+                  Permiso para modificar artes más vendidos
+                </Typography>
+                <Switch
+                  checked={modifyArtBestSellers}
+                  onChange={handleChangeModifyArtBestSellers}
                   name="checkedA"
                   color="primary"
                 />

@@ -56,7 +56,7 @@ export default function UpdateConsumer(props) {
   const [nationalIdType, setNationalIdType] = useState(
     props.consumer.nationalIdType
   );
-  const [nationalId, setNationalId] = useState(props.consumer.nationalId);
+  const [CI, setCi] = useState(props.consumer.ci);
   const [gender, setGender] = useState(props.consumer.gender);
   const [prixers, setPrixers] = useState();
   const [selectedPrixer, setSelectedPrixer] = useState();
@@ -91,7 +91,7 @@ export default function UpdateConsumer(props) {
         instagram: instagram,
         birthdate: birthdate,
         nationalIdType: nationalIdType,
-        nationalId: nationalId,
+        ci: CI,
         gender: gender,
         _id: props.consumer._id,
       };
@@ -399,13 +399,13 @@ export default function UpdateConsumer(props) {
                   required
                   fullWidth
                   minRows={2}
-                  id="nationalId"
+                  id="CI"
                   label="Cédula o RIF"
-                  name="nationalId"
-                  autoComplete="nationalId"
-                  value={nationalId}
+                  name="CI"
+                  autoComplete="CI"
+                  value={CI}
                   onChange={(e) => {
-                    setNationalId(e.target.value);
+                    setCi(e.target.value);
                   }}
                 />
               </FormControl>

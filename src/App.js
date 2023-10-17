@@ -81,10 +81,10 @@ function App() {
       console.log(e);
     }
   };
-  const checkP = () => {
+  const checkP = async () => {
     const base_url =
       process.env.REACT_APP_BACKEND_URL + "/admin/CheckPermissions";
-    axios
+    await axios
       .post(base_url, { adminToken: localStorage.getItem("adminTokenV") })
       .then((response) => {
         if (response.data.auth === false) {
@@ -256,6 +256,8 @@ function App() {
             admins={admins}
             sellers={sellers}
             permissions={permissions}
+            setSearchResult={setSearchResult}
+            searchResult={searchResult}
           />
         </Route>
 

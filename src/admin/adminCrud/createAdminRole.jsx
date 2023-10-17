@@ -50,6 +50,8 @@ export default function CreateAdminRole() {
   const [deleteConsumer, setDeleteConsumer] = useState(false);
   const [artBan, setArtBan] = useState(false);
   const [modifyBestSellers, setModifyBestSellers] = useState(false);
+  const [modifyArtBestSellers, setModifyArtBestSellers] = useState(false);
+
   const [loading, setLoading] = useState(false);
   const [buttonState, setButtonState] = useState(false);
 
@@ -94,6 +96,7 @@ export default function CreateAdminRole() {
         deleteConsumer: deleteConsumer,
         artBan: artBan,
         modifyBestSellers: modifyBestSellers,
+        modifyArtBestSellers: modifyArtBestSellers,
         adminToken: localStorage.getItem("adminTokenV"),
       };
       const base_url = process.env.REACT_APP_BACKEND_URL + "/adminRole/create";
@@ -213,6 +216,10 @@ export default function CreateAdminRole() {
 
   const handleChangeModifyBestSellers = () => {
     setModifyBestSellers(!modifyBestSellers);
+  };
+
+  const handleChangeModifyArtBestSellers = () => {
+    setModifyArtBestSellers(!modifyArtBestSellers);
   };
 
   return (
@@ -536,6 +543,29 @@ export default function CreateAdminRole() {
                 <Switch
                   checked={modifyBestSellers}
                   onChange={handleChangeModifyBestSellers}
+                  name="checkedA"
+                  color="primary"
+                />
+              </FormControl>
+            </div>
+            <div>
+              <FormControl
+                className={clsx(classes.margin, classes.textField)}
+                variant="outlined"
+                style={{
+                  width: "90%",
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Typography>
+                  Permiso para modificar artes más vendidos
+                </Typography>
+                <Switch
+                  checked={modifyArtBestSellers}
+                  onChange={handleChangeModifyArtBestSellers}
                   name="checkedA"
                   color="primary"
                 />

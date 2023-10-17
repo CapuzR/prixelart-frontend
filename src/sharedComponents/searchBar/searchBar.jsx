@@ -78,12 +78,7 @@ export default function CustomizedInputBase(props) {
     },
   };
 
-  const [categories, setCategories] = useState(
-    // localStorage.getItem("filterCategory")
-    //   ? JSON.parse(localStorage.getItem("filterCategory"))
-    //   : []
-    params.get("category")
-  );
+  const [categories, setCategories] = useState(params.get("category"));
   const [queryValue, setQueryValue] = useState(params.get("name"));
 
   const [isShowFilter, setIsShowFilter] = useState(
@@ -96,19 +91,6 @@ export default function CustomizedInputBase(props) {
       setIsShowFilter(false);
     }
   }, []);
-
-  // function getStyles(category, categories, theme) {
-  //   return {
-  //     fontWeight:
-  //       categories.indexOf(category) === -1
-  //         ? theme.typography.fontWeightRegular
-  //         : theme.typography.fontWeightMedium,
-  //   };
-  // }
-
-  // const handleChange = (event) => {
-  //   setCategories(event);
-  // };
 
   return (
     <div>
@@ -170,11 +152,7 @@ export default function CustomizedInputBase(props) {
               <em>Ninguno</em>
             </MenuItem>
             {categoriesList.map((category) => (
-              <MenuItem
-                key={category}
-                value={category}
-                // style={getStyles(category, categories, theme)}
-              >
+              <MenuItem key={category} value={category}>
                 {category}
               </MenuItem>
             ))}

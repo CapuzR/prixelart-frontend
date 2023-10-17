@@ -67,8 +67,7 @@ function Copyright() {
 const useStyles = makeStyles((theme) => ({
   iconTabs: {
     flexGrow: 1,
-    width: "100%",
-    maxWidth: 800,
+    maxWidth: 650,
     margin: "auto",
     marginBottom: 30,
   },
@@ -106,7 +105,6 @@ const useStyles = makeStyles((theme) => ({
   cardGrid: {
     width: "100%",
     paddingTop: theme.spacing(4),
-    paddingBottom: theme.spacing(8),
   },
   card: {
     height: "100%",
@@ -148,8 +146,8 @@ export default function Home(props) {
   const theme = useTheme();
   const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
   const isDeskTop = useMediaQuery(theme.breakpoints.up("sm"));
-  const isTab = useMediaQuery(theme.breakpoints.down("md"));
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isTab = useMediaQuery(theme.breakpoints.up("xs"));
+  const isMobile = useMediaQuery(theme.breakpoints.down("xs"));
   const classes = useStyles();
   const prixerUsername = "all";
   const [imagesDesktop, newImagesDesktop] = useState({ images: [] });
@@ -161,6 +159,7 @@ export default function Home(props) {
   const [openTestimonials, setOpenTestimonials] = useState(false);
   const [selectedArt, setSelectedArt] = useState(undefined);
   const [bestSellers, setBestSellers] = useState();
+  const [mostSelledArts, setMostSelledArts] = useState();
 
   const [openArtFormDialog, setOpenArtFormDialog] = useState(false);
   const [openShoppingCart, setOpenShoppingCart] = useState(false);
@@ -281,10 +280,20 @@ export default function Home(props) {
   };
 
   const getBestSellers = async () => {
-    const url = process.env.REACT_APP_BACKEND_URL + "/getBestSellers";
+    const url = process.env.REACT_APP_BACKEND_URL + "/product/bestSellers";
     try {
       const bestS = await axios.get(url);
       setBestSellers(bestS.data.products);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const getBestArts = async () => {
+    const url = process.env.REACT_APP_BACKEND_URL + "/art/bestSellers";
+    try {
+      const getArts = await axios.get(url);
+      setMostSelledArts(getArts.data.arts);
     } catch (error) {
       console.log(error);
     }
@@ -302,6 +311,7 @@ export default function Home(props) {
   useEffect(() => {
     getImagesForTheCarousel();
     getBestSellers();
+    getBestArts();
     {
       JSON.parse(localStorage.getItem("token")) && TermsAgreeModal();
     }
@@ -323,14 +333,29 @@ export default function Home(props) {
     }, 1000);
   };
 
+  const handleArt = async (art) => {
+    history.push({
+      pathname: "/art=" + art.artId,
+    });
+  };
+
   const settings = {
-    slidesToShow: (isMobile && 1) || (isTab && 3) || (isDesktop && 4),
+    slidesToShow: (isDesktop && 4) || (isMobile && 1.5) || (isTab && 2),
     slidesToScroll: 1,
     autoplay: true,
     autoplaySpeed: 4000,
-    speed: 500,
+    speed: 1000,
     infinite: true,
     dots: true,
+  };
+
+  const settings2 = {
+    slidesToShow: (isDesktop && 2) || (isMobile && 2) || (isTab && 1),
+    slidesToScroll: 1,
+    autoplay: true,
+    autoplaySpeed: 4000,
+    speed: 1000,
+    infinite: true,
   };
 
   return (
@@ -341,7 +366,6 @@ export default function Home(props) {
 
         <main>
           <Card
-            // className={classes.card}
             style={{
               display: "flex",
               position: "relative",
@@ -468,246 +492,385 @@ export default function Home(props) {
             </div>
           </Card>
 
-          <Paper
-            style={{
-              backgroundImage: `url(${backG})`,
-              backgroundSize: "cover",
-              backgroundRepeat: "no-repeat",
-              backgroundPosition: "left",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "end",
-              justifyContent: "center",
-              position: "relative",
-              width: isDesktop ? "80%" : "90%",
-              height: isMobile ? 100 : isTab ? 170 : 230,
-              marginLeft: isDesktop ? "10%" : "5%",
-              borderRadius: isMobile ? 25 : 52,
-              backgroundColor: "gainsboro",
-            }}
-            elevation={5}
-          >
-            <div
-              style={{
-                width: "64%",
-                display: "flex",
-                flexDirection: "column",
-                justifyItems: "center",
-                marginRight: 5,
-                alignItems: isMobile ? "end" : "start",
-              }}
-            >
-              <Typography
-                variant="h4"
+          <Grid container style={{ marginLeft: -10 }}>
+            <Grid item lg={8} md={8} sm={8} xs={12}>
+              <Paper
                 style={{
-                  color: "#404e5c",
-                  marginBottom: isDesktop && 12,
-                  fontSize: (isMobile && 14) || (isTab && 20),
+                  backgroundImage: `url(${backG})`,
+                  backgroundSize: "cover",
+                  backgroundRepeat: "no-repeat",
+                  backgroundPosition: "left",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "end",
+                  justifyContent: "center",
+                  position: "relative",
+                  width: "100%",
+                  marginLeft: isMobile && 8,
+                  borderRadius:
+                    (isDesktop && 47) || (isMobile && 30) || (isTab && 35),
+                  backgroundColor: "gainsboro",
                 }}
-                fontWeight="bold"
+                elevation={5}
               >
-                <strong>¡Productos más vendidos! </strong>
-              </Typography>
-              <Typography
-                // variant="body1"
-                style={{
-                  color: "#404e5c",
-                  textAlign: isMobile && "end",
-                  marginBottom: isDesktop && 12,
-                  fontSize: isMobile ? 10 : 20,
-                }}
-              >
-                ¡No te lo puedes perder! Descubre los favoritos de nuestros
-                clientes
-              </Typography>
-
-              <Button
-                style={{
-                  backgroundColor: "#d33f49",
-                  color: "white",
-                  borderRadius: 40,
-                  fontSize: isDesktop ? 20 : 12,
-                  textTransform: "none",
-                  paddingLeft: 20,
-                  paddingRight: 20,
-                }}
-                onClick={handleProductCatalog}
-                size={isMobile ? "small" : "large"}
-              >
-                Ver todos
-              </Button>
-            </div>
-          </Paper>
-
-          {bestSellers && (
-            <Paper
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
-                position: "relative",
-                width: isDesktop ? "80%" : "90%",
-                height: isDesktop ? 280 : 220,
-                marginTop: 20,
-                marginLeft: isDesktop ? "10%" : "5%",
-                borderRadius: isMobile ? 30 : 52,
-                backgroundColor: "gainsboro",
-                padding: 30,
-              }}
-              elevation={5}
-            >
-              <Slider {...settings}>
-                {bestSellers?.map((product) => (
-                  <div
-                    key={product._id}
+                <div
+                  style={{
+                    width: "64%",
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyItems: "center",
+                    padding: 10,
+                    alignItems: (isDesktop && "start") || (isTab && "end"),
+                    marginRight: (isMobile && 5) || (isTab && 10),
+                    paddingLeft: isTab && 30,
+                  }}
+                >
+                  <Typography
+                    variant="h4"
                     style={{
-                      borderRadius: 40,
-                      display: "flex",
-                      flexDirection: "column",
-                      height: isMobile ? 150 : 250,
-                      width: "80%",
-                      marginLeft: isMobile ? 35 : 100,
+                      color: "#404e5c",
+                      marginBottom: isDesktop && 12,
+                      fontSize:
+                        (isDesktop && 30) || (isMobile && 12) || (isTab && 18),
+                    }}
+                    fontWeight="bold"
+                  >
+                    <strong>¡Productos más vendidos! </strong>
+                  </Typography>
+                  <Typography
+                    style={{
+                      color: "#404e5c",
+                      textAlign:
+                        (isDesktop && "start") ||
+                        ((isMobile || isTab) && "end"),
+                      marginBottom: isDesktop && 12,
+                      fontSize:
+                        (isDesktop && 20) || (isMobile && 8) || (isTab && 14),
                     }}
                   >
-                    <div
+                    ¡No te lo puedes perder! Descubre los favoritos de nuestros
+                    clientes
+                  </Typography>
+
+                  <Button
+                    style={{
+                      backgroundColor: "#d33f49",
+                      color: "white",
+                      borderRadius: 40,
+                      fontSize: isDesktop ? 20 : 12,
+                      textTransform: "none",
+                      paddingLeft: 20,
+                      paddingRight: 20,
+                    }}
+                    onClick={handleProductCatalog}
+                    size={isMobile ? "small" : "medium"}
+                  >
+                    Ver todos
+                  </Button>
+                </div>
+              </Paper>
+
+              {bestSellers && (
+                <Paper
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    position: "relative",
+                    width: "100%",
+                    height:
+                      (isDesktop && 280) || (isMobile && 190) || (isTab && 220),
+                    marginTop: isMobile ? 10 : 20,
+                    marginLeft: isMobile && 10,
+                    borderRadius:
+                      (isDesktop && 47) || (isMobile && 30) || (isTab && 35),
+                    backgroundColor: "gainsboro",
+                    padding: 30,
+                    marginBottom: isMobile ? 15 : 30,
+                  }}
+                  elevation={5}
+                >
+                  <Slider {...settings}>
+                    {bestSellers?.map((product) => (
+                      <div
+                        key={product._id}
+                        style={{
+                          borderRadius: 40,
+                          display: "flex",
+                          flexDirection: "column",
+                          height: isMobile ? 150 : 250,
+                          width: "80%",
+                        }}
+                      >
+                        <div
+                          style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "center",
+                            justifyItems: "center",
+                          }}
+                        >
+                          <div
+                            style={{
+                              backgroundImage:
+                                product?.sources?.images.length > 0
+                                  ? "url(" +
+                                    product.sources.images[0]?.url +
+                                    ")"
+                                  : "url(" + product.thumbUrl + ")",
+                              height:
+                                (isDesktop && 170) ||
+                                (isMobile && 120) ||
+                                (isTab && 130),
+                              width:
+                                (isDesktop && 170) ||
+                                (isMobile && 120) ||
+                                (isTab && 130),
+                              backgroundSize: "cover",
+                              borderRadius: (isDesktop && 40) || (isTab && 25),
+                              backgroundPosition: "back",
+                              marginBottom: isMobile && 5,
+                            }}
+                          />
+                          {!isMobile && (
+                            <Typography
+                              variant="subtitle1"
+                              style={{
+                                color: "#404e5c",
+                                fontWeight: "bold",
+                                fontSize: isMobile && "1rem",
+                                alignSelf: "center",
+                              }}
+                            >
+                              {product.name}
+                            </Typography>
+                          )}
+                          <Button
+                            style={{
+                              backgroundColor: "#d33f49",
+                              color: "white",
+                              borderRadius: 40,
+                              width: 100,
+                              height: 20,
+                              textTransform: "none",
+                            }}
+                            onClick={() => handleProduct(product)}
+                          >
+                            Ver detalles
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </Slider>
+                </Paper>
+              )}
+            </Grid>
+
+            <Grid item lg={4} md={4} sm={4} xs={12}>
+              {mostSelledArts && (
+                <Paper
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    position: "relative",
+                    width: "100%",
+                    height:
+                      (isDesktop && 497) || (isMobile && 300) || (isTab && 370),
+                    marginLeft: isMobile ? 10 : 20,
+                    borderRadius:
+                      (isDesktop && 47) || (isMobile && 30) || (isTab && 35),
+                    backgroundColor: "gainsboro",
+                    backgroundImage:
+                      `url(${mostSelledArts[0]?.largeThumbUrl})` ||
+                      `url(${mostSelledArts[0]?.thumbUrl})`,
+                    backgroundSize: "contain",
+                    backgroundRepeat: "no-repeat",
+                    backgroundPosition: "top",
+                  }}
+                  elevation={5}
+                >
+                  <Grid
+                    container
+                    GridDirection={"column"}
+                    style={{
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Grid
+                      item
+                      xs={12}
                       style={{
+                        marginRight: (isDesktop && 10) || (isTab && 20),
+                        height:
+                          (isDesktop && 150) ||
+                          (isMobile && 95) ||
+                          (isTab && 80),
                         display: "flex",
                         flexDirection: "column",
-                        alignItems: "center",
+                        alignItems: "end",
+                        justifyContent: "center",
                       }}
                     >
-                      <div
-                        style={{
-                          backgroundImage:
-                            product?.sources?.images.length > 0
-                              ? "url(" + product.sources.images[0]?.url + ")"
-                              : "url(" + product.thumbUrl + ")",
-                          height: isMobile ? 120 : 170,
-                          width: isMobile ? 120 : 170,
-                          marginRight: 10,
-                          backgroundSize: "cover",
-                          borderRadius: 40,
-                          backgroundPosition: "back",
-                        }}
-                      />
                       <Typography
-                        variant="subtitle1"
+                        variant="h4"
                         style={{
-                          color: "#404e5c",
-                          fontWeight: "bold",
-                          fontSize: isMobile && "1rem",
-                          alignSelf: "center",
-                        }}
-                      >
-                        {product.name}
-                      </Typography>
-                      <Button
-                        style={{
-                          backgroundColor: "#d33f49",
                           color: "white",
-                          borderRadius: 40,
-                          width: 120,
-                          textTransform: "none",
+                          fontWeight: "bold",
+                          fontSize:
+                            (isDesktop && 30) ||
+                            (isMobile && 12) ||
+                            (isTab && 18),
                         }}
-                        size="small"
-                        onClick={() => handleProduct(product)}
                       >
-                        Ver detalles
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-              </Slider>
-            </Paper>
-          )}
-
-          <Container className={classes.cardGrid} maxWidth="xl">
-            <Grid container spacing={1}>
-              <Paper
-                square
-                className={classes.iconTabs}
-                style={{
-                  display: isMobile ? "grid" : "flex",
-                  gridTemplateColumns: isMobile ? "50%, 2fr" : "",
-                  // flexDirection: isMobile ? "column" : "row",
-                  justifyContent: "center",
-                }}
-                elevation={3}
-              >
-                <Tabs
-                  value={tabValue}
-                  onChange={handleChange}
-                  variant="fullWidth"
-                  indicatorColor="primary"
-                  textColor="secondary"
-                >
-                  <Tab
-                    icon={<PhotoLibraryIcon />}
-                    label="ARTES"
-                    style={{
-                      fontSize: isMobile ? "0.62rem" : "0.875rem",
-                      width: "25%",
-                    }}
-                  />
-                  <Tab
-                    icon={<FavoriteIcon />}
-                    label="PRIXERS"
-                    style={{
-                      fontSize: isMobile ? "0.62rem" : "0.875rem",
-                      width: "25%",
-                    }}
-                  />
-                  <Tab
-                    icon={<InsertEmoticon />}
-                    label={"TESTIMONIOS"}
-                    style={{
-                      fontSize: isMobile ? "0.62rem" : "0.875rem",
-                      width: "25%",
-                    }}
-                  />
-                  <Tab
-                    icon={<PhoneIcon />}
-                    label="TE ASESORAMOS"
-                    style={{
-                      fontSize: isMobile ? "0.62rem" : "0.875rem",
-                      width: "25%",
-                    }}
-                  />
-                </Tabs>
-              </Paper>
+                        Artes
+                      </Typography>
+                      <Typography
+                        variant="h4"
+                        style={{
+                          color: "white",
+                          fontWeight: "bold",
+                          fontSize:
+                            (isDesktop && 30) ||
+                            (isMobile && 12) ||
+                            (isTab && 18),
+                        }}
+                      >
+                        más vendidos
+                      </Typography>
+                    </Grid>
+                    <Grid
+                      xs={10}
+                      sm={9}
+                      md={10}
+                      lg={10}
+                      style={{ marginLeft: 5 }}
+                    >
+                      <Slider {...settings2}>
+                        {mostSelledArts?.map((art) => (
+                          <div
+                            key={art._id}
+                            style={{
+                              borderRadius: 30,
+                              display: "flex",
+                              flexDirection: "column",
+                              height:
+                                (isDesktop && 320) ||
+                                (isMobile && 180) ||
+                                (isTab && 260),
+                              width:
+                                (isDesktop && 170) ||
+                                (isMobile && 110) ||
+                                (isTab && 180),
+                            }}
+                            onClick={() => handleArt(art)}
+                          >
+                            <div
+                              style={{
+                                backgroundImage:
+                                  `url(${art?.largeThumbUrl})` ||
+                                  `url(${art?.thumbUrl})`,
+                                height:
+                                  (isDesktop && 320) ||
+                                  (isMobile && 180) ||
+                                  (isTab && 260),
+                                width:
+                                  (isDesktop && 170) ||
+                                  (isMobile && 110) ||
+                                  (isTab && 180),
+                                backgroundSize: "cover",
+                                borderRadius: 30,
+                                backgroundPosition: "back",
+                                marginBottom: 30,
+                                marginTop: 15,
+                              }}
+                            />
+                          </div>
+                        ))}
+                      </Slider>
+                    </Grid>
+                  </Grid>
+                </Paper>
+              )}
             </Grid>
-            {
-              openArts && (
-                // <Suspense fallback={<div>Loading...</div>}>
-                <ArtsGrid
-                  prixerUsername={null}
-                  buyState={props.buyState}
-                  addItemToBuyState={props.addItemToBuyState}
-                  setIsOpenAssociateProduct={props.setIsOpenAssociateProduct}
-                  setSelectedArt={setSelectedArt}
-                  setPrixer={props.setPrixer}
-                  setFullArt={props.setFullArt}
-                  setSearchResult={props.setSearchResult}
-                  permissions={props.permissions}
+          </Grid>
+
+          <Container
+            className={classes.cardGrid}
+            style={{
+              paddingLeft: !isDeskTop && 5,
+              paddingRight: !isDeskTop && 5,
+            }}
+          >
+            <Paper
+              // square
+              className={classes.iconTabs}
+              style={{
+                display: isMobile ? "grid" : "flex",
+                gridTemplateColumns: isMobile ? "50%, 2fr" : "",
+                // flexDirection: isMobile ? "column" : "row",
+                justifyContent: "center",
+                width: isDeskTop ? 650 : "100%",
+              }}
+              elevation={3}
+            >
+              <Tabs
+                value={tabValue}
+                onChange={handleChange}
+                variant="fullWidth"
+                indicatorColor="primary"
+                textColor="secondary"
+              >
+                <Tab
+                  icon={<PhotoLibraryIcon />}
+                  label="ARTES"
+                  style={{
+                    fontSize: isMobile ? "0.62rem" : "0.875rem",
+                    width: "25%",
+                  }}
                 />
-              )
-              // </Suspense>
-            }
-            {
-              openPrixers && (
-                // <Suspense fallback={<div>Loading...</div>}>
-                <PrixersGrid />
-              )
-              // </Suspense>
-            }
-            {openTestimonials && (
-              // <Suspense fallback={<div>Loading...</div>}>
-              <TestimonialsFeed />
-              // </Suspense>
+                <Tab
+                  icon={<FavoriteIcon />}
+                  label="PRIXERS"
+                  style={{
+                    fontSize: isMobile ? "0.62rem" : "0.875rem",
+                    width: "25%",
+                  }}
+                />
+                <Tab
+                  icon={<InsertEmoticon />}
+                  label={"TESTIMONIOS"}
+                  style={{
+                    fontSize: isMobile ? "0.62rem" : "0.875rem",
+                    width: "25%",
+                  }}
+                />
+                <Tab
+                  icon={<PhoneIcon />}
+                  label="TE ASESORAMOS"
+                  style={{
+                    fontSize: isMobile ? "0.62rem" : "0.875rem",
+                    width: "25%",
+                  }}
+                />
+              </Tabs>
+            </Paper>
+            {openArts && (
+              <ArtsGrid
+                prixerUsername={null}
+                buyState={props.buyState}
+                addItemToBuyState={props.addItemToBuyState}
+                setIsOpenAssociateProduct={props.setIsOpenAssociateProduct}
+                setSelectedArt={setSelectedArt}
+                setPrixer={props.setPrixer}
+                setFullArt={props.setFullArt}
+                setSearchResult={props.setSearchResult}
+                permissions={props.permissions}
+              />
             )}
+            {openPrixers && <PrixersGrid />}
+            {openTestimonials && <TestimonialsFeed />}
           </Container>
         </main>
-        {/* Footer */}
         <footer className={classes.footer}>
           <Typography variant="h6" align="center" gutterBottom>
             Si quieres convertirte en un Prixer{" "}
@@ -728,7 +891,6 @@ export default function Home(props) {
           </Typography>
           <Copyright />
         </footer>
-        {/* End footer */}
       </Container>
       {openArtFormDialog && (
         <ArtUploader

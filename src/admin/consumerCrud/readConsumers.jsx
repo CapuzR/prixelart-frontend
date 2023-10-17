@@ -18,9 +18,35 @@ import { Snackbar } from "@material-ui/core";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Box from "@material-ui/core/Box";
 import Button from "@material-ui/core/Button";
+import { makeStyles } from "@material-ui/core/styles";
+import Backdrop from "@material-ui/core/Backdrop";
+
+const useStyles = makeStyles((theme) => ({
+  paper: {
+    padding: theme.spacing(2),
+    display: "flex",
+    overflow: "none",
+    flexDirection: "column",
+    marginLeft: 30,
+  },
+  fixedHeight: {
+    height: "auto",
+    overflow: "none",
+  },
+  formControl: {
+    margin: theme.spacing(1),
+    minWidth: 120,
+  },
+  backdrop: {
+    zIndex: theme.zIndex.drawer + 1,
+    color: theme.palette.primary.main,
+  },
+}));
 
 export default function ReadConsumers(props) {
   const history = useHistory();
+  const classes = useStyles();
+
   const [rows, setRows] = useState();
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState();
@@ -33,11 +59,13 @@ export default function ReadConsumers(props) {
   const rowsv2 = rows?.slice(itemsToSkip, itemsPerPage + itemsToSkip);
 
   const readConsumers = () => {
+    setLoading(true);
     const base_url = process.env.REACT_APP_BACKEND_URL + "/consumer/read-all";
     axios
       .post(base_url)
       .then((response) => {
         setRows(response.data);
+        setLoading(false);
       })
       .catch((error) => {
         console.log(error);
@@ -77,11 +105,13 @@ export default function ReadConsumers(props) {
 
   return (
     <React.Fragment>
-      {loading && (
-        <div>
-          <CircularProgress />
-        </div>
-      )}
+      <Backdrop
+        className={classes.backdrop}
+        open={loading}
+        transitionDuration={1000}
+      >
+        <CircularProgress />
+      </Backdrop>
       {props?.permissions?.readConsumers ? (
         <>
           <Title>Clientes frecuentes</Title>

@@ -121,7 +121,9 @@ export default function Grid(props) {
   const classes = useStyles();
   const [tiles, setTiles] = useState([]);
   const history = useHistory();
+  const [onAdmin, setOnAdmin] = useState(false);
   let globalParams = new URLSearchParams(window.location.search);
+
   const [searchValue, setSearchValue] = useState(
     globalParams.get("name") || null
   );
@@ -137,11 +139,8 @@ export default function Grid(props) {
   const [open, setOpen] = useState(false);
   const [openV, setOpenV] = useState(false);
   const [openFullArt, setOpenFullArt] = useState(false);
-  // const [fullArt, setFullArt] = useState(null);
-  // const [fullPrixer, setFullPrixer] = useState(null);
   const [disabledReason, setDisabledReason] = useState("");
   const [visible, setVisible] = useState(true);
-  // const [visibles, setVisibles] = useState([]);
   const totalOrders = tiles?.length;
   const itemsPerPage = 30;
   const noOfPages = Math.ceil(totalOrders / itemsPerPage);
@@ -195,6 +194,12 @@ export default function Grid(props) {
       setDisabledReason("");
     }
   };
+
+  useEffect(() => {
+    if (window.location.pathname.includes("/admin/preferences/read")) {
+      setOnAdmin(true);
+    }
+  }, []);
 
   useEffect(() => {
     if (props.prixerUsername || globalParams.get("prixer")) {
@@ -292,28 +297,52 @@ export default function Grid(props) {
       axios.get(base_url).then((response) => {
         setTiles(response.data.arts);
         props.setSearchResult(response.data.arts);
-        // getTags(response);
         setBackdrop(false);
       });
     }
   }, [searchValue, categoryValue]);
 
   const handleFullImage = async (e, tile) => {
-    // setFullPrixer(tile.prixerUsername);
-    props.setFullArt(tile);
-    props.setSearchResult(tiles);
-    let art = e.target.id;
-    history.push({
-      pathname: "/art=" + art,
-    });
-    setOpenFullArt(true);
+    if (onAdmin) {
+      props.addMostSellerToBestSeller(tile.title);
+    } else {
+      props.setFullArt(tile);
+      props.setSearchResult(tiles);
+      let art = e.target.id;
+      history.push({
+        pathname: "/art=" + art,
+      });
+      setOpenFullArt(true);
+    }
   };
 
   const searchPhotos = (e, queryValue, categories) => {
     setSearchValue(queryValue);
     setCategoryValue(categories);
     e.preventDefault();
-    if (props.prixerUsername || globalParams.get("prixer")) {
+    if (onAdmin) {
+      if (queryValue !== null && categories !== null) {
+        history.push({
+          pathname:
+            "/admin/preferences/read/s?category=" +
+            categories +
+            "&name=" +
+            queryValue,
+        });
+      } else if ((categories?.length > 0 && queryValue === null) || "") {
+        history.push({
+          pathname: "/admin/preferences/read/s?category=" + categories,
+        });
+      } else if (queryValue) {
+        history.push({
+          pathname: "/admin/preferences/read/s?name=" + queryValue,
+        });
+      } else {
+        history.push({
+          pathname: "/admin/preferences/read/",
+        });
+      }
+    } else if (props.prixerUsername || globalParams.get("prixer")) {
       //
       if (queryValue !== null && categories !== null) {
         history.push({
@@ -352,7 +381,7 @@ export default function Grid(props) {
         history.push({
           pathname: "/galeria/s?category=" + categories + "&name=" + queryValue,
         });
-      } else if ((categories.length > 0 && queryValue === null) || "") {
+      } else if ((categories?.length > 0 && queryValue === null) || "") {
         history.push({
           pathname: "/galeria/s?category=" + categories,
         });
@@ -430,18 +459,20 @@ export default function Grid(props) {
                     )}
 
                   <CardActionArea>
-                    <Tooltip title="Agregar al carrito">
-                      <IconButton
-                        size="small"
-                        color="primary"
-                        onClick={(e) => {
-                          addingToCart(e, tile);
-                        }}
-                        style={{ position: "absolute", padding: "8px" }}
-                      >
-                        <AddShoppingCartIcon />
-                      </IconButton>
-                    </Tooltip>
+                    {!onAdmin && (
+                      <Tooltip title="Agregar al carrito">
+                        <IconButton
+                          size="small"
+                          color="primary"
+                          onClick={(e) => {
+                            addingToCart(e, tile);
+                          }}
+                          style={{ position: "absolute", padding: "8px" }}
+                        >
+                          <AddShoppingCartIcon />
+                        </IconButton>
+                      </Tooltip>
+                    )}
                     <Img
                       draggable={false}
                       onClick={(e) => {

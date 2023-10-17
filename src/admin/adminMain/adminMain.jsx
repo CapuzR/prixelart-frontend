@@ -318,7 +318,11 @@ export default function AdminMain(props) {
               ) : active === "prixer" ? (
                 <Prixers permissions={props.permissions} />
               ) : active === "preferences" ? (
-                <Preferences permissions={props.permissions} />
+                <Preferences
+                  permissions={props.permissions}
+                  setSearchResult={props.setSearchResult}
+                  searchResult={props.searchResult}
+                />
               ) : active === "testimonials" ? (
                 <Testimonials permissions={props.permissions} />
               ) : (

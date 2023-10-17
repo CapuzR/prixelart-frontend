@@ -11,17 +11,12 @@ import Snackbar from "@material-ui/core/Snackbar";
 import { Typography, Checkbox } from "@material-ui/core";
 import {
   VictoryChart,
-  VictoryLine,
   VictoryBar,
   VictoryAxis,
-  VictoryTooltip,
-  VictoryLegend,
   VictoryLabel,
   VictoryTheme,
-  VictoryGroup,
-  VictoryStack,
 } from "victory";
-
+import ArtGrid from "../../../prixerProfile/grid/grid";
 const useStyles = makeStyles((theme) => ({
   backdrop: {
     zIndex: theme.zIndex.drawer + 1,
@@ -55,10 +50,9 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function BestSellers(props) {
+export default function ArtBestSellers(props) {
   const classes = useStyles();
-  const [value, setValue] = useState("");
-  const [products, setProducts] = useState();
+  const [arts, setArts] = useState();
   const [loading, setLoading] = useState(false);
   const [bestSellers, setBestSellers] = useState();
   const [mostSellers, setMostSellers] = useState();
@@ -66,66 +60,59 @@ export default function BestSellers(props) {
   const [snackBarError, setSnackBarError] = useState(false);
 
   const addMostSellerToBestSeller = (selectedMostSeller) => {
-    const prodv1 = products.find((prod) => prod.name === selectedMostSeller);
+    const artv1 = arts.find((art) => art.title === selectedMostSeller);
     if (bestSellers?.length === 0 || bestSellers === undefined) {
-      setBestSellers([prodv1]);
-    } else if (bestSellers?.some((p) => p.name === selectedMostSeller)) {
+      setBestSellers([artv1]);
+    } else if (bestSellers?.some((art) => art.title === selectedMostSeller)) {
+      const withoutArt = bestSellers.filter(
+        (art) => art.title !== selectedMostSeller
+      );
+      setBestSellers(withoutArt);
       setSnackBarError(true);
-      setErrorMessage("Este producto ya está incluido en el banner.");
+      setErrorMessage("Arte eliminado del banner.");
     } else if (bestSellers.length === 9) {
       setSnackBarError(true);
-      setErrorMessage(
-        "Has alcanzado el máximo de Productos a mostrar (9 productos)."
-      );
+      setErrorMessage("Has alcanzado el máximo de Artes a mostrar (9 artes).");
     } else {
-      setBestSellers([...bestSellers, prodv1]);
+      setBestSellers([...bestSellers, artv1]);
     }
   };
-  const getProducts = async () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + "/product/read-allv1";
-    await axios
-      .post(
-        base_url,
-        { adminToken: localStorage.getItem("adminTokenV") },
-        { withCredentials: true }
-      )
-      .then((response) => {
-        setProducts(response.data.products);
-      })
-      .catch((error) => {
-        console.log(error);
+  const getAllArts = async () => {
+    try {
+      const base_url = process.env.REACT_APP_BACKEND_URL + "/art/read-all";
+      axios.get(base_url).then((response) => {
+        setArts(response.data.arts);
       });
-  };
-
-  const getBestSellers = async () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + "/getBestSellers";
-    await axios
-      .get(base_url)
-      .then((response) => {
-        setBestSellers(response.data.products);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const getMostSellers = async () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + "/product/bestSellers";
-    await axios
-      .get(base_url)
-      .then((response) => {
-        setMostSellers(response.data.ref);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    const url = process.env.REACT_APP_BACKEND_URL + "/art/bestSellers";
+    try {
+      const getArts = await axios.get(url);
+      setMostSellers(getArts.data.ref);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const getBestSellers = async () => {
+    const url = process.env.REACT_APP_BACKEND_URL + "/getArtBestSellers";
+    try {
+      const getArts = await axios.get(url);
+      setBestSellers(getArts.data.arts);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   useEffect(() => {
     setLoading(true);
-    getProducts();
-    getBestSellers();
+    getAllArts();
     getMostSellers();
+    getBestSellers();
     setLoading(false);
   }, []);
 
@@ -134,20 +121,26 @@ export default function BestSellers(props) {
   };
 
   const updateBestSellers = async () => {
-    let data = [];
-    bestSellers.map((prod) => {
-      data.push(prod._id);
-    });
-    const base_url = process.env.REACT_APP_BACKEND_URL + "/updateBestSellers";
-    await axios
-      .put(base_url, {
-        data: data,
-        adminToken: localStorage.getItem("adminTokenV"),
-      })
-      .then((response) => {
-        setSnackBarError(true);
-        setErrorMessage(response.data.message);
+    if (props.permissions.modifyArtBestSellers) {
+      let data = [];
+      bestSellers.map((prod) => {
+        data.push(prod._id);
       });
+      const base_url =
+        process.env.REACT_APP_BACKEND_URL + "/updateArtBestSellers";
+      await axios
+        .put(base_url, {
+          data: data,
+          adminToken: localStorage.getItem("adminTokenV"),
+        })
+        .then((response) => {
+          setSnackBarError(true);
+          setErrorMessage(response.data.message);
+        });
+    } else {
+      setSnackBarError(true);
+      setErrorMessage("No tienes permiso para realizar acciones en esta área.");
+    }
   };
 
   return (
@@ -159,7 +152,7 @@ export default function BestSellers(props) {
         justifyContent: "center",
       }}
     >
-      <Backdrop className={classes.backdrop}>
+      <Backdrop className={classes.backdrop} open={loading}>
         <CircularProgress color="inherit" />
       </Backdrop>
 
@@ -180,11 +173,11 @@ export default function BestSellers(props) {
           }}
         >
           <Typography variant="h6" style={{ color: "#404e5c", marginTop: 30 }}>
-            Productos más vendidos en el último año
+            Artes más vendidos en el último año
           </Typography>
           <VictoryChart
             theme={VictoryTheme.material}
-            padding={{ top: 20, bottom: 60, right: -100, left: -100 }}
+            padding={{ top: 20, bottom: 60, right: -100, left: -60 }}
             horizontal
           >
             <VictoryAxis />
@@ -248,16 +241,15 @@ export default function BestSellers(props) {
           Banner de la pantalla principal
         </Typography>
         <div style={{ display: "flex", flexDirection: "row" }}>
-          {bestSellers ? (
-            bestSellers.map((prod, i) => (
+          {bestSellers !== undefined && bestSellers.length > 0 ? (
+            bestSellers.map((art, i) => (
               <div>
                 <div
                   key={i}
                   style={{
                     backgroundImage:
-                      prod.sources.images.length > 0
-                        ? "url(" + prod.sources.images[0]?.url + ")"
-                        : "url(" + prod.thumbUrl + ")",
+                      `url(${art.largeThumbUrl.replace(" ", "_")})` ||
+                      `url(${art.thumbUrl.replace(" ", "_")})`,
                     width: 100,
                     height: 100,
                     backgroundSize: "cover",
@@ -265,15 +257,20 @@ export default function BestSellers(props) {
                     marginTop: 5,
                     marginRight: 10,
                   }}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    addMostSellerToBestSeller(art.title);
+                  }}
                 />
                 <div
                   style={{
                     color: "#404e5c",
                     display: "flex",
                     justifyContent: "center",
+                    fontSize: 10,
                   }}
                 >
-                  {prod.name}
+                  {art.title.substring(0, 17)}
                 </div>
               </div>
             ))
@@ -286,12 +283,20 @@ export default function BestSellers(props) {
               }}
               fontWeight="bold"
             >
-              No tienes productos seleccionados aún
+              No tienes artes seleccionados aún
             </Typography>
           )}
         </div>
       </Paper>
-      {props?.permissions?.modifyBestSellers && (
+      <Grid style={{ marginTop: 20 }}>
+        <ArtGrid
+          setSearchResult={props.setSearchResult}
+          searchResult={props.searchResult}
+          addMostSellerToBestSeller={addMostSellerToBestSeller}
+        />
+      </Grid>
+
+      {props.permissions.modifyBestSellers && (
         <>
           <div style={{ display: "flex", justifyContent: "center" }}>
             <Button
@@ -305,45 +310,11 @@ export default function BestSellers(props) {
               Actualizar
             </Button>
           </div>
-          <Grid container style={{ marginTop: 20 }}>
-            {products &&
-              bestSellers &&
-              products.map((product) => (
-                <Grid item xs={3}>
-                  <Checkbox
-                    checked={bestSellers?.some((p) => p.name === product.name)}
-                    color="primary"
-                    inputProps={{ "aria-label": "secondary checkbox" }}
-                    onChange={() => {
-                      if (bestSellers.length === 0) {
-                        setBestSellers([product]);
-                      } else if (
-                        bestSellers.some((p) => p.name === product.name)
-                      ) {
-                        setBestSellers(
-                          bestSellers.filter(
-                            (item) => item.name !== product.name
-                          )
-                        );
-                      } else if (bestSellers.length === 9) {
-                        setSnackBarError(true);
-                        setErrorMessage(
-                          "Has alcanzado el máximo de Productos a mostrar (9 productos)."
-                        );
-                      } else {
-                        setBestSellers([...bestSellers, product]);
-                      }
-                    }}
-                  />
-                  {product.name}
-                </Grid>
-              ))}
-          </Grid>
         </>
       )}
       <Snackbar
         open={snackBarError}
-        autoHideDuration={4000}
+        autoHideDuration={3000}
         message={errorMessage}
         className={classes.snackbar}
         onClose={closeAd}

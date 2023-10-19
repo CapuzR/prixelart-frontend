@@ -33,7 +33,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function ReadAdmins(props) {
-  const history = useHistory();
+  const navigate = useNavigate();
   // const classes = useStyles();
 
   const [rows, setRows] = useState();
@@ -106,13 +106,13 @@ export default function ReadAdmins(props) {
   };
 
   const handleActive = (row) => {
-    history.push("/admin/user/update");
+    navigate("/admin/user/update");
     props.handleCallback2(row);
   };
 
   const handleActiveRole = (role) => {
     props.handleCallback2(role);
-    history.push("/admin/user/updateRole");
+    navigate("/admin/user/updateRole");
     props.setActiveCrud("updateRole");
   };
 

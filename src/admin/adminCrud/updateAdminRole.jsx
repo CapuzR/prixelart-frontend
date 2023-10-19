@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function UpdateAdminRole(props) {
   const classes = useStyles();
-  const history = useNavigate();
+  const navigate = useNavigate();
   const [area, setArea] = useState(props.admin.area);
   const [detailOrder, setDetailOrder] = useState(
     props.admin.detailOrder || false
@@ -161,7 +161,7 @@ export default function UpdateAdminRole(props) {
       } else {
         setErrorMessage("Actualización de rol de Administrador exitoso.");
         setSnackBarError(true);
-        history.push({ pathname: "/admin/user/read" });
+        navigate({ pathname: "/admin/user/read" });
       }
     }
   };

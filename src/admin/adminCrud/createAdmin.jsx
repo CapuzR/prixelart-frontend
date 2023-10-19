@@ -39,7 +39,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function CreateAdmin() {
   const classes = useStyles();
-  const history = useNavigate();
+  const navigate = useNavigate();
   const [roles, setRoles] = useState([]);
   const [username, setUsername] = useState("");
   const [firstname, setFirstname] = useState("");
@@ -148,7 +148,7 @@ export default function CreateAdmin() {
         setEmail("");
         setPhone("");
         setPassword("");
-        history.push({ pathname: "/admin/user/read" });
+        navigate({ pathname: "/admin/user/read" });
       }
     }
   };

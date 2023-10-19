@@ -16,10 +16,10 @@ import { InsertEmoticon } from "@mui/icons-material";
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
 export default function MainListItems(props) {
-  const history = useNavigate();
+  const navigate = useNavigate();
 
   const handleClick = (value) => {
-    history.push({ pathname: "/admin/" + value + "/read" });
+    navigate({ pathname: "/admin/" + value + "/read" });
   };
 
   return (

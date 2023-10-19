@@ -101,7 +101,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Variants(props) {
   const classes = useStyles();
-  const history = useNavigate();
+  const navigate = useNavigate();
   const location = useLocation();
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
   const [variant, setVariant] = useState("");
@@ -109,11 +109,11 @@ export default function Variants(props) {
   const handleProductAction = (action) => {
     if (action === "read") {
       setVariant("");
-      history.push({
+      navigate({
         pathname: "/admin/product/" + props.product._id + "/variant/read",
       });
     } else {
-      history.push({
+      navigate({
         pathname: "/admin/product/" + props.product._id + "/variant/create",
       });
     }

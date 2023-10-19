@@ -68,7 +68,7 @@ const useStyles = makeStyles((theme) => ({
 export default function UpdateDiscount(props) {
   const classes = useStyles();
   const theme = useTheme();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   // const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
   const [active, setActive] = useState(props.discount.active);
@@ -124,7 +124,7 @@ export default function UpdateDiscount(props) {
         setType();
         setValue("");
         setAppliedProducts([]);
-        history.push("/admin/product/read");
+        navigate("/admin/product/read");
       }
     }
   };

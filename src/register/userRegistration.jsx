@@ -85,7 +85,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function SignUp() {
   const classes = useStyles();
-  const history = useNavigate();
+  const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [firstName, setFirstName] = useState("");
@@ -154,7 +154,7 @@ export default function SignUp() {
               "tokenExpire",
               JSON.stringify(now.getTime() + 21600000)
             );
-            history.push({ pathname: "/registrar/prixer" });
+            navigate({ pathname: "/registrar/prixer" });
           }
         })
         .catch((error) => {
@@ -394,7 +394,7 @@ export default function SignUp() {
               <Link
                 href="#"
                 onClick={() => {
-                  history.push({ pathname: "/iniciar" });
+                  navigate({ pathname: "/iniciar" });
                 }}
                 variant="body2"
               >

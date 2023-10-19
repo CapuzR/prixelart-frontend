@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function CreateAdminRole() {
   const classes = useStyles();
-  const history = useNavigate();
+  const navigate = useNavigate();
   const [area, setArea] = useState();
   const [detailOrder, setDetailOrder] = useState(false);
   const [detailPay, setDetailPay] = useState(false);
@@ -109,7 +109,7 @@ export default function CreateAdminRole() {
       } else {
         setErrorMessage("Registro de Admin exitoso.");
         setSnackBarError(true);
-        history.push({ pathname: "/admin/user/read" });
+        navigate({ pathname: "/admin/user/read" });
       }
     }
   };

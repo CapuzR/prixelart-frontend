@@ -136,7 +136,7 @@ const photoIsos = ["100", "200", "400"];
 
 export default function FullscreenPhoto(props) {
   const classes = useStyles();
-  const history = useNavigate();
+  const navigate = useNavigate();
   const theme = useTheme();
   const globalParams = new URLSearchParams(window.location.pathname);
 
@@ -366,7 +366,7 @@ export default function FullscreenPhoto(props) {
 
   const navigateToPrixer = (e, prixerUsername) => {
     e.preventDefault();
-    history.push({ pathname: "/" + prixerUsername });
+    navigate({ pathname: "/" + prixerUsername });
   };
 
   const deleteArt = async () => {
@@ -1888,7 +1888,7 @@ export default function FullscreenPhoto(props) {
                   });
 
                   setSelectedArt(undefined);
-                  history.push({ pathname: "/productos" });
+                  navigate({ pathname: "/productos" });
                 }}
                 color="primary"
               >
@@ -1947,7 +1947,7 @@ export default function FullscreenPhoto(props) {
             {props.buyState?.length > 0 && (
               <Button
                 onClick={() => {
-                  history.push({ pathname: "/shopping" });
+                  navigate({ pathname: "/shopping" });
                 }}
                 color="primary"
               >

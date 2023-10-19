@@ -76,7 +76,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function UpdateAdmin(props) {
   const classes = useStyles();
-  const history = useNavigate();
+  const navigate = useNavigate();
   const theme = useTheme();
   const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
   const [productId, setProductId] = useState(props?.product?._id);
@@ -329,7 +329,7 @@ export default function UpdateAdmin(props) {
           } else {
             setErrorMessage("Actualización de producto exitosa.");
             setSnackBarError(true);
-            history.push("/admin/product/read");
+            navigate("/admin/product/read");
           }
         }
       }
@@ -337,7 +337,7 @@ export default function UpdateAdmin(props) {
   };
 
   const handleVariantsClick = () => {
-    history.push({ pathname: "/admin/product/" + productId + "/variant/read" });
+    navigate({ pathname: "/admin/product/" + productId + "/variant/read" });
     setShowVariants(true);
     props.setProductEdit(false);
   };

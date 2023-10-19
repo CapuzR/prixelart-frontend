@@ -101,7 +101,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Consumers(props) {
   const classes = useStyles();
-  const history = useNavigate();
+  const navigate = useNavigate();
   const location = useLocation();
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
   const [activeCrud, setActiveCrud] = useState("read");
@@ -109,7 +109,7 @@ export default function Consumers(props) {
   const [consumerEdit, setConsumerEdit] = useState(true);
 
   const handleConsumerAction = (action) => {
-    history.push({ pathname: "/admin/consumer/" + action });
+    navigate({ pathname: "/admin/consumer/" + action });
   };
 
   useEffect(() => {

@@ -70,7 +70,7 @@ export default function Gallery(props) {
   const [termsAgreeVar, setTermsAgreeVar] = useState(true);
   const [value, setValue] = useState("");
   const [selectedArt, setSelectedArt] = useState(undefined);
-  const history = useNavigate();
+  const navigate = useNavigate();
   const theme = useTheme();
 
   const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
@@ -345,7 +345,7 @@ export default function Gallery(props) {
                     props.setSelectedProductToAssociate(undefined);
                     setSelectedArt(undefined);
                     props.setIsOpenAssociateProduct(false);
-                    history.push({ pathname: "/" });
+                    navigate({ pathname: "/" });
                   }}
                   color="primary"
                 >
@@ -362,7 +362,7 @@ export default function Gallery(props) {
                     item: selectedArt,
                   });
                   setSelectedArt(undefined);
-                  history.push({ pathname: "/productos" });
+                  navigate({ pathname: "/productos" });
                 }}
                 color="primary"
               >
@@ -421,7 +421,7 @@ export default function Gallery(props) {
             {props.buyState?.length > 0 && (
               <Button
                 onClick={() => {
-                  history.push({ pathname: "/shopping" });
+                  navigate({ pathname: "/shopping" });
                 }}
                 color="primary"
               >

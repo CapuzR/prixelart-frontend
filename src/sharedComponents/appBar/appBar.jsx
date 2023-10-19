@@ -52,6 +52,7 @@ const useStyles = makeStyles((theme) => ({
   },
   button: {
     minWidth: "0px",
+    color: "white",
   },
   root2: {
     display: "flex",
@@ -113,7 +114,7 @@ export default function MenuAppBar(props) {
   const theme = useTheme();
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const history = useNavigate();
+  const navigate = useNavigate();
   const open = Boolean(anchorEl);
   const isMobile = useMediaQuery(theme.breakpoints.down("lg"));
   const [open2, setOpen] = React.useState(false);
@@ -127,34 +128,34 @@ export default function MenuAppBar(props) {
   };
 
   const handleMain = () => {
-    history.push({ pathname: "/" });
+    navigate({ pathname: "/" });
     setAnchorEl(null);
   };
 
   const handleBack = () => {
-    history.goBack();
+    navigate(-1);
     setAnchorEl(null);
   };
 
   const handlePasswordChange = () => {
-    history.push({ pathname: "/cambio-contraseña" });
+    navigate({ pathname: "/cambio-contraseña" });
     setAnchorEl(null);
   };
 
   const handleCTLogin = () => {
-    history.push({ pathname: "/iniciar" });
+    navigate({ pathname: "/iniciar" });
     setAnchorEl(null);
   };
 
   const handleMyAccount = () => {
-    history.push({
+    navigate({
       pathname: "/" + JSON.parse(localStorage.getItem("token")).username,
     });
     setAnchorEl(null);
   };
 
   const handleMyStats = () => {
-    history.push({
+    navigate({
       pathname:
         "/" + JSON.parse(localStorage.getItem("token")).username + "/stats",
     });
@@ -165,24 +166,24 @@ export default function MenuAppBar(props) {
     const base_url = process.env.REACT_APP_BACKEND_URL + "/logout";
     axios.post(base_url).then((response) => {
       localStorage.setItem("token", null);
-      history.push({ pathname: "/iniciar" });
+      navigate({ pathname: "/iniciar" });
       setAnchorEl(null);
     });
   };
 
   const handleGallery = (e) => {
     e.preventDefault();
-    history.push({ pathname: "/galeria" });
+    navigate({ pathname: "/galeria" });
   };
 
   const handleProductCatalog = (e) => {
     e.preventDefault();
-    history.push({ pathname: "/productos" });
+    navigate({ pathname: "/productos" });
   };
 
   const handleShoppingCart = (e) => {
     e.preventDefault();
-    history.push({ pathname: "/shopping" });
+    navigate({ pathname: "/shopping" });
   };
 
   const handleDrawerOpen = () => {

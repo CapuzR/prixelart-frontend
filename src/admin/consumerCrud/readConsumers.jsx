@@ -20,7 +20,7 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 
 export default function ReadConsumers(props) {
-  const history = useNavigate();
+  const navigate = useNavigate();
   const [rows, setRows] = useState();
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState();
@@ -49,7 +49,7 @@ export default function ReadConsumers(props) {
 
   const handleActive = (consumer, action) => {
     props.setConsumer(consumer);
-    history.push("/admin/consumer/" + action + "/" + consumer._id);
+    navigate("/admin/consumer/" + action + "/" + consumer._id);
   };
 
   const deleteConsumer = (row) => {

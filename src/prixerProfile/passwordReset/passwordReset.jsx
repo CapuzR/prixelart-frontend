@@ -70,7 +70,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function PasswordReset(props) {
   const classes = useStyles();
-  const history = useNavigate();
+  const navigate = useNavigate();
   const [newPassword, setNewPassword] = useState("");
   const [showNewPassword, setShowNewPassword] = useState(false);
   const token = props.match.params.token;
@@ -130,7 +130,7 @@ export default function PasswordReset(props) {
           } else {
             setErrorMessage(response.data.info);
             setSnackBarError(true);
-            history.push({ pathname: "/iniciar" });
+            navigate({ pathname: "/iniciar" });
           }
         })
         .catch((error) => {

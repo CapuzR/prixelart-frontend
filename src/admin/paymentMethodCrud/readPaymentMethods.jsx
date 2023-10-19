@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
 export default function ReadPaymentMethods(props) {
   const classes = useStyles();
 
-  const history = useHistory();
+  const navigate = useNavigate();
   const [rows, setRows] = useState();
   const [loading, setLoading] = useState(false);
 
@@ -61,7 +61,7 @@ export default function ReadPaymentMethods(props) {
 
   const handleActive = (paymentMethod, action) => {
     props.setPaymentMethod(paymentMethod);
-    history.push("/admin/payment-method/" + action + "/" + paymentMethod._id);
+    navigate("/admin/payment-method/" + action + "/" + paymentMethod._id);
   };
 
   const deleteMethod = async (id) => {

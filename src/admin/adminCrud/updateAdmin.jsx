@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function UpAdmin(props) {
   const classes = useStyles();
-  const history = useNavigate();
+  const navigate = useNavigate();
   const [username, setUsername] = useState(props.admin.username);
   const [firstname, setFirstname] = useState(props.admin.firstname);
   const [lastname, setLastname] = useState(props.admin.lastname);
@@ -99,7 +99,7 @@ export default function UpAdmin(props) {
         setLastname("");
         setEmail("");
         setPhone("");
-        history.push({ pathname: "/admin/user/read" });
+        navigate({ pathname: "/admin/user/read" });
       }
     }
   };

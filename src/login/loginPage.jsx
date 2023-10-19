@@ -72,7 +72,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Login() {
   const classes = useStyles();
-  const history = useNavigate();
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -119,7 +119,7 @@ export default function Login() {
               "tokenExpire",
               JSON.stringify(now.getTime() + 21600000)
             );
-            history.push({ pathname: "/" + response.data.username });
+            navigate({ pathname: "/" + response.data.username });
           }
         })
         .catch((error) => {
@@ -272,7 +272,7 @@ export default function Login() {
                   <Link
                     href="#"
                     onClick={() => {
-                      history.push({ pathname: "/registrar" });
+                      navigate({ pathname: "/registrar" });
                     }}
                     variant="body2"
                   >
@@ -283,7 +283,7 @@ export default function Login() {
                   <Link
                     href="#"
                     onClick={() => {
-                      history.push({ pathname: "/olvido-contraseña" });
+                      navigate({ pathname: "/olvido-contraseña" });
                     }}
                     variant="body2"
                   >

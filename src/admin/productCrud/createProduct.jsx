@@ -94,7 +94,7 @@ export default function CreateProduct() {
     loader: [],
     filename: "Subir imagenes",
   });
-  const history = useHistory();
+  const navigate = useNavigate();
 
   //Error states.
   const [errorMessage, setErrorMessage] = useState();
@@ -258,7 +258,7 @@ export default function CreateProduct() {
             setToPublicPrice("");
             setFromPrixerPrice("");
             setToPrixerPrice("");
-            history.push("/admin/product/read");
+            navigate("/admin/product/read");
           }
         }
       }

@@ -100,7 +100,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function PaymentMethods(props) {
   const classes = useStyles();
-  const history = useNavigate();
+  const navigate = useNavigate();
   const location = useLocation();
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
   const [activeCrud, setActiveCrud] = useState("read");
@@ -108,7 +108,7 @@ export default function PaymentMethods(props) {
   const [paymentMethodEdit, setPaymentMethodEdit] = useState(true);
 
   const handlePaymentMethodAction = (action) => {
-    history.push({ pathname: "/admin/payment-method/" + action });
+    navigate({ pathname: "/admin/payment-method/" + action });
   };
 
   useEffect(() => {

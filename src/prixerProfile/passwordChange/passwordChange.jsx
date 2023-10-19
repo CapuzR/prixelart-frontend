@@ -63,7 +63,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function PasswordChange() {
   const classes = useStyles();
-  const history = useNavigate();
+  const navigate = useNavigate();
   const [newPassword, setNewPassword] = useState("");
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [currentPassword, setCurrentPassword] = useState("");
@@ -101,7 +101,7 @@ export default function PasswordChange() {
           } else {
             setErrorMessage("Cambio de clave exitoso.");
             setSnackBarError(true);
-            history.push({
+            navigate({
               pathname:
                 "/" + JSON.parse(localStorage.getItem("token")).username,
             });

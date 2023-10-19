@@ -64,7 +64,7 @@ export default function PrixerGrid(props) {
   // const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
   // const isDeskTop = useMediaQuery(theme.breakpoints.up("sm"));
   const [tiles, setTiles] = useState([]);
-  const history = useNavigate();
+  const navigate = useNavigate();
   const [backdrop, setBackdrop] = useState(true);
 
   useEffect(() => {
@@ -125,7 +125,7 @@ export default function PrixerGrid(props) {
                           size="small"
                           color="primary"
                           onClick={(e) =>
-                            history.push({ pathname: "/" + tile.username })
+                            navigate({ pathname: "/" + tile.username })
                           }
                         >
                           Explorar

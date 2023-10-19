@@ -33,7 +33,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function UpdateConsumer(props) {
   const classes = useStyles();
-  const history = useNavigate();
+  const navigate = useNavigate();
   const [active, setActive] = useState(props.consumer.active);
   const [consumerType, setConsumerType] = useState(props.consumer.consumerType);
   const [consumerFirstname, setConsumerFirstname] = useState(
@@ -106,7 +106,7 @@ export default function UpdateConsumer(props) {
       } else {
         setErrorMessage("Actualización de consumidor exitosa.");
         setSnackBarError(true);
-        history.push("/admin/consumer/read");
+        navigate("/admin/consumer/read");
       }
     }
   };

@@ -158,7 +158,7 @@ export default function ProductGrid(props) {
   const [width, setWidth] = useState([]);
   const [height, setHeight] = useState([]);
   const [order, setOrder] = useState("");
-  const history = useNavigate();
+  const navigate = useNavigate();
   // const [dollarValue, setDollarValue] = useState(1);
   const [currency, setCurrency] = useState(false);
 

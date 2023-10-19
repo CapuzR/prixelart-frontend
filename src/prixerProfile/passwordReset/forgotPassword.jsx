@@ -60,7 +60,7 @@ function sleep(ms) {
 
 export default function ForgotPassword() {
   const classes = useStyles();
-  const history = useNavigate();
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
 
   //Error states.
@@ -90,7 +90,7 @@ export default function ForgotPassword() {
             setErrorMessage("Hemos enviado un enlace a tu correo electrónico.");
             setSnackBarError(true);
             await sleep(3000);
-            history.push({ pathname: "/" });
+            navigate({ pathname: "/" });
           }
         })
         .catch((error) => {

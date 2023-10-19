@@ -85,7 +85,7 @@ export default function ProductsCatalog(props) {
   const [selectedProduct, setSelectedProduct] = useState(undefined);
   const prixerUsername = "all";
   const classes = useStyles();
-  const history = useNavigate();
+  const navigate = useNavigate();
 
   return (
     <>
@@ -218,8 +218,8 @@ export default function ProductsCatalog(props) {
                     props.setSelectedArtToAssociate(undefined);
                     props.setIsOpenAssociateArt(false);
                     localStorage.getItem("adminToken")
-                      ? history.push({ pathname: "/admin/order/read" })
-                      : history.push({ pathname: "/" });
+                      ? navigate({ pathname: "/admin/order/read" })
+                      : navigate({ pathname: "/" });
                   }}
                   color="primary"
                 >
@@ -234,7 +234,7 @@ export default function ProductsCatalog(props) {
                     item: selectedProduct,
                   });
                   setSelectedProduct(undefined);
-                  history.push({ pathname: "/galeria" });
+                  navigate({ pathname: "/galeria" });
                 }}
                 color="primary"
               >
@@ -293,7 +293,7 @@ export default function ProductsCatalog(props) {
             {props.buyState?.length > 0 && (
               <Button
                 onClick={() => {
-                  history.push({ pathname: "/shopping" });
+                  navigate({ pathname: "/shopping" });
                 }}
                 color="primary"
               >

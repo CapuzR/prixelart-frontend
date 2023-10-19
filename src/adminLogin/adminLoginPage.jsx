@@ -74,7 +74,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Login() {
   const classes = useStyles();
-  const history = useNavigate();
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -122,7 +122,7 @@ export default function Login() {
               "adminTokenExpire",
               JSON.stringify(now.getTime() + 21600000)
             );
-            history.push({ pathname: "/admin/order/read" });
+            navigate({ pathname: "/admin/order/read" });
           }
         })
         .catch((error) => {

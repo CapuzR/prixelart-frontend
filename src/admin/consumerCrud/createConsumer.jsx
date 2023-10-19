@@ -34,7 +34,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function CreateConsumer(props) {
   const classes = useStyles();
-  const history = useNavigate();
+  const navigate = useNavigate();
 
   const [active, setActive] = useState(false);
   const [consumerType, setConsumerType] = useState("Particular");
@@ -111,7 +111,7 @@ export default function CreateConsumer(props) {
         setNationalId("");
         setGender("");
         setLoading(false);
-        history.push({ pathname: "/admin/consumer/read" });
+        navigate({ pathname: "/admin/consumer/read" });
       }
     }
   };

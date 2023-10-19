@@ -124,7 +124,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Products(props) {
   const classes = useStyles();
-  const history = useNavigate();
+  const navigate = useNavigate();
   const location = useLocation();
   const theme = useTheme();
 
@@ -154,7 +154,7 @@ export default function Products(props) {
   const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
 
   const handleProductAction = (action) => {
-    history.push({ pathname: "/admin/product/" + action });
+    navigate({ pathname: "/admin/product/" + action });
   };
 
   useEffect(() => {

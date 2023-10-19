@@ -38,7 +38,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function ReadVariants(props) {
   const classes = useStyles();
-  const history = useNavigate();
+  const navigate = useNavigate();
   const [rows, setRows] = useState();
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState();
@@ -80,15 +80,15 @@ export default function ReadVariants(props) {
   const handleActive = (variant, action) => {
     props.setVariant(variant);
     action == "create" &&
-      history.push(
+      navigate(
         "/admin/product" + "/" + props.product._id + "/variant/" + action
       );
     action == "read" &&
-      history.push(
+      navigate(
         "/admin/product" + "/" + props.product._id + "/variant/" + action
       );
     action == "update" &&
-      history.push(
+      navigate(
         "/admin/product" +
           "/" +
           props.product._id +

@@ -128,7 +128,7 @@ const useStyles = makeStyles((theme) => ({
 export default function ShoppingPage(props) {
   const prixerUsername = "all";
   const classes = useStyles();
-  const history = useNavigate();
+  const navigate = useNavigate();
   const theme = useTheme();
   const [orderPaymentMethod, setOrderPaymentMethod] = useState(undefined);
   const [observations, setObservations] = useState();
@@ -562,7 +562,7 @@ export default function ShoppingPage(props) {
         .catch((error) => {
           console.log(error.response);
         });
-      history.push({ pathname: "/" });
+      navigate({ pathname: "/" });
       props.setValuesConsumerForm(undefined);
       localStorage.removeItem("buyState");
       props.setBuyState([]);

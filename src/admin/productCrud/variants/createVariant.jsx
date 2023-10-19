@@ -75,7 +75,7 @@ export default function CreateVariant(props) {
   );
   const [loading, setLoading] = useState(false);
   const [buttonState, setButtonState] = useState(false);
-  const history = useNavigate();
+  const navigate = useNavigate();
   const [image, setImage] = useState(props?.variant?.variantImage || []);
   const [videoUrl, setVideoUrl] = useState(
     (props.variant && props.variant?.video) || undefined
@@ -290,7 +290,7 @@ export default function CreateVariant(props) {
           setToPrixerPrice("");
           props.setVariant("");
           setLoading(false);
-          history.push({ pathname: "/admin/product/read" });
+          navigate({ pathname: "/admin/product/read" });
         }
       }
     }

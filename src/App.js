@@ -10,7 +10,7 @@ import PrixerRegistration from "./register/prixerRegistration";
 import PrixerProfile from "./prixerProfile/prixerProfile";
 import FullscreenPhoto from "./prixerProfile/fullscreenPhoto/fullscreenPhoto";
 import Home from "./home/home";
-import { Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Gallery from "./gallery/gallery";
 import Products from "./products/productsCatalog";
 import ShoppingPage from "./shoppingCart/shoppingPage";
@@ -82,7 +82,7 @@ function App() {
   };
   useEffect(() => {
     readDollarValue();
-    loadAdmins();
+    // loadAdmins();
   }, []);
 
   useEffect(() => {
@@ -194,265 +194,280 @@ function App() {
   return (
     <>
       <Routes>
-        <Route path="/iniciar">
-          <Login />
-        </Route>
+        <Route path="/iniciar" element={<Login />} />
+        {/* <Login />
+          </Route> */}
 
         {/* Admin Routes */}
-        <Route path="/inicio-admin-prix">
-          <AdminLogin />
-        </Route>
+        <Route path="/inicio-admin-prix" element={<AdminLogin />} />
 
-        <Route path="/admin/dashboard">
-          <AdminMain
-            dollarValue={dollarValue}
-            setDollarValue={setDollarValue}
-            updateDollarValue={updateDollarValue}
-            setMessage={setMessage}
-            setOpen={setOpen}
-          />
-        </Route>
-
-        <Route path="/admin">
-          <AdminMain
-            buyState={buyState}
-            setBuyState={setBuyState}
-            deleteItemInBuyState={deleteItemInBuyState}
-            deleteProductInItem={deleteProductInItem}
-            setSelectedArtToAssociate={setSelectedArtToAssociate}
-            setSelectedProductToAssociate={setSelectedProductToAssociate}
-            setValues={setValuesConsumerForm}
-            values={valuesConsumerForm}
-            AssociateProduct={AssociateProduct}
-            changeQuantity={changeQuantity}
-            valuesConsumerForm={valuesConsumerForm}
-            setValuesConsumerForm={setValuesConsumerForm}
-            setOpen={setOpen}
-            setMessage={setMessage}
-            addItemToBuyState={addItemToBuyState}
-            dollarValue={dollarValue}
-            setDollarValue={setDollarValue}
-            updateDollarValue={updateDollarValue}
-            admins={admins}
-            sellers={sellers}
-          />
-        </Route>
-
-        <Route path="/admin/user/create">
-          <AdminMain dollarValue={dollarValue} />
-        </Route>
-
-        <Route path="/admin/users/read">
-          <AdminMain
-            dollarValue={dollarValue}
-            setDollarValue={setDollarValue}
-            updateDollarValue={updateDollarValue}
-            setMessage={setMessage}
-            setOpen={setOpen}
-          />
-        </Route>
-
-        <Route exact path="/user/update/:userId" component={AdminMain} />
-
-        <Route path="/admin/product/create">
-          <AdminMain dollarValue={dollarValue} />
-        </Route>
-
-        <Route path="/admin/products/read">
-          <AdminMain
-            dollarValue={dollarValue}
-            setDollarValue={setDollarValue}
-            updateDollarValue={updateDollarValue}
-            setMessage={setMessage}
-            setOpen={setOpen}
-          />
-        </Route>
-
-        <Route exact path="/product/update/:productId" component={AdminMain} />
+        {/* <Route path="/admin/dashboard">
+            <AdminMain
+              dollarValue={dollarValue}
+              setDollarValue={setDollarValue}
+              updateDollarValue={updateDollarValue}
+              setMessage={setMessage}
+              setOpen={setOpen}
+            />
+          </Route> */}
 
         <Route
-          exact
-          path="/product/:productId/variant/create"
-          component={AdminMain}
+          path="/admin"
+          element={
+            <AdminMain
+              buyState={buyState}
+              setBuyState={setBuyState}
+              deleteItemInBuyState={deleteItemInBuyState}
+              deleteProductInItem={deleteProductInItem}
+              setSelectedArtToAssociate={setSelectedArtToAssociate}
+              setSelectedProductToAssociate={setSelectedProductToAssociate}
+              setValues={setValuesConsumerForm}
+              values={valuesConsumerForm}
+              AssociateProduct={AssociateProduct}
+              changeQuantity={changeQuantity}
+              valuesConsumerForm={valuesConsumerForm}
+              setValuesConsumerForm={setValuesConsumerForm}
+              setOpen={setOpen}
+              setMessage={setMessage}
+              addItemToBuyState={addItemToBuyState}
+              dollarValue={dollarValue}
+              setDollarValue={setDollarValue}
+              updateDollarValue={updateDollarValue}
+              admins={admins}
+              sellers={sellers}
+            />
+          }
         />
 
-        <Route
-          exact
-          path="/product/:productId/variants/read"
-          component={AdminMain}
-        />
+        {/* <Route path="/admin/user/create">
+            <AdminMain dollarValue={dollarValue} />
+          </Route>
 
-        <Route path="/admin/consumer/create">
-          <AdminMain dollarValue={dollarValue} />
-        </Route>
+          <Route path="/admin/users/read">
+            <AdminMain
+              dollarValue={dollarValue}
+              setDollarValue={setDollarValue}
+              updateDollarValue={updateDollarValue}
+              setMessage={setMessage}
+              setOpen={setOpen}
+            />
+          </Route>
 
-        <Route path="/admin/consumers/read">
-          <AdminMain
-            dollarValue={dollarValue}
-            setDollarValue={setDollarValue}
-            updateDollarValue={updateDollarValue}
-            setMessage={setMessage}
-            setOpen={setOpen}
+          <Route exact path="/user/update/:userId" element={AdminMain} />
+
+          <Route path="/admin/product/create">
+            <AdminMain dollarValue={dollarValue} />
+          </Route>
+
+          <Route path="/admin/products/read">
+            <AdminMain
+              dollarValue={dollarValue}
+              setDollarValue={setDollarValue}
+              updateDollarValue={updateDollarValue}
+              setMessage={setMessage}
+              setOpen={setOpen}
+            />
+          </Route>
+
+          <Route
+            exact
+            path="/product/update/:productId"
+            element={AdminMain}
           />
-        </Route>
 
-        <Route
-          exact
-          path="/consumer/update/:consumerId"
-          component={AdminMain}
-        />
+          <Route
+            exact
+            path="/product/:productId/variant/create"
+            element={AdminMain}
+          />
+
+          <Route
+            exact
+            path="/product/:productId/variants/read"
+            element={AdminMain}
+          />
+
+          <Route path="/admin/consumer/create">
+            <AdminMain dollarValue={dollarValue} />
+          </Route>
+
+          <Route path="/admin/consumers/read">
+            <AdminMain
+              dollarValue={dollarValue}
+              setDollarValue={setDollarValue}
+              updateDollarValue={updateDollarValue}
+              setMessage={setMessage}
+              setOpen={setOpen}
+            />
+          </Route>
+
+          <Route
+            exact
+            path="/consumer/update/:consumerId"
+            element={AdminMain}
+          /> */}
 
         {/* END Admin Routes */}
-        <Route path="/productos">
-          <Products
-            buyState={buyState}
-            addItemToBuyState={addItemToBuyState}
-            isOpenAssociateArt={isOpenAssociateArt}
-            setIsOpenAssociateArt={setIsOpenAssociateArt}
-            setSelectedArtToAssociate={setSelectedArtToAssociate}
-            changeQuantity={changeQuantity}
-            selectedArtToAssociate={selectedArtToAssociate}
-            selectedProductToAssociate={selectedProductToAssociate}
-            deleteItemInBuyState={deleteItemInBuyState}
-            deleteProductInItem={deleteProductInItem}
-            AssociateProduct={AssociateProduct}
-            dollarValue={dollarValue}
-          />
-        </Route>
+        <Route
+          path="/productos"
+          element={
+            <Products
+              buyState={buyState}
+              addItemToBuyState={addItemToBuyState}
+              isOpenAssociateArt={isOpenAssociateArt}
+              setIsOpenAssociateArt={setIsOpenAssociateArt}
+              setSelectedArtToAssociate={setSelectedArtToAssociate}
+              changeQuantity={changeQuantity}
+              selectedArtToAssociate={selectedArtToAssociate}
+              selectedProductToAssociate={selectedProductToAssociate}
+              deleteItemInBuyState={deleteItemInBuyState}
+              deleteProductInItem={deleteProductInItem}
+              AssociateProduct={AssociateProduct}
+              dollarValue={dollarValue}
+            />
+          }
+        />
 
-        <Route path="/galeria">
-          <Gallery
-            buyState={buyState}
-            addItemToBuyState={addItemToBuyState}
-            isOpenAssociateProduct={isOpenAssociateProduct}
-            setIsOpenAssociateProduct={setIsOpenAssociateProduct}
-            setSelectedProductToAssociate={setSelectedProductToAssociate}
-            selectedProductToAssociate={selectedProductToAssociate}
-            selectedArtToAssociate={selectedArtToAssociate}
-            setSelectedArtToAssociate={setSelectedArtToAssociate}
-            deleteItemInBuyState={deleteItemInBuyState}
-            deleteProductInItem={deleteProductInItem}
-            changeQuantity={changeQuantity}
-            AssociateProduct={AssociateProduct}
-            setPrixer={setPrixer}
-            prixer={prixer}
-            setFullArt={setFullArt}
-            fullArt={fullArt}
-            setSearchResult={setSearchResult}
-            searchResult={searchResult}
-          />
-        </Route>
+        <Route
+          path="/galeria"
+          element={
+            <Gallery
+              buyState={buyState}
+              addItemToBuyState={addItemToBuyState}
+              isOpenAssociateProduct={isOpenAssociateProduct}
+              setIsOpenAssociateProduct={setIsOpenAssociateProduct}
+              setSelectedProductToAssociate={setSelectedProductToAssociate}
+              selectedProductToAssociate={selectedProductToAssociate}
+              selectedArtToAssociate={selectedArtToAssociate}
+              setSelectedArtToAssociate={setSelectedArtToAssociate}
+              deleteItemInBuyState={deleteItemInBuyState}
+              deleteProductInItem={deleteProductInItem}
+              changeQuantity={changeQuantity}
+              AssociateProduct={AssociateProduct}
+              setPrixer={setPrixer}
+              prixer={prixer}
+              setFullArt={setFullArt}
+              fullArt={fullArt}
+              setSearchResult={setSearchResult}
+              searchResult={searchResult}
+            />
+          }
+        />
 
-        <Route path="/shopping">
-          <ShoppingPage
-            buyState={buyState}
-            setBuyState={setBuyState}
-            deleteItemInBuyState={deleteItemInBuyState}
-            deleteProductInItem={deleteProductInItem}
-            setSelectedArtToAssociate={setSelectedArtToAssociate}
-            changeQuantity={changeQuantity}
-            valuesConsumerForm={valuesConsumerForm}
-            setValuesConsumerForm={setValuesConsumerForm}
-            dollarValue={dollarValue}
-            setOpen={setOpen}
-            setMessage={setMessage}
-          />
-        </Route>
+        <Route
+          path="/shopping"
+          element={
+            <ShoppingPage
+              buyState={buyState}
+              setBuyState={setBuyState}
+              deleteItemInBuyState={deleteItemInBuyState}
+              deleteProductInItem={deleteProductInItem}
+              setSelectedArtToAssociate={setSelectedArtToAssociate}
+              changeQuantity={changeQuantity}
+              valuesConsumerForm={valuesConsumerForm}
+              setValuesConsumerForm={setValuesConsumerForm}
+              dollarValue={dollarValue}
+              setOpen={setOpen}
+              setMessage={setMessage}
+            />
+          }
+        />
 
-        <Route path="/registrar/prixer">
-          <PrixerRegistration />
-        </Route>
+        <Route path="/registrar/prixer" element={<PrixerRegistration />} />
 
-        <Route path="/registrar">
-          <Register />
-        </Route>
+        <Route path="/registrar" element={<Register />} />
 
-        <Route path="/cambio-contraseña">
-          <PasswordChange />
-        </Route>
+        <Route path="/cambio-contraseña" element={<PasswordChange />} />
 
-        <Route path="/olvido-contraseña">
-          <ForgotPassword />
-        </Route>
+        <Route path="/olvido-contraseña" element={<ForgotPassword />} />
 
-        <Route exact path="/recuperar/:token" component={ResetPassword} />
+        <Route exact path="/recuperar/:token" element={<ResetPassword />} />
 
-        <Route exact path="/art=:artId" component={FullscreenPhoto}>
-          <FullscreenPhoto
-            buyState={buyState}
-            deleteItemInBuyState={deleteItemInBuyState}
-            addItemToBuyState={addItemToBuyState}
-            prixer={prixer}
-            fullArt={fullArt}
-            searchResult={searchResult}
-            isOpenAssociateProduct={isOpenAssociateProduct}
-            setIsOpenAssociateProduct={setIsOpenAssociateProduct}
-            setSelectedProductToAssociate={setSelectedProductToAssociate}
-            selectedProductToAssociate={selectedProductToAssociate}
-            AssociateProduct={AssociateProduct}
-            setBuyState={setBuyState}
-            deleteProductInItem={deleteProductInItem}
-            setSelectedArtToAssociate={setSelectedArtToAssociate}
-            changeQuantity={changeQuantity}
-            setOpen={setOpen}
-            setMessage={setMessage}
-          />
-        </Route>
+        <Route
+          exact
+          path="/art=:artId"
+          element={
+            <FullscreenPhoto
+              buyState={buyState}
+              deleteItemInBuyState={deleteItemInBuyState}
+              addItemToBuyState={addItemToBuyState}
+              prixer={prixer}
+              fullArt={fullArt}
+              searchResult={searchResult}
+              isOpenAssociateProduct={isOpenAssociateProduct}
+              setIsOpenAssociateProduct={setIsOpenAssociateProduct}
+              setSelectedProductToAssociate={setSelectedProductToAssociate}
+              selectedProductToAssociate={selectedProductToAssociate}
+              AssociateProduct={AssociateProduct}
+              setBuyState={setBuyState}
+              deleteProductInItem={deleteProductInItem}
+              setSelectedArtToAssociate={setSelectedArtToAssociate}
+              changeQuantity={changeQuantity}
+              setOpen={setOpen}
+              setMessage={setMessage}
+            />
+          }
+        />
 
-        <Route path="/:username/stats">
-          <PrixerStats />
-        </Route>
+        <Route path="/:username/stats" element={<PrixerStats />} />
 
-        <Route path="/:username">
-          <PrixerProfile
-            buyState={buyState}
-            deleteItemInBuyState={deleteItemInBuyState}
-            addItemToBuyState={addItemToBuyState}
-            isOpenAssociateProduct={isOpenAssociateProduct}
-            setIsOpenAssociateProduct={setIsOpenAssociateProduct}
-            setSelectedProductToAssociate={setSelectedProductToAssociate}
-            selectedProductToAssociate={selectedProductToAssociate}
-            AssociateProduct={AssociateProduct}
-            setBuyState={setBuyState}
-            deleteProductInItem={deleteProductInItem}
-            setSelectedArtToAssociate={setSelectedArtToAssociate}
-            changeQuantity={changeQuantity}
-            setOpen={setOpen}
-            setMessage={setMessage}
-            setPrixer={setPrixer}
-            setFullArt={setFullArt}
-            setSearchResult={setSearchResult}
-          />
-        </Route>
+        <Route
+          path="/:username"
+          element={
+            <PrixerProfile
+              buyState={buyState}
+              deleteItemInBuyState={deleteItemInBuyState}
+              addItemToBuyState={addItemToBuyState}
+              isOpenAssociateProduct={isOpenAssociateProduct}
+              setIsOpenAssociateProduct={setIsOpenAssociateProduct}
+              setSelectedProductToAssociate={setSelectedProductToAssociate}
+              selectedProductToAssociate={selectedProductToAssociate}
+              AssociateProduct={AssociateProduct}
+              setBuyState={setBuyState}
+              deleteProductInItem={deleteProductInItem}
+              setSelectedArtToAssociate={setSelectedArtToAssociate}
+              changeQuantity={changeQuantity}
+              setOpen={setOpen}
+              setMessage={setMessage}
+              setPrixer={setPrixer}
+              setFullArt={setFullArt}
+              setSearchResult={setSearchResult}
+            />
+          }
+        />
 
-        <Route path="/">
-          <Home
-            deleteItemInBuyState={deleteItemInBuyState}
-            component={Home}
-            buyState={buyState}
-            addItemToBuyState={addItemToBuyState}
-            isOpenAssociateProduct={isOpenAssociateProduct}
-            setIsOpenAssociateProduct={setIsOpenAssociateProduct}
-            setSelectedProductToAssociate={setSelectedProductToAssociate}
-            selectedProductToAssociate={selectedProductToAssociate}
-            AssociateProduct={AssociateProduct}
-            setBuyState={setBuyState}
-            deleteProductInItem={deleteProductInItem}
-            setSelectedArtToAssociate={setSelectedArtToAssociate}
-            changeQuantity={changeQuantity}
-            valuesConsumerForm={valuesConsumerForm}
-            setValuesConsumerForm={setValuesConsumerForm}
-            setOpen={setOpen}
-            setMessage={setMessage}
-            setPrixer={setPrixer}
-            setFullArt={setFullArt}
-            setSearchResult={setSearchResult}
-            dollarValue={dollarValue}
-          />
-        </Route>
+        <Route
+          path="/"
+          element={
+            <Home
+              deleteItemInBuyState={deleteItemInBuyState}
+              element={Home}
+              buyState={buyState}
+              addItemToBuyState={addItemToBuyState}
+              isOpenAssociateProduct={isOpenAssociateProduct}
+              setIsOpenAssociateProduct={setIsOpenAssociateProduct}
+              setSelectedProductToAssociate={setSelectedProductToAssociate}
+              selectedProductToAssociate={selectedProductToAssociate}
+              AssociateProduct={AssociateProduct}
+              setBuyState={setBuyState}
+              deleteProductInItem={deleteProductInItem}
+              setSelectedArtToAssociate={setSelectedArtToAssociate}
+              changeQuantity={changeQuantity}
+              valuesConsumerForm={valuesConsumerForm}
+              setValuesConsumerForm={setValuesConsumerForm}
+              setOpen={setOpen}
+              setMessage={setMessage}
+              setPrixer={setPrixer}
+              setFullArt={setFullArt}
+              setSearchResult={setSearchResult}
+              dollarValue={dollarValue}
+            />
+          }
+        />
 
-        <Route component={Home} />
+        {/* <Route element={Home} /> */}
       </Routes>
+
       <Snackbar
         open={open}
         autoHideDuration={5000}

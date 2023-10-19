@@ -49,7 +49,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function ReadMovements(props) {
-  const history = useNavigate();
+  const navigate = useNavigate();
   const location = useLocation();
 
   const classes = useStyles();

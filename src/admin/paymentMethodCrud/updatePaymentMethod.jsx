@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function UpdatePaymentMethod(props) {
   const classes = useStyles();
-  const history = useNavigate();
+  const navigate = useNavigate();
   const [active, setActive] = useState(props.paymentMethod.active);
   // const [ id, setId ] = useState(props.paymentMethod._id);
   const [name, setName] = useState(props.paymentMethod.name);
@@ -75,7 +75,7 @@ export default function UpdatePaymentMethod(props) {
       } else {
         setErrorMessage("Actualización del método de pago exitosa.");
         setSnackBarError(true);
-        history.push("/admin/payment-method/read");
+        navigate("/admin/payment-method/read");
       }
     }
   };

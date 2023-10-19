@@ -174,7 +174,7 @@ export default function AdminMain(props) {
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState("user");
   const location = useLocation();
-  const history = useNavigate();
+  const navigate = useNavigate();
   const [permissions, setPermissions] = useState();
   const [openDollarView, setOpenDollarView] = useState(false);
 
@@ -413,7 +413,7 @@ export default function AdminMain(props) {
           </Modal>
         </>
       ) : (
-        history.push({ pathname: "/" })
+        navigate({ pathname: "/" })
       )}
     </div>
   );

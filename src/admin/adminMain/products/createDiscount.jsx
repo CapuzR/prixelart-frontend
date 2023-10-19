@@ -69,7 +69,7 @@ const useStyles = makeStyles((theme) => ({
 export default function CreateDiscount() {
   const classes = useStyles();
   const theme = useTheme();
-  const history = useNavigate();
+  const navigate = useNavigate();
 
   const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
   const [active, setActive] = useState(true);
@@ -121,7 +121,7 @@ export default function CreateDiscount() {
         setType();
         setValue();
         setAppliedProducts([]);
-        history.push("/admin/product/read");
+        navigate("/admin/product/read");
       }
     }
   };

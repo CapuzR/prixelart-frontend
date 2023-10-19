@@ -34,7 +34,7 @@ export default function CreatePaymentMethod(props) {
   const [instructions, setInstructions] = useState();
   const [paymentData, setPaymentData] = useState();
   const [loading, setLoading] = useState(false);
-  const history = useNavigate();
+  const navigate = useNavigate();
 
   //Error states.
   const [errorMessage, setErrorMessage] = useState();
@@ -68,7 +68,7 @@ export default function CreatePaymentMethod(props) {
       setName("");
       setInstructions("");
       setPaymentData("");
-      history.push({ pathname: "/admin/payment-method/read" });
+      navigate({ pathname: "/admin/payment-method/read" });
       setLoading(false);
     }
   };

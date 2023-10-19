@@ -136,7 +136,7 @@ function getStyles(specialty, theme) {
 }
 export default function PrixerRegistration() {
   const classes = useStyles();
-  const history = useNavigate();
+  const navigate = useNavigate();
   const [instagram, setInstagram] = useState("");
   const [facebook, setFacebook] = useState("");
   const [twitter, setTwitter] = useState("");
@@ -265,7 +265,7 @@ export default function PrixerRegistration() {
             });
             setErrorMessage("Registro de Prixer exitoso.");
             setSnackBarError(true);
-            history.push({ pathname: "/" + response.data.prixerData.username });
+            navigate({ pathname: "/" + response.data.prixerData.username });
           }
         })
         .catch((error) => {

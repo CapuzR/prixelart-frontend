@@ -37,7 +37,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function ReadProducts(props) {
-  const history = useNavigate();
+  const navigate = useNavigate();
   const classes = useStyles();
   const [rows, setRows] = useState();
   const [discountList, setDiscountList] = useState([]);
@@ -110,13 +110,13 @@ export default function ReadProducts(props) {
   const handleActive = (product, action) => {
     props.setProduct(product);
     localStorage.setItem("product", JSON.stringify(product));
-    history.push("/admin/product/" + action + "/" + product._id);
+    navigate("/admin/product/" + action + "/" + product._id);
   };
 
   const handleActiveDiscount = (discount, action) => {
     props.setDiscount(discount);
     localStorage.setItem("discount", JSON.stringify(discount));
-    history.push("/admin/product/" + action + "/" + discount._id);
+    navigate("/admin/product/" + action + "/" + discount._id);
     props.setActiveCrud("updateDiscount");
   };
 

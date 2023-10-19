@@ -121,7 +121,7 @@ const useStyles = makeStyles((theme) => ({
 export default function Grid(props) {
   const classes = useStyles();
   const [tiles, setTiles] = useState([]);
-  const history = useNavigate();
+  const navigate = useNavigate();
   let globalParams = new URLSearchParams(window.location.search);
   const [searchValue, setSearchValue] = useState(
     globalParams.get("name") || null
@@ -304,7 +304,7 @@ export default function Grid(props) {
     props.setFullArt(tile);
     props.setSearchResult(tiles);
     let art = e.target.id;
-    history.push({
+    navigate({
       pathname: "/art=" + art,
     });
     setOpenFullArt(true);
@@ -317,7 +317,7 @@ export default function Grid(props) {
     if (props.prixerUsername || globalParams.get("prixer")) {
       //
       if (queryValue !== null && categories !== null) {
-        history.push({
+        navigate({
           pathname:
             "/galeria/s?prixer=" +
             (props.prixerUsername || globalParams.get("prixer")) +
@@ -327,7 +327,7 @@ export default function Grid(props) {
             queryValue,
         });
       } else if ((categories[0] !== null && queryValue === null) || "") {
-        history.push({
+        navigate({
           pathname:
             "/galeria/s?prixer=" +
             (props.prixerUsername || globalParams.get("prixer")) +
@@ -335,7 +335,7 @@ export default function Grid(props) {
             categories,
         });
       } else if (queryValue) {
-        history.push({
+        navigate({
           pathname:
             "/galeria/s?prixer=" +
             (props.prixerUsername || globalParams.get("prixer")) +
@@ -343,26 +343,26 @@ export default function Grid(props) {
             queryValue,
         });
       } else {
-        history.push({
+        navigate({
           pathname:
             "/galeria/s?prixer=" + props.prixerUsername + "&name=" + queryValue,
         });
       }
     } else {
       if (queryValue !== null && categories !== null) {
-        history.push({
+        navigate({
           pathname: "/galeria/s?category=" + categories + "&name=" + queryValue,
         });
       } else if ((categories[0] !== null && queryValue === null) || "") {
-        history.push({
+        navigate({
           pathname: "/galeria/s?category=" + categories,
         });
       } else if (queryValue) {
-        history.push({
+        navigate({
           pathname: "/galeria/s?name=" + queryValue,
         });
       } else {
-        history.push({
+        navigate({
           pathname: "/galeria/",
         });
       }

@@ -73,7 +73,7 @@ export default function PrixerProfile(props) {
   const [termsAgreeVar, setTermsAgreeVar] = useState(true);
   const [value, setValue] = useState("");
   const [openShoppingCart, setOpenShoppingCart] = useState(false);
-  const history = useNavigate();
+  const navigate = useNavigate();
   const theme = useTheme();
   const [selectedArt, setSelectedArt] = useState(undefined);
   const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
@@ -341,7 +341,7 @@ export default function PrixerProfile(props) {
                 });
 
                 setSelectedArt(undefined);
-                history.push({ pathname: "/productos" });
+                navigate({ pathname: "/productos" });
               }}
               color="primary"
             >
@@ -403,7 +403,7 @@ export default function PrixerProfile(props) {
           {props.buyState?.length > 0 && (
             <Button
               onClick={() => {
-                history.push({ pathname: "/shopping" });
+                navigate({ pathname: "/shopping" });
               }}
               color="primary"
             >

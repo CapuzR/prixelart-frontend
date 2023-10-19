@@ -122,7 +122,7 @@ export default function UserData(props) {
   const [inputChange, setInputChange] = useState(false);
   const [backdrop, setBackdrop] = useState(true);
   const theme = useTheme();
-  const history = useNavigate();
+  const navigate = useNavigate();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const isDesktop = useMediaQuery(theme.breakpoints.up("lg"));
   const [prixer, setPrixer] = useState();

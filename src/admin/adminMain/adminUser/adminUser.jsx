@@ -103,14 +103,14 @@ const useStyles = makeStyles((theme) => ({
 export default function AdminUsers(props) {
   const classes = useStyles();
   const location = useLocation();
-  const history = useHistory();
+  const navigate = useNavigate();
   const fixedHeightPaper = clsx(classes.paper);
   const [activeCrud, setActiveCrud] = useState("read");
   const [page, setPage] = useState(0);
   const [admin, setAdmin] = useState();
 
   const handleUserAction = (action) => {
-    history.push("/admin/user/" + action);
+    navigate("/admin/user/" + action);
     setActiveCrud(action);
   };
 

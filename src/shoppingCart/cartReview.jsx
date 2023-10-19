@@ -42,7 +42,7 @@ const useStyles = makeStyles((theme) => ({
 export default function CartReview(props) {
   // const prixerUsername = "all";
   const classes = useStyles();
-  const history = useNavigate();
+  const navigate = useNavigate();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("lg"));
   const isIphone = useMediaQuery(theme.breakpoints.down("sm"));
@@ -482,7 +482,7 @@ export default function CartReview(props) {
                             item: buy.product,
                             previous: true,
                           });
-                          history.push({ pathname: "/galeria" });
+                          navigate({ pathname: "/galeria" });
                         }}
                         size="large"
                       >
@@ -506,7 +506,7 @@ export default function CartReview(props) {
                           item: buy.art,
                           previous: true,
                         });
-                        history.push({ pathname: "/galeria" });
+                        navigate({ pathname: "/galeria" });
                       }}
                       size="large"
                     >
@@ -572,7 +572,7 @@ export default function CartReview(props) {
                             item: buy.art,
                             previous: true,
                           });
-                          history.push({ pathname: "/productos" });
+                          navigate({ pathname: "/productos" });
                         }}
                         size="large"
                       >
@@ -598,7 +598,7 @@ export default function CartReview(props) {
                           item: buy.art,
                           previous: true,
                         });
-                        history.push({ pathname: "/productos" });
+                        navigate({ pathname: "/productos" });
                       }}
                       size="large"
                     >
@@ -718,7 +718,7 @@ export default function CartReview(props) {
                           item: buy.art,
                           previous: true,
                         });
-                        history.push({
+                        navigate({
                           pathname: "/productos",
                         });
                       }}
@@ -758,7 +758,7 @@ export default function CartReview(props) {
                           item: buy.product,
                           previous: true,
                         });
-                        history.push({ pathname: "/galeria" });
+                        navigate({ pathname: "/galeria" });
                       }}
                     >
                       Elige tu arte

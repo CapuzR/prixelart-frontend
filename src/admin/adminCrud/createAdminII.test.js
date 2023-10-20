@@ -18,24 +18,34 @@ jest.mock("axios");
 
 test("Encontrar el Select", async () => {
   const roles = adminRoles;
-  // axios.post.mockResolvedValueOnce({ data: roles });
-  //   axios.post.mockResolvedValueOnce(() => Promise.resolve({ data: roles }));
+  axios.post.mockResolvedValue({ data: roles });
 
-  //   await act(async () => {
   render(<CreateAdmin />);
-  // await waitFor(() => {
-  //   expect(areaMock).toHaveBeenCalledTimes(1);
-  // });
-  //   });
 
-  //   const usernameInput = screen.getByRole("textbox", {
-  //     name: /nombre de usuario/i,
-  //   });
+  await waitFor(() => {
+    expect(axios.post).toHaveBeenCalledTimes(1);
+  });
+  expect(axios.post).toHaveBeenCalledWith(
+    process.env.REACT_APP_BACKEND_URL + "/admin/read-roles",
+    { adminToken: null },
+    { withCredentials: true }
+  );
+  // const usernameInput = screen.getByRole("textbox", {
+  //   name: /nombre de usuario/i,
+  // });
+  // expect(usernameInput).toBeInTheDocument();
   //   fireEvent.change(usernameInput, { target: { value: "john.doe" } });
   // screen.debug();
-  // const areaSelect = screen.getByRole("button", { name: "" });
+  const areaSelect = screen.getByTestId("area-select");
+  expect(areaSelect).toBeInTheDocument();
+
+  fireEvent.click(areaSelect);
+  // await waitFor(() => {
+  //   expect(screen.getByText("Master")).toBeInTheDocument();
+  // });
+  const opcion1 = screen.getByText(/Master/);
+  expect(opcion1).toBeInTheDocument();
   // fireEvent.click(areaSelect);
-  // console.log(areaSelect);
   // const areaSelect = getByTestId("Área");
   // fireEvent.change(areaSelect, { target: { value: 1 } });
   // fireEvent.mouseDown(areaSelect);

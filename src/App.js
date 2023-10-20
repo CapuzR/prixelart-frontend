@@ -195,13 +195,13 @@ function App() {
     <>
       <Routes>
         <Route path="/iniciar" element={<Login />} />
-        {/* <Login />
-          </Route> */}
 
         {/* Admin Routes */}
         <Route path="/inicio-admin-prix" element={<AdminLogin />} />
 
-        {/* <Route path="/admin/dashboard">
+        <Route
+          path="/admin/dashboard"
+          element={
             <AdminMain
               dollarValue={dollarValue}
               setDollarValue={setDollarValue}
@@ -209,7 +209,8 @@ function App() {
               setMessage={setMessage}
               setOpen={setOpen}
             />
-          </Route> */}
+          }
+        />
 
         <Route
           path="/admin"
@@ -239,11 +240,14 @@ function App() {
           }
         />
 
-        {/* <Route path="/admin/user/create">
-            <AdminMain dollarValue={dollarValue} />
-          </Route>
+        <Route
+          path="/admin/user/create"
+          element={<AdminMain dollarValue={dollarValue} />}
+        />
 
-          <Route path="/admin/users/read">
+        <Route
+          path="/admin/users/read"
+          element={
             <AdminMain
               dollarValue={dollarValue}
               setDollarValue={setDollarValue}
@@ -251,15 +255,13 @@ function App() {
               setMessage={setMessage}
               setOpen={setOpen}
             />
-          </Route>
+          }
+        />
 
-          <Route exact path="/user/update/:userId" element={AdminMain} />
-
-          <Route path="/admin/product/create">
-            <AdminMain dollarValue={dollarValue} />
-          </Route>
-
-          <Route path="/admin/products/read">
+        <Route
+          exact
+          path="/user/update/:userId"
+          element={
             <AdminMain
               dollarValue={dollarValue}
               setDollarValue={setDollarValue}
@@ -267,31 +269,12 @@ function App() {
               setMessage={setMessage}
               setOpen={setOpen}
             />
-          </Route>
+          }
+        />
 
-          <Route
-            exact
-            path="/product/update/:productId"
-            element={AdminMain}
-          />
-
-          <Route
-            exact
-            path="/product/:productId/variant/create"
-            element={AdminMain}
-          />
-
-          <Route
-            exact
-            path="/product/:productId/variants/read"
-            element={AdminMain}
-          />
-
-          <Route path="/admin/consumer/create">
-            <AdminMain dollarValue={dollarValue} />
-          </Route>
-
-          <Route path="/admin/consumers/read">
+        <Route
+          path="/admin/product/create"
+          element={
             <AdminMain
               dollarValue={dollarValue}
               setDollarValue={setDollarValue}
@@ -299,13 +282,103 @@ function App() {
               setMessage={setMessage}
               setOpen={setOpen}
             />
-          </Route>
+          }
+        />
 
-          <Route
-            exact
-            path="/consumer/update/:consumerId"
-            element={AdminMain}
-          /> */}
+        <Route
+          path="/admin/products/read"
+          element={
+            <AdminMain
+              dollarValue={dollarValue}
+              setDollarValue={setDollarValue}
+              updateDollarValue={updateDollarValue}
+              setMessage={setMessage}
+              setOpen={setOpen}
+            />
+          }
+        />
+
+        <Route
+          exact
+          path="/product/update/:productId"
+          element={
+            <AdminMain
+              dollarValue={dollarValue}
+              setDollarValue={setDollarValue}
+              updateDollarValue={updateDollarValue}
+              setMessage={setMessage}
+              setOpen={setOpen}
+            />
+          }
+        />
+
+        <Route
+          exact
+          path="/product/:productId/variant/create"
+          element={
+            <AdminMain
+              dollarValue={dollarValue}
+              setDollarValue={setDollarValue}
+              updateDollarValue={updateDollarValue}
+              setMessage={setMessage}
+              setOpen={setOpen}
+            />
+          }
+        />
+
+        <Route
+          exact
+          path="/product/:productId/variants/read"
+          element={
+            <AdminMain
+              dollarValue={dollarValue}
+              setDollarValue={setDollarValue}
+              updateDollarValue={updateDollarValue}
+              setMessage={setMessage}
+              setOpen={setOpen}
+            />
+          }
+        />
+
+        <Route
+          path="/admin/consumer/create"
+          element={
+            <AdminMain
+              dollarValue={dollarValue}
+              setDollarValue={setDollarValue}
+              updateDollarValue={updateDollarValue}
+              setMessage={setMessage}
+              setOpen={setOpen}
+            />
+          }
+        />
+
+        <Route
+          path="/admin/consumers/read"
+          element={
+            <AdminMain
+              dollarValue={dollarValue}
+              setDollarValue={setDollarValue}
+              updateDollarValue={updateDollarValue}
+              setMessage={setMessage}
+              setOpen={setOpen}
+            />
+          }
+        />
+
+        <Route
+          exact
+          path="/consumer/update/:consumerId"
+          element={
+            <AdminMain
+              dollarValue={dollarValue}
+              setDollarValue={setDollarValue}
+              updateDollarValue={updateDollarValue}
+              setMessage={setMessage}
+              setOpen={setOpen}
+            />
+          }
+        />
 
         {/* END Admin Routes */}
         <Route

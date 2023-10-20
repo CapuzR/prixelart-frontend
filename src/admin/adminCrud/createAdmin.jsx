@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import clsx from "classnames";
 import axios from "axios";
-
+import { createTheme, ThemeProvider, styled } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 
 import {
@@ -25,12 +25,13 @@ import VisibilityOff from "@mui/icons-material/VisibilityOff";
 
 import Title from "../adminMain/Title";
 import validations from "../../utils/validations";
+const theme = createTheme();
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   loading: {
     display: "flex",
     "& > * + *": {
-      marginLeft: theme.spacing(2),
+      // marginLeft: theme.spacing(2),
     },
     marginLeft: "50vw",
     marginTop: "50vh",
@@ -39,7 +40,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function CreateAdmin() {
   const classes = useStyles();
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const [roles, setRoles] = useState([]);
   const [username, setUsername] = useState("");
   const [firstname, setFirstname] = useState("");
@@ -148,215 +149,218 @@ export default function CreateAdmin() {
         setEmail("");
         setPhone("");
         setPassword("");
-        navigate({ pathname: "/admin/user/read" });
+        // navigate({ pathname: "/admin/user/read" });
       }
     }
   };
 
   return (
-    <React.Fragment>
-      {loading && (
-        <div className={classes.loading}>
-          <CircularProgress />
-        </div>
-      )}
-      <Title>Crear Administrador</Title>
-      <form className={classes.form} noValidate onSubmit={handleSubmit}>
-        <Grid container spacing={2}>
-          <Grid item xs={6}>
-            <FormControl
-              className={clsx(classes.margin, classes.textField)}
-              variant="outlined"
-              xs={5}
-            >
-              <TextField
+    <ThemeProvider theme={theme}>
+      <React.Fragment>
+        {loading && (
+          <div className={classes.loading}>
+            <CircularProgress />
+          </div>
+        )}
+        <Title>Crear Administrador</Title>
+        <form className={classes.form} noValidate onSubmit={handleSubmit}>
+          <Grid container spacing={2}>
+            <Grid item xs={6}>
+              <FormControl
+                className={clsx(classes.margin, classes.textField)}
                 variant="outlined"
-                required
-                fullWidth
-                id="username"
-                aria-label="username"
-                label="Nombre de usuario"
-                name="username"
-                autoComplete="username"
-                value={username}
-                onChange={(e) => {
-                  setUsername(e.target.value);
-                }}
-              />
-            </FormControl>
-          </Grid>
-          <Grid item xs={6}>
-            <FormControl
-              className={clsx(classes.margin, classes.textField)}
-              variant="outlined"
-              style={{ width: "50%" }}
-              required
-            >
-              <InputLabel>Área</InputLabel>
-              <Select
-                value={area}
-                onChange={(e) => {
-                  setArea(e.target.value);
-                }}
-                data-testid="area-select"
+                xs={5}
               >
-                {roles &&
-                  roles.map((role) => (
-                    <MenuItem
-                      value={role.area}
-                      name={role.area}
-                      key={role.area}
-                    >
-                      {role.area}{" "}
-                    </MenuItem>
-                  ))}
-              </Select>
-            </FormControl>
-          </Grid>
-          <Grid item xs={6}>
-            <FormControl
-              className={clsx(classes.margin, classes.textField)}
-              variant="outlined"
-              xs={12}
-              fullWidth={true}
-            >
-              <TextField
+                <TextField
+                  variant="outlined"
+                  required
+                  fullWidth
+                  id="username"
+                  aria-label="username"
+                  label="Nombre de usuario"
+                  name="username"
+                  autoComplete="username"
+                  value={username}
+                  onChange={(e) => {
+                    setUsername(e.target.value);
+                  }}
+                />
+              </FormControl>
+            </Grid>
+            <Grid item xs={6}>
+              <FormControl
+                className={clsx(classes.margin, classes.textField)}
                 variant="outlined"
+                style={{ width: "50%" }}
                 required
-                fullWidth
-                id="firstname"
-                label="firstname"
-                aria-label="firstname"
-                name="firstname"
-                autoComplete="firstname"
-                value={firstname}
-                onChange={(e) => {
-                  setFirstname(e.target.value);
-                }}
-              />
-            </FormControl>
-          </Grid>
-          <Grid item xs={6}>
-            <FormControl
-              className={clsx(classes.margin, classes.textField)}
-              variant="outlined"
-              xs={12}
-              fullWidth={true}
-            >
-              <TextField
-                variant="outlined"
-                required
-                fullWidth
-                id="lastname"
-                label="Apellido"
-                aria-label="Apellido"
-                name="lastname"
-                autoComplete="lastname"
-                value={lastname}
-                onChange={(e) => {
-                  setLastname(e.target.value);
-                }}
-              />
-            </FormControl>
-          </Grid>
-
-          <Grid item xs={8}>
-            <FormControl
-              className={clsx(classes.margin, classes.textField)}
-              variant="outlined"
-              xs={12}
-              fullWidth={true}
-            >
-              <TextField
-                variant="outlined"
-                required
-                fullWidth
-                id="email"
-                label="Correo electrónico"
-                aria-label="Correo electrónico"
-                name="email"
-                autoComplete="email"
-                value={email}
-                onChange={(e) => {
-                  setEmail(e.target.value);
-                }}
-              />
-            </FormControl>
-          </Grid>
-
-          <Grid item xs={4}>
-            <FormControl
-              className={clsx(classes.margin, classes.textField)}
-              variant="outlined"
-              xs={12}
-              fullWidth={true}
-            >
-              <TextField
-                variant="outlined"
-                required
-                fullWidth
-                id="phone"
-                label="Teléfono"
-                aria-label="Teléfono"
-                name="phone"
-                autoComplete="phone"
-                value={phone}
-                onChange={(e) => {
-                  setPhone(e.target.value);
-                }}
-              />
-            </FormControl>
-          </Grid>
-
-          <Grid item xs={12}>
-            <FormControl
-              className={clsx(classes.margin, classes.textField)}
-              variant="outlined"
-              xs={12}
-            >
-              <TextField
-                variant="outlined"
-                id="Contraseña"
-                label="Contraseña"
-                aria-label="Contraseña"
-                name="Contraseña"
-                type={showPassword ? "text" : "password"}
-                value={password}
-                error={passwordError}
-                onChange={handlePasswordChange}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        // aria-label="toggle password visibility"
-                        onClick={handleClickShowPassword}
-                        onMouseDown={handleMouseDownPassword}
-                        edge="end"
+              >
+                <InputLabel>Área</InputLabel>
+                <Select
+                  value={area}
+                  onChange={(e) => {
+                    setArea(e.target.value);
+                  }}
+                  data-testid="area-select"
+                >
+                  {roles &&
+                    roles.map((role, i) => (
+                      <MenuItem
+                        data-testid={role.area}
+                        value={role.area}
+                        name={role.area}
+                        key={role.area}
                       >
-                        {showPassword ? <Visibility /> : <VisibilityOff />}
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                }}
-              />
-            </FormControl>
+                        {role.area}{" "}
+                      </MenuItem>
+                    ))}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={6}>
+              <FormControl
+                className={clsx(classes.margin, classes.textField)}
+                variant="outlined"
+                xs={12}
+                fullWidth={true}
+              >
+                <TextField
+                  variant="outlined"
+                  required
+                  fullWidth
+                  id="firstname"
+                  label="firstname"
+                  aria-label="firstname"
+                  name="firstname"
+                  autoComplete="firstname"
+                  value={firstname}
+                  onChange={(e) => {
+                    setFirstname(e.target.value);
+                  }}
+                />
+              </FormControl>
+            </Grid>
+            <Grid item xs={6}>
+              <FormControl
+                className={clsx(classes.margin, classes.textField)}
+                variant="outlined"
+                xs={12}
+                fullWidth={true}
+              >
+                <TextField
+                  variant="outlined"
+                  required
+                  fullWidth
+                  id="lastname"
+                  label="Apellido"
+                  aria-label="Apellido"
+                  name="lastname"
+                  autoComplete="lastname"
+                  value={lastname}
+                  onChange={(e) => {
+                    setLastname(e.target.value);
+                  }}
+                />
+              </FormControl>
+            </Grid>
+
+            <Grid item xs={8}>
+              <FormControl
+                className={clsx(classes.margin, classes.textField)}
+                variant="outlined"
+                xs={12}
+                fullWidth={true}
+              >
+                <TextField
+                  variant="outlined"
+                  required
+                  fullWidth
+                  id="email"
+                  label="Correo electrónico"
+                  aria-label="Correo electrónico"
+                  name="email"
+                  autoComplete="email"
+                  value={email}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                  }}
+                />
+              </FormControl>
+            </Grid>
+
+            <Grid item xs={4}>
+              <FormControl
+                className={clsx(classes.margin, classes.textField)}
+                variant="outlined"
+                xs={12}
+                fullWidth={true}
+              >
+                <TextField
+                  variant="outlined"
+                  required
+                  fullWidth
+                  id="phone"
+                  label="Teléfono"
+                  aria-label="Teléfono"
+                  name="phone"
+                  autoComplete="phone"
+                  value={phone}
+                  onChange={(e) => {
+                    setPhone(e.target.value);
+                  }}
+                />
+              </FormControl>
+            </Grid>
+
+            <Grid item xs={12}>
+              <FormControl
+                className={clsx(classes.margin, classes.textField)}
+                variant="outlined"
+                xs={12}
+              >
+                <TextField
+                  variant="outlined"
+                  id="Contraseña"
+                  label="Contraseña"
+                  aria-label="Contraseña"
+                  name="Contraseña"
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  error={passwordError}
+                  onChange={handlePasswordChange}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          // aria-label="toggle password visibility"
+                          onClick={handleClickShowPassword}
+                          onMouseDown={handleMouseDownPassword}
+                          edge="end"
+                        >
+                          {showPassword ? <Visibility /> : <VisibilityOff />}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+              </FormControl>
+            </Grid>
+            <Button
+              variant="contained"
+              color="primary"
+              type="submit"
+              disabled={buttonState}
+            >
+              Crear
+            </Button>
           </Grid>
-          <Button
-            variant="contained"
-            color="primary"
-            type="submit"
-            disabled={buttonState}
-          >
-            Crear
-          </Button>
-        </Grid>
-      </form>
-      <Snackbar
-        open={snackBarError}
-        autoHideDuration={1000}
-        message={errorMessage}
-        className={classes.snackbar}
-      />
-    </React.Fragment>
+        </form>
+        <Snackbar
+          open={snackBarError}
+          autoHideDuration={1000}
+          message={errorMessage}
+          className={classes.snackbar}
+        />
+      </React.Fragment>
+    </ThemeProvider>
   );
 }

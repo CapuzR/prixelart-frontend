@@ -350,7 +350,7 @@ export default function Home(props) {
   };
 
   const settings2 = {
-    slidesToShow: (isDesktop && 2) || (isMobile && 2) || (isTab && 1),
+    slidesToShow: (isDesktop && 2) || (isMobile && 1) || (isTab && 1),
     slidesToScroll: 1,
     autoplay: true,
     autoplaySpeed: 4000,
@@ -674,6 +674,7 @@ export default function Home(props) {
                     flexDirection: "column",
                     position: "relative",
                     width: "100%",
+                    maxWidth: 435,
                     height:
                       (isDesktop && 497) || (isMobile && 300) || (isTab && 370),
                     marginLeft: isMobile ? 10 : 20,
@@ -686,6 +687,7 @@ export default function Home(props) {
                     backgroundSize: "contain",
                     backgroundRepeat: "no-repeat",
                     backgroundPosition: "top",
+                    // paddingTop: "119.45%",
                   }}
                   elevation={5}
                 >
@@ -694,6 +696,7 @@ export default function Home(props) {
                     GridDirection={"column"}
                     style={{
                       justifyContent: "center",
+                      aspectRatio: 434 / 518.05,
                     }}
                   >
                     <Grid
@@ -757,26 +760,29 @@ export default function Home(props) {
                                 (isDesktop && 320) ||
                                 (isMobile && 180) ||
                                 (isTab && 260),
-                              width:
-                                (isDesktop && 170) ||
-                                (isMobile && 110) ||
-                                (isTab && 180),
+                              marginRight: 10,
+                              // width:
+                              //   (isDesktop && 170) ||
+                              //   (isMobile && 110) ||
+                              //   (isTab && 180),
                             }}
                             onClick={() => handleArt(art)}
                           >
                             <div
                               style={{
                                 backgroundImage:
-                                  `url(${art?.largeThumbUrl})` ||
-                                  `url(${art?.thumbUrl})`,
+                                  `url(${encodeURI(art?.largeThumbUrl)})` ||
+                                  `url(${encodeURI(art?.thumbUrl)})`,
                                 height:
                                   (isDesktop && 320) ||
                                   (isMobile && 180) ||
                                   (isTab && 260),
-                                width:
-                                  (isDesktop && 170) ||
-                                  (isMobile && 110) ||
-                                  (isTab && 180),
+                                marginRight: 10,
+
+                                // width:
+                                //   (isDesktop && 170) ||
+                                //   (isMobile && 110) ||
+                                //   (isTab && 180),
                                 backgroundSize: "cover",
                                 borderRadius: 30,
                                 backgroundPosition: "back",

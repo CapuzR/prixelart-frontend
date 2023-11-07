@@ -37,6 +37,18 @@ const generateProductMessage = (tile, type) => {
   return productMessage;
 };
 
+const generateServiceMessage = (tile, prixer) => {
+  const waNumber = "584126377748";
+  const message =
+    "Hola, quiero solicitar el servicio de " +
+    `*${tile.title}*` +
+    " del prixer " +
+    `*${prixer}*`;
+
+  const url = "https://wa.me/" + waNumber + "?text=" + message;
+  return url;
+};
+
 const generateArtMessage = (tile, type) => {
   let lineBreak = "";
 
@@ -126,6 +138,7 @@ const util = {
   shuffle,
   generateWaProductMessage,
   generateWaBuyMessage,
+  generateServiceMessage,
 };
 
 export default util;

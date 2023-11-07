@@ -71,7 +71,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Login() {
+export default function Login(props) {
   const classes = useStyles();
   const history = useHistory();
   const [email, setEmail] = useState("");
@@ -122,6 +122,7 @@ export default function Login() {
               JSON.stringify(now.getTime() + 21600000)
             );
             history.push({ pathname: "/admin/order/read" });
+            props.checkP();
           }
         })
         .catch((error) => {

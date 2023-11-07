@@ -26,6 +26,7 @@ import CardActionArea from "@material-ui/core/CardActionArea";
 import Box from "@material-ui/core/Box";
 import AddShoppingCartIcon from "@material-ui/icons/AddShoppingCart";
 import FullscreenPhoto from "../fullscreenPhoto/fullscreenPhoto";
+
 const IOSSwitch = withStyles((theme) => ({
   root: {
     width: 42,
@@ -429,9 +430,9 @@ export default function Grid(props) {
       >
         <Masonry style={{ columnGap: "7px" }}>
           {tiles ? (
-            tilesv2.map((tile) =>
+            tilesv2.map((tile, i) =>
               tile.visible ? (
-                <div>
+                <div key={i}>
                   {JSON.parse(localStorage.getItem("adminToken")) &&
                     tile.visible && (
                       <Button
@@ -576,7 +577,7 @@ export default function Grid(props) {
                 </div>
               ) : (
                 JSON.parse(localStorage.getItem("adminToken")) && (
-                  <div>
+                  <div key={i}>
                     <Img
                       onClick={(e) => {
                         handleFullImage(e, tile);

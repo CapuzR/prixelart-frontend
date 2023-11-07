@@ -98,7 +98,11 @@ export default function CustomizedInputBase(props) {
         component="form"
         className={classes.root}
         elevation={3}
-        style={{ width: isMobile ? "auto" : 650 }}
+        style={{
+          width: isMobile ? "auto" : 650,
+          marginLeft: isMobile && 2,
+          marginRight: isMobile && 2,
+        }}
       >
         <div style={{ display: "flex", width: "100%", alignItems: "center" }}>
           <IconButton

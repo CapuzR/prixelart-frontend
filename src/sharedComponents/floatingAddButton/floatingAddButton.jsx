@@ -3,19 +3,15 @@ import { makeStyles } from "@material-ui/core/styles";
 import Fab from "@material-ui/core/Fab";
 import AddPhotoAlternateIcon from "@material-ui/icons/AddPhotoAlternate";
 import ShoppingCartOutlinedIcon from "@material-ui/icons/ShoppingCartOutlined";
+import LocalActivityIcon from "@material-ui/icons/LocalActivity";
 
 const useStyles = makeStyles((theme) => ({
   root: {
     "& > *": {
       margin: theme.spacing(1),
-      // marginRight: theme.spacing(1),
-
-      // margin: 0,
       top: "auto",
-      // marginLeft: 333,
       bottom: 20,
       left: "auto",
-      // paddingRight: "5",
       position: "fixed",
     },
   },
@@ -55,6 +51,10 @@ export default function FloatingAddButton(props) {
     props.setOpenArtFormDialog(true);
   };
 
+  const openServiceDialog = () => {
+    props.setOpenServiceFormDialog(true);
+  };
+
   const openShoppingCart = () => {
     props.setOpenShoppingCart(true);
   };
@@ -63,24 +63,51 @@ export default function FloatingAddButton(props) {
     <div className={classes.root}>
       {JSON.parse(localStorage.getItem("token")) &&
         JSON.parse(localStorage.getItem("token")).username && (
-          <Fab
-            color="primary"
-            aria-label="add"
-            onClick={openArtDialog}
-            style={{ bottom: 90, right: 10 }}
-          >
-            <AddPhotoAlternateIcon />
-          </Fab>
+          <>
+            <Fab
+              color="primary"
+              aria-label="add"
+              onClick={openServiceDialog}
+              style={{
+                bottom:
+                  props.buyState === undefined ||
+                  props.buyState[0] === undefined
+                    ? 70
+                    : 160,
+                right: 10,
+              }}
+            >
+              <LocalActivityIcon />
+            </Fab>
+
+            <Fab
+              color="primary"
+              aria-label="add"
+              onClick={openArtDialog}
+              style={{
+                bottom:
+                  props.buyState === undefined ||
+                  props.buyState[0] === undefined
+                    ? 0
+                    : 90,
+                right: 10,
+              }}
+            >
+              <AddPhotoAlternateIcon />
+            </Fab>
+          </>
         )}
 
-      <Fab
-        color="primary"
-        aria-label="add"
-        onClick={openShoppingCart}
-        style={{ right: 10 }}
-      >
-        <ShoppingCartOutlinedIcon />
-      </Fab>
+      {JSON.parse(localStorage.getItem("buyState")).lenght > 0 && (
+        <Fab
+          color="primary"
+          aria-label="add"
+          onClick={openShoppingCart}
+          style={{ right: 10 }}
+        >
+          <ShoppingCartOutlinedIcon />
+        </Fab>
+      )}
     </div>
   );
 }

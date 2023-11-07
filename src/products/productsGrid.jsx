@@ -29,6 +29,8 @@ import {
   getAttributes,
   getEquation,
 } from "./services.js";
+import Paper from "@material-ui/core/Paper";
+
 import AddShoppingCartIcon from "@material-ui/icons/ShoppingCart";
 import { useHistory } from "react-router-dom";
 import Switch from "@material-ui/core/Switch";
@@ -148,6 +150,14 @@ const useStyles = makeStyles((theme) => ({
     transform: "translateX(35px) !important",
     padding: "1px",
   },
+  adjust1: {
+    objectFit: "cover",
+    width: 434,
+    height: 142,
+    transformOrigin: "top left",
+    transform:
+      "perspective(130px) rotateX(2deg) skew(2deg, 8.7deg) translateX(1px) rotateY(14deg)",
+  },
 }));
 
 export default function ProductGrid(props) {
@@ -158,9 +168,9 @@ export default function ProductGrid(props) {
   // const [imagesProducts, setImagesProducts] = useState();
   const [width, setWidth] = useState([]);
   const [height, setHeight] = useState([]);
+
   const [order, setOrder] = useState("");
   const history = useHistory();
-  // const [dollarValue, setDollarValue] = useState(1);
   const [currency, setCurrency] = useState(false);
 
   const getDiscounts = async () => {
@@ -242,6 +252,232 @@ export default function ProductGrid(props) {
 
   const priceSelect = (item) => {
     if (
+      (JSON.parse(localStorage?.getItem("token")) ||
+        JSON.parse(localStorage?.getItem("adminToken"))) &&
+      (JSON.parse(localStorage?.getItem("token"))?.username ||
+        JSON.parse(localStorage?.getItem("adminToken"))?.username) &&
+      item.prixerEquation !== "" &&
+      typeof item.discount === "string" &&
+      currency
+    ) {
+      return (
+        "PVM: Bs" +
+        (item.prixerEquation * props.dollarValue).toLocaleString("de-DE", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })
+      );
+    } else if (
+      (JSON.parse(localStorage.getItem("token")) ||
+        JSON.parse(localStorage.getItem("adminToken"))) &&
+      (JSON.parse(localStorage.getItem("token"))?.username ||
+        JSON.parse(localStorage.getItem("adminToken"))?.username) &&
+      item.prixerEquation !== "" &&
+      typeof item.discount === "string"
+    ) {
+      return (
+        "PVM: $" +
+        item.prixerEquation.toLocaleString("de-DE", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })
+      );
+    } else if (
+      (JSON.parse(localStorage.getItem("token")) ||
+        JSON.parse(localStorage.getItem("adminToken"))) &&
+      (JSON.parse(localStorage.getItem("token"))?.username ||
+        JSON.parse(localStorage.getItem("adminToken"))?.username) &&
+      item.attributes.length > 0 &&
+      item.prixerPrice.to !== item.prixerPrice.from &&
+      item.prixerPrice.to !== "" &&
+      item.prixerPrice.to !== null &&
+      currency &&
+      typeof item.discount === "string"
+    ) {
+      return (
+        "PVM: Bs" +
+        (Number(item.prixerPrice.from) * props.dollarValue).toLocaleString(
+          "de-DE",
+          {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          }
+        ) +
+        " - " +
+        Number(item.prixerPrice?.to * props.dollarValue).toLocaleString(
+          "de-DE",
+          {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          }
+        )
+      );
+    } else if (
+      (JSON.parse(localStorage.getItem("token")) ||
+        JSON.parse(localStorage.getItem("adminToken"))) &&
+      (JSON.parse(localStorage.getItem("token"))?.username ||
+        JSON.parse(localStorage.getItem("adminToken"))?.username) &&
+      item.attributes.length > 0 &&
+      item.prixerPrice.to !== item.prixerPrice.from &&
+      item.prixerPrice.to !== "" &&
+      item.prixerPrice.to !== null &&
+      typeof item.discount === "string"
+    ) {
+      return (
+        "PVM: $" +
+        Number(item.prixerPrice.from).toLocaleString("de-DE", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        }) +
+        " - " +
+        Number(item.prixerPrice?.to).toLocaleString("de-DE", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })
+      );
+    } else if (
+      (JSON.parse(localStorage?.getItem("token")) ||
+        JSON.parse(localStorage?.getItem("adminToken"))) &&
+      (JSON.parse(localStorage?.getItem("token"))?.username ||
+        JSON.parse(localStorage?.getItem("adminToken"))?.username) &&
+      typeof item.discount === "string" &&
+      currency
+    ) {
+      return (
+        "PVM: Bs" +
+        Number(item?.prixerPrice?.from * props.dollarValue).toLocaleString(
+          "de-DE",
+          {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          }
+        )
+      );
+    } else if (
+      (JSON.parse(localStorage?.getItem("token")) ||
+        JSON.parse(localStorage?.getItem("adminToken"))) &&
+      (JSON.parse(localStorage?.getItem("token"))?.username ||
+        JSON.parse(localStorage?.getItem("adminToken"))?.username) &&
+      typeof item.discount === "string"
+    ) {
+      return (
+        "PVM: $" +
+        Number(item?.prixerPrice?.from).toLocaleString("de-DE", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })
+      );
+    } else if (
+      (JSON.parse(localStorage?.getItem("token")) ||
+        JSON.parse(localStorage?.getItem("adminToken"))) &&
+      (JSON.parse(localStorage?.getItem("token"))?.username ||
+        JSON.parse(localStorage?.getItem("adminToken"))?.username) &&
+      item.prixerEquation !== "" &&
+      currency
+    ) {
+      return (
+        "PVM: Bs" +
+        (item.prixerEquation * props.dollarValue).toLocaleString("de-DE", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })
+      );
+    } else if (
+      (JSON.parse(localStorage.getItem("token")) ||
+        JSON.parse(localStorage.getItem("adminToken"))) &&
+      (JSON.parse(localStorage.getItem("token"))?.username ||
+        JSON.parse(localStorage.getItem("adminToken"))?.username) &&
+      item.prixerEquation !== ""
+    ) {
+      return (
+        "PVM: $" +
+        item.prixerEquation.toLocaleString("de-DE", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })
+      );
+    } else if (
+      (JSON.parse(localStorage.getItem("token")) ||
+        JSON.parse(localStorage.getItem("adminToken"))) &&
+      (JSON.parse(localStorage.getItem("token"))?.username ||
+        JSON.parse(localStorage.getItem("adminToken"))?.username) &&
+      item.attributes.length > 0 &&
+      item.prixerPrice.to !== item.prixerPrice.from &&
+      item.prixerPrice.to !== "" &&
+      item.prixerPrice.to !== null &&
+      currency
+    ) {
+      return (
+        "PVM: Bs" +
+        (Number(item.prixerPrice.from) * props.dollarValue).toLocaleString(
+          "de-DE",
+          {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          }
+        ) +
+        " - " +
+        Number(item.prixerPrice?.to * props.dollarValue).toLocaleString(
+          "de-DE",
+          {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          }
+        )
+      );
+    } else if (
+      (JSON.parse(localStorage.getItem("token")) ||
+        JSON.parse(localStorage.getItem("adminToken"))) &&
+      (JSON.parse(localStorage.getItem("token"))?.username ||
+        JSON.parse(localStorage.getItem("adminToken"))?.username) &&
+      item.attributes.length > 0 &&
+      item.prixerPrice.to !== item.prixerPrice.from &&
+      item.prixerPrice.to !== "" &&
+      item.prixerPrice.to !== null
+    ) {
+      return (
+        "PVM: $" +
+        Number(item.prixerPrice.from).toLocaleString("de-DE", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        }) +
+        " - " +
+        Number(item.prixerPrice?.to).toLocaleString("de-DE", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })
+      );
+    } else if (
+      (JSON.parse(localStorage.getItem("token")) ||
+        JSON.parse(localStorage.getItem("adminToken"))) &&
+      (JSON.parse(localStorage.getItem("token"))?.username ||
+        JSON.parse(localStorage.getItem("adminToken"))?.username) &&
+      currency
+    ) {
+      return (
+        "PVM: Bs" +
+        Number(item?.prixerPrice?.from * props.dollarValue).toLocaleString(
+          "de-DE",
+          {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          }
+        )
+      );
+    } else if (
+      (JSON.parse(localStorage.getItem("token")) ||
+        JSON.parse(localStorage.getItem("adminToken"))) &&
+      (JSON.parse(localStorage.getItem("token"))?.username ||
+        JSON.parse(localStorage.getItem("adminToken"))?.username)
+    ) {
+      return (
+        "PVM: $" +
+        Number(item?.prixerPrice?.from).toLocaleString("de-DE", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })
+      );
+    } else if (
       typeof item.discount === "string" &&
       item.publicEquation !== "" &&
       currency
@@ -644,116 +880,6 @@ export default function ProductGrid(props) {
           )}
         </>
       );
-    } else if (
-      (JSON.parse(localStorage?.getItem("token")) ||
-        JSON.parse(localStorage?.getItem("adminToken"))) &&
-      (JSON.parse(localStorage?.getItem("token"))?.username ||
-        JSON.parse(localStorage?.getItem("adminToken"))?.username) &&
-      item.prixerEquation !== "" &&
-      currency
-    ) {
-      return (
-        "PVM: Bs" +
-        (item.prixerEquation * props.dollarValue).toLocaleString("de-DE", {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        })
-      );
-    } else if (
-      (JSON.parse(localStorage.getItem("token")) ||
-        JSON.parse(localStorage.getItem("adminToken"))) &&
-      (JSON.parse(localStorage.getItem("token"))?.username ||
-        JSON.parse(localStorage.getItem("adminToken"))?.username) &&
-      item.prixerEquation !== ""
-    ) {
-      return (
-        "PVP: $" +
-        item.prixerEquation.toLocaleString("de-DE", {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        })
-      );
-    } else if (
-      (JSON.parse(localStorage.getItem("token")) ||
-        JSON.parse(localStorage.getItem("adminToken"))) &&
-      (JSON.parse(localStorage.getItem("token"))?.username ||
-        JSON.parse(localStorage.getItem("adminToken"))?.username) &&
-      item.attributes.length > 0 &&
-      item.prixerPrice.to !== item.prixerPrice.from &&
-      item.prixerPrice.to !== "" &&
-      item.prixerPrice.to !== null &&
-      currency
-    ) {
-      return (
-        "PVM: Bs" +
-        (Number(item.prixerPrice.from) * props.dollarValue).toLocaleString(
-          "de-DE",
-          {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          }
-        ) +
-        " - " +
-        Number(item.prixerPrice?.to * props.dollarValue).toLocaleString(
-          "de-DE",
-          {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          }
-        )
-      );
-    } else if (
-      (JSON.parse(localStorage.getItem("token")) ||
-        JSON.parse(localStorage.getItem("adminToken"))) &&
-      (JSON.parse(localStorage.getItem("token"))?.username ||
-        JSON.parse(localStorage.getItem("adminToken"))?.username) &&
-      item.attributes.length > 0 &&
-      item.prixerPrice.to !== item.prixerPrice.from &&
-      item.prixerPrice.to !== "" &&
-      item.prixerPrice.to !== null
-    ) {
-      return (
-        "PVM: $" +
-        Number(item.prixerPrice.from).toLocaleString("de-DE", {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        }) +
-        " - " +
-        Number(item.prixerPrice?.to).toLocaleString("de-DE", {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        })
-      );
-    } else if (
-      (JSON.parse(localStorage.getItem("token")) ||
-        JSON.parse(localStorage.getItem("adminToken"))) &&
-      (JSON.parse(localStorage.getItem("token"))?.username ||
-        JSON.parse(localStorage.getItem("adminToken"))?.username) &&
-      currency
-    ) {
-      return (
-        "PVM: Bs" +
-        Number(item?.prixerPrice?.from * props.dollarValue).toLocaleString(
-          "de-DE",
-          {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          }
-        )
-      );
-    } else if (
-      (JSON.parse(localStorage.getItem("token")) ||
-        JSON.parse(localStorage.getItem("adminToken"))) &&
-      (JSON.parse(localStorage.getItem("token"))?.username ||
-        JSON.parse(localStorage.getItem("adminToken"))?.username)
-    ) {
-      return (
-        "PVM: $" +
-        Number(item?.prixerPrice?.from).toLocaleString("de-DE", {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        })
-      );
     } else if (item.publicEquation !== "" && currency) {
       return (
         "PVP: Bs" +
@@ -839,6 +965,40 @@ export default function ProductGrid(props) {
   };
   return (
     <>
+      {/* <Grid container style={{ marginTop: 20 }}>
+        <Grid item xs={12} align={"center"}>
+          <Paper
+            style={{
+              width: 800,
+              height: 400,
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              position: "relative",
+            }}
+            elevation={5}
+          >
+            <div>
+              <img src={tiles[2]?.sources.images[0]?.url}></img>
+              <div
+                style={{
+                  position: "absolute",
+                  // transformStyle: "preserve-3d",
+                  // perspective: "800px",
+                  top: 137,
+                  left: 280,
+                }}
+              >
+                <img
+                  src={props.buyState[0].art.smallThumbUrl}
+                  className={classes.adjust1}
+                ></img>
+              </div>
+            </div>
+          </Paper>
+        </Grid>
+      </Grid> */}
+
       <div style={{ display: "flex", justifyContent: "end" }}>
         <div
           style={{

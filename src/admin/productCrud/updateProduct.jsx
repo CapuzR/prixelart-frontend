@@ -26,10 +26,15 @@ import EditIcon from "@material-ui/icons/Edit";
 import MDEditor from "@uiw/react-md-editor";
 import Variants from "../adminMain/products/variants";
 import Backdrop from "@material-ui/core/Backdrop";
+import Tabs from "@material-ui/core/Tabs";
+import Tab from "@material-ui/core/Tab";
+import Box from "@material-ui/core/Box";
+import Typography from "@material-ui/core/Typography";
+
 import validations from "../../shoppingCart/validations";
 import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
 import Paper from "@material-ui/core/Paper";
-
+import Mockup from "./updateMockUp";
 const useStyles = makeStyles((theme) => ({
   seeMore: {
     marginTop: theme.spacing(3),
@@ -74,7 +79,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function UpdateAdmin(props) {
+export default function UpdateProduct(props) {
   const classes = useStyles();
   const history = useHistory();
   const theme = useTheme();
@@ -108,7 +113,6 @@ export default function UpdateAdmin(props) {
   );
   const [loading, setLoading] = useState(false);
   const [buttonState, setButtonState] = useState(false);
-  const [showVariants, setShowVariants] = useState(false);
   const [activeVCrud, setActiveVCrud] = useState("read");
   const [hasSpecialVar, setHasSpecialVar] = useState(
     props?.product?.hasSpecialVar || false
@@ -118,6 +122,11 @@ export default function UpdateAdmin(props) {
     loader: [],
     filename: "Subir imagenes",
   });
+
+  const [value, setValue] = useState(0);
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+  };
 
   //Error states.
   const [errorMessage, setErrorMessage] = useState();
@@ -161,6 +170,7 @@ export default function UpdateAdmin(props) {
       props.setProduct(product);
       localStorage.setItem("product", JSON.stringify(product));
     });
+    props.setProductEdit(false);
   };
 
   const handleClickOpen = () => {
@@ -329,18 +339,29 @@ export default function UpdateAdmin(props) {
           } else {
             setErrorMessage("Actualización de producto exitosa.");
             setSnackBarError(true);
-            history.push("/admin/product/read");
           }
         }
       }
     }
   };
 
-  const handleVariantsClick = () => {
-    history.push({ pathname: "/admin/product/" + productId + "/variant/read" });
-    setShowVariants(true);
-    props.setProductEdit(false);
-  };
+  function TabPanel(props) {
+    const { children, value, index } = props;
+    return (
+      <div
+        role="tabpanel"
+        hidden={value !== index}
+        id={`simple-tabpanel-${index}`}
+        aria-labelledby={`simple-tab-${index}`}
+      >
+        {value === index && (
+          <Box p={3}>
+            <Typography>{children}</Typography>
+          </Box>
+        )}
+      </div>
+    );
+  }
 
   return (
     <React.Fragment>
@@ -349,181 +370,74 @@ export default function UpdateAdmin(props) {
           <CircularProgress />
         </Backdrop>
       }
-      {showVariants ? (
-        <>
-          <Grid container justifyContent="left">
-            <Grid item xs={2}>
-              <button
-                href="#"
-                onClick={() => {
-                  setShowVariants(false);
-                  props.setProductEdit(true);
-                }}
-              >
-                <h2 style={{ color: "rgba(191, 191, 191, 0.5)", marginTop: 0 }}>
-                  Productos{" "}
-                </h2>
-              </button>
-            </Grid>
-            <Grid item xs={1}>
-              <button
-                href="#"
-                onClick={() => {
-                  setShowVariants(true);
-                  setActiveVCrud("read");
-                }}
-              >
-                <h2 style={{ color: "#d33f49", marginTop: 0 }}>Variantes</h2>
-              </button>
-            </Grid>
-          </Grid>
-          <Variants
-            product={props.product}
-            activeVCrud={activeVCrud}
-            setActiveVCrud={setActiveVCrud}
-          />
-        </>
-      ) : (
-        <div>
-          <Grid container justifyContent="left">
-            <Grid item xs={2} style={{ color: "rgba(191, 191, 191, 0.5)" }}>
-              <Title>Productos </Title>
-            </Grid>
-            <Grid item xs={1}>
-              <a onClick={handleVariantsClick}>
-                <h2 style={{ color: "rgba(191, 191, 191, 0.5)", marginTop: 0 }}>
-                  Variantes
-                </h2>
-              </a>
-            </Grid>
-          </Grid>
-          <form
-            className={classes.form}
-            encType="multipart/form-data"
-            noValidate
-            onSubmit={handleSubmit}
-          >
-            <Grid container spacing={2}>
-              <Grid container spacing={2}>
-                <Grid
-                  item
-                  xs={12}
-                  sm={12}
-                  md={4}
-                  lg={4}
-                  xl={4}
-                  style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                >
-                  <FormControl variant="outlined">
-                    <Button variant="contained" component="label">
-                      Upload File
-                      <input
-                        name="newProductImages"
-                        type="file"
-                        accept="image/*"
-                        hidden
-                        onChange={(a) => {
-                          a.preventDefault();
-                          loadImage(a);
-                        }}
-                      />
-                    </Button>
-                    - O -
-                    <Button
-                      variant="contained"
-                      componenet="label"
-                      onClick={handleClickOpen}
-                    >
-                      Upload video
-                    </Button>
-                  </FormControl>
-                </Grid>
-                <Grid
-                  item
-                  xs={11}
-                  sm={11}
-                  md={7}
-                  lg={7}
-                  xl={7}
-                  style={{ display: "flex" }}
-                >
-                  {imageLoader.loader &&
-                    imageLoader.loader.map((img, key_id) => {
-                      return (
-                        <div
-                          style={{
-                            width: "25%",
-                            marginRight: "4px",
-                            flexDirection: "row",
-                          }}
-                        >
-                          <div
-                            style={{
-                              textAlign: "right",
-                            }}
-                          >
-                            <IconButton
-                              variant="text"
-                              className={classes.buttonImgLoader}
-                              style={{
-                                color: "#d33f49",
-                              }}
-                              component="label"
-                            >
-                              <input
-                                name="productImages"
-                                type="file"
-                                accept="image/*"
-                                hidden
-                                onChange={(a) => {
-                                  const i = imageLoader.loader.indexOf(img);
-                                  replaceImage(a, i);
-                                  imagesList?.splice(key_id, 1);
-                                }}
-                              />
-                              <EditIcon />
-                            </IconButton>
+      <Tabs
+        value={value}
+        onChange={handleChange}
+        style={{ width: "70%" }}
+        indicatorColor="primary"
+        textColor="primary"
+      >
+        <Tab label="Descripción" />
+        <Tab label="Variantes" />
+        <Tab label="MockUp" />
+      </Tabs>
 
-                            <IconButton
-                              variant="text"
-                              className={classes.buttonImgLoader}
-                              style={{ color: "#d33f49" }}
-                              onClick={(d) => {
-                                imageLoader.loader.splice(key_id, 1);
-                                images.images.splice(key_id, 1);
-                                imagesList?.splice(key_id, 1);
-                                setLoadImage({
-                                  loader: imageLoader.loader,
-                                  filename: "Subir Imagenes",
-                                });
-                                newImages({ images: images.images });
-                              }}
-                            >
-                              <HighlightOffOutlinedIcon />
-                            </IconButton>
-                          </div>
-                          <Paper elevation={3} style={{ padding: 10 }}>
-                            <img
-                              style={{
-                                width: "100%",
-                                objectFit: "contain",
-                              }}
-                              src={img}
-                              alt="Imagen"
-                            />
-                          </Paper>
-                        </div>
-                      );
-                    })}
-                  {videoUrl && (
-                    <>
+      <TabPanel value={value} index={0}>
+        <form encType="multipart/form-data" noValidate onSubmit={handleSubmit}>
+          <Grid container spacing={2}>
+            <Grid container spacing={2}>
+              <Grid
+                item
+                xs={12}
+                sm={12}
+                md={4}
+                lg={4}
+                xl={4}
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <FormControl variant="outlined">
+                  <Button variant="contained" component="label">
+                    Upload File
+                    <input
+                      name="newProductImages"
+                      type="file"
+                      accept="image/*"
+                      hidden
+                      onChange={(a) => {
+                        a.preventDefault();
+                        loadImage(a);
+                      }}
+                    />
+                  </Button>
+                  - O -
+                  <Button
+                    variant="contained"
+                    componenet="label"
+                    onClick={handleClickOpen}
+                  >
+                    Upload video
+                  </Button>
+                </FormControl>
+              </Grid>
+              <Grid
+                item
+                xs={11}
+                sm={11}
+                md={7}
+                lg={7}
+                xl={7}
+                style={{ display: "flex" }}
+              >
+                {imageLoader.loader &&
+                  imageLoader.loader.map((img, key_id) => {
+                    return (
                       <div
                         style={{
-                          // width: "25%",
+                          width: "25%",
                           marginRight: "4px",
                           flexDirection: "row",
                         }}
@@ -531,7 +445,6 @@ export default function UpdateAdmin(props) {
                         <div
                           style={{
                             textAlign: "right",
-                            display: "flex",
                           }}
                         >
                           <IconButton
@@ -541,8 +454,18 @@ export default function UpdateAdmin(props) {
                               color: "#d33f49",
                             }}
                             component="label"
-                            onClick={handleClickOpen}
                           >
+                            <input
+                              name="productImages"
+                              type="file"
+                              accept="image/*"
+                              hidden
+                              onChange={(a) => {
+                                const i = imageLoader.loader.indexOf(img);
+                                replaceImage(a, i);
+                                imagesList?.splice(key_id, 1);
+                              }}
+                            />
                             <EditIcon />
                           </IconButton>
 
@@ -551,301 +474,371 @@ export default function UpdateAdmin(props) {
                             className={classes.buttonImgLoader}
                             style={{ color: "#d33f49" }}
                             onClick={(d) => {
-                              setVideoUrl(undefined);
+                              imageLoader.loader.splice(key_id, 1);
+                              images.images.splice(key_id, 1);
+                              imagesList?.splice(key_id, 1);
+                              setLoadImage({
+                                loader: imageLoader.loader,
+                                filename: "Subir Imagenes",
+                              });
+                              newImages({ images: images.images });
                             }}
                           >
                             <HighlightOffOutlinedIcon />
                           </IconButton>
                         </div>
-
                         <Paper elevation={3} style={{ padding: 10 }}>
-                          <span
-                            key={1}
-                            style={{ width: "100%" }}
-                            dangerouslySetInnerHTML={{
-                              __html: videoUrl,
+                          <img
+                            style={{
+                              width: "100%",
+                              objectFit: "contain",
                             }}
-                            alt={"video"}
+                            src={img}
+                            alt="Imagen"
                           />
                         </Paper>
                       </div>
-                    </>
-                  )}
-                </Grid>
-                <IconButton
-                  variant="text"
-                  className={classes.buttonImgLoader}
-                  style={{
-                    color: "#d33f49",
-                    width: 40,
-                    height: 40,
-                  }}
-                  onClick={(e) => {
-                    setImagesList([]);
-                    setLoadImage({ loader: [], filename: "Subir imagenes" });
-                  }}
-                >
-                  <DeleteOutlineIcon style={{ width: 30, height: 30 }} />
-                </IconButton>
-                <Grid item xs={12}>
-                  <Grid container xs={isDesktop ? 12 : 12}>
-                    <Grid item xs={12} md={6}>
-                      <Checkbox
-                        checked={active}
-                        color="primary"
-                        inputProps={{ "aria-label": "secondary checkbox" }}
-                        onChange={() => {
-                          active ? setActive(false) : setActive(true);
+                    );
+                  })}
+                {videoUrl && (
+                  <>
+                    <div
+                      style={{
+                        // width: "25%",
+                        marginRight: "4px",
+                        flexDirection: "row",
+                      }}
+                    >
+                      <div
+                        style={{
+                          textAlign: "right",
+                          display: "flex",
                         }}
-                      />
-                      Habilitado / Visible
-                    </Grid>
-                    <Grid item xs={12} md={6}>
-                      <Checkbox
-                        checked={hasSpecialVar}
-                        color="primary"
-                        inputProps={{ "aria-label": "secondary checkbox" }}
-                        onChange={() => {
-                          hasSpecialVar
-                            ? setHasSpecialVar(false)
-                            : setHasSpecialVar(true);
-                        }}
-                      />{" "}
-                      ¿Tiene variables especiales?
-                    </Grid>
+                      >
+                        <IconButton
+                          variant="text"
+                          className={classes.buttonImgLoader}
+                          style={{
+                            color: "#d33f49",
+                          }}
+                          component="label"
+                          onClick={handleClickOpen}
+                        >
+                          <EditIcon />
+                        </IconButton>
+
+                        <IconButton
+                          variant="text"
+                          className={classes.buttonImgLoader}
+                          style={{ color: "#d33f49" }}
+                          onClick={(d) => {
+                            setVideoUrl(undefined);
+                          }}
+                        >
+                          <HighlightOffOutlinedIcon />
+                        </IconButton>
+                      </div>
+
+                      <Paper elevation={3} style={{ padding: 10 }}>
+                        <span
+                          key={1}
+                          style={{ width: "100%" }}
+                          dangerouslySetInnerHTML={{
+                            __html: videoUrl,
+                          }}
+                          alt={"video"}
+                        />
+                      </Paper>
+                    </div>
+                  </>
+                )}
+              </Grid>
+              <IconButton
+                variant="text"
+                className={classes.buttonImgLoader}
+                style={{
+                  color: "#d33f49",
+                  width: 40,
+                  height: 40,
+                }}
+                onClick={(e) => {
+                  setImagesList([]);
+                  setLoadImage({ loader: [], filename: "Subir imagenes" });
+                }}
+              >
+                <DeleteOutlineIcon style={{ width: 30, height: 30 }} />
+              </IconButton>
+              <Grid item xs={12}>
+                <Grid container xs={isDesktop ? 12 : 12}>
+                  <Grid item xs={12} md={6}>
+                    <Checkbox
+                      checked={active}
+                      color="primary"
+                      inputProps={{ "aria-label": "secondary checkbox" }}
+                      onChange={() => {
+                        active ? setActive(false) : setActive(true);
+                      }}
+                    />
+                    Habilitado / Visible
+                  </Grid>
+                  <Grid item xs={12} md={6}>
+                    <Checkbox
+                      checked={hasSpecialVar}
+                      color="primary"
+                      inputProps={{ "aria-label": "secondary checkbox" }}
+                      onChange={() => {
+                        hasSpecialVar
+                          ? setHasSpecialVar(false)
+                          : setHasSpecialVar(true);
+                      }}
+                    />{" "}
+                    ¿Tiene variables especiales?
                   </Grid>
                 </Grid>
-                <Grid item xs={12} md={6}>
-                  <FormControl variant="outlined" xs={12} fullWidth={true}>
-                    <TextField
-                      variant="outlined"
-                      required
-                      fullWidth
-                      display="inline"
-                      id="productName"
-                      label="Nombre"
-                      name="productName"
-                      autoComplete="productName"
-                      value={productName}
-                      onChange={(e) => {
-                        setProductName(e.target.value);
-                      }}
-                    />
-                  </FormControl>
-                </Grid>
-                <Grid item xs={12} md={6}>
-                  <FormControl
-                    className={clsx(classes.margin, classes.textField)}
-                    variant="outlined"
-                    xs={12}
-                    fullWidth={true}
-                  >
-                    <TextField
-                      variant="outlined"
-                      required
-                      display="inline"
-                      fullWidth
-                      id="category"
-                      label="Categoría"
-                      name="category"
-                      autoComplete="category"
-                      value={category}
-                      onChange={(e) => {
-                        setCategory(e.target.value);
-                      }}
-                    />
-                  </FormControl>
-                </Grid>
-                <Grid item xs={12} md={6}>
-                  <FormControl
-                    className={clsx(classes.margin, classes.textField)}
-                    data-color-mode="light"
-                    variant="outlined"
-                    xs={12}
-                    fullWidth={true}
-                  >
-                    <InputLabel style={{ marginTop: "-5%" }}>
-                      Descripción
-                    </InputLabel>
-                    <MDEditor
-                      value={description}
-                      onChange={setDescription}
-                      preview="edit"
-                      hideToolbar={false}
-                    />
-                  </FormControl>
-                </Grid>
-                <Grid item xs={12} md={6}>
-                  <FormControl
-                    className={clsx(classes.margin, classes.textField)}
-                    variant="outlined"
-                    xs={12}
-                    fullWidth={true}
-                  >
-                    <TextField
-                      variant="outlined"
-                      required
-                      fullWidth
-                      multiline
-                      rows={2}
-                      label="Consideraciones"
-                      value={considerations}
-                      onChange={(e) => {
-                        setConsiderations(e.target.value);
-                      }}
-                    />
-                  </FormControl>
-                  <FormControl
-                    className={clsx(classes.margin, classes.textField)}
-                    variant="outlined"
-                    xs={12}
-                    fullWidth={true}
-                    style={{ marginTop: 20 }}
-                  >
-                    <TextField
-                      variant="outlined"
-                      fullWidth
-                      label="Tiempo de producción"
-                      value={productionTime}
-                      onChange={(e) => {
-                        setProductionTime(e.target.value);
-                      }}
-                    />
-                  </FormControl>
-                </Grid>
               </Grid>
-              <Grid container style={{ marginTop: 20 }}>
-                <Title>PVP</Title>
-              </Grid>
-              <Grid container spacing={2}>
-                <Grid item xs={4} md={5}>
-                  <FormControl
-                    className={clsx(classes.margin, classes.textField)}
+              <Grid item xs={12} md={6}>
+                <FormControl variant="outlined" xs={12} fullWidth={true}>
+                  <TextField
                     variant="outlined"
-                    xs={12}
-                    fullWidth={true}
-                  >
-                    <TextField
-                      variant="outlined"
-                      required
-                      fullWidth
-                      id="fromPublicPrice"
-                      label="Desde"
-                      name="fromPublicPrice"
-                      autoComplete="fromPublicPrice"
-                      value={fromPublicPrice}
-                      onChange={(e) => {
-                        setFromPublicPrice(e.target.value);
-                      }}
-                      error={
-                        fromPublicPrice !== undefined &&
-                        !validations.isAValidPrice(fromPublicPrice)
-                      }
-                    />
-                  </FormControl>
-                </Grid>
-                <Grid item xs={4} md={5}>
-                  <FormControl
-                    className={clsx(classes.margin, classes.textField)}
-                    variant="outlined"
-                    xs={12}
-                    fullWidth={true}
-                  >
-                    <TextField
-                      variant="outlined"
-                      // required
-                      fullWidth
-                      id="toPublicPrice"
-                      label="Hasta"
-                      name="toPublicPrice"
-                      autoComplete="toPublicPrice"
-                      value={toPublicPrice}
-                      onChange={(e) => {
-                        setToPublicPrice(e.target.value);
-                      }}
-                      error={
-                        toPublicPrice !== undefined &&
-                        toPublicPrice !== "" &&
-                        toPublicPrice !== null &&
-                        !validations.isAValidPrice(toPublicPrice)
-                      }
-                    />
-                  </FormControl>
-                </Grid>
+                    required
+                    fullWidth
+                    display="inline"
+                    id="productName"
+                    label="Nombre"
+                    name="productName"
+                    autoComplete="productName"
+                    value={productName}
+                    onChange={(e) => {
+                      setProductName(e.target.value);
+                    }}
+                  />
+                </FormControl>
               </Grid>
-              <Grid container style={{ marginTop: 20 }}>
-                <Title>PVM</Title>
-              </Grid>
-              <Grid container spacing={2}>
-                <Grid item xs={4} md={5}>
-                  <FormControl
-                    className={clsx(classes.margin, classes.textField)}
+              <Grid item xs={12} md={6}>
+                <FormControl
+                  className={clsx(classes.margin, classes.textField)}
+                  variant="outlined"
+                  xs={12}
+                  fullWidth={true}
+                >
+                  <TextField
                     variant="outlined"
-                    xs={12}
-                    fullWidth={true}
-                  >
-                    <TextField
-                      variant="outlined"
-                      fullWidth
-                      id="fromPrixerPrice"
-                      label="Desde"
-                      name="fromPrixerPrice"
-                      autoComplete="fromPrixerPrice"
-                      value={fromPrixerPrice}
-                      onChange={(e) => {
-                        setFromPrixerPrice(e.target.value);
-                      }}
-                      error={
-                        fromPrixerPrice !== undefined &&
-                        fromPrixerPrice !== "" &&
-                        fromPrixerPrice !== null &&
-                        !validations.isAValidPrice(fromPrixerPrice)
-                      }
-                    />
-                  </FormControl>
-                </Grid>
-                <Grid item xs={4} md={5}>
-                  <FormControl
-                    className={clsx(classes.margin, classes.textField)}
-                    variant="outlined"
-                    xs={12}
-                    fullWidth={true}
-                  >
-                    <TextField
-                      variant="outlined"
-                      // required
-                      fullWidth
-                      id="toPrixerPrice"
-                      label="Hasta"
-                      name="toPrixerPrice"
-                      autoComplete="toPrixerPrice"
-                      value={toPrixerPrice}
-                      onChange={(e) => {
-                        setToPrixerPrice(e.target.value);
-                      }}
-                      error={
-                        toPrixerPrice !== undefined &&
-                        toPrixerPrice !== "" &&
-                        toPrixerPrice !== null &&
-                        !validations.isAValidPrice(toPrixerPrice)
-                      }
-                    />
-                  </FormControl>
-                </Grid>
+                    required
+                    display="inline"
+                    fullWidth
+                    id="category"
+                    label="Categoría"
+                    name="category"
+                    autoComplete="category"
+                    value={category}
+                    onChange={(e) => {
+                      setCategory(e.target.value);
+                    }}
+                  />
+                </FormControl>
               </Grid>
-              <Button
-                variant="contained"
-                color="primary"
-                type="submit"
-                disabled={buttonState}
-                style={{ marginTop: 20 }}
-              >
-                Actualizar
-              </Button>
+              <Grid item xs={12} md={6}>
+                <FormControl
+                  className={clsx(classes.margin, classes.textField)}
+                  data-color-mode="light"
+                  variant="outlined"
+                  xs={12}
+                  fullWidth={true}
+                >
+                  <InputLabel style={{ marginTop: "-5%" }}>
+                    Descripción
+                  </InputLabel>
+                  <MDEditor
+                    value={description}
+                    onChange={setDescription}
+                    preview="edit"
+                    hideToolbar={false}
+                  />
+                </FormControl>
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <FormControl
+                  className={clsx(classes.margin, classes.textField)}
+                  variant="outlined"
+                  xs={12}
+                  fullWidth={true}
+                >
+                  <TextField
+                    variant="outlined"
+                    required
+                    fullWidth
+                    multiline
+                    minRows={2}
+                    label="Consideraciones"
+                    value={considerations}
+                    onChange={(e) => {
+                      setConsiderations(e.target.value);
+                    }}
+                  />
+                </FormControl>
+                <FormControl
+                  className={clsx(classes.margin, classes.textField)}
+                  variant="outlined"
+                  xs={12}
+                  fullWidth={true}
+                  style={{ marginTop: 20 }}
+                >
+                  <TextField
+                    variant="outlined"
+                    fullWidth
+                    label="Tiempo de producción"
+                    value={productionTime}
+                    onChange={(e) => {
+                      setProductionTime(e.target.value);
+                    }}
+                  />
+                </FormControl>
+              </Grid>
             </Grid>
-          </form>
-        </div>
-      )}
+            <Grid container style={{ marginTop: 20 }}>
+              <Title>PVP</Title>
+            </Grid>
+            <Grid container spacing={2}>
+              <Grid item xs={4} md={5}>
+                <FormControl
+                  className={clsx(classes.margin, classes.textField)}
+                  variant="outlined"
+                  xs={12}
+                  fullWidth={true}
+                >
+                  <TextField
+                    variant="outlined"
+                    required
+                    fullWidth
+                    id="fromPublicPrice"
+                    label="Desde"
+                    name="fromPublicPrice"
+                    autoComplete="fromPublicPrice"
+                    value={fromPublicPrice}
+                    onChange={(e) => {
+                      setFromPublicPrice(e.target.value);
+                    }}
+                    error={
+                      fromPublicPrice !== undefined &&
+                      !validations.isAValidPrice(fromPublicPrice)
+                    }
+                  />
+                </FormControl>
+              </Grid>
+              <Grid item xs={4} md={5}>
+                <FormControl
+                  className={clsx(classes.margin, classes.textField)}
+                  variant="outlined"
+                  xs={12}
+                  fullWidth={true}
+                >
+                  <TextField
+                    variant="outlined"
+                    // required
+                    fullWidth
+                    id="toPublicPrice"
+                    label="Hasta"
+                    name="toPublicPrice"
+                    autoComplete="toPublicPrice"
+                    value={toPublicPrice}
+                    onChange={(e) => {
+                      setToPublicPrice(e.target.value);
+                    }}
+                    error={
+                      toPublicPrice !== undefined &&
+                      toPublicPrice !== "" &&
+                      toPublicPrice !== null &&
+                      !validations.isAValidPrice(toPublicPrice)
+                    }
+                  />
+                </FormControl>
+              </Grid>
+            </Grid>
+            <Grid container style={{ marginTop: 20 }}>
+              <Title>PVM</Title>
+            </Grid>
+            <Grid container spacing={2}>
+              <Grid item xs={4} md={5}>
+                <FormControl
+                  className={clsx(classes.margin, classes.textField)}
+                  variant="outlined"
+                  xs={12}
+                  fullWidth={true}
+                >
+                  <TextField
+                    variant="outlined"
+                    fullWidth
+                    id="fromPrixerPrice"
+                    label="Desde"
+                    name="fromPrixerPrice"
+                    autoComplete="fromPrixerPrice"
+                    value={fromPrixerPrice}
+                    onChange={(e) => {
+                      setFromPrixerPrice(e.target.value);
+                    }}
+                    error={
+                      fromPrixerPrice !== undefined &&
+                      fromPrixerPrice !== "" &&
+                      fromPrixerPrice !== null &&
+                      !validations.isAValidPrice(fromPrixerPrice)
+                    }
+                  />
+                </FormControl>
+              </Grid>
+              <Grid item xs={4} md={5}>
+                <FormControl
+                  className={clsx(classes.margin, classes.textField)}
+                  variant="outlined"
+                  xs={12}
+                  fullWidth={true}
+                >
+                  <TextField
+                    variant="outlined"
+                    // required
+                    fullWidth
+                    id="toPrixerPrice"
+                    label="Hasta"
+                    name="toPrixerPrice"
+                    autoComplete="toPrixerPrice"
+                    value={toPrixerPrice}
+                    onChange={(e) => {
+                      setToPrixerPrice(e.target.value);
+                    }}
+                    error={
+                      toPrixerPrice !== undefined &&
+                      toPrixerPrice !== "" &&
+                      toPrixerPrice !== null &&
+                      !validations.isAValidPrice(toPrixerPrice)
+                    }
+                  />
+                </FormControl>
+              </Grid>
+            </Grid>
+            <Button
+              variant="contained"
+              color="primary"
+              type="submit"
+              disabled={buttonState}
+              style={{ marginTop: 20 }}
+            >
+              Actualizar
+            </Button>
+          </Grid>
+        </form>
+      </TabPanel>
+
+      <TabPanel value={value} index={1}>
+        <Variants
+          product={props.product}
+          activeVCrud={activeVCrud}
+          setActiveVCrud={setActiveVCrud}
+        />
+      </TabPanel>
+
+      <TabPanel value={value} index={2}>
+        <Mockup product={props.product} />
+      </TabPanel>
+
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>Youtube Url</DialogTitle>
         <DialogContent>

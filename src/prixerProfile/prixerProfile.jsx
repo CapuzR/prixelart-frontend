@@ -3,6 +3,7 @@ import axios from "axios";
 
 import AppBar from "../sharedComponents/appBar/appBar";
 import FloatingAddButton from "../sharedComponents/floatingAddButton/floatingAddButton";
+import CreateService from "../sharedComponents/createService/createService";
 import UserData from "./userData/userData";
 import PrixerOptions from "./prixerOptions/prixerOptions";
 import ArtsGrid from "./grid/grid";
@@ -12,6 +13,7 @@ import Grid from "@material-ui/core/Grid";
 import { makeStyles } from "@material-ui/core/styles";
 import { useState } from "react";
 import ArtUploader from "../sharedComponents/artUploader/artUploader";
+import ServiceGrid from "./grid/serviceGrid";
 import Modal from "@material-ui/core/Modal";
 import Button from "@material-ui/core/Button";
 import MDEditor from "@uiw/react-md-editor";
@@ -66,18 +68,21 @@ const useStyles = makeStyles((theme) => ({
 
 export default function PrixerProfile(props) {
   const classes = useStyles();
-  const [openArtFormDialog, setOpenArtFormDialog] = useState(false);
+  const history = useHistory();
+  const theme = useTheme();
   const prixerUsername = new URLSearchParams(window.location)
     .get("pathname")
     .replace(/[/]/gi, "");
-  const [termsAgreeVar, setTermsAgreeVar] = useState(true);
-  const [value, setValue] = useState("");
-  const [openShoppingCart, setOpenShoppingCart] = useState(false);
-  const history = useHistory();
-  const theme = useTheme();
-  const [selectedArt, setSelectedArt] = useState(undefined);
   const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
   const isDeskTop = useMediaQuery(theme.breakpoints.up("sm"));
+
+  const [termsAgreeVar, setTermsAgreeVar] = useState(true);
+  const [value, setValue] = useState("");
+  const [openArtFormDialog, setOpenArtFormDialog] = useState(false);
+  const [openServiceFormDialog, setOpenServiceFormDialog] = useState(false);
+  const [openShoppingCart, setOpenShoppingCart] = useState(false);
+  const [selectedArt, setSelectedArt] = useState(undefined);
+  const [feed, setFeed] = useState("Artes");
 
   const TermsAgreeModal = () => {
     const GetId = JSON.parse(localStorage.getItem("token")).username;
@@ -137,25 +142,44 @@ export default function PrixerProfile(props) {
         <AppBar prixerUsername={prixerUsername} />
       </Grid>
       <UserData prixerUsername={prixerUsername} />
-      <PrixerOptions prixerUsername={prixerUsername} />
-      <ArtsGrid
+      <PrixerOptions
         prixerUsername={prixerUsername}
-        buyState={props.buyState}
-        addItemToBuyState={props.addItemToBuyState}
-        setIsOpenAssociateProduct={props.setIsOpenAssociateProduct}
-        setSelectedArt={setSelectedArt}
-        setPrixer={props.setPrixer}
-        setFullArt={props.setFullArt}
-        setSearchResult={props.setSearchResult}
+        feed={feed}
+        setFeed={setFeed}
       />
+
+      {feed === "Artes" ? (
+        <ArtsGrid
+          prixerUsername={prixerUsername}
+          buyState={props.buyState}
+          addItemToBuyState={props.addItemToBuyState}
+          setIsOpenAssociateProduct={props.setIsOpenAssociateProduct}
+          setSelectedArt={setSelectedArt}
+          setPrixer={props.setPrixer}
+          setFullArt={props.setFullArt}
+          setSearchResult={props.setSearchResult}
+        />
+      ) : (
+        feed === "Servicios" && <ServiceGrid />
+      )}
+
       {openArtFormDialog && (
         <ArtUploader
           openArtFormDialog={openArtFormDialog}
           setOpenArtFormDialog={setOpenArtFormDialog}
         />
       )}
+
+      {openServiceFormDialog && (
+        <CreateService
+          openArtFormDialog={openServiceFormDialog}
+          setOpenArtFormDialog={setOpenServiceFormDialog}
+        />
+      )}
+
       <Grid className={classes.float}>
         <FloatingAddButton
+          setOpenServiceFormDialog={setOpenServiceFormDialog}
           setOpenArtFormDialog={setOpenArtFormDialog}
           setOpenShoppingCart={setOpenShoppingCart}
         />

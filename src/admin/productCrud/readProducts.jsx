@@ -159,8 +159,14 @@ export default function ReadProducts(props) {
       <Backdrop className={classes.backdrop} open={loading}>
         <CircularProgress />
       </Backdrop>
-      <Tabs value={value} onChange={handleChange} style={{ width: "70%" }}>
-        <Tab indicator="red" backgroundColor="red" label="Productos" />
+      <Tabs
+        value={value}
+        onChange={handleChange}
+        style={{ width: "70%" }}
+        indicatorColor="primary"
+        textColor="primary"
+      >
+        <Tab label="Productos" />
         <Tab label="Descuentos" />
       </Tabs>
       <TabPanel value={value} index={0}>

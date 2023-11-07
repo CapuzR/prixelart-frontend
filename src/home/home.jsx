@@ -967,6 +967,7 @@ export default function Home(props) {
 
       <Grid className={classes.float}>
         <FloatingAddButton
+          buyState={props.buyState}
           setOpenArtFormDialog={setOpenArtFormDialog}
           setOpenShoppingCart={setOpenShoppingCart}
         />

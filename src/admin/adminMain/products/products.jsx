@@ -97,10 +97,9 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     overflow: "hidden",
     flexDirection: "column",
-    height: "auto",
   },
   fixedHeight: {
-    // height: "auto",
+    // height: "2000px",
     overflow: "hidden",
   },
   fab: {
@@ -300,7 +299,11 @@ export default function Products(props) {
             </Modal>
           </div>
         )}
-        <Grid container spacing={3} style={{ margin: isDesktop ? "10px" : "" }}>
+        <Grid
+          container
+          spacing={3}
+          style={{ margin: isDesktop ? "10px" : "", height: "100%" }}
+        >
           <Grid item xs={12} md={12} lg={12}>
             <Paper className={fixedHeightPaper}>
               {activeCrud === "create" ? (
@@ -314,22 +317,16 @@ export default function Products(props) {
                   setActiveCrud={setActiveCrud}
                 />
               ) : activeCrud === "update" ? (
-                <div style={{ height: "155vh" }}>
-                  <UpdateProduct
-                    setProduct={setProduct}
-                    product={product}
-                    setProductEdit={setProductEdit}
-                  />
-                </div>
+                <UpdateProduct
+                  setProduct={setProduct}
+                  product={product}
+                  setProductEdit={setProductEdit}
+                />
               ) : activeCrud === "createDiscount" ? (
-                <div style={{ height: "155vh" }}>
-                  <CreateDiscount />
-                </div>
+                <CreateDiscount />
               ) : (
                 activeCrud === "updateDiscount" && (
-                  <div style={{ height: "155vh" }}>
-                    <UpdateDiscount discount={discount} />
-                  </div>
+                  <UpdateDiscount discount={discount} />
                 )
               )}
             </Paper>

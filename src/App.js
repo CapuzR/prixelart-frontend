@@ -22,7 +22,7 @@ import PrixerStats from "../src/prixerProfile/prixerStats";
 import Snackbar from "@material-ui/core/Snackbar";
 import Orders from "./admin/adminMain/orders/orders";
 import OrderForm from "./shoppingCart/orderForm";
-
+import MockUp from "./admin/productCrud/updateMockUp";
 function App() {
   const [buyState, setBuyState] = useState(
     localStorage.getItem("buyState")
@@ -101,9 +101,12 @@ function App() {
 
   useEffect(() => {
     readDollarValue();
-    loadAdmins();
     checkP();
   }, []);
+
+  useEffect(() => {
+    loadAdmins();
+  }, [localStorage.getItem("adminTokenV")]);
 
   useEffect(() => {
     setInterval(() => {
@@ -220,7 +223,7 @@ function App() {
 
         {/* Admin Routes */}
         <Route path="/inicio-admin-prix">
-          <AdminLogin />
+          <AdminLogin checkP={checkP} />
         </Route>
 
         <Route path="/admin/dashboard">
@@ -304,6 +307,12 @@ function App() {
           path="/product/:productId/variants/read"
           component={AdminMain}
         />
+
+        {/* <Route
+          exact
+          path="/product/:productId/mockup"
+          component={MockUp}
+        ></Route> */}
 
         <Route path="/admin/consumer/create">
           <AdminMain dollarValue={dollarValue} />

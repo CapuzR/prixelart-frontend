@@ -187,12 +187,8 @@ export default function CreateProduct() {
           !description &&
           !category &&
           !considerations &&
-          // !fixedPublicPrice &&
           !fromPublicPrice &&
-          // !toPublicPrice &&
-          // !fixedPrixerPrice &&
           !fromPrixerPrice &&
-          // !toPrixerPrice &&
           !images
         ) {
           setErrorMessage("Por favor completa todos los campos requeridos.");
@@ -264,6 +260,7 @@ export default function CreateProduct() {
       }
     }
   };
+
   return (
     <React.Fragment>
       {

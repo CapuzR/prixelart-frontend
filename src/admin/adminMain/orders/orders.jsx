@@ -418,11 +418,8 @@ export default function Orders(props) {
             (item.product.selection?.attributes[0]?.value,
             ", ",
             item.product.selection?.attributes[1]?.value);
-        } else if (
-          item.product.selection &&
-          item.product.selection?.attributes[0] !== undefined
-        ) {
-          attributes = item.product.selection.attributes[0].value;
+        } else if (typeof item.product.selection === "string") {
+          attributes = item.product.selection;
         }
 
         quantity = item.quantity;

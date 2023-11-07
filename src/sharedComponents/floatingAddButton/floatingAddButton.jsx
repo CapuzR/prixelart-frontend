@@ -98,7 +98,7 @@ export default function FloatingAddButton(props) {
           </>
         )}
 
-      {JSON.parse(localStorage.getItem("buyState")).lenght > 0 && (
+      {JSON.parse(localStorage.getItem("buyState")).length > 0 && (
         <Fab
           color="primary"
           aria-label="add"

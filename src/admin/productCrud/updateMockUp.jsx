@@ -142,16 +142,6 @@ export default function UpdateMockup(props) {
     setSkewY(newValue);
   };
 
-  // const handleSkew = async (type, value) => {
-  //   const prev = skew;
-  //   if (type === "X") {
-  //     skew.x = value;
-  //   } else {
-  //     skew.y = value;
-  //   }
-  //   setSkew({ ...skew, prev });
-  // };
-
   const handleCorner = (event) => {
     setCorner(event.target.value);
   };

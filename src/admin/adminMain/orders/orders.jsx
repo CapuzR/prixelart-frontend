@@ -408,18 +408,24 @@ export default function Orders(props) {
         art = item.art.title;
 
         product = item.product.name;
-
-        if (
+        if (typeof item.product.selection === "string") {
+          attributes = item.product.selection;
+        } else if (
           item.product.selection &&
+          typeof item.product.selection === "object" &&
           item.product.selection?.attributes &&
           item.product.selection?.attributes[1]?.value
         ) {
           attributes =
-            (item.product.selection?.attributes[0]?.value,
-            ", ",
-            item.product.selection?.attributes[1]?.value);
-        } else if (typeof item.product.selection === "string") {
-          attributes = item.product.selection;
+            item.product.selection?.attributes[0]?.value +
+            ", " +
+            item.product.selection?.attributes[1]?.value;
+        } else if (
+          item.product.selection &&
+          typeof item.product.selection === "object" &&
+          item.product.selection?.attributes
+        ) {
+          attributes = item.product.selection?.attributes[0]?.value;
         }
 
         quantity = item.quantity;

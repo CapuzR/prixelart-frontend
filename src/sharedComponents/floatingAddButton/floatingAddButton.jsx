@@ -98,16 +98,17 @@ export default function FloatingAddButton(props) {
           </>
         )}
 
-      {JSON.parse(localStorage.getItem("buyState")).length > 0 && (
-        <Fab
-          color="primary"
-          aria-label="add"
-          onClick={openShoppingCart}
-          style={{ right: 10 }}
-        >
-          <ShoppingCartOutlinedIcon />
-        </Fab>
-      )}
+      {JSON.parse(localStorage.getItem("buyState")) &&
+        JSON.parse(localStorage.getItem("buyState"))?.length > 0 && (
+          <Fab
+            color="primary"
+            aria-label="add"
+            onClick={openShoppingCart}
+            style={{ right: 10 }}
+          >
+            <ShoppingCartOutlinedIcon />
+          </Fab>
+        )}
     </div>
   );
 }

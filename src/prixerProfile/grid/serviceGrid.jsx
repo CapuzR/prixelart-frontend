@@ -357,7 +357,7 @@ export default function ServiceGrid(props) {
         {tiles?.length > 0 ? (
           tilesv2.map((tile, i) => (
             <Grid item xs={12} md={10} lg={8} key={i}>
-              <Paper elevation={3} style={{ padding: 20 }}>
+              <Paper elevation={3} style={{ padding: 20, marginBottom: 20 }}>
                 <Grid
                   container
                   style={{ display: "flex", flexDirection: "row" }}
@@ -886,9 +886,9 @@ export default function ServiceGrid(props) {
                           "  hasta $" + tile.publicPrice.to}
                       </Typography>
                     )}
-                    {JSON.parse(localStorage.getItem("token")) ? (
-                      JSON.parse(localStorage.getItem("token")).username
-                        .username !== prixer && (
+                    {JSON.parse(localStorage.getItem("token")) &&
+                      JSON.parse(localStorage.getItem("token")).username !==
+                        prixer && (
                         <div
                           style={{
                             display: "flex",
@@ -914,34 +914,7 @@ export default function ServiceGrid(props) {
                             Contactar
                           </Button>
                         </div>
-                      )
-                    ) : (
-                      <div
-                        style={{
-                          display: "flex",
-                          justifyContent: "end",
-                          alignContent: "end",
-                        }}
-                      >
-                        <Button
-                          style={{
-                            backgroundColor: "#d33f49",
-                            color: "white",
-                            padding: 8,
-                            marginLeft: 10,
-                            marginTop: 20,
-                          }}
-                          onClick={(e) => {
-                            window.open(
-                              utils.generateServiceMessage(tile, prixer),
-                              "_blank"
-                            );
-                          }}
-                        >
-                          Contactar
-                        </Button>
-                      </div>
-                    )}
+                      )}
                   </Grid>
                 </Grid>
               </Paper>

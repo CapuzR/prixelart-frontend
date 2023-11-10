@@ -99,47 +99,53 @@ export default function UpdateMockup(props) {
   const [topRight, setTopRight] = useState({ x: 0, y: 0 });
   const [bottomLeft, setBottomLeft] = useState({ x: 0, y: 0 });
   const [bottomRight, setBottomRight] = useState({ x: 0, y: 0 });
-  const [width, setWidth] = useState(0);
-  const [height, setHeight] = useState(0);
+  const [width, setWidth] = useState(250);
+  const [height, setHeight] = useState(250);
   const [perspective, setPerspective] = useState(0);
-  const [rotateX, setRotateX] = useState(0);
   const [skewX, setSkewX] = useState(0);
   const [skewY, setSkewY] = useState(0);
   const [translateX, setTranslateX] = useState(0);
+  const [translateY, setTranslateY] = useState(0);
+  const [rotateX, setRotateX] = useState(0);
   const [rotateY, setRotateY] = useState(0);
+  const [aspectRatio, setAspectRatio] = useState(0);
+  const [selectedImg, setSelectedImg] = useState(undefined);
+
   //Error states.
   const [errorMessage, setErrorMessage] = useState();
   const [snackBarError, setSnackBarError] = useState(false);
-  console.log(translateX);
-  const handleWidth = (event, newValue) => {
-    setWidth(newValue);
+  const handleWidth = (event) => {
+    setWidth(event.target.value);
   };
-  const handleHeight = (event, newValue) => {
-    setHeight(newValue);
-  };
-
-  const handlePerspective = (event, newValue) => {
-    setPerspective(newValue);
+  const handleHeight = (event) => {
+    setHeight(event.target.value);
   };
 
-  const handleRotateX = (event, newValue) => {
-    setRotateX(newValue);
+  const handlePerspective = (event) => {
+    setPerspective(event.target.value);
   };
 
-  const handleRotateY = (event, newValue) => {
-    setRotateY(newValue);
+  const handleRotateX = (event) => {
+    setRotateX(event.target.value);
   };
 
-  const handleTranslateX = (event, newValue) => {
-    setTranslateX(newValue);
+  const handleRotateY = (event) => {
+    setRotateY(event.target.value);
   };
 
-  const handleSkewX = (event, newValue) => {
-    setSkewX(newValue);
+  const handleTranslateX = (event) => {
+    setTranslateX(event.target.value);
+  };
+  const handleTranslateY = (event) => {
+    setTranslateY(event.target.value);
   };
 
-  const handleSkewY = (event, newValue) => {
-    setSkewY(newValue);
+  const handleSkewX = (event) => {
+    setSkewX(event.target.value);
+  };
+
+  const handleSkewY = (event) => {
+    setSkewY(event.target.value);
   };
 
   const handleCorner = (event) => {
@@ -177,6 +183,31 @@ export default function UpdateMockup(props) {
   };
 
   useEffect(() => {
+    if (width > 0 && height > 0) {
+      let calc = width / height;
+      if (calc < 0.5) {
+        setAspectRatio(0.5);
+      } else if (calc > 0.5 && calc < 0.666) {
+        setAspectRatio(0.6666666666666666);
+      } else if (calc > 0.666 && calc < 1) {
+        setAspectRatio(1);
+      } else if (calc > 1 && calc < 1.5) {
+        setAspectRatio(1.5);
+      } else if (calc > 1.5 && calc < 2) {
+        setAspectRatio(2);
+      } else if (calc > 2) {
+        setAspectRatio(3);
+      }
+      randomArt &&
+        randomArt?.crops.map((crop) => {
+          if (crop.aspect === aspectRatio) {
+            setSelectedImg(crop);
+          }
+        });
+    }
+  }, [width, height]);
+
+  useEffect(() => {
     checkImages();
     getRandomArt();
   }, []);
@@ -205,77 +236,47 @@ export default function UpdateMockup(props) {
     }
   };
 
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  //   setLoading(true);
-  //   const newFormData = new FormData();
+    setLoading(true);
+    const newFormData = new FormData();
 
-  //   newFormData.append("adminToken", localStorage.getItem("adminTokenV"));
-  //   newFormData.append("active", active);
-  //   newFormData.append("name", productName);
-  //   newFormData.append("description", description);
-  //   newFormData.append("category", category);
-  //   newFormData.append("thumbUrl", thumbUrl);
+    newFormData.append("adminToken", localStorage.getItem("adminTokenV"));
 
-  //   newFormData.append("variants", JSON.stringify(variants));
-  //   newFormData.append("considerations", considerations);
-  //   if (productionTime !== undefined && productionTime !== "") {
-  //     newFormData.append("productionTime", productionTime);
-  //   }
-  //   newFormData.append(
-  //     "publicPriceFrom",
-  //     data.publicPrice.from.replace(/[,]/gi, ".")
-  //   );
-  //   if (toPublicPrice) {
-  //     newFormData.append(
-  //       "publicPriceTo",
-  //       data.publicPrice.to.replace(/[,]/gi, ".")
-  //     );
-  //   }
-  //   if (fromPrixerPrice) {
-  //     newFormData.append(
-  //       "prixerPriceFrom",
-  //       data.prixerPrice.from.replace(/[,]/gi, ".")
-  //     );
-  //   }
-  //   if (toPrixerPrice) {
-  //     newFormData.append(
-  //       "prixerPriceTo",
-  //       data.prixerPrice.to.replace(/[,]/gi, ".")
-  //     );
-  //   }
-  //   newFormData.append("hasSpecialVar", hasSpecialVar);
-  //   if (imagesList[0] !== undefined && imagesList.length > 0) {
-  //     const images = [];
+    newFormData.append("images", images);
+    newFormData.append("topLeft", topLeft.x + " " + topLeft.y);
+    newFormData.append("topRight", topRight.x + " " + topRight.y);
+    newFormData.append("bottomLeft", bottomLeft.x + " " + bottomLeft.y);
+    newFormData.append("bottomRight", bottomRight.x + " " + bottomRight.y);
 
-  //     imagesList?.map((img) => {
-  //       img !== null && typeof img !== "string" && images.push(img.url + " ");
-  //     });
-  //     newFormData.append("images", images);
-  //   } else newFormData.append("images", []);
-  //   if (images.images) {
-  //     images.images.map((file) => {
-  //       newFormData.append("newProductImages", file);
-  //     });
-  //   }
-  //   if (videoUrl) {
-  //     newFormData.append("video", videoUrl);
-  //   }
-  //   const base_url =
-  //     process.env.REACT_APP_BACKEND_URL + `/product/update/${productId}`;
-  //   const response = await axios.put(base_url, newFormData, {
-  //     withCredentials: true,
-  //   });
-  //   if (response.data.success === false) {
-  //     setLoading(false);
-  //     setErrorMessage(response.data.message);
-  //     setSnackBarError(true);
-  //   } else {
-  //     setErrorMessage("Actualización de producto exitosa.");
-  //     setSnackBarError(true);
-  //   }
-  // };
+    newFormData.append("width", width);
+    newFormData.append("height", height);
+
+    newFormData.append("perspective", perspective);
+    newFormData.append("rotateX", rotateX);
+    newFormData.append("rotateY", rotateY);
+    newFormData.append("skewX", skewX);
+    newFormData.append("skewY", skewY);
+    newFormData.append("translateX", translateX);
+    newFormData.append("translateY", translateY);
+    newFormData.append("rotateY", rotateY);
+
+    const base_url =
+      process.env.REACT_APP_BACKEND_URL +
+      `/product/updateMockup/${props.product.id}`;
+    const response = await axios.put(base_url, newFormData, {
+      withCredentials: true,
+    });
+    if (response.data.success === false) {
+      setLoading(false);
+      setErrorMessage(response.data.message);
+      setSnackBarError(true);
+    } else {
+      setErrorMessage("Actualización de producto exitosa.");
+      setSnackBarError(true);
+    }
+  };
 
   return (
     <React.Fragment>
@@ -285,11 +286,7 @@ export default function UpdateMockup(props) {
         </Backdrop>
       }
 
-      <form
-        encType="multipart/form-data"
-        noValidate
-        // onSubmit={handleSubmit}
-      >
+      <form encType="multipart/form-data" noValidate onSubmit={handleSubmit}>
         <Grid
           container
           spacing={2}
@@ -304,7 +301,7 @@ export default function UpdateMockup(props) {
             <Paper
               className={classes.paper}
               style={{
-                height: 480,
+                height: "100%",
                 width: "100%",
                 backgroundColor: "gainsboro",
                 display: "flex",
@@ -367,133 +364,151 @@ export default function UpdateMockup(props) {
                       </Typography>
                     </div>
                   </RadioGroup>
-                  <Grid
-                    container
-                    spacing={2}
-                    style={{ display: "flex", alignItems: "center" }}
-                  >
-                    <Typography>Ancho</Typography>
-                    <Grid item md>
-                      <Slider
-                        value={width}
-                        onChange={handleWidth}
-                        max={1000}
-                        min={0}
-                        defaultValue={250}
-                      />
-                    </Grid>
-                  </Grid>
-                  <Grid
-                    container
-                    spacing={2}
-                    style={{ display: "flex", alignItems: "center" }}
-                  >
-                    <Typography>Alto</Typography>
-                    <Grid item md>
-                      <Slider
-                        value={height}
-                        onChange={handleHeight}
-                        max={1000}
-                        min={0}
-                        defaultValue={250}
-                      />
-                    </Grid>
-                  </Grid>
-                  <Grid
-                    container
-                    spacing={2}
-                    style={{ display: "flex", alignItems: "center" }}
-                  >
-                    <Typography>Perspectiva</Typography>
-                    <Grid item md>
-                      <Slider
-                        value={perspective}
-                        onChange={handlePerspective}
-                        max={500}
-                        min={-500}
-                        defaultValue={0}
-                      />
-                    </Grid>
-                  </Grid>
-                  <Grid
-                    container
-                    spacing={2}
-                    style={{ display: "flex", alignItems: "center" }}
-                  >
-                    <Typography>Rotación horizontal</Typography>
-                    <Grid item md>
-                      <Slider
-                        value={rotateX}
-                        onChange={handleRotateX}
-                        max={360}
-                        min={-360}
-                        defaultValue={0}
-                      />
-                    </Grid>
-                  </Grid>
-                  <Grid
-                    container
-                    spacing={2}
-                    style={{ display: "flex", alignItems: "center" }}
-                  >
-                    <Typography>Rotación vertical</Typography>
-                    <Grid item md>
-                      <Slider
-                        value={rotateY}
-                        onChange={handleRotateY}
-                        max={360}
-                        min={-360}
-                        defaultValue={0}
-                      />
-                    </Grid>
-                  </Grid>
-                  <Grid
-                    container
-                    spacing={2}
-                    style={{ display: "flex", alignItems: "center" }}
-                  >
-                    <Typography>Desplazamiento horizontal</Typography>
-                    <Grid item md>
-                      <Slider
-                        value={translateX}
-                        onChange={handleTranslateX}
-                        max={300}
-                        min={-300}
-                        defaultValue={0}
-                      />
-                    </Grid>
-                  </Grid>
-                  <Grid
-                    container
-                    spacing={2}
-                    style={{ display: "flex", alignItems: "center" }}
-                  >
-                    <Typography>Oblicuidad X</Typography>
-                    <Grid item md>
-                      <Slider
-                        value={skewX}
-                        onChange={handleSkewX}
-                        max={300}
-                        min={-300}
-                        defaultValue={0}
-                      />
-                    </Grid>
-                  </Grid>
-                  <Grid
-                    container
-                    spacing={2}
-                    style={{ display: "flex", alignItems: "center" }}
-                  >
-                    <Typography>Oblicuidad Y</Typography>
+                  <Grid style={{ display: "flex" }}>
+                    <Grid
+                      container
+                      spacing={2}
+                      style={{
+                        display: "flex",
+                        alignItems: "start",
+                        flexDirection: "column",
+                      }}
+                    >
+                      <Grid item md>
+                        <TextField
+                          label="Ancho"
+                          value={width}
+                          onChange={handleWidth}
+                          type="number"
+                          variant="outlined"
+                          InputLabelProps={{
+                            shrink: true,
+                          }}
+                        />
+                      </Grid>
 
-                    <Grid item md>
-                      <Slider
-                        value={skewY}
-                        onChange={handleSkewY}
-                        max={300}
-                        min={-300}
-                        defaultValue={0}
-                      />
+                      <Grid item md>
+                        <TextField
+                          label="Alto"
+                          value={height}
+                          onChange={handleHeight}
+                          type="number"
+                          variant="outlined"
+                          InputLabelProps={{
+                            shrink: true,
+                          }}
+                        />
+                      </Grid>
+                      <Grid item md>
+                        <TextField
+                          label="Perspectiva"
+                          value={perspective}
+                          onChange={handlePerspective}
+                          max={500}
+                          min={-500}
+                          type="number"
+                          variant="outlined"
+                          InputLabelProps={{
+                            shrink: true,
+                          }}
+                        />
+                      </Grid>
+                      <Grid item md>
+                        <TextField
+                          label="Rotación horizontal"
+                          value={rotateX}
+                          onChange={handleRotateX}
+                          max={360}
+                          min={-360}
+                          type="number"
+                          variant="outlined"
+                          InputLabelProps={{
+                            shrink: true,
+                          }}
+                        />
+                      </Grid>
+                      <Grid item md>
+                        <TextField
+                          label="Rotación vertical"
+                          value={rotateY}
+                          onChange={handleRotateY}
+                          max={360}
+                          min={-360}
+                          type="number"
+                          variant="outlined"
+                          InputLabelProps={{
+                            shrink: true,
+                          }}
+                        />
+                      </Grid>
+                    </Grid>
+                    <Grid
+                      container
+                      spacing={2}
+                      style={{
+                        display: "flex",
+                        alignItems: "start",
+                        flexDirection: "column",
+                        marginLeft: 10,
+                      }}
+                    >
+                      <Grid item md>
+                        <TextField
+                          label="Desplazamiento horizontal"
+                          value={translateX}
+                          onChange={handleTranslateX}
+                          max={300}
+                          min={-300}
+                          type="number"
+                          variant="outlined"
+                          InputLabelProps={{
+                            shrink: true,
+                          }}
+                        />
+                      </Grid>
+                      <Grid item md>
+                        <TextField
+                          label="Desplazamiento vertical"
+                          value={translateY}
+                          onChange={handleTranslateY}
+                          max={300}
+                          min={-300}
+                          type="number"
+                          variant="outlined"
+                          InputLabelProps={{
+                            shrink: true,
+                          }}
+                        />
+                      </Grid>
+                      <Grid item md>
+                        <TextField
+                          label="Deformación 2D horizontal"
+                          value={skewX}
+                          onChange={handleSkewX}
+                          max={300}
+                          min={-300}
+                          type="number"
+                          variant="outlined"
+                          InputLabelProps={{
+                            shrink: true,
+                          }}
+                        />
+                      </Grid>
+
+                      <Grid item md>
+                        <TextField
+                          label="Deformación 2D vertical"
+                          value={skewY}
+                          onChange={handleSkewY}
+                          max={300}
+                          min={-300}
+                          type="number"
+                          variant="outlined"
+                          InputLabelProps={{
+                            shrink: true,
+                          }}
+                        />
+                      </Grid>
                     </Grid>
                   </Grid>
                 </FormControl>
@@ -512,39 +527,45 @@ export default function UpdateMockup(props) {
                     }}
                     onClick={handleImageClick}
                   />
-                  {topLeft.x !== 0 &&
-                    topLeft.y !== 0 &&
-                    topRight.x !== 0 &&
-                    topRight.y !== 0 &&
-                    bottomLeft.x !== 0 &&
-                    bottomLeft.y !== 0 &&
-                    bottomRight.x !== 0 &&
-                    bottomRight.y !== 0 && (
-                      <div
+                  {topLeft.x !== 0 && topLeft.y !== 0 && (
+                    // topRight.x !== 0 &&
+                    // topRight.y !== 0 &&
+                    // bottomLeft.x !== 0 &&
+                    // bottomLeft.y !== 0 &&
+                    // bottomRight.x !== 0 &&
+                    // bottomRight.y !== 0 &&
+                    <div
+                      style={{
+                        width: 350,
+                        height: 350,
+                        borderRadius: 5,
+                        marginTop: -345,
+                        marginRight: 10,
+                      }}
+                    >
+                      <img
+                        src={
+                          selectedImg
+                            ? randomArt.smallThumbUrl
+                            : randomArt.mediumThumbUrl
+                        }
+                        alt="Imagen Superpuesta"
                         style={{
-                          width: 350,
-                          height: 350,
-                          borderRadius: 5,
-                          marginTop: -345,
-                          marginRight: 10,
+                          position: "relative",
+                          top: `${topLeft.y}px`,
+                          left: `${topLeft.x}px`,
+                          width: `${width}px`,
+                          height: `${height}px`,
+                          transformOrigin: "top left",
+                          objectFit: "cover",
+                          transform: `perspective(${perspective}px) rotateX(${rotateX}deg) skew(${skewX}deg, ${skewY}deg) translateX(${translateX}px) translateY(${translateY}px) rotateY(${rotateY}deg)`,
+                          // backgroundPosition:
+                          //   selectedImg &&
+                          //   `-${selectedImg?.crop?.x}px -${selectedImg?.crop?.y}px`,
                         }}
-                      >
-                        <img
-                          src={randomArt.largeThumbUrl}
-                          alt="Imagen Superpuesta"
-                          style={{
-                            position: "relative",
-                            top: `${topLeft.y}px`,
-                            left: `${topLeft.x}px`,
-                            width: `${width}px`,
-                            height: `${height}px`,
-                            transformOrigin: "top left",
-                            objectFit: "cover",
-                            transform: `perspective(${perspective}px) rotateX(${rotateX}deg) skew(${skewX}deg, ${skewY}deg) translateX(${translateX}px) rotateY(${rotateY}deg)`,
-                          }}
-                        />
-                      </div>
-                    )}
+                      />
+                    </div>
+                  )}
                 </div>
               </Grid>
             </Paper>

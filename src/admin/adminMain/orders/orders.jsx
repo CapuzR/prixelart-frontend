@@ -329,7 +329,6 @@ export default function Orders(props) {
       { header: "Fecha de solicitud", key: "createdOn", width: 11 },
       { header: "Nombre del cliente", key: "basicData", width: 24 },
       { header: "Fecha de entrega", key: "shippingDate", width: 11 },
-      { header: "Fecha concretada", key: "date", width: 12 },
       { header: "certificado", key: "", width: 12 },
       { header: "Prixer", key: "prixer", width: 18 },
       { header: "Arte", key: "art", width: 24 },
@@ -338,9 +337,10 @@ export default function Orders(props) {
       { header: "Cantidad", key: "quantity", width: 10 },
       { header: "Observación", key: "observations", width: 18 },
       { header: "Vendedor", key: "createdBy", width: 16 },
-      { header: "Método de entrega", key: "shippingData", width: 14 },
+      { header: "Método de pago", key: "paymentMethod", width: 14 },
       { header: "Validación del pago", key: "payStatus", width: 12 },
       { header: "Fecha de pago", key: "payDate", width: 11 },
+      { header: "Método de entrega", key: "shippingData", width: 14 },
       { header: "Costo unitario", key: "price", width: 8 },
       { header: "Fecha concretada", key: "completionDate", width: 11 },
     ];
@@ -366,7 +366,6 @@ export default function Orders(props) {
         status: order?.status,
         ID: order.orderId,
         createdOn: order.createdOn?.substring(0, 10),
-        date: order.date?.substring(0, 10),
         basicData:
           (order.basicData?.firstname || order.basicData?.name) +
           " " +
@@ -380,10 +379,12 @@ export default function Orders(props) {
         quantity: "",
         observations: eliminarEtiquetasHTML(order?.observations),
         createdBy: order.createdBy?.username,
+        paymentMethod: order?.billingData?.orderPaymentMethod,
         shippingData: "",
         payStatus: order.payStatus,
         payDate: order?.payDate?.substring(0, 10),
         price: "",
+        completionDate: order?.completionDate?.substring(0, 10),
       };
 
       let shippingData = " ";

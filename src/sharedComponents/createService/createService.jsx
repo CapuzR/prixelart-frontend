@@ -257,7 +257,7 @@ export default function CreateService(props) {
     <div>
       <Dialog
         xs={12}
-        lg={10}
+        lg={12}
         open={props.openArtFormDialog}
         onClose={handleClose}
         TransitionComponent={Transition}
@@ -446,6 +446,7 @@ export default function CreateService(props) {
                     label="Descripción"
                     multiline
                     minRows={3}
+                    maxRows={18}
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                   />

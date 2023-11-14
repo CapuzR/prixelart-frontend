@@ -165,7 +165,7 @@ export default function UpdateProduct(props) {
 
   const readProduct = () => {
     const base_url2 = process.env.REACT_APP_BACKEND_URL + "/product/read";
-    axios.post(base_url2, { _id: props.product._id }).then((response) => {
+    axios.post(base_url2, { _id: productId }).then((response) => {
       let product = response.data.products[0];
       props.setProduct(product);
       localStorage.setItem("product", JSON.stringify(product));

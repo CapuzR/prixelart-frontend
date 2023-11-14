@@ -252,6 +252,7 @@ export default function Orders(props) {
   const [discountList, setDiscountList] = useState([]);
   const [orders, setOrders] = useState([]);
   const [movements, setMovements] = useState([]);
+  const [consumers, setConsumers] = useState([]);
 
   const getDiscounts = async () => {
     const base_url = process.env.REACT_APP_BACKEND_URL + "/discount/read-allv1";
@@ -305,6 +306,21 @@ export default function Orders(props) {
       });
   };
 
+  const readConsumers = async () => {
+    const base_url2 = process.env.REACT_APP_BACKEND_URL + "/consumer/read-all";
+    axios
+      .post(
+        base_url2,
+        { adminToken: localStorage.getItem("adminTokenV") },
+        { withCredentials: true }
+      )
+      .then((response) => {
+        setConsumers(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
   const updateOrders = () => {
     orders.map((order) => {
       const findMov = movements.find((mov) =>
@@ -319,17 +335,19 @@ export default function Orders(props) {
     });
     setOrders(orders);
   };
-
   const downloadOrders = async () => {
     const workbook = new excelJS.Workbook();
-    const worksheet = workbook.addWorksheet("Pedidos");
+    const date = new Date()
+      .toLocaleString()
+      .substring(0, 10)
+      .replace(/\//g, "-");
+    const worksheet = workbook.addWorksheet(`Pedidos`);
     worksheet.columns = [
       { header: "status", key: "status", width: 16 },
       { header: "ID", key: "ID", width: 10 },
       { header: "Fecha de solicitud", key: "createdOn", width: 11 },
       { header: "Nombre del cliente", key: "basicData", width: 24 },
-      { header: "Fecha de entrega", key: "shippingDate", width: 11 },
-      { header: "Fecha concretada", key: "date", width: 12 },
+      { header: "Tipo de cliente", key: "typeConsumer", width: 12 },
       { header: "certificado", key: "", width: 12 },
       { header: "Prixer", key: "prixer", width: 18 },
       { header: "Arte", key: "art", width: 24 },
@@ -338,9 +356,11 @@ export default function Orders(props) {
       { header: "Cantidad", key: "quantity", width: 10 },
       { header: "Observación", key: "observations", width: 18 },
       { header: "Vendedor", key: "createdBy", width: 16 },
-      { header: "Método de entrega", key: "shippingData", width: 14 },
+      { header: "Método de pago", key: "paymentMethod", width: 14 },
       { header: "Validación del pago", key: "payStatus", width: 12 },
       { header: "Fecha de pago", key: "payDate", width: 11 },
+      { header: "Método de entrega", key: "shippingData", width: 14 },
+      { header: "Fecha de entrega", key: "shippingDate", width: 11 },
       { header: "Costo unitario", key: "price", width: 8 },
       { header: "Fecha concretada", key: "completionDate", width: 11 },
     ];
@@ -358,19 +378,41 @@ export default function Orders(props) {
         wrapText: true,
       };
     });
+
     function eliminarEtiquetasHTML(observations) {
       return observations?.replace(/<[^>]+>/g, "");
     }
+
+    const searchConsumerType = (basicData) => {
+      if (
+        basicData !== undefined &&
+        (basicData.firstname !== undefined || basicData.name !== undefined)
+      ) {
+        const match = consumers.find(
+          (cons) =>
+            cons.firstname === (basicData.firstname || basicData.name) &&
+            cons.lastname === basicData.lastname
+        );
+        if (match) {
+          return match.consumerType;
+        } else {
+          return undefined;
+        }
+      } else {
+        return undefined;
+      }
+    };
+
     orders.map((order, i) => {
       const v2 = {
         status: order?.status,
         ID: order.orderId,
         createdOn: order.createdOn?.substring(0, 10),
-        date: order.date?.substring(0, 10),
         basicData:
           (order.basicData?.firstname || order.basicData?.name) +
           " " +
           order.basicData?.lastname,
+        typeConsumer: searchConsumerType(order.basicData),
         shippingDate: "",
         // Certificado
         prixer: "",
@@ -380,10 +422,12 @@ export default function Orders(props) {
         quantity: "",
         observations: eliminarEtiquetasHTML(order?.observations),
         createdBy: order.createdBy?.username,
+        paymentMethod: order?.billingData?.orderPaymentMethod,
         shippingData: "",
         payStatus: order.payStatus,
         payDate: order?.payDate?.substring(0, 10),
         price: "",
+        completionDate: order?.completionDate?.substring(0, 10),
       };
 
       let shippingData = " ";
@@ -472,7 +516,7 @@ export default function Orders(props) {
 
       const link = document.createElement("a");
       link.href = URL.createObjectURL(blob);
-      link.download = "Pedidos.xlsx";
+      link.download = `Pedidos ${date}.xlsx`;
       link.click();
     });
   };
@@ -770,6 +814,7 @@ export default function Orders(props) {
   useEffect(() => {
     readOrders();
     readMovements();
+    readConsumers();
   }, []);
 
   useEffect(() => {

@@ -128,9 +128,16 @@ export default function ServiceGrid(props) {
   const isnDesk = useMediaQuery(theme.breakpoints.down("md"));
   const serviceAreas = ["Diseño", "Fotografía", "Artes Plásticas", "Otro"];
   const [serviceOnEdit, setServiceOnEdit] = useState(); //Data inicial
+  const [showFullDescription, setShowFullDescription] = useState([]);
 
   const [images, setImages] = useState([]); // Imágenes visaulizadas
   const [newImg, setNewImg] = useState([]);
+
+  const toggleDescription = (index) => {
+    const updatedShowFullDescription = [...showFullDescription];
+    updatedShowFullDescription[index] = !updatedShowFullDescription[index];
+    setShowFullDescription(updatedShowFullDescription);
+  };
 
   const getMyServices = async () => {
     setBackdrop(true);
@@ -357,7 +364,7 @@ export default function ServiceGrid(props) {
         {tiles?.length > 0 ? (
           tilesv2.map((tile, i) => (
             <Grid item xs={12} md={10} lg={8} key={i}>
-              <Paper elevation={3} style={{ padding: 20 }}>
+              <Paper elevation={3} style={{ padding: 20, marginBottom: 20 }}>
                 <Grid
                   container
                   style={{ display: "flex", flexDirection: "row" }}
@@ -723,13 +730,32 @@ export default function ServiceGrid(props) {
                             description: e.target.value,
                           });
                         }}
-                        style={{ marginTop: 10 }}
+                        style={{
+                          marginTop: 10,
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          display: "-webkit-box",
+                        }}
                         minRows={3}
                       />
                     ) : (
-                      <Typography variant="body2" color="secondary">
-                        {tile.description}
-                      </Typography>
+                      <>
+                        <Typography variant="body2" color="secondary">
+                          {showFullDescription[i]
+                            ? tile.description
+                            : `${tile.description.slice(0, 450)}...`}
+                        </Typography>
+                        {tile.description.length > 450 && (
+                          <Button
+                            style={{
+                              color: "dimgray",
+                            }}
+                            onClick={() => toggleDescription(i)}
+                          >
+                            {showFullDescription[i] ? "Ver menos" : "Ver más"}
+                          </Button>
+                        )}
+                      </>
                     )}
                     <div
                       style={{
@@ -886,9 +912,9 @@ export default function ServiceGrid(props) {
                           "  hasta $" + tile.publicPrice.to}
                       </Typography>
                     )}
-                    {JSON.parse(localStorage.getItem("token")) ? (
-                      JSON.parse(localStorage.getItem("token")).username
-                        .username !== prixer && (
+                    {JSON.parse(localStorage.getItem("token")) &&
+                      JSON.parse(localStorage.getItem("token")).username !==
+                        prixer && (
                         <div
                           style={{
                             display: "flex",
@@ -914,34 +940,7 @@ export default function ServiceGrid(props) {
                             Contactar
                           </Button>
                         </div>
-                      )
-                    ) : (
-                      <div
-                        style={{
-                          display: "flex",
-                          justifyContent: "end",
-                          alignContent: "end",
-                        }}
-                      >
-                        <Button
-                          style={{
-                            backgroundColor: "#d33f49",
-                            color: "white",
-                            padding: 8,
-                            marginLeft: 10,
-                            marginTop: 20,
-                          }}
-                          onClick={(e) => {
-                            window.open(
-                              utils.generateServiceMessage(tile, prixer),
-                              "_blank"
-                            );
-                          }}
-                        >
-                          Contactar
-                        </Button>
-                      </div>
-                    )}
+                      )}
                   </Grid>
                 </Grid>
               </Paper>

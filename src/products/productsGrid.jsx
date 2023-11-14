@@ -172,6 +172,13 @@ export default function ProductGrid(props) {
   const [order, setOrder] = useState("");
   const history = useHistory();
   const [currency, setCurrency] = useState(false);
+  const [showFullDescription, setShowFullDescription] = useState([]);
+
+  const toggleDescription = (index) => {
+    const updatedShowFullDescription = [...showFullDescription];
+    updatedShowFullDescription[index] = !updatedShowFullDescription[index];
+    setShowFullDescription(updatedShowFullDescription);
+  };
 
   const getDiscounts = async () => {
     const base_url = process.env.REACT_APP_BACKEND_URL + "/discount/read-allv2";
@@ -1178,9 +1185,29 @@ export default function ProductGrid(props) {
                     {tile && priceSelect(tile)}
                   </Typography>
                   <MDEditor.Markdown
-                    source={tile.description}
+                    source={
+                      showFullDescription[iProd]
+                        ? tile.description
+                        : tile.description.split("\r\n")[0].length > 130
+                        ? `${tile.description
+                            .split("\r\n")[0]
+                            .slice(0, 130)}...`
+                        : `${tile.description.split("\r\n")[0]}`
+                    }
                     style={{ whiteSpace: "pre-wrap" }}
                   />
+                  {tile.description.length > 130 && (
+                    <Button
+                      style={{
+                        color: "dimgray",
+                        // backgroundColor: "gainsboro",
+                      }}
+                      onClick={() => toggleDescription(iProd)}
+                    >
+                      {showFullDescription[iProd] ? "Ver menos" : "Ver más"}
+                    </Button>
+                  )}
+
                   {tile.productionTime && (
                     <div
                       style={{

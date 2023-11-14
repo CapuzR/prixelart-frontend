@@ -91,8 +91,8 @@ export default function UpdateMockup(props) {
   const theme = useTheme();
   const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
   const [loading, setLoading] = useState(false);
-  const [images, setImages] = useState(0);
-  const [preview, setPreview] = useState(0);
+  const [images, setImages] = useState();
+  const [preview, setPreview] = useState(undefined);
   const [randomArt, setArt] = useState(0);
   const [corner, setCorner] = useState(0);
   const [topLeft, setTopLeft] = useState({ x: 0, y: 0 });
@@ -177,8 +177,34 @@ export default function UpdateMockup(props) {
   };
 
   const checkImages = async () => {
-    if (props.product.mockupImg) {
-      setPreview(props.product.mockup);
+    if (props.product.mockUp) {
+      const prev = props.product.mockUp;
+      setPreview(prev.mockupImg);
+      setTopLeft({
+        x: prev.topLeft.split(" ")[0],
+        y: prev.topLeft.split(" ")[1],
+      });
+      setTopRight({
+        x: prev.topRight.split(" ")[0],
+        y: prev.topRight.split(" ")[1],
+      });
+      setBottomLeft({
+        x: prev.bottomLeft.split(" ")[0],
+        y: prev.bottomLeft.split(" ")[1],
+      });
+      setBottomRight({
+        x: prev.bottomRight.split(" ")[0],
+        y: prev.bottomRight.split(" ")[1],
+      });
+      setWidth(Number(prev.width));
+      setHeight(Number(prev.height));
+      setPerspective(Number(prev.perspective));
+      setSkewX(Number(prev.skewX));
+      setSkewY(Number(prev.skewY));
+      setTranslateX(Number(prev.translateX));
+      setTranslateY(Number(prev.translateY));
+      setRotateX(Number(prev.rotateX));
+      setRotateY(Number(prev.rotateY));
     }
   };
 
@@ -235,7 +261,6 @@ export default function UpdateMockup(props) {
         break;
     }
   };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -243,8 +268,11 @@ export default function UpdateMockup(props) {
     const newFormData = new FormData();
 
     newFormData.append("adminToken", localStorage.getItem("adminTokenV"));
+    if (images !== undefined) {
+      newFormData.append("newMockupImg", images);
+    }
+    newFormData.append("mockupImg", preview);
 
-    newFormData.append("images", images);
     newFormData.append("topLeft", topLeft.x + " " + topLeft.y);
     newFormData.append("topRight", topRight.x + " " + topRight.y);
     newFormData.append("bottomLeft", bottomLeft.x + " " + bottomLeft.y);
@@ -260,11 +288,10 @@ export default function UpdateMockup(props) {
     newFormData.append("skewY", skewY);
     newFormData.append("translateX", translateX);
     newFormData.append("translateY", translateY);
-    newFormData.append("rotateY", rotateY);
 
     const base_url =
       process.env.REACT_APP_BACKEND_URL +
-      `/product/updateMockup/${props.product.id}`;
+      `/product/updateMockup/${props.product._id}`;
     const response = await axios.put(base_url, newFormData, {
       withCredentials: true,
     });
@@ -274,6 +301,7 @@ export default function UpdateMockup(props) {
       setSnackBarError(true);
     } else {
       setErrorMessage("Actualización de producto exitosa.");
+      setLoading(false);
       setSnackBarError(true);
     }
   };

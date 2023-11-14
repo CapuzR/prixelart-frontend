@@ -373,7 +373,7 @@ export default function Home(props) {
               marginLeft: isDesktop ? "-24px" : "-16px",
               marginLeft: isDeskTop ? "-24px" : "-16px",
               height: "100vh",
-              marginTop: "60px",
+              marginTop: isDesktop ? "60px" : "55px",
             }}
             elevation={0}
           >
@@ -384,7 +384,7 @@ export default function Home(props) {
                 swipe={true}
                 stopAutoPlayOnHover={true}
                 fullHeightHover={false}
-                style={{ marginTop: isDesktop ? "0" : "-40px" }}
+                style={{ marginTop: isDesktop ? "0" : "0" }}
                 IndicatorIcon={<MaximizeIcon />}
                 NextIcon={<ArrowForwardIosIcon style={{ fontSize: "3rem" }} />}
                 PrevIcon={<ArrowBackIosIcon style={{ fontSize: "3rem" }} />}
@@ -394,7 +394,6 @@ export default function Home(props) {
                     width: "98%",
                     height: "100vh",
                     marginTop: "-50vh",
-                    borderRadius: "0",
                     marginLeft: "1px",
                   },
                 }}
@@ -442,6 +441,7 @@ export default function Home(props) {
                             backgroundImage: "url(" + img.images.url + ")",
                             backgroundSize: "cover",
                             backgroundPosition: "left",
+                            marginTop: "-24px",
                           }}
                         ></div>
                       ) : (

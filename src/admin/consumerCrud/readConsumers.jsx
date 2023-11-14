@@ -123,7 +123,7 @@ export default function ReadConsumers(props) {
                     <TableCell align="center">Activo</TableCell>
                     <TableCell align="center">Nombre</TableCell>
                     <TableCell align="center">Apellido</TableCell>
-                    <TableCell align="center">Usuario</TableCell>
+                    <TableCell align="center">Tipo</TableCell>
                     <TableCell align="center">Teléfono</TableCell>
                     <TableCell align="center">Email</TableCell>
                     <TableCell align="center">Envío</TableCell>
@@ -144,7 +144,9 @@ export default function ReadConsumers(props) {
                         </TableCell>
                         <TableCell align="center">{row.firstname}</TableCell>
                         <TableCell align="center">{row.lastname}</TableCell>
-                        <TableCell align="center">{row.username}</TableCell>
+                        <TableCell align="center">
+                          {row?.consumerType}
+                        </TableCell>
                         <TableCell align="center">{row.phone}</TableCell>
                         <TableCell align="center">{row.email}</TableCell>
                         <TableCell align="center">

@@ -128,9 +128,16 @@ export default function ServiceGrid(props) {
   const isnDesk = useMediaQuery(theme.breakpoints.down("md"));
   const serviceAreas = ["Diseño", "Fotografía", "Artes Plásticas", "Otro"];
   const [serviceOnEdit, setServiceOnEdit] = useState(); //Data inicial
+  const [showFullDescription, setShowFullDescription] = useState([]);
 
   const [images, setImages] = useState([]); // Imágenes visaulizadas
   const [newImg, setNewImg] = useState([]);
+
+  const toggleDescription = (index) => {
+    const updatedShowFullDescription = [...showFullDescription];
+    updatedShowFullDescription[index] = !updatedShowFullDescription[index];
+    setShowFullDescription(updatedShowFullDescription);
+  };
 
   const getMyServices = async () => {
     setBackdrop(true);
@@ -723,13 +730,32 @@ export default function ServiceGrid(props) {
                             description: e.target.value,
                           });
                         }}
-                        style={{ marginTop: 10 }}
+                        style={{
+                          marginTop: 10,
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          display: "-webkit-box",
+                        }}
                         minRows={3}
                       />
                     ) : (
-                      <Typography variant="body2" color="secondary">
-                        {tile.description}
-                      </Typography>
+                      <>
+                        <Typography variant="body2" color="secondary">
+                          {showFullDescription[i]
+                            ? tile.description
+                            : `${tile.description.slice(0, 450)}...`}
+                        </Typography>
+                        {tile.description.length > 450 && (
+                          <Button
+                            style={{
+                              color: "dimgray",
+                            }}
+                            onClick={() => toggleDescription(i)}
+                          >
+                            {showFullDescription[i] ? "Ver menos" : "Ver más"}
+                          </Button>
+                        )}
+                      </>
                     )}
                     <div
                       style={{

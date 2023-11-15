@@ -67,7 +67,6 @@ export default function Gallery(props) {
   const [openShoppingCart, setOpenShoppingCart] = useState(false);
 
   const [prixerUsername, setPrixerUsername] = useState(null);
-  const [termsAgreeVar, setTermsAgreeVar] = useState(true);
   const [value, setValue] = useState("");
   const [selectedArt, setSelectedArt] = useState(undefined);
   const history = useHistory();
@@ -76,61 +75,6 @@ export default function Gallery(props) {
   const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
   const isDeskTop = useMediaQuery(theme.breakpoints.up("sm"));
   const classes = useStyles();
-
-  useEffect(() => {
-    {
-      JSON.parse(localStorage.getItem("token")) && TermsAgreeModal();
-    }
-
-    return () => {
-      localStorage.removeItem("filterCategorie");
-    };
-  }, []);
-
-  const getTerms = () => {
-    const base_url =
-      process.env.REACT_APP_BACKEND_URL + "/termsAndConditions/read";
-    axios
-      .get(base_url)
-      .then((response) => {
-        setValue(response.data.terms.termsAndConditions);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
-
-  const handleSubmit = async (e, Id) => {
-    e.preventDefault();
-    const formData = new FormData();
-    const termsAgree = true;
-    formData.append("termsAgree", termsAgree);
-    // formData.append(
-    //   "username",
-    //   JSON.parse(localStorage.getItem("token")).username
-    // );
-    const base_url =
-      process.env.REACT_APP_BACKEND_URL + "/prixer/update-terms/" + Id;
-    const response = await axios
-      .put(
-        base_url,
-        { termsAgree: true },
-        {
-          "Content-Type": "multipart/form-data",
-        }
-      )
-      .then((response) => {
-        setTermsAgreeVar(true);
-      });
-  };
-  const TermsAgreeModal = () => {
-    const GetId = JSON.parse(localStorage.getItem("token")).username;
-    const base_url = process.env.REACT_APP_BACKEND_URL + "/prixer/get/" + GetId;
-    axios.get(base_url).then((response) => {
-      setTermsAgreeVar(response.data.termsAgree);
-      getTerms();
-    });
-  };
 
   return (
     <>
@@ -177,59 +121,7 @@ export default function Gallery(props) {
             setOpenShoppingCart={setOpenShoppingCart}
           />
         </Grid>
-        <Modal
-          xl={800}
-          lg={800}
-          md={480}
-          sm={360}
-          xs={360}
-          open={termsAgreeVar === false}
-          onClose={termsAgreeVar === true}
-        >
-          <div className={classes.paper2}>
-            <h2 style={{ textAlign: "center", fontWeight: "Normal" }}>
-              Hemos actualizado nuestros términos y condiciones y queremos que
-              estés al tanto.
-            </h2>
-            <div>
-              <div data-color-mode="light">
-                <div
-                  style={{
-                    textAlign: "center",
-                    marginBottom: "12px",
-                    fontWeight: "bold",
-                    fontSize: "1.2rem",
-                  }}
-                >
-                  CONVENIO DE RELACIÓN ENTRE LOS ARTISTAS Y LA COMPAÑÍA
-                </div>
-                <div data-color-mode="light">
-                  <MDEditor.Markdown
-                    source={value}
-                    style={{ textAlign: "justify" }}
-                  />
-                </div>
-              </div>
-            </div>
-            <div style={{ justifyContent: "center", display: "flex" }}>
-              <Button
-                onClick={(e) => {
-                  handleSubmit(
-                    e,
-                    JSON.parse(localStorage.getItem("token")).username
-                  );
-                }}
-                type="submit"
-                variant="contained"
-                color="primary"
-                className={classes.submit}
-                required
-              >
-                Acepto los nuevos términos y condiciones
-              </Button>
-            </div>
-          </div>
-        </Modal>
+
         <Dialog
           open={props.isOpenAssociateProduct}
           keepMounted
@@ -261,16 +153,25 @@ export default function Gallery(props) {
                       <div
                         style={{
                           display: "flex",
-                          width: "180px",
+                          width: 350,
                         }}
                       >
                         {buy.product && (
                           <div
                             key={index}
                             style={{
-                              marginBottom: "32px",
-                              height: "180px",
-                              width: "180px",
+                              // marginBottom: "32px",
+                              backgroundImage: buy.product
+                                ? "url(" + buy.product.mockUp.mockupImg + ")"
+                                : "url(" + buy.product.thumbUrl + ")",
+                              height: 350,
+                              width: 350,
+                              backgroundSize: "cover",
+                              opacity:
+                                props.selectedProductToAssociate?.index ===
+                                index
+                                  ? "1"
+                                  : "0.6",
                             }}
                             onClick={() =>
                               props.setSelectedProductToAssociate({
@@ -279,19 +180,58 @@ export default function Gallery(props) {
                               })
                             }
                           >
-                            <Img
+                            {props.selectedProductToAssociate?.index ===
+                              index && (
+                              <div
+                                style={{
+                                  width: 350,
+                                  height: 350,
+                                  borderRadius: 5,
+                                  marginTop: 5,
+                                  marginRight: 10,
+                                }}
+                              >
+                                <img
+                                  src={
+                                    selectedArt
+                                      ? selectedArt.mediumThumbUrl
+                                      : selectedArt.smallThumbUrl
+                                  }
+                                  alt="Imagen Superpuesta"
+                                  style={{
+                                    position: "relative",
+                                    top: `${
+                                      buy.product.mockUp.topLeft.split(" ")[1]
+                                    }px`,
+                                    left: `${
+                                      buy.product.mockUp.topLeft.split(" ")[0]
+                                    }px`,
+                                    width: `${buy.product.mockUp.width}px`,
+                                    height: `${buy.product.mockUp.height}px`,
+                                    transformOrigin: "top left",
+                                    objectFit: "cover",
+                                    transform: `perspective(${buy.product.mockUp.perspective}px) rotateX(${buy.product.mockUp.rotateX}deg) skew(${buy.product.mockUp.skewX}deg, ${buy.product.mockUp.skewY}deg) translateX(${buy.product.mockUp.translateX}px) translateY(${buy.product.mockUp.translateY}px) rotateY(${buy.product.mockUp.rotateY}deg)`,
+                                  }}
+                                />
+                              </div>
+                            )}
+                            {/* <Img
                               placeholder="/imgLoading.svg"
                               style={{
                                 backgroundColor: "#eeeeee",
-                                height: "180px",
-                                width: "180px",
+                                height: 350,
+                                width: 350,
                                 opacity:
                                   props.selectedProductToAssociate?.index ===
                                   index
                                     ? "1"
                                     : "0.6",
                               }}
-                              src={buy.product ? buy.product.thumbUrl : ""}
+                              src={
+                                buy.product
+                                  ? buy.product.mockUp.mockupImg
+                                  : buy.product.thumbUrl
+                              }
                               debounce={1000}
                               cache
                               error="/imgError.svg"
@@ -299,7 +239,7 @@ export default function Gallery(props) {
                               sizes="(min-width: 1600px) 850px, (min-width: 960px) 450px, (min-width: 640px) 400px, 200px"
                               alt={buy.product && buy.product.name}
                               id={index}
-                            />
+                            /> */}
                           </div>
                         )}
                       </div>

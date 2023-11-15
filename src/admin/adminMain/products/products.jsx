@@ -130,8 +130,6 @@ export default function Products(props) {
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
 
   const [productEdit, setProductEdit] = useState(true);
-  const [termsAgreeVar, setTermsAgreeVar] = useState(true);
-  const [value, setValue] = useState("");
   const [activeCrud, setActiveCrud] = useState("read");
   const [page, setPage] = useState(0);
 
@@ -167,53 +165,6 @@ export default function Products(props) {
         );
   }, [location.pathname]);
 
-  useEffect(() => {
-    {
-      JSON.parse(localStorage.getItem("token")) && TermsAgreeModal();
-    }
-  }, []);
-
-  const getTerms = () => {
-    const base_url =
-      process.env.REACT_APP_BACKEND_URL + "/termsAndConditions/read";
-    axios
-      .get(base_url)
-      .then((response) => {
-        setValue(response.data.terms.termsAndConditions);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
-  const handleSubmit = async (e, Id) => {
-    e.preventDefault();
-    const formData = new FormData();
-    const termsAgree = true;
-    formData.append("termsAgree", termsAgree);
-    const base_url =
-      process.env.REACT_APP_BACKEND_URL + "/prixer/update-terms/" + Id;
-    const response = await axios
-      .put(
-        base_url,
-        { termsAgree: true },
-        {
-          "Content-Type": "multipart/form-data",
-        }
-      )
-      .then((response) => {
-        setTermsAgreeVar(true);
-      });
-  };
-
-  const TermsAgreeModal = () => {
-    const GetId = JSON.parse(localStorage.getItem("token")).username;
-    const base_url = process.env.REACT_APP_BACKEND_URL + "/prixer/get/" + GetId;
-    axios.get(base_url).then((response) => {
-      setTermsAgreeVar(response.data.termsAgree);
-      getTerms();
-    });
-  };
-
   return (
     <>
       <div style={{ position: "relative" }}>
@@ -243,60 +194,6 @@ export default function Products(props) {
                 <AddIcon />
               </Fab>
             )}
-
-            <Modal
-              xl={800}
-              lg={800}
-              md={480}
-              sm={360}
-              xs={360}
-              open={termsAgreeVar === false}
-              onClose={termsAgreeVar === true}
-            >
-              <div className={classes.paper2}>
-                <h2 style={{ textAlign: "center", fontWeight: "Normal" }}>
-                  Hemos actualizado nuestros términos y condiciones y queremos
-                  que estés al tanto.
-                </h2>
-                <div>
-                  <div data-color-mode="light">
-                    <div
-                      style={{
-                        textAlign: "center",
-                        marginBottom: "12px",
-                        fontWeight: "bold",
-                        fontSize: "1.2rem",
-                      }}
-                    >
-                      CONVENIO DE RELACIÓN ENTRE LOS ARTISTAS Y LA COMPAÑÍA
-                    </div>
-                    <div data-color-mode="light">
-                      <MDEditor.Markdown
-                        source={value}
-                        style={{ textAlign: "justify" }}
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div style={{ justifyContent: "center", display: "flex" }}>
-                  <Button
-                    onClick={(e) => {
-                      handleSubmit(
-                        e,
-                        JSON.parse(localStorage.getItem("token")).username
-                      );
-                    }}
-                    type="submit"
-                    variant="contained"
-                    color="primary"
-                    className={classes.submit}
-                    required
-                  >
-                    Acepto los nuevos términos y condiciones
-                  </Button>
-                </div>
-              </div>
-            </Modal>
           </div>
         )}
         <Grid

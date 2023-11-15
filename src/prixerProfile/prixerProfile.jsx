@@ -76,64 +76,12 @@ export default function PrixerProfile(props) {
   const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
   const isDeskTop = useMediaQuery(theme.breakpoints.up("sm"));
 
-  const [termsAgreeVar, setTermsAgreeVar] = useState(true);
   const [value, setValue] = useState("");
   const [openArtFormDialog, setOpenArtFormDialog] = useState(false);
   const [openServiceFormDialog, setOpenServiceFormDialog] = useState(false);
   const [openShoppingCart, setOpenShoppingCart] = useState(false);
   const [selectedArt, setSelectedArt] = useState(undefined);
   const [feed, setFeed] = useState("Artes");
-
-  const TermsAgreeModal = () => {
-    const GetId = JSON.parse(localStorage.getItem("token")).username;
-    const base_url = process.env.REACT_APP_BACKEND_URL + "/prixer/get/" + GetId;
-    axios.get(base_url).then((response) => {
-      setTermsAgreeVar(response.data.termsAgree);
-      getTerms();
-    });
-  };
-
-  useEffect(() => {
-    {
-      JSON.parse(localStorage.getItem("token")) && TermsAgreeModal();
-    }
-  }, []);
-
-  const getTerms = () => {
-    const base_url =
-      process.env.REACT_APP_BACKEND_URL + "/termsAndConditions/read";
-    axios
-      .get(base_url)
-      .then((response) => {
-        setValue(response?.data?.terms?.termsAndConditions);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
-  const handleSubmit = async (e, Id) => {
-    e.preventDefault();
-    const formData = new FormData();
-    const termsAgree = true;
-    formData.append("termsAgree", termsAgree);
-    // formData.append(
-    //   "username",
-    //   JSON.parse(localStorage.getItem("token")).username
-    // );
-    const base_url =
-      process.env.REACT_APP_BACKEND_URL + "/prixer/update-terms/" + Id;
-    const response = await axios
-      .put(
-        base_url,
-        { termsAgree: true },
-        {
-          "Content-Type": "multipart/form-data",
-        }
-      )
-      .then((response) => {
-        setTermsAgreeVar(true);
-      });
-  };
 
   return (
     <Container component="main" maxWidth="xl" className={classes.paper}>
@@ -184,61 +132,6 @@ export default function PrixerProfile(props) {
           setOpenShoppingCart={setOpenShoppingCart}
         />
       </Grid>
-
-      {/* Terms & Co */}
-      <Modal
-        xl={800}
-        lg={800}
-        md={480}
-        sm={360}
-        xs={360}
-        open={termsAgreeVar === false}
-        onClose={termsAgreeVar === true}
-      >
-        <div className={classes.paper2}>
-          <h2 style={{ textAlign: "center", fontWeight: "Normal" }}>
-            Hemos actualizado nuestros términos y condiciones y queremos que
-            estés al tanto.
-          </h2>
-          <div>
-            <div data-color-mode="light">
-              <div
-                style={{
-                  textAlign: "center",
-                  marginBottom: "12px",
-                  fontWeight: "bold",
-                  fontSize: "1.2rem",
-                }}
-              >
-                CONVENIO DE RELACIÓN ENTRE LOS ARTISTAS Y LA COMPAÑÍA
-              </div>
-              <div data-color-mode="light">
-                <MDEditor.Markdown
-                  source={value}
-                  style={{ textAlign: "justify" }}
-                />
-              </div>
-            </div>
-          </div>
-          <div style={{ justifyContent: "center", display: "flex" }}>
-            <Button
-              onClick={(e) => {
-                handleSubmit(
-                  e,
-                  JSON.parse(localStorage.getItem("token")).username
-                );
-              }}
-              type="submit"
-              variant="contained"
-              color="primary"
-              className={classes.submit}
-              required
-            >
-              Acepto los nuevos términos y condiciones
-            </Button>
-          </div>
-        </div>
-      </Modal>
 
       {/* Associate Item */}
       <Dialog

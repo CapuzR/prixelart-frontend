@@ -30,6 +30,8 @@ import AddIcon from "@material-ui/icons/Add";
 import Snackbar from "@material-ui/core/Snackbar";
 import DeleteIcon from "@material-ui/icons/Delete";
 import utils from "../../utils/utils";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -339,6 +341,17 @@ export default function ServiceGrid(props) {
     setServiceOnEdit({
       ...serviceOnEdit,
       isRemote: !serviceOnEdit.isRemote,
+    });
+  };
+
+  const RenderHTML = ({ htmlString }) => {
+    return <div dangerouslySetInnerHTML={{ __html: htmlString }} />;
+  };
+
+  const handleEditorChange = (value) => {
+    setServiceOnEdit({
+      ...serviceOnEdit,
+      description: value,
     });
   };
 
@@ -718,33 +731,29 @@ export default function ServiceGrid(props) {
                       </Typography>
                     )}
                     {openEdit === i ? (
-                      <TextField
-                        variant="outlined"
-                        required
-                        fullWidth
-                        label="Descripción"
+                      <ReactQuill
+                        style={{ height: 300, marginBottom: 30, marginTop: 15 }}
+                        modules={{
+                          toolbar: [
+                            [{ header: [1, 2, 3, 4, 5, 6, false] }],
+                            ["bold", "italic", "underline", "strike"],
+                            [{ align: [] }],
+                            [{ list: "ordered" }, { list: "bullet" }],
+                          ],
+                        }}
                         value={serviceOnEdit.description}
-                        onChange={(e) => {
-                          setServiceOnEdit({
-                            ...serviceOnEdit,
-                            description: e.target.value,
-                          });
-                        }}
-                        style={{
-                          marginTop: 10,
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                          display: "-webkit-box",
-                        }}
-                        minRows={3}
+                        onChange={handleEditorChange}
+                        placeholder="Escribe la descripción aquí..."
                       />
                     ) : (
                       <>
-                        <Typography variant="body2" color="secondary">
-                          {showFullDescription[i]
-                            ? tile.description
-                            : `${tile.description.slice(0, 450)}...`}
-                        </Typography>
+                        <RenderHTML
+                          htmlString={
+                            showFullDescription[i]
+                              ? tile.description
+                              : `${tile.description.slice(0, 450)}...`
+                          }
+                        />
                         {tile.description.length > 450 && (
                           <Button
                             style={{

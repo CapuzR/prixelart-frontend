@@ -286,12 +286,11 @@ export default function CartReview(props) {
     ) {
       return (
         " Bs" +
-        Number(product.prixerEquation * props.dollarValue).toLocaleString(
-          "de-DE",
-          {
-            minimumFractionDigits: 2,
-          }
-        )
+        Number(
+          product.prixerEquation.replace(",", ".") * props.dollarValue
+        ).toLocaleString("de-DE", {
+          minimumFractionDigits: 2,
+        })
       );
     } else if (
       (JSON.parse(localStorage?.getItem("token")) ||
@@ -302,9 +301,12 @@ export default function CartReview(props) {
     ) {
       return (
         " $" +
-        Number(product.prixerEquation).toLocaleString("de-DE", {
-          minimumFractionDigits: 2,
-        })
+        Number(product.prixerEquation.replace(",", ".")).toLocaleString(
+          "de-DE",
+          {
+            minimumFractionDigits: 2,
+          }
+        )
       );
     } else if (
       (JSON.parse(localStorage?.getItem("token")) ||

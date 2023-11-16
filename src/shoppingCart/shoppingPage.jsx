@@ -155,61 +155,6 @@ export default function ShoppingPage(props) {
   useEffect(() => {
     getDiscounts();
   }, []);
-  // useEffect(() => {
-  //   {
-  //     JSON.parse(localStorage.getItem("token")) && TermsAgreeModal();
-  //   }
-
-  //   return () => {
-  //     localStorage.removeItem("filterCategorie");
-  //   };
-  // }, []);
-
-  // const getTerms = () => {
-  //   const base_url =
-  //     process.env.REACT_APP_BACKEND_URL + "/termsAndConditions/read";
-  //   axios
-  //     .get(base_url)
-  //     .then((response) => {
-  //       setValue(response.data.terms.termsAndConditions);
-  //     })
-  //     .catch((error) => {
-  //       console.log(error);
-  //     });
-  // };
-
-  // const handleSubmit = async (e, Id) => {
-  //   e.preventDefault();
-  //   const formData = new FormData();
-  //   const termsAgree = true;
-  //   formData.append("termsAgree", termsAgree);
-  //   formData.append(
-  //     "username",
-  //     JSON.parse(localStorage.getItem("token")).username
-  //   );
-  //   const base_url =
-  //     process.env.REACT_APP_BACKEND_URL + "/prixer/update-terms/" + Id;
-  //   const response = await axios
-  //     .put(
-  //       base_url,
-  //       { termsAgree: true },
-  //       {
-  //         "Content-Type": "multipart/form-data",
-  //       }
-  //     )
-  //     .then((response) => {
-  //       setTermsAgreeVar(true);
-  //     });
-  // };
-
-  // const TermsAgreeModal = () => {
-  //   const GetId = JSON.parse(localStorage.getItem("token")).username;
-  //   const base_url = process.env.REACT_APP_BACKEND_URL + "/prixer/get/" + GetId;
-  //   axios.get(base_url).then((response) => {
-  //     setTermsAgreeVar(response.data.termsAgree);
-  //     getTerms();
-  //   });
-  // };
 
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
@@ -773,7 +718,7 @@ export default function ShoppingPage(props) {
           </Grid>
         ) : (
           <div style={{ marginTop: 100 }}>
-            <Typography variant={"h6"} align={"Center"}>
+            <Typography variant={"h5"} align={"center"} color="secondary">
               Actualmente no tienes ningun producto dentro del carrito de
               compra.
             </Typography>

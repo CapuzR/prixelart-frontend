@@ -34,6 +34,8 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 import InfoIcon from "@material-ui/icons/Info";
 import HighlightOffOutlinedIcon from "@material-ui/icons/HighlightOffOutlined";
 import EditIcon from "@material-ui/icons/Edit";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 
 const useStyles = makeStyles((theme) => ({
   img: {
@@ -114,6 +116,10 @@ export default function CreateService(props) {
   const [errorMessage, setErrorMessage] = useState();
   const [snackBarAction, setSnackBarAction] = useState();
   const [snackBarError, setSnackBarError] = useState(false);
+
+  const handleEditorChange = (value) => {
+    setDescription(value);
+  };
 
   const handleServiceAreaChange = (e) => {
     if (!e.target.value) {
@@ -436,7 +442,7 @@ export default function CreateService(props) {
                 </Grid>
 
                 <Grid item xs={12} sm={12}>
-                  <TextField
+                  {/* <TextField
                     autoComplete="description"
                     required
                     name="description"
@@ -449,6 +455,20 @@ export default function CreateService(props) {
                     maxRows={18}
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
+                  /> */}
+                  <ReactQuill
+                    style={{ height: 300, marginBottom: 30 }}
+                    modules={{
+                      toolbar: [
+                        [{ header: [1, 2, 3, 4, 5, 6, false] }],
+                        ["bold", "italic", "underline", "strike"],
+                        [{ align: [] }],
+                        [{ list: "ordered" }, { list: "bullet" }],
+                      ],
+                    }}
+                    value={description}
+                    onChange={handleEditorChange}
+                    placeholder="Escribe la descripción aquí..."
                   />
                 </Grid>
 

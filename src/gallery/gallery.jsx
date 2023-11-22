@@ -153,25 +153,28 @@ export default function Gallery(props) {
                       <div
                         style={{
                           display: "flex",
-                          width: 350,
+                          width: 180,
                         }}
                       >
                         {buy.product && (
                           <div
                             key={index}
                             style={{
-                              // marginBottom: "32px",
-                              backgroundImage: buy.product
-                                ? "url(" + buy.product.mockUp.mockupImg + ")"
-                                : "url(" + buy.product.thumbUrl + ")",
-                              height: 350,
-                              width: 350,
-                              backgroundSize: "cover",
-                              opacity:
-                                props.selectedProductToAssociate?.index ===
-                                index
-                                  ? "1"
-                                  : "0.6",
+                              marginBottom: "32px",
+                              height: "180px",
+                              width: "180px",
+                              //                               backgroundImage: buy.product
+                              //   ? buy.product?.mockUp?.mockupImg &&
+                              //     "url(" + buy.product?.mockUp?.mockupImg + ")"
+                              //   : "url(" + buy.product.thumbUrl + ")",
+                              // height: 350,
+                              // width: 350,
+                              // backgroundSize: "cover",
+                              // opacity:
+                              //   props.selectedProductToAssociate?.index ===
+                              //   index
+                              //     ? "1"
+                              //     : "0.6",
                             }}
                             onClick={() =>
                               props.setSelectedProductToAssociate({
@@ -180,7 +183,7 @@ export default function Gallery(props) {
                               })
                             }
                           >
-                            {props.selectedProductToAssociate?.index ===
+                            {/* {props.selectedProductToAssociate?.index ===
                               index && (
                               <div
                                 style={{
@@ -214,13 +217,21 @@ export default function Gallery(props) {
                                   }}
                                 />
                               </div>
-                            )}
-                            {/* <Img
+                            )} */}
+                            <Img
                               placeholder="/imgLoading.svg"
                               style={{
                                 backgroundColor: "#eeeeee",
-                                height: 350,
-                                width: 350,
+                                height: 180,
+                                width: 180,
+                                borderRadius: 15,
+                                border: "2px",
+                                borderStyle: "solid",
+                                borderColor:
+                                  props.selectedProductToAssociate?.index ===
+                                  index
+                                    ? "#d33f49"
+                                    : "gainsboro",
                                 opacity:
                                   props.selectedProductToAssociate?.index ===
                                   index
@@ -229,8 +240,9 @@ export default function Gallery(props) {
                               }}
                               src={
                                 buy.product
-                                  ? buy.product.mockUp.mockupImg
-                                  : buy.product.thumbUrl
+                                  ? buy.product.sources.images[0].url ||
+                                    buy.product.thumbUrl
+                                  : ""
                               }
                               debounce={1000}
                               cache
@@ -239,7 +251,7 @@ export default function Gallery(props) {
                               sizes="(min-width: 1600px) 850px, (min-width: 960px) 450px, (min-width: 640px) 400px, 200px"
                               alt={buy.product && buy.product.name}
                               id={index}
-                            /> */}
+                            />
                           </div>
                         )}
                       </div>

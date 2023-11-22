@@ -1,5 +1,5 @@
 import React from "react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Title from "../adminMain/Title";
 import axios from "axios";
@@ -35,6 +35,7 @@ import RadioGroup from "@material-ui/core/RadioGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Slider from "@material-ui/core/Slider";
 import Checkbox from "@material-ui/core/Checkbox";
+import * as THREE from "three";
 
 const useStyles = makeStyles((theme) => ({
   seeMore: {
@@ -114,6 +115,7 @@ export default function UpdateMockup(props) {
   //Error states.
   const [errorMessage, setErrorMessage] = useState();
   const [snackBarError, setSnackBarError] = useState(false);
+
   const handleWidth = (event) => {
     setWidth(event.target.value);
   };
@@ -305,6 +307,71 @@ export default function UpdateMockup(props) {
       setSnackBarError(true);
     }
   };
+
+  const container = document.getElementById("container");
+
+  // useEffect(() => {
+  //   if (container) {
+  //     let scene, renderer;
+  //     const loader = new THREE.ImageLoader();
+  //     loader.load(
+  //       // resource URL
+  //       `${randomArt.smallThumbUrl}`,
+
+  //       // onLoad callback
+  //       function (image) {
+  //         // use the image, e.g. draw part of it on a canvas
+  //         const canvas = document.createElement("canvas");
+  //         container.appendChild(canvas);
+
+  //         const context = canvas.getContext("2d");
+  //         context.drawImage(image, 100, 100);
+  //       },
+
+  //       // onProgress callback currently not supported
+  //       undefined,
+
+  //       // onError callback
+  //       function () {
+  //         console.error("An error happened.");
+  //       }
+  //     );
+
+  //     // const init = () => {
+  //     //   // Configuración de la escena
+  //     //   scene = new THREE.Scene();
+
+  //     //   // Configuración de la cámara
+  //     //   const camera = new THREE.PerspectiveCamera(75, 400 / 400, 0.1, 1000);
+  //     //   camera.position.z = 5;
+
+  //     //   // Configuración del renderizador
+  //     //   renderer = new THREE.WebGLRenderer();
+  //     //   renderer.setSize(400, 400);
+  //     //   container.appendChild(renderer.domElement);
+  //     //   // Crear el cilindro
+  //     //   const geometry = new THREE.BoxGeometry(1, 1, 1);
+  //     //   const texture = new THREE.TextureLoader().load(
+  //     //     `${randomArt.smallThumbUrl}`
+  //     //   );
+  //     //   const material = new THREE.MeshBasicMaterial({ map: texture });
+  //     //   // const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+  //     //   const cylinder = new THREE.Mesh(geometry, material);
+  //     //   scene.add(cylinder);
+
+  //     //   // Animación
+  //     //   const animate = () => {
+  //     //     requestAnimationFrame(animate);
+  //     //     cylinder.rotation.y += 0.01;
+  //     //     renderer.render(scene, camera);
+  //     //   };
+
+  //     //   animate();
+  //     // };
+
+  //     // init();
+  //   }
+  // }, []);
 
   return (
     <React.Fragment>
@@ -556,12 +623,6 @@ export default function UpdateMockup(props) {
                     onClick={handleImageClick}
                   />
                   {topLeft.x !== 0 && topLeft.y !== 0 && (
-                    // topRight.x !== 0 &&
-                    // topRight.y !== 0 &&
-                    // bottomLeft.x !== 0 &&
-                    // bottomLeft.y !== 0 &&
-                    // bottomRight.x !== 0 &&
-                    // bottomRight.y !== 0 &&
                     <div
                       style={{
                         width: 350,
@@ -594,6 +655,12 @@ export default function UpdateMockup(props) {
                       />
                     </div>
                   )}
+                  {/* {randomArt && (
+                    <div
+                      style={{ width: "400px", height: "400px" }}
+                      id="container"
+                    />
+                  )} */}
                 </div>
               </Grid>
             </Paper>

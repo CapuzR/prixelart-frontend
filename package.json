@@ -34,6 +34,7 @@
     "react-slick": "^0.29.0",
     "recharts": "^2.8.0",
     "slick-carousel": "^1.8.1",
+    "three": "^0.158.0",
     "update-browserslist-db": "^1.0.11",
     "victory": "^36.6.11",
     "whatwg-fetch": "^3.6.19"

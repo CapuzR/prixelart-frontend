@@ -70,10 +70,10 @@ export default function FloatingAddButton(props) {
               onClick={openServiceDialog}
               style={{
                 bottom:
-                  props.buyState === undefined ||
-                  props.buyState[0] === undefined
-                    ? 70
-                    : 160,
+                  JSON.parse(localStorage.getItem("buyState")) &&
+                  JSON.parse(localStorage.getItem("buyState"))?.length > 0
+                    ? 160
+                    : 70,
                 right: 10,
               }}
             >
@@ -86,10 +86,10 @@ export default function FloatingAddButton(props) {
               onClick={openArtDialog}
               style={{
                 bottom:
-                  props.buyState === undefined ||
-                  props.buyState[0] === undefined
-                    ? 0
-                    : 90,
+                  JSON.parse(localStorage.getItem("buyState")) &&
+                  JSON.parse(localStorage.getItem("buyState"))?.length > 0
+                    ? 90
+                    : 0,
                 right: 10,
               }}
             >
@@ -97,7 +97,6 @@ export default function FloatingAddButton(props) {
             </Fab>
           </>
         )}
-
       {JSON.parse(localStorage.getItem("buyState")) &&
         JSON.parse(localStorage.getItem("buyState"))?.length > 0 && (
           <Fab

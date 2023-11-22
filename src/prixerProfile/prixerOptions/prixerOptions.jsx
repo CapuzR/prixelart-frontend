@@ -44,7 +44,15 @@ export default function BasicButtonGroup(props) {
           display: "flex",
         }}
       >
-        <Paper className={classes.paper}>
+        <Paper className={classes.paper} elevation={3}>
+          <Button
+            onClick={(e) => {
+              changeFeed("Bio");
+            }}
+            color="primary"
+          >
+            Biografía
+          </Button>
           <Button
             onClick={(e) => {
               changeFeed("Artes");

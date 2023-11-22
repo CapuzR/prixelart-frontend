@@ -24,7 +24,6 @@ import { InsertEmoticon } from "@material-ui/icons";
 import InstagramIcon from "@material-ui/icons/Instagram";
 import SimpleDialog from "../sharedComponents/simpleDialog/simpleDialog";
 import FloatingAddButton from "../sharedComponents/floatingAddButton/floatingAddButton";
-import Modal from "@material-ui/core/Modal";
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
 import DialogContent from "@material-ui/core/DialogContent";
@@ -34,7 +33,6 @@ import DialogActions from "@material-ui/core/DialogActions";
 import Img from "react-cool-img";
 import { useHistory } from "react-router-dom";
 
-import MDEditor from "@uiw/react-md-editor";
 import MaximizeIcon from "@material-ui/icons/Maximize";
 import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
 import ArrowForwardIosIcon from "@material-ui/icons/ArrowForwardIos";
@@ -144,10 +142,10 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Home(props) {
   const theme = useTheme();
-  const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
+  const isDesktop = useMediaQuery(theme.breakpoints.up("lg"));
   const isDeskTop = useMediaQuery(theme.breakpoints.up("sm"));
-  const isTab = useMediaQuery(theme.breakpoints.up("xs"));
-  const isMobile = useMediaQuery(theme.breakpoints.down("xs"));
+  const isTab = useMediaQuery(theme.breakpoints.down("lg"));
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const classes = useStyles();
   const prixerUsername = "all";
   const [imagesDesktop, newImagesDesktop] = useState({ images: [] });
@@ -444,7 +442,14 @@ export default function Home(props) {
           </Card>
 
           <Grid container style={{ marginLeft: -10 }}>
-            <Grid item lg={8} md={8} sm={8} xs={12}>
+            <Grid
+              item
+              lg={8}
+              md={8}
+              sm={12}
+              xs={12}
+              style={{ paddingRight: isMobile && 10 }}
+            >
               <Paper
                 style={{
                   backgroundImage: `url(${backG})`,
@@ -617,7 +622,14 @@ export default function Home(props) {
               )}
             </Grid>
 
-            <Grid item lg={4} md={4} sm={4} xs={12}>
+            <Grid
+              item
+              lg={4}
+              md={4}
+              sm={12}
+              xs={12}
+              style={{ display: "flex", justifyContent: "center" }}
+            >
               {mostSelledArts && (
                 <Paper
                   style={{
@@ -625,7 +637,7 @@ export default function Home(props) {
                     flexDirection: "column",
                     position: "relative",
                     width: "100%",
-                    maxWidth: 435,
+                    maxWidth: isDesktop ? 435 : 320,
                     height:
                       (isDesktop && 497) || (isMobile && 300) || (isTab && 370),
                     marginLeft: isMobile ? 10 : 20,
@@ -646,6 +658,7 @@ export default function Home(props) {
                     container
                     GridDirection={"column"}
                     style={{
+                      // maxWidth: isTab ? 320 : isDesktop && 650,
                       justifyContent: "center",
                       aspectRatio: 434 / 518.05,
                     }}
@@ -658,7 +671,7 @@ export default function Home(props) {
                         height:
                           (isDesktop && 150) ||
                           (isMobile && 95) ||
-                          (isTab && 80),
+                          (isTab && 120),
                         display: "flex",
                         flexDirection: "column",
                         alignItems: "end",
@@ -693,6 +706,7 @@ export default function Home(props) {
                       </Typography>
                     </Grid>
                     <Grid
+                      item
                       xs={10}
                       sm={9}
                       md={10}
@@ -710,7 +724,7 @@ export default function Home(props) {
                               height:
                                 (isDesktop && 320) ||
                                 (isMobile && 180) ||
-                                (isTab && 260),
+                                (isTab && 220),
                               marginRight: 10,
                               // width:
                               //   (isDesktop && 170) ||
@@ -727,7 +741,7 @@ export default function Home(props) {
                                 height:
                                   (isDesktop && 320) ||
                                   (isMobile && 180) ||
-                                  (isTab && 260),
+                                  (isTab && 220),
                                 marginRight: 10,
 
                                 // width:
@@ -766,7 +780,8 @@ export default function Home(props) {
                 gridTemplateColumns: isMobile ? "50%, 2fr" : "",
                 // flexDirection: isMobile ? "column" : "row",
                 justifyContent: "center",
-                width: isDeskTop ? 650 : "100%",
+                maxWidth: 650,
+                width: "100%",
               }}
               elevation={3}
             >

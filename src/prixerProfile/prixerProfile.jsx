@@ -28,6 +28,7 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import Img from "react-cool-img";
+import Biography from "./grid/biography";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -83,6 +84,29 @@ export default function PrixerProfile(props) {
   const [selectedArt, setSelectedArt] = useState(undefined);
   const [feed, setFeed] = useState("Artes");
 
+  const showPrixerGrid = () => {
+    switch (feed) {
+      case "Artes":
+        return (
+          <ArtsGrid
+            prixerUsername={prixerUsername}
+            buyState={props.buyState}
+            addItemToBuyState={props.addItemToBuyState}
+            setIsOpenAssociateProduct={props.setIsOpenAssociateProduct}
+            setSelectedArt={setSelectedArt}
+            setPrixer={props.setPrixer}
+            setFullArt={props.setFullArt}
+            setSearchResult={props.setSearchResult}
+          />
+        );
+
+      case "Servicios":
+        return <ServiceGrid prixerUsername={prixerUsername} />;
+
+      case "Bio":
+        return <Biography prixerUsername={prixerUsername} />;
+    }
+  };
   return (
     <Container component="main" maxWidth="xl" className={classes.paper}>
       <CssBaseline />
@@ -95,21 +119,7 @@ export default function PrixerProfile(props) {
         feed={feed}
         setFeed={setFeed}
       />
-
-      {feed === "Artes" ? (
-        <ArtsGrid
-          prixerUsername={prixerUsername}
-          buyState={props.buyState}
-          addItemToBuyState={props.addItemToBuyState}
-          setIsOpenAssociateProduct={props.setIsOpenAssociateProduct}
-          setSelectedArt={setSelectedArt}
-          setPrixer={props.setPrixer}
-          setFullArt={props.setFullArt}
-          setSearchResult={props.setSearchResult}
-        />
-      ) : (
-        feed === "Servicios" && <ServiceGrid />
-      )}
+      {showPrixerGrid()}
 
       {openArtFormDialog && (
         <ArtUploader

@@ -45,7 +45,6 @@ const useStyles = makeStyles((theme) => ({
   paper: {
     padding: theme.spacing(2),
     margin: "auto",
-    // width: "100%",
   },
   image: {
     width: 128,
@@ -244,6 +243,7 @@ export default function UserData(props) {
         <CircularProgress color="inherit" />
       </Backdrop>
       <Paper
+        elevation={3}
         className={classes.paper}
         style={{ width: isDesktop ? "50%" : "100%" }}
       >

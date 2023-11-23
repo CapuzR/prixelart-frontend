@@ -287,7 +287,7 @@ export default function CartReview(props) {
       return (
         " Bs" +
         Number(
-          product.prixerEquation.replace(",", ".") * props.dollarValue
+          product.prixerEquation?.replace(",", ".") * props.dollarValue
         ).toLocaleString("de-DE", {
           minimumFractionDigits: 2,
         })
@@ -301,7 +301,7 @@ export default function CartReview(props) {
     ) {
       return (
         " $" +
-        Number(product.prixerEquation.replace(",", ".")).toLocaleString(
+        Number(product.prixerEquation?.replace(",", ".")).toLocaleString(
           "de-DE",
           {
             minimumFractionDigits: 2,

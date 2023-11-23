@@ -184,9 +184,9 @@ export default function ShoppingPage(props) {
         if (dis?.type === "Porcentaje") {
           prices.push(
             Number(
-              ((item.product?.prixerEquation ||
+              ((item.product?.prixerEquation.replace(/[,]/gi, ".") ||
                 item.product?.prixerPrice?.from) -
-                ((item.product?.prixerEquation ||
+                ((item.product?.prixerEquation.replace(/[,]/gi, ".") ||
                   item.product?.prixerPrice?.from) /
                   100) *
                   dis.value) *
@@ -196,7 +196,7 @@ export default function ShoppingPage(props) {
         } else if (dis?.type === "Monto") {
           prices.push(
             Number(
-              ((item.product?.prixerEquation ||
+              ((item.product?.prixerEquation.replace(/[,]/gi, ".") ||
                 item.product?.prixerPrice?.from) -
                 dis.value) *
                 (item.quantity || 1)
@@ -213,7 +213,8 @@ export default function ShoppingPage(props) {
       ) {
         prices.push(
           Number(
-            (item.product?.prixerEquation || item.product?.prixerPrice?.from) *
+            (item.product?.prixerEquation.replace(/[,]/gi, ".") ||
+              item.product?.prixerPrice?.from.replace(/[,]/gi, ".")) *
               (item.quantity || 1)
           )
         );
@@ -386,7 +387,7 @@ export default function ShoppingPage(props) {
           "Content-Type": "multipart/form-data",
         })
         .then(async (response) => {
-          if (response.status == 200) {
+          if (response.status === 200) {
             if (
               JSON.parse(localStorage.getItem("token")) &&
               JSON.parse(localStorage.getItem("token")).username &&
@@ -436,28 +437,35 @@ export default function ShoppingPage(props) {
                   ({ _id }) => _id === item.product.discount
                 );
                 if (
-                  JSON.parse(localStorage.getItem("token")) &&
-                  JSON.parse(localStorage.getItem("token")).username &&
-                  dis?.type === "Porcentaje"
+                  (JSON.parse(localStorage.getItem("token")) &&
+                    JSON.parse(localStorage.getItem("token")).username) ||
+                  (JSON.parse(localStorage?.getItem("adminToken")) &&
+                    JSON.parse(localStorage?.getItem("adminToken"))?.username &&
+                    dis?.type === "Porcentaje")
                 ) {
                   item.product.finalPrice = Number(
                     ((item.product.prixerEquation ||
-                      item.product.prixerPrice.from.replace(/[,]/gi, ".")) -
+                      item.product?.prixerPrice?.from?.replace(/[,]/gi, ".")) -
                       ((item.product.prixerEquation ||
-                        item.product.prixerPrice.from.replace(/[,]/gi, ".")) /
+                        item.product?.prixerPrice?.from?.replace(
+                          /[,]/gi,
+                          "."
+                        )) /
                         100) *
                         dis.value) *
                       (item.quantity || 1)
                   );
                   item.product.discount = dis.name + " %" + dis.value;
                 } else if (
-                  JSON.parse(localStorage.getItem("token")) &&
-                  JSON.parse(localStorage.getItem("token")).username &&
-                  dis?.type === "Monto"
+                  (JSON.parse(localStorage.getItem("token")) &&
+                    JSON.parse(localStorage.getItem("token")).username) ||
+                  (JSON.parse(localStorage?.getItem("adminToken")) &&
+                    JSON.parse(localStorage?.getItem("adminToken"))?.username &&
+                    dis?.type === "Monto")
                 ) {
                   item.product.finalPrice = Number(
                     ((item.product.prixerEquation ||
-                      item.product.prixerPrice.from.replace(/[,]/gi, ".")) -
+                      item.product?.prixerPrice?.from?.replace(/[,]/gi, ".")) -
                       dis.value) *
                       (item.quantity || 1)
                   );
@@ -465,9 +473,9 @@ export default function ShoppingPage(props) {
                 } else if (dis?.type === "Porcentaje") {
                   item.product.finalPrice = Number(
                     ((item.product.publicEquation ||
-                      item.product.publicPrice.from.replace(/[,]/gi, ".")) -
+                      item.product.publicPrice?.from.replace(/[,]/gi, ".")) -
                       ((item.product.publicEquation ||
-                        item.product.publicPrice.from.replace(/[,]/gi, ".")) /
+                        item.product.publicPrice?.from.replace(/[,]/gi, ".")) /
                         100) *
                         dis.value) *
                       (item.quantity || 1)
@@ -476,15 +484,17 @@ export default function ShoppingPage(props) {
                 } else if (dis?.type === "Monto") {
                   item.product.finalPrice = Number(
                     ((item.product.publicEquation ||
-                      item.product.publicPrice.from.replace(/[,]/gi, ".")) -
+                      item.product.publicPrice.from?.replace(/[,]/gi, ".")) -
                       dis.value) *
                       (item.quantity || 1)
                   );
                   item.product.discount = dis.name + " $" + dis.value;
                 }
               } else if (
-                JSON.parse(localStorage.getItem("token")) &&
-                JSON.parse(localStorage.getItem("token")).username
+                (JSON.parse(localStorage.getItem("token")) &&
+                  JSON.parse(localStorage.getItem("token")).username) ||
+                (JSON.parse(localStorage.getItem("adminToken")) &&
+                  JSON.parse(localStorage.getItem("adminToken")).username)
               ) {
                 item.product.finalPrice =
                   item.product.prixerEquation || item.product.prixerPrice.from;

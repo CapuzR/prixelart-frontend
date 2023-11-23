@@ -131,9 +131,9 @@ export default function OrderForm(props) {
         if (dis?.type === "Porcentaje") {
           prices.push(
             Number(
-              ((item.product?.prixerEquation ||
+              ((item.product?.prixerEquation?.replace(/[,]/gi, ".") ||
                 item.product?.prixerPrice?.from) -
-                ((item.product?.prixerEquation ||
+                ((item.product?.prixerEquation?.replace(/[,]/gi, ".") ||
                   item.product?.prixerPrice?.from) /
                   100) *
                   dis.value) *
@@ -143,7 +143,7 @@ export default function OrderForm(props) {
         } else if (dis?.type === "Monto") {
           prices.push(
             Number(
-              ((item.product?.prixerEquation ||
+              ((item.product?.prixerEquation?.replace(/[,]/gi, ".") ||
                 item.product?.prixerPrice?.from) -
                 dis.value) *
                 (item.quantity || 1)
@@ -160,8 +160,8 @@ export default function OrderForm(props) {
       ) {
         prices.push(
           Number(
-            (item.product?.prixerEquation || item.product?.prixerPrice?.from) *
-              (item.quantity || 1)
+            (item.product?.prixerEquation?.replace(/[,]/gi, ".") ||
+              item.product?.prixerPrice?.from) * (item.quantity || 1)
           )
         );
       } else if (
@@ -176,9 +176,9 @@ export default function OrderForm(props) {
           prices.push(
             Number(
               ((item.product?.publicEquation ||
-                item.product?.publicPrice?.from.replace(/[,]/gi, ".")) -
+                item.product?.publicPrice?.from?.replace(/[,]/gi, ".")) -
                 ((item.product?.publicEquation ||
-                  item.product?.publicPrice?.from.replace(/[,]/gi, ".")) /
+                  item.product?.publicPrice?.from?.replace(/[,]/gi, ".")) /
                   100) *
                   dis.value) *
                 (item.quantity || 1)
@@ -188,7 +188,7 @@ export default function OrderForm(props) {
           prices.push(
             Number(
               ((item.product?.publicEquation ||
-                item.product?.publicPrice?.from.replace(/[,]/gi, ".")) -
+                item.product?.publicPrice?.from?.replace(/[,]/gi, ".")) -
                 dis.value) *
                 (item.quantity || 1)
             )
@@ -223,8 +223,9 @@ export default function OrderForm(props) {
           {dis?.type === "Porcentaje" &&
             " Bs" +
               Number(
-                (product.prixerEquation -
-                  (product.prixerEquation / 100) * dis?.value) *
+                (product.prixerEquation?.replace(/[,]/gi, ".") -
+                  (product.prixerEquation?.replace(/[,]/gi, ".") / 100) *
+                    dis?.value) *
                   props.dollarValue *
                   quantity
               ).toLocaleString("de-DE", {
@@ -233,7 +234,7 @@ export default function OrderForm(props) {
           {dis?.type === "Monto" &&
             " Bs" +
               Number(
-                (product.prixerEquation - dis?.value) *
+                (product.prixerEquation?.replace(/[,]/gi, ".") - dis?.value) *
                   props.dollarValue *
                   quantity
               ).toLocaleString("de-DE", {
@@ -255,8 +256,9 @@ export default function OrderForm(props) {
           {dis?.type === "Porcentaje" &&
             " $" +
               Number(
-                (product.prixerEquation -
-                  (product.prixerEquation / 100) * dis?.value) *
+                (product.prixerEquation?.replace(/[,]/gi, ".") -
+                  (product.prixerEquation?.replace(/[,]/gi, ".") / 100) *
+                    dis?.value) *
                   quantity
               ).toLocaleString("de-DE", {
                 minimumFractionDigits: 2,
@@ -264,7 +266,8 @@ export default function OrderForm(props) {
           {dis?.type === "Monto" &&
             " $" +
               Number(
-                (product.prixerEquation - dis?.value) * quantity
+                (product.prixerEquation?.replace(/[,]/gi, ".") - dis?.value) *
+                  quantity
               ).toLocaleString("de-DE", {
                 minimumFractionDigits: 2,
               })}
@@ -443,7 +446,9 @@ export default function OrderForm(props) {
       return (
         " Bs" +
         Number(
-          product.prixerEquation * props.dollarValue * quantity
+          product.prixerEquation?.replace(/[,]/gi, ".") *
+            props.dollarValue *
+            quantity
         ).toLocaleString("de-DE", {
           minimumFractionDigits: 2,
         })
@@ -457,7 +462,9 @@ export default function OrderForm(props) {
     ) {
       return (
         " $" +
-        Number(product.prixerEquation * quantity).toLocaleString("de-DE", {
+        Number(
+          product.prixerEquation?.replace(/[,]/gi, ".") * quantity
+        ).toLocaleString("de-DE", {
           minimumFractionDigits: 2,
         })
       );

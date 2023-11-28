@@ -95,7 +95,7 @@ function App() {
       );
       setAdmins(rowState.data);
 
-      let sellersTeam = rowState.data.filter(
+      let sellersTeam = rowState?.data?.filter(
         (admin) => admin.area === "Ventas"
       );
       let team = [];
@@ -131,13 +131,17 @@ function App() {
   }, []);
 
   useEffect(() => {
-    loadAdmins();
-  }, [localStorage.getItem("adminTokenV")]);
+    if (localStorage.getItem("adminTokenV")) {
+      loadAdmins();
+    }
+  }, []);
 
   useEffect(() => {
-    setInterval(() => {
+    if (localStorage.getItem("token")) {
       expire("token", "tokenExpire");
-    }, 60000);
+    } else if (localStorage.getItem("adminToken")) {
+      expire("adminToken", "adminTokenExpire");
+    }
   }, []);
 
   useEffect(() => {

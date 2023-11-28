@@ -4,6 +4,8 @@ import Fab from "@material-ui/core/Fab";
 import AddPhotoAlternateIcon from "@material-ui/icons/AddPhotoAlternate";
 import ShoppingCartOutlinedIcon from "@material-ui/icons/ShoppingCartOutlined";
 import LocalActivityIcon from "@material-ui/icons/LocalActivity";
+import Badge from "@material-ui/core/Badge";
+import NotificationsIcon from "@material-ui/icons/Notifications";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -105,7 +107,15 @@ export default function FloatingAddButton(props) {
             onClick={openShoppingCart}
             style={{ right: 10 }}
           >
-            <ShoppingCartOutlinedIcon />
+            <Badge
+              overlap="rectangular"
+              badgeContent={
+                JSON.parse(localStorage.getItem("buyState"))?.length
+              }
+              color="white"
+            >
+              <ShoppingCartOutlinedIcon />
+            </Badge>
           </Fab>
         )}
     </div>

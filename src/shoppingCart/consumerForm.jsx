@@ -122,7 +122,7 @@ function ConsumerForm(props) {
     "-" +
     readyDate.getDate();
 
-  useEffect(() => {
+  const getShippingMethods = async () => {
     const base_url =
       process.env.REACT_APP_BACKEND_URL + "/shipping-method/read-all-v2";
     axios
@@ -133,6 +133,58 @@ function ConsumerForm(props) {
       .catch((error) => {
         console.log(error);
       });
+  };
+
+  const getConsumer = async () => {
+    if (localStorage.getItem("token")) {
+      const base_url = process.env.REACT_APP_BACKEND_URL + "/consumer/read";
+      const email = JSON.parse(localStorage.getItem("token")).email;
+      axios
+        .post(base_url, { email: email })
+        .then((response) => {
+          if (response.data.success) {
+            const consumer = response.data.consumer;
+            props.setValues({
+              name: consumer.firstname,
+              lastName: consumer.lastname,
+              ci: consumer.ci,
+              phone: consumer.phone,
+              email: consumer.email,
+              address: consumer.address,
+              shippingAddress: consumer?.shippingAddress,
+              billingAddress: consumer?.billingShAddress,
+            });
+          } else {
+            const base_url2 =
+              process.env.REACT_APP_BACKEND_URL + "/prixer/read";
+            const username = JSON.parse(localStorage.getItem("token")).username;
+            axios.post(base_url2, { username: username }).then((response) => {
+              if (response.data) {
+                const prixer = response.data;
+                props.setValues({
+                  name: prixer.firstName,
+                  lastName: prixer.lastName,
+                  // ci: consumer.ci,
+                  phone: prixer?.phone,
+                  email: prixer?.email,
+                  address: prixer?.address,
+                  // shippingAddress: consumer?.shippingAddress,
+                  // billingAddress: consumer?.billingShAddress,
+                });
+              }
+            });
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
+  };
+
+  useEffect(() => {
+    getShippingMethods();
+    getConsumer();
+    // }
   }, []);
 
   const handleAccordionExpansion = (panel) => (event, isExpanded) => {
@@ -226,6 +278,7 @@ function ConsumerForm(props) {
       shippingDate: stringReadyDate,
     });
   }
+
   return (
     <>
       <div>

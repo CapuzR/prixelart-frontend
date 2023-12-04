@@ -231,12 +231,7 @@ export default function Biography(props) {
   };
 
   const RenderHTML = ({ htmlString }) => {
-    return (
-      <div
-        style={{ margin: isDesktop && "0px 50px 30px 50px" }}
-        dangerouslySetInnerHTML={{ __html: htmlString }}
-      />
-    );
+    return <div dangerouslySetInnerHTML={{ __html: htmlString }} />;
   };
 
   const handleEditorChange = (value) => {
@@ -320,9 +315,7 @@ export default function Biography(props) {
                           borderRadius: 40,
                           display: "flex",
                           flexDirection: "column",
-                          //   height: 250,
                           width: "80%",
-                          //   marginTop: 10,
                         }}
                       >
                         <div
@@ -349,24 +342,6 @@ export default function Biography(props) {
                             src={img}
                             alt="Imagen"
                           />
-                          {/* <div
-                            style={{
-                              backgroundImage: "url(" + img + ")",
-                              height:
-                                (isDesktop && 170) ||
-                                (isMobile && 120) ||
-                                (isTab && 130),
-                              width:
-                                (isDesktop && 170) ||
-                                (isMobile && 120) ||
-                                (isTab && 130),
-                              backgroundSize: "cover",
-                              backgroundPosition: "back",
-                              marginBottom: isMobile && 5,
-                              marginTop: -35,
-                              borderRadius: 10,
-                            }}
-                          /> */}
                         </div>
                       </div>
                     ))}
@@ -443,10 +418,7 @@ export default function Biography(props) {
                 width: "100%",
               }}
             >
-              <Tooltip
-                title="Editar biografía"
-                // style={{ height: 40, width: 40 }}
-              >
+              <Tooltip title="Editar biografía">
                 <IconButton
                   component="span"
                   color="primary"
@@ -504,13 +476,15 @@ export default function Biography(props) {
                 </Slider>
               </div>
             )}
-            <RenderHTML
-              htmlString={
-                //   showFullDescription[i]
-                data?.biography
-                // : `${tile.description.slice(0, 450)}...`
-              }
-            />
+            <div class="ql-editor" style={{ height: "auto" }}>
+              <RenderHTML
+                htmlString={
+                  //   showFullDescription[i]
+                  data?.biography
+                  // : `${tile.description.slice(0, 450)}...`
+                }
+              />
+            </div>
           </Paper>
         ) : data?.biography === undefined &&
           JSON.parse(localStorage.getItem("token")) &&
@@ -563,7 +537,6 @@ export default function Biography(props) {
                         flexDirection: "column",
                         height: "100%",
                         width: "90%",
-                        //   marginTop: 10,
                       }}
                     >
                       <div
@@ -588,13 +561,15 @@ export default function Biography(props) {
                 </Slider>
               </div>
             )}
-            <RenderHTML
-              htmlString={
-                //   showFullDescription[i]
-                data?.biography
-                // : `${tile.description.slice(0, 450)}...`
-              }
-            />
+            <div class="ql-editor" style={{ height: "auto" }}>
+              <RenderHTML
+                htmlString={
+                  //   showFullDescription[i]
+                  data?.biography
+                  // : `${tile.description.slice(0, 450)}...`
+                }
+              />
+            </div>
           </Paper>
         ) : (
           <Typography

@@ -112,6 +112,12 @@ const useStyles = makeStyles((theme) => ({
     position: "absolute",
   },
   paper2: {
+    position: "absolute",
+    maxHeight: "90%",
+    overflowY: "auto",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
     width: "400px",
     backgroundColor: "white",
     boxShadow: theme.shadows[4],
@@ -286,9 +292,20 @@ export default function MovOrder(props) {
   };
 
   const getDis = (discount) => {
-    const s = discountList.find((dis) => dis._id === discount)?.name;
-    return s;
+    if (typeof discount === "string") {
+      return discount;
+    } else {
+      const s = discountList.find((dis) => dis._id === discount)?.name;
+      return s;
+    }
   };
+
+  function handleKeyDown(event) {
+    if (event.key === "Escape") {
+      props.handleClose();
+    } else return;
+  }
+  document.addEventListener("keydown", handleKeyDown);
 
   return (
     <React.Fragment>
@@ -414,11 +431,11 @@ export default function MovOrder(props) {
                       <div>
                         {"Precio unitario: $" +
                           Number(
-                            item.product?.publicEquation
-                              ? item.product?.publicEquation
-                              : item.product?.publicPrice?.from ||
-                                  item.product.prixerEquation ||
-                                  item.product.prixerPrice.from
+                            item.product.finalPrice ||
+                              item.product?.publicEquation ||
+                              item.product?.publicPrice?.from ||
+                              item.product.prixerEquation ||
+                              item.product.prixerPrice.from
                           ).toLocaleString("de-DE", {
                             minimumFractionDigits: 2,
                             maximumFractionDigits: 2,
@@ -455,7 +472,7 @@ export default function MovOrder(props) {
           >
             <Typography
               variant="h6"
-              style={{ marginTop: -38, margin: 5 }}
+              style={{ marginTop: -38 }}
               color="secondary"
               align="center"
             >
@@ -468,7 +485,7 @@ export default function MovOrder(props) {
                   style={{
                     display: "flex",
                     flexDirection: "column",
-                    // margin: "0px 0px 20px 0px",
+                    marginBottom: 10,
                     borderWidth: "1px",
                     borderStyle: "solid",
                     borderRadius: 10,
@@ -564,11 +581,11 @@ export default function MovOrder(props) {
                     <div>
                       {"Precio unitario: $" +
                         Number(
-                          item.product?.publicEquation
-                            ? item.product?.publicEquation
-                            : item.product?.publicPrice?.from ||
-                                item.product?.prixerEquation ||
-                                item.product?.prixerPrice?.price
+                          item.product.finalPrice ||
+                            item.product?.publicEquation ||
+                            item.product?.publicPrice?.from ||
+                            item.product?.prixerEquation ||
+                            item.product?.prixerPrice?.price
                         ).toLocaleString("de-DE", {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
@@ -591,7 +608,6 @@ export default function MovOrder(props) {
               style={{
                 display: "flex",
                 flexDirection: "column",
-                marginTop: 10,
                 borderWidth: "1px",
                 borderStyle: "solid",
                 borderRadius: 10,

@@ -119,10 +119,10 @@ export default function OrderForm(props) {
       if (
         item.product &&
         item.art &&
-        (JSON.parse(localStorage?.getItem("token")) ||
-          JSON.parse(localStorage?.getItem("adminToken"))) &&
-        (JSON.parse(localStorage?.getItem("token"))?.username ||
-          JSON.parse(localStorage?.getItem("adminToken"))?.username) &&
+        // (JSON.parse(localStorage?.getItem("token")) ||
+        JSON.parse(localStorage?.getItem("adminToken")) &&
+        // (JSON.parse(localStorage?.getItem("token"))?.username ||
+        JSON.parse(localStorage?.getItem("adminToken"))?.username &&
         typeof item.product.discount === "string"
       ) {
         let dis = discountList?.filter(
@@ -210,10 +210,10 @@ export default function OrderForm(props) {
   const PriceSelect = (product, quantity) => {
     if (
       typeof product.discount === "string" &&
-      (JSON.parse(localStorage?.getItem("token")) ||
-        JSON.parse(localStorage?.getItem("adminToken"))) &&
-      (JSON.parse(localStorage?.getItem("token"))?.username ||
-        JSON.parse(localStorage?.getItem("adminToken"))?.username) &&
+      // (JSON.parse(localStorage?.getItem("token")) ||
+      JSON.parse(localStorage?.getItem("adminToken")) &&
+      // (JSON.parse(localStorage?.getItem("token"))?.username ||
+      JSON.parse(localStorage?.getItem("adminToken"))?.username &&
       product.prixerEquation !== "" &&
       props.currency
     ) {
@@ -244,10 +244,10 @@ export default function OrderForm(props) {
       );
     } else if (
       typeof product.discount === "string" &&
-      (JSON.parse(localStorage?.getItem("token")) ||
-        JSON.parse(localStorage?.getItem("adminToken"))) &&
-      (JSON.parse(localStorage?.getItem("token"))?.username ||
-        JSON.parse(localStorage?.getItem("adminToken"))?.username) &&
+      // (JSON.parse(localStorage?.getItem("token")) ||
+      JSON.parse(localStorage?.getItem("adminToken")) &&
+      // (JSON.parse(localStorage?.getItem("token"))?.username ||
+      JSON.parse(localStorage?.getItem("adminToken"))?.username &&
       product.prixerEquation !== ""
     ) {
       let dis = discountList?.filter((dis) => dis._id === product.discount)[0];
@@ -276,10 +276,10 @@ export default function OrderForm(props) {
     }
     if (
       typeof product.discount === "string" &&
-      (JSON.parse(localStorage?.getItem("token")) ||
-        JSON.parse(localStorage?.getItem("adminToken"))) &&
-      (JSON.parse(localStorage?.getItem("token"))?.username ||
-        JSON.parse(localStorage?.getItem("adminToken"))?.username) &&
+      // (JSON.parse(localStorage?.getItem("token")) ||
+      JSON.parse(localStorage?.getItem("adminToken")) &&
+      // (JSON.parse(localStorage?.getItem("token"))?.username ||
+      JSON.parse(localStorage?.getItem("adminToken"))?.username &&
       props.currency
     ) {
       let dis = discountList?.filter((dis) => dis._id === product.discount)[0];
@@ -308,10 +308,10 @@ export default function OrderForm(props) {
       );
     } else if (
       typeof product.discount === "string" &&
-      (JSON.parse(localStorage?.getItem("token")) ||
-        JSON.parse(localStorage?.getItem("adminToken"))) &&
-      (JSON.parse(localStorage?.getItem("token"))?.username ||
-        JSON.parse(localStorage?.getItem("adminToken"))?.username)
+      // (JSON.parse(localStorage?.getItem("token")) ||
+      JSON.parse(localStorage?.getItem("adminToken")) &&
+      // (JSON.parse(localStorage?.getItem("token"))?.username ||
+      JSON.parse(localStorage?.getItem("adminToken"))?.username
     ) {
       let dis = discountList?.filter((dis) => dis._id === product.discount)[0];
       return (
@@ -333,6 +333,68 @@ export default function OrderForm(props) {
                 minimumFractionDigits: 2,
               })}
         </>
+      );
+    } else if (
+      (JSON.parse(localStorage?.getItem("token")) ||
+        JSON.parse(localStorage?.getItem("adminToken"))) &&
+      (JSON.parse(localStorage?.getItem("token"))?.username ||
+        JSON.parse(localStorage?.getItem("adminToken"))?.username) &&
+      product.prixerEquation !== "" &&
+      props.currency
+    ) {
+      return (
+        " Bs" +
+        Number(
+          product.prixerEquation?.replace(/[,]/gi, ".") *
+            props.dollarValue *
+            quantity
+        ).toLocaleString("de-DE", {
+          minimumFractionDigits: 2,
+        })
+      );
+    } else if (
+      (JSON.parse(localStorage?.getItem("token")) ||
+        JSON.parse(localStorage?.getItem("adminToken"))) &&
+      (JSON.parse(localStorage?.getItem("token"))?.username ||
+        JSON.parse(localStorage?.getItem("adminToken"))?.username) &&
+      product.prixerEquation !== ""
+    ) {
+      return (
+        " $" +
+        Number(
+          product.prixerEquation?.replace(/[,]/gi, ".") * quantity
+        ).toLocaleString("de-DE", {
+          minimumFractionDigits: 2,
+        })
+      );
+    } else if (
+      (JSON.parse(localStorage?.getItem("token")) ||
+        JSON.parse(localStorage?.getItem("adminToken"))) &&
+      (JSON.parse(localStorage?.getItem("token"))?.username ||
+        JSON.parse(localStorage?.getItem("adminToken"))?.username) &&
+      props.currency
+    ) {
+      return (
+        " Bs" +
+        Number(
+          product.prixerPrice.from * props.dollarValue * quantity
+        ).toLocaleString("de-DE", {
+          minimumFractionDigits: 2,
+        })
+      );
+    } else if (
+      (JSON.parse(localStorage?.getItem("token")) ||
+        JSON.parse(localStorage?.getItem("adminToken"))) &&
+      (JSON.parse(localStorage?.getItem("token"))?.username ||
+        JSON.parse(localStorage?.getItem("adminToken"))?.username)
+    ) {
+      return (
+        " $" +
+        Number(
+          product.prixerPrice.from.replace(/[$]/gi, "") * quantity
+        ).toLocaleString("de-DE", {
+          minimumFractionDigits: 2,
+        })
       );
     } else if (
       typeof product.discount === "string" &&
@@ -434,68 +496,6 @@ export default function OrderForm(props) {
                 minimumFractionDigits: 2,
               })}
         </>
-      );
-    } else if (
-      (JSON.parse(localStorage?.getItem("token")) ||
-        JSON.parse(localStorage?.getItem("adminToken"))) &&
-      (JSON.parse(localStorage?.getItem("token"))?.username ||
-        JSON.parse(localStorage?.getItem("adminToken"))?.username) &&
-      product.prixerEquation !== "" &&
-      props.currency
-    ) {
-      return (
-        " Bs" +
-        Number(
-          product.prixerEquation?.replace(/[,]/gi, ".") *
-            props.dollarValue *
-            quantity
-        ).toLocaleString("de-DE", {
-          minimumFractionDigits: 2,
-        })
-      );
-    } else if (
-      (JSON.parse(localStorage?.getItem("token")) ||
-        JSON.parse(localStorage?.getItem("adminToken"))) &&
-      (JSON.parse(localStorage?.getItem("token"))?.username ||
-        JSON.parse(localStorage?.getItem("adminToken"))?.username) &&
-      product.prixerEquation !== ""
-    ) {
-      return (
-        " $" +
-        Number(
-          product.prixerEquation?.replace(/[,]/gi, ".") * quantity
-        ).toLocaleString("de-DE", {
-          minimumFractionDigits: 2,
-        })
-      );
-    } else if (
-      (JSON.parse(localStorage?.getItem("token")) ||
-        JSON.parse(localStorage?.getItem("adminToken"))) &&
-      (JSON.parse(localStorage?.getItem("token"))?.username ||
-        JSON.parse(localStorage?.getItem("adminToken"))?.username) &&
-      props.currency
-    ) {
-      return (
-        " Bs" +
-        Number(
-          product.prixerPrice.from * props.dollarValue * quantity
-        ).toLocaleString("de-DE", {
-          minimumFractionDigits: 2,
-        })
-      );
-    } else if (
-      (JSON.parse(localStorage?.getItem("token")) ||
-        JSON.parse(localStorage?.getItem("adminToken"))) &&
-      (JSON.parse(localStorage?.getItem("token"))?.username ||
-        JSON.parse(localStorage?.getItem("adminToken"))?.username)
-    ) {
-      return (
-        " $" +
-        Number(
-          product.prixerPrice.from.replace(/[$]/gi, "") * quantity
-        ).toLocaleString("de-DE", {
-          minimumFractionDigits: 2,
-        })
       );
     } else if (product.publicEquation !== "" && props.currency) {
       return (

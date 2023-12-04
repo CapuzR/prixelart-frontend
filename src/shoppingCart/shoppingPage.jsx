@@ -172,10 +172,10 @@ export default function ShoppingPage(props) {
       if (
         item.product &&
         item.art &&
-        (JSON.parse(localStorage?.getItem("token")) ||
-          JSON.parse(localStorage?.getItem("adminToken"))) &&
-        (JSON.parse(localStorage?.getItem("token"))?.username ||
-          JSON.parse(localStorage?.getItem("adminToken"))?.username) &&
+        // (JSON.parse(localStorage?.getItem("token")) ||
+        JSON.parse(localStorage?.getItem("adminToken")) &&
+        // (JSON.parse(localStorage?.getItem("token"))?.username ||
+        JSON.parse(localStorage?.getItem("adminToken"))?.username &&
         typeof item.product.discount === "string"
       ) {
         let dis = discountList?.filter(

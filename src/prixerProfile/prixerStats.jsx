@@ -17,9 +17,11 @@ import { Button } from "@material-ui/core";
 import MovDetails from "./movDetails";
 import Menu from "@material-ui/core/Menu";
 import ClickAwayListener from "@material-ui/core/ClickAwayListener";
+import CircularProgress from "@material-ui/core/CircularProgress";
 import Grow from "@material-ui/core/Grow";
 import Popper from "@material-ui/core/Popper";
 import Fade from "@material-ui/core/Fade";
+import Modal from "@material-ui/core/Modal";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -46,6 +48,7 @@ export default function PrixerProfile() {
   const account = JSON.parse(localStorage.getItem("token")).account;
   const [balance, setBalance] = useState(0);
   const [movements, setMovements] = useState([]);
+  const [orders, setOrders] = useState([]);
   const [tab, setTab] = useState(0);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [openOrderDetails, setOpenOrderDetails] = useState(false);
@@ -74,9 +77,22 @@ export default function PrixerProfile() {
       .post(url, data)
       .then((response) => setMovements(response.data.movements));
   };
+
+  const getOrders = () => {
+    const url = process.env.REACT_APP_BACKEND_URL + "/order/byEmail";
+    const data = {
+      email: "iamwar2070@gmail.com",
+      // JSON.parse(localStorage.getItem("token")).email
+    };
+
+    axios
+      .post(url, data)
+      .then((response) => setOrders(response.data.orders.reverse()));
+  };
   useEffect(() => {
     getBalance();
     getMovements();
+    getOrders();
   }, []);
 
   const handleChange = (event, newValue) => {
@@ -128,6 +144,15 @@ export default function PrixerProfile() {
               >
                 <Tab
                   label="Balance General"
+                  style={{
+                    textTransform: "none",
+                    fontSize: isDeskTop ? 18 : 11,
+                    color: "#404e5c",
+                    padding: isDeskTop ? "6px 12px" : "6px 6px",
+                  }}
+                />
+                <Tab
+                  label="Pedidos"
                   style={{
                     textTransform: "none",
                     fontSize: isDeskTop ? 18 : 11,
@@ -197,12 +222,75 @@ export default function PrixerProfile() {
               )}
               {tab === 1 && (
                 <Grid>
-                  {/* <Typography
-                    variant="h6"
-                    style={{ display: "flex", justifyContent: "center" }}
-                  >
-                    Tus Movimientos:
-                  </Typography> */}
+                  {orders.length > 0 ? (
+                    orders.map((order) => (
+                      <Grid
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          color: "grey",
+                          backgroundColor: "ghostwhite",
+                          padding: 10,
+                          borderRadius: 10,
+                          margin: "10px 0px 10px 0px",
+                          alignItems: "center",
+                        }}
+                      >
+                        <Grid style={{ fontSize: isDeskTop ? "14px" : "9px" }}>
+                          {new Date(order.createdOn)
+                            .toLocaleString("en-GB", {
+                              timeZone: "UTC",
+                            })
+                            .slice(0, 10)}
+                        </Grid>
+                        <Grid style={{ fontSize: isDeskTop ? "14px" : "9px" }}>
+                          <Button
+                            style={{
+                              textTransform: "none",
+                              color: "#404e5c",
+                              fontSize: isDeskTop ? "14px" : "9px",
+                              minWidth: 32,
+                            }}
+                            onClick={handleClick("right-start", order.orderId)}
+                          >
+                            {order.orderId}
+                          </Button>
+                        </Grid>
+                        <Grid
+                          style={{
+                            fontWeight: "bold",
+                            fontSize: isDeskTop ? "14px" : "9px",
+                            display: "flex",
+                            alignItems: "center",
+                          }}
+                        >
+                          {order.status}
+                          <CircularProgress
+                            style={{ marginLeft: 10 }}
+                            variant="determinate"
+                            value={
+                              (order.status === "Por producir" && 10) ||
+                              (order.status === "En impresión" && 20) ||
+                              (order.status === "En producción" && 30) ||
+                              (order.status === "Por entregar" && 80) ||
+                              (order.status === "Entregado" && 90) ||
+                              (order.status === "Concretado" && 100) ||
+                              (order.status === "Detenido" && 50) ||
+                              (order.status === "Anulado" && 0)
+                            }
+                          />
+                        </Grid>
+                      </Grid>
+                    ))
+                  ) : (
+                    <Typography align="center" variant="h5" color="secondary">
+                      Aún no hay pedidos registradas para ti.
+                    </Typography>
+                  )}
+                </Grid>
+              )}
+              {tab === 2 && (
+                <Grid>
                   {movements ? (
                     movements.map((mov) => (
                       <Grid
@@ -280,15 +368,13 @@ export default function PrixerProfile() {
                       </Grid>
                     ))
                   ) : (
-                    <Typography
-                      style={{ display: "flex", justifyContent: "center" }}
-                    >
-                      Aún no hay órdenes registradas para ti.
+                    <Typography align="center" variant="h6" color="secondary">
+                      Aún no hay movimientos registradas para ti.
                     </Typography>
                   )}
                 </Grid>
               )}
-              {tab === 2 && (
+              {tab === 3 && (
                 <Typography align="center" variant="h4" color="secondary">
                   Próximamente
                 </Typography>
@@ -298,7 +384,8 @@ export default function PrixerProfile() {
         </Paper>
       </Grid>
       <div style={{ maxWidth: "80%" }}>
-        <Popper
+        <Modal open={openOrderDetails} onClose={handleClose}>
+          {/* <Popper
           open={openOrderDetails}
           anchorEl={anchorEl}
           placement={placement}
@@ -306,16 +393,13 @@ export default function PrixerProfile() {
         >
           {({ TransitionProps }) => (
             <Fade {...TransitionProps} timeout={350}>
-              <ClickAwayListener onClickAway={handleClose}>
-                <MovDetails
-                  orderId={orderId}
-                  handleClose={handleClose}
-                  type={type}
-                />
-              </ClickAwayListener>
+              <ClickAwayListener onClickAway={handleClose}> */}
+          <MovDetails orderId={orderId} handleClose={handleClose} type={type} />
+          {/* </ClickAwayListener>
             </Fade>
           )}
-        </Popper>
+        </Popper> */}
+        </Modal>
       </div>
     </Container>
   );

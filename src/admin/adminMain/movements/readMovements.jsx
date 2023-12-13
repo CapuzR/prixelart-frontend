@@ -71,6 +71,7 @@ export default function ReadMovements(props) {
   const [prixers, setPrixers] = useState();
   const [selectedPrixer, setSelectedPrixer] = useState();
   const [type, setType] = useState();
+  const moment = require("moment-timezone");
 
   const totalMovements = rows?.length;
   const itemsPerPage = 20;
@@ -230,7 +231,7 @@ export default function ReadMovements(props) {
                       </TableCell>
                       <TableCell align="center">Descripción</TableCell>
                       <TableCell align="center">Monto</TableCell>
-                      <TableCell align="center">Fecha</TableCell>
+                      <TableCell align="center">Fecha de creación</TableCell>
                       <TableCell align="center">Creado por</TableCell>
                     </TableRow>
                   </TableHead>
@@ -240,8 +241,8 @@ export default function ReadMovements(props) {
                         <TableRow key={row._id}>
                           <TableCell align="center">{row._id}</TableCell>
                           <TableCell align="center">
-                            {row?.date?.substring(0, 10) ||
-                              row.createdOn.substring(0, 10)}
+                            {row.date &&
+                              new Date(row?.date)?.toLocaleDateString()}
                           </TableCell>
                           <TableCell align="center">
                             {row.destinatary}
@@ -278,7 +279,9 @@ export default function ReadMovements(props) {
                             })}
                           </TableCell>
                           <TableCell align="center">
-                            {row.createdOn.substring(0, 10)}
+                            {new Date(row.createdOn).toLocaleDateString()}
+                            {/* <br></br>
+                            {row.createdOn.substring(0, 10)} */}
                           </TableCell>
                           <TableCell align="center">{row.createdBy}</TableCell>
                         </TableRow>

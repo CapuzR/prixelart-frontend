@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 
 import Button from "@material-ui/core/Button";
@@ -15,6 +15,8 @@ import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { useHistory } from "react-router-dom";
 import IconButton from "@material-ui/core/IconButton";
 import { Typography } from "@material-ui/core";
+// import * as THREE from "three";
+import { AmbientLight, PointLight } from "three";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -381,9 +383,10 @@ export default function CartReview(props) {
           justifyContent: "space-between",
         }}
       >
-        <h1 style={{ marginBottom: 20, marginTop: 90 }}>Carrito de compras</h1>
+        <h1 style={{ marginBottom: 20, marginTop: 90, color: "#404e5c" }}>
+          Carrito de compras
+        </h1>
       </Grid>
-
       {props.buyState.map((buy, index) => {
         return (
           <Grid

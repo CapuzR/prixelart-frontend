@@ -310,69 +310,6 @@ export default function UpdateMockup(props) {
 
   const container = document.getElementById("container");
 
-  // useEffect(() => {
-  //   if (container) {
-  //     let scene, renderer;
-  //     const loader = new THREE.ImageLoader();
-  //     loader.load(
-  //       // resource URL
-  //       `${randomArt.smallThumbUrl}`,
-
-  //       // onLoad callback
-  //       function (image) {
-  //         // use the image, e.g. draw part of it on a canvas
-  //         const canvas = document.createElement("canvas");
-  //         container.appendChild(canvas);
-
-  //         const context = canvas.getContext("2d");
-  //         context.drawImage(image, 100, 100);
-  //       },
-
-  //       // onProgress callback currently not supported
-  //       undefined,
-
-  //       // onError callback
-  //       function () {
-  //         console.error("An error happened.");
-  //       }
-  //     );
-
-  //     // const init = () => {
-  //     //   // Configuración de la escena
-  //     //   scene = new THREE.Scene();
-
-  //     //   // Configuración de la cámara
-  //     //   const camera = new THREE.PerspectiveCamera(75, 400 / 400, 0.1, 1000);
-  //     //   camera.position.z = 5;
-
-  //     //   // Configuración del renderizador
-  //     //   renderer = new THREE.WebGLRenderer();
-  //     //   renderer.setSize(400, 400);
-  //     //   container.appendChild(renderer.domElement);
-  //     //   // Crear el cilindro
-  //     //   const geometry = new THREE.BoxGeometry(1, 1, 1);
-  //     //   const texture = new THREE.TextureLoader().load(
-  //     //     `${randomArt.smallThumbUrl}`
-  //     //   );
-  //     //   const material = new THREE.MeshBasicMaterial({ map: texture });
-  //     //   // const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-  //     //   const cylinder = new THREE.Mesh(geometry, material);
-  //     //   scene.add(cylinder);
-
-  //     //   // Animación
-  //     //   const animate = () => {
-  //     //     requestAnimationFrame(animate);
-  //     //     cylinder.rotation.y += 0.01;
-  //     //     renderer.render(scene, camera);
-  //     //   };
-
-  //     //   animate();
-  //     // };
-
-  //     // init();
-  //   }
-  // }, []);
-
   return (
     <React.Fragment>
       {
@@ -622,39 +559,7 @@ export default function UpdateMockup(props) {
                     }}
                     onClick={handleImageClick}
                   />
-                  {topLeft.x !== 0 && topLeft.y !== 0 && (
-                    <div
-                      style={{
-                        width: 350,
-                        height: 350,
-                        borderRadius: 5,
-                        marginTop: -345,
-                        marginRight: 10,
-                      }}
-                    >
-                      <img
-                        src={
-                          selectedImg
-                            ? randomArt.smallThumbUrl
-                            : randomArt.mediumThumbUrl
-                        }
-                        alt="Imagen Superpuesta"
-                        style={{
-                          position: "relative",
-                          top: `${topLeft.y}px`,
-                          left: `${topLeft.x}px`,
-                          width: `${width}px`,
-                          height: `${height}px`,
-                          transformOrigin: "top left",
-                          objectFit: "cover",
-                          transform: `perspective(${perspective}px) rotateX(${rotateX}deg) skew(${skewX}deg, ${skewY}deg) translateX(${translateX}px) translateY(${translateY}px) rotateY(${rotateY}deg)`,
-                          // backgroundPosition:
-                          //   selectedImg &&
-                          //   `-${selectedImg?.crop?.x}px -${selectedImg?.crop?.y}px`,
-                        }}
-                      />
-                    </div>
-                  )}
+
                   {/* {randomArt && (
                     <div
                       style={{ width: "400px", height: "400px" }}

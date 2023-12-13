@@ -844,7 +844,12 @@ export default function Home(props) {
           </Container>
         </main>
         <footer className={classes.footer}>
-          <Typography variant="h6" align="center" gutterBottom>
+          <Typography
+            variant="h6"
+            align="center"
+            gutterBottom
+            style={{ color: "#404e5c" }}
+          >
             Si quieres convertirte en un Prixer{" "}
             <a target="blank" href="https://prixelart.com/registrar">
               regístrate

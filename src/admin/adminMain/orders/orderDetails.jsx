@@ -575,7 +575,9 @@ export default function OrderDetails(props) {
                       {props.modalContent.shippingData?.shippingDate && (
                         <div>
                           {"Fecha de entrega: " +
-                            props.modalContent?.shippingData?.shippingDate}
+                            new Date(
+                              props.modalContent?.shippingData?.shippingDate
+                            )?.toLocaleDateString()}
                         </div>
                       )}
                     </Grid>

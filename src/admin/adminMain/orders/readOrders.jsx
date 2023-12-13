@@ -311,10 +311,12 @@ export default function ReadOrders(props) {
                 <TableRow key={index}>
                   <TableCell align="center">{row.orderId}</TableCell>
                   <TableCell align="center">
-                    {row.createdOn.substring(0, 10)}
+                    {new Date(row.createdOn)?.toLocaleDateString()}
                   </TableCell>
                   <TableCell align="center">
-                    {row.shippingData?.shippingDate?.substring(0, 10)}
+                    {new Date(
+                      row.shippingData?.shippingDate
+                    )?.toLocaleDateString()}
                   </TableCell>
                   <TableCell align="center">
                     {row.basicData?.firstname || row.basicData?.name}{" "}
@@ -380,7 +382,7 @@ export default function ReadOrders(props) {
                       </Select>
                       {row.payStatus === "Pagado" && row.payDate && (
                         <Typography variant="body2" color="secondary">
-                          el {row.payDate?.substring(0, 10)}
+                          el {new Date(row.payDate)?.toLocaleDateString()}
                         </Typography>
                       )}
                     </FormControl>
@@ -431,7 +433,8 @@ export default function ReadOrders(props) {
                       </Select>
                       {row.status === "Concretado" && row.completionDate && (
                         <Typography variant="body2" color="secondary">
-                          el {row?.completionDate?.substring(0, 10)}
+                          el{" "}
+                          {new Date(row?.completionDate)?.toLocaleDateString()}
                         </Typography>
                       )}
                     </FormControl>

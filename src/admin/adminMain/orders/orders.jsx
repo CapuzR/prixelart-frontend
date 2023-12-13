@@ -345,7 +345,7 @@ export default function Orders(props) {
     worksheet.columns = [
       { header: "status", key: "status", width: 16 },
       { header: "ID", key: "ID", width: 10 },
-      { header: "Fecha de solicitud", key: "createdOn", width: 11 },
+      { header: "Fecha de solicitud", key: "createdOn", width: 12 },
       { header: "Nombre del cliente", key: "basicData", width: 24 },
       { header: "Tipo de cliente", key: "typeConsumer", width: 12 },
       { header: "certificado", key: "", width: 12 },
@@ -407,7 +407,7 @@ export default function Orders(props) {
       const v2 = {
         status: order?.status,
         ID: order.orderId,
-        createdOn: order.createdOn?.substring(0, 10),
+        createdOn: new Date(order.createdOn)?.toLocaleDateString(),
         basicData:
           (order.basicData?.firstname || order.basicData?.name) +
           " " +
@@ -425,9 +425,11 @@ export default function Orders(props) {
         paymentMethod: order?.billingData?.orderPaymentMethod,
         shippingData: "",
         payStatus: order.payStatus,
-        payDate: order?.payDate?.substring(0, 10),
+        payDate: order.payDate && new Date(order?.payDate).toLocaleDateString(),
         price: "",
-        completionDate: order?.completionDate?.substring(0, 10),
+        completionDate:
+          order.completionDate &&
+          new Date(order?.completionDate).toLocaleDateString(),
       };
 
       let shippingData = " ";
@@ -438,7 +440,9 @@ export default function Orders(props) {
       }
       let shippingDate;
       if (order.shippingData?.shippingDate !== undefined) {
-        shippingDate = order.shippingData?.shippingDate;
+        shippingDate = new Date(
+          order.shippingData?.shippingDate
+        ).toLocaleDateString();
       }
       let prixer = "";
       let art = "";

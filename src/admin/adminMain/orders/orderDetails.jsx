@@ -654,21 +654,21 @@ export default function OrderDetails(props) {
                           {
                             minimumFractionDigits: 2,
                             maximumFractionDigits: 2,
-                            // maximumSignificantDigits: 2,
                           }
                         )}
                     </div>
                     <div>
-                      {"IVA: $" +
-                        Number(props.modalContent?.tax).toLocaleString(
-                          "de-DE",
-                          {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-
-                            // maximumSignificantDigits: 2,
-                          }
-                        )}
+                      IVA: $
+                      {props.modalContent?.billingData?.orderPaymentMethod ===
+                      "Balance Prixer"
+                        ? "0,00"
+                        : Number(props.modalContent?.tax).toLocaleString(
+                            "de-DE",
+                            {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                            }
+                          )}
                     </div>
                     <div>
                       {props.modalContent.shippingData?.shippingMethod &&
@@ -679,8 +679,6 @@ export default function OrderDetails(props) {
                           ).toLocaleString("de-DE", {
                             minimumFractionDigits: 2,
                             maximumFractionDigits: 2,
-
-                            // maximumSignificantDigits: 2,
                           })}
                     </div>
                     <div>

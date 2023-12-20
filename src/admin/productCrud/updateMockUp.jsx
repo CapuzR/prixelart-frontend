@@ -94,8 +94,9 @@ export default function UpdateMockup(props) {
   const [loading, setLoading] = useState(false);
   const [images, setImages] = useState();
   const [preview, setPreview] = useState(undefined);
-  const [randomArt, setArt] = useState(0);
+  const [randomArt, setArt] = useState(undefined);
   const [corner, setCorner] = useState(0);
+  const [distortion, setDistortion] = useState(undefined);
   const [topLeft, setTopLeft] = useState({ x: 0, y: 0 });
   const [topRight, setTopRight] = useState({ x: 0, y: 0 });
   const [bottomLeft, setBottomLeft] = useState({ x: 0, y: 0 });
@@ -111,6 +112,7 @@ export default function UpdateMockup(props) {
   const [rotateY, setRotateY] = useState(0);
   const [aspectRatio, setAspectRatio] = useState(0);
   const [selectedImg, setSelectedImg] = useState(undefined);
+  const [warpPercentage, setWarpPercenteage] = useState(0);
 
   //Error states.
   const [errorMessage, setErrorMessage] = useState();
@@ -154,10 +156,16 @@ export default function UpdateMockup(props) {
     setCorner(event.target.value);
   };
 
+  const handleDistortion = (event) => {
+    setDistortion(event.taget.value);
+    console.log(event.target.value);
+  };
   const getRandomArt = async () => {
     const url = process.env.REACT_APP_BACKEND_URL + "/art/random";
-    const response = axios.get(url);
-    setArt((await response).data.arts);
+    const response = await axios.get(url);
+    if (response.data.arts !== null) {
+      setArt(response.data.arts);
+    }
   };
   //Preview de imagen antes de enviar
   const convertToBase64 = (blob) => {
@@ -263,6 +271,11 @@ export default function UpdateMockup(props) {
         break;
     }
   };
+
+  const handleChangeWarpPercentage = (event, newValue) => {
+    setWarpPercenteage(newValue);
+    warpImage();
+  };
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -308,8 +321,178 @@ export default function UpdateMockup(props) {
     }
   };
 
-  const container = document.getElementById("container");
+  var warped_image = document.getElementById("warped_image"),
+    warp_canvas = document.createElement("canvas"),
+    warp_context = warp_canvas.getContext("2d");
 
+  // inputs
+  var warp_percentage_input = document.getElementById("warp_percentage");
+
+  // for reference, the full method
+  function getQuadraticBezierXYatT(start_point, control_point, end_point, T) {
+    var pow1minusTsquared = Math.pow(1 - T, 2),
+      powTsquared = Math.pow(T, 2);
+
+    var x =
+        pow1minusTsquared * start_point.x +
+        2 * (1 - T) * T * control_point.x +
+        powTsquared * end_point.x,
+      y =
+        pow1minusTsquared * start_point.y +
+        2 * (1 - T) * T * control_point.y +
+        powTsquared * end_point.y;
+
+    return {
+      x: x,
+      y: y,
+    };
+  }
+
+  function warpHorizontally(image_to_warp, invert_curve) {
+    var image_width = image_to_warp.width,
+      image_height = image_to_warp.height,
+      warp_percentage = parseFloat(warp_percentage_input.value, 10),
+      // for fun purposes and nicer controls
+      // I chose to determine the offset by applying a percentage value to the image width
+      warp_x_offset = warp_percentage * image_width;
+
+    warp_canvas.width = image_width + Math.ceil(warp_x_offset * 2);
+    warp_canvas.height = image_height;
+
+    // see https://www.rgraph.net/blog/an-example-of-the-html5-canvas-quadraticcurveto-function.html
+    // for more details regarding start_point, control_point si end_point
+    var start_point = {
+      x: 0,
+      y: 0,
+    };
+    var control_point = {
+      x: invert_curve ? warp_x_offset : -warp_x_offset,
+      y: image_height / 2,
+    };
+    var end_point = {
+      x: 0,
+      y: image_height,
+    };
+
+    var offset_x_points = [],
+      t = 0;
+    for (; t < image_height; t++) {
+      var xyAtT = getQuadraticBezierXYatT(
+          start_point,
+          control_point,
+          end_point,
+          t / image_height
+        ),
+        x = parseInt(xyAtT.x);
+
+      offset_x_points.push(x);
+    }
+
+    warp_context.clearRect(0, 0, warp_canvas.width, warp_canvas.height);
+
+    var y = 0;
+    for (; y < image_height; y++) {
+      warp_context.drawImage(
+        image_to_warp,
+        // clip 1 pixel wide slice from the image
+        //x, 0, 1, image_height + warp_y_offset,
+        0,
+        y,
+        image_width + warp_x_offset,
+        1,
+        // draw that slice with a y-offset
+        //x, warp_y_offset + offset_y_points[x], 1, image_height + warp_y_offset
+        warp_x_offset + offset_x_points[y],
+        y,
+        image_width + warp_x_offset,
+        1
+      );
+    }
+  }
+
+  function warpVertically(image_to_warp, invert_curve) {
+    var image_width = image_to_warp.width,
+      image_height = image_to_warp.height,
+      warp_percentage = parseFloat(warp_percentage_input.value, 10),
+      // for fun purposes and nicer controls
+      // I chose to determine the offset by applying a percentage value to the image height
+      warp_y_offset = warp_percentage * image_height;
+
+    warp_canvas.width = image_width;
+    warp_canvas.height = image_height + Math.ceil(warp_y_offset * 2);
+
+    // see https://www.rgraph.net/blog/an-example-of-the-html5-canvas-quadraticcurveto-function.html
+    // for more details regarding start_point, control_point si end_point
+    var start_point = {
+      x: 0,
+      y: 0,
+    };
+    var control_point = {
+      x: image_width / 2,
+      y: invert_curve ? warp_y_offset : -warp_y_offset,
+    };
+    var end_point = {
+      x: image_width,
+      y: 0,
+    };
+
+    var offset_y_points = [],
+      t = 0;
+    for (; t < image_width; t++) {
+      var xyAtT = getQuadraticBezierXYatT(
+          start_point,
+          control_point,
+          end_point,
+          t / image_width
+        ),
+        y = parseInt(xyAtT.y);
+
+      offset_y_points.push(y);
+    }
+
+    warp_context.clearRect(0, 0, warp_canvas.width, warp_canvas.height);
+
+    var x = 0;
+    for (; x < image_width; x++) {
+      warp_context.drawImage(
+        image_to_warp,
+        // clip 1 pixel wide slice from the image
+        x,
+        0,
+        1,
+        image_height + warp_y_offset,
+        // draw that slice with a y-offset
+        x,
+        warp_y_offset + offset_y_points[x],
+        1,
+        image_height + warp_y_offset
+      );
+    }
+  }
+
+  // warpImage();
+
+  // window.warpImage = warpImage();
+
+  const warpImage = () => {
+    var image_to_warp = new Image();
+
+    // image_to_warp.onload = function () {
+    //   var warp_orientation = document.querySelector(
+    //       'input[name="warp_orientation"]:checked'
+    //     ).value,
+    //     invert_curve = document.getElementById("invert_curve").checked;
+    //   if (warp_orientation === "horizontal") {
+    //     warpHorizontally(image_to_warp, invert_curve);
+    //   } else {
+    //     warpVertically(image_to_warp, invert_curve);
+    //   }
+
+    //   warped_image.src = warp_canvas.toDataURL();
+    // };
+
+    image_to_warp.src = randomArt?.smallThumbUrl;
+  };
   return (
     <React.Fragment>
       {
@@ -329,6 +512,90 @@ export default function UpdateMockup(props) {
             flexDirection: "column",
           }}
         >
+          {/* <div class="main-container">
+            {/* <h2>Options</h2>
+            <p>Warp percentage </p>
+            <p>{warpPercentage}</p>
+
+            <input
+              id="warp_percentage"
+              type="range"
+              min="0"
+              max="1"
+              value="0.3"
+              step="0.01"
+            />
+            <p>1.0</p>
+             <span>
+              Note: curving the image has nothing to do with percentages, this
+              was simply my desired choice of controlling the curve level.
+            </span> 
+
+            <p>Horizontal </p>
+            <input name="warp_orientation" type="radio" value="horizontal" />
+            <span class="spacer"></span>
+
+            <p>Vertical </p>
+            <input
+              name="warp_orientation"
+              type="radio"
+              value="vertical"
+              checked
+            />
+            <span class="spacer"></span>
+
+            <p>Invert curve </p>
+            <input id="invert_curve" type="checkbox" />
+
+            <button onClick={warpImage()}>Warp Image</button>
+
+            <h2>Result</h2>
+
+            <img id="warped_image" />
+          </div> */}
+          {/* <Grid>
+            <Typography variant="h4" color="secondary">
+              Options
+            </Typography>
+            <Typography variant="subtitle2" color="secondary">
+              Warp percentage: {warpPercentage}
+            </Typography>
+            <Slider
+              value={warpPercentage}
+              onChange={handleChangeWarpPercentage}
+              aria-labelledby="continuous-slider"
+              min="0"
+              max="1"
+              step="0.01"
+            />
+            <FormControl component="fieldset">
+              <FormLabel color="secondary">Tipo de distorsión</FormLabel>
+              <RadioGroup value={distortion} onChange={handleDistortion}>
+                <FormControlLabel
+                  value="horizontal"
+                  control={<Radio />}
+                  label="Horizontal"
+                />
+                <FormControlLabel
+                  value="vertical"
+                  control={<Radio />}
+                  label="Vertical"
+                />
+                <FormControlLabel
+                  value="inverted horizontal"
+                  control={<Radio />}
+                  label="Horizontal Invertida"
+                />
+                <FormControlLabel
+                  value="inverted vertical"
+                  control={<Radio />}
+                  label="Vertical Invertida"
+                />
+              </RadioGroup>
+            </FormControl>
+            <img id="warped_image" />
+          </Grid> */}
+
           {preview ? (
             <Paper
               className={classes.paper}
@@ -344,11 +611,7 @@ export default function UpdateMockup(props) {
               elevation={3}
             >
               <Grid item md={6}>
-                <FormControl
-                  // component="fieldset"
-                  style={{ width: "90%" }}
-                  // className={classes.formControl}
-                >
+                <FormControl style={{ width: "90%" }}>
                   <FormLabel component="legend">
                     Selecciona el punto a definir:
                   </FormLabel>
@@ -550,6 +813,7 @@ export default function UpdateMockup(props) {
                   <div
                     style={{
                       backgroundImage: "url(" + preview + ")",
+                      marginTop: -350,
                       width: 350,
                       height: 350,
                       backgroundSize: "cover",
@@ -559,13 +823,18 @@ export default function UpdateMockup(props) {
                     }}
                     onClick={handleImageClick}
                   />
-
-                  {/* {randomArt && (
+                  {randomArt && (
                     <div
-                      style={{ width: "400px", height: "400px" }}
+                      style={{
+                        width: "400px",
+                        height: "400px",
+                        backgroundImage: "url(" + randomArt.smallThumbUrl + ")",
+                        backgroundSize: "contain",
+                        backgroundRepeat: "no-repeat",
+                      }}
                       id="container"
                     />
-                  )} */}
+                  )}
                 </div>
               </Grid>
             </Paper>

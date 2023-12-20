@@ -243,9 +243,17 @@ export default function CreateOrder(props) {
   };
 
   let shippingCost = Number(shippingMethod?.price);
+
   const getIvaCost = (state) => {
     let iva = getTotalPrice(state) * 0.16;
-    return iva;
+    if (
+      typeof selectedPrixer?.username === "string" &&
+      billingData.orderPaymentMethod === "Balance Prixer"
+    ) {
+      return 0;
+    } else {
+      return iva;
+    }
   };
 
   const getTotal = (x) => {
@@ -356,7 +364,7 @@ export default function CreateOrder(props) {
       billingData: billingData,
       dollarValue: props.dollarValue,
       observations: observations,
-      tax: getTotalPrice(props.buyState) * 0.16,
+      tax: getIvaCost(props.buyState),
       subtotal: getTotalPrice(props.buyState),
       shippingCost: shippingCost,
       total: getTotal(props.buyState),
@@ -484,7 +492,7 @@ export default function CreateOrder(props) {
             basicData={basicData}
             shippingData={shippingData}
             setShippingData={setShippingData}
-            billingAddress={billingData}
+            billingData={billingData}
             setBillingData={setBillingData}
             observations={observations}
             dollarValue={props.dollarValue}

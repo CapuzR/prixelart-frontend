@@ -282,7 +282,14 @@ export default function Checkout(props) {
 
   const getIvaCost = (state) => {
     let iva = getTotalPrice(state) * 0.16;
-    return iva;
+    if (
+      typeof props.selectedPrixer?.username === "string" &&
+      props.billingData.orderPaymentMethod === "Balance Prixer"
+    ) {
+      return 0;
+    } else {
+      return iva;
+    }
   };
 
   const getTotalPrice = (state) => {
@@ -863,6 +870,9 @@ export default function Checkout(props) {
 
                     <strong>
                       IVA:
+                      {/* {typeof props.selectedPrixer?.username === "string" &&
+                      props.billingData.orderPaymentMethod === "Balance Prixer"
+                        ? "$0,00" */}
                       {currency
                         ? " Bs" +
                           Number(

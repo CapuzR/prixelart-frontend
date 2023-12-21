@@ -545,7 +545,14 @@ export default function OrderForm(props) {
 
   const getIvaCost = (state) => {
     let iva = getTotalPrice(state) * 0.16;
-    return iva;
+    if (
+      props?.orderPaymentMethod &&
+      props?.orderPaymentMethod.name === "Balance Prixer"
+    ) {
+      return 0;
+    } else {
+      return iva;
+    }
   };
 
   const getTotal = (x) => {

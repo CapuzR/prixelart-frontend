@@ -284,7 +284,7 @@ export default function Checkout(props) {
     let iva = getTotalPrice(state) * 0.16;
     if (
       typeof props.selectedPrixer?.username === "string" &&
-      props.billingData.orderPaymentMethod === "Balance Prixer"
+      props.billingData?.orderPaymentMethod === "Balance Prixer"
     ) {
       return 0;
     } else {

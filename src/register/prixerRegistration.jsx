@@ -264,6 +264,9 @@ export default function PrixerRegistration() {
             });
             setErrorMessage("Registro de Prixer exitoso.");
             setSnackBarError(true);
+            const token = JSON.parse(localStorage.getItem("token"));
+            token.prixerId = token.id;
+            localStorage.setItem("token", JSON.stringify(token));
             history.push({ pathname: "/" + response.data.prixerData.username });
           }
         })

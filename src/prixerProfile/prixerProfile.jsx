@@ -83,6 +83,7 @@ export default function PrixerProfile(props) {
   const [openShoppingCart, setOpenShoppingCart] = useState(false);
   const [selectedArt, setSelectedArt] = useState(undefined);
   const [feed, setFeed] = useState("Artes");
+  const [createdService, setCreatedService] = useState(false);
 
   const showPrixerGrid = () => {
     switch (feed) {
@@ -101,7 +102,13 @@ export default function PrixerProfile(props) {
         );
 
       case "Servicios":
-        return <ServiceGrid prixerUsername={prixerUsername} />;
+        return (
+          <ServiceGrid
+            prixerUsername={prixerUsername}
+            createdService={createdService}
+            setCreatedService={setCreatedService}
+          />
+        );
 
       case "Bio":
         return <Biography prixerUsername={prixerUsername} />;
@@ -131,7 +138,8 @@ export default function PrixerProfile(props) {
       {openServiceFormDialog && (
         <CreateService
           openArtFormDialog={openServiceFormDialog}
-          setOpenArtFormDialog={setOpenServiceFormDialog}
+          setOpenServiceFormDialog={setOpenServiceFormDialog}
+          setCreatedService={setCreatedService}
         />
       )}
 

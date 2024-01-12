@@ -263,7 +263,11 @@ export default function ShoppingPage(props) {
 
   const getIvaCost = (state) => {
     let iva = getTotalPrice(state) * 0.16;
-    return iva;
+    if (orderPaymentMethod && orderPaymentMethod === "Balance Prixer") {
+      return 0;
+    } else {
+      return iva;
+    }
   };
 
   const getTotal = (x) => {
@@ -285,7 +289,7 @@ export default function ShoppingPage(props) {
       props.setOpen(true);
 
       let orderLines = [];
-      let taxv2 = getTotalPrice(props.buyState) * 0.16;
+      let taxv2 = getIvaCost(props.buyState);
       let subtotalv2 = getTotalPrice(props.buyState);
       let totalv2 = getTotal(props.buyState);
 

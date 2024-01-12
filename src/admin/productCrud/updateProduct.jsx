@@ -35,6 +35,10 @@ import validations from "../../shoppingCart/validations";
 import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
 import Paper from "@material-ui/core/Paper";
 import Mockup from "./updateMockUp";
+import InputAdornment from "@material-ui/core/InputAdornment";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
+
 const useStyles = makeStyles((theme) => ({
   seeMore: {
     marginTop: theme.spacing(3),
@@ -339,6 +343,7 @@ export default function UpdateProduct(props) {
           } else {
             setErrorMessage("Actualización de producto exitosa.");
             setSnackBarError(true);
+            // history.push("/admin/product/read");
           }
         }
       }
@@ -400,8 +405,12 @@ export default function UpdateProduct(props) {
                 }}
               >
                 <FormControl variant="outlined">
-                  <Button variant="contained" component="label">
-                    Upload File
+                  <Button
+                    variant="contained"
+                    component="label"
+                    style={{ textTransform: "none" }}
+                  >
+                    Subir imagen{" "}
                     <input
                       name="newProductImages"
                       type="file"
@@ -413,13 +422,13 @@ export default function UpdateProduct(props) {
                       }}
                     />
                   </Button>
-                  - O -
                   <Button
                     variant="contained"
                     componenet="label"
                     onClick={handleClickOpen}
+                    style={{ textTransform: "none", marginTop: 10 }}
                   >
-                    Upload video
+                    Subir video
                   </Button>
                 </FormControl>
               </Grid>
@@ -655,6 +664,27 @@ export default function UpdateProduct(props) {
                     hideToolbar={false}
                   />
                 </FormControl>
+                {/* <ReactQuill
+                  style={{
+                    marginBottom: 10,
+                    marginTop: 15,
+                    maxWidth: 1100,
+                    width: "100%",
+
+                    borderRadius: 30,
+                  }}
+                  modules={{
+                    toolbar: [
+                      [{ header: [1, 2, 3, 4, 5, 6, false] }],
+                      ["bold", "italic", "underline", "strike"],
+                      [{ align: [] }],
+                      [{ list: "ordered" }, { list: "bullet" }],
+                    ],
+                  }}
+                  value={description}
+                  onChange={setDescription}
+                  placeholder="Escribe la descripción aquí..."
+                /> */}
               </Grid>
               <Grid item xs={12} md={6}>
                 <FormControl
@@ -691,6 +721,11 @@ export default function UpdateProduct(props) {
                     onChange={(e) => {
                       setProductionTime(e.target.value);
                     }}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">días</InputAdornment>
+                      ),
+                    }}
                   />
                 </FormControl>
               </Grid>
@@ -722,6 +757,11 @@ export default function UpdateProduct(props) {
                       fromPublicPrice !== undefined &&
                       !validations.isAValidPrice(fromPublicPrice)
                     }
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">$</InputAdornment>
+                      ),
+                    }}
                   />
                 </FormControl>
               </Grid>
@@ -750,6 +790,11 @@ export default function UpdateProduct(props) {
                       toPublicPrice !== null &&
                       !validations.isAValidPrice(toPublicPrice)
                     }
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">$</InputAdornment>
+                      ),
+                    }}
                   />
                 </FormControl>
               </Grid>
@@ -782,6 +827,11 @@ export default function UpdateProduct(props) {
                       fromPrixerPrice !== null &&
                       !validations.isAValidPrice(fromPrixerPrice)
                     }
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">$</InputAdornment>
+                      ),
+                    }}
                   />
                 </FormControl>
               </Grid>
@@ -810,6 +860,11 @@ export default function UpdateProduct(props) {
                       toPrixerPrice !== null &&
                       !validations.isAValidPrice(toPrixerPrice)
                     }
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">$</InputAdornment>
+                      ),
+                    }}
                   />
                 </FormControl>
               </Grid>
@@ -887,7 +942,7 @@ export default function UpdateProduct(props) {
       <Snackbar
         open={mustImage}
         autoHideDuration={1000}
-        message={"No puedes actualizar un producto sin foto. Agrega 1 o mas"}
+        message={"No puedes crear un producto sin foto, agrega 1 o más"}
         className={classes.snackbar}
       />
     </React.Fragment>

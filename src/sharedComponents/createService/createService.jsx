@@ -116,6 +116,9 @@ export default function CreateService(props) {
   const [errorMessage, setErrorMessage] = useState();
   const [snackBarAction, setSnackBarAction] = useState();
   const [snackBarError, setSnackBarError] = useState(false);
+  const prixerUsername = new URLSearchParams(window.location)
+    .get("pathname")
+    .replace(/[/]/gi, "");
 
   const handleEditorChange = (value) => {
     setDescription(value);
@@ -135,7 +138,7 @@ export default function CreateService(props) {
   };
 
   const handleClose = () => {
-    props.setOpenArtFormDialog(false);
+    props.setOpenServiceFormDialog(false);
   };
 
   const handleSubmit = async () => {
@@ -149,7 +152,7 @@ export default function CreateService(props) {
     } catch (err) {
       console.log(err);
       setBackdrop(false);
-      props.setOpenArtFormDialog(false);
+      props.setOpenServiceFormDialog(false);
       setErrorMessage(
         "Ocurrió un error inesperado, por favor valida e inicia sesión."
       );
@@ -196,31 +199,31 @@ export default function CreateService(props) {
     images.map((file) => formData.append("serviceImages", file));
 
     const base_url = process.env.REACT_APP_BACKEND_URL + "/service/create";
-    const data = await axios.post(base_url, formData, {
+    const create = await axios.post(base_url, formData, {
       "Content-Type": "multipart/form-data",
     });
-    if (data.data.success) {
-      props.setOpenArtFormDialog(false);
+    if (create.data.success) {
       setBackdrop(false);
-      setErrorMessage("¡Servicio creado exitosamente!");
-      setSnackBarError(true);
-      window.location.reload();
+      props.setOpenServiceFormDialog(false);
+      props.setCreatedService(true);
     } else {
+      setSnackBarError(true);
       setErrorMessage(
         "Por favor vuelve a intentarlo, puede que exista algún inconveniente de conexión. Si aún no lo has hecho por favor inicia sesión."
       );
-      setSnackBarError(true);
     }
   }
 
   const replaceImage = async (e, index) => {
-    e.preventDefault();
     const file = e.target.files[0];
     const resizedString = await convertToBase64(file);
     const prevImg = [...imageLoader];
-
     prevImg[index] = resizedString;
     setLoadImage(prevImg);
+
+    const newImgs = [...images];
+    newImgs.splice(index, 1, file);
+    setImages(newImgs);
   };
 
   const convertToBase64 = (blob) => {
@@ -233,12 +236,16 @@ export default function CreateService(props) {
     });
   };
 
-  const deleteImage = (X) => {
+  const deleteImage = (X, i) => {
     if (imageLoader.length === 1) {
       setLoadImage([]);
+      setImages([]);
     } else if (imageLoader.length > 1) {
       const newImg = imageLoader.filter((img) => img !== X);
       setLoadImage(newImg);
+      const newImgs = [...images];
+      newImgs.splice(i, 1);
+      setImages(newImgs);
     }
   };
 
@@ -344,7 +351,7 @@ export default function CreateService(props) {
                                     accept="image/*"
                                     hidden
                                     onChange={(a) => {
-                                      const i = imageLoader.indexOf(img);
+                                      // const i = imageLoader.indexOf(img);
                                       replaceImage(a, i);
                                     }}
                                   />
@@ -358,7 +365,7 @@ export default function CreateService(props) {
                                     marginRight: -5,
                                   }}
                                   onClick={() => {
-                                    deleteImage(img);
+                                    deleteImage(img, i);
                                   }}
                                 >
                                   <HighlightOffOutlinedIcon />

@@ -810,7 +810,7 @@ export default function UpdateMockup(props) {
               </Grid>
               <Grid item md={6}>
                 <div style={{ width: 350, height: 350 }}>
-                  <div
+                  {/* <div
                     style={{
                       backgroundImage: "url(" + preview + ")",
                       marginTop: -350,
@@ -822,7 +822,7 @@ export default function UpdateMockup(props) {
                       marginRight: 10,
                     }}
                     onClick={handleImageClick}
-                  />
+                  /> */}
                   {randomArt && (
                     <div
                       style={{

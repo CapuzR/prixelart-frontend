@@ -970,42 +970,12 @@ export default function ProductGrid(props) {
       );
     }
   };
+  const RenderHTML = ({ htmlString }) => {
+    return <div dangerouslySetInnerHTML={{ __html: htmlString }} />;
+  };
+
   return (
     <>
-      {/* <Grid container style={{ marginTop: 20 }}>
-        <Grid item xs={12} align={"center"}>
-          <Paper
-            style={{
-              width: 800,
-              height: 400,
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              position: "relative",
-            }}
-            elevation={5}
-          >
-            <div>
-              <img src={tiles[2]?.sources.images[0]?.url}></img>
-              <div
-                style={{
-                  position: "absolute",
-                  // transformStyle: "preserve-3d",
-                  // perspective: "800px",
-                  top: 137,
-                  left: 280,
-                }}
-              >
-                <img
-                  src={props.buyState[0].art.smallThumbUrl}
-                  className={classes.adjust1}
-                ></img>
-              </div>
-            </div>
-          </Paper>
-        </Grid>
-      </Grid> */}
-
       <div style={{ display: "flex", justifyContent: "end" }}>
         <div
           style={{
@@ -1196,6 +1166,14 @@ export default function ProductGrid(props) {
                     }
                     style={{ whiteSpace: "pre-wrap" }}
                   />
+                  {/* <div class="ql-editor" style={{ height: "auto" }}>
+                    <RenderHTML
+                      htmlString={
+                        //   showFullDescription[i]
+                        tile.description // : `${tile.description.slice(0, 450)}...`
+                      }
+                    />
+                  </div> */}
                   {tile.description.length > 130 && (
                     <Button
                       style={{

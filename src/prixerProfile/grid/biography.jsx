@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { makeStyles, withStyles } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import { useTheme } from "@material-ui/core/styles";
 import axios from "axios";
 import { useHistory } from "react-router-dom";
@@ -15,12 +15,8 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import EditIcon from "@material-ui/icons/Edit";
-import { TextField } from "@material-ui/core";
 import HighlightOffOutlinedIcon from "@material-ui/icons/HighlightOffOutlined";
-import AddIcon from "@material-ui/icons/Add";
 import Snackbar from "@material-ui/core/Snackbar";
-import DeleteIcon from "@material-ui/icons/Delete";
-import utils from "../../utils/utils";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import Tooltip from "@material-ui/core/Tooltip";
@@ -32,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "space-around",
     overflow: "hidden",
     backgroundColor: theme.palette.background.paper,
-    marginBottom: "20px",
+    // marginBottom: "20px",
   },
   img: {
     [theme.breakpoints.down("sm")]: {
@@ -231,12 +227,51 @@ export default function Biography(props) {
   };
 
   const RenderHTML = ({ htmlString }) => {
-    return <div dangerouslySetInnerHTML={{ __html: htmlString }} />;
+    return (
+      <div
+        dangerouslySetInnerHTML={{ __html: htmlString }}
+        style={{ margin: 10 }}
+      />
+    );
   };
 
   const handleEditorChange = (value) => {
     setData({ ...data, biography: value });
   };
+
+  function SampleNextArrow(props) {
+    const { className, style, onClick } = props;
+    return (
+      <div
+        className={className}
+        style={{
+          ...style,
+          display: "block",
+          background: "silver",
+          paddingTop: "1px",
+          borderRadius: 50,
+        }}
+        onClick={onClick}
+      />
+    );
+  }
+
+  function SamplePrevArrow(props) {
+    const { className, style, onClick } = props;
+    return (
+      <div
+        className={className}
+        style={{
+          ...style,
+          display: "block",
+          background: "silver",
+          borderRadius: 50,
+          paddingTop: "1px",
+        }}
+        onClick={onClick}
+      />
+    );
+  }
 
   const settings = {
     slidesToShow:
@@ -259,6 +294,8 @@ export default function Biography(props) {
     speed: 500,
     infinite: true,
     dots: true,
+    nextArrow: <SampleNextArrow />,
+    prevArrow: <SamplePrevArrow />,
   };
 
   const changeState = () => {
@@ -439,6 +476,7 @@ export default function Biography(props) {
                   justifyContent: "center",
                   position: "relative",
                   width: "100%",
+                  marginTop: 20,
                 }}
               >
                 <Slider {...setting2}>
@@ -451,7 +489,7 @@ export default function Biography(props) {
                         flexDirection: "column",
                         height: "100%",
                         width: "90%",
-                        //   marginTop: 10,
+                        // marginTop: 50,
                       }}
                     >
                       <div
@@ -524,7 +562,9 @@ export default function Biography(props) {
                   flexDirection: "column",
                   justifyContent: "center",
                   position: "relative",
-                  width: "100%",
+                  width: "92%",
+                  marginLeft: "4%",
+                  marginTop: 20,
                 }}
               >
                 <Slider {...setting2}>
@@ -536,7 +576,7 @@ export default function Biography(props) {
                         display: "flex",
                         flexDirection: "column",
                         height: "100%",
-                        width: "90%",
+                        width: "100%",
                       }}
                     >
                       <div
@@ -548,7 +588,7 @@ export default function Biography(props) {
                       >
                         <img
                           style={{
-                            width: "90%",
+                            width: "100%",
                             objectFit: "cover",
                             borderRadius: 10,
                           }}

@@ -5,6 +5,7 @@ import AddPhotoAlternateIcon from "@material-ui/icons/AddPhotoAlternate";
 import ShoppingCartOutlinedIcon from "@material-ui/icons/ShoppingCartOutlined";
 import LocalActivityIcon from "@material-ui/icons/LocalActivity";
 import Badge from "@material-ui/core/Badge";
+import Tooltip from "@material-ui/core/Tooltip";
 import NotificationsIcon from "@material-ui/icons/Notifications";
 
 const useStyles = makeStyles((theme) => ({
@@ -66,37 +67,40 @@ export default function FloatingAddButton(props) {
       {JSON.parse(localStorage.getItem("token")) &&
         JSON.parse(localStorage.getItem("token")).username && (
           <>
-            <Fab
-              color="primary"
-              aria-label="add"
-              onClick={openServiceDialog}
-              style={{
-                bottom:
-                  JSON.parse(localStorage.getItem("buyState")) &&
-                  JSON.parse(localStorage.getItem("buyState"))?.length > 0
-                    ? 160
-                    : 70,
-                right: 10,
-              }}
-            >
-              <LocalActivityIcon />
-            </Fab>
-
-            <Fab
-              color="primary"
-              aria-label="add"
-              onClick={openArtDialog}
-              style={{
-                bottom:
-                  JSON.parse(localStorage.getItem("buyState")) &&
-                  JSON.parse(localStorage.getItem("buyState"))?.length > 0
-                    ? 90
-                    : 0,
-                right: 10,
-              }}
-            >
-              <AddPhotoAlternateIcon />
-            </Fab>
+            <Tooltip title="Agregar Servicio" placement="left">
+              <Fab
+                color="primary"
+                aria-label="add"
+                onClick={openServiceDialog}
+                style={{
+                  bottom:
+                    JSON.parse(localStorage.getItem("buyState")) &&
+                    JSON.parse(localStorage.getItem("buyState"))?.length > 0
+                      ? 160
+                      : 70,
+                  right: 10,
+                }}
+              >
+                <LocalActivityIcon />
+              </Fab>
+            </Tooltip>
+            <Tooltip title="Agregar Arte" placement="left">
+              <Fab
+                color="primary"
+                aria-label="add"
+                onClick={openArtDialog}
+                style={{
+                  bottom:
+                    JSON.parse(localStorage.getItem("buyState")) &&
+                    JSON.parse(localStorage.getItem("buyState"))?.length > 0
+                      ? 90
+                      : 0,
+                  right: 10,
+                }}
+              >
+                <AddPhotoAlternateIcon />
+              </Fab>
+            </Tooltip>
           </>
         )}
       {JSON.parse(localStorage.getItem("buyState")) &&

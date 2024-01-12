@@ -40,7 +40,7 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "space-around",
     overflow: "hidden",
     backgroundColor: theme.palette.background.paper,
-    marginBottom: "20px",
+    // marginBottom: "20px",
   },
   img: {
     [theme.breakpoints.down("sm")]: {
@@ -183,6 +183,12 @@ export default function ServiceGrid(props) {
     }
   }, []);
 
+  useEffect(() => {
+    getMyServices();
+    setSnackBar(true);
+    setSnackBarMessage("¡Servicio creado exitosamente!");
+  }, [props.createdService]);
+
   const updateService = async () => {
     var formData = new FormData();
     formData.append("_id", serviceOnEdit._id);
@@ -261,23 +267,14 @@ export default function ServiceGrid(props) {
     setImages(prevImg);
   };
 
-  const replaceImage = async (e, x, index) => {
-    e.preventDefault();
-    const filteredPrev = serviceOnEdit.sources.images.filter(
-      (prev) => prev.url !== x.url
-    );
-    setServiceOnEdit({ ...serviceOnEdit, sources: { images: filteredPrev } });
-
-    const file = e.target.files[0];
-    const resizedString = await convertToBase64(file);
-    const prevImg = [...images];
-    if (newImg.length > 0) {
-      const ImgForDelete = prevImg[index]?.name;
-      const filteredNewImg = newImg.filter((img) => img.name !== ImgForDelete);
-      setNewImg(filteredNewImg);
+  const adjustPrice = async (type, e) => {
+    const newPrice = serviceOnEdit.publicPrice;
+    if (type === "from") {
+      newPrice.from = e;
+    } else {
+      newPrice.to = e;
     }
-    prevImg[index] = { name: file.name, url: resizedString };
-    setImages(prevImg);
+    setServiceOnEdit({ ...serviceOnEdit, publicPrice: newPrice });
   };
 
   const loadNewImage = async (e) => {
@@ -293,29 +290,39 @@ export default function ServiceGrid(props) {
     }
   };
 
-  const adjustPrice = async (type, e) => {
-    const newPrice = serviceOnEdit.publicPrice;
-    if (type === "from") {
-      newPrice.from = e;
-    } else {
-      newPrice.to = e;
-    }
-    setServiceOnEdit({ ...serviceOnEdit, publicPrice: newPrice });
-  };
-
-  const deleteImg = async (e, x) => {
-    e.preventDefault();
+  const replaceImage = async (e, x, index) => {
     const filteredPrev = serviceOnEdit.sources.images.filter(
-      (prev) => prev.url !== x?.url
+      (prev) => prev.url !== x
     );
     setServiceOnEdit({ ...serviceOnEdit, sources: { images: filteredPrev } });
-    const filteredImg = images.filter((img) => img.name !== x.name);
-    setImages(filteredImg);
+
+    const file = e.target.files[0];
+    const resizedString = await convertToBase64(file);
+    const prevImg = [...images];
+    prevImg[index] = resizedString;
+    setImages(prevImg);
+
+    if (newImg.length > 0) {
+      const filteredNewImg = newImg.filter((img) => img.name !== x.name);
+      setNewImg([...filteredNewImg, file]);
+    } else {
+      setNewImg([...newImg, file]);
+    }
+  };
+
+  const deleteImg = async (x, i2) => {
+    const filteredPrev = serviceOnEdit.sources.images.filter(
+      (prev) => prev.url !== x
+    );
+    setServiceOnEdit({ ...serviceOnEdit, sources: { images: filteredPrev } });
     if (newImg.length > 0) {
       const filteredNewImg = newImg.filter((img) => img.name !== x.name);
       setNewImg(filteredNewImg);
     }
+    const filteredImg = images.filter((img) => img !== x);
+    setImages(filteredImg);
   };
+
   const convertToBase64 = (blob) => {
     return new Promise((resolve) => {
       var reader = new FileReader();
@@ -358,6 +365,7 @@ export default function ServiceGrid(props) {
   const settings = {
     slidesToShow: (isDesktop && 1) || (isMobile && 1) || (isTab && 1),
     slidesToScroll: 1,
+    swipeToSlide: true,
     autoplay: true,
     autoplaySpeed: 4000,
     speed: 1000,
@@ -506,7 +514,7 @@ export default function ServiceGrid(props) {
                                 <IconButton
                                   className={classes.buttonImgLoader}
                                   onClick={(d) => {
-                                    deleteImg(d, img);
+                                    deleteImg(img, i2);
                                   }}
                                 >
                                   <HighlightOffOutlinedIcon />

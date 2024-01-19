@@ -209,6 +209,7 @@ export default function Products(props) {
                 <ReadProducts
                   handleCallback={Callback}
                   setProduct={setProduct}
+                  product={product}
                   setDiscount={setDiscount}
                   permissions={props.permissions}
                   setActiveCrud={setActiveCrud}

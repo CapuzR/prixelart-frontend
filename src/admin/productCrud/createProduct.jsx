@@ -165,9 +165,6 @@ export default function CreateProduct() {
     const previewMp4 = sti.replace("1350", "510").replace("494", "350");
     setVideoUrl(width);
     setVideoPreview(previewMp4);
-    // const index = url[3].indexOf()
-    // sti.replace(index, '?controls=0\"')
-    //sti[79]
   };
 
   const handleSubmit = async (e) => {
@@ -873,7 +870,6 @@ export default function CreateProduct() {
               div.innerHTML = videoPreview;
             }}
             value={videoUrl}
-            autoFocus
             label="Url"
             type="text"
             fullWidth

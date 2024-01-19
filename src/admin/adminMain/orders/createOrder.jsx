@@ -246,10 +246,7 @@ export default function CreateOrder(props) {
 
   const getIvaCost = (state) => {
     let iva = getTotalPrice(state) * 0.16;
-    if (
-      typeof selectedPrixer?.username === "string" &&
-      billingData.orderPaymentMethod === "Balance Prixer"
-    ) {
+    if (typeof selectedPrixer?.username === "string") {
       return 0;
     } else {
       return iva;

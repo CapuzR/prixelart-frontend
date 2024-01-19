@@ -20,7 +20,8 @@ import Paper from "@material-ui/core/Paper";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { Backdrop } from "@material-ui/core";
 import Box from "@material-ui/core/Box";
-
+import Modal from "@material-ui/core/Modal";
+import UpdateProductV2 from "./updateProductv2";
 const useStyles = makeStyles((theme) => ({
   loading: {
     display: "flex",
@@ -45,8 +46,15 @@ export default function ReadProducts(props) {
   const [value, setValue] = useState(0);
   const [deleteMessage, setDeleteMessage] = useState();
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const [openUpdateProduct, setUpdateProduct] = useState(false);
+
   const handleChange = (event, newValue) => {
     setValue(newValue);
+  };
+
+  const handleClose = () => {
+    setUpdateProduct(false);
+    // setOpenCreateOrder(false);
   };
 
   function TabPanel(props) {
@@ -110,6 +118,7 @@ export default function ReadProducts(props) {
   const handleActive = (product, action) => {
     props.setProduct(product);
     localStorage.setItem("product", JSON.stringify(product));
+    // setUpdateProduct(true);
     history.push("/admin/product/" + action + "/" + product._id);
   };
 
@@ -423,6 +432,15 @@ export default function ReadProducts(props) {
         autoHideDuration={3000}
         message={deleteMessage}
       />
+
+      <Modal open={openUpdateProduct} onClose={handleClose}>
+        <UpdateProductV2
+          product={props.product}
+          setProduct={props.setProduct}
+          permissions={props.permissions}
+          handleClose={handleClose}
+        ></UpdateProductV2>
+      </Modal>
       {props.handleCallback(value)}
     </React.Fragment>
   );

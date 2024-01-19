@@ -18,6 +18,7 @@ import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
 import MenuItem from "@material-ui/core/MenuItem";
 import Select from "@material-ui/core/Select";
+import { Switch, Typography } from "@material-ui/core";
 
 import clsx from "clsx";
 import validations from "../../utils/validations";
@@ -47,7 +48,7 @@ export default function CreateAdmin() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [buttonState, setButtonState] = useState(false);
-
+  const [isSeller, setIsSeller] = useState(false);
   //Error states.
   const [errorMessage, setErrorMessage] = useState();
   const [snackBarError, setSnackBarError] = useState(false);
@@ -124,6 +125,7 @@ export default function CreateAdmin() {
         phone: phone,
         password: password,
         adminToken: localStorage.getItem("adminTokenV"),
+        isSeller: isSeller,
       };
 
       const base_url = process.env.REACT_APP_BACKEND_URL + "/admin/create";
@@ -149,6 +151,10 @@ export default function CreateAdmin() {
     }
   };
 
+  const handleSeller = () => {
+    setIsSeller(!isSeller);
+  };
+
   return (
     <React.Fragment>
       {loading && (
@@ -159,7 +165,7 @@ export default function CreateAdmin() {
       <Title>Crear Administrador</Title>
       <form className={classes.form} noValidate onSubmit={handleSubmit}>
         <Grid container spacing={2}>
-          <Grid item xs={6}>
+          <Grid item xs={4}>
             <FormControl
               className={clsx(classes.margin, classes.textField)}
               variant="outlined"
@@ -181,7 +187,7 @@ export default function CreateAdmin() {
               />
             </FormControl>
           </Grid>
-          <Grid item xs={6}>
+          <Grid item xs={4}>
             <FormControl
               className={clsx(classes.margin, classes.textField)}
               variant="outlined"
@@ -209,6 +215,28 @@ export default function CreateAdmin() {
               </Select>
             </FormControl>
           </Grid>
+          {/* No funciona hasta que se actualice BACKEND */}
+          {/* <Grid item xs={4}>
+            <FormControl
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                justifyItems: "center",
+                alignItems: "center",
+              }}
+              variant="outlined"
+              required
+            >
+              <Typography color="secondary">
+                Mostrar como Asesor de ventas
+              </Typography>
+              <Switch
+                checked={isSeller}
+                onChange={handleSeller}
+                color="primary"
+              />
+            </FormControl>
+          </Grid> */}
           <Grid item xs={6}>
             <FormControl
               className={clsx(classes.margin, classes.textField)}

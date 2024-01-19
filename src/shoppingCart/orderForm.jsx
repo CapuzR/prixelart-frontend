@@ -88,10 +88,10 @@ export default function OrderForm(props) {
   const getSellers = () => {
     const base_url = process.env.REACT_APP_BACKEND_URL + "/admin/getSellers";
     axios.get(base_url).then((response) => {
-      // console.log(response.data);
       setSellers(response.data);
     });
   };
+
   useEffect(() => {
     getPaymentMethod();
     getSellers();
@@ -546,8 +546,9 @@ export default function OrderForm(props) {
   const getIvaCost = (state) => {
     let iva = getTotalPrice(state) * 0.16;
     if (
-      props?.orderPaymentMethod &&
-      props?.orderPaymentMethod.name === "Balance Prixer"
+      typeof JSON.parse(localStorage?.getItem("token"))?.username === "string"
+      // props?.orderPaymentMethod &&
+      // props?.orderPaymentMethod.name === "Balance Prixer"
     ) {
       return 0;
     } else {

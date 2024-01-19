@@ -635,13 +635,13 @@ export default function CreateProduct() {
                 <InputLabel style={{ marginTop: "-5%" }}>
                   Descripción
                 </InputLabel>
-                <MDEditor
+                {/* <MDEditor
                   value={description}
                   onChange={setDescription}
                   preview="edit"
                   hideToolbar={false}
-                />
-                {/* <ReactQuill
+                /> */}
+                <ReactQuill
                   style={{
                     marginBottom: 10,
                     marginTop: 15,
@@ -661,7 +661,7 @@ export default function CreateProduct() {
                   value={description}
                   onChange={setDescription}
                   placeholder="Escribe la descripción aquí..."
-                /> */}
+                />
               </FormControl>
             </Grid>
             <Grid item xs={12} md={6}>

@@ -30,7 +30,7 @@ import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import Box from "@material-ui/core/Box";
 import Typography from "@material-ui/core/Typography";
-import PropTypes from "prop-types";
+
 import validations from "../../shoppingCart/validations";
 import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
 import Paper from "@material-ui/core/Paper";
@@ -38,91 +38,47 @@ import Mockup from "./updateMockUp";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
+const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    flexGrow: 1,
-    backgroundColor: theme.palette.background.paper,
+  textField: {
+    marginRight: "8px",
   },
-  seeMore: {
-    marginTop: theme.spacing(3),
+  paper: {
+    padding: theme.spacing(2),
+    display: "flex",
+    overflow: "none",
+    flexDirection: "column",
   },
-  form: {
-    height: 550,
+  paper2: {
+    position: "absolute",
+    width: "80%",
+    maxHeight: "90%",
+    overflowY: "auto",
+    backgroundColor: "white",
+    boxShadow: theme.shadows[2],
+    padding: "16px 32px 24px",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    textAlign: "justify",
+    minWidth: 320,
+    borderRadius: 10,
+    marginTop: "12px",
+    display: "flex",
+    flexDirection: "row",
   },
   backdrop: {
     zIndex: theme.zIndex.drawer + 1,
     color: theme.palette.primary.main,
   },
-  loaderImage: {
-    width: "120%",
-    border: "2px",
-    height: "30vh",
-    borderStyle: "groove",
-    borderColor: "#d33f49",
-    backgroundColor: "#ededed",
-    display: "flex",
-    flexDirection: "row",
-  },
-  imageLoad: {
-    width: "100%",
-    height: "95%",
-    padding: "15px",
-    marginTop: "5px",
-  },
-  formHead: {
-    display: "flex",
-    flexDirection: "row",
-    alignContent: "center",
-    justifyContent: "space-evenly",
-    alignItems: "center",
-  },
-  buttonImgLoader: {
-    cursor: "pointer",
-    padding: "5px",
-  },
 }));
-function TabPanel(props) {
-  const { children, value, index, ...other } = props;
 
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`simple-tabpanel-${index}`}
-      aria-labelledby={`simple-tab-${index}`}
-      {...other}
-    >
-      {value === index && (
-        <Box p={3}>
-          <Typography>{children}</Typography>
-        </Box>
-      )}
-    </div>
-  );
-}
-
-TabPanel.propTypes = {
-  children: PropTypes.node,
-  index: PropTypes.any.isRequired,
-  value: PropTypes.any.isRequired,
-};
-
-function a11yProps(index) {
-  return {
-    id: `simple-tab-${index}`,
-    "aria-controls": `simple-tabpanel-${index}`,
-  };
-}
-
-export default function UpdateProduct(props) {
+export default function UpdateProductV2(props) {
   const classes = useStyles();
   const theme = useTheme();
-  const history = useHistory();
   const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
-  const [productId, setProductId] = useState(
-    props?.product?._id || window.location.pathname.slice(22)
-  );
+  const [productId, setProductId] = useState(props?.product?._id);
   const [images, newImages] = useState({ images: [] });
   const [thumbUrl, setThumbUrl] = useState(props.product?.thumbUrl);
   const [imagesList, setImagesList] = useState(props?.product?.sources.images);
@@ -167,6 +123,8 @@ export default function UpdateProduct(props) {
     setValue(newValue);
   };
 
+  const [focus, setFocus] = useState(undefined);
+
   //Error states.
   const [errorMessage, setErrorMessage] = useState();
   const [snackBarError, setSnackBarError] = useState(false);
@@ -176,7 +134,7 @@ export default function UpdateProduct(props) {
   const [mustImage, setMustImages] = useState(false);
 
   useEffect(() => {
-    readProduct();
+    // readProduct();
     const indexImage =
       imagesList?.length < 1 ? imagesList?.indexOf(thumbUrl) : undefined;
 
@@ -202,188 +160,13 @@ export default function UpdateProduct(props) {
     };
   }, []);
 
-  const readProduct = () => {
-    const base_url2 = process.env.REACT_APP_BACKEND_URL + "/product/read";
-    axios.post(base_url2, { _id: productId }).then((response) => {
-      let product = response.data.products[0];
-      props.setProduct(product);
-      localStorage.setItem("product", JSON.stringify(product));
-    });
-    props.setProductEdit(false);
-  };
+  function handleKeyDown(event) {
+    if (event.key === "Escape") {
+      props.handleClose();
+    } else return;
+  }
+  document.addEventListener("keydown", handleKeyDown);
 
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
-
-  //Preview de imagen antes de enviar
-  const convertToBase64 = (blob) => {
-    return new Promise((resolve) => {
-      var reader = new FileReader();
-      reader.onload = function () {
-        resolve(reader.result);
-      };
-      reader.readAsDataURL(blob);
-    });
-  };
-
-  const loadImage = async (e) => {
-    e.preventDefault();
-    if (imageLoader.loader.length >= 4 || imagesList?.length >= 5) {
-      setLoadOpen(true);
-      setTimeout(() => {
-        setLoadOpen(false);
-      }, 3000);
-    } else {
-      const file = e.target.files[0];
-      const resizedString = await convertToBase64(file);
-      imageLoader.loader.push(resizedString);
-      images.images.push(file);
-      setLoadImage({
-        loader: imageLoader.loader,
-        filename: file.name.replace(/[,]/gi, ""),
-      });
-    }
-  };
-
-  const replaceImage = async (e, index) => {
-    e.preventDefault();
-    const file = e.target.files[0];
-    const resizedString = await convertToBase64(file);
-    imageLoader.loader[index] = resizedString;
-    images.images[index] = file;
-    setLoadImage({ loader: imageLoader.loader, filename: file.name });
-  };
-
-  const modifyString = (a, sti) => {
-    const width = sti.replace("560", "326").replace("315", "326");
-    setVideoUrl(width);
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (
-      images.images.length &&
-      imageLoader.loader.length &&
-      imagesList?.length >= 5
-    ) {
-      setLoaDOpen(true);
-    } else {
-      if (images?.images.length === 0 && imagesList?.length === 0) {
-        setMustImages(true);
-        setTimeout(() => {
-          setMustImages(false);
-        }, 3000);
-      } else {
-        if (
-          !active &&
-          !productName &&
-          !description &&
-          !category &&
-          !considerations &&
-          !fromPublicPrice &&
-          // !fromPrixerPrice &&
-          !images
-        ) {
-          setErrorMessage("Por favor completa todos los campos requeridos.");
-          setSnackBarError(true);
-          e.preventDefault();
-        } else {
-          setLoading(true);
-          setButtonState(true);
-          const newFormData = new FormData();
-          const data = {
-            publicPrice: {
-              from: fromPublicPrice,
-              to: toPublicPrice,
-            },
-            prixerPrice: {
-              from: fromPrixerPrice,
-              to: toPrixerPrice,
-            },
-            specialVars: [
-              {
-                name: "",
-                isSpecialVarVisible: "",
-              },
-            ],
-          };
-          newFormData.append("adminToken", localStorage.getItem("adminTokenV"));
-          newFormData.append("active", active);
-          newFormData.append("name", productName);
-          newFormData.append("description", description);
-          newFormData.append("category", category);
-          newFormData.append("thumbUrl", thumbUrl);
-
-          newFormData.append("variants", JSON.stringify(variants));
-          newFormData.append("considerations", considerations);
-          if (productionTime !== undefined && productionTime !== "") {
-            newFormData.append("productionTime", productionTime);
-          }
-          newFormData.append(
-            "publicPriceFrom",
-            data.publicPrice.from.replace(/[,]/gi, ".")
-          );
-          if (toPublicPrice) {
-            newFormData.append(
-              "publicPriceTo",
-              data.publicPrice.to.replace(/[,]/gi, ".")
-            );
-          }
-          if (fromPrixerPrice) {
-            newFormData.append(
-              "prixerPriceFrom",
-              data.prixerPrice.from.replace(/[,]/gi, ".")
-            );
-          }
-          if (toPrixerPrice) {
-            newFormData.append(
-              "prixerPriceTo",
-              data.prixerPrice.to.replace(/[,]/gi, ".")
-            );
-          }
-          newFormData.append("hasSpecialVar", hasSpecialVar);
-          if (imagesList[0] !== undefined && imagesList.length > 0) {
-            const images = [];
-
-            imagesList?.map((img) => {
-              img !== null &&
-                typeof img !== "string" &&
-                images.push(img.url + " ");
-            });
-            newFormData.append("images", images);
-          } else newFormData.append("images", []);
-          if (images.images) {
-            images.images.map((file) => {
-              newFormData.append("newProductImages", file);
-            });
-          }
-          if (videoUrl) {
-            newFormData.append("video", videoUrl);
-          }
-          const base_url =
-            process.env.REACT_APP_BACKEND_URL + `/product/update/${productId}`;
-          const response = await axios.put(base_url, newFormData, {
-            withCredentials: true,
-          });
-          if (response.data.success === false) {
-            setLoading(false);
-            setButtonState(false);
-            setErrorMessage(response.data.message);
-            setSnackBarError(true);
-          } else {
-            setErrorMessage("Actualización de producto exitosa.");
-            setSnackBarError(true);
-            // history.push("/admin/product/read");
-          }
-        }
-      }
-    }
-  };
   return (
     <React.Fragment>
       {
@@ -391,20 +174,25 @@ export default function UpdateProduct(props) {
           <CircularProgress />
         </Backdrop>
       }
-      <Tabs
-        value={value}
-        onChange={handleChange}
-        style={{ width: "70%" }}
-        indicatorColor="primary"
-        textColor="primary"
-      >
-        <Tab label="Descripción" {...a11yProps(0)} />
-        <Tab label="Variantes" {...a11yProps(1)} />
-        <Tab label="MockUp" {...a11yProps(2)} />
-      </Tabs>
+      <Grid container className={classes.paper2}>
+        <Tabs
+          value={value}
+          onChange={handleChange}
+          style={{ width: "70%" }}
+          indicatorColor="primary"
+          textColor="primary"
+        >
+          <Tab label="Descripción" />
+          <Tab label="Variantes" />
+          <Tab label="MockUp" />
+        </Tabs>
 
-      <TabPanel value={value} index={0}>
-        <form encType="multipart/form-data" noValidate onSubmit={handleSubmit}>
+        {/* <TabPanel value={value} index={0}> */}
+        <form
+          encType="multipart/form-data"
+          noValidate
+          //  onSubmit={handleSubmit}
+        >
           <Grid container spacing={2}>
             <Grid container spacing={2}>
               <Grid
@@ -435,14 +223,14 @@ export default function UpdateProduct(props) {
                       hidden
                       onChange={(a) => {
                         a.preventDefault();
-                        loadImage(a);
+                        // loadImage(a);
                       }}
                     />
                   </Button>
                   <Button
                     variant="contained"
                     componenet="label"
-                    onClick={handleClickOpen}
+                    // onClick={handleClickOpen}
                     style={{ textTransform: "none", marginTop: 10 }}
                   >
                     Subir video
@@ -489,7 +277,7 @@ export default function UpdateProduct(props) {
                               hidden
                               onChange={(a) => {
                                 const i = imageLoader.loader.indexOf(img);
-                                replaceImage(a, i);
+                                // replaceImage(a, i);
                                 imagesList?.splice(key_id, 1);
                               }}
                             />
@@ -548,7 +336,7 @@ export default function UpdateProduct(props) {
                             color: "#d33f49",
                           }}
                           component="label"
-                          onClick={handleClickOpen}
+                          //   onClick={handleClickOpen}
                         >
                           <EditIcon />
                         </IconButton>
@@ -558,7 +346,7 @@ export default function UpdateProduct(props) {
                           className={classes.buttonImgLoader}
                           style={{ color: "#d33f49" }}
                           onClick={(d) => {
-                            setVideoUrl(undefined);
+                            // setVideoUrl(undefined);
                           }}
                         >
                           <HighlightOffOutlinedIcon />
@@ -637,6 +425,13 @@ export default function UpdateProduct(props) {
                     onChange={(e) => {
                       setProductName(e.target.value);
                     }}
+                    // autoFocus={focus === "name"}
+                    // onFocus={() => {
+                    //   handleFocus("name");
+                    // }}
+                    // onBlur={() => {
+                    //   handleBlur();
+                    // }}
                   />
                 </FormControl>
               </Grid>
@@ -660,6 +455,13 @@ export default function UpdateProduct(props) {
                     onChange={(e) => {
                       setCategory(e.target.value);
                     }}
+                    // autoFocus={focus === "category"}
+                    // onFocus={() => {
+                    //   handleFocus("category");
+                    // }}
+                    // onBlur={() => {
+                    //   handleBlur();
+                    // }}
                   />
                 </FormControl>
               </Grid>
@@ -679,28 +481,42 @@ export default function UpdateProduct(props) {
                     onChange={setDescription}
                     preview="edit"
                     hideToolbar={false}
+                    // autoFocus={focus === "description"}
+                    // onFocus={() => {
+                    //   handleFocus("description");
+                    // }}
+                    // onBlur={() => {
+                    //   handleBlur();
+                    // }}
                   />
                   {/* <ReactQuill
-                    style={{
-                      marginBottom: 10,
-                      marginTop: 15,
-                      maxWidth: 1100,
-                      width: "100%",
+                  style={{
+                    marginBottom: 10,
+                    marginTop: 15,
+                    maxWidth: 1100,
+                    width: "100%",
 
-                      borderRadius: 30,
-                    }}
-                    modules={{
-                      toolbar: [
-                        [{ header: [1, 2, 3, 4, 5, 6, false] }],
-                        ["bold", "italic", "underline", "strike"],
-                        [{ align: [] }],
-                        [{ list: "ordered" }, { list: "bullet" }],
-                      ],
-                    }}
-                    value={description}
-                    onChange={setDescription}
-                    placeholder="Escribe la descripción aquí..."
-                  /> */}
+                    borderRadius: 30,
+                  }}
+                  modules={{
+                    toolbar: [
+                      [{ header: [1, 2, 3, 4, 5, 6, false] }],
+                      ["bold", "italic", "underline", "strike"],
+                      [{ align: [] }],
+                      [{ list: "ordered" }, { list: "bullet" }],
+                    ],
+                  }}
+                  value={description}
+                  onChange={handleEditorChange}
+                  placeholder="Escribe la descripción aquí..."
+                  // autoFocus={focus === "description"}
+                  onFocus={() => {
+                    handleFocus("description");
+                  }}
+                  onBlur={() => {
+                    handleBlur();
+                  }}
+                /> */}
                 </FormControl>
               </Grid>
               <Grid item xs={12} md={6}>
@@ -721,6 +537,13 @@ export default function UpdateProduct(props) {
                     onChange={(e) => {
                       setConsiderations(e.target.value);
                     }}
+                    // autoFocus={focus === "considerations"}
+                    // onFocus={() => {
+                    //   handleFocus("considerations");
+                    // }}
+                    // onBlur={() => {
+                    //   handleBlur();
+                    // }}
                   />
                 </FormControl>
                 <FormControl
@@ -743,6 +566,13 @@ export default function UpdateProduct(props) {
                         <InputAdornment position="end">días</InputAdornment>
                       ),
                     }}
+                    // autoFocus={focus === "productionTime"}
+                    // onFocus={() => {
+                    //   handleFocus("productionTime");
+                    // }}
+                    // onBlur={() => {
+                    //   handleBlur();
+                    // }}
                   />
                 </FormControl>
               </Grid>
@@ -779,6 +609,13 @@ export default function UpdateProduct(props) {
                         <InputAdornment position="start">$</InputAdornment>
                       ),
                     }}
+                    // autoFocus={focus === "fromPublicPrice"}
+                    // onFocus={() => {
+                    //   handleFocus("fromPublicPrice");
+                    // }}
+                    // onBlur={() => {
+                    //   handleBlur();
+                    // }}
                   />
                 </FormControl>
               </Grid>
@@ -812,6 +649,13 @@ export default function UpdateProduct(props) {
                         <InputAdornment position="start">$</InputAdornment>
                       ),
                     }}
+                    // autoFocus={focus === "toPublicPrice"}
+                    // onFocus={() => {
+                    //   handleFocus("toPublicPrice");
+                    // }}
+                    // onBlur={() => {
+                    //   handleBlur();
+                    // }}
                   />
                 </FormControl>
               </Grid>
@@ -849,6 +693,13 @@ export default function UpdateProduct(props) {
                         <InputAdornment position="start">$</InputAdornment>
                       ),
                     }}
+                    // autoFocus={focus === "fromPrixerPrice"}
+                    // onFocus={() => {
+                    //   handleFocus("fromPrixerPrice");
+                    // }}
+                    // onBlur={() => {
+                    //   handleBlur();
+                    // }}
                   />
                 </FormControl>
               </Grid>
@@ -882,6 +733,13 @@ export default function UpdateProduct(props) {
                         <InputAdornment position="start">$</InputAdornment>
                       ),
                     }}
+                    // autoFocus={focus === "toPrixerPrice"}
+                    // onFocus={() => {
+                    //   handleFocus("toPrixerPrice");
+                    // }}
+                    // onBlur={() => {
+                    //   handleBlur();
+                    // }}
                   />
                 </FormControl>
               </Grid>
@@ -897,21 +755,21 @@ export default function UpdateProduct(props) {
             </Button>
           </Grid>
         </form>
-      </TabPanel>
+        {/* </TabPanel>
 
-      <TabPanel value={value} index={1}>
-        <Variants
-          product={props.product}
-          activeVCrud={activeVCrud}
-          setActiveVCrud={setActiveVCrud}
-        />
-      </TabPanel>
+        <TabPanel value={value} index={1}>
+          <Variants
+            product={props.product}
+            activeVCrud={activeVCrud}
+            setActiveVCrud={setActiveVCrud}
+          />
+        </TabPanel>
 
-      <TabPanel value={value} index={2}>
-        <Mockup product={props.product} />
-      </TabPanel>
-
-      <Dialog open={open} onClose={handleClose}>
+        <TabPanel value={value} index={2}>
+          <Mockup product={props.product} />
+        </TabPanel> */}
+      </Grid>
+      {/* <Dialog open={open} onClose={handleClose}>
         <DialogTitle>Youtube Url</DialogTitle>
         <DialogContent>
           <DialogContentText>
@@ -936,7 +794,7 @@ export default function UpdateProduct(props) {
             Aceptar
           </Button>
         </DialogActions>
-      </Dialog>
+      </Dialog> */}
       <Snackbar
         open={snackBarError}
         autoHideDuration={1000}

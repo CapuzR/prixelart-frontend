@@ -370,17 +370,17 @@ function App() {
 
         <Route exact path="/product/update/:productId" component={AdminMain} />
 
-        <Route
+        {/* <Route
           exact
           path="/product/:productId/variant/create"
           component={AdminMain}
-        />
+        /> */}
 
-        <Route
+        {/* <Route
           exact
           path="/product/:productId/variants/read"
           component={AdminMain}
-        />
+        /> */}
 
         {/* <Route
           exact

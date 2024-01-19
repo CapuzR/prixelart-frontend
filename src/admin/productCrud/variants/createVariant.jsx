@@ -274,8 +274,9 @@ export default function CreateVariant(props) {
           setSnackBarError(true);
           props.setVariant("");
         } else {
-          setErrorMessage("Actualización de producto exitoso.");
+          history.push("/admin/product/update/" + props.product._id);
           setSnackBarError(true);
+          setErrorMessage("Actualización de variante exitoso.");
           setActive("");
           setImage("");
           setVariantName("");
@@ -289,8 +290,8 @@ export default function CreateVariant(props) {
           setFromPrixerPrice("");
           setToPrixerPrice("");
           props.setVariant("");
+          props.setActiveVCrud("read");
           setLoading(false);
-          history.push({ pathname: "/admin/product/read" });
         }
       }
     }

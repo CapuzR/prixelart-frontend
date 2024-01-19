@@ -48,7 +48,6 @@ export default function ReadVariants(props) {
 
   useEffect(() => {
     readVariants();
-    readProduct();
   }, []);
 
   const readVariants = () => {
@@ -62,21 +61,23 @@ export default function ReadVariants(props) {
         { withCredentials: true }
       )
       .then((response) => {
-        response.data.products[0].variants &&
-          setRows(response.data.products[0].variants);
+        if (response.data.products[0].variants) {
+          let variants = response.data.products[0].variants.sort(function (
+            a,
+            b
+          ) {
+            if (isNaN(a.name) || isNaN(b.name)) {
+              return a.name.localeCompare(b.name);
+            } else {
+              return a.name - b.name;
+            }
+          });
+          setRows(variants);
+        }
       })
       .catch((error) => {
         console.log(error);
       });
-  };
-
-  const readProduct = () => {
-    const base_url2 = process.env.REACT_APP_BACKEND_URL + "/product/read";
-    axios.post(base_url2, { _id: props.product._id }).then((response) => {
-      let product = response.data.products[0];
-      // props.setProduct(product);
-      localStorage.setItem("product", JSON.stringify(product));
-    });
   };
 
   const handleActive = (variant, action) => {
@@ -119,7 +120,6 @@ export default function ReadVariants(props) {
       )
       .then((response) => {
         readVariants();
-        readProduct();
       })
       .catch((error) => {
         console.log(error);

@@ -15,6 +15,7 @@ import InputLabel from "@material-ui/core/InputLabel";
 import FormControl from "@material-ui/core/FormControl";
 import MenuItem from "@material-ui/core/MenuItem";
 import Select from "@material-ui/core/Select";
+import { Switch, Typography } from "@material-ui/core";
 
 import clsx from "clsx";
 
@@ -33,6 +34,8 @@ export default function UpAdmin(props) {
   const [area, setArea] = useState(props.admin.area);
   const [email, setEmail] = useState(props.admin.email);
   const [phone, setPhone] = useState(props.admin.phone);
+  const [isSeller, setIsSeller] = useState(props.admin.isSeller || false);
+
   // const [password, setPassword] = useState();
   // const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -76,6 +79,7 @@ export default function UpAdmin(props) {
         email: email.toLowerCase(),
         phone: phone,
         adminToken: localStorage.getItem("adminTokenV"),
+        isSeller: isSeller,
       };
 
       const base_url =
@@ -101,6 +105,11 @@ export default function UpAdmin(props) {
       }
     }
   };
+
+  const handleSeller = () => {
+    setIsSeller(!isSeller);
+  };
+
   return (
     <React.Fragment>
       {loading && (
@@ -111,7 +120,7 @@ export default function UpAdmin(props) {
       <Title>Actualizar Administrador</Title>
       <form className={classes.form} noValidate onSubmit={handleSubmit}>
         <Grid container spacing={2}>
-          <Grid item xs={6}>
+          <Grid item xs={4}>
             <FormControl
               className={clsx(classes.margin, classes.textField)}
               variant="outlined"
@@ -132,7 +141,7 @@ export default function UpAdmin(props) {
               />
             </FormControl>
           </Grid>
-          <Grid item xs={6}>
+          <Grid item xs={4}>
             <FormControl
               className={clsx(classes.margin, classes.textField)}
               variant="outlined"
@@ -154,6 +163,28 @@ export default function UpAdmin(props) {
               </Select>
             </FormControl>
           </Grid>
+          {/* No funciona hasta actualizar BACKEND 
+          <Grid item xs={4}>
+            <FormControl
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                justifyItems: "center",
+                alignItems: "center",
+              }}
+              variant="outlined"
+              required
+            >
+              <Typography color="secondary">
+                Mostrar como Asesor de ventas
+              </Typography>
+              <Switch
+                checked={isSeller}
+                onChange={handleSeller}
+                color="primary"
+              />
+            </FormControl>
+          </Grid> */}
           <Grid item xs={6}>
             <FormControl
               className={clsx(classes.margin, classes.textField)}

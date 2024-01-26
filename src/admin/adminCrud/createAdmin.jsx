@@ -215,8 +215,7 @@ export default function CreateAdmin() {
               </Select>
             </FormControl>
           </Grid>
-          {/* No funciona hasta que se actualice BACKEND */}
-          {/* <Grid item xs={4}>
+          <Grid item xs={4}>
             <FormControl
               style={{
                 display: "flex",
@@ -236,7 +235,7 @@ export default function CreateAdmin() {
                 color="primary"
               />
             </FormControl>
-          </Grid> */}
+          </Grid>
           <Grid item xs={6}>
             <FormControl
               className={clsx(classes.margin, classes.textField)}

@@ -175,6 +175,11 @@ export default function MenuAppBar(props) {
     history.push({ pathname: "/galeria" });
   };
 
+  const handlePrixers = (e) => {
+    e.preventDefault();
+    history.push({ pathname: "/prixers" });
+  };
+
   const handleProductCatalog = (e) => {
     e.preventDefault();
     history.push({ pathname: "/productos" });
@@ -302,6 +307,11 @@ export default function MenuAppBar(props) {
               />
               <Tab
                 className={classes.button}
+                onClick={handlePrixers}
+                label="Prixers"
+              />
+              <Tab
+                className={classes.button}
                 label="Compras"
                 onClick={handleShoppingCart}
               />
@@ -378,24 +388,14 @@ export default function MenuAppBar(props) {
               />
               <Tab
                 className={classes.button}
+                onClick={handlePrixers}
+                label="Prixers"
+              />
+              {/* <Tab
+                className={classes.button}
                 label="Compras"
                 onClick={handleShoppingCart}
-              />
-              <Tab
-                className={classes.button}
-                onClick={(e) => {
-                  window.open("https://linktr.ee/prixelart", "_blank");
-                }}
-                label="Contáctanos"
-              />
-
-              <Tab
-                className={classes.button}
-                onClick={(e) => {
-                  window.open("http://blog.prixelart.com/", "_blank");
-                }}
-                label="Blog"
-              />
+              /> */}
             </Tabs>
 
             <div>
@@ -427,7 +427,8 @@ export default function MenuAppBar(props) {
                     }}
                   />
                 ) : (
-                  <AccountCircle />
+                  // <AccountCircle />
+                  <MenuIcon />
                 )}
               </IconButton>
               {JSON.parse(localStorage.getItem("token")) &&
@@ -473,6 +474,20 @@ export default function MenuAppBar(props) {
                   open={open}
                   onClose={handleClose}
                 >
+                  <MenuItem
+                    onClick={(e) => {
+                      window.open("https://linktr.ee/prixelart", "_blank");
+                    }}
+                  >
+                    Contáctanos
+                  </MenuItem>
+                  <MenuItem
+                    onClick={(e) => {
+                      window.open("http://blog.prixelart.com/", "_blank");
+                    }}
+                  >
+                    Blog
+                  </MenuItem>
                   <MenuItem onClick={handleCTLogin}>Iniciar Sesión</MenuItem>
                 </Menu>
               )}

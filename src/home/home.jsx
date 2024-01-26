@@ -440,7 +440,6 @@ export default function Home(props) {
               </div>
             </div>
           </Card>
-
           <Grid container style={{ marginLeft: -10 }}>
             <Grid
               item
@@ -765,7 +764,8 @@ export default function Home(props) {
             </Grid>
           </Grid>
 
-          <Container
+          {
+            /* <Container
             className={classes.cardGrid}
             style={{
               paddingLeft: !isDeskTop && 5,
@@ -826,22 +826,24 @@ export default function Home(props) {
                 />
               </Tabs>
             </Paper>
-            {openArts && (
-              <ArtsGrid
-                prixerUsername={null}
-                buyState={props.buyState}
-                addItemToBuyState={props.addItemToBuyState}
-                setIsOpenAssociateProduct={props.setIsOpenAssociateProduct}
-                setSelectedArt={setSelectedArt}
-                setPrixer={props.setPrixer}
-                setFullArt={props.setFullArt}
-                setSearchResult={props.setSearchResult}
-                permissions={props.permissions}
-              />
-            )}
+            {openArts && ( */
+            <ArtsGrid
+              prixerUsername={null}
+              buyState={props.buyState}
+              addItemToBuyState={props.addItemToBuyState}
+              setIsOpenAssociateProduct={props.setIsOpenAssociateProduct}
+              setSelectedArt={setSelectedArt}
+              setPrixer={props.setPrixer}
+              setFullArt={props.setFullArt}
+              setSearchResult={props.setSearchResult}
+              permissions={props.permissions}
+              inHome={true}
+            />
+            /*} )}
             {openPrixers && <PrixersGrid />}
             {openTestimonials && <TestimonialsFeed />}
-          </Container>
+          </Container> */
+          }
         </main>
         <footer className={classes.footer}>
           <Typography

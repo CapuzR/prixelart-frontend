@@ -112,8 +112,9 @@ export default function UpdateMockup(props) {
   const [rotateY, setRotateY] = useState(0);
   const [aspectRatio, setAspectRatio] = useState(0);
   const [selectedImg, setSelectedImg] = useState(undefined);
-  const [warpPercentage, setWarpPercenteage] = useState(0);
-
+  const [warpPercentage, setWarpPercenteage] = useState(0.3);
+  const [warpOrientation, setWarpOrientation] = useState("vertical");
+  const [invertedWrap, setInvertedWrap] = useState(false);
   //Error states.
   const [errorMessage, setErrorMessage] = useState();
   const [snackBarError, setSnackBarError] = useState(false);
@@ -158,8 +159,16 @@ export default function UpdateMockup(props) {
 
   const handleDistortion = (event) => {
     setDistortion(event.taget.value);
-    console.log(event.target.value);
   };
+
+  const handleOrientation = (event) => {
+    setWarpOrientation(event.target.value);
+  };
+
+  const handleInvertedWrap = (event) => {
+    setInvertedWrap(event.target.checked);
+  };
+
   const getRandomArt = async () => {
     const url = process.env.REACT_APP_BACKEND_URL + "/art/random";
     const response = await axios.get(url);
@@ -276,6 +285,7 @@ export default function UpdateMockup(props) {
     setWarpPercenteage(newValue);
     warpImage();
   };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -325,10 +335,6 @@ export default function UpdateMockup(props) {
     warp_canvas = document.createElement("canvas"),
     warp_context = warp_canvas.getContext("2d");
 
-  // inputs
-  var warp_percentage_input = document.getElementById("warp_percentage");
-
-  // for reference, the full method
   function getQuadraticBezierXYatT(start_point, control_point, end_point, T) {
     var pow1minusTsquared = Math.pow(1 - T, 2),
       powTsquared = Math.pow(T, 2);
@@ -351,7 +357,7 @@ export default function UpdateMockup(props) {
   function warpHorizontally(image_to_warp, invert_curve) {
     var image_width = image_to_warp.width,
       image_height = image_to_warp.height,
-      warp_percentage = parseFloat(warp_percentage_input.value, 10),
+      warp_percentage = parseFloat(warpPercentage, 10),
       // for fun purposes and nicer controls
       // I chose to determine the offset by applying a percentage value to the image width
       warp_x_offset = warp_percentage * image_width;
@@ -413,7 +419,7 @@ export default function UpdateMockup(props) {
   function warpVertically(image_to_warp, invert_curve) {
     var image_width = image_to_warp.width,
       image_height = image_to_warp.height,
-      warp_percentage = parseFloat(warp_percentage_input.value, 10),
+      warp_percentage = parseFloat(warpPercentage, 10),
       // for fun purposes and nicer controls
       // I chose to determine the offset by applying a percentage value to the image height
       warp_y_offset = warp_percentage * image_height;
@@ -470,29 +476,23 @@ export default function UpdateMockup(props) {
     }
   }
 
-  // warpImage();
-
-  // window.warpImage = warpImage();
-
   const warpImage = () => {
     var image_to_warp = new Image();
 
-    // image_to_warp.onload = function () {
-    //   var warp_orientation = document.querySelector(
-    //       'input[name="warp_orientation"]:checked'
-    //     ).value,
-    //     invert_curve = document.getElementById("invert_curve").checked;
-    //   if (warp_orientation === "horizontal") {
-    //     warpHorizontally(image_to_warp, invert_curve);
-    //   } else {
-    //     warpVertically(image_to_warp, invert_curve);
-    //   }
+    image_to_warp.onload = function () {
+      if (warpOrientation === "horizontal") {
+        warpHorizontally(image_to_warp, invertedWrap);
+      } else {
+        warpVertically(image_to_warp, invertedWrap);
+      }
+      warped_image.src = warp_canvas.toDataURL();
+    };
 
-    //   warped_image.src = warp_canvas.toDataURL();
-    // };
-
-    image_to_warp.src = randomArt?.smallThumbUrl;
+    image_to_warp.src = randomArt.smallThumbUrl;
   };
+
+  window.warpImage = warpImage;
+
   return (
     <React.Fragment>
       {
@@ -501,102 +501,64 @@ export default function UpdateMockup(props) {
         </Backdrop>
       }
 
-      <form encType="multipart/form-data" noValidate onSubmit={handleSubmit}>
-        <Grid
-          container
-          spacing={2}
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            flexDirection: "column",
+      {/* <form encType="multipart/form-data" noValidate onSubmit={handleSubmit}> */}
+      <Grid
+        container
+        spacing={2}
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          flexDirection: "column",
+        }}
+      >
+        <label>Warp percentage </label>
+        <label>{warpPercentage}</label>
+        <Slider
+          style={{ width: 200 }}
+          id="warp_percentage"
+          type="range"
+          min={0}
+          max={1}
+          value={warpPercentage}
+          onChange={handleChangeWarpPercentage}
+          step={0.1}
+        />
+        <FormLabel component="legend">Orientación</FormLabel>
+        <RadioGroup value={warpOrientation} onChange={handleOrientation}>
+          <FormControlLabel
+            value="vertical"
+            control={<Radio />}
+            label="Vertical"
+          />
+          <FormControlLabel
+            value="horizontal"
+            control={<Radio />}
+            label="Horizontal"
+          />
+        </RadioGroup>
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={invertedWrap}
+              onChange={handleInvertedWrap}
+              name="checkedA"
+            />
+          }
+          label="Invertido"
+        />
+        <Button
+          onClick={(a) => {
+            a.preventDefault();
+
+            warpImage();
           }}
         >
-          {/* <div class="main-container">
-            {/* <h2>Options</h2>
-            <p>Warp percentage </p>
-            <p>{warpPercentage}</p>
+          Warp Image
+        </Button>
+        <img id="warped_image" />
 
-            <input
-              id="warp_percentage"
-              type="range"
-              min="0"
-              max="1"
-              value="0.3"
-              step="0.01"
-            />
-            <p>1.0</p>
-             <span>
-              Note: curving the image has nothing to do with percentages, this
-              was simply my desired choice of controlling the curve level.
-            </span> 
-
-            <p>Horizontal </p>
-            <input name="warp_orientation" type="radio" value="horizontal" />
-            <span class="spacer"></span>
-
-            <p>Vertical </p>
-            <input
-              name="warp_orientation"
-              type="radio"
-              value="vertical"
-              checked
-            />
-            <span class="spacer"></span>
-
-            <p>Invert curve </p>
-            <input id="invert_curve" type="checkbox" />
-
-            <button onClick={warpImage()}>Warp Image</button>
-
-            <h2>Result</h2>
-
-            <img id="warped_image" />
-          </div> */}
-          {/* <Grid>
-            <Typography variant="h4" color="secondary">
-              Options
-            </Typography>
-            <Typography variant="subtitle2" color="secondary">
-              Warp percentage: {warpPercentage}
-            </Typography>
-            <Slider
-              value={warpPercentage}
-              onChange={handleChangeWarpPercentage}
-              aria-labelledby="continuous-slider"
-              min="0"
-              max="1"
-              step="0.01"
-            />
-            <FormControl component="fieldset">
-              <FormLabel color="secondary">Tipo de distorsión</FormLabel>
-              <RadioGroup value={distortion} onChange={handleDistortion}>
-                <FormControlLabel
-                  value="horizontal"
-                  control={<Radio />}
-                  label="Horizontal"
-                />
-                <FormControlLabel
-                  value="vertical"
-                  control={<Radio />}
-                  label="Vertical"
-                />
-                <FormControlLabel
-                  value="inverted horizontal"
-                  control={<Radio />}
-                  label="Horizontal Invertida"
-                />
-                <FormControlLabel
-                  value="inverted vertical"
-                  control={<Radio />}
-                  label="Vertical Invertida"
-                />
-              </RadioGroup>
-            </FormControl>
-            <img id="warped_image" />
-          </Grid> */}
-
-          {preview ? (
+        {/* {preview ? (
             <Paper
               className={classes.paper}
               style={{
@@ -810,7 +772,7 @@ export default function UpdateMockup(props) {
               </Grid>
               <Grid item md={6}>
                 <div style={{ width: 350, height: 350 }}>
-                  {/* <div
+                   <div
                     style={{
                       backgroundImage: "url(" + preview + ")",
                       marginTop: -350,
@@ -822,7 +784,7 @@ export default function UpdateMockup(props) {
                       marginRight: 10,
                     }}
                     onClick={handleImageClick}
-                  /> */}
+                  />
                   {randomArt && (
                     <div
                       style={{
@@ -842,39 +804,39 @@ export default function UpdateMockup(props) {
             <Typography variant="h5" color="secondary" style={{ padding: 20 }}>
               No hay imagen seleccionada
             </Typography>
-          )}
+          )} */}
 
+        <Button
+          variant="contained"
+          component="label"
+          color="primary"
+          style={{ marginTop: 10 }}
+        >
+          {preview ? "Cambiar imagen" : "Subir imagen"}
+          <input
+            name="newMockupImage"
+            type="file"
+            accept="image/*"
+            hidden
+            onChange={(a) => {
+              a.preventDefault();
+              loadImage(a);
+            }}
+          />
+        </Button>
+
+        {preview !== undefined && (
           <Button
             variant="contained"
-            component="label"
             color="primary"
-            style={{ marginTop: 10 }}
+            type="submit"
+            style={{ marginTop: 20 }}
           >
-            {preview ? "Cambiar imagen" : "Subir imagen"}
-            <input
-              name="newMockupImage"
-              type="file"
-              accept="image/*"
-              hidden
-              onChange={(a) => {
-                a.preventDefault();
-                loadImage(a);
-              }}
-            />
+            Actualizar
           </Button>
-
-          {preview !== undefined && (
-            <Button
-              variant="contained"
-              color="primary"
-              type="submit"
-              style={{ marginTop: 20 }}
-            >
-              Actualizar
-            </Button>
-          )}
-        </Grid>
-      </form>
+        )}
+      </Grid>
+      {/* </form> */}
 
       <Snackbar
         open={snackBarError}

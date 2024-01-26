@@ -16,7 +16,7 @@ import Products from "./products/productsCatalog";
 import ShoppingPage from "./shoppingCart/shoppingPage";
 import expire from "./utils/expire";
 import { makeStyles } from "@material-ui/core/styles";
-
+import Prixers from "./prixers/prixersGrid";
 import PasswordChange from "./prixerProfile/passwordChange/passwordChange";
 import ForgotPassword from "./prixerProfile/passwordReset/forgotPassword";
 import ResetPassword from "./prixerProfile/passwordReset/passwordReset";
@@ -96,7 +96,7 @@ function App() {
       setAdmins(rowState.data);
 
       let sellersTeam = rowState?.data?.filter(
-        (admin) => admin.area === "Ventas"
+        (admin) => admin.isSeller === true
       );
       let team = [];
       sellersTeam.map((admin) => {
@@ -450,7 +450,9 @@ function App() {
             searchResult={searchResult}
           />
         </Route>
-
+        <Route path="/prixers">
+          <Prixers buyState={buyState} setPrixer={setPrixer} prixer={prixer} />
+        </Route>
         <Route path="/shopping">
           <ShoppingPage
             buyState={buyState}

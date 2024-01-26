@@ -4,7 +4,6 @@ import { makeStyles } from "@material-ui/core/styles";
 import axios from "axios";
 import { useHistory } from "react-router-dom";
 // import useMediaQuery from "@material-ui/core/useMediaQuery";
-import Card from "@material-ui/core/Card";
 import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
 import CardMedia from "@material-ui/core/CardMedia";
@@ -14,7 +13,7 @@ import Grid from "@material-ui/core/Grid";
 import Backdrop from "@material-ui/core/Backdrop";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import utils from "../../utils/utils";
-
+import Paper from "@material-ui/core/Paper";
 const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
@@ -82,16 +81,15 @@ export default function PrixerGrid(props) {
       <Backdrop className={classes.backdrop} open={backdrop}>
         <CircularProgress color="inherit" />
       </Backdrop>
-      <Grid container spacing={1}>
+      <Grid container spacing={2} style={{ padding: 10 }}>
         {tiles &&
           tiles
             .filter((tile) => tile.avatar) //quitar?
             .map(
               (tile) =>
                 tile.status && (
-                  // isDesktop ? (
                   <Grid item key={tile._id} xs={6} sm={6} md={3}>
-                    <Card className={classes.card}>
+                    <Paper elevation={5} className={classes.card}>
                       <CardMedia
                         alt={tile.title}
                         height="100"
@@ -131,7 +129,7 @@ export default function PrixerGrid(props) {
                           Explorar
                         </Button>
                       </CardActions>
-                    </Card>
+                    </Paper>
                   </Grid>
                 )
             )}

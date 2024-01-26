@@ -376,8 +376,10 @@ export default function OrderDetails(props) {
                         >
                           <Img
                             src={
-                              item.product?.thumbUrl ||
-                              item.product?.sources?.images[0]?.url
+                              item.product?.thumbUrl &&
+                              item.product?.thumbUrl !== "undefined"
+                                ? item.product?.thumbUrl
+                                : item.product?.sources?.images[0]?.url
                             }
                             style={{
                               maxWidth: 150,

@@ -7,6 +7,7 @@ import LocalActivityIcon from "@material-ui/icons/LocalActivity";
 import Badge from "@material-ui/core/Badge";
 import Tooltip from "@material-ui/core/Tooltip";
 import NotificationsIcon from "@material-ui/icons/Notifications";
+import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -49,6 +50,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function FloatingAddButton(props) {
   const classes = useStyles();
+  const history = useHistory();
 
   const openArtDialog = () => {
     props.setOpenArtFormDialog(true);
@@ -59,7 +61,7 @@ export default function FloatingAddButton(props) {
   };
 
   const openShoppingCart = () => {
-    props.setOpenShoppingCart(true);
+    history.push({ pathname: "/shopping" });
   };
 
   return (
@@ -73,11 +75,8 @@ export default function FloatingAddButton(props) {
                 aria-label="add"
                 onClick={openServiceDialog}
                 style={{
-                  bottom:
-                    JSON.parse(localStorage.getItem("buyState")) &&
-                    JSON.parse(localStorage.getItem("buyState"))?.length > 0
-                      ? 160
-                      : 70,
+                  bottom: 160,
+
                   right: 10,
                 }}
               >
@@ -90,11 +89,7 @@ export default function FloatingAddButton(props) {
                 aria-label="add"
                 onClick={openArtDialog}
                 style={{
-                  bottom:
-                    JSON.parse(localStorage.getItem("buyState")) &&
-                    JSON.parse(localStorage.getItem("buyState"))?.length > 0
-                      ? 90
-                      : 0,
+                  bottom: 90,
                   right: 10,
                 }}
               >
@@ -103,25 +98,20 @@ export default function FloatingAddButton(props) {
             </Tooltip>
           </>
         )}
-      {JSON.parse(localStorage.getItem("buyState")) &&
-        JSON.parse(localStorage.getItem("buyState"))?.length > 0 && (
-          <Fab
-            color="primary"
-            aria-label="add"
-            onClick={openShoppingCart}
-            style={{ right: 10 }}
-          >
-            <Badge
-              overlap="rectangular"
-              badgeContent={
-                JSON.parse(localStorage.getItem("buyState"))?.length
-              }
-              color="white"
-            >
-              <ShoppingCartOutlinedIcon />
-            </Badge>
-          </Fab>
-        )}
+      <Fab
+        color="primary"
+        aria-label="add"
+        onClick={openShoppingCart}
+        style={{ right: 10 }}
+      >
+        <Badge
+          overlap="rectangular"
+          badgeContent={JSON.parse(localStorage.getItem("buyState"))?.length}
+          color="white"
+        >
+          <ShoppingCartOutlinedIcon />
+        </Badge>
+      </Fab>
     </div>
   );
 }

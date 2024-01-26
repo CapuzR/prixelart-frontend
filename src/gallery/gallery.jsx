@@ -83,8 +83,22 @@ export default function Gallery(props) {
       <Container component="main" maxWidth="s" className={classes.paper}>
         <CssBaseline />
 
-        <Grid style={{ marginTop: 90 }}>
-          <h1 style={{ margin: 0 }}>Galería</h1>
+        <Grid
+          style={{
+            marginTop: 90,
+            justifyContent: "center",
+            alignItems: "center",
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
+          <Typography
+            variant="h4"
+            style={{ color: "#404e5c" }}
+            fontWeight="bold"
+          >
+            <strong>Galería</strong>
+          </Typography>
           <Typography
             variant="body2"
             color="textSecondary"

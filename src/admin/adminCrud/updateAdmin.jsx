@@ -163,7 +163,6 @@ export default function UpAdmin(props) {
               </Select>
             </FormControl>
           </Grid>
-          {/* No funciona hasta actualizar BACKEND 
           <Grid item xs={4}>
             <FormControl
               style={{
@@ -184,7 +183,7 @@ export default function UpAdmin(props) {
                 color="primary"
               />
             </FormControl>
-          </Grid> */}
+          </Grid>
           <Grid item xs={6}>
             <FormControl
               className={clsx(classes.margin, classes.textField)}

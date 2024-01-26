@@ -293,6 +293,13 @@ export default function Grid(props) {
         props.setSearchResult(response.data.arts);
         setBackdrop(false);
       });
+    } else if (props.inHome) {
+      const base_url = process.env.REACT_APP_BACKEND_URL + "/art/get-latest";
+      axios.get(base_url).then((response) => {
+        setTiles(response.data.arts);
+        props.setSearchResult(response.data.arts);
+        setBackdrop(false);
+      });
     } else {
       const base_url = process.env.REACT_APP_BACKEND_URL + "/art/read-all";
       axios.get(base_url).then((response) => {

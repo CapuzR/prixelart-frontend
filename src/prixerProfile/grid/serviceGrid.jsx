@@ -160,10 +160,16 @@ export default function ServiceGrid(props) {
   };
 
   const getServices = async () => {
-    const base_url =
-      process.env.REACT_APP_BACKEND_URL +
-      "/service/getServiceByPrixer/" +
-      prixer;
+    let base_url;
+
+    if (prixer === "services") {
+      base_url = process.env.REACT_APP_BACKEND_URL + "/service/getAllActive";
+    } else {
+      base_url =
+        process.env.REACT_APP_BACKEND_URL +
+        "/service/getServiceByPrixer/" +
+        prixer;
+    }
     await axios
       .get(base_url)
       .then((response) => {
@@ -183,10 +189,14 @@ export default function ServiceGrid(props) {
     }
   }, []);
 
+  if (props.createdService) {
+  }
   useEffect(() => {
-    getMyServices();
-    setSnackBar(true);
-    setSnackBarMessage("¡Servicio creado exitosamente!");
+    if (props.createdService) {
+      getMyServices();
+      setSnackBar(true);
+      setSnackBarMessage("¡Servicio creado exitosamente!");
+    } else return;
   }, [props.createdService]);
 
   const updateService = async () => {
@@ -929,7 +939,7 @@ export default function ServiceGrid(props) {
                           "  hasta $" + tile.publicPrice.to}
                       </Typography>
                     )}
-                    {JSON.parse(localStorage.getItem("token")) &&
+                    {JSON.parse(localStorage.getItem("token")) ? (
                       JSON.parse(localStorage.getItem("token")).username !==
                         prixer && (
                         <div
@@ -957,7 +967,34 @@ export default function ServiceGrid(props) {
                             Contactar
                           </Button>
                         </div>
-                      )}
+                      )
+                    ) : (
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "end",
+                          alignContent: "end",
+                        }}
+                      >
+                        <Button
+                          style={{
+                            backgroundColor: "#d33f49",
+                            color: "white",
+                            padding: 8,
+                            marginLeft: 10,
+                            marginTop: 20,
+                          }}
+                          onClick={(e) => {
+                            window.open(
+                              utils.generateServiceMessage(tile, prixer),
+                              "_blank"
+                            );
+                          }}
+                        >
+                          Contactar
+                        </Button>
+                      </div>
+                    )}
                   </Grid>
                 </Grid>
               </Paper>

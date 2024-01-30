@@ -25,6 +25,8 @@ import Snackbar from "@material-ui/core/Snackbar";
 import Modal from "@material-ui/core/Modal";
 import Button from "@material-ui/core/Button";
 import MDEditor from "@uiw/react-md-editor";
+import PrixersService from "./prixerServices/prixerService";
+import TestimonialsGrid from "./testimonials/testimonialsGrid";
 
 const useStyles = makeStyles((theme) => ({
   paper2: {
@@ -297,7 +299,7 @@ function App() {
 
         {/* Admin Routes */}
         <Route path="/inicio-admin-prix">
-          <AdminLogin checkP={checkP} />
+          <AdminLogin checkP={checkP} loadAdmins={loadAdmins} />
         </Route>
 
         <Route path="/admin/dashboard">
@@ -466,6 +468,22 @@ function App() {
             dollarValue={dollarValue}
             setOpen={setOpen}
             setMessage={setMessage}
+          />
+        </Route>
+
+        <Route path="/services">
+          <PrixersService
+            buyState={buyState}
+            setPrixer={setPrixer}
+            prixer={prixer}
+          />
+        </Route>
+
+        <Route path="/testimonials">
+          <TestimonialsGrid
+            buyState={buyState}
+            setPrixer={setPrixer}
+            prixer={prixer}
           />
         </Route>
 

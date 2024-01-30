@@ -123,6 +123,7 @@ export default function Login(props) {
             );
             history.push({ pathname: "/admin/order/read" });
             props.checkP();
+            props.loadAdmins();
           }
         })
         .catch((error) => {

@@ -8,7 +8,6 @@ import { makeStyles, useTheme } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import IconButton from "@material-ui/core/IconButton";
-import AccountCircle from "@material-ui/icons/AccountCircle";
 import MenuItem from "@material-ui/core/MenuItem";
 import Menu from "@material-ui/core/Menu";
 import Tabs from "@material-ui/core/Tabs";
@@ -185,9 +184,14 @@ export default function MenuAppBar(props) {
     history.push({ pathname: "/productos" });
   };
 
-  const handleShoppingCart = (e) => {
+  const handleServices = (e) => {
     e.preventDefault();
-    history.push({ pathname: "/shopping" });
+    history.push({ pathname: "/services" });
+  };
+
+  const handleTestimonials = (e) => {
+    e.preventDefault();
+    history.push({ pathname: "/testimonials" });
   };
 
   const handleDrawerOpen = () => {
@@ -284,6 +288,7 @@ export default function MenuAppBar(props) {
                 }}
               >
                 <img
+                  onClick={handleMyAccount}
                   src={avatar}
                   style={{
                     height: 180,
@@ -312,9 +317,49 @@ export default function MenuAppBar(props) {
               />
               <Tab
                 className={classes.button}
-                label="Compras"
-                onClick={handleShoppingCart}
+                label="Servicios"
+                onClick={handleServices}
               />
+              <Tab
+                className={classes.button}
+                label="Testimonios"
+                onClick={handleTestimonials}
+              />
+              <Divider />
+
+              {JSON.parse(localStorage.getItem("token")) &&
+              JSON.parse(localStorage.getItem("token")).username ? (
+                <Tabs display="flex" orientation="vertical">
+                  <Tab
+                    className={classes.button}
+                    onClick={handleMyAccount}
+                    label="Mi Perfil"
+                  />
+                  <Tab
+                    className={classes.button}
+                    onClick={handleMyStats}
+                    label="Mi Cuenta"
+                  />
+                  <Tab
+                    className={classes.button}
+                    onClick={handlePasswordChange}
+                    label="Cambiar contraseña"
+                  />
+                  <Tab
+                    className={classes.button}
+                    onClick={handleLogout}
+                    label="Cerrar Sesión"
+                  />
+                </Tabs>
+              ) : (
+                <Tab
+                  className={classes.button}
+                  onClick={handleCTLogin}
+                  label="Iniciar sesión"
+                />
+              )}
+              <Divider />
+              <Divider />
               <Tab
                 className={classes.button}
                 onClick={(e) => {
@@ -330,42 +375,6 @@ export default function MenuAppBar(props) {
                 label="Blog"
               />
             </Tabs>
-            <Divider />
-            <Divider />
-
-            {JSON.parse(localStorage.getItem("token")) &&
-            JSON.parse(localStorage.getItem("token")).username ? (
-              <Tabs display="flex" orientation="vertical">
-                <Tab
-                  className={classes.button}
-                  onClick={handleMyAccount}
-                  label="Mi Perfil"
-                />
-                <Tab
-                  className={classes.button}
-                  onClick={handleMyStats}
-                  label="Mi Cuenta"
-                />
-                <Tab
-                  className={classes.button}
-                  onClick={handlePasswordChange}
-                  label="Cambiar contraseña"
-                />
-                <Tab
-                  className={classes.button}
-                  onClick={handleLogout}
-                  label="Cerrar Sesión"
-                />
-              </Tabs>
-            ) : (
-              <Tabs display="flex" orientation="vertical">
-                <Tab
-                  className={classes.button}
-                  onClick={handleCTLogin}
-                  label="Iniciar sesión"
-                />
-              </Tabs>
-            )}
           </Drawer>
         </>
       ) : (
@@ -391,11 +400,16 @@ export default function MenuAppBar(props) {
                 onClick={handlePrixers}
                 label="Prixers"
               />
-              {/* <Tab
+              <Tab
                 className={classes.button}
-                label="Compras"
-                onClick={handleShoppingCart}
-              /> */}
+                label="Servicios"
+                onClick={handleServices}
+              />
+              <Tab
+                className={classes.button}
+                label="Testimonios"
+                onClick={handleTestimonials}
+              />
             </Tabs>
 
             <div>
@@ -427,7 +441,6 @@ export default function MenuAppBar(props) {
                     }}
                   />
                 ) : (
-                  // <AccountCircle />
                   <MenuIcon />
                 )}
               </IconButton>
@@ -456,6 +469,22 @@ export default function MenuAppBar(props) {
                     Cambiar contraseña
                   </MenuItem>
                   <MenuItem onClick={handleLogout}>Cerrar Sesión</MenuItem>
+                  <Divider />
+
+                  <MenuItem
+                    onClick={(e) => {
+                      window.open("https://linktr.ee/prixelart", "_blank");
+                    }}
+                  >
+                    Contáctanos
+                  </MenuItem>
+                  <MenuItem
+                    onClick={(e) => {
+                      window.open("http://blog.prixelart.com/", "_blank");
+                    }}
+                  >
+                    Blog
+                  </MenuItem>
                 </Menu>
               ) : (
                 <Menu

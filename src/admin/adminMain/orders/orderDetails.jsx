@@ -407,7 +407,7 @@ export default function OrderDetails(props) {
                         )}
                         <div>{"Producto: " + item.product.name}</div>
                         <div>{"Id: " + item.product._id}</div>
-                        {item.product.selection &&
+                        {/* {item.product.selection &&
                         item.product.selection?.attributes
                           ? item.product.attributes.map((a, i) => {
                               return (
@@ -425,7 +425,22 @@ export default function OrderDetails(props) {
                                 </p>
                               );
                             })
-                          : item.product.selection.name}
+                          :  */}
+                        {item.product.selection &&
+                        item.product.selection.includes(" ") ? (
+                          <div>
+                            {item.product.selection}{" "}
+                            {
+                              item.product.variants.find(
+                                (v) => v.name === item.product.selection
+                              ).attributes[1]?.value
+                            }
+                          </div>
+                        ) : (
+                          item.product.selection && (
+                            <div>{item.product.selection}</div>
+                          )
+                        )}
                         {/* <div>
                           {item.product?.discount &&
                             "Descuento: " +
@@ -869,13 +884,14 @@ export default function OrderDetails(props) {
                                     margin: 0,
                                   }}
                                 >
-                                  {item.product.selection.attributes
-                                    ? item.product.selection.attributes[i]
+                                  {item.product.selection}
+                                  {/* ? item.product.selection.attributes[i]
                                         ?.name +
                                       ": " +
                                       item.product.selection.attributes[i]
                                         ?.value
-                                    : item.product.selection}
+                                    :
+                                     item.product.selection} */}
                                 </p>
                               );
                             })}

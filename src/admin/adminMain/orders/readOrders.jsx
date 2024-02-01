@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { makeStyles } from "@material-ui/core/styles";
 import { TableCell, TableHead, TableRow, TableBody } from "@material-ui/core";
@@ -139,9 +139,38 @@ export default function ReadOrders(props) {
   const itemsToSkip = (pageNumber - 1) * itemsPerPage;
   const rowsv2 = props.rows?.slice(itemsToSkip, itemsPerPage + itemsToSkip);
 
-  const handleChange = (event) => {
-    props.setFilter(event.target.value);
-    props.filterOrders(event.target.value);
+  const handleID = (event) => {
+    props.filterOrders(event.target.value, "id");
+  };
+
+  const handleCreationDate = (event) => {
+    props.setCreationDateFilter(event.target.value);
+    props.filterOrders(event.target.value, "creationDate");
+  };
+
+  const handleShippingDate = (event) => {
+    props.setShippingDateFilter(event.target.value);
+    props.filterOrders(event.target.value, "shippingDate");
+  };
+
+  const handleClient = (event) => {
+    props.setClientFilter(event.target.value);
+    props.filterOrders(event.target.value, "client");
+  };
+
+  const handlePayStatus = (event) => {
+    props.setPayStatusFilter(event.target.value);
+    props.filterOrders(event.target.value, "payStatus");
+  };
+
+  const handleStatus = (event) => {
+    props.setStatusFilter(event.target.value);
+    props.filterOrders(event.target.value, "status");
+  };
+
+  const handleSeller = (event) => {
+    props.setSellerFilter(event.target.value);
+    props.filterOrders(event.target.value, "seller");
   };
 
   const handleChangeSeller = async (order, seller) => {
@@ -161,6 +190,7 @@ export default function ReadOrders(props) {
     });
     props.readOrders();
   };
+
   return (
     <>
       <Table>
@@ -169,9 +199,10 @@ export default function ReadOrders(props) {
             <TableCell align="center">
               <TextField
                 variant="outlined"
-                fullWidth
+                // fullWidth
                 label="ID"
-                onChange={handleChange}
+                onChange={handleID}
+                style={{ marginLeft: -15, width: "150%" }}
               />
             </TableCell>
             <TableCell align="center">
@@ -181,8 +212,8 @@ export default function ReadOrders(props) {
                   <Select
                     labelId="demo-simple-select-label"
                     id="demo-simple-select"
-                    value={props.filter}
-                    onChange={handleChange}
+                    value={props.creationDateFilter}
+                    onChange={handleCreationDate}
                   >
                     <MenuItem key={0} value={"recent"}>
                       Recientes
@@ -198,7 +229,10 @@ export default function ReadOrders(props) {
               <div style={{ display: "flex", justifyContent: "end" }}>
                 <FormControl className={classes.formControl}>
                   <InputLabel>Fecha de entrega</InputLabel>
-                  <Select value={props.filter} onChange={handleChange}>
+                  <Select
+                    value={props.shippingDateFilter}
+                    onChange={handleShippingDate}
+                  >
                     <MenuItem key={0} value={"coming"}>
                       Próximos
                     </MenuItem>
@@ -209,13 +243,27 @@ export default function ReadOrders(props) {
                 </FormControl>
               </div>
             </TableCell>
-            <TableCell align="center">Cliente</TableCell>
+            <TableCell align="center">
+              <div style={{ display: "flex", justifyContent: "end" }}>
+                <FormControl className={classes.formControl}>
+                  <InputLabel>Cliente</InputLabel>
+                  <Select value={props.filter} onChange={handleClient}>
+                    {props.clients &&
+                      props.clients.map((c, i) => (
+                        <MenuItem key={c} value={c}>
+                          {c}
+                        </MenuItem>
+                      ))}
+                  </Select>
+                </FormControl>
+              </div>
+            </TableCell>
             <TableCell align="center">Productos</TableCell>
             <TableCell align="center">
               <div style={{ display: "flex", justifyContent: "end" }}>
                 <FormControl className={classes.formControl}>
                   <InputLabel> Status de Pago</InputLabel>
-                  <Select value={props.filter} onChange={handleChange}>
+                  <Select value={props.filter} onChange={handlePayStatus}>
                     <MenuItem key={0} value={"Pendiente"}>
                       Pendiente
                     </MenuItem>
@@ -242,7 +290,7 @@ export default function ReadOrders(props) {
               <div style={{ display: "flex", justifyContent: "end" }}>
                 <FormControl className={classes.formControl}>
                   <InputLabel>Status</InputLabel>
-                  <Select value={props.filter} onChange={handleChange}>
+                  <Select value={props.filter} onChange={handleStatus}>
                     <MenuItem key={0} value={"Por producir"}>
                       Por producir
                     </MenuItem>
@@ -275,7 +323,7 @@ export default function ReadOrders(props) {
               <div style={{ display: "flex", justifyContent: "end" }}>
                 <FormControl className={classes.formControl}>
                   <InputLabel>Asesor</InputLabel>
-                  <Select value={props.filter} onChange={handleChange}>
+                  <Select value={props?.sellerFilter} onChange={handleSeller}>
                     <MenuItem
                       key={0}
                       value={{
@@ -294,7 +342,7 @@ export default function ReadOrders(props) {
                     </MenuItem>
                     {props.sellers &&
                       props.sellers?.map((seller, index) => (
-                        <MenuItem key={index} value={{ seller: seller }}>
+                        <MenuItem key={index} value={seller}>
                           {seller}
                         </MenuItem>
                       ))}
@@ -310,19 +358,19 @@ export default function ReadOrders(props) {
               <>
                 <TableRow key={index}>
                   <TableCell align="center">{row.orderId}</TableCell>
-                  <TableCell align="center">
+                  <TableCell align="center" style={{ padding: 10 }}>
                     {new Date(row.createdOn)?.toLocaleDateString()}
                   </TableCell>
-                  <TableCell align="center">
+                  <TableCell align="center" style={{ padding: 10 }}>
                     {new Date(
                       row.shippingData?.shippingDate
                     )?.toLocaleDateString()}
                   </TableCell>
-                  <TableCell align="center">
+                  <TableCell align="center" style={{ padding: 10 }}>
                     {row.basicData?.firstname || row.basicData?.name}{" "}
                     {row.basicData?.lastname}
                   </TableCell>
-                  <TableCell align="center">
+                  <TableCell align="center" style={{ padding: 10 }}>
                     <Button
                       onClick={() => {
                         props.setModalContent(row);
@@ -344,7 +392,7 @@ export default function ReadOrders(props) {
                       </div>
                     </Button>
                   </TableCell>
-                  <TableCell align="center">
+                  <TableCell align="center" style={{ padding: 10 }}>
                     <FormControl
                       disabled={
                         JSON.parse(localStorage.getItem("adminToken")).area !==
@@ -388,7 +436,7 @@ export default function ReadOrders(props) {
                     </FormControl>
                   </TableCell>
 
-                  <TableCell align="center">
+                  <TableCell align="center" style={{ padding: 10 }}>
                     <FormControl
                       disabled={
                         !props.permissions?.orderStatus ||
@@ -451,7 +499,7 @@ export default function ReadOrders(props) {
                         <DeleteIcon />
                       </Fab> */}
                   </TableCell>
-                  <TableCell align="center">
+                  <TableCell align="center" style={{ padding: 10 }}>
                     <Select
                       variant="outlined"
                       disabled={

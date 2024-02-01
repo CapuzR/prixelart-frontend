@@ -720,12 +720,13 @@ export default function Checkout(props) {
                                     {item.product.name + " X " + item.art.title}
                                     <br></br>
                                     {item.product?.selection &&
-                                      item.product?.selection?.name}
-                                    {item.product?.selection?.attributes &&
-                                      item.product.selection.attributes
-                                        ?.length > 1 &&
-                                      item.product.selection.attributes[1]
-                                        ?.value}
+                                      item.product?.selection}
+                                    {item.product?.selection.includes(" ") &&
+                                      " " +
+                                        item.product.variants.find(
+                                          (v) =>
+                                            v.name === item.product.selection
+                                        ).attributes[1]?.value}
                                   </Grid>
                                   <Grid
                                     item

@@ -32,6 +32,7 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import utils from "../../utils/utils";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
+import ServiceSearchBar from "../../sharedComponents/searchBar/serviceSearchBar";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -109,6 +110,7 @@ const useStyles = makeStyles((theme) => ({
 export default function ServiceGrid(props) {
   const classes = useStyles();
   const [tiles, setTiles] = useState([]);
+  const [services, setServices] = useState([]);
   const history = useHistory();
   const prixer = window.location.pathname.slice(1);
   const [backdrop, setBackdrop] = useState(true);
@@ -131,7 +133,8 @@ export default function ServiceGrid(props) {
   const serviceAreas = ["Diseño", "Fotografía", "Artes Plásticas", "Otro"];
   const [serviceOnEdit, setServiceOnEdit] = useState(); //Data inicial
   const [showFullDescription, setShowFullDescription] = useState([]);
-
+  const [query, setQuery] = useState();
+  const [categories, setCategories] = useState();
   const [images, setImages] = useState([]); // Imágenes visaulizadas
   const [newImg, setNewImg] = useState([]);
 
@@ -152,6 +155,7 @@ export default function ServiceGrid(props) {
       })
       .then((response) => {
         setTiles(response.data.services);
+        setServices(response.data.services);
       })
       .catch((error) => {
         console.log(error);
@@ -174,6 +178,7 @@ export default function ServiceGrid(props) {
       .get(base_url)
       .then((response) => {
         setTiles(response.data.services);
+        setServices(response.data.services);
       })
       .catch((error) => {
         console.log(error);
@@ -182,7 +187,7 @@ export default function ServiceGrid(props) {
   };
 
   useEffect(() => {
-    if (localStorage.getItem("token")) {
+    if (localStorage.getItem("token") && prixer !== "services") {
       getMyServices();
     } else {
       getServices();
@@ -198,6 +203,48 @@ export default function ServiceGrid(props) {
       setSnackBarMessage("¡Servicio creado exitosamente!");
     } else return;
   }, [props.createdService]);
+
+  useEffect(() => {
+    if (categories && query?.length > 0) {
+      const result = [];
+      services.map((tile) => {
+        if (
+          tile.serviceArea === categories &&
+          (tile.title.toLowerCase().includes(query.toLowerCase()) ||
+            tile.description
+              .toLowerCase()
+              .includes(
+                query.toLowerCase() ||
+                  tile.serviceArea.toLowerCase().includes(query.toLowerCase())
+              ))
+        ) {
+          result.push(tile);
+        }
+      });
+      setTiles(result);
+    } else if (categories !== undefined) {
+      const result = services.filter((tile) => tile.serviceArea === categories);
+      setTiles(result);
+    } else if (query?.length > 0) {
+      const result = [];
+      services.map((tile) => {
+        if (
+          tile.title.toLowerCase().includes(query.toLowerCase()) ||
+          tile.description
+            .toLowerCase()
+            .includes(
+              query.toLowerCase() ||
+                tile.serviceArea.toLowerCase().includes(query.toLowerCase())
+            )
+        ) {
+          result.push(tile);
+        }
+      });
+      setTiles(result);
+    } else {
+      setTiles(services);
+    }
+  }, [query, categories]);
 
   const updateService = async () => {
     var formData = new FormData();
@@ -389,6 +436,22 @@ export default function ServiceGrid(props) {
         <Backdrop className={classes.backdrop} open={backdrop}>
           <CircularProgress color="inherit" />
         </Backdrop>
+      </div>
+
+      <div
+        style={{
+          width: "100%",
+          display: "flex",
+          justifyContent: "center",
+          marginBottom: 10,
+        }}
+      >
+        <ServiceSearchBar
+          query={query}
+          setQuery={setQuery}
+          categories={categories}
+          setCategories={setCategories}
+        />
       </div>
 
       <Grid container style={{ justifyContent: "center", marginBottom: 20 }}>

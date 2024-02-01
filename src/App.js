@@ -427,6 +427,7 @@ function App() {
             dollarValue={dollarValue}
             pointedProduct={pointedProduct}
             setPointedProduct={setPointedProduct}
+            permissions={permissions}
           />
         </Route>
 
@@ -450,6 +451,7 @@ function App() {
             fullArt={fullArt}
             setSearchResult={setSearchResult}
             searchResult={searchResult}
+            permissions={permissions}
           />
         </Route>
         <Route path="/prixers">
@@ -476,6 +478,7 @@ function App() {
             buyState={buyState}
             setPrixer={setPrixer}
             prixer={prixer}
+            permissions={permissions}
           />
         </Route>
 
@@ -551,6 +554,7 @@ function App() {
             setPrixer={setPrixer}
             setFullArt={setFullArt}
             setSearchResult={setSearchResult}
+            permissions={permissions}
           />
         </Route>
 

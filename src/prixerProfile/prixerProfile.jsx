@@ -107,6 +107,7 @@ export default function PrixerProfile(props) {
             prixerUsername={prixerUsername}
             createdService={createdService}
             setCreatedService={setCreatedService}
+            permissions={props.permissions}
           />
         );
 

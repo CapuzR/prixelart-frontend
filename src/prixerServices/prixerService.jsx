@@ -77,7 +77,7 @@ export default function PrixersService(props) {
           </Typography>
         </Grid>
         <Grid>
-          <ServiceGrid />
+          <ServiceGrid permissions={props.permissions} />
         </Grid>
       </Container>
     </>

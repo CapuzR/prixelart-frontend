@@ -401,7 +401,8 @@ export default function ShoppingCart(props) {
   const handleVariantProduct = (variant, index, product) => {
     let prod = product;
     prod.selection = variant;
-    prod.publicEquation = variant?.publicPrice?.equation;
+    let selection = product.variants.find((v) => v.name === variant);
+    prod.publicEquation = selection?.publicPrice?.equation;
     props.AssociateProduct({
       index: index,
       item: prod,
@@ -411,12 +412,12 @@ export default function ShoppingCart(props) {
 
   const modifyPrice = (product, index, newPrice) => {
     const purchase = props.buyState;
-    let item = props.buyState[index];
+    let item = purchase[index];
     item.product.publicEquation = newPrice;
+    item.product.modifyPrice = true;
+    item.product.publicEquation = newPrice.replace(/[,]/gi, ".");
     purchase.splice(index, 1, item);
-    product.modifyPrice = true;
     // product.comission = newPrice/10;
-    product.publicEquation = newPrice.replace(/[,]/gi, ".");
     localStorage.setItem("buyState", JSON.stringify(purchase));
     props.setBuyState(purchase);
   };
@@ -531,51 +532,35 @@ export default function ShoppingCart(props) {
                             className={classes.formControl}
                             style={{ minWidth: 200 }}
                           >
-                            {typeof buy.product.selection?._id === "string" ? (
-                              <Typography
-                                variant="h6"
-                                style={{
-                                  fontWeight: 300,
-                                  fontSize: 18,
-                                  marginTop: -10,
-                                }}
-                              >
-                                {buy.product.selection.name}
-                                {buy.product.selection?.attributes?.length >
-                                  1 &&
-                                  buy.product.selection?.attributes[1]
-                                    ?.value !== undefined &&
-                                  " " +
-                                    buy.product.selection.attributes[1].value}
-                              </Typography>
-                            ) : (
-                              <>
-                                <InputLabel style={{ paddingLeft: 15 }}>
-                                  {buy.product.attributes[0]?.name}
-                                </InputLabel>
-                                <Select
-                                  id={"variant " + index}
-                                  variant="outlined"
-                                  onChange={(e) => {
-                                    handleVariantProduct(
-                                      e.target.value,
-                                      index,
-                                      buy.product
-                                    );
-                                  }}
-                                >
-                                  {buy.product.variants.map((a) => {
-                                    return (
-                                      <MenuItem value={a}>
-                                        {a.name}
-                                        {a.attributes[1]?.value &&
-                                          " " + a.attributes[1]?.value}
-                                      </MenuItem>
-                                    );
-                                  })}
-                                </Select>
-                              </>
-                            )}
+                            <InputLabel style={{ paddingLeft: 15 }}>
+                              {buy.product.attributes[0]?.name}
+                            </InputLabel>
+                            <Select
+                              id={"variant " + index}
+                              variant="outlined"
+                              value={buy.product.selection}
+                              onChange={(e) => {
+                                handleVariantProduct(
+                                  e.target.value,
+                                  index,
+                                  buy.product
+                                );
+                              }}
+                            >
+                              {productList
+                                .find(
+                                  (product) => product.name === buy.product.name
+                                )
+                                ?.variants.map((a) => {
+                                  return (
+                                    <MenuItem value={a.name}>
+                                      {a.name}
+                                      {/* {a.attributes[1]?.value &&
+                                      " " + a.attributes[1]?.value} */}
+                                    </MenuItem>
+                                  );
+                                })}
+                            </Select>
                           </FormControl>
                         )}
                         {props.discountList !== undefined &&

@@ -70,7 +70,7 @@ export default function PrixersService(props) {
         >
           <Typography
             variant="h4"
-            style={{ color: "#404e5c", marginBottom: 20 }}
+            style={{ color: "#404e5c", marginBottom: 10 }}
             fontWeight="bold"
           >
             <strong>Servicios</strong>

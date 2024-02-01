@@ -137,6 +137,7 @@ export default function UpdateProduct(props) {
   const [productionTime, setProductionTime] = useState(
     props.product?.productionTime || undefined
   );
+  const [cost, setCost] = useState(props?.product?.cost || undefined);
   const [fromPublicPrice, setFromPublicPrice] = useState(
     props?.product?.publicPrice?.from
   );
@@ -285,13 +286,14 @@ export default function UpdateProduct(props) {
           !description &&
           !category &&
           !considerations &&
+          !cost &&
           !fromPublicPrice &&
           // !fromPrixerPrice &&
           !images
         ) {
           setErrorMessage("Por favor completa todos los campos requeridos.");
           setSnackBarError(true);
-          e.preventDefault();
+          // e.preventDefault();
         } else {
           setLoading(true);
           setButtonState(true);
@@ -324,6 +326,7 @@ export default function UpdateProduct(props) {
           if (productionTime !== undefined && productionTime !== "") {
             newFormData.append("productionTime", productionTime);
           }
+          newFormData.append("cost", cost.replace(/[,]/gi, "."));
           newFormData.append(
             "publicPriceFrom",
             data.publicPrice.from.replace(/[,]/gi, ".")
@@ -377,7 +380,10 @@ export default function UpdateProduct(props) {
             setSnackBarError(true);
           } else {
             setErrorMessage("Actualización de producto exitosa.");
+            setLoading(false);
             setSnackBarError(true);
+            setButtonState(false);
+
             // history.push("/admin/product/read");
           }
         }
@@ -741,6 +747,37 @@ export default function UpdateProduct(props) {
                     InputProps={{
                       endAdornment: (
                         <InputAdornment position="end">días</InputAdornment>
+                      ),
+                    }}
+                  />
+                </FormControl>
+              </Grid>
+            </Grid>
+            <Grid container style={{ marginTop: 20 }}>
+              <Title>Costo de producción</Title>
+            </Grid>
+            <Grid container spacing={2}>
+              <Grid item xs={4} md={5}>
+                <FormControl
+                  className={clsx(classes.margin, classes.textField)}
+                  variant="outlined"
+                  xs={12}
+                  fullWidth={true}
+                >
+                  <TextField
+                    variant="outlined"
+                    required
+                    fullWidth
+                    value={cost}
+                    onChange={(e) => {
+                      setCost(e.target.value);
+                    }}
+                    error={
+                      cost !== undefined && !validations.isAValidPrice(cost)
+                    }
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">$</InputAdornment>
                       ),
                     }}
                   />

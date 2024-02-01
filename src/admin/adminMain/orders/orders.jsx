@@ -8,6 +8,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import Fab from "@material-ui/core/Fab";
 import AddIcon from "@material-ui/icons/Add";
 import GetAppIcon from "@material-ui/icons/GetApp";
+import BackspaceIcon from "@material-ui/icons/Backspace";
+
 import Title from "../Title";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import Modal from "@material-ui/core/Modal";
@@ -110,7 +112,7 @@ const useStyles = makeStyles((theme) => ({
     paddingBottom: theme.spacing(4),
   },
   paper: {
-    padding: theme.spacing(2),
+    padding: theme.spacing(1),
     display: "flex",
     overflow: "none",
     flexDirection: "column",
@@ -253,6 +255,13 @@ export default function Orders(props) {
   const [orders, setOrders] = useState([]);
   const [movements, setMovements] = useState([]);
   const [consumers, setConsumers] = useState([]);
+  const [creationDateFilter, setCreationDateFilter] = useState();
+  const [shippingDateFilter, setShippingDateFilter] = useState();
+  const [clientFilter, setClientFilter] = useState();
+  const [payStatusFilter, setPayStatusFilter] = useState();
+  const [statusFilter, setStatusFilter] = useState();
+  const [sellerFilter, setSellerFilter] = useState();
+  const [client, setClients] = useState();
 
   const getDiscounts = async () => {
     const base_url = process.env.REACT_APP_BACKEND_URL + "/discount/read-allv1";
@@ -282,6 +291,7 @@ export default function Orders(props) {
       .then((response) => {
         setRows(response.data.orders);
         setOrders(response.data.orders);
+        getClients(response.data.orders);
       })
       .catch((error) => {
         console.log(error);
@@ -321,6 +331,7 @@ export default function Orders(props) {
         console.log(error);
       });
   };
+
   const updateOrders = () => {
     orders.map((order) => {
       const findMov = movements.find((mov) =>
@@ -335,6 +346,7 @@ export default function Orders(props) {
     });
     setOrders(orders);
   };
+
   const downloadOrders = async () => {
     const workbook = new excelJS.Workbook();
     const date = new Date()
@@ -525,117 +537,108 @@ export default function Orders(props) {
     });
   };
 
-  const filterOrders = (filter) => {
+  const filterOrders = (data, type) => {
     setLoading(true);
-    if (filter === "recent") {
-      let ordersv2 = orders.sort(function (a, b) {
-        if (a.createdOn.toLowerCase() < b.createdOn.toLowerCase()) {
-          return 1;
-        }
-        if (a.createdOn.toLowerCase() > b.createdOn.toLowerCase()) {
-          return -1;
-        }
-        return 0;
-      });
-      setRows(ordersv2);
-    } else if (filter === "previous") {
-      let ordersv2 = orders.sort(function (a, b) {
-        if (a.createdOn.toLowerCase() > b.createdOn.toLowerCase()) {
-          return 1;
-        }
-        if (a.createdOn.toLowerCase() < b.createdOn.toLowerCase()) {
-          return -1;
-        }
-        return 0;
-      });
-      setRows(ordersv2);
-    } else if (filter === "coming") {
-      let toDeliver = orders.filter(
-        (row) =>
-          row.shippingData && row.shippingData?.shippingDate !== undefined
-      );
-      let ordersv2 = toDeliver.sort(function (a, b) {
-        if (
-          a.shippingData?.shippingDate !== undefined &&
-          b.shippingData?.shippingDate !== undefined &&
-          a.shippingData?.shippingDate > b.shippingData?.shippingDate
-        ) {
-          return 1;
-        }
-        if (
-          a.shippingData?.shippingDate !== undefined &&
-          b.shippingData?.shippingDate !== undefined &&
-          a.shippingData?.shippingDate < b.shippingData?.shippingDate
-        ) {
-          return -1;
-        }
-        if (a.shippingData?.shippingDate === undefined) {
-          return -1;
-        }
-        return 0;
-      });
-      setRows(ordersv2);
-    } else if (filter === "later") {
-      let toDeliver = orders.filter(
-        (row) =>
-          row.shippingData && row.shippingData?.shippingDate !== undefined
-      );
-      let ordersv2 = toDeliver.sort(function (a, b) {
-        if (
-          a.shippingData?.shippingDate !== undefined &&
-          b.shippingData?.shippingDate !== undefined &&
-          a.shippingData?.shippingDate < b.shippingData?.shippingDate
-        ) {
-          return 1;
-        }
-        if (
-          a.shippingData?.shippingDate !== undefined &&
-          b.shippingData?.shippingDate !== undefined &&
-          a.shippingData?.shippingDate > b.shippingData?.shippingDate
-        ) {
-          return -1;
-        }
-        if (a.shippingData?.shippingDate === undefined) {
-          return -1;
-        }
-        return 0;
-      });
-      setRows(ordersv2);
-    } else if (
-      filter === "Pagado" ||
-      filter === "Abonado" ||
-      filter === "Giftcard" ||
-      filter === "Obsequio" ||
-      filter === "Anulado"
-    ) {
-      let ordersv2 = orders.filter((row) => row.payStatus === filter);
-      setRows(ordersv2);
-    } else if (filter === "Pendiente") {
-      let ordersv2 = orders.filter(
-        (row) => row.payStatus === filter || row.payStatus === undefined
-      );
-      setRows(ordersv2);
-    } else if (
-      filter === "Por producir" ||
-      filter === "En impresión" ||
-      filter === "En producción" ||
-      filter === "Por entregar" ||
-      filter === "Entregado" ||
-      filter === "Concretado" ||
-      filter === "Detenido" ||
-      filter === "Anulado"
-    ) {
-      let ordersv2 = orders.filter((row) => row.status === filter);
-      setRows(ordersv2);
-    } else if (typeof filter === "object") {
-      let ordersv2 = orders.filter(
-        (row) => row.createdBy.username === filter.seller
-      );
-      setRows(ordersv2);
-    } else {
+    if (type === "id") {
       let ordersv2 = orders.filter((row) =>
-        row.orderId.toLowerCase().includes(filter.toLowerCase())
+        row.orderId.toLowerCase().includes(data.toLowerCase())
       );
+      setRows(ordersv2);
+    } else if (type === "creationDate") {
+      if (data === "recent") {
+        let ordersv2 = rows.sort(function (a, b) {
+          if (a.createdOn.toLowerCase() < b.createdOn.toLowerCase()) {
+            return 1;
+          }
+          if (a.createdOn.toLowerCase() > b.createdOn.toLowerCase()) {
+            return -1;
+          }
+          return 0;
+        });
+        setRows(ordersv2);
+      } else if (data === "previous") {
+        let ordersv2 = rows.sort(function (a, b) {
+          if (a.createdOn.toLowerCase() > b.createdOn.toLowerCase()) {
+            return 1;
+          }
+          if (a.createdOn.toLowerCase() < b.createdOn.toLowerCase()) {
+            return -1;
+          }
+          return 0;
+        });
+        setRows(ordersv2);
+      }
+    } else if (type === "shippingDate") {
+      if (data === "coming") {
+        let toDeliver = rows.filter(
+          (row) =>
+            row.shippingData && row.shippingData?.shippingDate !== undefined
+        );
+        let ordersv2 = toDeliver.sort(function (a, b) {
+          if (
+            a.shippingData?.shippingDate !== undefined &&
+            b.shippingData?.shippingDate !== undefined &&
+            a.shippingData?.shippingDate > b.shippingData?.shippingDate
+          ) {
+            return 1;
+          }
+          if (
+            a.shippingData?.shippingDate !== undefined &&
+            b.shippingData?.shippingDate !== undefined &&
+            a.shippingData?.shippingDate < b.shippingData?.shippingDate
+          ) {
+            return -1;
+          }
+          if (a.shippingData?.shippingDate === undefined) {
+            return -1;
+          }
+          return 0;
+        });
+        setRows(ordersv2);
+      } else if (data === "later") {
+        let toDeliver = rows.filter(
+          (row) =>
+            row.shippingData && row.shippingData?.shippingDate !== undefined
+        );
+        let ordersv2 = toDeliver.sort(function (a, b) {
+          if (
+            a.shippingData?.shippingDate !== undefined &&
+            b.shippingData?.shippingDate !== undefined &&
+            a.shippingData?.shippingDate < b.shippingData?.shippingDate
+          ) {
+            return 1;
+          }
+          if (
+            a.shippingData?.shippingDate !== undefined &&
+            b.shippingData?.shippingDate !== undefined &&
+            a.shippingData?.shippingDate > b.shippingData?.shippingDate
+          ) {
+            return -1;
+          }
+          if (a.shippingData?.shippingDate === undefined) {
+            return -1;
+          }
+          return 0;
+        });
+        setRows(ordersv2);
+      }
+    } else if (type === "client") {
+      let ordersv2 = rows.filter(
+        (row) =>
+          (row.basicData?.firstname || row.basicData?.name) +
+            " " +
+            row.basicData?.lastname ===
+          data
+      );
+      setRows(ordersv2);
+    } else if (type === "payStatus") {
+      let ordersv2 = rows.filter((row) => row.payStatus === data);
+      setRows(ordersv2);
+    } else if (type === "status") {
+      let ordersv2 = rows.filter((row) => row.status === data);
+      setRows(ordersv2);
+    } else if (type === "seller") {
+      let ordersv2 = rows.filter((row) => row.createdBy.username === data);
       setRows(ordersv2);
     }
     setLoading(false);
@@ -815,6 +818,32 @@ export default function Orders(props) {
     readOrders();
   };
 
+  const removeFilters = () => {
+    setCreationDateFilter(undefined);
+    setShippingDateFilter(undefined);
+    setClientFilter(undefined);
+    setPayStatusFilter(undefined);
+    setStatusFilter(undefined);
+    setSellerFilter(undefined);
+    setRows(orders);
+  };
+
+  const getClients = (data) => {
+    let c = [];
+    data?.map((order) => {
+      let fullname =
+        (order.basicData?.firstname || order.basicData?.name) +
+        " " +
+        order.basicData?.lastname;
+      if (c.includes(fullname)) {
+        return;
+      } else {
+        c.push(fullname);
+      }
+    });
+    setClients(c);
+  };
+
   useEffect(() => {
     readOrders();
     readMovements();
@@ -851,7 +880,7 @@ export default function Orders(props) {
       >
         <CircularProgress />
       </Backdrop>
-      <Grid container spacing={3} style={{ margin: isDesktop ? "12px" : "" }}>
+      <Grid container spacing={2} style={{ margin: isDesktop ? "12px" : "" }}>
         <Grid item xs={12} md={12} lg={12}>
           <Paper className={fixedHeightPaper}>
             <div
@@ -895,6 +924,21 @@ export default function Orders(props) {
                   </Tooltip>
                 )}
                 <Tooltip
+                  title="Eliminar filtros"
+                  style={{ height: 40, width: 40 }}
+                >
+                  <Fab
+                    color="primary"
+                    size="small"
+                    onClick={() => {
+                      removeFilters();
+                    }}
+                    style={{ marginRight: 10 }}
+                  >
+                    <BackspaceIcon />
+                  </Fab>
+                </Tooltip>
+                <Tooltip
                   title="Recargar listado"
                   style={{ height: 40, width: 40 }}
                 >
@@ -913,6 +957,7 @@ export default function Orders(props) {
             </div>
             <ReadOrders
               rows={rows}
+              orders={orders}
               setFilter={setFilter}
               filter={filter}
               filterOrders={filterOrders}
@@ -927,6 +972,19 @@ export default function Orders(props) {
               setSnackBarError={setSnackBarError}
               readOrders={readOrders}
               sellers={props.sellers}
+              setCreationDateFilter={setCreationDateFilter}
+              setShippingDateFilter={setShippingDateFilter}
+              setClientFilter={setClientFilter}
+              setPayStatusFilter={setPayStatusFilter}
+              setStatusFilter={setStatusFilter}
+              setSellerFilter={setSellerFilter}
+              creationDateFilter={creationDateFilter}
+              shippingDateFilter={shippingDateFilter}
+              clientFilter={clientFilter}
+              payStatusFilter={payStatusFilter}
+              statusFilter={statusFilter}
+              sellerFilter={sellerFilter}
+              clients={client}
             ></ReadOrders>
           </Paper>
         </Grid>

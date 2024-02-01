@@ -85,6 +85,7 @@ export default function CreateProduct() {
   const [images, newImages] = useState({ images: [] });
   const [videoUrl, setVideoUrl] = useState("");
   const [videoPreview, setVideoPreview] = useState("");
+  const [cost, setCost] = useState();
   const [fromPublicPrice, setFromPublicPrice] = useState();
   const [toPublicPrice, setToPublicPrice] = useState();
   const [fromPrixerPrice, setFromPrixerPrice] = useState();
@@ -187,6 +188,7 @@ export default function CreateProduct() {
           !description &&
           !category &&
           !considerations &&
+          !cost &&
           !fromPublicPrice &&
           !fromPrixerPrice &&
           !images
@@ -221,6 +223,8 @@ export default function CreateProduct() {
           formData.append("category", category);
           formData.append("considerations", considerations);
           formData.append("productionTime", productionTime);
+          formData.append("cost", cost.replace(/[,]/gi, "."));
+
           formData.append("publicPriceFrom", data.publicPrice.from);
           if (toPublicPrice) {
             formData.append("publicPriceTo", data.publicPrice.to);
@@ -705,6 +709,35 @@ export default function CreateProduct() {
                   InputProps={{
                     endAdornment: (
                       <InputAdornment position="end">días</InputAdornment>
+                    ),
+                  }}
+                />
+              </FormControl>
+            </Grid>
+          </Grid>
+          <Grid container style={{ marginTop: 20 }}>
+            <Title>Costo de producción</Title>
+          </Grid>
+          <Grid container spacing={2}>
+            <Grid item xs={4} md={5}>
+              <FormControl
+                className={clsx(classes.margin, classes.textField)}
+                variant="outlined"
+                xs={12}
+                fullWidth={true}
+              >
+                <TextField
+                  variant="outlined"
+                  required
+                  fullWidth
+                  value={cost}
+                  onChange={(e) => {
+                    setCost(e.target.value);
+                  }}
+                  error={cost !== undefined && !validations.isAValidPrice(cost)}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">$</InputAdornment>
                     ),
                   }}
                 />

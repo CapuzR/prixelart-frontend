@@ -254,6 +254,89 @@ export default function OrderDetails(props) {
     });
   };
 
+  const PriceSelect = (product) => {
+    let dis = props.discountList?.filter(
+      (dis) => dis._id === product.discount
+    )[0];
+    if (product.modifyPrice) {
+      return (
+        " $" +
+        Number(product.publicEquation).toLocaleString("de-DE", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })
+      );
+    } else if (
+      typeof product.discount === "string" &&
+      product.publicEquation !== ""
+    ) {
+      return (
+        <>
+          {dis?.type === "Porcentaje" &&
+            " $" +
+              Number(
+                product.publicEquation -
+                  (product.publicEquation / 100) * dis?.value
+              ).toLocaleString("de-DE", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}
+          {dis?.type === "Monto" &&
+            " $" +
+              Number(product.publicEquation - dis?.value).toLocaleString(
+                "de-DE",
+                {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                }
+              )}
+        </>
+      );
+    } else if (typeof product.discount === "string") {
+      return (
+        <>
+          {dis?.type === "Porcentaje" &&
+            " $" +
+              Number(
+                product.publicPrice.from -
+                  (product.publicPrice.from / 100) * dis?.value
+              ).toLocaleString("de-DE", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}
+          {dis?.type === "Monto" &&
+            " $" +
+              Number(product.publicPrice.from - dis?.value).toLocaleString(
+                "de-DE",
+                {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                }
+              )}
+        </>
+      );
+    } else if (product.publicEquation !== "") {
+      return (
+        " $" +
+        Number(product.publicEquation).toLocaleString("de-DE", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })
+      );
+    } else {
+      return (
+        " $" +
+        Number(product.publicPrice.from.replace(/[$]/gi, "")).toLocaleString(
+          "de-DE",
+          {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          }
+        )
+      );
+    }
+  };
+
   const RenderHTML = ({ htmlString }) => {
     return <div dangerouslySetInnerHTML={{ __html: htmlString }} />;
   };
@@ -440,6 +523,7 @@ export default function OrderDetails(props) {
                             <div>{item.product.selection}</div>
                           )
                         )}
+                        {"Precio unitario: " + PriceSelect(item.product)}
                         {/* <div>
                           {item.product?.discount &&
                             "Descuento: " +
@@ -873,8 +957,8 @@ export default function OrderDetails(props) {
                         >
                           <div>{"Producto: " + item.product.name}</div>
                           <div>{"Id: " + item.product._id}</div>
-                          {item.product.attributes &&
-                            item.product.selection &&
+                          {item.product.selection &&
+                          typeof item.product.selection === "object" ? (
                             item.product.attributes.map((a, i) => {
                               return (
                                 <p
@@ -883,17 +967,30 @@ export default function OrderDetails(props) {
                                     margin: 0,
                                   }}
                                 >
-                                  {item.product.selection}
-                                  {/* ? item.product.selection.attributes[i]
-                                        ?.name +
-                                      ": " +
-                                      item.product.selection.attributes[i]
-                                        ?.value
-                                    :
-                                     item.product.selection} */}
+                                  {item.product?.selection?.attributes[i]
+                                    ?.name +
+                                    ": " +
+                                    item.product?.selection?.attributes[i]
+                                      ?.value}
                                 </p>
                               );
-                            })}
+                            })
+                          ) : item.product.selection &&
+                            typeof item.product.selection === "string" &&
+                            item.product?.selection?.includes(" ") ? (
+                            <div>
+                              {item.product.selection}{" "}
+                              {
+                                item.product.variants.find(
+                                  (v) => v.name === item.product.selection
+                                ).attributes[1]?.value
+                              }
+                            </div>
+                          ) : (
+                            item.product.selection && (
+                              <div>{item.product.selection}</div>
+                            )
+                          )}
                           <div
                             style={{
                               marginTop: 10,

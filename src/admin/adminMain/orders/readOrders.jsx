@@ -247,7 +247,7 @@ export default function ReadOrders(props) {
               <div style={{ display: "flex", justifyContent: "end" }}>
                 <FormControl className={classes.formControl}>
                   <InputLabel>Cliente</InputLabel>
-                  <Select value={props.filter} onChange={handleClient}>
+                  <Select value={props.clientFilter} onChange={handleClient}>
                     {props.clients &&
                       props.clients.map((c, i) => (
                         <MenuItem key={c} value={c}>
@@ -263,7 +263,10 @@ export default function ReadOrders(props) {
               <div style={{ display: "flex", justifyContent: "end" }}>
                 <FormControl className={classes.formControl}>
                   <InputLabel> Status de Pago</InputLabel>
-                  <Select value={props.filter} onChange={handlePayStatus}>
+                  <Select
+                    value={props.payStatusFilter}
+                    onChange={handlePayStatus}
+                  >
                     <MenuItem key={0} value={"Pendiente"}>
                       Pendiente
                     </MenuItem>
@@ -290,7 +293,7 @@ export default function ReadOrders(props) {
               <div style={{ display: "flex", justifyContent: "end" }}>
                 <FormControl className={classes.formControl}>
                   <InputLabel>Status</InputLabel>
-                  <Select value={props.filter} onChange={handleStatus}>
+                  <Select value={props.statusFilter} onChange={handleStatus}>
                     <MenuItem key={0} value={"Por producir"}>
                       Por producir
                     </MenuItem>
@@ -324,22 +327,6 @@ export default function ReadOrders(props) {
                 <FormControl className={classes.formControl}>
                   <InputLabel>Asesor</InputLabel>
                   <Select value={props?.sellerFilter} onChange={handleSeller}>
-                    <MenuItem
-                      key={0}
-                      value={{
-                        seller:
-                          JSON.parse(localStorage.getItem("adminToken"))
-                            .firstname +
-                          " " +
-                          JSON.parse(localStorage.getItem("adminToken"))
-                            .lastname,
-                      }}
-                    >
-                      {JSON.parse(localStorage.getItem("adminToken"))
-                        .firstname +
-                        " " +
-                        JSON.parse(localStorage.getItem("adminToken")).lastname}
-                    </MenuItem>
                     {props.sellers &&
                       props.sellers?.map((seller, index) => (
                         <MenuItem key={index} value={seller}>
@@ -353,7 +340,7 @@ export default function ReadOrders(props) {
           </TableRow>
         </TableHead>
         <TableBody>
-          {rowsv2 &&
+          {rowsv2?.length > 0 &&
             rowsv2.map((row, index) => (
               <>
                 <TableRow key={index}>
@@ -541,113 +528,142 @@ export default function ReadOrders(props) {
             ))}
         </TableBody>
       </Table>
-      <Box
-        style={{
-          display: "flex",
-          alignSelf: "center",
-          paddingTop: 5,
-          marginBottom: 4,
-        }}
-      >
-        {pageNumber - 3 > 0 && (
-          <Button
-            style={{ minWidth: 30, marginRight: 5 }}
-            onClick={() => {
-              setPageNumber(1);
-            }}
-          >
-            {1}
-          </Button>
-        )}
-        {pageNumber - 3 > 0 && (
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              marginRight: 5,
-            }}
-          >
-            ...
-          </div>
-        )}
-        {pageNumber - 2 > 0 && (
-          <Button
-            style={{ minWidth: 30, marginRight: 5 }}
-            onClick={() => {
-              setPageNumber(pageNumber - 2);
-            }}
-          >
-            {pageNumber - 2}
-          </Button>
-        )}
-        {pageNumber - 1 > 0 && (
-          <Button
-            style={{ minWidth: 30, marginRight: 5 }}
-            onClick={() => {
-              setPageNumber(pageNumber - 1);
-            }}
-          >
-            {pageNumber - 1}
-          </Button>
-        )}
+      {rowsv2?.length < 1 && (
         <div
           style={{
             display: "flex",
-            justifyContent: "center",
+            flexDirection: "column",
             alignItems: "center",
-            width: 80,
-            marginRight: 5,
-            backgroundColor: "rgb(238, 238, 238)",
-            borderRadius: 4,
+            margin: 20,
           }}
         >
-          Página {pageNumber}
+          <Typography style={{ margin: 20 }} align="center" color="secondary">
+            No hay órdenes que coincidan con tu criterio de búsqueda, intenta de
+            nuevo.
+          </Typography>
+          <Button
+            style={{
+              textTransform: "none",
+              backgroundColor: "gainsboro",
+              color: "#404e5c",
+              width: 200,
+            }}
+            size="small"
+            onClick={() => props.removeFilters()}
+          >
+            Borrar filtros
+          </Button>
         </div>
-        {pageNumber + 1 <= noOfPages && (
-          <Button
-            style={{ minWidth: 30, marginRight: 5 }}
-            onClick={() => {
-              setPageNumber(pageNumber + 1);
-            }}
-          >
-            {pageNumber + 1}
-          </Button>
-        )}
-
-        {pageNumber + 2 <= noOfPages && (
-          <Button
-            style={{ minWidth: 30, marginRight: 5 }}
-            onClick={() => {
-              setPageNumber(pageNumber + 2);
-            }}
-          >
-            {pageNumber + 2}
-          </Button>
-        )}
-        {pageNumber + 3 <= noOfPages && (
+      )}
+      {rowsv2?.length > 0 && (
+        <Box
+          style={{
+            display: "flex",
+            alignSelf: "center",
+            paddingTop: 5,
+            marginBottom: 4,
+          }}
+        >
+          {pageNumber - 3 > 0 && (
+            <Button
+              style={{ minWidth: 30, marginRight: 5 }}
+              onClick={() => {
+                setPageNumber(1);
+              }}
+            >
+              {1}
+            </Button>
+          )}
+          {pageNumber - 3 > 0 && (
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                marginRight: 5,
+              }}
+            >
+              ...
+            </div>
+          )}
+          {pageNumber - 2 > 0 && (
+            <Button
+              style={{ minWidth: 30, marginRight: 5 }}
+              onClick={() => {
+                setPageNumber(pageNumber - 2);
+              }}
+            >
+              {pageNumber - 2}
+            </Button>
+          )}
+          {pageNumber - 1 > 0 && (
+            <Button
+              style={{ minWidth: 30, marginRight: 5 }}
+              onClick={() => {
+                setPageNumber(pageNumber - 1);
+              }}
+            >
+              {pageNumber - 1}
+            </Button>
+          )}
           <div
             style={{
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
+              width: 80,
               marginRight: 5,
+              backgroundColor: "rgb(238, 238, 238)",
+              borderRadius: 4,
             }}
           >
-            ...
+            Página {pageNumber}
           </div>
-        )}
-        {pageNumber + 3 <= noOfPages && (
-          <Button
-            style={{ minWidth: 30, marginRight: 5 }}
-            onClick={() => {
-              setPageNumber(noOfPages);
-            }}
-          >
-            {noOfPages}
-          </Button>
-        )}
-      </Box>
+          {pageNumber + 1 <= noOfPages && (
+            <Button
+              style={{ minWidth: 30, marginRight: 5 }}
+              onClick={() => {
+                setPageNumber(pageNumber + 1);
+              }}
+            >
+              {pageNumber + 1}
+            </Button>
+          )}
+
+          {pageNumber + 2 <= noOfPages && (
+            <Button
+              style={{ minWidth: 30, marginRight: 5 }}
+              onClick={() => {
+                setPageNumber(pageNumber + 2);
+              }}
+            >
+              {pageNumber + 2}
+            </Button>
+          )}
+          {pageNumber + 3 <= noOfPages && (
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                marginRight: 5,
+              }}
+            >
+              ...
+            </div>
+          )}
+          {pageNumber + 3 <= noOfPages && (
+            <Button
+              style={{ minWidth: 30, marginRight: 5 }}
+              onClick={() => {
+                setPageNumber(noOfPages);
+              }}
+            >
+              {noOfPages}
+            </Button>
+          )}
+        </Box>
+      )}
     </>
   );
 }

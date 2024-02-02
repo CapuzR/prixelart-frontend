@@ -407,27 +407,26 @@ export default function OrderDetails(props) {
                         )}
                         <div>{"Producto: " + item.product.name}</div>
                         <div>{"Id: " + item.product._id}</div>
-                        {/* {item.product.selection &&
-                        item.product.selection?.attributes
-                          ? item.product.attributes.map((a, i) => {
-                              return (
-                                <p
-                                  style={{
-                                    padding: 0,
-                                    margin: 0,
-                                  }}
-                                >
-                                  {item.product?.selection?.attributes[i]
-                                    ?.name +
-                                    ": " +
-                                    item.product?.selection?.attributes[i]
-                                      ?.value}
-                                </p>
-                              );
-                            })
-                          :  */}
+
                         {item.product.selection &&
-                        item.product.selection.includes(" ") ? (
+                        typeof item.product.selection === "object" ? (
+                          item.product.attributes.map((a, i) => {
+                            return (
+                              <p
+                                style={{
+                                  padding: 0,
+                                  margin: 0,
+                                }}
+                              >
+                                {item.product?.selection?.attributes[i]?.name +
+                                  ": " +
+                                  item.product?.selection?.attributes[i]?.value}
+                              </p>
+                            );
+                          })
+                        ) : item.product.selection &&
+                          typeof item.product.selection === "string" &&
+                          item.product?.selection?.includes(" ") ? (
                           <div>
                             {item.product.selection}{" "}
                             {

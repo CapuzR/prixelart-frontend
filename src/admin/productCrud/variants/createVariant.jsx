@@ -24,6 +24,8 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import { nanoid } from "nanoid";
 import validations from "../../../shoppingCart/validations";
 import Paper from "@material-ui/core/Paper";
+import InputAdornment from "@material-ui/core/InputAdornment";
+
 const useStyles = makeStyles((theme) => ({
   seeMore: {
     marginTop: theme.spacing(3),
@@ -55,6 +57,7 @@ export default function CreateVariant(props) {
   const [considerations, setConsiderations] = useState(
     (props.variant && props.variant.considerations) || ""
   );
+  const [cost, setCost] = useState((props.variant && props.variant.cost) || "");
   const [publicPriceEq, setPublicPriceEq] = useState(
     (props.variant && props.variant.publicPrice.equation) || ""
   );
@@ -179,6 +182,7 @@ export default function CreateVariant(props) {
         // !description &&
         // !category &&
         // !considerations &&
+        !cost &&
         !publicPriceEq &&
         !prixerPriceEq &&
         !image
@@ -200,6 +204,7 @@ export default function CreateVariant(props) {
           description: description,
           category: category,
           considerations: considerations,
+          cost: cost,
           publicPrice: {
             from: fromPublicPrice,
             to: toPublicPrice,
@@ -239,6 +244,7 @@ export default function CreateVariant(props) {
         formData.append("variantDescription", variants.description);
         formData.append("variantCategory", variants.category);
         formData.append("variantConsiderations", variants.considerations);
+        formData.append("variantPrice", variants.cost);
         if (fromPublicPrice) {
           formData.append("variantPublicPriceFrom", variants.publicPrice.from);
         }
@@ -283,6 +289,7 @@ export default function CreateVariant(props) {
           setDescription("");
           setCategory("");
           setConsiderations("");
+          setCost("");
           setPublicPriceEq("");
           setFromPublicPrice("");
           setToPublicPrice("");
@@ -554,7 +561,25 @@ export default function CreateVariant(props) {
             <h3>Precios </h3>
           </Grid>
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={12} md={6} lg={6}>
+            <Grid item xs={12} sm={12} md={4} lg={4}>
+              <TextField
+                variant="outlined"
+                required
+                fullWidth
+                label="Costo de producción"
+                value={cost}
+                onChange={(e) => {
+                  setCost(e.target.value);
+                }}
+                error={cost !== undefined && !validations.isAValidPrice(cost)}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">$</InputAdornment>
+                  ),
+                }}
+              />
+            </Grid>
+            <Grid item xs={12} sm={12} md={4} lg={4}>
               <TextField
                 variant="outlined"
                 required
@@ -571,9 +596,14 @@ export default function CreateVariant(props) {
                   publicPriceEq !== undefined &&
                   !validations.isAValidPrice(publicPriceEq)
                 }
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">$</InputAdornment>
+                  ),
+                }}
               />
             </Grid>
-            <Grid item xs={12} sm={12} md={6} lg={6}>
+            <Grid item xs={12} sm={12} md={4} lg={4}>
               <TextField
                 variant="outlined"
                 fullWidth
@@ -591,6 +621,11 @@ export default function CreateVariant(props) {
                   prixerPriceEq !== "" &&
                   !validations.isAValidPrice(prixerPriceEq)
                 }
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">$</InputAdornment>
+                  ),
+                }}
               />
             </Grid>
           </Grid>

@@ -623,7 +623,7 @@ export default function Orders(props) {
         setRows(ordersv2);
       }
     } else if (type === "client") {
-      let ordersv2 = rows.filter(
+      let ordersv2 = orders.filter(
         (row) =>
           (row.basicData?.firstname || row.basicData?.name) +
             " " +
@@ -985,6 +985,7 @@ export default function Orders(props) {
               statusFilter={statusFilter}
               sellerFilter={sellerFilter}
               clients={client}
+              removeFilters={removeFilters}
             ></ReadOrders>
           </Paper>
         </Grid>

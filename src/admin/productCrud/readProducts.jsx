@@ -42,19 +42,20 @@ export default function ReadProducts(props) {
   const classes = useStyles();
   const [rows, setRows] = useState();
   const [discountList, setDiscountList] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [value, setValue] = useState(0);
-  const [deleteMessage, setDeleteMessage] = useState();
-  const [deleteOpen, setDeleteOpen] = useState(false);
+
   const [openUpdateProduct, setUpdateProduct] = useState(false);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
 
-  const handleClose = () => {
+  const handleClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
     setUpdateProduct(false);
-    // setOpenCreateOrder(false);
   };
 
   function TabPanel(props) {
@@ -75,7 +76,7 @@ export default function ReadProducts(props) {
     );
   }
   const getRows = async () => {
-    setLoading(true);
+    props.setLoading(true);
     const base_url = process.env.REACT_APP_BACKEND_URL + "/product/read-allv1";
     await axios
       .post(
@@ -85,15 +86,16 @@ export default function ReadProducts(props) {
       )
       .then((response) => {
         setRows(response.data.products);
+        props.getProducts(response.data.products);
       })
       .catch((error) => {
         console.log(error);
       });
-    setLoading(false);
+    props.setLoading(false);
   };
 
   const getDiscounts = async () => {
-    setLoading(true);
+    props.setLoading(true);
     const base_url = process.env.REACT_APP_BACKEND_URL + "/discount/read-allv1";
     await axios
       .post(
@@ -107,7 +109,7 @@ export default function ReadProducts(props) {
       .catch((error) => {
         console.log(error);
       });
-    setLoading(false);
+    props.setLoading(false);
   };
 
   useEffect(() => {
@@ -139,7 +141,7 @@ export default function ReadProducts(props) {
       )
       .then(
         setTimeout(() => {
-          setDeleteOpen(true);
+          props.setDeleteOpen(true);
           setDeleteMessage("Producto eliminado exitosamente.");
           getRows();
         }, 500)
@@ -165,7 +167,7 @@ export default function ReadProducts(props) {
 
   return (
     <React.Fragment>
-      <Backdrop className={classes.backdrop} open={loading}>
+      <Backdrop className={classes.backdrop} open={props.loading}>
         <CircularProgress />
       </Backdrop>
       <Tabs
@@ -428,9 +430,10 @@ export default function ReadProducts(props) {
       </TabPanel>
 
       <Snackbar
-        open={deleteOpen}
+        open={props.deleteOpen}
         autoHideDuration={3000}
-        message={deleteMessage}
+        message={props.deleteMessage}
+        onClose={handleClose}
       />
 
       <Modal open={openUpdateProduct} onClose={handleClose}>

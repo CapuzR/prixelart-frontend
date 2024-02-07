@@ -993,6 +993,7 @@ export default function Orders(props) {
 
       <Modal open={isShowDetails} onClose={handleClose}>
         <OrderDetails
+          discountList={discountList}
           permissions={props.permissions}
           modalContent={modalContent}
           setModalContent={setModalContent}

@@ -236,6 +236,9 @@ export default function ShoppingCart(props) {
   const [artList0, setArtList0] = useState([]);
   const [artistFilter, setArtistFilter] = useState();
   const [selectedArtist, setSelectedArtist] = useState([]);
+  const [prices, setPrices] = useState();
+
+  let custom = { name: "Personalizado", attributes: [{ value: "0x0cm" }] };
 
   const getProducts = () => {
     const base_url = process.env.REACT_APP_BACKEND_URL + "/product/read-all";
@@ -245,9 +248,6 @@ export default function ShoppingCart(props) {
         productsAttTemp1 = await getEquation(p, iProd, pArr);
       });
       setProductList(getAttributes(productsAttTemp1));
-      // setTimeout(() => {
-      // setProducts(getAttributes(productsAttTemp1));
-      // }, 100);
     });
   };
   useEffect(() => {
@@ -275,6 +275,18 @@ export default function ShoppingCart(props) {
       });
       setArtist(artist);
     });
+  }, []);
+
+  useEffect(() => {
+    let selected = [];
+    let prices = [];
+
+    props.buyState.map((item) => {
+      if (item.art) {
+        selected.push(item.art.prixerUsername);
+      }
+    });
+    setSelectedArtist(selected);
   }, []);
 
   const changeArtistFilter = (artist, i) => {
@@ -422,6 +434,79 @@ export default function ShoppingCart(props) {
     props.setBuyState(purchase);
   };
 
+  const modifyVariant = (product, index, dimension, value) => {
+    const purchase = props.buyState;
+    let item = purchase[index];
+    if (product.selection?.attributes) {
+      let prev = product.selection.attributes[0].value;
+      let v2 = prev.split("x");
+      if (dimension === "width") {
+        product.selection.attributes = [
+          {
+            name: "Medida",
+            value: `${value}x${v2[1]}`,
+          },
+        ];
+      } else if (dimension === "height") {
+        product.selection.attributes = [
+          {
+            name: "Medida",
+            value: `${v2[0]}x${value}cm`,
+          },
+        ];
+      }
+    } else {
+      let selection = { name: "Personalizado" };
+      product.selection = selection;
+
+      if (dimension === "width") {
+        product.selection.attributes = [
+          {
+            name: "Medida",
+            value: `${value}x0cm`,
+          },
+        ];
+      } else if (dimension === "height") {
+        product.selection.attributes = [
+          {
+            name: "Medida",
+            value: `0x${value}cm`,
+          },
+        ];
+      }
+    }
+    let prev = product.selection?.attributes[0]?.value;
+    let v2 = prev.split("x");
+
+    if (v2[0].length > 0 && v2[1].slice(0, -2).length > 0) {
+      let vars = product.variants.filter((v) => v.active === true);
+
+      let v3 = vars.sort((a, b) => {
+        const A = Number(a.name.split("x")[0]);
+        const B = Number(b.name.split("x")[0]);
+        return A - B;
+      });
+      // v3.pop();
+
+      for (let i = 0; i < v3.length; i++) {
+        const actual = Number(v3[i].name.split("x")[0]);
+        if (actual >= Number(v2[0])) {
+          product.publicEquation = v3[i].publicPrice.equation;
+          return;
+        }
+      }
+    }
+    // props.AssociateProduct({
+    //   index: index,
+    //   item: prod,
+    //   type: "product",
+    // });
+    item.product = product;
+    purchase.splice(index, 1, item);
+    localStorage.setItem("buyState", JSON.stringify(purchase));
+    props.setBuyState(purchase);
+  };
+
   const handleProduct = (event) => {
     let selectedProduct = event.target.value;
     props.addItemToBuyState({
@@ -444,7 +529,10 @@ export default function ShoppingCart(props) {
               xl={12}
               key={index}
               style={{
-                // height: isMobile ? "370px" : "240px",
+                height:
+                  (buy.product?.selection?.name === "Personalizado" ||
+                    buy.product?.selection === "Personalizado") &&
+                  215,
                 marginBottom: 20,
                 width: "100%",
               }}
@@ -455,6 +543,10 @@ export default function ShoppingCart(props) {
                   marginTop: "2px",
                   display: "flex",
                   flexDirection: isMobile ? "column" : "row",
+                  height:
+                    (buy.product?.selection?.name === "Personalizado" ||
+                      buy.product?.selection === "Personalizado") &&
+                    215,
                 }}
                 elevation={3}
               >
@@ -533,12 +625,15 @@ export default function ShoppingCart(props) {
                             style={{ minWidth: 200 }}
                           >
                             <InputLabel style={{ paddingLeft: 15 }}>
-                              {buy.product.attributes[0]?.name}
+                              {buy.product?.attributes[0]?.name}
                             </InputLabel>
                             <Select
                               id={"variant " + index}
                               variant="outlined"
-                              value={buy.product.selection}
+                              value={
+                                buy.product.selection.name ||
+                                buy.product.selection
+                              }
                               onChange={(e) => {
                                 handleVariantProduct(
                                   e.target.value,
@@ -547,20 +642,86 @@ export default function ShoppingCart(props) {
                                 );
                               }}
                             >
+                              {buy.product.hasSpecialVar && (
+                                <MenuItem value={custom.name}>
+                                  {custom.name}
+                                </MenuItem>
+                              )}
                               {productList
                                 .find(
                                   (product) => product.name === buy.product.name
                                 )
                                 ?.variants.map((a) => {
-                                  return (
-                                    <MenuItem value={a.name}>
-                                      {a.name}
-                                      {/* {a.attributes[1]?.value &&
-                                      " " + a.attributes[1]?.value} */}
-                                    </MenuItem>
-                                  );
+                                  if (a.active === true)
+                                    return (
+                                      <MenuItem value={a.name}>
+                                        {a.name}
+                                      </MenuItem>
+                                    );
                                 })}
                             </Select>
+                            {(buy.product?.selection?.name ===
+                              "Personalizado" ||
+                              buy.product.selection === "Personalizado") && (
+                              <div
+                                style={{ display: "flex", marginTop: "-5px" }}
+                              >
+                                <TextField
+                                  variant="outlined"
+                                  label="Ancho"
+                                  className={classes.textField}
+                                  style={{ width: 100, marginRight: 10 }}
+                                  defaultValue={
+                                    buy.product?.selection?.attributes[0]?.value?.split(
+                                      "x"
+                                    )[0] || 0
+                                  }
+                                  onChange={(e) =>
+                                    modifyVariant(
+                                      buy.product,
+                                      index,
+                                      "width",
+                                      e.target.value
+                                    )
+                                  }
+                                  InputProps={{
+                                    endAdornment: (
+                                      <InputAdornment position="end">
+                                        cm
+                                      </InputAdornment>
+                                    ),
+                                  }}
+                                  margin="normal"
+                                />
+                                <TextField
+                                  variant="outlined"
+                                  label="Alto"
+                                  className={classes.textField}
+                                  style={{ width: 100 }}
+                                  onChange={(e) =>
+                                    modifyVariant(
+                                      buy.product,
+                                      index,
+                                      "height",
+                                      e.target.value
+                                    )
+                                  }
+                                  defaultValue={
+                                    buy.product?.selection?.attributes[0]?.value
+                                      ?.split("x")[1]
+                                      .slice(0, -2) || 0
+                                  }
+                                  InputProps={{
+                                    endAdornment: (
+                                      <InputAdornment position="end">
+                                        cm
+                                      </InputAdornment>
+                                    ),
+                                  }}
+                                  margin="normal"
+                                />
+                              </div>
+                            )}
                           </FormControl>
                         )}
                         {props.discountList !== undefined &&
@@ -777,9 +938,9 @@ export default function ShoppingCart(props) {
                           <TextField
                             variant="outlined"
                             label={
-                              props.buyState[index].product.selection
-                                ? "Precio variante: " +
-                                  UnitPrice(props.buyState[index].product)
+                              buy.product.selection
+                                ? // props.buyState[index].product.selection
+                                  "Precio variante: " + UnitPrice(buy.product)
                                 : "Precio base: " + UnitPrice(buy.product)
                             }
                             InputProps={{

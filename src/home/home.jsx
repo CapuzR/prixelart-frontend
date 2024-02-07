@@ -152,11 +152,10 @@ export default function Home(props) {
   const [imagesMobile, newImagesMobile] = useState({ images: [] });
   const [tabValue, setTabValue] = useState(0);
   const [openModal, setOpenModal] = useState(false);
-  const [openPrixers, setOpenPrixers] = useState(false);
   const [openArts, setOpenArts] = useState(true);
-  const [openTestimonials, setOpenTestimonials] = useState(false);
   const [selectedArt, setSelectedArt] = useState(undefined);
   const [bestSellers, setBestSellers] = useState();
+  const [latestArts, setLatestArts] = useState();
   const [mostSelledArts, setMostSelledArts] = useState();
 
   const [openArtFormDialog, setOpenArtFormDialog] = useState(false);
@@ -184,34 +183,6 @@ export default function Home(props) {
       url: "https://devprix.nyc3.digitaloceanspaces.com/Foto%20de%20Daria%20Shevtsova%20en%20Pexels.jpg",
     },
   ];
-  const handleChange = (event, newValue) => {
-    if (newValue === 0) {
-      setOpenArts(true);
-      setOpenModal(false);
-      setOpenPrixers(false);
-      setOpenTestimonials(false);
-    } else if (newValue === 1) {
-      setOpenModal(false);
-      setOpenPrixers(true);
-      setOpenArts(false);
-      setOpenTestimonials(false);
-    } else if (newValue === 2) {
-      setOpenModal(false);
-      setOpenPrixers(false);
-      setOpenArts(false);
-      setOpenTestimonials(true);
-    } else if (newValue === 3) {
-      setOpenModal(true);
-      setOpenPrixers(false);
-      setOpenArts(false);
-      setOpenTestimonials(false);
-    } else {
-      setOpenModal(false);
-      setOpenPrixers(false);
-      setOpenArts(false);
-    }
-    setTabValue(newValue);
-  };
 
   const getImagesForTheCarousel = () => {
     const URI = process.env.REACT_APP_BACKEND_URL + "/carousel";
@@ -260,10 +231,21 @@ export default function Home(props) {
     }
   };
 
+  const getLatest = async () => {
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/art/get-latest";
+    try {
+      const getLatestArts = await axios.get(base_url);
+      setLatestArts(getLatestArts.data.arts);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     getImagesForTheCarousel();
     getBestSellers();
     getBestArts();
+    getLatest();
   }, []);
 
   const handleProductCatalog = (e) => {
@@ -305,6 +287,16 @@ export default function Home(props) {
     autoplaySpeed: 4000,
     speed: 1000,
     infinite: true,
+  };
+
+  const settings3 = {
+    slidesToShow: (isDesktop && 3) || (isMobile && 1) || (isTab && 2),
+    slidesToScroll: 1,
+    autoplay: true,
+    autoplaySpeed: 4000,
+    speed: 1000,
+    infinite: true,
+    dots: true,
   };
 
   return (
@@ -763,87 +755,108 @@ export default function Home(props) {
               )}
             </Grid>
           </Grid>
-
-          {
-            /* <Container
-            className={classes.cardGrid}
-            style={{
-              paddingLeft: !isDeskTop && 5,
-              paddingRight: !isDeskTop && 5,
-            }}
+          <Grid
+            item
+            sm={12}
+            xs={12}
+            style={{ display: "flex", justifyContent: "center" }}
           >
-            <Paper
-              // square
-              className={classes.iconTabs}
-              style={{
-                display: isMobile ? "grid" : "flex",
-                gridTemplateColumns: isMobile ? "50%, 2fr" : "",
-                // flexDirection: isMobile ? "column" : "row",
-                justifyContent: "center",
-                maxWidth: 650,
-                width: "100%",
-              }}
-              elevation={3}
-            >
-              <Tabs
-                value={tabValue}
-                onChange={handleChange}
-                variant="fullWidth"
-                indicatorColor="primary"
-                textColor="secondary"
+            {latestArts && (
+              <Paper
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  position: "relative",
+                  width: "100%",
+                  height:
+                    (isDesktop && 450) || (isMobile && 300) || (isTab && 370),
+                  borderRadius:
+                    (isDesktop && 47) || (isMobile && 30) || (isTab && 35),
+                  backgroundColor: "gainsboro",
+                  marginBottom: 12,
+                }}
+                elevation={5}
               >
-                <Tab
-                  icon={<PhotoLibraryIcon />}
-                  label="ARTES"
+                <Grid
+                  container
+                  GridDirection={"column"}
                   style={{
-                    fontSize: isMobile ? "0.62rem" : "0.875rem",
-                    width: "25%",
+                    justifyContent: "center",
+                    aspectRatio: 434 / 518.05,
                   }}
-                />
-                <Tab
-                  icon={<FavoriteIcon />}
-                  label="PRIXERS"
-                  style={{
-                    fontSize: isMobile ? "0.62rem" : "0.875rem",
-                    width: "25%",
-                  }}
-                />
-                <Tab
-                  icon={<InsertEmoticon />}
-                  label={"TESTIMONIOS"}
-                  style={{
-                    fontSize: isMobile ? "0.62rem" : "0.875rem",
-                    width: "25%",
-                  }}
-                />
-                <Tab
-                  icon={<PhoneIcon />}
-                  label="TE ASESORAMOS"
-                  style={{
-                    fontSize: isMobile ? "0.62rem" : "0.875rem",
-                    width: "25%",
-                  }}
-                />
-              </Tabs>
-            </Paper>
-            {openArts && ( */
-            <ArtsGrid
-              prixerUsername={null}
-              buyState={props.buyState}
-              addItemToBuyState={props.addItemToBuyState}
-              setIsOpenAssociateProduct={props.setIsOpenAssociateProduct}
-              setSelectedArt={setSelectedArt}
-              setPrixer={props.setPrixer}
-              setFullArt={props.setFullArt}
-              setSearchResult={props.setSearchResult}
-              permissions={props.permissions}
-              inHome={true}
-            />
-            /*} )}
-            {openPrixers && <PrixersGrid />}
-            {openTestimonials && <TestimonialsFeed />}
-          </Container> */
-          }
+                >
+                  <Grid
+                    item
+                    xs={12}
+                    style={{
+                      marginRight: (isDesktop && 10) || (isTab && 20),
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Typography
+                      variant="h4"
+                      style={{
+                        color: "#404e5c",
+                        fontWeight: "bold",
+                        fontSize:
+                          (isDesktop && 30) ||
+                          (isMobile && 12) ||
+                          (isTab && 18),
+                        margin: "25px 0px 5px 140px",
+                      }}
+                    >
+                      Artes más recientes
+                    </Typography>
+                  </Grid>
+                  <Grid
+                    item
+                    xs={10}
+                    sm={9}
+                    md={10}
+                    lg={11}
+                    style={{ marginLeft: 5 }}
+                  >
+                    <Slider {...settings3}>
+                      {mostSelledArts?.map((art) => (
+                        <div
+                          key={art._id}
+                          style={{
+                            borderRadius: 30,
+                            display: "flex",
+                            flexDirection: "column",
+                            height: "100%",
+                            width: "100%",
+                            marginRight: 10,
+                          }}
+                          onClick={() => handleArt(art)}
+                        >
+                          <div
+                            style={{
+                              backgroundImage:
+                                `url(${encodeURI(art?.largeThumbUrl)})` ||
+                                `url(${encodeURI(art?.thumbUrl)})`,
+                              height:
+                                (isDesktop && 320) ||
+                                (isMobile && 180) ||
+                                (isTab && 220),
+                              marginRight: 10,
+                              backgroundSize: "cover",
+                              borderRadius: 30,
+                              backgroundPosition: "back",
+                              marginBottom: 10,
+                              marginTop: 15,
+                            }}
+                          />
+                        </div>
+                      ))}
+                    </Slider>
+                  </Grid>
+                </Grid>
+              </Paper>
+            )}
+          </Grid>
         </main>
         <footer className={classes.footer}>
           <Typography

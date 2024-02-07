@@ -524,13 +524,32 @@ export default function OrderDetails(props) {
                           )
                         )}
                         {"Precio unitario: " + PriceSelect(item.product)}
-                        {/* <div>
-                          {item.product?.discount &&
+                        <div>
+                          {typeof item.product?.discount === "string" &&
                             "Descuento: " +
-                              discountList?.find(
+                              props.discountList?.find(
                                 ({ _id }) => _id === item.product.discount
-                              ).name}
-                        </div> */}
+                              )?.name +
+                              " ("}
+                          {typeof item.product?.discount === "string" &&
+                          props.discountList?.find(
+                            ({ _id }) => _id === item.product.discount
+                          )?.type === "Monto"
+                            ? "$" +
+                              props.discountList?.find(
+                                ({ _id }) => _id === item.product.discount
+                              )?.value +
+                              ")"
+                            : typeof item.product?.discount === "string" &&
+                              props.discountList?.find(
+                                ({ _id }) => _id === item.product.discount
+                              )?.type === "Porcentaje" &&
+                              "%" +
+                                props.discountList?.find(
+                                  ({ _id }) => _id === item.product.discount
+                                )?.value +
+                                ")"}
+                        </div>
 
                         <div
                           style={{

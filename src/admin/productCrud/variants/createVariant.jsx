@@ -487,9 +487,9 @@ export default function CreateVariant(props) {
                 color="primary"
                 inputProps={{ "aria-label": "secondary checkbox" }}
                 onChange={() => {
-                  active ? setActive(false) : setActive(true);
+                  setActive(!active);
                 }}
-              />{" "}
+              />
               Habilitado / Visible
             </Grid>
             <Grid item xs={12} md={6}>

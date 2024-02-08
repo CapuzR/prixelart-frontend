@@ -719,21 +719,16 @@ export default function Checkout(props) {
                                   <Grid item xs={12} md={8}>
                                     {item.product.name + " X " + item.art.title}
                                     <br></br>
+                                    {console.log(item.product?.selection)}
                                     {item.product?.selection &&
                                     typeof item.product.selection === "string"
                                       ? item.product?.selection
                                       : item.product.selection.name}
-                                    {typeof item.product.selection ===
-                                      "string" &&
-                                      item.product?.selection.includes(" ") &&
-                                      " " +
-                                        item.product.variants.find(
-                                          (v) =>
-                                            v.name === item.product.selection
-                                        ).attributes[1]?.value}
-                                    {typeof item.product.selection ===
-                                      "object" &&
-                                      ` (${item.product.selection.attributes[0].value})`}
+                                    {item.product.selection.name ===
+                                      "Personalizado" &&
+                                      item.product.selection?.attributes[0]
+                                        ?.value &&
+                                      ` (${item.product.selection?.attributes[0]?.value})`}
                                   </Grid>
                                   <Grid
                                     item

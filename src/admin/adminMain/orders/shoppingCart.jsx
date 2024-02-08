@@ -414,7 +414,11 @@ export default function ShoppingCart(props) {
     let prod = product;
     prod.selection = variant;
     let selection = product.variants.find((v) => v.name === variant);
-    prod.publicEquation = selection?.publicPrice?.equation;
+    if (variant !== "Personalizado") {
+      prod.publicEquation = selection?.publicPrice?.equation;
+    } else {
+      prod.publicEquation = 0;
+    }
     props.AssociateProduct({
       index: index,
       item: prod,
@@ -478,24 +482,24 @@ export default function ShoppingCart(props) {
     let prev = product.selection?.attributes[0]?.value;
     let v2 = prev.split("x");
 
-    if (v2[0].length > 0 && v2[1].slice(0, -2).length > 0) {
-      let vars = product.variants.filter((v) => v.active === true);
+    // if (v2[0].length > 0 && v2[1].slice(0, -2).length > 0) {
+    //   let vars = product.variants.filter((v) => v.active === true);
 
-      let v3 = vars.sort((a, b) => {
-        const A = Number(a.name.split("x")[0]);
-        const B = Number(b.name.split("x")[0]);
-        return A - B;
-      });
-      // v3.pop();
+    //   let v3 = vars.sort((a, b) => {
+    //     const A = Number(a.name.split("x")[0]);
+    //     const B = Number(b.name.split("x")[0]);
+    //     return A - B;
+    //   });
+    //   // v3.pop();
 
-      for (let i = 0; i < v3.length; i++) {
-        const actual = Number(v3[i].name.split("x")[0]);
-        if (actual >= Number(v2[0])) {
-          product.publicEquation = v3[i].publicPrice.equation;
-          return;
-        }
-      }
-    }
+    //   for (let i = 0; i < v3.length; i++) {
+    //     const actual = Number(v3[i].name.split("x")[0]);
+    //     if (actual >= Number(v2[0])) {
+    //       product.publicEquation = v3[i].publicPrice.equation;
+    //       return;
+    //     }
+    //   }
+    // }
     // props.AssociateProduct({
     //   index: index,
     //   item: prod,
@@ -672,9 +676,12 @@ export default function ShoppingCart(props) {
                                   className={classes.textField}
                                   style={{ width: 100, marginRight: 10 }}
                                   defaultValue={
-                                    buy.product?.selection?.attributes[0]?.value?.split(
-                                      "x"
-                                    )[0] || 0
+                                    buy.product.selection.attributes &&
+                                    buy.product?.selection?.attributes[0]?.value
+                                      ? buy.product?.selection?.attributes[0]?.value?.split(
+                                          "x"
+                                        )[0]
+                                      : 0
                                   }
                                   onChange={(e) =>
                                     modifyVariant(
@@ -707,9 +714,12 @@ export default function ShoppingCart(props) {
                                     )
                                   }
                                   defaultValue={
+                                    buy.product.selection.attributes &&
                                     buy.product?.selection?.attributes[0]?.value
-                                      ?.split("x")[1]
-                                      .slice(0, -2) || 0
+                                      ? buy.product?.selection?.attributes[0]?.value
+                                          ?.split("x")[1]
+                                          .slice(0, -2)
+                                      : 0
                                   }
                                   InputProps={{
                                     endAdornment: (

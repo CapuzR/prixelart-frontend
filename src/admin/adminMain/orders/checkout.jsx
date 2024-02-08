@@ -719,7 +719,6 @@ export default function Checkout(props) {
                                   <Grid item xs={12} md={8}>
                                     {item.product.name + " X " + item.art.title}
                                     <br></br>
-                                    {console.log(item.product?.selection)}
                                     {item.product?.selection &&
                                     typeof item.product.selection === "string"
                                       ? item.product?.selection

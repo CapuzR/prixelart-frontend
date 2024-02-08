@@ -223,17 +223,16 @@ function App() {
         : "Arte agregado al carrito correctamente, selecciona un producto que desees asociar."
     );
   }
-  function AssociateProduct(input) {
-    const newState = buyState;
+
+  const AssociateProduct = (input) => {
+    let newState = JSON.parse(localStorage.getItem("buyState"));
     if (input.type === "product") {
       newState[input.index].product = input.item;
       newState[input.index].quantity = 1;
-      setBuyState(newState);
     } else if (input.type === "art") {
       newState[input.index].art = input.item;
-      newState[input.index].quantity = 1;
-      setBuyState(newState);
     }
+    setBuyState(newState);
     localStorage.setItem("buyState", JSON.stringify(newState));
     setOpen(true);
     setMessage(
@@ -241,7 +240,7 @@ function App() {
         ? "Producto asociado correctamente."
         : "Arte asociado correctamente."
     );
-  }
+  };
 
   function changeQuantity(input) {
     const newState = [...buyState];
@@ -249,11 +248,6 @@ function App() {
       newState[input.index].quantity = input.quantity;
       setBuyState(newState);
     }
-    // newState.push({
-    //   art: input.art,
-    //   product: input.product,
-    //   quantity: input.quantity,
-    // });
     setBuyState(newState);
     localStorage.setItem("buyState", JSON.stringify(newState));
   }

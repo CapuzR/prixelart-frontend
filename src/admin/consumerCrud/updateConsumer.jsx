@@ -180,7 +180,13 @@ export default function UpdateConsumer(props) {
                   <MenuItem value="">
                     <em></em>
                   </MenuItem>
-                  {["Particular", "DAs", "Corporativo", "Prixer"].map((n) => (
+                  {[
+                    "Particular",
+                    "DAs",
+                    "Corporativo",
+                    "Prixer",
+                    "Artista",
+                  ].map((n) => (
                     <MenuItem key={n} value={n}>
                       {n}
                     </MenuItem>

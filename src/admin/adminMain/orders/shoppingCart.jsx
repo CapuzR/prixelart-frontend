@@ -635,14 +635,14 @@ export default function ShoppingCart(props) {
                               id={"variant " + index}
                               variant="outlined"
                               value={
-                                buy.product.selection.name ||
-                                buy.product.selection
+                                props.buyState[index].product.selection.name ||
+                                props.buyState[index].product.selection
                               }
                               onChange={(e) => {
                                 handleVariantProduct(
                                   e.target.value,
                                   index,
-                                  buy.product
+                                  props.buyState[index].product
                                 );
                               }}
                             >

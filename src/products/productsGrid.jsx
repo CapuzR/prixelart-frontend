@@ -1203,7 +1203,7 @@ export default function ProductGrid(props) {
                   )}
                 </CardContent>
                 {/* </CardActionArea> */}
-                {tile.hasSpecialVar && (
+                {/* {tile.hasSpecialVar && (
                   <>
                     <CardActions style={{ width: "25%" }}>
                       <Grid item xs={12} md={12}>
@@ -1332,10 +1332,10 @@ export default function ProductGrid(props) {
                           />
                         </FormControl>
                       </Grid>
-                      {/* </Grid> */}
+                       </Grid> 
                     </CardActions>
                   </>
-                )}
+                )} */}
 
                 {tile.attributes &&
                   tile.attributes.map((att, iAtt, attributesArr) =>

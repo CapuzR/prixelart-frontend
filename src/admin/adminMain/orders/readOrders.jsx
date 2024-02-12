@@ -138,39 +138,35 @@ export default function ReadOrders(props) {
   const [pageNumber, setPageNumber] = useState(1);
   const itemsToSkip = (pageNumber - 1) * itemsPerPage;
   const rowsv2 = props.rows?.slice(itemsToSkip, itemsPerPage + itemsToSkip);
+  // const [filters, setFilters] = useState(props.filters);
 
   const handleID = (event) => {
-    props.filterOrders(event.target.value, "id");
+    props.findOrder(event.target.value);
   };
 
   const handleCreationDate = (event) => {
-    props.setCreationDateFilter(event.target.value);
-    props.filterOrders(event.target.value, "creationDate");
+    props.handleFilters("creationDate", event.target.value);
+    // setFilters({ ...filters, creationDate: event.target.value });
   };
 
   const handleShippingDate = (event) => {
-    props.setShippingDateFilter(event.target.value);
-    props.filterOrders(event.target.value, "shippingDate");
+    props.handleFilters("shippingDate", event.target.value);
   };
 
   const handleClient = (event) => {
-    props.setClientFilter(event.target.value);
-    props.filterOrders(event.target.value, "client");
+    props.handleFilters("client", event.target.value);
   };
 
   const handlePayStatus = (event) => {
-    props.setPayStatusFilter(event.target.value);
-    props.filterOrders(event.target.value, "payStatus");
+    props.handleFilters("payStatus", event.target.value);
   };
 
   const handleStatus = (event) => {
-    props.setStatusFilter(event.target.value);
-    props.filterOrders(event.target.value, "status");
+    props.handleFilters("status", event.target.value);
   };
 
   const handleSeller = (event) => {
-    props.setSellerFilter(event.target.value);
-    props.filterOrders(event.target.value, "seller");
+    props.handleFilters("seller", event.target.value);
   };
 
   const handleChangeSeller = async (order, seller) => {
@@ -212,7 +208,7 @@ export default function ReadOrders(props) {
                   <Select
                     labelId="demo-simple-select-label"
                     id="demo-simple-select"
-                    value={props.creationDateFilter}
+                    value={props.filters.creationDate}
                     onChange={handleCreationDate}
                   >
                     <MenuItem key={0} value={"recent"}>
@@ -230,7 +226,7 @@ export default function ReadOrders(props) {
                 <FormControl className={classes.formControl}>
                   <InputLabel>Fecha de entrega</InputLabel>
                   <Select
-                    value={props.shippingDateFilter}
+                    value={props.filters.shippingDate}
                     onChange={handleShippingDate}
                   >
                     <MenuItem key={0} value={"coming"}>
@@ -247,7 +243,10 @@ export default function ReadOrders(props) {
               <div style={{ display: "flex", justifyContent: "end" }}>
                 <FormControl className={classes.formControl}>
                   <InputLabel>Cliente</InputLabel>
-                  <Select value={props.clientFilter} onChange={handleClient}>
+                  <Select value={props.filters.client} onChange={handleClient}>
+                    <MenuItem style={{ color: "gray" }} value={undefined}>
+                      <em>Todos</em>
+                    </MenuItem>
                     {props.clients &&
                       props.clients.map((c, i) => (
                         <MenuItem key={c} value={c}>
@@ -264,9 +263,12 @@ export default function ReadOrders(props) {
                 <FormControl className={classes.formControl}>
                   <InputLabel> Status de Pago</InputLabel>
                   <Select
-                    value={props.payStatusFilter}
+                    value={props.filters.payStatus}
                     onChange={handlePayStatus}
                   >
+                    <MenuItem value={undefined}>
+                      <em>Todos</em>
+                    </MenuItem>
                     <MenuItem key={0} value={"Pendiente"}>
                       Pendiente
                     </MenuItem>
@@ -293,7 +295,11 @@ export default function ReadOrders(props) {
               <div style={{ display: "flex", justifyContent: "end" }}>
                 <FormControl className={classes.formControl}>
                   <InputLabel>Status</InputLabel>
-                  <Select value={props.statusFilter} onChange={handleStatus}>
+                  <Select value={props.filters.status} onChange={handleStatus}>
+                    <MenuItem value={undefined}>
+                      <em>Todos</em>
+                    </MenuItem>
+
                     <MenuItem key={0} value={"Por producir"}>
                       Por producir
                     </MenuItem>
@@ -326,7 +332,10 @@ export default function ReadOrders(props) {
               <div style={{ display: "flex", justifyContent: "end" }}>
                 <FormControl className={classes.formControl}>
                   <InputLabel>Asesor</InputLabel>
-                  <Select value={props?.sellerFilter} onChange={handleSeller}>
+                  <Select value={props.filters.seller} onChange={handleSeller}>
+                    <MenuItem style={{ color: "gray" }} value={undefined}>
+                      <em>Todos</em>
+                    </MenuItem>
                     {props.sellers &&
                       props.sellers?.map((seller, index) => (
                         <MenuItem key={index} value={seller}>
@@ -350,7 +359,9 @@ export default function ReadOrders(props) {
                   </TableCell>
                   <TableCell align="center" style={{ padding: 10 }}>
                     {new Date(
-                      row.shippingData?.shippingDate
+                      row.shippingData?.shippingDate?.split("-")[0],
+                      row.shippingData?.shippingDate?.split("-")[1],
+                      row.shippingData?.shippingDate?.split("-")[2]
                     )?.toLocaleDateString()}
                   </TableCell>
                   <TableCell align="center" style={{ padding: 10 }}>

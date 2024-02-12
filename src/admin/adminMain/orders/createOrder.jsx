@@ -375,6 +375,7 @@ export default function CreateOrder(props) {
       consumerId: consumerData._id,
       orderType: "Particular",
       status: "Por producir",
+      payStatus: "Pendiente",
     };
 
     const base_url3 = process.env.REACT_APP_BACKEND_URL + "/order/sendEmail";

@@ -245,7 +245,6 @@ export default function Orders(props) {
   const [rows, setRows] = useState();
   const [modalContent, setModalContent] = useState();
   const [loading, setLoading] = useState(false);
-  const [filter, setFilter] = useState("recent");
   const [openCreateOrder, setOpenCreateOrder] = useState(false);
   const [dollarValue, setDollarValue] = useState(1);
   const [account, setAccount] = useState();
@@ -255,12 +254,14 @@ export default function Orders(props) {
   const [orders, setOrders] = useState([]);
   const [movements, setMovements] = useState([]);
   const [consumers, setConsumers] = useState([]);
-  const [creationDateFilter, setCreationDateFilter] = useState();
-  const [shippingDateFilter, setShippingDateFilter] = useState();
-  const [clientFilter, setClientFilter] = useState();
-  const [payStatusFilter, setPayStatusFilter] = useState();
-  const [statusFilter, setStatusFilter] = useState();
-  const [sellerFilter, setSellerFilter] = useState();
+  const [filters, setFilters] = useState({
+    creationDate: undefined,
+    shippingDate: undefined,
+    client: undefined,
+    payStatus: undefined,
+    status: undefined,
+    seller: undefined,
+  });
   const [client, setClients] = useState();
 
   const getDiscounts = async () => {
@@ -278,6 +279,13 @@ export default function Orders(props) {
   useEffect(() => {
     getDiscounts();
   }, []);
+
+  const handleFilters = (filter, value) => {
+    let f = filters;
+    f[filter] = value;
+    setFilters(f);
+    filterOrders(f);
+  };
 
   const readOrders = async () => {
     setLoading(true);
@@ -537,16 +545,19 @@ export default function Orders(props) {
     });
   };
 
-  const filterOrders = (data, type) => {
+  const findOrder = (ID) => {
+    let ordersv2 = orders.filter((row) =>
+      row.orderId.toLowerCase().includes(ID.toLowerCase())
+    );
+    setRows(ordersv2);
+  };
+
+  const filterOrders = (filters) => {
+    let ordersv2 = orders;
     setLoading(true);
-    if (type === "id") {
-      let ordersv2 = orders.filter((row) =>
-        row.orderId.toLowerCase().includes(data.toLowerCase())
-      );
-      setRows(ordersv2);
-    } else if (type === "creationDate") {
-      if (data === "recent") {
-        let ordersv2 = rows.sort(function (a, b) {
+    if (filters.creationDate !== undefined) {
+      if (filters.creationDate === "recent") {
+        let ordersv3 = ordersv2.sort(function (a, b) {
           if (a.createdOn.toLowerCase() < b.createdOn.toLowerCase()) {
             return 1;
           }
@@ -555,9 +566,9 @@ export default function Orders(props) {
           }
           return 0;
         });
-        setRows(ordersv2);
-      } else if (data === "previous") {
-        let ordersv2 = rows.sort(function (a, b) {
+        ordersv2 = ordersv3;
+      } else if (filters.creationDate === "previous") {
+        let ordersv3 = ordersv2.sort(function (a, b) {
           if (a.createdOn.toLowerCase() > b.createdOn.toLowerCase()) {
             return 1;
           }
@@ -566,15 +577,16 @@ export default function Orders(props) {
           }
           return 0;
         });
-        setRows(ordersv2);
+        ordersv2 = ordersv3;
       }
-    } else if (type === "shippingDate") {
-      if (data === "coming") {
-        let toDeliver = rows.filter(
+    }
+    if (filters.shippingDate !== undefined) {
+      if (filters.shippingDate === "recent") {
+        let toDeliver = ordersv2.filter(
           (row) =>
             row.shippingData && row.shippingData?.shippingDate !== undefined
         );
-        let ordersv2 = toDeliver.sort(function (a, b) {
+        ordersv2 = toDeliver.sort(function (a, b) {
           if (
             a.shippingData?.shippingDate !== undefined &&
             b.shippingData?.shippingDate !== undefined &&
@@ -594,13 +606,12 @@ export default function Orders(props) {
           }
           return 0;
         });
-        setRows(ordersv2);
-      } else if (data === "later") {
-        let toDeliver = rows.filter(
+      } else if (filters.shippingDate === "later") {
+        let toDeliver = ordersv2.filter(
           (row) =>
             row.shippingData && row.shippingData?.shippingDate !== undefined
         );
-        let ordersv2 = toDeliver.sort(function (a, b) {
+        ordersv2 = toDeliver.sort(function (a, b) {
           if (
             a.shippingData?.shippingDate !== undefined &&
             b.shippingData?.shippingDate !== undefined &&
@@ -620,27 +631,31 @@ export default function Orders(props) {
           }
           return 0;
         });
-        setRows(ordersv2);
       }
-    } else if (type === "client") {
-      let ordersv2 = orders.filter(
+    }
+    if (filters.client !== undefined) {
+      ordersv2 = ordersv2.filter(
         (row) =>
           (row.basicData?.firstname || row.basicData?.name) +
             " " +
             row.basicData?.lastname ===
-          data
+          filters.client
       );
-      setRows(ordersv2);
-    } else if (type === "payStatus") {
-      let ordersv2 = rows.filter((row) => row.payStatus === data);
-      setRows(ordersv2);
-    } else if (type === "status") {
-      let ordersv2 = rows.filter((row) => row.status === data);
-      setRows(ordersv2);
-    } else if (type === "seller") {
-      let ordersv2 = rows.filter((row) => row.createdBy.username === data);
-      setRows(ordersv2);
     }
+    if (filters.payStatus !== undefined) {
+      if (filters.payStatus === "Pendiente") {
+        ordersv2 = ordersv2.filter(
+          (row) => row.payStatus === undefined || row.payStatus === "Pendiente"
+        );
+      } else
+        ordersv2 = ordersv2.filter(
+          (row) => row.payStatus === filters.payStatus
+        );
+    }
+    if (filters.status !== undefined) {
+      ordersv2 = ordersv2.filter((row) => row.status === filters.status);
+    }
+    setRows(ordersv2);
     setLoading(false);
   };
 
@@ -661,50 +676,6 @@ export default function Orders(props) {
 
   const handleCloseVoucher = () => {
     setShowVoucher(!showVoucher);
-  };
-
-  const getTotalPrice = (state) => {
-    let prices = [0];
-    state.map((item) => {
-      if (item.product.modifyPrice) {
-        prices.push(Number(item.product.publicEquation));
-      } else if (
-        item.product &&
-        item.art &&
-        typeof item.product.discount === "string"
-      ) {
-        let dis = discountList?.find(
-          ({ _id }) => _id === item.product.discount
-        );
-        if (dis?.type === "Porcentaje") {
-          prices.push(
-            ((item.product?.publicEquation ||
-              item.product?.publicPrice?.from.replace(/[,]/gi, ".")) -
-              ((item.product?.publicEquation ||
-                item.product?.publicPrice?.from.replace(/[,]/gi, ".")) /
-                100) *
-                dis.value) *
-              (item.quantity || 1)
-          );
-        } else if (dis?.type === "Monto") {
-          prices.push(
-            ((item.product?.publicEquation ||
-              item.product?.publicPrice?.from.replace(/[,]/gi, ".")) -
-              dis.value) *
-              (item.quantity || 1)
-          );
-        }
-      } else if (item.product && item.art) {
-        prices.push(
-          (item.product?.publicEquation || item.product?.publicPrice?.from) *
-            (item.quantity || 1)
-        );
-      }
-    });
-    let total = prices?.reduce(function (a, b) {
-      return a + b;
-    });
-    return total;
   };
 
   const handleChangeStatus = async (order, status) => {
@@ -819,12 +790,15 @@ export default function Orders(props) {
   };
 
   const removeFilters = () => {
-    setCreationDateFilter(undefined);
-    setShippingDateFilter(undefined);
-    setClientFilter(undefined);
-    setPayStatusFilter(undefined);
-    setStatusFilter(undefined);
-    setSellerFilter(undefined);
+    setFilters({
+      ...filters,
+      creationDate: undefined,
+      shippingDate: undefined,
+      client: undefined,
+      payStatus: undefined,
+      status: undefined,
+      seller: undefined,
+    });
     setRows(orders);
   };
 
@@ -958,9 +932,8 @@ export default function Orders(props) {
             <ReadOrders
               rows={rows}
               orders={orders}
-              setFilter={setFilter}
-              filter={filter}
               filterOrders={filterOrders}
+              findOrder={findOrder}
               setModalContent={setModalContent}
               setIsShowDetails={setIsShowDetails}
               isShowDetails={isShowDetails}
@@ -972,19 +945,9 @@ export default function Orders(props) {
               setSnackBarError={setSnackBarError}
               readOrders={readOrders}
               sellers={props.sellers}
-              setCreationDateFilter={setCreationDateFilter}
-              setShippingDateFilter={setShippingDateFilter}
-              setClientFilter={setClientFilter}
-              setPayStatusFilter={setPayStatusFilter}
-              setStatusFilter={setStatusFilter}
-              setSellerFilter={setSellerFilter}
-              creationDateFilter={creationDateFilter}
-              shippingDateFilter={shippingDateFilter}
-              clientFilter={clientFilter}
-              payStatusFilter={payStatusFilter}
-              statusFilter={statusFilter}
-              sellerFilter={sellerFilter}
               clients={client}
+              filters={filters}
+              handleFilters={handleFilters}
               removeFilters={removeFilters}
             ></ReadOrders>
           </Paper>

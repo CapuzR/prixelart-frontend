@@ -148,7 +148,9 @@ export default function Grid(props) {
   const [pageNumber, setPageNumber] = useState(1);
   const itemsToSkip = (pageNumber - 1) * itemsPerPage;
   const tilesv2 = tiles?.slice(itemsToSkip, itemsPerPage + itemsToSkip);
-
+  tiles.map((t) => {
+    console.log(t.comission);
+  });
   const handleClickVisible = () => {
     setOpenV(true);
   };

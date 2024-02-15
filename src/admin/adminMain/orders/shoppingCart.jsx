@@ -409,12 +409,29 @@ export default function ShoppingCart(props) {
       type: "product",
     });
   };
-
+  //
   const handleVariantProduct = (variant, index, product) => {
     let prod = product;
     prod.selection = variant;
-    let selection = product.variants.find((v) => v.name === variant);
-    if (variant !== "Personalizado") {
+    let selection;
+    if (
+      variant !== "Personalizado" &&
+      product.attributes.length > 1 &&
+      product.name !== "Qrvo"
+    ) {
+      let name = variant.split(" ");
+      let namev2;
+      if (name.length === 4) {
+        namev2 = `${name[0]} ${name[1]} ${name[2]}`;
+      } else {
+        namev2 = name[0];
+      }
+      let selectionv2 = product.variants.find(
+        (v) => v.name === namev2 && v.attributes[1].value === name[3]
+      );
+      prod.publicEquation = selectionv2?.publicPrice?.equation;
+    } else if (variant !== "Personalizado") {
+      selection = product.variants.find((v) => v.name === variant);
       prod.publicEquation = selection?.publicPrice?.equation;
     } else {
       prod.publicEquation = 0;
@@ -658,8 +675,19 @@ export default function ShoppingCart(props) {
                                 ?.variants.map((a) => {
                                   if (a.active === true)
                                     return (
-                                      <MenuItem value={a.name}>
-                                        {a.name}
+                                      <MenuItem
+                                        value={
+                                          a.attributes[1] !== undefined
+                                            ? a.name +
+                                              " " +
+                                              a.attributes[1].value
+                                            : a.name
+                                        }
+                                      >
+                                        {/* {a.name} */}
+                                        {a.attributes[1] !== undefined
+                                          ? a.name + " " + a.attributes[1].value
+                                          : a.name}
                                       </MenuItem>
                                     );
                                 })}

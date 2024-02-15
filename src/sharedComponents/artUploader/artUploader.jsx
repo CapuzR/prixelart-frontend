@@ -36,6 +36,7 @@ import Paper from "@material-ui/core/Paper";
 import Chip from "@material-ui/core/Chip";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import InfoIcon from "@material-ui/icons/Info";
+import InputAdornment from "@material-ui/core/InputAdornment";
 
 const useStyles = makeStyles((theme) => ({
   img: {
@@ -184,7 +185,6 @@ const aspectRatios = [
 
 export default function ArtUploader(props) {
   const classes = useStyles();
-
   const [title, setTitle] = useState("");
   const [artUrl, setArtUrl] = useState();
   // const [thumbnailUrl, setThumbnailUrl] = useState();
@@ -201,6 +201,8 @@ export default function ArtUploader(props) {
   const [maxPrintWidthCm, setMaxPrintWidthCm] = useState("");
   const [artType, setArtType] = useState("");
   const [location, setLocation] = useState("");
+  const [exclusive, setExclusive] = useState("standard");
+  const [comission, setComission] = useState(10);
   const [requiredPhoto, setRequiredPhoto] = useState("");
   const [uploaded, setUploaded] = useState(false);
   const [mimeType, setMimeType] = useState("");
@@ -211,6 +213,7 @@ export default function ArtUploader(props) {
     height: 0,
     size: 0,
   });
+  const [allowExclusive, setAllowExclusive] = useState(false);
   const [disabledReason, setDisabledReason] = useState("");
   const [visible, setVisible] = useState(true);
   //Error states.
@@ -246,6 +249,12 @@ export default function ArtUploader(props) {
     setCategory(e.target.value);
   };
 
+  const handleExclusive = (e) => {
+    setExclusive(e.target.value);
+    if (e.target.value === "standard") {
+      setComission(10);
+    }
+  };
   const handleClose = () => {
     props.setOpenArtFormDialog(false);
   };
@@ -470,6 +479,22 @@ export default function ArtUploader(props) {
   //   });
   // };
 
+  const verifyStandardArts = async () => {
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/art/read-by-prixer";
+    const body = {
+      username: JSON.parse(localStorage.getItem("token")).username,
+    };
+    axios.post(base_url, body).then((response) => {
+      if (response.data.arts.length > 5) {
+        setAllowExclusive(true);
+      }
+    });
+  };
+
+  useEffect(() => {
+    verifyStandardArts();
+  }, []);
+
   async function newArtPost() {
     var formData = new FormData();
     formData.append("title", title);
@@ -494,6 +519,9 @@ export default function ArtUploader(props) {
     formData.append("imageUrl", artUrl);
     formData.append("disabledReason", disabledReason);
     formData.append("visible", visible);
+    formData.append("exclusive", exclusive);
+    formData.append("comission", comission);
+
     const base_url = process.env.REACT_APP_BACKEND_URL + "/art/create";
     const data = await axios.post(base_url, formData, {
       "Content-Type": "multipart/form-data",
@@ -855,11 +883,53 @@ export default function ArtUploader(props) {
                     label="Descripción"
                     autoFocus
                     multiline
-                    rows={4}
+                    minRows={4}
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                   />
                 </Grid>
+                {allowExclusive && (
+                  <Grid
+                    container
+                    spacing={2}
+                    style={{ justifyContent: "center" }}
+                  >
+                    <Grid item xs={12} sm={12} md={5}>
+                      <FormControl variant="outlined" className={classes.form}>
+                        <InputLabel required id="artTypeLabel">
+                          Exclusividad
+                        </InputLabel>
+                        <Select
+                          value={exclusive}
+                          onChange={handleExclusive}
+                          label="artType"
+                        >
+                          <MenuItem value="standard">Estándar</MenuItem>
+                          <MenuItem value={"exclusive"}>Exclusivo</MenuItem>
+                        </Select>
+                      </FormControl>
+                    </Grid>
+                    <Grid item xs={12} sm={12} md={5}>
+                      <TextField
+                        variant="outlined"
+                        fullWidth
+                        label="Comisión"
+                        disabled={exclusive === "standard"}
+                        value={comission}
+                        type="number"
+                        InputProps={{
+                          startAdornment: (
+                            <InputAdornment position="start">%</InputAdornment>
+                          ),
+                        }}
+                        inputProps={{
+                          min: 10,
+                        }}
+                        onChange={(e) => setComission(e.target.value)}
+                      />
+                    </Grid>
+                  </Grid>
+                )}
                 <Grid item xs={12}>
                   <TextField
                     variant="outlined"

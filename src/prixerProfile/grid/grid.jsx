@@ -26,6 +26,7 @@ import CardActionArea from "@material-ui/core/CardActionArea";
 import Box from "@material-ui/core/Box";
 import AddShoppingCartIcon from "@material-ui/icons/AddShoppingCart";
 import FullscreenPhoto from "../fullscreenPhoto/fullscreenPhoto";
+import StarsIcon from "@material-ui/icons/Stars";
 
 const IOSSwitch = withStyles((theme) => ({
   root: {
@@ -148,9 +149,7 @@ export default function Grid(props) {
   const [pageNumber, setPageNumber] = useState(1);
   const itemsToSkip = (pageNumber - 1) * itemsPerPage;
   const tilesv2 = tiles?.slice(itemsToSkip, itemsPerPage + itemsToSkip);
-  tiles.map((t) => {
-    console.log(t.comission);
-  });
+
   const handleClickVisible = () => {
     setOpenV(true);
   };
@@ -480,6 +479,20 @@ export default function Grid(props) {
                           style={{ position: "absolute", padding: "8px" }}
                         >
                           <AddShoppingCartIcon />
+                        </IconButton>
+                      </Tooltip>
+                    )}
+                    {tile.exclusive === "exclusive" && (
+                      <Tooltip title="Arte exclusivo">
+                        <IconButton
+                          size="small"
+                          color="primary"
+                          // onClick={(e) => {
+                          //   addingToCart(e, tile);
+                          // }}
+                          style={{ position: "absolute", right: 0 }}
+                        >
+                          <StarsIcon />
                         </IconButton>
                       </Tooltip>
                     )}

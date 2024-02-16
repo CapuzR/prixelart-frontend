@@ -39,6 +39,10 @@ import CartReview from "../../shoppingCart/cartReview";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { useTheme } from "@material-ui/core/styles";
 import Box from "@material-ui/core/Box";
+import InputAdornment from "@material-ui/core/InputAdornment";
+import StarsIcon from "@material-ui/icons/Stars";
+import Tooltip from "@material-ui/core/Tooltip";
+import IconButton from "@material-ui/core/IconButton";
 
 const IOSSwitch = withStyles((theme) => ({
   root: {
@@ -161,6 +165,8 @@ export default function FullscreenPhoto(props) {
   const [termsAgreeVar, setTermsAgreeVar] = useState(true);
   const [value, setValue] = useState("");
   const [openShoppingCart, setOpenShoppingCart] = useState(false);
+  const [allowExclusive, setAllowExclusive] = useState(false);
+  const [comission, setComission] = useState(10);
 
   const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
   const isDeskTop = useMediaQuery(theme.breakpoints.up("sm"));
@@ -179,6 +185,24 @@ export default function FullscreenPhoto(props) {
     max: 100,
   };
 
+  const verifyStandardArts = async () => {
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/art/read-by-prixer";
+    const body = {
+      username: JSON.parse(localStorage.getItem("token")).username,
+    };
+    axios.post(base_url, body).then((response) => {
+      if (response.data.arts.length > 5) {
+        setAllowExclusive(true);
+      }
+    });
+  };
+
+  useEffect(() => {
+    if (JSON.parse(localStorage.getItem("token"))) {
+      verifyStandardArts();
+    }
+  }, []);
+
   const handleArtEdit = async (e, tile) => {
     setLoading(true);
     if (artDataState === tile.artId) {
@@ -194,6 +218,8 @@ export default function FullscreenPhoto(props) {
           // artId: tile.artId,
           artType: tile.artType,
           artLocation: tile.artLocation,
+          exclusive: tile.exclusive,
+          comission: Number(tile.comission),
         };
         await axios
           .put(base_url, data)
@@ -516,6 +542,39 @@ export default function FullscreenPhoto(props) {
       });
   };
 
+  const handleExclusive = async (e, tile) => {
+    let tempTiles = tiles;
+    let result = await exclusiveEdit(tempTiles, tile, e);
+    setTiles(result);
+  };
+
+  function exclusiveEdit(tempTiles, tile, e) {
+    return tempTiles.map((item) => {
+      if (item.artId === tile.artId) {
+        item.exclusive = e.target.value;
+        if (e.target.value === "standard") {
+          item.comission = 10;
+        }
+      }
+      return item;
+    });
+  }
+
+  const handleComission = async (e, tile) => {
+    let tempTiles = tiles;
+    let result = await comissionEdit(tempTiles, tile, e);
+    setTiles(result);
+  };
+
+  function comissionEdit(tempTiles, tile, e) {
+    return tempTiles.map((item) => {
+      if (item.artId === tile.artId) {
+        item.comission = e.target.value;
+      }
+      return item;
+    });
+  }
+
   const handleSubmit = async (e, Id) => {
     e.preventDefault();
     const formData = new FormData();
@@ -576,6 +635,18 @@ export default function FullscreenPhoto(props) {
                     <>
                       <Card style={{ marginTop: 35 }}>
                         <CardActionArea disabled>
+                          {tile.exclusive === "exclusive" && (
+                            <Tooltip title="Arte exclusivo">
+                              <IconButton
+                                style={{
+                                  position: "absolute",
+                                  right: 0,
+                                }}
+                              >
+                                <StarsIcon color="primary" fontSize="large" />
+                              </IconButton>
+                            </Tooltip>
+                          )}
                           <Img
                             placeholder="/imgLoading.svg"
                             style={{
@@ -1466,7 +1537,7 @@ export default function FullscreenPhoto(props) {
                           >
                             <TextField
                               multiline
-                              rows={2}
+                              minRows={2}
                               fullWidth
                               required
                               id="artDescription"
@@ -1551,6 +1622,61 @@ export default function FullscreenPhoto(props) {
                               onChange={(e) => handleArtLocationEdit(e, tile)}
                             />
                           </Grid>
+                          {allowExclusive && (
+                            <Grid
+                              container
+                              spacing={2}
+                              style={{
+                                marginTop: 20,
+                                justifyContent: "center",
+                              }}
+                            >
+                              <Grid item xs={12} sm={12} md={6}>
+                                <FormControl
+                                  variant="outlined"
+                                  className={classes.form}
+                                  fullWidth
+                                >
+                                  <InputLabel required id="artTypeLabel">
+                                    Exclusividad
+                                  </InputLabel>
+                                  <Select
+                                    value={tile.exclusive}
+                                    onChange={(e) => handleExclusive(e, tile)}
+                                    label="artType"
+                                  >
+                                    <MenuItem value="standard">
+                                      Estándar
+                                    </MenuItem>
+                                    <MenuItem value={"exclusive"}>
+                                      Exclusivo
+                                    </MenuItem>
+                                  </Select>
+                                </FormControl>
+                              </Grid>
+                              <Grid item xs={12} sm={12} md={6}>
+                                <TextField
+                                  variant="outlined"
+                                  fullWidth
+                                  label="Comisión"
+                                  disabled={tile.exclusive === "standard"}
+                                  value={tile.comission}
+                                  type="number"
+                                  InputProps={{
+                                    startAdornment: (
+                                      <InputAdornment position="start">
+                                        %
+                                      </InputAdornment>
+                                    ),
+                                  }}
+                                  inputProps={{
+                                    min: 10,
+                                  }}
+                                  onChange={(e) => handleComission(e, tile)}
+                                />
+                              </Grid>
+                            </Grid>
+                          )}
                         </Grid>
                       </Grid>
                     </Grid>

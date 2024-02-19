@@ -1651,6 +1651,9 @@ export default function FullscreenPhoto(props) {
                                     <MenuItem value={"exclusive"}>
                                       Exclusivo
                                     </MenuItem>
+                                    <MenuItem value={"private"}>
+                                      Privado
+                                    </MenuItem>
                                   </Select>
                                 </FormControl>
                               </Grid>

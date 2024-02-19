@@ -906,6 +906,7 @@ export default function ArtUploader(props) {
                         >
                           <MenuItem value="standard">Estándar</MenuItem>
                           <MenuItem value={"exclusive"}>Exclusivo</MenuItem>
+                          <MenuItem value={"private"}>Exclusivo</MenuItem>
                         </Select>
                       </FormControl>
                     </Grid>

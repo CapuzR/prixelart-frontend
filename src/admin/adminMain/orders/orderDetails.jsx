@@ -511,11 +511,10 @@ export default function OrderDetails(props) {
                           item.product?.selection?.includes(" ") ? (
                           <div>
                             {item.product.selection}{" "}
-                            {
-                              item.product.variants.find(
+                            {item.products.variants.length > 0 &&
+                              item.product.variants?.find(
                                 (v) => v.name === item.product.selection
-                              ).attributes[1]?.value
-                            }
+                              )?.attributes[1]?.value}
                           </div>
                         ) : (
                           item.product.selection && (
@@ -557,7 +556,7 @@ export default function OrderDetails(props) {
                             justifyContent: "space-between",
                           }}
                         >
-                          {"Cantidad: " + item.quantity}
+                          {"Cantidad: " + (item.quantity || 1)}
                           <Select
                             input={<OutlinedInput />}
                             id="status"
@@ -1016,7 +1015,7 @@ export default function OrderDetails(props) {
                               justifyContent: "space-between",
                             }}
                           >
-                            {"Cantidad: " + item.quantity}
+                            {"Cantidad: " + (item.quantity || 1)}
                             <Select
                               input={<OutlinedInput />}
                               id="status"

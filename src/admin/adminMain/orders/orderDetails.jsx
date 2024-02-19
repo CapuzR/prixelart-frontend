@@ -511,7 +511,8 @@ export default function OrderDetails(props) {
                           item.product?.selection?.includes(" ") ? (
                           <div>
                             {item.product.selection}{" "}
-                            {item.products.variants.length > 0 &&
+                            {item.products?.variants &&
+                              item.products?.variants.length > 0 &&
                               item.product.variants?.find(
                                 (v) => v.name === item.product.selection
                               )?.attributes[1]?.value}
@@ -997,11 +998,11 @@ export default function OrderDetails(props) {
                             item.product?.selection?.includes(" ") ? (
                             <div>
                               {item.product.selection}{" "}
-                              {
+                              {item.products?.variants &&
+                                item.products?.variants.length > 0 &&
                                 item.product.variants.find(
                                   (v) => v.name === item.product.selection
-                                ).attributes[1]?.value
-                              }
+                                ).attributes[1]?.value}
                             </div>
                           ) : (
                             item.product.selection && (

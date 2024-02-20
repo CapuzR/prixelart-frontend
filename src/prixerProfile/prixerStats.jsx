@@ -63,35 +63,38 @@ export default function PrixerProfile() {
     setOrderId(orderId);
     setType(type);
   };
-
-  const getBalance = () => {
+  const getBalance = async () => {
     const url = process.env.REACT_APP_BACKEND_URL + "/account/readById";
     const data = { _id: account };
-    axios.post(url, data).then((response) => setBalance(response.data.balance));
+    await axios
+      .post(url, data)
+      .then((response) => setBalance(response.data.balance));
   };
 
-  const getMovements = () => {
+  const getMovements = async () => {
     const url = process.env.REACT_APP_BACKEND_URL + "/movement/readByAccount";
     const data = { _id: account };
-    axios
+    await axios
       .post(url, data)
       .then((response) => setMovements(response.data.movements));
   };
 
-  const getOrders = () => {
+  const getOrders = async () => {
     const url = process.env.REACT_APP_BACKEND_URL + "/order/byEmail";
     const data = {
-      email: "iamwar2070@gmail.com",
-      // JSON.parse(localStorage.getItem("token")).email
+      email: JSON.parse(localStorage.getItem("token")).email,
+      prixerId: JSON.parse(localStorage.getItem("token")).prixerId,
     };
-
-    axios
+    await axios
       .post(url, data)
       .then((response) => setOrders(response.data.orders.reverse()));
   };
+
   useEffect(() => {
-    getBalance();
-    getMovements();
+    if (account !== undefined) {
+      getBalance();
+      getMovements();
+    }
     getOrders();
   }, []);
 
@@ -195,29 +198,45 @@ export default function PrixerProfile() {
             >
               {tab === 0 && (
                 <Grid>
-                  <Typography
-                    variant="body1"
-                    style={{
-                      display: "flex",
-                      justifyContent: "center",
-                      color: "#404e5c",
-                    }}
-                  >
-                    Tu balance es de:
-                  </Typography>
-                  <Typography
-                    variant="h2"
-                    style={{
-                      display: "flex",
-                      justifyContent: "center",
-                      color: "#404e5c",
-                    }}
-                  >
-                    $
-                    {balance?.toLocaleString("de-DE", {
-                      minimumFractionDigits: 2,
-                    })}
-                  </Typography>
+                  {account ? (
+                    <>
+                      <Typography
+                        variant="body1"
+                        style={{
+                          display: "flex",
+                          justifyContent: "center",
+                          color: "#404e5c",
+                        }}
+                      >
+                        Tu balance es de:
+                      </Typography>
+                      <Typography
+                        variant="h2"
+                        style={{
+                          display: "flex",
+                          justifyContent: "center",
+                          color: "#404e5c",
+                        }}
+                      >
+                        $
+                        {balance?.toLocaleString("de-DE", {
+                          minimumFractionDigits: 2,
+                        })}
+                      </Typography>
+                    </>
+                  ) : (
+                    <Typography
+                      variant="body1"
+                      style={{
+                        display: "flex",
+                        justifyContent: "center",
+                        color: "#404e5c",
+                      }}
+                    >
+                      Aún no tienes una cuenta asignada, nuestro equipo pronto
+                      te asignará una.
+                    </Typography>
+                  )}
                 </Grid>
               )}
               {tab === 1 && (
@@ -284,14 +303,14 @@ export default function PrixerProfile() {
                     ))
                   ) : (
                     <Typography align="center" variant="h5" color="secondary">
-                      Aún no hay pedidos registradas para ti.
+                      Aún no hay pedidos registrados para ti.
                     </Typography>
                   )}
                 </Grid>
               )}
               {tab === 2 && (
                 <Grid>
-                  {movements ? (
+                  {movements.length > 0 ? (
                     movements.map((mov) => (
                       <Grid
                         style={{
@@ -369,7 +388,7 @@ export default function PrixerProfile() {
                     ))
                   ) : (
                     <Typography align="center" variant="h6" color="secondary">
-                      Aún no hay movimientos registradas para ti.
+                      Aún no hay movimientos registrados para ti.
                     </Typography>
                   )}
                 </Grid>

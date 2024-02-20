@@ -713,14 +713,12 @@ export default function Home(props) {
                       <div
                         key={art._id}
                         style={{
-                          borderRadius: 30,
                           display: "flex",
                           flexDirection: "column",
                           height:
-                            (isDesktop && 200) ||
+                            (isDesktop && 220) ||
                             (isMobile && 180) ||
                             (isTab && 220),
-                          marginRight: 10,
                         }}
                         onClick={() => handleArt(art)}
                       >
@@ -733,13 +731,10 @@ export default function Home(props) {
                               (isDesktop && 220) ||
                               (isMobile && 180) ||
                               (isTab && 220),
-                            backgroundSize: isMobile ? "contain" : "cover",
+                            width: "95%",
+                            backgroundSize: "contain",
                             backgroundRepeat: "no-repeat",
-                            borderRadius: 30,
                             backgroundPosition: "center",
-                            margin: 10,
-                            // marginBottom: 30,
-                            // marginTop: 15,
                           }}
                         />
                       </div>
@@ -845,11 +840,10 @@ export default function Home(props) {
                       <div
                         key={art._id}
                         style={{
-                          borderRadius: 30,
                           display: "flex",
                           flexDirection: "column",
                           height:
-                            (isDesktop && 200) ||
+                            (isDesktop && 220) ||
                             (isMobile && 180) ||
                             (isTab && 220),
                           marginRight: 10,
@@ -865,13 +859,10 @@ export default function Home(props) {
                               (isDesktop && 220) ||
                               (isMobile && 180) ||
                               (isTab && 220),
-                            backgroundSize: isMobile ? "contain" : "cover",
+                            width: "100%",
+                            backgroundSize: "contain",
                             backgroundRepeat: "no-repeat",
-                            borderRadius: 30,
                             backgroundPosition: "center",
-                            margin: 10,
-                            // marginBottom: 30,
-                            // marginTop: 15,
                           }}
                         />
                       </div>

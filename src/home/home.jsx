@@ -466,7 +466,7 @@ export default function Home(props) {
                     backgroundSize: "cover",
                     backgroundRepeat: "no-repeat",
                     backgroundPosition: "left",
-                    width: "-moz-available",
+                    width: "100%",
                     display: "flex",
                     flexDirection: "column",
                     justifyItems: "center",
@@ -635,64 +635,85 @@ export default function Home(props) {
               >
                 <div
                   style={{
-                    backgroundImage:
-                      `url(${mostSelledArts[0]?.largeThumbUrl})` ||
-                      `url(${mostSelledArts[0]?.thumbUrl})`,
-                    backgroundSize: "contain",
-                    backgroundRepeat: "no-repeat",
-                    backgroundPosition: "right",
-                    width: "-moz-available",
                     display: "flex",
-                    flexDirection: "column",
                     justifyItems: "center",
-                    padding: "15px 25px 10px 25px",
+                    padding: "5px 10px 5px 25px",
                     paddingLeft: isMobile ? 15 : 25,
-                    margin: "15px 15px 15px 15px",
+                    margin: "15px",
                     backgroundColor: "#404e5c",
                     alignItems: "start",
                     borderRadius:
                       (isDesktop && 47) || (isMobile && 30) || (isTab && 35),
                   }}
                 >
-                  <Typography
-                    variant="h4"
+                  <div
                     style={{
-                      color: "white",
-                      fontWeight: "bold",
-                      fontSize:
-                        (isDesktop && 30) || (isMobile && 12) || (isTab && 18),
-                      marginBottom: isDesktop && 12,
+                      display: "flex",
+                      flexDirection: "column",
+                      width: "50%",
+                      margin: 10,
+                      paddingLeft: 40,
                     }}
                   >
-                    Artes
-                  </Typography>
-                  <Typography
-                    variant="h4"
+                    <Typography
+                      variant="h4"
+                      style={{
+                        color: "white",
+                        fontWeight: "bold",
+                        fontSize:
+                          (isDesktop && 30) ||
+                          (isMobile && 12) ||
+                          (isTab && 18),
+                        marginBottom: isDesktop && 12,
+                      }}
+                    >
+                      Artes
+                    </Typography>
+                    <Typography
+                      variant="h4"
+                      style={{
+                        color: "white",
+                        fontWeight: "bold",
+                        fontSize:
+                          (isDesktop && 30) ||
+                          (isMobile && 12) ||
+                          (isTab && 18),
+                        marginBottom: isDesktop && 12,
+                      }}
+                    >
+                      más vendidos
+                    </Typography>
+                    <Button
+                      style={{
+                        backgroundColor: "#d33f49",
+                        color: "white",
+                        borderRadius: 40,
+                        fontSize: isDesktop ? 20 : 12,
+                        textTransform: "none",
+                        paddingLeft: 20,
+                        paddingRight: 20,
+                        maxWidth: 150,
+                      }}
+                      onClick={handleGallery}
+                      size={isMobile ? "small" : "medium"}
+                    >
+                      Ver todos
+                    </Button>
+                  </div>
+                  <div
                     style={{
-                      color: "white",
-                      fontWeight: "bold",
-                      fontSize:
-                        (isDesktop && 30) || (isMobile && 12) || (isTab && 18),
-                      marginBottom: isDesktop && 12,
-                    }}
-                  >
-                    más vendidos
-                  </Typography>
-                  <Button
-                    style={{
-                      backgroundColor: "#d33f49",
-                      color: "white",
+                      backgroundImage: `linear-gradient(to left, transparent, rgba(64, 78, 92,1)), url(${
+                        mostSelledArts[0]?.largeThumbUrl ||
+                        mostSelledArts[0]?.thumbUrl
+                      })`,
+                      backgroundSize: "cover",
+                      backgroundRepeat: "no-repeat",
+                      backgroundPosition: "right",
+                      width: "70%",
+                      height: "100%",
                       borderRadius: 40,
-                      fontSize: isDesktop ? 20 : 12,
-                      textTransform: "none",
-                      paddingLeft: 20,
-                      paddingRight: 20,
                     }}
-                    onClick={handleGallery}
-                    size={isMobile ? "small" : "medium"}
-                  >
-                    Ver todos
-                  </Button>
+                  />
                 </div>
                 <Grid
                   style={{
@@ -762,64 +783,84 @@ export default function Home(props) {
               >
                 <div
                   style={{
-                    backgroundImage:
-                      `url(${latestArts[1]?.largeThumbUrl})` ||
-                      `url(${latestArts[1]?.thumbUrl})`,
-                    backgroundSize: "contain",
-                    backgroundRepeat: "no-repeat",
-                    backgroundPosition: "left",
-                    width: "-moz-available",
                     display: "flex",
-                    flexDirection: "column",
                     justifyItems: "center",
-                    padding: "15px 25px 10px 25px",
+                    padding: "5px 10px 5px 10px",
                     paddingLeft: isMobile ? 15 : 25,
-                    margin: "15px 15px 15px 15px",
+                    margin: "15px",
                     backgroundColor: "#404e5c",
-                    alignItems: "end",
+                    alignItems: "start",
                     borderRadius:
                       (isDesktop && 47) || (isMobile && 30) || (isTab && 35),
                   }}
                 >
-                  <Typography
-                    variant="h4"
+                  <div
                     style={{
-                      color: "white",
-                      fontWeight: "bold",
-                      fontSize:
-                        (isDesktop && 30) || (isMobile && 12) || (isTab && 18),
-                      marginBottom: isDesktop && 12,
-                    }}
-                  >
-                    Artes
-                  </Typography>
-                  <Typography
-                    variant="h4"
-                    style={{
-                      color: "white",
-                      fontWeight: "bold",
-                      fontSize:
-                        (isDesktop && 30) || (isMobile && 12) || (isTab && 18),
-                      marginBottom: isDesktop && 12,
-                    }}
-                  >
-                    más recientes
-                  </Typography>
-                  <Button
-                    style={{
-                      backgroundColor: "#d33f49",
-                      color: "white",
+                      backgroundImage: `linear-gradient(to right, transparent, rgba(64, 78, 92,1)), url(${
+                        latestArts[1]?.largeThumbUrl || latestArts[1]?.thumbUrl
+                      })`,
+                      backgroundSize: "cover",
+                      backgroundRepeat: "no-repeat",
+                      backgroundPosition: "left",
+                      width: "70%",
+                      height: "100%",
                       borderRadius: 40,
-                      fontSize: isDesktop ? 20 : 12,
-                      textTransform: "none",
-                      paddingLeft: 20,
-                      paddingRight: 20,
                     }}
-                    onClick={handleGallery}
-                    size={isMobile ? "small" : "medium"}
+                  />
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      width: "50%",
+                      margin: 10,
+                      alignItems: "end",
+                      paddingRight: 40,
+                    }}
                   >
-                    Ver todos
-                  </Button>
+                    <Typography
+                      variant="h4"
+                      style={{
+                        color: "white",
+                        fontWeight: "bold",
+                        fontSize:
+                          (isDesktop && 30) ||
+                          (isMobile && 12) ||
+                          (isTab && 18),
+                        marginBottom: isDesktop && 12,
+                      }}
+                    >
+                      Artes
+                    </Typography>
+                    <Typography
+                      variant="h4"
+                      style={{
+                        color: "white",
+                        fontWeight: "bold",
+                        fontSize:
+                          (isDesktop && 30) ||
+                          (isMobile && 12) ||
+                          (isTab && 18),
+                        marginBottom: isDesktop && 12,
+                      }}
+                    >
+                      más recientes
+                    </Typography>
+                    <Button
+                      style={{
+                        backgroundColor: "#d33f49",
+                        color: "white",
+                        borderRadius: 40,
+                        fontSize: isDesktop ? 20 : 12,
+                        textTransform: "none",
+                        paddingLeft: 20,
+                        paddingRight: 20,
+                      }}
+                      onClick={handleGallery}
+                      size={isMobile ? "small" : "medium"}
+                    >
+                      Ver todos
+                    </Button>
+                  </div>
                 </div>
                 <Grid
                   style={{

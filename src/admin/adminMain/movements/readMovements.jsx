@@ -71,7 +71,6 @@ export default function ReadMovements(props) {
   const [prixers, setPrixers] = useState();
   const [selectedPrixer, setSelectedPrixer] = useState();
   const [type, setType] = useState();
-  const moment = require("moment-timezone");
 
   const totalMovements = rows?.length;
   const itemsPerPage = 20;
@@ -85,11 +84,13 @@ export default function ReadMovements(props) {
   const [snackBarError, setSnackBarError] = useState(false);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const anchorRef = React.useRef(null);
+
   const handleClick = (event) => {
     setAnchorEl(true);
   };
 
   const readMovements = () => {
+    setLoading(true);
     const base_url =
       process.env.REACT_APP_BACKEND_URL + "/movement/readAllMovements";
     axios
@@ -102,9 +103,13 @@ export default function ReadMovements(props) {
         setRows(response.data.movements);
         setMovements(response.data.movements);
         getPrixersNames(response.data.movements);
+        setLoading(false);
       })
       .catch((error) => {
         console.log(error);
+        setLoading(false);
+        setSnackBarError(true);
+        setErrorMessage(error);
       });
   };
 
@@ -189,11 +194,6 @@ export default function ReadMovements(props) {
       >
         <CircularProgress />
       </Backdrop>
-      <Backdrop
-        className={classes.backdrop}
-        open={openOrderDetails}
-        transitionDuration={1000}
-      ></Backdrop>
       <Grid container>
         <Grid item xs={12} md={12} lg={12}>
           <Paper className={fixedHeightPaper}>
@@ -415,7 +415,7 @@ export default function ReadMovements(props) {
         message={errorMessage}
         className={classes.snackbar}
       />
-      <Menu
+      {/* <Menu
         id="simple-menu"
         anchorEl={anchorEl}
         keepMounted
@@ -436,18 +436,21 @@ export default function ReadMovements(props) {
                 transformOrigin: "center",
               }}
             >
-              <ClickAwayListener onClickAway={handleClose}>
-                <MovOrder
-                  orderId={orderId}
-                  selectedPrixer={selectedPrixer}
-                  type={type}
-                  handleClose={handleClose}
-                />
-              </ClickAwayListener>
+              <ClickAwayListener onClickAway={handleClose}> */}
+
+      <Modal open={openOrderDetails} onClose={handleClose}>
+        <MovOrder
+          orderId={orderId}
+          selectedPrixer={selectedPrixer}
+          type={type}
+          handleClose={handleClose}
+        />
+      </Modal>
+      {/* </ClickAwayListener>
             </Grow>
-          )}
-        </Popper>
-      </Menu>
+          )} */}
+      {/* </Popper>
+      </Menu> */}
     </React.Fragment>
   );
 }

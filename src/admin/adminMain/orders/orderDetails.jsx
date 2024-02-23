@@ -477,7 +477,8 @@ export default function OrderDetails(props) {
                           <>
                             <div>{"Id: " + item.art?.artId}</div>
                             <div style={{ marginBottom: 10 }}>
-                              {"Prixer: " + item.art?.prixerUsername}
+                              {item.art?.prixerUsername !== undefined &&
+                                "Prixer: " + item.art?.prixerUsername}
                             </div>
                           </>
                         ) : (

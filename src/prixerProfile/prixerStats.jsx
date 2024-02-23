@@ -221,6 +221,7 @@ export default function PrixerProfile() {
                         $
                         {balance?.toLocaleString("de-DE", {
                           minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
                         })}
                       </Typography>
                     </>

@@ -720,7 +720,7 @@ export default function ServiceGrid(props) {
                       </>
                     ) : (
                       <Slider {...settings}>
-                        {tile.sources.images?.map((img, i2) => (
+                        {tile.sources?.images?.map((img, i2) => (
                           <div
                             key={img._id}
                             style={{
@@ -836,6 +836,22 @@ export default function ServiceGrid(props) {
                         )
                       )}
                     </div>
+                    {prixer === "services" && (
+                      <Button
+                        size="small"
+                        style={{
+                          backgroundColor: "gainsboro",
+                          color: "#404e5c",
+                          textTransform: "none",
+                          padding: "1px 5px",
+                        }}
+                        onClick={() => {
+                          history.push({ pathname: "/" + tile.prixer });
+                        }}
+                      >
+                        de {tile.prixer}
+                      </Button>
+                    )}
                     {openEdit === i ? (
                       <div
                         style={{
@@ -919,8 +935,8 @@ export default function ServiceGrid(props) {
                         <RenderHTML
                           htmlString={
                             showFullDescription[i]
-                              ? tile.description
-                              : `${tile.description.slice(0, 450)}...`
+                              ? tile?.description
+                              : `${tile?.description.slice(0, 450)}...`
                           }
                         />
                         {tile.description.length > 450 && (

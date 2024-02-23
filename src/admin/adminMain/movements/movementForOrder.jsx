@@ -120,9 +120,10 @@ const useStyles = makeStyles((theme) => ({
     position: "absolute",
     width: "400px",
     backgroundColor: "white",
-    boxShadow: theme.shadows[5],
+    boxShadow: theme.shadows[2],
     padding: theme.spacing(2),
-
+    maxHeight: "90%",
+    overflowY: "auto",
     transform: "translate(65%)",
     textAlign: "justify",
     borderRadius: 10,
@@ -297,6 +298,13 @@ export default function MovOrder(props) {
     const s = discountList.find((dis) => dis._id === discount)?.name;
     return s;
   };
+
+  function handleKeyDown(event) {
+    if (event.key === "Escape") {
+      props.handleClose();
+    } else return;
+  }
+  document.addEventListener("keydown", handleKeyDown);
 
   return (
     <React.Fragment>
@@ -483,6 +491,7 @@ export default function MovOrder(props) {
                   flexDirection: "column",
                   width: "100%",
                   marginTop: -42,
+                  // height: "80%",
                 }}
               >
                 <Typography
@@ -500,6 +509,7 @@ export default function MovOrder(props) {
                       style={{
                         display: "flex",
                         flexDirection: "column",
+                        marginBottom: 10,
                         // margin: "0px 0px 20px 0px",
                         borderWidth: "1px",
                         borderStyle: "solid",
@@ -640,7 +650,7 @@ export default function MovOrder(props) {
                   </div>
                   <div>
                     {"IVA: $" +
-                      order.tax.toLocaleString("de-DE", {
+                      order.tax?.toLocaleString("de-DE", {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
                       })}
@@ -651,8 +661,9 @@ export default function MovOrder(props) {
                       {"Envío: $" +
                         (
                           order.shippingCost ||
-                          order.shippingData?.shippingMethod?.price
-                        ).toLocaleString("de-DE", {
+                          order.shippingData?.shippingMethod?.price ||
+                          0
+                        )?.toLocaleString("de-DE", {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
                         })}

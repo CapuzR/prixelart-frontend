@@ -7,6 +7,7 @@ import data from "../data/LPG/data.json";
 
 export const Desktop = () => {
   const [selectedIcon, setSelectedIcon] = React.useState();
+  const [openSelected, setOpenSelected] = React.useState(false);
   const [icons, setIcons] = React.useState(data.array);
 
   return (
@@ -36,7 +37,12 @@ export const Desktop = () => {
           alignContent: "center",
         }}
       >
-        <Map icons={icons} setSelectedIcon={setSelectedIcon} />
+        <Map
+          icons={icons}
+          selected={selectedIcon}
+          setSelectedIcon={setSelectedIcon}
+          setOpenSelected={setOpenSelected}
+        />
       </Grid>
       <Grid
         item
@@ -48,7 +54,12 @@ export const Desktop = () => {
           alignContent: "center",
         }}
       >
-        <IconCard icon={selectedIcon} />
+        <IconCard
+          icon={selectedIcon}
+          openSelected={openSelected}
+          setSelectedIcon={setSelectedIcon}
+          setOpenSelected={setOpenSelected}
+        />
       </Grid>
       {/* <Grid item xs={12} id="webapp">
           <Showcase />

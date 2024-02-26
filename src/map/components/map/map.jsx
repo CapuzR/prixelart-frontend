@@ -1,7 +1,7 @@
 import React from "react";
 import { Icon } from "./icon.jsx";
 
-export const Map = ({ icons, setSelectedIcon }) => {
+export const Map = ({ icons, setSelectedIcon, setOpenSelected }) => {
   let rawMapRef = React.useRef(document.getElementById("rawMap"));
 
   const calculateIconRelation = (mapOriginal, iconOriginal, adapted) => {
@@ -17,7 +17,7 @@ export const Map = ({ icons, setSelectedIcon }) => {
         alt="icon"
         ref={rawMapRef}
         src="/LPG/rawMap.png"
-        style={{ width: "100%", height: "auto" }}
+        style={{ width: "auto", height: "65vh" }}
       />
       {icons.map((icon, index) => {
         return (
@@ -26,6 +26,7 @@ export const Map = ({ icons, setSelectedIcon }) => {
             icon={icon}
             rawMapRef={rawMapRef}
             calculateIconRelation={calculateIconRelation}
+            setOpenSelected={setOpenSelected}
             setSelectedIcon={setSelectedIcon}
           />
         );

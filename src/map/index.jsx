@@ -6,6 +6,7 @@ import "./i18n.js";
 import { Desktop } from "./views/desktop.jsx";
 import { Mobile } from "./views/mobile.jsx";
 import AppBar from "../sharedComponents/appBar/appBar.jsx";
+
 const Konecta = () => {
   const isMobile = useMediaQuery("(max-width:1090px)");
 

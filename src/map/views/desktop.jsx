@@ -1,0 +1,87 @@
+import * as React from "react";
+import { Grid } from "@material-ui/core";
+import { Map } from "../components/map/map.jsx";
+import { IconCard } from "../components/map/card.jsx";
+import { IconsForm } from "../components/iconsForm/iconsForm.jsx";
+import data from "../data/LPG/data.json";
+
+export const Desktop = () => {
+  const [selectedIcon, setSelectedIcon] = React.useState();
+  const [icons, setIcons] = React.useState(data.array);
+
+  return (
+    <Grid
+      container
+      justifyContent={"center"}
+      alignItems={"center"}
+      style={{ padding: 0, marginTop: 64 }}
+    >
+      <Grid
+        item
+        xs={4}
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignContent: "center",
+        }}
+      >
+        <IconsForm icons={icons} setIcons={setIcons} />
+      </Grid>
+      <Grid
+        item
+        xs={4}
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignContent: "center",
+        }}
+      >
+        <Map icons={icons} setSelectedIcon={setSelectedIcon} />
+      </Grid>
+      <Grid
+        item
+        container
+        xs={4}
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignContent: "center",
+        }}
+      >
+        <IconCard icon={selectedIcon} />
+      </Grid>
+      {/* <Grid item xs={12} id="webapp">
+          <Showcase />
+        </Grid>
+        <Grid item xs={12} id="about">
+          <ProductCarrousel />
+        </Grid>
+        <Grid item xs={12} id="about">
+          <ArtistSign />
+        </Grid>
+        <Grid item xs={12}>
+          <Footer/>
+        </Grid> */}
+    </Grid>
+    // <Grid container sx={{ padding: "3% 8% 0 8%", backgroundImage: "Bg" }}>
+    //   <Grid item xs={12}>
+    //     <TopBar />
+    //   </Grid>
+    //   <Grid item xs={12}>
+    //     <Banner />
+    //   </Grid>
+    //   <Grid item xs={12} id="webapp">
+    //     <Showcase />
+    //   </Grid>
+    //   <Grid item xs={12} id="about">
+    //     <About />
+    //   </Grid>
+    //   <Grid item xs={12}>
+    //     <Prefooter/>
+    //   </Grid>
+    //   <Grid item xs={12}>
+    //     <Footer/>
+    //   </Grid>
+    // </Grid>
+  );
+};

@@ -27,6 +27,7 @@ import Button from "@material-ui/core/Button";
 import MDEditor from "@uiw/react-md-editor";
 import PrixersService from "./prixerServices/prixerService";
 import TestimonialsGrid from "./testimonials/testimonialsGrid";
+import Map from "./map/index";
 
 const useStyles = makeStyles((theme) => ({
   paper2: {
@@ -523,6 +524,10 @@ function App() {
             setMessage={setMessage}
             permissions={permissions}
           />
+        </Route>
+
+        <Route path="/wip/map">
+          <Map />
         </Route>
 
         <Route path="/:username/stats">

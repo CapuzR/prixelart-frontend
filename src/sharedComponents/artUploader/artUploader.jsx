@@ -516,11 +516,11 @@ export default function ArtUploader(props) {
     formData.append("originalPhotoIso", originalPhotoIso);
     formData.append("originalPhotoPpi", originalPhotoPpi);
     formData.append("artLocation", location);
-    formData.append("imageUrl", artUrl);
     formData.append("disabledReason", disabledReason);
     formData.append("visible", visible);
     formData.append("exclusive", exclusive);
     formData.append("comission", comission);
+    formData.append("imageUrl", artUrl);
 
     const base_url = process.env.REACT_APP_BACKEND_URL + "/art/create";
     const data = await axios.post(base_url, formData, {

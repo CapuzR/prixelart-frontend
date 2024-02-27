@@ -1,8 +1,11 @@
 import React from "react";
 import { Icon } from "./icon.jsx";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
+import { useHistory, useLocation } from "react-router-dom";
 
 export const Map = ({ icons, setSelectedIcon, setOpenSelected }) => {
+  const history = useHistory();
+
   let rawMapRef = React.useRef(document.getElementById("rawMap"));
   const isMobile = useMediaQuery("(max-width:1090px)");
   const calculateIconRelation = (mapOriginal, iconOriginal, adapted) => {
@@ -63,6 +66,7 @@ export const Map = ({ icons, setSelectedIcon, setOpenSelected }) => {
             width: "auto",
             maxHeight: "140px",
           }}
+          onClick={(e) => history.push({ pathname: "/LPG" })}
         />
       </div>
     </div>

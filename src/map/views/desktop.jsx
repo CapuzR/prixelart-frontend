@@ -1,8 +1,10 @@
 import * as React from "react";
-import { Grid } from "@material-ui/core";
+import { Grid, Typography } from "@material-ui/core";
 import { Map } from "../components/map/map.jsx";
 import { IconCard } from "../components/map/card.jsx";
 import { IconsForm } from "../components/iconsForm/iconsForm.jsx";
+import { IconsList } from "../components/iconsForm/iconList.jsx";
+
 import data from "../data/LPG/data.json";
 
 export const Desktop = () => {
@@ -15,8 +17,23 @@ export const Desktop = () => {
       container
       justifyContent={"center"}
       alignItems={"center"}
-      style={{ padding: 0, marginTop: 64 }}
+      style={{ padding: 0, marginTop: 80 }}
     >
+      <Grid xs={12}>
+        <Typography
+          variant="h4"
+          style={{
+            display: "flex",
+            width: "100%",
+            justifyContent: "center",
+            fontWeight: "bold",
+            // fontSize: "1.2rem",
+            color: "#404e5c",
+          }}
+        >
+          Murales de los Palos Grandes
+        </Typography>
+      </Grid>
       <Grid
         item
         xs={4}
@@ -26,7 +43,13 @@ export const Desktop = () => {
           alignContent: "center",
         }}
       >
-        <IconsForm icons={icons} setIcons={setIcons} />
+        <IconsList
+          icons={icons}
+          selected={selectedIcon}
+          setSelectedIcon={setSelectedIcon}
+          setOpenSelected={setOpenSelected}
+        />
+        {/* <IconsForm icons={icons} setIcons={setIcons} /> */}
       </Grid>
       <Grid
         item

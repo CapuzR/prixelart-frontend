@@ -76,7 +76,7 @@ export function IconCard({
         <div
           style={{ display: "flex", width: "100%", justifyContent: "center" }}
         >
-          <Card sx={{ maxWidth: 350 }}>
+          <Card sx={{ maxWidth: 350, maxWidth: 60 }}>
             {/* <CardMedia
             component="img"
             sx={{ maxHeight: 200, margin: "auto", objectFit: "contain" }}

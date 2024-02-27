@@ -5,6 +5,7 @@ import { Map } from "../components/map/map.jsx";
 import { IconCard } from "../components/map/card.jsx";
 import { IconsForm } from "../components/iconsForm/iconsForm.jsx";
 import { IconsList } from "../components/iconsForm/iconList.jsx";
+import { useHistory, useLocation } from "react-router-dom";
 
 import data from "../data/LPG/data.json";
 
@@ -12,6 +13,7 @@ export const Mobile = () => {
   const [selectedIcon, setSelectedIcon] = React.useState();
   const [openSelected, setOpenSelected] = React.useState(false);
   const [icons, setIcons] = React.useState(data.array);
+  const history = useHistory();
 
   const handleClose = () => {
     setOpenSelected(false);
@@ -49,12 +51,40 @@ export const Mobile = () => {
           setSelectedIcon={setSelectedIcon}
           setOpenSelected={setOpenSelected}
         />
-
-        <Map
-          icons={icons}
-          setSelectedIcon={setSelectedIcon}
-          setOpenSelected={setOpenSelected}
-        />
+        <div
+          style={{
+            display: "flex",
+            alignItems: "end",
+            flexDirection: "column",
+          }}
+        >
+          <Map
+            icons={icons}
+            setSelectedIcon={setSelectedIcon}
+            setOpenSelected={setOpenSelected}
+          />
+          {/* <div
+        style={{
+          display: "flex",
+          top: 0,
+          right: 0,
+          // marginRight: "650px",
+          // marginTop: "300px",
+        }}
+      > */}
+          <img
+            alt="icon"
+            src="/LPG/logocolor.jpg"
+            style={{
+              maxWidth: "140px",
+              maxHeight: "160px",
+              marginTop: "-170px",
+              zIndex: 2,
+            }}
+            onClick={(e) => history.push({ pathname: "/LPG" })}
+          />
+        </div>
+        {/* </div> */}
         <IconCard
           icon={selectedIcon}
           openSelected={openSelected}

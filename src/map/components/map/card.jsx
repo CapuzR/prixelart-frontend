@@ -73,15 +73,19 @@ export function IconCard({
         </Card>
       </Modal>
       {openSelected === false && (
-        <Card sx={{ maxWidth: 350 }}>
-          <CardMedia
+        <div
+          style={{ display: "flex", width: "100%", justifyContent: "center" }}
+        >
+          <Card sx={{ maxWidth: 350 }}>
+            {/* <CardMedia
             component="img"
             sx={{ maxHeight: 200, margin: "auto", objectFit: "contain" }}
             image={icon?.src}
             title={icon?.name}
-          />
-          <CardContent>Selecciona un ícono</CardContent>
-        </Card>
+          /> */}
+            <CardContent>Selecciona un ícono</CardContent>
+          </Card>
+        </div>
       )}
     </>
   );

@@ -50,7 +50,7 @@ export const Map = ({ icons, setSelectedIcon, setOpenSelected }) => {
           );
         })}
       </div>
-      <div
+      {/* <div
         style={{
           display: "flex",
           width: "100%",
@@ -68,7 +68,7 @@ export const Map = ({ icons, setSelectedIcon, setOpenSelected }) => {
           }}
           onClick={(e) => history.push({ pathname: "/LPG" })}
         />
-      </div>
+      </div> */}
     </div>
   );
 };

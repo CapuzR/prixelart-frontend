@@ -60,12 +60,33 @@ export const Desktop = () => {
           alignContent: "center",
         }}
       >
-        <Map
-          icons={icons}
-          selected={selectedIcon}
-          setSelectedIcon={setSelectedIcon}
-          setOpenSelected={setOpenSelected}
-        />
+        <div
+          style={{
+            display: "flex",
+            alignItems: "end",
+            flexDirection: "column",
+          }}
+        >
+          <Map
+            icons={icons}
+            selected={selectedIcon}
+            setSelectedIcon={setSelectedIcon}
+            setOpenSelected={setOpenSelected}
+          />
+
+          <img
+            alt="icon"
+            src="/LPG/logocolor.jpg"
+            style={{
+              maxWidth: "140px",
+              maxHeight: "160px",
+              marginTop: "-110px",
+              marginRight: "-20px",
+              zIndex: 2,
+            }}
+            onClick={(e) => history.push({ pathname: "/LPG" })}
+          />
+        </div>
       </Grid>
       <Grid
         item
@@ -83,7 +104,26 @@ export const Desktop = () => {
           setSelectedIcon={setSelectedIcon}
           setOpenSelected={setOpenSelected}
         />
+        {/* <div
+          style={{
+            display: "flex",
+            marginRight: "650px",
+            marginTop: "300px",
+            zIndex: 2,
+          }}
+        >
+          <img
+            alt="icon"
+            src="/LPG/logocolor.jpg"
+            style={{
+              maxWidth: "140px",
+              maxHeight: "140px",
+            }}
+            onClick={(e) => history.push({ pathname: "/LPG" })}
+          />
+        </div> */}
       </Grid>
+
       {/* <Grid item xs={12} id="webapp">
           <Showcase />
         </Grid>

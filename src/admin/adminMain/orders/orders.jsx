@@ -709,16 +709,26 @@ export default function Orders(props) {
         (dis) => dis._id === item.product.discount
       );
       if (item.product.modifyPrice) {
-        unitPrice = Number(
-          (item.product.publicEquation?.replace(/[,]/gi, ".") / 10) *
-            item.quantity
-        );
+        let alfa = Number(item.product.publicEquation?.replace(/[,]/gi, "."));
+        unitPrice = (alfa / 10) * (item.quantity || 1);
       } else if (typeof item.product.discount === "string") {
-        unitPrice =
-          // item.product?.prixerEquation ||
-          // item.product?.prixerPrice?.from ||
-          Number(item.product?.publicEquation?.replace(/[,]/gi, ".")) ||
-          Number(item.product.publicPrice.from?.replace(/[,]/gi, "."));
+        if (item.product.publicEquation) {
+          unitPrice = Number(
+            item.product?.publicEquation?.replace(/[,]/gi, ".")
+          );
+        } else if (item.product.publicPrice) {
+          unitPrice = Number(
+            item.product.publicPrice.from?.replace(/[,]/gi, ".")
+          );
+        } else if (item.product.prixerEquation) {
+          unitPrice = Number(
+            item.product?.prixerEquation?.replace(/[,]/gi, ".")
+          );
+        } else if (item.product.prixerPrice) {
+          unitPrice = Number(
+            item.product.prixerPrice.from?.replace(/[,]/gi, ".")
+          );
+        }
 
         if (discount?.type === "Porcentaje") {
           let op = Number(
@@ -731,34 +741,59 @@ export default function Orders(props) {
           unitPrice = op;
         }
       } else {
-        unitPrice =
-          item.product?.publicEquation?.replace(/[,]/gi, ".") ||
-          item.product.publicPrice.from?.replace(/[,]/gi, ".");
-
+        if (item.product.publicEquation) {
+          unitPrice = Number(
+            item.product?.publicEquation.replace(/[,]/gi, ".")
+          );
+        } else if (item.product.publicPrice) {
+          unitPrice = Number(
+            item.product.publicPrice.from?.replace(/[,]/gi, ".")
+          );
+        } else if (item.product.prixerEquation) {
+          unitPrice = Number(
+            item.product?.prixerEquation?.replace(/[,]/gi, ".")
+          );
+        } else if (item.product.prixerPrice) {
+          unitPrice = Number(
+            item.product.prixerPrice.from?.replace(/[,]/gi, ".")
+          );
+        }
         let op = Number((unitPrice / 10) * item.quantity);
         unitPrice = op;
       }
-      const url1 = process.env.REACT_APP_BACKEND_URL + "/prixer/read";
 
-      await axios
-        .post(url1, { username: item.art?.prixerUsername })
-        .then(async (res) => {
-          setAccount(res.data.account);
-          const url = process.env.REACT_APP_BACKEND_URL + "/movement/create";
-          const data = {
-            _id: nanoid(),
-            createdOn: new Date(),
-            createdBy: JSON.parse(localStorage.getItem("adminToken")).username,
-            date: new Date(),
-            destinatary: res.data.account,
-            description: `Comisión de la orden #${order.orderId}`,
-            type: "Depósito",
-            value: unitPrice,
-            adminToken: localStorage.getItem("adminTokenV"),
-          };
-          await axios.post(url, data);
-        });
+      if (
+        item.art?.prixerUsername &&
+        item.art?.prixerUsername !== "Personalizado" &&
+        item.art?.prixerUsername !== undefined
+      ) {
+        const url1 = process.env.REACT_APP_BACKEND_URL + "/prixer/read";
 
+        await axios
+          .post(url1, { username: item.art?.prixerUsername })
+          .then(async (res) => {
+            setAccount(res.data.account);
+            const url = process.env.REACT_APP_BACKEND_URL + "/movement/create";
+            const data = {
+              _id: nanoid(),
+              createdOn: new Date(),
+              createdBy: JSON.parse(localStorage.getItem("adminToken"))
+                .username,
+              date: new Date(),
+              destinatary: res.data.account,
+              description: `Comisión de la orden #${order.orderId}`,
+              type: "Depósito",
+              value: unitPrice,
+              adminToken: localStorage.getItem("adminTokenV"),
+            };
+            await axios.post(url, data).then(async (res) => {
+              if (res.data.success === false) {
+                setSnackBarError(true);
+                setErrorMessage(res.data.message);
+              }
+            });
+          });
+      }
       setAccount();
     }
   };
@@ -809,12 +844,14 @@ export default function Orders(props) {
         (order.basicData?.firstname || order.basicData?.name) +
         " " +
         order.basicData?.lastname;
+
       if (c.includes(fullname)) {
         return;
       } else {
         c.push(fullname);
       }
     });
+    c.sort();
     setClients(c);
   };
 
@@ -854,7 +891,11 @@ export default function Orders(props) {
       >
         <CircularProgress />
       </Backdrop>
-      <Grid container spacing={2} style={{ margin: isDesktop ? "12px" : "" }}>
+      <Grid
+        container
+        spacing={2}
+        style={{ marginLeft: isDesktop ? "12px" : "" }}
+      >
         <Grid item xs={12} md={12} lg={12}>
           <Paper className={fixedHeightPaper}>
             <div
@@ -988,7 +1029,7 @@ export default function Orders(props) {
       </Modal>
       <Snackbar
         open={snackBarError}
-        autoHideDuration={4000}
+        autoHideDuration={10000}
         message={errorMessage}
         className={classes.snackbar}
         onClose={closeAd}

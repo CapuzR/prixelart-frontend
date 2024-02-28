@@ -206,11 +206,13 @@ function App() {
       newState.push({
         art: undefined,
         product: input.item,
+        quantity: 1,
       });
     } else if (input.type === "art") {
       newState.push({
         art: input.item,
         product: undefined,
+        quantity: 1,
       });
     }
     setBuyState(newState);

@@ -247,7 +247,17 @@ export default function ShoppingCart(props) {
       await productsAttTemp1.map(async (p, iProd, pArr) => {
         productsAttTemp1 = await getEquation(p, iProd, pArr);
       });
-      setProductList(getAttributes(productsAttTemp1));
+      setProductList(
+        getAttributes(productsAttTemp1).sort(function (a, b) {
+          if (a.name.toLowerCase() > b.name.toLowerCase()) {
+            return 1;
+          }
+          if (a.name.toLowerCase() < b.name.toLowerCase()) {
+            return -1;
+          }
+          return 0;
+        })
+      );
     });
   };
   useEffect(() => {

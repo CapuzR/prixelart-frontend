@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { useParams } from "react-router-dom";
 import axios from "axios";
 
 import AppBar from "../sharedComponents/appBar/appBar";
@@ -71,9 +72,7 @@ export default function PrixerProfile(props) {
   const classes = useStyles();
   const history = useHistory();
   const theme = useTheme();
-  const prixerUsername = new URLSearchParams(window.location)
-    .get("pathname")
-    .replace(/[/]/gi, "");
+  const { username } = useParams();
   const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
   const isDeskTop = useMediaQuery(theme.breakpoints.up("sm"));
 
@@ -90,7 +89,7 @@ export default function PrixerProfile(props) {
       case "Artes":
         return (
           <ArtsGrid
-            prixerUsername={prixerUsername}
+            prixerUsername={username}
             buyState={props.buyState}
             addItemToBuyState={props.addItemToBuyState}
             setIsOpenAssociateProduct={props.setIsOpenAssociateProduct}
@@ -104,7 +103,7 @@ export default function PrixerProfile(props) {
       case "Servicios":
         return (
           <ServiceGrid
-            prixerUsername={prixerUsername}
+            prixerUsername={username}
             createdService={createdService}
             setCreatedService={setCreatedService}
             permissions={props.permissions}
@@ -112,21 +111,17 @@ export default function PrixerProfile(props) {
         );
 
       case "Bio":
-        return <Biography prixerUsername={prixerUsername} />;
+        return <Biography prixerUsername={username} />;
     }
   };
   return (
     <Container component="main" maxWidth="xl" className={classes.paper}>
       <CssBaseline />
       <Grid>
-        <AppBar prixerUsername={prixerUsername} />
+        <AppBar prixerUsername={username} />
       </Grid>
-      <UserData prixerUsername={prixerUsername} />
-      <PrixerOptions
-        prixerUsername={prixerUsername}
-        feed={feed}
-        setFeed={setFeed}
-      />
+      <UserData prixerUsername={username} />
+      <PrixerOptions prixerUsername={username} feed={feed} setFeed={setFeed} />
       {showPrixerGrid()}
 
       {openArtFormDialog && (

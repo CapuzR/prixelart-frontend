@@ -457,6 +457,7 @@ export default function Home(props) {
                     (isDesktop && 47) || (isMobile && 30) || (isTab && 35),
                   backgroundColor: "gainsboro",
                   marginBottom: 20,
+                  padding: 15,
                 }}
                 elevation={5}
               >
@@ -472,7 +473,7 @@ export default function Home(props) {
                     justifyItems: "center",
                     padding: "15px 25px 10px 0px",
                     paddingRight: isMobile ? 15 : 25,
-                    margin: "15px 15px 15px 15px",
+                    marginBottom: 14,
                     backgroundColor: "#404e5c",
                     alignItems: "end",
                     borderRadius:

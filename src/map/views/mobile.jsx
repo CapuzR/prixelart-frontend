@@ -81,7 +81,7 @@ export const Mobile = () => {
               marginTop: "-170px",
               zIndex: 2,
             }}
-            onClick={(e) => history.push({ pathname: "/LPG" })}
+            onClick={(e) => history.push({ pathname: "/prixer=LPG" })}
           />
         </div>
         {/* </div> */}

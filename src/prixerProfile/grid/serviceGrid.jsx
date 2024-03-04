@@ -846,7 +846,7 @@ export default function ServiceGrid(props) {
                           padding: "1px 5px",
                         }}
                         onClick={() => {
-                          history.push({ pathname: "/" + tile.prixer });
+                          history.push({ pathname: "/prixer=" + tile.prixer });
                         }}
                       >
                         de {tile.prixer}

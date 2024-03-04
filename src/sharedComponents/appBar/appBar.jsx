@@ -111,12 +111,13 @@ const useStyles = makeStyles((theme) => ({
 export default function MenuAppBar(props) {
   const theme = useTheme();
   const classes = useStyles();
-  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [anchorEl, setAnchorEl] = useState(null);
   const history = useHistory();
   const open = Boolean(anchorEl);
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
-  const [open2, setOpen] = React.useState(false);
+  const [open2, setOpen] = useState(false);
   const [avatar, setAvatar] = useState("");
+
   const handleMenu = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -147,7 +148,7 @@ export default function MenuAppBar(props) {
 
   const handleMyAccount = () => {
     history.push({
-      pathname: "/" + JSON.parse(localStorage.getItem("token")).username,
+      pathname: "/prixer=" + JSON.parse(localStorage.getItem("token")).username,
     });
     setAnchorEl(null);
   };
@@ -155,7 +156,9 @@ export default function MenuAppBar(props) {
   const handleMyStats = () => {
     history.push({
       pathname:
-        "/" + JSON.parse(localStorage.getItem("token")).username + "/stats",
+        "/prixer=" +
+        JSON.parse(localStorage.getItem("token")).username +
+        "/stats",
     });
     setAnchorEl(null);
   };

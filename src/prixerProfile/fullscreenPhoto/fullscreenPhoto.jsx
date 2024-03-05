@@ -391,7 +391,7 @@ export default function FullscreenPhoto(props) {
 
   const navigateToPrixer = (e, prixerUsername) => {
     e.preventDefault();
-    history.push({ pathname: "/" + prixerUsername });
+    history.push({ pathname: "/prixer=" + prixerUsername });
   };
 
   const deleteArt = async () => {

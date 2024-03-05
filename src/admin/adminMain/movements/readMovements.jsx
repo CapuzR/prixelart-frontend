@@ -100,8 +100,17 @@ export default function ReadMovements(props) {
         { withCredentials: true }
       )
       .then((response) => {
-        setRows(response.data.movements);
-        setMovements(response.data.movements);
+        const sortedMov = response.data.movements.sort(function (a, b) {
+          if (a.createdOn < b.createdOn) {
+            return 1;
+          }
+          if (a.createdOn > b.createdOn) {
+            return -1;
+          }
+          return 0;
+        });
+        setRows(sortedMov);
+        setMovements(sortedMov);
         getPrixersNames(response.data.movements);
         setLoading(false);
       })

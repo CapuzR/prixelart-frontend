@@ -536,7 +536,7 @@ function App() {
           <PrixerStats />
         </Route>
 
-        <Route path="/:username">
+        <Route path="/prixer=:username">
           <PrixerProfile
             buyState={buyState}
             deleteItemInBuyState={deleteItemInBuyState}

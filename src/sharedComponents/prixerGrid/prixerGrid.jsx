@@ -123,7 +123,9 @@ export default function PrixerGrid(props) {
                           size="small"
                           color="primary"
                           onClick={(e) =>
-                            history.push({ pathname: "/" + tile.username })
+                            history.push({
+                              pathname: "/prixer=" + tile.username,
+                            })
                           }
                         >
                           Explorar

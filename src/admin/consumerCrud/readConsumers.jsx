@@ -20,6 +20,9 @@ import Box from "@material-ui/core/Box";
 import Button from "@material-ui/core/Button";
 import { makeStyles } from "@material-ui/core/styles";
 import Backdrop from "@material-ui/core/Backdrop";
+import TextField from "@material-ui/core/TextField";
+import SearchIcon from "@material-ui/icons/Search";
+import InputAdornment from "@material-ui/core/InputAdornment";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -48,16 +51,20 @@ export default function ReadConsumers(props) {
   const classes = useStyles();
 
   const [rows, setRows] = useState();
+
+  const [filter, setFilter] = useState("");
+
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState();
   const [snackbar, setSnackbar] = useState(false);
+
   const totalConsumers = rows?.length;
   const itemsPerPage = 20;
   const noOfPages = Math.ceil(totalConsumers / itemsPerPage);
   const [pageNumber, setPageNumber] = useState(1);
   const itemsToSkip = (pageNumber - 1) * itemsPerPage;
-  const rowsv2 = rows?.slice(itemsToSkip, itemsPerPage + itemsToSkip);
-
+  let rowsv2 = rows?.slice(itemsToSkip, itemsPerPage + itemsToSkip);
+  const [rv2, setRv2] = useState();
   const readConsumers = () => {
     setLoading(true);
     const base_url = process.env.REACT_APP_BACKEND_URL + "/consumer/read-all";
@@ -65,6 +72,7 @@ export default function ReadConsumers(props) {
       .post(base_url)
       .then((response) => {
         setRows(response.data);
+        setRv2(response.data?.slice(itemsToSkip, itemsPerPage + itemsToSkip));
         setLoading(false);
       })
       .catch((error) => {
@@ -103,6 +111,25 @@ export default function ReadConsumers(props) {
     setSnackbar(false);
   };
 
+  const changeFilter = (e) => {
+    let f = e.target.value.toLowerCase();
+    setFilter(e.target.value);
+
+    if (typeof f === "string" && f.length > 0) {
+      let filteredClients = rows.filter(
+        (row) =>
+          row.firstname.toLowerCase().includes(f) ||
+          row?.lastname?.toLowerCase().includes(f.toLowerCase()) ||
+          row?.email?.toLowerCase().includes(f.toLowerCase()) ||
+          row?.address?.toLowerCase().includes(f.toLowerCase()) ||
+          row?.ci?.toLowerCase().includes(f.toLowerCase())
+      );
+      setRv2(filteredClients);
+    } else {
+      setRv2(rows?.slice(itemsToSkip, itemsPerPage + itemsToSkip));
+    }
+  };
+
   return (
     <React.Fragment>
       <Backdrop
@@ -112,9 +139,25 @@ export default function ReadConsumers(props) {
       >
         <CircularProgress />
       </Backdrop>
+
       {props?.permissions?.readConsumers ? (
         <>
           <Title>Clientes frecuentes</Title>
+          <Grid>
+            <TextField
+              variant="outlined"
+              value={filter}
+              onChange={changeFilter}
+              style={{ padding: 0 }}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon color="secondary" />
+                  </InputAdornment>
+                ),
+              }}
+            />
+          </Grid>
           {rows && (
             <>
               <Table size="small">
@@ -131,8 +174,8 @@ export default function ReadConsumers(props) {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {rows &&
-                    rowsv2.map((row) => (
+                  {rv2?.length > 0 ? (
+                    rv2.map((row) => (
                       <TableRow key={row._id}>
                         <TableCell align="center">
                           <Checkbox
@@ -187,7 +230,18 @@ export default function ReadConsumers(props) {
                           </Grid>
                         </TableCell>
                       </TableRow>
-                    ))}
+                    ))
+                  ) : (
+                    <Typography
+                      style={{ margin: 20 }}
+                      align="center"
+                      color="secondary"
+                    >
+                      No hay clientes que coincidan con tu criterio de búsqueda,
+                      intenta de nuevo.
+                    </Typography>
+                  )}
+                  {console.log(rv2)}
                 </TableBody>
               </Table>
               <Box

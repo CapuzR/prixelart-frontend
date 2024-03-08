@@ -17,7 +17,7 @@ import useMediaQuery from "@material-ui/core/useMediaQuery";
 import EditIcon from "@material-ui/icons/Edit";
 import HighlightOffOutlinedIcon from "@material-ui/icons/HighlightOffOutlined";
 import Snackbar from "@material-ui/core/Snackbar";
-import ReactQuill from "react-quill";
+import ReactQuill, { Quill } from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import Tooltip from "@material-ui/core/Tooltip";
 
@@ -101,7 +101,9 @@ const useStyles = makeStyles((theme) => ({
 export default function Biography(props) {
   const classes = useStyles();
   const history = useHistory();
-  const prixer = window.location.pathname.slice(1);
+  const globalParams = new URLSearchParams(window.location.pathname);
+  const prixer = globalParams.get("/prixer");
+
   const [backdrop, setBackdrop] = useState(false);
   const theme = useTheme();
   const [snackBar, setSnackBar] = useState(false);
@@ -480,37 +482,41 @@ export default function Biography(props) {
                 }}
               >
                 <Slider {...setting2}>
-                  {data?.images?.map((img, i) => (
-                    <div
-                      key={i}
-                      style={{
-                        borderRadius: 40,
-                        display: "flex",
-                        flexDirection: "column",
-                        height: "100%",
-                        width: "90%",
-                        // marginTop: 50,
-                      }}
-                    >
-                      <div
-                        style={{
-                          display: "flex",
-                          flexDirection: "column",
-                          alignItems: "center",
-                        }}
-                      >
-                        <img
+                  {data?.images?.map(
+                    (img, i) =>
+                      img !== null &&
+                      img !== undefined && (
+                        <div
+                          key={i}
                           style={{
+                            borderRadius: 40,
+                            display: "flex",
+                            flexDirection: "column",
+                            height: "100%",
                             width: "90%",
-                            objectFit: "cover",
-                            borderRadius: 10,
+                            // marginTop: 50,
                           }}
-                          src={img}
-                          alt="Imagen"
-                        />
-                      </div>
-                    </div>
-                  ))}
+                        >
+                          <div
+                            style={{
+                              display: "flex",
+                              flexDirection: "column",
+                              alignItems: "center",
+                            }}
+                          >
+                            <img
+                              style={{
+                                width: "90%",
+                                objectFit: "cover",
+                                borderRadius: 10,
+                              }}
+                              src={img}
+                              alt="Imagen"
+                            />
+                          </div>
+                        </div>
+                      )
+                  )}
                 </Slider>
               </div>
             )}
@@ -568,36 +574,40 @@ export default function Biography(props) {
                 }}
               >
                 <Slider {...setting2}>
-                  {data?.images?.map((img, i) => (
-                    <div
-                      key={i}
-                      style={{
-                        borderRadius: 40,
-                        display: "flex",
-                        flexDirection: "column",
-                        height: "100%",
-                        width: "100%",
-                      }}
-                    >
-                      <div
-                        style={{
-                          display: "flex",
-                          flexDirection: "column",
-                          alignItems: "center",
-                        }}
-                      >
-                        <img
+                  {data?.images?.map(
+                    (img, i) =>
+                      img !== null &&
+                      img !== undefined && (
+                        <div
+                          key={i}
                           style={{
+                            borderRadius: 40,
+                            display: "flex",
+                            flexDirection: "column",
+                            height: "100%",
                             width: "100%",
-                            objectFit: "cover",
-                            borderRadius: 10,
                           }}
-                          src={img}
-                          alt="Imagen"
-                        />
-                      </div>
-                    </div>
-                  ))}
+                        >
+                          <div
+                            style={{
+                              display: "flex",
+                              flexDirection: "column",
+                              alignItems: "center",
+                            }}
+                          >
+                            <img
+                              style={{
+                                width: "100%",
+                                objectFit: "cover",
+                                borderRadius: 10,
+                              }}
+                              src={img}
+                              alt="Imagen"
+                            />
+                          </div>
+                        </div>
+                      )
+                  )}
                 </Slider>
               </div>
             )}

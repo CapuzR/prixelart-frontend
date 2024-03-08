@@ -26,8 +26,14 @@ import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
-
+import Tabs from "@material-ui/core/Tabs";
+import Tab from "@material-ui/core/Tab";
+import Menu from "@material-ui/core/Menu";
+import MenuItem from "@material-ui/core/MenuItem";
+import MoreVertIcon from "@material-ui/icons/MoreVert";
 import { nanoid } from "nanoid";
+import Toolbar from "@material-ui/core/Toolbar";
+import { SelectAllOutlined } from "@material-ui/icons";
 
 const useStyles = makeStyles((theme) => ({
   loading: {
@@ -126,9 +132,12 @@ const useStyles = makeStyles((theme) => ({
 export default function Prixers(props) {
   const classes = useStyles();
   const theme = useTheme();
+  const [value, setValue] = useState(0);
 
   const [loading, setLoading] = useState(false);
   const [tiles, setTiles] = useState([]);
+  const [ogz, setOgz] = useState([]);
+
   const [backdrop, setBackdrop] = useState(true);
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
@@ -139,7 +148,7 @@ export default function Prixers(props) {
   const [openNewBalance, setOpenNewBalance] = useState(false);
   const [openNewMovement, setOpenNewMovement] = useState(false);
   const [openList, setOpenList] = useState(false);
-  const [selectedPrixer, setSelectedPrixer] = useState();
+  const [selectedPrixer, setSelectedPrixer] = useState(undefined);
   const [balance, setBalance] = useState(0);
   const [type, setType] = useState();
   const [date, setDate] = useState(new Date());
@@ -148,17 +157,32 @@ export default function Prixers(props) {
   const [movements, setMovements] = useState();
   const [message, setMessage] = useState();
   const [open, setOpen] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const openMenu = Boolean(anchorEl);
+
+  const handleSection = (event, newValue) => {
+    setValue(newValue);
+  };
 
   const readPrixers = async () => {
     try {
-      setLoading(true);
       const base_url =
         process.env.REACT_APP_BACKEND_URL + "/prixer/read-all-full";
 
       const response = await axios.get(base_url);
       setTiles(response.data.prixers);
-      setBackdrop(false);
-      setLoading(false);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const readOgz = async () => {
+    try {
+      const base_url =
+        process.env.REACT_APP_BACKEND_URL + "/organization/read-all-full";
+
+      const response = await axios.get(base_url);
+      setOgz(response.data.organizations);
     } catch (error) {
       console.log(error);
     }
@@ -189,8 +213,13 @@ export default function Prixers(props) {
   };
 
   useEffect(() => {
+    setLoading(true);
+
     readPrixers();
+    readOgz();
     getBalance();
+    setBackdrop(false);
+    setLoading(false);
   }, []);
 
   const handleChange = (event) => {
@@ -290,7 +319,27 @@ export default function Prixers(props) {
     setDate();
     setDescription();
     setMovements();
+    setAnchorEl(null);
   };
+
+  function TabPanel(props) {
+    const { children, value, index } = props;
+    return (
+      <div
+        role="tabpanel"
+        hidden={value !== index}
+        id={`simple-tabpanel-${index}`}
+        aria-labelledby={`simple-tab-${index}`}
+      >
+        {value === index && (
+          <Box p={3}>
+            <Typography>{children}</Typography>
+          </Box>
+        )}
+      </div>
+    );
+  }
+
   if (movements) {
     const july = movements.filter(
       (mov) =>
@@ -310,52 +359,196 @@ export default function Prixers(props) {
       )
     );
   }
+
+  const TurnIntoOgz = async (event, user) => {
+    const url = process.env.REACT_APP_BACKEND_URL + "/turn-to-association";
+    const data = { username: user };
+    const call = await axios.post(url, data);
+    if (call.data.success) {
+      setOpen(true);
+      setMessage("Rol modificado a Organización.");
+      let prev = tiles.filter((tile) => tile.username !== user);
+      setTiles(prev);
+    }
+  };
+
+  const TurnIntoPrixer = async (event, user) => {
+    const url = process.env.REACT_APP_BACKEND_URL + "/turn-to-prixer";
+    const data = { username: user };
+    const call = await axios.post(url, data);
+    if (call.data.success) {
+      setOpen(true);
+      setMessage("Rol modificado a Prixer.");
+      let prev = ogz.filter((o) => o.username !== user);
+      if (prev[0] === null) {
+        setOgz([]);
+      } else {
+        setOgz(prev);
+      }
+    }
+  };
+
+  const addrole = async () => {
+    const url = process.env.REACT_APP_BACKEND_URL + "/prixers/addRole";
+
+    await axios.put(url);
+    setOpen(true);
+    setMessage("Rol de Prixer agregado a todos los usuarios.");
+  };
+
+  function handleKeyDown(event) {
+    if (event.key === "*") {
+      addrole();
+    } else return;
+  }
+  document.addEventListener("keydown", handleKeyDown);
+
   return (
     <div>
       <Backdrop className={classes.backdrop} open={loading}>
         <CircularProgress />
       </Backdrop>
       <Paper className={classes.paper}>
-        <AppBar position="static">
-          <Typography
-            style={{
-              display: "flex",
-              alignContent: "center",
-              padding: "10px 40px",
-            }}
-            variant="h6"
-            className={classes.title}
-          >
-            Prixers
-          </Typography>
-        </AppBar>
-        <Grid
-          container
-          spacing={2}
-          style={{
-            padding: isMobile ? "0px" : "18px",
-            display: "flex",
-            textAlign: "start",
-          }}
+        <Tabs
+          value={value}
+          onChange={handleSection}
+          style={{ width: "70%" }}
+          indicatorColor="primary"
+          textColor="primary"
         >
-          {tiles &&
-            tiles
-              // .filter((tile) => tile.avatar)
-              .map((tile, key_id) =>
-                isDesktop ? (
+          <Tab label="Prixers" />
+          <Tab label="Asociaciones" />
+        </Tabs>
+        <TabPanel value={value} index={0}>
+          <Grid
+            container
+            spacing={2}
+            style={{
+              padding: isMobile ? "0px" : "18px",
+              display: "flex",
+              textAlign: "start",
+            }}
+          >
+            {tiles.length > 0 ? (
+              tiles.map((tile) =>
+                tile === selectedPrixer ? (
                   <Grid item xs={6} sm={6} md={3}>
-                    <Card key={tile._id} className={classes.card}>
+                    <Card key={tile?._id} className={classes.card}>
+                      <div
+                        style={{
+                          width: "100%",
+                          display: "flex",
+                          justifyContent: "end",
+                          marginBottom: "-25px",
+                        }}
+                      >
+                        <IconButton
+                          aria-controls="simple-menu"
+                          aria-haspopup="true"
+                          onClick={(e) => {
+                            setSelectedPrixer(undefined);
+                          }}
+                        >
+                          <CloseIcon />
+                        </IconButton>
+                      </div>
+
+                      <CardContent className={classes.cardContent}>
+                        <Typography gutterBottom variant="h5" component="h2">
+                          {tile?.firstName} {tile?.lastName}
+                        </Typography>
+                        {props.permissions?.setPrixerBalance && (
+                          <Box
+                            style={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                            }}
+                            label="Visible"
+                          >
+                            <Typography
+                              color="secondary"
+                              style={{ display: "flex", alignItems: "center" }}
+                            >
+                              Cambiar a Organización
+                            </Typography>
+                            <Switch
+                              color="primary"
+                              onChange={(event) =>
+                                TurnIntoOgz(event, tile?.username)
+                              }
+                              name="checkedA"
+                              inputProps={{
+                                "aria-label": "secondary checkbox",
+                              }}
+                            />
+                          </Box>
+                        )}
+                        {props.permissions?.prixerBan && (
+                          <Box
+                            style={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                            }}
+                            label="Visible"
+                          >
+                            <Typography
+                              color="secondary"
+                              style={{ display: "flex", alignItems: "center" }}
+                            >
+                              Visible
+                            </Typography>
+                            <Switch
+                              checked={tile?.status}
+                              color="primary"
+                              onChange={
+                                // handleChange
+                                (event) =>
+                                  handleChange(event, tile?.state) ||
+                                  ChangeVisibility(event, tile?.prixerId)
+                              }
+                              name="checkedA"
+                              value={tile?.status}
+                              inputProps={{
+                                "aria-label": "secondary checkbox",
+                              }}
+                            />
+                          </Box>
+                        )}
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                ) : (
+                  <Grid item xs={6} sm={6} md={3}>
+                    <Card key={tile?._id} className={classes.card}>
+                      <div
+                        style={{
+                          width: "100%",
+                          display: "flex",
+                          justifyContent: "end",
+                          marginBottom: "-50px",
+                        }}
+                      >
+                        <IconButton
+                          aria-controls="simple-menu"
+                          aria-haspopup="true"
+                          onClick={(e) => {
+                            setSelectedPrixer(tile);
+                          }}
+                        >
+                          <MoreVertIcon />
+                        </IconButton>
+                      </div>
                       <CardMedia
-                        alt={tile.title}
+                        alt={tile?.title}
                         height="100"
                         width="100"
-                        image={tile.avatar || "/PrixLogo.png"}
+                        image={tile?.avatar || "/PrixLogo.png"}
                         className={classes.cardMedia}
-                        title={tile.title}
+                        title={tile?.title}
                       />
                       <CardContent className={classes.cardContent}>
                         <Typography gutterBottom variant="h5" component="h2">
-                          {tile.firstName} {tile.lastName}
+                          {tile?.firstName} {tile?.lastName}
                         </Typography>
                         <Typography
                           gutterBottom
@@ -363,18 +556,18 @@ export default function Prixers(props) {
                           component="h6"
                           style={{ fontSize: 16 }}
                         >
-                          {tile.username} -
-                          {tile.specialty ||
-                            tile.specialtyArt?.map(
+                          {tile?.username} -
+                          {tile?.specialty ||
+                            tile?.specialtyArt?.map(
                               (specialty, index) =>
                                 specialty !== "" &&
-                                (tile.specialtyArt?.length === index + 1
+                                (tile?.specialtyArt?.length === index + 1
                                   ? specialty
                                   : `${specialty}, `)
                             )}
                         </Typography>
                       </CardContent>
-                      {tile.account !== undefined &&
+                      {tile?.account !== undefined &&
                       props.permissions?.setPrixerBalance ? (
                         <div
                           style={{
@@ -390,7 +583,7 @@ export default function Prixers(props) {
                             Balance $
                             {accounts &&
                               accounts
-                                ?.find((acc) => acc._id === tile.account)
+                                ?.find((acc) => acc._id === tile?.account)
                                 ?.balance.toLocaleString("de-DE", {
                                   minimumFractionDigits: 2,
                                   maximumFractionDigits: 2,
@@ -441,7 +634,7 @@ export default function Prixers(props) {
                             <Button
                               onClick={() => {
                                 setSelectedPrixer(tile);
-                                getMovements(tile.account);
+                                getMovements(tile?.account);
                                 setOpenList(true);
                               }}
                             >
@@ -469,52 +662,155 @@ export default function Prixers(props) {
                           </Button>
                         )
                       )}
-                      {props.permissions?.prixerBan && (
-                        <Box
-                          style={{
-                            display: "flex",
-                            justifyContent: "end",
+                    </Card>
+                  </Grid>
+                )
+              )
+            ) : (
+              <Typography
+                variant="h6"
+                color="secondary"
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  marginTop: 20,
+                  marginBottom: 20,
+                }}
+              >
+                No se han cargado los Prixers aún.
+              </Typography>
+            )}
+          </Grid>
+        </TabPanel>
+
+        <TabPanel value={value} index={1}>
+          <Grid
+            container
+            spacing={2}
+            style={{
+              padding: isMobile ? "0px" : "18px",
+              display: "flex",
+              textAlign: "start",
+            }}
+          >
+            {ogz && ogz.length > 0 ? (
+              ogz.map((tile) =>
+                tile === selectedPrixer ? (
+                  <Grid item xs={6} sm={6} md={3}>
+                    <Card key={tile?._id} className={classes.card}>
+                      <div
+                        style={{
+                          width: "100%",
+                          display: "flex",
+                          justifyContent: "end",
+                          marginBottom: "-25px",
+                        }}
+                      >
+                        <IconButton
+                          aria-controls="simple-menu"
+                          aria-haspopup="true"
+                          onClick={(e) => {
+                            setSelectedPrixer(undefined);
                           }}
-                          label="Visible"
                         >
-                          <Typography
-                            color="secondary"
-                            style={{ display: "flex", alignItems: "center" }}
-                          >
-                            Visible
-                          </Typography>
-                          <Switch
-                            checked={tile.status}
-                            color="primary"
-                            onChange={
-                              // handleChange
-                              (event) =>
-                                handleChange(event, tile.state) ||
-                                ChangeVisibility(event, tile.prixerId)
-                            }
-                            name="checkedA"
-                            value={tile.status}
-                            inputProps={{
-                              "aria-label": "secondary checkbox",
+                          <CloseIcon />
+                        </IconButton>
+                      </div>
+
+                      <CardContent className={classes.cardContent}>
+                        <Typography gutterBottom variant="h5" component="h2">
+                          {tile?.firstName} {tile?.lastName}
+                        </Typography>
+                        {props.permissions?.setPrixerBalance && (
+                          <Box
+                            style={{
+                              display: "flex",
+                              justifyContent: "end",
                             }}
-                          />
-                        </Box>
-                      )}
+                            label="Visible"
+                          >
+                            <Typography
+                              color="secondary"
+                              style={{ display: "flex", alignItems: "center" }}
+                            >
+                              Cambiar a Prixer
+                            </Typography>
+                            <Switch
+                              color="primary"
+                              onChange={(event) =>
+                                TurnIntoPrixer(event, tile?.username)
+                              }
+                              name="checkedA"
+                              inputProps={{
+                                "aria-label": "secondary checkbox",
+                              }}
+                            />
+                          </Box>
+                        )}
+                        {props.permissions?.prixerBan && (
+                          <Box
+                            style={{
+                              display: "flex",
+                              justifyContent: "end",
+                            }}
+                            label="Visible"
+                          >
+                            <Typography
+                              color="secondary"
+                              style={{ display: "flex", alignItems: "center" }}
+                            >
+                              Visible
+                            </Typography>
+                            <Switch
+                              checked={tile?.status}
+                              color="primary"
+                              onChange={(event) =>
+                                handleChange(event, tile?.state) ||
+                                ChangeVisibility(event, tile?.prixerId)
+                              }
+                              name="checkedA"
+                              value={tile?.status}
+                              inputProps={{
+                                "aria-label": "secondary checkbox",
+                              }}
+                            />
+                          </Box>
+                        )}
+                      </CardContent>
                     </Card>
                   </Grid>
                 ) : (
-                  <Grid item xs={12} sm={4} md={4}>
-                    <Card key={tile._id} className={classes.card}>
+                  <Grid item xs={6} sm={6} md={3}>
+                    <Card key={tile?._id} className={classes.card}>
+                      <div
+                        style={{
+                          width: "100%",
+                          display: "flex",
+                          justifyContent: "end",
+                          marginBottom: "-50px",
+                        }}
+                      >
+                        <IconButton
+                          aria-controls="simple-menu"
+                          aria-haspopup="true"
+                          onClick={(e) => {
+                            setSelectedPrixer(tile);
+                          }}
+                        >
+                          <MoreVertIcon />
+                        </IconButton>
+                      </div>
                       <CardMedia
-                        alt={tile.title}
+                        alt={tile?.title}
                         height="100"
-                        image={tile.avatar || "/PrixLogo.png"}
+                        width="100"
+                        image={tile?.avatar || "/PrixLogo.png"}
                         className={classes.cardMedia}
-                        title={tile.title}
+                        title={tile?.title}
                       />
                       <CardContent className={classes.cardContent}>
                         <Typography gutterBottom variant="h5" component="h2">
-                          {tile.firstName} {tile.lastName}
+                          {tile?.firstName} {tile?.lastName}
                         </Typography>
                         <Typography
                           gutterBottom
@@ -522,46 +818,135 @@ export default function Prixers(props) {
                           component="h6"
                           style={{ fontSize: 16 }}
                         >
-                          {tile.username} - {tile.specialty}
+                          {tile?.username} -
+                          {tile?.specialty ||
+                            tile?.specialtyArt?.map(
+                              (specialty, index) =>
+                                specialty !== "" &&
+                                (tile?.specialtyArt?.length === index + 1
+                                  ? specialty
+                                  : `${specialty}, `)
+                            )}
                         </Typography>
                       </CardContent>
-                      {props.permissions?.prixerBan && (
-                        <Box
+                      {tile?.account !== undefined &&
+                      props.permissions?.setPrixerBalance ? (
+                        <div
                           style={{
-                            display: "flex",
-                            justifyContent: "end",
+                            borderStyle: "solid",
+                            borderWidth: "thin",
+                            borderRadius: "10px",
+                            borderColor: "#e5e7e9",
+                            margin: "5px",
+                            paddingBottom: "5px",
                           }}
-                          label="Visible"
                         >
-                          <Typography
-                            color="secondary"
-                            style={{ display: "flex", alignItems: "center" }}
-                          >
-                            Visible
+                          <Typography variant="h6" align="center">
+                            Balance $
+                            {accounts &&
+                              accounts
+                                ?.find((acc) => acc._id === tile?.account)
+                                ?.balance.toLocaleString("de-DE", {
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 2,
+                                })}
                           </Typography>
-                          <Switch
-                            checked={tile.status}
-                            color="primary"
-                            onChange={
-                              // handleChange
-                              (event) => ChangeVisibility(event, tile.prixerId)
-                            }
-                            name="checkedA"
-                            // defaultValue={tile.status}
-                            // defaultChecked={tile.status}
-                            value={tile.status}
-                            inputProps={{
-                              "aria-label": "secondary checkbox",
+                          <div
+                            style={{
+                              display: "flex",
+                              justifyContent: "space-evenly",
                             }}
-                          />
-                        </Box>
+                          >
+                            <Button
+                              onClick={(e) => {
+                                setSelectedPrixer(tile);
+                                setType("Depósito");
+                                setOpenNewMovement(true);
+                              }}
+                              style={{
+                                width: "40%",
+                                backgroundColor: "#e5e7e9",
+                              }}
+                            >
+                              Depósito
+                            </Button>
+                            <Button
+                              onClick={(e) => {
+                                setSelectedPrixer(tile);
+                                setType("Retiro");
+                                setOpenNewMovement(true);
+                              }}
+                              style={{
+                                width: "40%",
+                                backgroundColor: "#e5e7e9",
+                              }}
+                            >
+                              Retiro
+                            </Button>
+                          </div>
+                          <div
+                            style={{
+                              width: "100%",
+                              display: "flex",
+                              justifyContent: "center",
+                              textTransform: "lowercase",
+                              marginTop: 5,
+                            }}
+                          >
+                            <Button
+                              onClick={() => {
+                                setSelectedPrixer(tile);
+                                getMovements(tile?.account);
+                                setOpenList(true);
+                              }}
+                            >
+                              <DehazeIcon />
+                              Detalles
+                            </Button>
+                          </div>
+                        </div>
+                      ) : (
+                        props.permissions?.setPrixerBalance && (
+                          <Button
+                            variant="contained"
+                            color="primary"
+                            style={{
+                              width: 160,
+                              alignSelf: "center",
+                              fontWeight: "bold",
+                            }}
+                            onClick={(e) => {
+                              setSelectedPrixer(tile);
+                              setOpenNewBalance(true);
+                            }}
+                          >
+                            Crear Cartera
+                          </Button>
+                        )
                       )}
                     </Card>
                   </Grid>
                 )
-              )}
-        </Grid>
+              )
+            ) : (
+              <Typography
+                variant="h6"
+                color="secondary"
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  marginTop: 20,
+                  marginBottom: 20,
+                  width: "100%",
+                }}
+              >
+                No tenemos asociaciones registradas por ahora.
+              </Typography>
+            )}
+          </Grid>
+        </TabPanel>
       </Paper>
+
       <Modal open={openNewBalance} onClose={handleClose}>
         <Grid container className={classes.paper2}>
           <Grid

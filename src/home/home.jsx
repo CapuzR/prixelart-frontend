@@ -901,7 +901,9 @@ export default function Home(props) {
                               (isDesktop && 220) ||
                               (isMobile && 180) ||
                               (isTab && 220),
-                            width: "100%",
+                            width: "95%",
+                            marginRight: 10,
+
                             backgroundSize: "contain",
                             backgroundRepeat: "no-repeat",
                             backgroundPosition: "center",

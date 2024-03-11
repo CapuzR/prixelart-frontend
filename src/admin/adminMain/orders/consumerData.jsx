@@ -374,10 +374,11 @@ export default function ConsumerData(props) {
     });
 
     const updatedv3 = prixers?.filter((prixer) =>
-      prixer.firstName
+      prixer?.firstName
         ?.toLowerCase()
         .includes(props?.basicData?.name?.toLowerCase())
     );
+
     updatedv3.map((p) => {
       if (updatedv2.includes(p.firstName + ", " + p.lastName)) {
         return;

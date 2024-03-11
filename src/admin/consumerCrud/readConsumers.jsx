@@ -143,7 +143,7 @@ export default function ReadConsumers(props) {
       {props?.permissions?.readConsumers ? (
         <>
           <Title>Clientes frecuentes</Title>
-          <Grid>
+          {/* <Grid>
             <TextField
               variant="outlined"
               value={filter}
@@ -157,7 +157,7 @@ export default function ReadConsumers(props) {
                 ),
               }}
             />
-          </Grid>
+          </Grid> */}
           {rows && (
             <>
               <Table size="small">
@@ -174,8 +174,8 @@ export default function ReadConsumers(props) {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {rv2?.length > 0 ? (
-                    rv2.map((row) => (
+                  {rowsv2?.length > 0 ? (
+                    rowsv2.map((row) => (
                       <TableRow key={row._id}>
                         <TableCell align="center">
                           <Checkbox

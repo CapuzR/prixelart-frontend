@@ -74,7 +74,7 @@ export default function PrixerProfile(props) {
   const theme = useTheme();
   // const { username } = useParams();
   const globalParams = new URLSearchParams(window.location.pathname);
-  const [username, setUsername] = useState(globalParams.get("/prixer"));
+  const username = globalParams.get("/prixer");
 
   const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
   const isDeskTop = useMediaQuery(theme.breakpoints.up("sm"));

@@ -54,8 +54,6 @@ export default function CreateAdmin() {
   const [snackBarError, setSnackBarError] = useState(false);
   const [passwordError, setPasswordError] = useState();
 
-  const rank = ["Administración", "Ventas", "Producción", "Master"];
-
   //Password
   const handlePasswordChange = (e) => {
     if (validations.isAValidPassword(e.target.value)) {

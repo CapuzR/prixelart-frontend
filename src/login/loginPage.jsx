@@ -46,8 +46,6 @@ const useStyles = makeStyles((theme) => ({
   },
   image: {
     backgroundRepeat: "no-repeat",
-    // backgroundColor: '#404e5c',
-    // theme.palette.type === 'light' ? theme.palette.grey[50] : theme.palette.grey[900],
     backgroundSize: "cover",
     backgroundPosition: "center",
   },
@@ -262,11 +260,6 @@ export default function Login() {
                 Inicia sesión
               </Button>
               <Grid container justify={"space-between"}>
-                {/* <Grid item xs>
-                  <Link href="#" variant="body2">
-                    ¿Olvidaste tu contraseña?
-                </Link>
-                </Grid> */}
                 <Grid item>
                   <Link
                     href="#"

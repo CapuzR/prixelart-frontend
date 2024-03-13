@@ -37,15 +37,37 @@ const generateProductMessage = (tile, type) => {
   return productMessage;
 };
 
-const generateServiceMessage = (tile, prixer) => {
+const generateServiceMessage = (tile) => {
   const waNumber = "584126377748";
   const message =
     "Hola, quiero solicitar el servicio de " +
     `*${tile.title}*` +
     " del prixer " +
-    `*${prixer}*`;
+    `*${tile.prixer}*`;
 
   const url = "https://wa.me/" + waNumber + "?text=" + message;
+  return url;
+};
+
+const generateLikeServiceMessage = (tile) => {
+  let lineBreak = "%0D%0A";
+  const waNumber = "584126377748";
+
+  const artMainMessage =
+    "Holaa, este es uno de los servicios que me interesan:";
+  const message =
+    artMainMessage +
+    lineBreak +
+    " *Servicio:* " +
+    tile.title +
+    lineBreak +
+    " *Prixer:* " +
+    tile.prixer +
+    lineBreak +
+    " *Enlace:* prixelart.com/service=" +
+    tile._id;
+
+  const url = "https://wa.me/" + "?text=" + message;
   return url;
 };
 
@@ -139,6 +161,7 @@ const util = {
   generateWaProductMessage,
   generateWaBuyMessage,
   generateServiceMessage,
+  generateLikeServiceMessage,
 };
 
 export default util;

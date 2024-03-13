@@ -26,6 +26,7 @@ import Modal from "@material-ui/core/Modal";
 import Button from "@material-ui/core/Button";
 import MDEditor from "@uiw/react-md-editor";
 import PrixersService from "./prixerServices/prixerService";
+import SoloService from "./prixerProfile/fullscreenPhoto/fullscreenService";
 import TestimonialsGrid from "./testimonials/testimonialsGrid";
 import Map from "./map/index";
 
@@ -479,6 +480,14 @@ function App() {
           />
         </Route>
 
+        <Route path="/service=:serviceId">
+          <SoloService
+            buyState={buyState}
+            setPrixer={setPrixer}
+            prixer={prixer}
+            permissions={permissions}
+          />
+        </Route>
         <Route path="/testimonials">
           <TestimonialsGrid
             buyState={buyState}

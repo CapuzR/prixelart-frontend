@@ -32,7 +32,7 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import utils from "../../utils/utils";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
-import ServiceSearchBar from "../../sharedComponents/searchBar/serviceSearchBar";
+import AppBar from "../../sharedComponents/appBar/appBar";
 
 const IOSSwitch = withStyles((theme) => ({
   root: {
@@ -162,24 +162,18 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function ServiceGrid(props) {
+export default function SoloService(props) {
   const classes = useStyles();
-  const [tiles, setTiles] = useState([]);
-  const [services, setServices] = useState([]);
+  const [tile, setTile] = useState(undefined);
   const history = useHistory();
-  const prixer = window.location.pathname.slice(1);
+  const globalParams = new URLSearchParams(window.location.pathname);
+  const service = globalParams.get("/service");
   const [backdrop, setBackdrop] = useState(true);
   const theme = useTheme();
   const [snackBar, setSnackBar] = useState(false);
   const [loading, setLoading] = useState(false);
   const [snackBarMessage, setSnackBarMessage] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
-  const totalOrders = tiles?.length;
-  const itemsPerPage = 30;
-  const noOfPages = Math.ceil(totalOrders / itemsPerPage);
-  const [pageNumber, setPageNumber] = useState(1);
-  const itemsToSkip = (pageNumber - 1) * itemsPerPage;
-  const tilesv2 = tiles?.slice(itemsToSkip, itemsPerPage + itemsToSkip);
   const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
   const isDeskTop = useMediaQuery(theme.breakpoints.up("sm"));
   const isTab = useMediaQuery(theme.breakpoints.up("xs"));
@@ -188,8 +182,6 @@ export default function ServiceGrid(props) {
   const serviceAreas = ["Diseño", "Fotografía", "Artes Plásticas", "Otro"];
   const [serviceOnEdit, setServiceOnEdit] = useState(); //Data inicial
   const [showFullDescription, setShowFullDescription] = useState([]);
-  const [query, setQuery] = useState();
-  const [categories, setCategories] = useState();
   const [images, setImages] = useState([]); // Imágenes visaulizadas
   const [newImg, setNewImg] = useState([]);
 
@@ -199,41 +191,17 @@ export default function ServiceGrid(props) {
     setShowFullDescription(updatedShowFullDescription);
   };
 
-  const getMyServices = async () => {
+  const getService = async () => {
     setBackdrop(true);
 
     const base_url =
-      process.env.REACT_APP_BACKEND_URL + "/service/readMyServices";
-    await axios
-      .post(base_url, {
-        prixer: JSON.parse(localStorage.getItem("token")).prixerId,
-      })
-      .then((response) => {
-        setTiles(response.data.services);
-        setServices(response.data.services);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-    setBackdrop(false);
-  };
-
-  const getServices = async () => {
-    let base_url;
-
-    if (prixer === "services") {
-      base_url = process.env.REACT_APP_BACKEND_URL + "/service/getAllActive";
-    } else {
-      base_url =
-        process.env.REACT_APP_BACKEND_URL +
-        "/service/getServiceByPrixer/" +
-        prixer;
-    }
+      process.env.REACT_APP_BACKEND_URL + "/service/readService/" + service;
     await axios
       .get(base_url)
       .then((response) => {
-        setTiles(response.data.services);
-        setServices(response.data.services);
+        if (response.data.success === true) {
+          setTile([response.data.service]);
+        }
       })
       .catch((error) => {
         console.log(error);
@@ -242,64 +210,8 @@ export default function ServiceGrid(props) {
   };
 
   useEffect(() => {
-    if (localStorage.getItem("token") && prixer !== "services") {
-      getMyServices();
-    } else {
-      getServices();
-    }
+    getService();
   }, []);
-
-  if (props.createdService) {
-  }
-  useEffect(() => {
-    if (props.createdService) {
-      getMyServices();
-      setSnackBar(true);
-      setSnackBarMessage("¡Servicio creado exitosamente!");
-    } else return;
-  }, [props.createdService]);
-
-  useEffect(() => {
-    if (categories && query?.length > 0) {
-      const result = [];
-      services.map((tile) => {
-        if (
-          tile.serviceArea === categories &&
-          (tile.title.toLowerCase().includes(query.toLowerCase()) ||
-            tile.description
-              .toLowerCase()
-              .includes(
-                query.toLowerCase() ||
-                  tile.serviceArea.toLowerCase().includes(query.toLowerCase())
-              ))
-        ) {
-          result.push(tile);
-        }
-      });
-      setTiles(result);
-    } else if (categories !== undefined) {
-      const result = services.filter((tile) => tile.serviceArea === categories);
-      setTiles(result);
-    } else if (query?.length > 0) {
-      const result = [];
-      services.map((tile) => {
-        if (
-          tile.title.toLowerCase().includes(query.toLowerCase()) ||
-          tile.description
-            .toLowerCase()
-            .includes(
-              query.toLowerCase() ||
-                tile.serviceArea.toLowerCase().includes(query.toLowerCase())
-            )
-        ) {
-          result.push(tile);
-        }
-      });
-      setTiles(result);
-    } else {
-      setTiles(services);
-    }
-  }, [query, categories]);
 
   const updateService = async () => {
     var formData = new FormData();
@@ -373,7 +285,7 @@ export default function ServiceGrid(props) {
 
   const checkImages = async (tile) => {
     const prevImg = [];
-    await tile.sources.images.map((images) => {
+    await tile?.sources.images.map((images) => {
       prevImg.push(images.url);
     });
     setImages(prevImg);
@@ -502,33 +414,22 @@ export default function ServiceGrid(props) {
 
   return (
     <>
+      <AppBar />
+
       <div className={classes.root}>
         <Backdrop className={classes.backdrop} open={backdrop}>
           <CircularProgress color="inherit" />
         </Backdrop>
       </div>
 
-      <div
-        style={{
-          width: "100%",
-          display: "flex",
-          justifyContent: "center",
-          marginBottom: 10,
-        }}
+      <Grid
+        container
+        style={{ justifyContent: "center", marginBottom: 20, marginTop: 80 }}
       >
-        <ServiceSearchBar
-          query={query}
-          setQuery={setQuery}
-          categories={categories}
-          setCategories={setCategories}
-        />
-      </div>
-
-      <Grid container style={{ justifyContent: "center", marginBottom: 20 }}>
-        {tiles?.length > 0 ? (
-          tilesv2.map((tile, i) => (
+        {tile ? (
+          tile?.map((tile, i) => (
             <Grid item xs={12} md={10} lg={8} key={i}>
-              <Paper elevation={3} style={{ padding: 20, marginBottom: 20 }}>
+              <Paper elevation={3} style={{ padding: 20 }}>
                 {props.permissions?.artBan && (
                   <div
                     style={{
@@ -540,7 +441,7 @@ export default function ServiceGrid(props) {
                     <IOSSwitch
                       color="primary"
                       size="normal"
-                      checked={tile.visible}
+                      checked={tile?.visible}
                       onChange={(e) => {
                         setVisibleService(tile, e.target.checked);
                       }}
@@ -554,7 +455,7 @@ export default function ServiceGrid(props) {
                   {isnDesk &&
                   JSON.parse(localStorage.getItem("token")) &&
                   JSON.parse(localStorage.getItem("token")).username ===
-                    prixer &&
+                    tile?.prixer &&
                   openEdit === i ? (
                     <Button
                       style={{
@@ -573,7 +474,7 @@ export default function ServiceGrid(props) {
                   ) : (
                     JSON.parse(localStorage.getItem("token")) &&
                     JSON.parse(localStorage.getItem("token")).username ===
-                      prixer &&
+                      tile?.prixer &&
                     isnDesk && (
                       <div
                         style={{
@@ -601,7 +502,7 @@ export default function ServiceGrid(props) {
                           component="span"
                           color="primary"
                           onClick={() => {
-                            deleteService(tile._id);
+                            deleteService(tile?._id);
                           }}
                           variant="contained"
                         >
@@ -721,7 +622,7 @@ export default function ServiceGrid(props) {
                       </>
                     ) : (
                       <Slider {...settings}>
-                        {tile.sources?.images?.map((img, i2) => (
+                        {tile?.sources?.images?.map((img, i2) => (
                           <div
                             key={img._id}
                             style={{
@@ -782,12 +683,12 @@ export default function ServiceGrid(props) {
                         />
                       ) : (
                         <Typography variant="h5" color="secondary">
-                          {tile.title}
+                          {tile?.title}
                         </Typography>
                       )}
                       {JSON.parse(localStorage.getItem("token")) &&
                       JSON.parse(localStorage.getItem("token")).username ===
-                        tile.prixer &&
+                        tile?.prixer &&
                       !isnDesk &&
                       openEdit === i ? (
                         <Button
@@ -807,7 +708,7 @@ export default function ServiceGrid(props) {
                       ) : (
                         JSON.parse(localStorage.getItem("token")) &&
                         JSON.parse(localStorage.getItem("token")).username ===
-                          tile.prixer &&
+                          tile?.prixer &&
                         !isnDesk && (
                           <div>
                             <IconButton
@@ -827,7 +728,7 @@ export default function ServiceGrid(props) {
                               component="span"
                               color="primary"
                               onClick={() => {
-                                deleteService(tile._id);
+                                deleteService(tile?._id);
                               }}
                               variant="contained"
                             >
@@ -837,22 +738,20 @@ export default function ServiceGrid(props) {
                         )
                       )}
                     </div>
-                    {prixer === "services" && (
-                      <Button
-                        size="small"
-                        style={{
-                          backgroundColor: "gainsboro",
-                          color: "#404e5c",
-                          textTransform: "none",
-                          padding: "1px 5px",
-                        }}
-                        onClick={() => {
-                          history.push({ pathname: "/prixer=" + tile.prixer });
-                        }}
-                      >
-                        de {tile.prixer}
-                      </Button>
-                    )}
+                    <Button
+                      size="small"
+                      style={{
+                        backgroundColor: "gainsboro",
+                        color: "#404e5c",
+                        textTransform: "none",
+                        padding: "1px 5px",
+                      }}
+                      onClick={() => {
+                        history.push({ pathname: "/prixer=" + tile?.prixer });
+                      }}
+                    >
+                      de {tile?.prixer}
+                    </Button>
                     {openEdit === i ? (
                       <div
                         style={{
@@ -913,7 +812,7 @@ export default function ServiceGrid(props) {
                         color="secondary"
                         style={{ paddingBottom: 15 }}
                       >
-                        ({tile.serviceArea})
+                        ({tile?.serviceArea})
                       </Typography>
                     )}
                     {openEdit === i ? (
@@ -935,12 +834,13 @@ export default function ServiceGrid(props) {
                       <>
                         <RenderHTML
                           htmlString={
-                            showFullDescription[i]
-                              ? tile?.description
-                              : `${tile?.description.slice(0, 450)}...`
+                            // showFullDescription[i]
+                            //   ?
+                            tile?.description
+                            //   : `${tile?.description.slice(0, 450)}...`
                           }
                         />
-                        {tile.description.length > 450 && (
+                        {/* {tile?.description.length > 450 && (
                           <Button
                             style={{
                               color: "dimgray",
@@ -949,7 +849,7 @@ export default function ServiceGrid(props) {
                           >
                             {showFullDescription[i] ? "Ver menos" : "Ver más"}
                           </Button>
-                        )}
+                        )} */}
                       </>
                     )}
                     <div
@@ -1004,7 +904,7 @@ export default function ServiceGrid(props) {
                         </>
                       ) : (
                         <>
-                          {tile.isRemote && (
+                          {tile?.isRemote && (
                             <>
                               <DirectionsBikeIcon
                                 color="secondary"
@@ -1016,14 +916,14 @@ export default function ServiceGrid(props) {
                             </>
                           )}
 
-                          {tile.isLocal && tile.location && (
+                          {tile?.isLocal && tile?.location && (
                             <>
                               <BusinessIcon
                                 color="secodary"
                                 style={{ paddingRight: 5 }}
                               />
                               <Typography variant="body2" color="secondary">
-                                {tile.location}
+                                {tile?.location}
                               </Typography>
                             </>
                           )}
@@ -1048,9 +948,9 @@ export default function ServiceGrid(props) {
                       />
                     )}
 
-                    {openEdit !== i && tile.productionTime && (
+                    {openEdit !== i && tile?.productionTime && (
                       <Typography variant="body2" color="secondary">
-                        {tile.productionTime}
+                        {tile?.productionTime}
                       </Typography>
                     )}
                     {openEdit === i ? (
@@ -1102,9 +1002,9 @@ export default function ServiceGrid(props) {
                         color="secondary"
                         style={{ paddingTop: 10 }}
                       >
-                        Valor desde ${tile.publicPrice.from}
-                        {tile.publicPrice.to &&
-                          "  hasta $" + tile.publicPrice.to}
+                        Valor desde ${tile?.publicPrice.from}
+                        {tile?.publicPrice.to &&
+                          "  hasta $" + tile?.publicPrice.to}
                       </Typography>
                     )}
                     <div
@@ -1133,7 +1033,41 @@ export default function ServiceGrid(props) {
                       </Button>
                       {JSON.parse(localStorage.getItem("token")) ? (
                         JSON.parse(localStorage.getItem("token")).username !==
-                          prixer && (
+                          tile?.prixer && (
+                          <div
+                            style={{
+                              display: "flex",
+                              justifyContent: "end",
+                              alignContent: "end",
+                            }}
+                          >
+                            <Button
+                              style={{
+                                backgroundColor: "#d33f49",
+                                color: "white",
+                                padding: 8,
+                                marginLeft: 10,
+                                marginTop: 20,
+                              }}
+                              onClick={(e) => {
+                                window.open(
+                                  utils.generateServiceMessage(tile),
+                                  "_blank"
+                                );
+                              }}
+                            >
+                              Contactar
+                            </Button>
+                          </div>
+                        )
+                      ) : (
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "end",
+                            alignContent: "end",
+                          }}
+                        >
                           <Button
                             style={{
                               backgroundColor: "#d33f49",
@@ -1151,25 +1085,7 @@ export default function ServiceGrid(props) {
                           >
                             Contactar
                           </Button>
-                        )
-                      ) : (
-                        <Button
-                          style={{
-                            backgroundColor: "#d33f49",
-                            color: "white",
-                            padding: 8,
-                            marginLeft: 10,
-                            marginTop: 20,
-                          }}
-                          onClick={(e) => {
-                            window.open(
-                              utils.generateServiceMessage(tile),
-                              "_blank"
-                            );
-                          }}
-                        >
-                          Contactar
-                        </Button>
+                        </div>
                       )}
                     </div>
                   </Grid>
@@ -1177,17 +1093,6 @@ export default function ServiceGrid(props) {
               </Paper>
             </Grid>
           ))
-        ) : JSON.parse(localStorage.getItem("token")) ? (
-          <Typography
-            variant="h4"
-            color="secondary"
-            align="center"
-            style={{
-              paddingTop: 30,
-            }}
-          >
-            No has cargado servicios aún.
-          </Typography>
         ) : (
           <Typography
             variant="h4"
@@ -1197,7 +1102,7 @@ export default function ServiceGrid(props) {
               paddingTop: 30,
             }}
           >
-            Pronto mis servicios estarán disponibles.
+            No ha cargado el servicio aún.
           </Typography>
         )}
       </Grid>

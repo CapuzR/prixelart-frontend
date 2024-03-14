@@ -55,7 +55,6 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "column",
   },
   cardContent: {
-    flexGrow: 1,
     marginTop: -10,
   },
   paper: {
@@ -136,7 +135,7 @@ export default function Prixers(props) {
 
   const [loading, setLoading] = useState(false);
   const [tiles, setTiles] = useState([]);
-  const [ogz, setOgz] = useState([]);
+  const [org, setOrg] = useState([]);
 
   const [backdrop, setBackdrop] = useState(true);
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -176,13 +175,13 @@ export default function Prixers(props) {
     }
   };
 
-  const readOgz = async () => {
+  const readOrg = async () => {
     try {
       const base_url =
         process.env.REACT_APP_BACKEND_URL + "/organization/read-all-full";
 
       const response = await axios.get(base_url);
-      setOgz(response.data.organizations);
+      setOrg(response.data.organizations);
     } catch (error) {
       console.log(error);
     }
@@ -216,7 +215,7 @@ export default function Prixers(props) {
     setLoading(true);
 
     readPrixers();
-    readOgz();
+    readOrg();
     getBalance();
     setBackdrop(false);
     setLoading(false);
@@ -226,21 +225,22 @@ export default function Prixers(props) {
     setState({ ...state, [event.target.name]: event.target.checked });
   }; //Switch
 
-  const ChangeVisibility = async (e, GetId) => {
+  const ChangeVisibility = async (e, prixer) => {
     e.preventDefault();
     setLoading(true);
     setState({ ...state, [e.target.name]: e.target.checked });
 
     const base_url =
-      process.env.REACT_APP_BACKEND_URL + "/prixer/update-home/" + GetId;
+      process.env.REACT_APP_BACKEND_URL +
+      "/prixer/update-home/" +
+      prixer.prixerId;
     const body = {
       status:
         e.target.value === "false" || e.target.value === "" ? true : false,
       adminToken: localStorage.getItem("adminTokenV"),
+      account: prixer?.account,
     };
-    await axios.put(base_url, body, {
-      "Content-Type": "multipart/form-data",
-    });
+    await axios.put(base_url, body);
     await readPrixers();
     setLoading(false);
   };
@@ -360,7 +360,7 @@ export default function Prixers(props) {
     );
   }
 
-  const TurnIntoOgz = async (event, user) => {
+  const TurnIntoOrg = async (event, user) => {
     const url = process.env.REACT_APP_BACKEND_URL + "/turn-to-association";
     const data = { username: user };
     const call = await axios.post(url, data);
@@ -379,11 +379,11 @@ export default function Prixers(props) {
     if (call.data.success) {
       setOpen(true);
       setMessage("Rol modificado a Prixer.");
-      let prev = ogz.filter((o) => o.username !== user);
+      let prev = org.filter((o) => o.username !== user);
       if (prev[0] === null) {
-        setOgz([]);
+        setOrg([]);
       } else {
-        setOgz(prev);
+        setOrg(prev);
       }
     }
   };
@@ -463,7 +463,6 @@ export default function Prixers(props) {
                               display: "flex",
                               justifyContent: "space-between",
                             }}
-                            label="Visible"
                           >
                             <Typography
                               color="secondary"
@@ -474,7 +473,7 @@ export default function Prixers(props) {
                             <Switch
                               color="primary"
                               onChange={(event) =>
-                                TurnIntoOgz(event, tile?.username)
+                                TurnIntoOrg(event, tile?.username)
                               }
                               name="checkedA"
                               inputProps={{
@@ -489,7 +488,6 @@ export default function Prixers(props) {
                               display: "flex",
                               justifyContent: "space-between",
                             }}
-                            label="Visible"
                           >
                             <Typography
                               color="secondary"
@@ -500,11 +498,9 @@ export default function Prixers(props) {
                             <Switch
                               checked={tile?.status}
                               color="primary"
-                              onChange={
-                                // handleChange
-                                (event) =>
-                                  handleChange(event, tile?.state) ||
-                                  ChangeVisibility(event, tile?.prixerId)
+                              onChange={(event) =>
+                                handleChange(event, tile?.state) ||
+                                ChangeVisibility(event, tile)
                               }
                               name="checkedA"
                               value={tile?.status}
@@ -545,6 +541,9 @@ export default function Prixers(props) {
                         image={tile?.avatar || "/PrixLogo.png"}
                         className={classes.cardMedia}
                         title={tile?.title}
+                        style={{
+                          opacity: tile.status === true ? "100%" : "50%",
+                        }}
                       />
                       <CardContent className={classes.cardContent}>
                         <Typography gutterBottom variant="h5" component="h2">
@@ -693,8 +692,8 @@ export default function Prixers(props) {
               textAlign: "start",
             }}
           >
-            {ogz && ogz.length > 0 ? (
-              ogz.map((tile) =>
+            {org && org.length > 0 ? (
+              org.map((tile) =>
                 tile === selectedPrixer ? (
                   <Grid item xs={6} sm={6} md={3}>
                     <Card key={tile?._id} className={classes.card}>
@@ -727,7 +726,6 @@ export default function Prixers(props) {
                               display: "flex",
                               justifyContent: "end",
                             }}
-                            label="Visible"
                           >
                             <Typography
                               color="secondary"
@@ -753,7 +751,6 @@ export default function Prixers(props) {
                               display: "flex",
                               justifyContent: "end",
                             }}
-                            label="Visible"
                           >
                             <Typography
                               color="secondary"
@@ -766,7 +763,7 @@ export default function Prixers(props) {
                               color="primary"
                               onChange={(event) =>
                                 handleChange(event, tile?.state) ||
-                                ChangeVisibility(event, tile?.prixerId)
+                                ChangeVisibility(event, tile)
                               }
                               name="checkedA"
                               value={tile?.status}

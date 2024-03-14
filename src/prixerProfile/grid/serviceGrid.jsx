@@ -167,7 +167,8 @@ export default function ServiceGrid(props) {
   const [tiles, setTiles] = useState([]);
   const [services, setServices] = useState([]);
   const history = useHistory();
-  const prixer = window.location.pathname.slice(1);
+  const globalParams = new URLSearchParams(window.location.pathname);
+  const prixer = globalParams.get("/prixer");
   const [backdrop, setBackdrop] = useState(true);
   const theme = useTheme();
   const [snackBar, setSnackBar] = useState(false);
@@ -221,7 +222,7 @@ export default function ServiceGrid(props) {
   const getServices = async () => {
     let base_url;
 
-    if (prixer === "services") {
+    if (prixer === null) {
       base_url = process.env.REACT_APP_BACKEND_URL + "/service/getAllActive";
     } else {
       base_url =

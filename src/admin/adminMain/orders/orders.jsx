@@ -342,8 +342,8 @@ export default function Orders(props) {
 
   const updateOrders = () => {
     orders.map((order) => {
-      const findMov = movements.find((mov) =>
-        mov.description.includes(order.orderId)
+      const findMov = movements?.find((mov) =>
+        mov?.description?.includes(order.orderId)
       );
       if (findMov) {
         const Datev2 = moment(findMov?.createdOn)
@@ -691,6 +691,17 @@ export default function Orders(props) {
         setSnackBarError(true);
       }
     });
+    const updated = orders.map((x) => {
+      if (x.orderId === order.orderId) {
+        x.status = status;
+        return x;
+      } else return x;
+    });
+    setOrders(updated);
+
+    const updatedv2 = rows.filter((x) => x.orderId !== order.orderId);
+    setRows(updatedv2);
+
     if (
       (order.payStatus === "Pagado" ||
         order.payStatus === "Giftcard" ||
@@ -699,7 +710,6 @@ export default function Orders(props) {
     ) {
       payComission(order);
     }
-    readOrders();
   };
 
   const payComission = async (order) => {
@@ -813,6 +823,17 @@ export default function Orders(props) {
         setSnackBarError(true);
       }
     });
+    const updated = orders.map((x) => {
+      if (x.orderId === order.orderId) {
+        x.payStatus = payStatus;
+        return x;
+      } else return x;
+    });
+    setOrders(updated);
+
+    const updatedv2 = rows.filter((x) => x.orderId !== order.orderId);
+    setRows(updatedv2);
+
     if (
       (payStatus === "Pagado" ||
         payStatus === "Giftcard" ||
@@ -821,7 +842,6 @@ export default function Orders(props) {
     ) {
       payComission(order);
     }
-    readOrders();
   };
 
   const removeFilters = () => {
@@ -859,13 +879,8 @@ export default function Orders(props) {
     readOrders();
     readMovements();
     readConsumers();
+    updateOrders();
   }, []);
-
-  useEffect(() => {
-    if (orders && movements) {
-      updateOrders();
-    }
-  }, [orders, movements]);
 
   const readDollarValue = async () => {
     const base_url = process.env.REACT_APP_BACKEND_URL + "/dollarValue/read";

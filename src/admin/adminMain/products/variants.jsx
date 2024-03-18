@@ -164,7 +164,11 @@ export default function Variants(props) {
         <Grid item xs={12} md={12} lg={12}>
           <Paper className={fixedHeightPaper}>
             {props.activeVCrud === "create" ? (
-              <CreateVariant product={props.product} setVariant={setVariant} />
+              <CreateVariant
+                product={props.product}
+                setVariant={setVariant}
+                setActiveVCrud={props.setActiveVCrud}
+              />
             ) : props.activeVCrud === "read" ? (
               <ReadVariant product={props.product} setVariant={setVariant} />
             ) : props.activeVCrud === "update" ? (

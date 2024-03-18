@@ -102,7 +102,7 @@ export default function ReadVariants(props) {
       );
   };
 
-  const deleteVariant = (i) => {
+  const deleteVariant = (v) => {
     setLoading(true);
     const base_url =
       process.env.REACT_APP_BACKEND_URL + "/product/deleteVariant";
@@ -113,7 +113,7 @@ export default function ReadVariants(props) {
         base_url,
         {
           product: id,
-          variant: i,
+          variant: v,
           adminToken: localStorage.getItem("adminTokenV"),
         },
         { withCredentials: true }
@@ -223,7 +223,7 @@ export default function ReadVariants(props) {
                       aria-label="Delete"
                       onClick={(e) => {
                         e.preventDefault();
-                        deleteVariant(i);
+                        deleteVariant(row._id);
                         readVariants();
                         // rows.splice(1, i);
                       }}

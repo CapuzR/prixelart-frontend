@@ -168,6 +168,7 @@ export default function ServiceGrid(props) {
   const [services, setServices] = useState([]);
   const history = useHistory();
   const globalParams = new URLSearchParams(window.location.pathname);
+  const view = window.location.pathname.slice(1);
   const prixer = globalParams.get("/prixer");
   const [backdrop, setBackdrop] = useState(true);
   const theme = useTheme();
@@ -838,7 +839,7 @@ export default function ServiceGrid(props) {
                         )
                       )}
                     </div>
-                    {prixer === "services" && (
+                    {view === "services" && (
                       <Button
                         size="small"
                         style={{

@@ -166,7 +166,8 @@ export default function MenuAppBar(props) {
   const handleLogout = () => {
     const base_url = process.env.REACT_APP_BACKEND_URL + "/logout";
     axios.post(base_url).then((response) => {
-      localStorage.setItem("token", null);
+      localStorage.removeItem("token");
+      localStorage.removeItem("tokenExpire");
       history.push({ pathname: "/iniciar" });
       setAnchorEl(null);
     });

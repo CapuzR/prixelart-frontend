@@ -56,6 +56,9 @@ const useStyles = makeStyles((theme) => ({
   },
   cardContent: {
     marginTop: -10,
+    display: "flex",
+    justifyContent: "center",
+    flexDirection: "column",
   },
   paper: {
     padding: theme.spacing(2),
@@ -126,6 +129,10 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "row",
   },
+  root: {
+    flexGrow: 1,
+    backgroundColor: theme.palette.background.paper,
+  },
 }));
 
 export default function Prixers(props) {
@@ -157,7 +164,12 @@ export default function Prixers(props) {
   const [message, setMessage] = useState();
   const [open, setOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
-  const openMenu = Boolean(anchorEl);
+  const [openInfo, setOpenInfo] = useState(false);
+  const [value1, setValue1] = useState(0);
+
+  const handleChange1 = (event, newValue) => {
+    setValue1(newValue);
+  };
 
   const handleSection = (event, newValue) => {
     setValue(newValue);
@@ -315,6 +327,7 @@ export default function Prixers(props) {
     setOpenNewMovement(false);
     setOpenList(false);
     setBalance(0);
+    setOpenInfo(false);
     setSelectedPrixer();
     setDate();
     setDescription();
@@ -403,6 +416,28 @@ export default function Prixers(props) {
   }
   document.addEventListener("keydown", handleKeyDown);
 
+  console.log(selectedPrixer);
+
+  function TabPanel(props) {
+    const { children, value, index, ...other } = props;
+
+    return (
+      <div
+        role="tabpanel"
+        hidden={value !== index}
+        id={`simple-tabpanel-${index}`}
+        aria-labelledby={`simple-tab-${index}`}
+        {...other}
+      >
+        {value === index && (
+          <Box p={3}>
+            <Typography>{children}</Typography>
+          </Box>
+        )}
+      </div>
+    );
+  }
+
   return (
     <div>
       <Backdrop className={classes.backdrop} open={loading}>
@@ -457,6 +492,19 @@ export default function Prixers(props) {
                         <Typography gutterBottom variant="h5" component="h2">
                           {tile?.firstName} {tile?.lastName}
                         </Typography>
+                        {props.permissions?.readConsumers && (
+                          <Button
+                            style={{
+                              backgroundColor: "#e5e7e9",
+                              textTransform: "none",
+                            }}
+                            onClick={() => {
+                              setOpenInfo(true);
+                            }}
+                          >
+                            Ver información
+                          </Button>
+                        )}
                         {props.permissions?.setPrixerBalance && (
                           <Box
                             style={{
@@ -603,6 +651,7 @@ export default function Prixers(props) {
                               style={{
                                 width: "40%",
                                 backgroundColor: "#e5e7e9",
+                                textTransform: "none",
                               }}
                             >
                               Depósito
@@ -616,6 +665,7 @@ export default function Prixers(props) {
                               style={{
                                 width: "40%",
                                 backgroundColor: "#e5e7e9",
+                                textTransform: "none",
                               }}
                             >
                               Retiro
@@ -626,11 +676,11 @@ export default function Prixers(props) {
                               width: "100%",
                               display: "flex",
                               justifyContent: "center",
-                              textTransform: "lowercase",
                               marginTop: 5,
                             }}
                           >
                             <Button
+                              style={{ textTransform: "none" }}
                               onClick={() => {
                                 setSelectedPrixer(tile);
                                 getMovements(tile?.account);
@@ -1167,6 +1217,83 @@ export default function Prixers(props) {
               Aún no hay movimientos registrados para este Prixer.
             </Typography>
           )}
+        </Grid>
+      </Modal>
+
+      <Modal open={openInfo} onClose={handleClose}>
+        <Grid container className={classes.paper1}>
+          <div
+            style={{
+              display: "flex",
+              width: "100%",
+
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <Typography variant="h5" color="secondary">
+              {selectedPrixer?.firstName + " " + selectedPrixer?.lastName}
+            </Typography>
+
+            <IconButton onClick={handleClose}>
+              <CloseIcon />
+            </IconButton>
+          </div>
+          <Tabs
+            value={value1}
+            onChange={handleChange1}
+            indicatorColor="primary"
+            textColor="primary"
+          >
+            <Tab
+              style={{ textTransform: "none" }}
+              label="Información de Prixer"
+            />
+            <Tab
+              style={{ textTransform: "none" }}
+              label="Información de Cliente"
+            />
+            <Tab style={{ textTransform: "none" }} label="Historial" />
+          </Tabs>
+          <TabPanel value={value1} index={0}>
+            <Grid
+              container
+              style={{
+                display: "flex",
+                width: "100%",
+                flexDirection: "column",
+              }}
+            >
+              <Typography>
+                {` Fecha de nacimiento: ${new Date(
+                  selectedPrixer?.dateOfBirth
+                )?.toLocaleDateString()}`}
+              </Typography>
+              <Typography>{`Teléfono: ${selectedPrixer?.phone}`}</Typography>
+              <Typography>{`Correo: ${selectedPrixer?.email}`}</Typography>
+              <Typography
+                style={{ marginBottom: 10 }}
+              >{`Ubicación: ${selectedPrixer?.city}, ${selectedPrixer?.country}`}</Typography>
+              <Typography>
+                Redes sociales:
+                {selectedPrixer?.instagram && (
+                  <>
+                    <br></br>Instagram: {selectedPrixer?.instagram}
+                  </>
+                )}
+                {selectedPrixer?.facebook && (
+                  <>
+                    <br></br>Facebook: {selectedPrixer?.facebook}
+                  </>
+                )}
+                {selectedPrixer?.twitter && (
+                  <>
+                    <br></br>Twitter: {selectedPrixer?.twitter}
+                  </>
+                )}
+              </Typography>
+            </Grid>
+          </TabPanel>
         </Grid>
       </Modal>
       <Snackbar

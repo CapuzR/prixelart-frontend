@@ -50,10 +50,10 @@ export default function ReadVariants(props) {
     readVariants();
   }, []);
 
-  const readVariants = () => {
+  const readVariants = async () => {
     const base_url = process.env.REACT_APP_BACKEND_URL + "/product/read";
 
-    axios
+    await axios
       .post(
         base_url,
         props.product,
@@ -102,28 +102,27 @@ export default function ReadVariants(props) {
       );
   };
 
-  const deleteVariant = (v) => {
+  const deleteVariant = async (v) => {
     setLoading(true);
     const base_url =
       process.env.REACT_APP_BACKEND_URL + "/product/deleteVariant";
     const id = props.product._id;
 
-    axios
-      .put(
-        base_url,
-        {
-          product: id,
-          variant: v,
-          adminToken: localStorage.getItem("adminTokenV"),
-        },
-        { withCredentials: true }
-      )
-      .then((response) => {
-        readVariants();
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    const deleteVar = await axios.put(
+      base_url,
+      {
+        product: id,
+        variant: v,
+        adminToken: localStorage.getItem("adminTokenV"),
+      },
+      { withCredentials: true }
+    );
+    if (deleteVar?.data.success === true) {
+      const newVars = rows.filter((variant) => variant._id !== v);
+      setRows(newVars);
+      readVariants();
+    }
+
     setSnackBarError(true);
     setErrorMessage("Variante eliminada exitosamente.");
     setLoading(false);
@@ -224,7 +223,7 @@ export default function ReadVariants(props) {
                       onClick={(e) => {
                         e.preventDefault();
                         deleteVariant(row._id);
-                        readVariants();
+                        // readVariants();
                         // rows.splice(1, i);
                       }}
                     >

@@ -118,8 +118,6 @@ export default function ReadVariants(props) {
       { withCredentials: true }
     );
     if (deleteVar?.data.success === true) {
-      const newVars = rows.filter((variant) => variant._id !== v);
-      setRows(newVars);
       readVariants();
     }
 

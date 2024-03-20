@@ -142,6 +142,7 @@ export default function Prixers(props) {
 
   const [loading, setLoading] = useState(false);
   const [tiles, setTiles] = useState([]);
+  const [consumers, setConsumers] = useState([]);
   const [org, setOrg] = useState([]);
 
   const [backdrop, setBackdrop] = useState(true);
@@ -155,6 +156,7 @@ export default function Prixers(props) {
   const [openNewMovement, setOpenNewMovement] = useState(false);
   const [openList, setOpenList] = useState(false);
   const [selectedPrixer, setSelectedPrixer] = useState(undefined);
+  const [selectedConsumer, setSelectedConsumer] = useState(undefined);
   const [balance, setBalance] = useState(0);
   const [type, setType] = useState();
   const [date, setDate] = useState(new Date());
@@ -187,6 +189,17 @@ export default function Prixers(props) {
     }
   };
 
+  const readConsumers = async () => {
+    try {
+      const base_url =
+        process.env.REACT_APP_BACKEND_URL + "/consumer/read-prixers";
+
+      const response = await axios.post(base_url);
+      setConsumers(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   const readOrg = async () => {
     try {
       const base_url =
@@ -228,6 +241,7 @@ export default function Prixers(props) {
 
     readPrixers();
     readOrg();
+    readConsumers();
     getBalance();
     setBackdrop(false);
     setLoading(false);
@@ -290,6 +304,7 @@ export default function Prixers(props) {
     setMessage("Cartera creada y balance actualizado exitosamente.");
     handleClose();
     setSelectedPrixer();
+    setSelectedConsumer();
     setBalance(0);
     setTimeout(() => {
       readPrixers();
@@ -365,12 +380,6 @@ export default function Prixers(props) {
         mov.description.substring(0, 20) === "Comisión de la orden" &&
         comissions.push(mov.value)
     );
-    console.log(
-      comissions?.reduce(
-        (accumulator, currentValue) => accumulator + currentValue,
-        0
-      )
-    );
   }
 
   const TurnIntoOrg = async (event, user) => {
@@ -409,14 +418,12 @@ export default function Prixers(props) {
     setMessage("Rol de Prixer agregado a todos los usuarios.");
   };
 
-  function handleKeyDown(event) {
-    if (event.key === "*") {
-      addrole();
-    } else return;
-  }
-  document.addEventListener("keydown", handleKeyDown);
-
-  console.log(selectedPrixer);
+  // function handleKeyDown(event) {
+  //   if (event.key === "*") {
+  //     addrole();
+  //   } else return;
+  // }
+  // document.addEventListener("keydown", handleKeyDown);
 
   function TabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -500,6 +507,11 @@ export default function Prixers(props) {
                             }}
                             onClick={() => {
                               setOpenInfo(true);
+                              consumers.map((cons) => {
+                                if (cons.prixerId === tile._id) {
+                                  setSelectedConsumer(cons);
+                                }
+                              });
                             }}
                           >
                             Ver información
@@ -577,6 +589,11 @@ export default function Prixers(props) {
                           aria-haspopup="true"
                           onClick={(e) => {
                             setSelectedPrixer(tile);
+                            consumers.map((cons) => {
+                              if (cons.prixerId === tile.prixerId) {
+                                setSelectedConsumer(cons);
+                              }
+                            });
                           }}
                         >
                           <MoreVertIcon />
@@ -1292,6 +1309,40 @@ export default function Prixers(props) {
                   </>
                 )}
               </Typography>
+            </Grid>
+          </TabPanel>
+
+          <TabPanel value={value1} index={1}>
+            <Grid
+              container
+              style={{
+                display: "flex",
+                width: "100%",
+                flexDirection: "column",
+              }}
+            >
+              {selectedConsumer?.gender && (
+                <Typography>Género: {selectedConsumer?.gender} </Typography>
+              )}
+              {selectedConsumer?.address && (
+                <Typography>Dirección: {selectedConsumer?.address} </Typography>
+              )}
+              {selectedConsumer?.billingAddress && (
+                <Typography>
+                  Dirección de facturación: {selectedConsumer?.billingAddress}{" "}
+                </Typography>
+              )}
+              {selectedConsumer?.shippingAddress && (
+                <Typography>
+                  Dirección de envío: {selectedConsumer?.shippingAddress}{" "}
+                </Typography>
+              )}
+              {selectedConsumer?.nationalId && (
+                <Typography>
+                  Documento de identidad: {selectedConsumer?.nationalIdType}{" "}
+                  {selectedConsumer?.nationalId}{" "}
+                </Typography>
+              )}
             </Grid>
           </TabPanel>
         </Grid>

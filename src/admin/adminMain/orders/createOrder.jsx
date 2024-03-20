@@ -224,7 +224,6 @@ export default function CreateOrder(props) {
 
   // const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
   // const isMobile = useMediaQuery(theme.breakpoints.down("md"));
-
   const [activeStep, setActiveStep] = React.useState(0);
   const [basicData, setBasicData] = useState();
   const [shippingData, setShippingData] = useState();
@@ -472,6 +471,7 @@ export default function CreateOrder(props) {
         )}
         {activeStep === 1 && (
           <ShoppingCart
+            selectedPrixer={selectedPrixer}
             buyState={props.buyState}
             discountList={props.discountList}
             AssociateProduct={props.AssociateProduct}

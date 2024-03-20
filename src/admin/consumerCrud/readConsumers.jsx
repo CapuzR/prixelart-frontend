@@ -59,8 +59,7 @@ export default function ReadConsumers(props) {
   const noOfPages = Math.ceil(totalConsumers / itemsPerPage);
   const [pageNumber, setPageNumber] = useState(1);
   const itemsToSkip = (pageNumber - 1) * itemsPerPage;
-  let rowsLimited = rows?.slice(itemsToSkip, itemsPerPage + itemsToSkip);
-  const [rowsv2, setRowsv2] = useState();
+  const [rowsv2, setRowsv2] = useState([]);
 
   const readConsumers = () => {
     setLoading(true);
@@ -112,7 +111,11 @@ export default function ReadConsumers(props) {
     setSnackbar(false);
   };
 
-  const filterConsumers = (f) => {
+  const changeFilter = (e) => {
+    setLoading(true);
+    let f = e.target.value.toLowerCase();
+
+    setFilter(e.target.value);
     if (typeof f === "string" && f.length > 0) {
       let filtered = rows.filter((row) =>
         row.firstname.toLowerCase().includes(f)
@@ -121,16 +124,18 @@ export default function ReadConsumers(props) {
       setTotalConsumers(filtered.length);
       setItemPerPage(filtered.length);
     } else {
-      setRowsv2(rowsLimited);
+      setRowsv2(rows?.slice(itemsToSkip, itemsPerPage + itemsToSkip)); // setRowsv2(rowsLimited);
       setTotalConsumers(rows?.length);
       setItemPerPage(20);
     }
+    setLoading(false);
   };
+  useEffect(() => {
+    setRowsv2(rows?.slice(itemsToSkip, itemsPerPage + itemsToSkip));
+  }, [pageNumber]);
 
-  const changeFilter = (e) => {
-    let f = e.target.value.toLowerCase();
-    setFilter(e.target.value);
-    filterConsumers(f);
+  const changePage = (i) => {
+    setPageNumber(i);
   };
 
   return (
@@ -150,7 +155,9 @@ export default function ReadConsumers(props) {
             <TextField
               variant="outlined"
               value={filter}
-              onChange={changeFilter}
+              onChange={(e) => {
+                changeFilter(e);
+              }}
               style={{ padding: 0 }}
               InputProps={{
                 startAdornment: (
@@ -315,7 +322,7 @@ export default function ReadConsumers(props) {
                 <Button
                   style={{ minWidth: 30, marginRight: 5 }}
                   onClick={() => {
-                    setPageNumber(pageNumber + 1);
+                    changePage(pageNumber + 1);
                   }}
                 >
                   {pageNumber + 1}

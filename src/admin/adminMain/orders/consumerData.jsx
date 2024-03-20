@@ -16,7 +16,7 @@ import EmailIcon from "@material-ui/icons/Email";
 import HomeIcon from "@material-ui/icons/Home";
 import BusinessIcon from "@material-ui/icons/Business";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-
+import { Typography } from "@material-ui/core";
 const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
@@ -223,6 +223,7 @@ const useStyles = makeStyles((theme) => ({
 export default function ConsumerData(props) {
   const classes = useStyles();
 
+  const [loading, setLoading] = useState(true);
   const [shippingDataCheck, setShippingDataCheck] = useState(true);
   const [shippingList, setShippingList] = useState();
   const [billingDataCheck, setBillingDataCheck] = useState(true);
@@ -290,6 +291,7 @@ export default function ConsumerData(props) {
   let readyDate = new Date(
     today.setDate(today.getDate() + Number(orderedProdT[0]))
   );
+
   const stringReadyDate =
     readyDate.getFullYear() +
     "-" +
@@ -335,9 +337,11 @@ export default function ConsumerData(props) {
       });
   };
   useEffect(() => {
+    setLoading(true);
     getShippingMethods();
     getConsumers();
     getPrixers();
+    setLoading(false);
   }, []);
 
   const handleShippingDataCheck = () => {
@@ -398,29 +402,19 @@ export default function ConsumerData(props) {
       });
     } else if (event?.type === "click") {
       const valuev2 = value.split(",");
-      let selected = consumers.find(
-        (consumer) =>
-          consumer.firstname === valuev2[0] &&
-          consumer.lastname === valuev2[1]?.trim()
-      );
       let prixer = prixers.find(
         (prixer) =>
           prixer.firstName === valuev2[0] &&
           prixer.lastName === valuev2[1]?.trim()
       );
-      if (selected) {
-        props.setSelectedConsumer(selected);
-        props.setBasicData({
-          ...props.basicData,
-          name: valuev2[0],
-          lastname: valuev2[1]?.trim(),
-          phone: selected?.phone,
-          email: selected?.email,
-          address: selected?.address,
-          ci: selected?.ci,
-        });
-      } else if (prixer) {
+      let selected = consumers.find(
+        (consumer) =>
+          consumer.firstname === valuev2[0] &&
+          consumer.lastname === valuev2[1]?.trim()
+      );
+      if (prixer) {
         props.setSelectedPrixer(prixer);
+        props.setSelectedConsumer(undefined);
         props.setBasicData({
           ...props.basicData,
           name: valuev2[0],
@@ -429,6 +423,18 @@ export default function ConsumerData(props) {
           email: prixer?.email,
           address: prixer?.address,
           ci: prixer?.ci,
+        });
+      } else if (selected) {
+        props.setSelectedConsumer(selected);
+        props.setSelectedPrixer(undefined);
+        props.setBasicData({
+          ...props.basicData,
+          name: valuev2[0],
+          lastname: valuev2[1]?.trim(),
+          phone: selected?.phone,
+          email: selected?.email,
+          address: selected?.address,
+          ci: selected?.ci,
         });
       }
     } else return;
@@ -439,11 +445,13 @@ export default function ConsumerData(props) {
       <Grid container spacing={2}>
         <Grid container style={{ marginTop: 20 }}>
           <Title>Información del cliente</Title>
+          {loading && <Typography>Cargando clientes </Typography>}
         </Grid>
         <Grid container>
           <Grid item lg={4} md={4} sm={4} xs={12} className={classes.gridInput}>
             <Autocomplete
               freeSolo
+              loading={loading}
               options={options}
               getOptionLabel={(option) => option}
               onInputChange={handleInputChange}

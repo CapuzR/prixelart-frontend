@@ -249,7 +249,6 @@ export default function OrderDetails(props) {
     await axios.put(url, body).then((res) => {
       if (res.data.auth) {
         props.setModalContent(res.data.order);
-        console.log(res.data.order.requests[0].product?.status);
       }
     });
   };

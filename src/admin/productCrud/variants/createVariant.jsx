@@ -157,17 +157,6 @@ export default function CreateVariant(props) {
     //sti[79]
   };
 
-  const insertVariants = (productData, variants) => {
-    let updatedVariants = productData;
-    updatedVariants.variants = productData.variants.filter((variant) => {
-      if (variant._id !== props.variant._id) return variant;
-    });
-    // variants._id = props.variant._id;
-    updatedVariants.variants.unshift(variants);
-
-    return updatedVariants;
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (image === undefined) {
@@ -177,15 +166,12 @@ export default function CreateVariant(props) {
       }, 3000);
     } else {
       if (
-        // !active &&
         !variantName &&
-        // !description &&
-        // !category &&
-        // !considerations &&
         !cost &&
         !publicPriceEq &&
         !prixerPriceEq &&
-        !image
+        !image &&
+        !attributes
       ) {
         setErrorMessage("Por favor completa todos los campos requeridos.");
         setSnackBarError(true);

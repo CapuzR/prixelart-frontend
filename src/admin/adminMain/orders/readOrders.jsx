@@ -359,9 +359,7 @@ export default function ReadOrders(props) {
                   </TableCell>
                   <TableCell align="center" style={{ padding: 10 }}>
                     {new Date(
-                      row.shippingData?.shippingDate?.split("-")[0],
-                      row.shippingData?.shippingDate?.split("-")[1],
-                      row.shippingData?.shippingDate?.split("-")[2]
+                      row.shippingData?.shippingDate
                     )?.toLocaleDateString()}
                   </TableCell>
                   <TableCell align="center" style={{ padding: 10 }}>

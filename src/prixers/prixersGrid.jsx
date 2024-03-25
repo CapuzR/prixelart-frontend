@@ -18,6 +18,7 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "column",
     alignItems: "left",
     flexGrow: 1,
+    marginTop: 90,
   },
   avatar: {
     margin: theme.spacing(1),
@@ -63,10 +64,7 @@ export default function Prixers(props) {
 
       <Container component="main" maxWidth="s" className={classes.paper}>
         <CssBaseline />
-
-        <Grid
-          style={{ marginTop: 90, justifyContent: "center", display: "flex" }}
-        >
+        <Grid style={{ justifyContent: "center", display: "flex" }}>
           <Typography
             variant="h4"
             style={{ color: "#404e5c" }}

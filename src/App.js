@@ -29,6 +29,7 @@ import PrixersService from "./prixerServices/prixerService";
 import SoloService from "./prixerProfile/fullscreenPhoto/fullscreenService";
 import TestimonialsGrid from "./testimonials/testimonialsGrid";
 import Map from "./map/index";
+import OrgGrid from "./sharedComponents/prixerGrid/orgGrid";
 
 const useStyles = makeStyles((theme) => ({
   paper2: {
@@ -455,6 +456,9 @@ function App() {
         <Route path="/prixers">
           <Prixers buyState={buyState} setPrixer={setPrixer} prixer={prixer} />
         </Route>
+        <Route path="/organizaciones">
+          <OrgGrid buyState={buyState} setPrixer={setPrixer} prixer={prixer} />
+        </Route>
         <Route path="/shopping">
           <ShoppingPage
             buyState={buyState}
@@ -546,6 +550,29 @@ function App() {
         </Route>
 
         <Route path="/prixer=:username">
+          <PrixerProfile
+            buyState={buyState}
+            deleteItemInBuyState={deleteItemInBuyState}
+            addItemToBuyState={addItemToBuyState}
+            isOpenAssociateProduct={isOpenAssociateProduct}
+            setIsOpenAssociateProduct={setIsOpenAssociateProduct}
+            setSelectedProductToAssociate={setSelectedProductToAssociate}
+            selectedProductToAssociate={selectedProductToAssociate}
+            AssociateProduct={AssociateProduct}
+            setBuyState={setBuyState}
+            deleteProductInItem={deleteProductInItem}
+            setSelectedArtToAssociate={setSelectedArtToAssociate}
+            changeQuantity={changeQuantity}
+            setOpen={setOpen}
+            setMessage={setMessage}
+            setPrixer={setPrixer}
+            setFullArt={setFullArt}
+            setSearchResult={setSearchResult}
+            permissions={permissions}
+          />
+        </Route>
+
+        <Route path="/org=:username">
           <PrixerProfile
             buyState={buyState}
             deleteItemInBuyState={deleteItemInBuyState}

@@ -254,7 +254,7 @@ export default function Gallery(props) {
                               }}
                               src={
                                 buy.product
-                                  ? buy.product.sources.images[0].url ||
+                                  ? buy.product.sources.images[0]?.url ||
                                     buy.product.thumbUrl
                                   : ""
                               }

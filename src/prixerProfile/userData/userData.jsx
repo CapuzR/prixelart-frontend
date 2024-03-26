@@ -20,11 +20,14 @@ import Avatar from "@material-ui/core/Avatar";
 import AddIcon from "@material-ui/icons/Add";
 import Backdrop from "@material-ui/core/Backdrop";
 import InstagramIcon from "@material-ui/icons/Instagram";
+import VerifiedUserIcon from "@material-ui/icons/VerifiedUser";
 import FacebookIcon from "@material-ui/icons/Facebook";
 import TwitterIcon from "@material-ui/icons/Twitter";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import Box from "@material-ui/core/Box";
 import Button from "@material-ui/core/Button";
+import Tooltip from "@material-ui/core/Tooltip";
+
 import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
@@ -337,6 +340,14 @@ export default function UserData(props) {
                     <Typography variant="body1" color="textSecondary">
                       {username}
                     </Typography>
+                    {prixer.role === "Organization" && (
+                      <Tooltip
+                        title="Organización verificada"
+                        // style={{ height: 40, width: 40 }}
+                      >
+                        <VerifiedUserIcon color="primary" />
+                      </Tooltip>
+                    )}{" "}
                   </Box>
                   {/* <Box style={{ marginBottom: "4px" }}>
                   <Typography variant="body1">

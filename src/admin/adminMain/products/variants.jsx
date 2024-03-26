@@ -150,6 +150,7 @@ export default function Variants(props) {
         </Fab>
         {!variant && (
           <Fab
+            style={{ marginLeft: 10 }}
             color="primary"
             aria-label="add"
             onClick={() => {

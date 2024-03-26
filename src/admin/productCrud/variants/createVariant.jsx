@@ -183,7 +183,7 @@ export default function CreateVariant(props) {
         // const productData = props.product;
         const formData = new FormData();
         const variants = {
-          _id: (props.variant && props.variant._id) || nanoid(6),
+          _id: props.variant ? props.variant._id : nanoid(6),
           image: image,
           active: active,
           name: variantName,
@@ -468,15 +468,17 @@ export default function CreateVariant(props) {
                   </>
                 )}
               </Grid>
-              <Checkbox
-                checked={active}
-                color="primary"
-                inputProps={{ "aria-label": "secondary checkbox" }}
-                onChange={() => {
-                  setActive(!active);
-                }}
-              />
-              Habilitado / Visible
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <Checkbox
+                  checked={active}
+                  color="primary"
+                  inputProps={{ "aria-label": "secondary checkbox" }}
+                  onChange={() => {
+                    setActive(!active);
+                  }}
+                />
+                Habilitado / Visible{" "}
+              </div>
             </Grid>
             <Grid item xs={12} md={6}>
               <FormControl variant="outlined" xs={12} fullWidth={true}>

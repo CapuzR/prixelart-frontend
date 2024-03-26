@@ -344,6 +344,7 @@ export default function Prixers(props) {
     setBalance(0);
     setOpenInfo(false);
     setSelectedPrixer();
+    setSelectedConsumer();
     setDate();
     setDescription();
     setMovements();
@@ -444,7 +445,6 @@ export default function Prixers(props) {
       </div>
     );
   }
-
   return (
     <div>
       <Backdrop className={classes.backdrop} open={loading}>
@@ -459,7 +459,7 @@ export default function Prixers(props) {
           textColor="primary"
         >
           <Tab label="Prixers" />
-          <Tab label="Asociaciones" />
+          <Tab label="Organizaciones" />
         </Tabs>
         <TabPanel value={value} index={0}>
           <Grid
@@ -471,11 +471,11 @@ export default function Prixers(props) {
               textAlign: "start",
             }}
           >
-            {tiles.length > 0 ? (
+            {tiles?.length > 0 ? (
               tiles.map((tile) =>
                 tile === selectedPrixer ? (
                   <Grid item xs={6} sm={6} md={3}>
-                    <Card key={tile?._id} className={classes.card}>
+                    <Card key={tile?.prixerId} className={classes.card}>
                       <div
                         style={{
                           width: "100%",
@@ -508,7 +508,7 @@ export default function Prixers(props) {
                             onClick={() => {
                               setOpenInfo(true);
                               consumers.map((cons) => {
-                                if (cons.prixerId === tile._id) {
+                                if (cons.prixerId === tile.prixerId) {
                                   setSelectedConsumer(cons);
                                 }
                               });
@@ -589,11 +589,6 @@ export default function Prixers(props) {
                           aria-haspopup="true"
                           onClick={(e) => {
                             setSelectedPrixer(tile);
-                            consumers.map((cons) => {
-                              if (cons.prixerId === tile.prixerId) {
-                                setSelectedConsumer(cons);
-                              }
-                            });
                           }}
                         >
                           <MoreVertIcon />
@@ -607,7 +602,7 @@ export default function Prixers(props) {
                         className={classes.cardMedia}
                         title={tile?.title}
                         style={{
-                          opacity: tile.status === true ? "100%" : "50%",
+                          opacity: tile?.status === true ? "100%" : "50%",
                         }}
                       />
                       <CardContent className={classes.cardContent}>

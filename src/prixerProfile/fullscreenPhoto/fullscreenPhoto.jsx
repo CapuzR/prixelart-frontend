@@ -40,9 +40,9 @@ import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { useTheme } from "@material-ui/core/styles";
 import Box from "@material-ui/core/Box";
 import InputAdornment from "@material-ui/core/InputAdornment";
-import StarsIcon from "@material-ui/icons/Stars";
 import Tooltip from "@material-ui/core/Tooltip";
 import IconButton from "@material-ui/core/IconButton";
+import Star from "@material-ui/icons/StarRate";
 
 const IOSSwitch = withStyles((theme) => ({
   root: {
@@ -641,9 +641,18 @@ export default function FullscreenPhoto(props) {
                                 style={{
                                   position: "absolute",
                                   right: 0,
+                                  display: "flex",
                                 }}
                               >
-                                <StarsIcon color="primary" fontSize="large" />
+                                <Star
+                                  style={{
+                                    color: "white",
+                                    marginRight: "-1.842rem",
+                                    marginTop: "-0.01rem",
+                                  }}
+                                  fontSize="large"
+                                />
+                                <Star color="primary" fontSize="medium" />
                               </IconButton>
                             </Tooltip>
                           )}

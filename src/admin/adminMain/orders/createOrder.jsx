@@ -117,7 +117,7 @@ const useStyles = makeStyles((theme) => ({
   },
   paper2: {
     position: "absolute",
-    width: "80%",
+    width: "85%",
     maxHeight: "90%",
     overflowY: "auto",
     backgroundColor: "white",
@@ -481,6 +481,8 @@ export default function CreateOrder(props) {
             addItemToBuyState={props.addItemToBuyState}
             changeQuantity={props.changeQuantity}
             deleteItemInBuyState={props.deleteItemInBuyState}
+            setErrorMessage={props.setErrorMessage}
+            setSnackBarError={props.setSnackBarError}
           />
         )}
         {activeStep === 2 && (

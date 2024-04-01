@@ -19,6 +19,13 @@ import Divider from "@material-ui/core/Divider";
 import Switch from "@material-ui/core/Switch";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
+import {
+  UnitPrice,
+  getPVP,
+  getPVM,
+  getTotalUnitsPVM,
+  getTotalUnitsPVP,
+} from "../../../shoppingCart/pricesFunctions";
 const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
@@ -234,12 +241,25 @@ export default function Checkout(props) {
   const [paymentMethods, setPaymentMethods] = useState(undefined);
   const [prixers, setPrixers] = useState([]);
   const [content, setContent] = useState("");
+  const [discountList, setDiscountList] = useState([]);
 
   const handleEditorChange = (value) => {
     props.setObservations(value);
   };
 
   let shippingCost = Number(props.shippingData?.shippingMethod?.price);
+
+  const getDiscounts = async () => {
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/discount/read-allv2";
+    await axios
+      .post(base_url)
+      .then((response) => {
+        setDiscountList(response.data.discounts);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
 
   useEffect(() => {
     const base_url =
@@ -248,6 +268,7 @@ export default function Checkout(props) {
     axios.get(base_url).then((response) => {
       setPrixers(response.data.prixers);
     });
+    getDiscounts();
   }, []);
 
   useEffect(() => {
@@ -269,7 +290,11 @@ export default function Checkout(props) {
 
   const getTotal = (x) => {
     let n = [];
-    n.push(getTotalPrice(props.buyState));
+    n.push(
+      Number(
+        getTotalPrice(props.buyState).replace(/[.]/gi, "").replace(/[,]/gi, ".")
+      )
+    );
     n.push(getIvaCost(props.buyState));
     {
       props.shippingData?.shippingMethod && n.push(shippingCost);
@@ -277,240 +302,76 @@ export default function Checkout(props) {
     let total = n.reduce(function (a, b) {
       return a + b;
     });
-    return total;
+    return total.toLocaleString("de-DE", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
   };
 
   const getIvaCost = (state) => {
-    let iva = getTotalPrice(state) * 0.16;
-    if (
-      typeof props.selectedPrixer?.username === "string" &&
-      props.billingData?.orderPaymentMethod === "Balance Prixer"
-    ) {
+    if (typeof props.selectedPrixer?.username === "string") {
       return 0;
     } else {
-      return iva;
+      return (
+        Number(
+          getTotalPrice(state).replace(/[.]/gi, "").replace(/[,]/gi, ".")
+        ) * 0.16
+      );
     }
   };
 
   const getTotalPrice = (state) => {
-    let prices = [0];
-    state.map((item) => {
-      if (item.product.modifyPrice) {
-        prices.push(Number(item.product.publicEquation * (item.quantity || 1)));
-      } else if (
-        item.product &&
-        item.art &&
-        typeof item.product.discount === "string"
-      ) {
-        let dis = props.discountList?.find(
-          ({ _id }) => _id === item.product.discount
-        );
-        if (dis?.type === "Porcentaje") {
-          prices.push(
-            ((item.product?.publicEquation ||
-              item.product?.publicPrice?.from.replace(/[,]/gi, ".")) -
-              ((item.product?.publicEquation ||
-                item.product?.publicPrice?.from.replace(/[,]/gi, ".")) /
-                100) *
-                dis.value) *
-              (item.quantity || 1)
-          );
-        } else if (dis?.type === "Monto") {
-          prices.push(
-            ((item.product?.publicEquation ||
-              item.product?.publicPrice?.from.replace(/[,]/gi, ".")) -
-              dis.value) *
-              (item.quantity || 1)
-          );
-        }
-      } else if (item.product && item.art) {
-        prices.push(
-          (item.product?.publicEquation || item.product?.publicPrice?.from) *
-            (item.quantity || 1)
-        );
-      }
-    });
-    let total = prices?.reduce(function (a, b) {
-      return a + b;
-    });
-    return total;
+    if (props.selectedPrixer) {
+      return getTotalUnitsPVM(
+        state,
+        props.currency,
+        props.dollarValue,
+        discountList,
+        props.selectedPrixer.username
+      ).toLocaleString("de-DE", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
+    } else {
+      return getTotalUnitsPVP(
+        state,
+        props.currency,
+        props.dollarValue,
+        discountList
+      ).toLocaleString("de-DE", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
+    }
   };
 
   const changeCurrency = () => {
     setCurrency(!currency);
   };
 
-  const PriceSelect = (product, quantity) => {
-    let dis = props.discountList?.filter(
-      (dis) => dis._id === product.discount
-    )[0];
-
-    if (product.modifyPrice && currency) {
+  const PriceSelect = (item) => {
+    if (typeof props.selectedPrixer?.username === "string") {
       return (
-        " Bs" +
-        Number(
-          product.publicEquation.replace(/[,]/gi, ".") *
-            (quantity || 1) *
-            props.dollarValue
-        ).toLocaleString("de-DE", {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        })
-      );
-    } else if (product.modifyPrice) {
-      return (
-        " $" +
-        Number(product.publicEquation * (quantity || 1)).toLocaleString(
-          "de-DE",
-          {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          }
-        )
-      );
-    } else if (
-      typeof product.discount === "string" &&
-      product.publicEquation !== "" &&
-      currency
-    ) {
-      if (dis?.type === "Porcentaje") {
-        return (
-          " Bs" +
-          Number(
-            (product.publicEquation -
-              (product.publicEquation / 100) * dis?.value) *
-              props.dollarValue *
-              quantity
-          ).toLocaleString("de-DE", {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          })
-        );
-      }
-      if (dis?.type === "Monto") {
-        return (
-          " Bs" +
-          Number(
-            (product.publicEquation - dis?.value) * props.dollarValue * quantity
-          ).toLocaleString("de-DE", {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          })
-        );
-      }
-    } else if (
-      typeof product.discount === "string" &&
-      product.publicEquation !== ""
-    ) {
-      return (
-        <>
-          {dis?.type === "Porcentaje" &&
-            " $" +
-              Number(
-                (product.publicEquation -
-                  (product.publicEquation / 100) * dis?.value) *
-                  quantity
-              ).toLocaleString("de-DE", {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              })}
-          {dis?.type === "Monto" &&
-            " $" +
-              Number(
-                (product.publicEquation - dis?.value) * quantity
-              ).toLocaleString("de-DE", {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              })}
-        </>
-      );
-    } else if (typeof product.discount === "string" && currency) {
-      return (
-        <>
-          {dis?.type === "Porcentaje" &&
-            " Bs" +
-              Number(
-                (product.publicPrice.from -
-                  (product.publicPrice.from / 100) * dis?.value) *
-                  props.dollarValue *
-                  quantity
-              ).toLocaleString("de-DE", {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              })}
-          {dis?.type === "Monto" &&
-            " Bs" +
-              Number(
-                (product.publicPrice.from - dis?.value) *
-                  props.dollarValue *
-                  quantity
-              ).toLocaleString("de-DE", {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              })}
-        </>
-      );
-    } else if (typeof product.discount === "string") {
-      return (
-        <>
-          {dis?.type === "Porcentaje" &&
-            " $" +
-              Number(
-                (product.publicPrice.from -
-                  (product.publicPrice.from / 100) * dis?.value) *
-                  quantity
-              ).toLocaleString("de-DE", {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              })}
-          {dis?.type === "Monto" &&
-            " $" +
-              Number(
-                (product.publicPrice.from - dis?.value) * quantity
-              ).toLocaleString("de-DE", {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              })}
-        </>
-      );
-    } else if (product.publicEquation !== "" && currency) {
-      return (
-        " Bs" +
-        Number(
-          product.publicPriceEquation * props.dollarValue * quantity
-        ).toLocaleString("de-DE", {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        })
-      );
-    } else if (product.publicEquation !== "") {
-      return (
-        " $" +
-        Number(product.publicEquation * quantity).toLocaleString("de-DE", {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        })
-      );
-    } else if (currency) {
-      return (
-        " Bs" +
-        Number(
-          product.publicPrice.from * props.dollarValue * quantity
-        ).toLocaleString("de-DE", {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        })
-      );
+        getPVM(
+          item,
+          currency,
+          props.dollarValue,
+          discountList,
+          props?.selectedPrixer?.username
+        ) * item.quantity
+      ).toLocaleString("de-DE", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
     } else {
       return (
-        " $" +
-        Number(
-          product.publicPrice.from.replace(/[$]/gi, "") * quantity
-        ).toLocaleString("de-DE", {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        })
-      );
+        getPVP(item, currency, props.dollarValue, discountList) *
+        // .replace(/[,]/gi, ".")
+        item.quantity
+      ).toLocaleString("de-DE", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
     }
   };
 
@@ -527,11 +388,12 @@ export default function Checkout(props) {
     if (props.basicData && props.basicData.name && props.basicData.lastname) {
       prixers.map((prixer) => {
         if (
-          prixer.firstName.toLowerCase() ===
+          prixer?.firstName?.toLowerCase() ===
             props.basicData.name.toLowerCase().trim() &&
-          prixer.lastName.toLowerCase() ===
+          prixer?.lastName?.toLowerCase() ===
             props.basicData.lastname.toLowerCase().trim()
         ) {
+          console.log(prixer);
           props.setSelectedPrixer(prixer);
         } else return;
       });
@@ -670,22 +532,6 @@ export default function Checkout(props) {
           variant="outlined"
           style={{ minWidth: "100%", marginTop: 20 }}
         >
-          {/* <TextField
-              className={classes.textField}
-              variant="outlined"
-              minRows="3"
-              multiline
-              // fullWidth
-              display="inline"
-              id="observations"
-              label="Observaciones"
-              name="observations"
-              autoComplete="observations"
-              value={props.observations}
-              onChange={(e) => {
-                props.setObservations(e.target.value);
-              }}
-            /> */}
           <ReactQuill
             value={props.observations}
             onChange={handleEditorChange}
@@ -748,7 +594,37 @@ export default function Checkout(props) {
                                       }}
                                     >
                                       Precio:
-                                      {PriceSelect(item.product, item.quantity)}
+                                      {/* {(
+                                        Number(
+                                          item.product.finalPrice ||
+                                            item.product.publicEquation.replace(
+                                              /[,]/gi,
+                                              "."
+                                            ) ||
+                                            item.product.publicPrice.from.replace(
+                                              /[,]/gi,
+                                              "."
+                                            )
+                                        ) * item.quantity
+                                      ).toLocaleString("de-DE", {
+                                        minimumFractionDigits: 2,
+                                        maximumFractionDigits: 2,
+                                      })} */}
+                                      {(
+                                        Number(
+                                          UnitPrice(
+                                            item.product,
+                                            item.art.comission,
+                                            currency,
+                                            props.dollarValue,
+                                            discountList,
+                                            props?.selectedPrixer?.username
+                                          ).replace(/[,]/gi, ".")
+                                        ) * item.quantity
+                                      ).toLocaleString("de-DE", {
+                                        minimumFractionDigits: 2,
+                                        maximumFractionDigits: 2,
+                                      })}
                                     </div>
                                   </Grid>
                                 </Grid>
@@ -852,45 +728,17 @@ export default function Checkout(props) {
                   <>
                     <strong>
                       Subtotal:
-                      {currency
-                        ? " Bs" +
-                          Number(
-                            getTotalPrice(props.buyState) * props.dollarValue
-                          ).toLocaleString("de-DE", {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                          })
-                        : " $" +
-                          Number(getTotalPrice(props.buyState)).toLocaleString(
-                            "de-DE",
-                            {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2,
-                            }
-                          )}
+                      {currency ? " Bs" : "$"}
+                      {getTotalPrice(props.buyState)}
                     </strong>
 
                     <strong>
                       IVA:
-                      {/* {typeof props.selectedPrixer?.username === "string" &&
-                      props.billingData.orderPaymentMethod === "Balance Prixer"
-                        ? "$0,00" */}
-                      {currency
-                        ? " Bs" +
-                          Number(
-                            getIvaCost(props.buyState) * props.dollarValue
-                          ).toLocaleString("de-DE", {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                          })
-                        : " $" +
-                          Number(getIvaCost(props.buyState)).toLocaleString(
-                            "de-DE",
-                            {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2,
-                            }
-                          )}
+                      {currency ? " Bs" : "$"}
+                      {getIvaCost(props.buyState).toLocaleString("de-DE", {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}
                     </strong>
 
                     {props?.shippingData?.shippingMethod && (
@@ -913,22 +761,8 @@ export default function Checkout(props) {
                     )}
                     <strong>
                       Total:
-                      {currency
-                        ? " Bs" +
-                          Number(
-                            getTotal(props.buyState) * props.dollarValue
-                          ).toLocaleString("de-DE", {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                          })
-                        : " $" +
-                          Number(getTotal(props.buyState)).toLocaleString(
-                            "de-DE",
-                            {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2,
-                            }
-                          )}
+                      {currency ? " Bs" : "$"}
+                      {getTotal(props.buyState)}
                     </strong>
                     <br />
                   </>

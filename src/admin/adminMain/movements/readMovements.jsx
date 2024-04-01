@@ -258,10 +258,10 @@ export default function ReadMovements(props) {
                           </TableCell>
 
                           <TableCell align="center">
-                            {row.description.includes("#") ? (
+                            {row.description?.includes("#") ? (
                               <div>
                                 <Typography>
-                                  {row.description.split("#")?.[0]}
+                                  {row.description?.split("#")?.[0]}
                                 </Typography>
                                 <Button
                                   onClick={() => {

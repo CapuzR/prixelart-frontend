@@ -13,7 +13,13 @@ import ConsumerData from "./consumerData";
 import ShoppingCart from "./shoppingCart";
 import Checkout from "./checkout";
 import { nanoid } from "nanoid";
-
+import {
+  UnitPrice,
+  getPVP,
+  getPVM,
+  getTotalUnitsPVM,
+  getTotalUnitsPVP,
+} from "../../../shoppingCart/pricesFunctions";
 const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
@@ -266,47 +272,17 @@ export default function CreateOrder(props) {
   };
 
   const getTotalPrice = (state) => {
-    let prices = [0];
-    state.map((item) => {
-      if (item.product.modifyPrice) {
-        prices.push(Number(item.product.publicEquation * (item.quantity || 1)));
-      } else if (
-        item.product &&
-        item.art &&
-        typeof item.product.discount === "string"
-      ) {
-        let dis = props.discountList?.find(
-          ({ _id }) => _id === item.product.discount
-        );
-        if (dis?.type === "Porcentaje") {
-          prices.push(
-            ((item.product?.publicEquation ||
-              item.product?.publicPrice?.from.replace(/[,]/gi, ".")) -
-              ((item.product?.publicEquation ||
-                item.product?.publicPrice?.from.replace(/[,]/gi, ".")) /
-                100) *
-                dis.value) *
-              (item.quantity || 1)
-          );
-        } else if (dis?.type === "Monto") {
-          prices.push(
-            ((item.product?.publicEquation ||
-              item.product?.publicPrice?.from.replace(/[,]/gi, ".")) -
-              dis.value) *
-              (item.quantity || 1)
-          );
-        }
-      } else if (item.product && item.art) {
-        prices.push(
-          (item.product?.publicEquation || item.product?.publicPrice?.from) *
-            (item.quantity || 1)
-        );
-      }
-    });
-    let total = prices?.reduce(function (a, b) {
-      return a + b;
-    });
-    return total;
+    if (selectedPrixer) {
+      return getTotalUnitsPVM(
+        state,
+        false,
+        1,
+        props.discountList,
+        selectedPrixer.username
+      );
+    } else {
+      return getTotalUnitsPVP(state, false, 1, props.discountList);
+    }
   };
 
   const createOrder = async () => {

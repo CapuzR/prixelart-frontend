@@ -10,6 +10,7 @@ import IconButton from "@material-ui/core/IconButton";
 import MenuItem from "@material-ui/core/MenuItem";
 import Select from "@material-ui/core/Select";
 import DeleteIcon from "@material-ui/icons/Delete";
+import FilterNoneIcon from "@material-ui/icons/FilterNone";
 import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
 import TextField from "@material-ui/core/TextField";
@@ -18,7 +19,11 @@ import Img from "react-cool-img";
 import Tooltip from "@material-ui/core/Tooltip";
 import { getAttributes, getEquation } from "../../../products/services";
 import x from "../../../apple-touch-icon-180x180.png";
-
+import {
+  UnitPrice,
+  UnitPriceSug,
+  getComission,
+} from "../../../shoppingCart/pricesFunctions";
 const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
@@ -236,7 +241,7 @@ export default function ShoppingCart(props) {
   const [artList0, setArtList0] = useState([]);
   const [artistFilter, setArtistFilter] = useState();
   const [selectedArtist, setSelectedArtist] = useState([]);
-  const [prices, setPrices] = useState();
+  const [prices, setPrices] = useState([]);
 
   let custom = { name: "Personalizado", attributes: [{ value: "0x0cm" }] };
 
@@ -289,13 +294,24 @@ export default function ShoppingCart(props) {
 
   useEffect(() => {
     let selected = [];
-    let prices = [];
+    let pricesList = [];
 
     props.buyState.map((item) => {
       if (item.art) {
         selected.push(item.art.prixerUsername);
       }
+      pricesList.push(
+        UnitPrice(
+          item.product,
+          item.art.comission,
+          false,
+          1,
+          props.discountList,
+          props?.selectedPrixer?.username
+        )
+      );
     });
+    setPrices(pricesList);
     setSelectedArtist(selected);
   }, []);
 
@@ -306,90 +322,65 @@ export default function ShoppingCart(props) {
     setSelectedArtist(artists);
   };
 
-  const UnitPrice = (product) => {
-    if (product.modifyPrice) {
-      return Number(product.publicEquation).toLocaleString("de-DE", {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      });
-    } else if (
-      typeof product.discount === "string" &&
-      product.publicEquation !== "" &&
-      props.currency
-    ) {
-      let dis = props.discountList?.filter(
-        (dis) => dis._id === product.discount
-      )[0];
-      if (dis?.type === "Porcentaje") {
-        return Number(
-          (product.publicEquation -
-            (product.publicEquation / 100) * dis?.value) *
-            props.dollarValue
-        );
-      } else if (dis?.type === "Monto") {
-        return Number(
-          (product.publicEquation - dis?.value) * props.dollarValue
-        );
-      }
-    } else if (
-      typeof product.discount === "string" &&
-      product.publicEquation !== ""
-    ) {
-      let dis = props.discountList?.filter(
-        (dis) => dis._id === product.discount
-      )[0];
-      if (dis?.type === "Porcentaje") {
-        return Number(
-          product.publicEquation - (product.publicEquation / 100) * dis?.value
-        );
-      } else if (dis?.type === "Monto") {
-        return Number(product.publicEquation - dis?.value);
-      }
-    } else if (typeof product.discount === "string" && props.currency) {
-      let dis = props.discountList?.filter(
-        (dis) => dis._id === product.discount
-      )[0];
-      if (dis?.type === "Porcentaje") {
-        return Number(
-          (product.publicPrice.from -
-            (product.publicPrice.from / 100) * dis?.value) *
-            props.dollarValue
-        );
-      }
-      if (dis?.type === "Monto") {
-        return Number(
-          (product.publicPrice.from - dis?.value) * props.dollarValue
-        );
-      }
-    } else if (typeof product.discount === "string") {
-      let dis = props.discountList?.filter(
-        (dis) => dis._id === product.discount
-      )[0];
-      if (dis?.type === "Porcentaje") {
-        return Number(
-          product.publicPrice.from -
-            (product.publicPrice.from / 100) * dis?.value
-        );
-      }
-      if (dis?.type === "Monto") {
-        return Number(product.publicPrice.from - dis?.value);
-      }
-    } else if (product.publicEquation !== "" && props.currency) {
-      return Number(product.publicPriceEquation * props.dollarValue);
-    } else if (product.publicEquation !== "") {
-      return Number(product.publicEquation);
-    } else if (props.currency) {
-      return Number(product.publicPrice.from * props.dollarValue);
+  const updatePrices = (
+    index,
+    prod,
+    art,
+    currency,
+    dollarValue,
+    discountList,
+    prixer
+  ) => {
+    if (prices.length === 0) {
+      setPrices([
+        UnitPriceSug(prod, art, currency, dollarValue, discountList, prixer),
+      ]);
+    } else if (index <= prices.length) {
+      let prev = prices;
+      prev[index] = UnitPriceSug(
+        prod,
+        art,
+        currency,
+        dollarValue,
+        discountList,
+        prixer
+      );
+      setPrices(prev);
     } else {
-      return Number(product.publicPrice.from);
+      setPrices([
+        ...prices,
+        UnitPriceSug(prod, art, currency, dollarValue, discountList, prixer),
+      ]);
     }
   };
 
-  const changeArt = (art, product, index) => {
+  const changeArt = async (art, product, index) => {
+    let prod = product;
+    let newPrice = await UnitPriceSug(
+      prod,
+      art,
+      false,
+      props.dollarValue,
+      props.discountList,
+      props?.selectedPrixer?.username
+    );
+    prod.finalPrice = Number(newPrice?.replace(/[,]/gi, "."));
+    prod.comission = getComission(
+      prod,
+      art.comission,
+      currency,
+      dollarValue,
+      discountList
+    );
     props.setSelectedProductToAssociate({
       index,
-      item: product,
+      item: prod,
       previous: true,
+    });
+    props.AssociateProduct({
+      index: index,
+      item: prod,
+      type: "product",
     });
     let selectedArt = art;
     let selectedArtFull = artList.find(
@@ -401,6 +392,16 @@ export default function ShoppingCart(props) {
       type: "art",
     });
     setArtistFilter(undefined);
+
+    updatePrices(
+      index,
+      product,
+      art,
+      props.currency,
+      props.dollarValue,
+      props.discountList,
+      props?.selectedPrixer?.username
+    );
   };
 
   const changeProduct = (event, art, index) => {
@@ -413,21 +414,37 @@ export default function ShoppingCart(props) {
     let selectedProductFull = productList.find(
       (result) => result.name === selectedProduct
     );
+    selectedProductFull.comission = getComission(
+      selectedProductFull,
+      art.comission,
+      currency,
+      dollarValue,
+      discountList
+    );
     props.AssociateProduct({
       index: index,
       item: selectedProductFull,
       type: "product",
     });
+    updatePrices(
+      index,
+      selectedProductFull,
+      art,
+      props.currency,
+      props.dollarValue,
+      props.discountList,
+      props?.selectedPrixer?.username
+    );
   };
-  //
-  const handleVariantProduct = (variant, index, product) => {
-    let prod = product;
+
+  const handleVariantProduct = (variant, index, item) => {
+    let prod = item.product;
     prod.selection = variant;
     let selection;
     if (
       variant !== "Personalizado" &&
-      product.attributes.length > 1 &&
-      product.name !== "Qrvo"
+      item.product.attributes.length > 1 &&
+      item.product.name !== "Qrvo"
     ) {
       let name = variant.split(" ");
       let namev2;
@@ -436,31 +453,70 @@ export default function ShoppingCart(props) {
       } else {
         namev2 = name[0];
       }
-      let selectionv2 = product.variants.find(
+      let selectionv2 = item.product.variants.find(
         (v) => v.name === namev2 && v.attributes[1].value === name[3]
       );
       prod.publicEquation = selectionv2?.publicPrice?.equation;
     } else if (variant !== "Personalizado") {
-      selection = product.variants.find((v) => v.name === variant);
+      selection = item.product.variants.find((v) => v.name === variant);
       prod.publicEquation = selection?.publicPrice?.equation;
+
+      prod.comission = getComission(
+        prod,
+        item.art.comission,
+        currency,
+        dollarValue,
+        discountList
+      );
+
+      prod.finalPrice = UnitPriceSug(
+        item.product,
+        item.art,
+        false,
+        1,
+        props.discountList,
+        props?.selectedPrixer?.username
+      );
     } else {
       prod.publicEquation = 0;
     }
+
     props.AssociateProduct({
       index: index,
       item: prod,
       type: "product",
     });
+
+    updatePrices(
+      index,
+      prod,
+      item.art,
+      false,
+      1,
+      props.discountList,
+      props?.selectedPrixer?.username
+    );
   };
 
-  const modifyPrice = (product, index, newPrice) => {
+  const modifyPrice = (index, newPrice) => {
     const purchase = props.buyState;
     let item = purchase[index];
-    item.product.publicEquation = newPrice;
     item.product.modifyPrice = true;
-    item.product.publicEquation = newPrice.replace(/[,]/gi, ".");
+    item.product.finalPrice = Number(newPrice.replace(/[,]/gi, "."));
+
+    const updatedPrices = prices.map((price, i) =>
+      i === index ? Number(newPrice.replace(/[,]/gi, ".")) : price
+    );
+    setPrices(updatedPrices);
+
+    item.product.comission = getComission(
+      item.product,
+      item.art.comission,
+      props.currency,
+      props.dollarValue,
+      props.discountList
+    );
     purchase.splice(index, 1, item);
-    // product.comission = newPrice/10;
     localStorage.setItem("buyState", JSON.stringify(purchase));
     props.setBuyState(purchase);
   };
@@ -509,29 +565,6 @@ export default function ShoppingCart(props) {
     let prev = product.selection?.attributes[0]?.value;
     let v2 = prev.split("x");
 
-    // if (v2[0].length > 0 && v2[1].slice(0, -2).length > 0) {
-    //   let vars = product.variants.filter((v) => v.active === true);
-
-    //   let v3 = vars.sort((a, b) => {
-    //     const A = Number(a.name.split("x")[0]);
-    //     const B = Number(b.name.split("x")[0]);
-    //     return A - B;
-    //   });
-    //   // v3.pop();
-
-    //   for (let i = 0; i < v3.length; i++) {
-    //     const actual = Number(v3[i].name.split("x")[0]);
-    //     if (actual >= Number(v2[0])) {
-    //       product.publicEquation = v3[i].publicPrice.equation;
-    //       return;
-    //     }
-    //   }
-    // }
-    // props.AssociateProduct({
-    //   index: index,
-    //   item: prod,
-    //   type: "product",
-    // });
     item.product = product;
     purchase.splice(index, 1, item);
     localStorage.setItem("buyState", JSON.stringify(purchase));
@@ -546,6 +579,15 @@ export default function ShoppingCart(props) {
     });
   };
 
+  const copyItem = (i) => {
+    let newState = JSON.parse(localStorage.getItem("buyState"));
+    newState.push(newState[i]);
+    props.setBuyState(newState);
+    localStorage.setItem("buyState", JSON.stringify(newState));
+    props.setErrorMessage("Item duplicado correctamente.");
+    props.setSnackBarError(true);
+  };
+
   return (
     <Grid container style={{ display: "flex", justifyContent: "center" }}>
       {props.buyState.length > 0 &&
@@ -554,10 +596,6 @@ export default function ShoppingCart(props) {
             <Grid
               item
               xs={12}
-              sm={12}
-              md={12}
-              lg={12}
-              xl={12}
               key={index}
               style={{
                 height:
@@ -570,7 +608,7 @@ export default function ShoppingCart(props) {
             >
               <Paper
                 style={{
-                  padding: isMobile ? 10 : "10px 10px 0px 10px",
+                  padding: 10,
                   marginTop: "2px",
                   display: "flex",
                   flexDirection: isMobile ? "column" : "row",
@@ -581,356 +619,318 @@ export default function ShoppingCart(props) {
                 }}
                 elevation={3}
               >
-                <Grid
-                  container
-                  style={{
-                    display: "flex",
-                  }}
-                >
-                  <Grid item xs={5}>
-                    <div
-                      style={{
-                        display: "flex",
-                        height: 120,
-                        marginRight: 20,
-                      }}
-                    >
-                      <Img
-                        placeholder="/imgLoading.svg"
-                        style={{
-                          backgroundColor: "#eeeeee",
-                          height: 120,
-                          borderRadius: "10px",
-                          marginRight: "20px",
-                          marginLeft: "20px",
-                        }}
-                        src={
-                          buy.product?.sources?.images[0]?.url ||
-                          buy.product?.thumbUrl ||
-                          ""
-                        }
-                        debounce={1000}
-                        cache
-                        error="/imgError.svg"
-                        alt={buy.product && buy.product.name}
-                        id={index}
-                      />
-                      <div
-                        style={{
-                          display: "flex",
-                          flexDirection: "column",
-                          width: "100%",
-                        }}
-                      >
-                        <FormControl
-                          className={classes.formControl}
-                          style={{
-                            minWidth: 200,
-                            marginBottom: 10,
-                          }}
-                        >
-                          <InputLabel style={{ paddingLeft: 15 }}>
-                            {buy.product ? "Producto" : "Agrega un producto"}
-                          </InputLabel>
-                          <Select
-                            id={"product " + index}
-                            variant="outlined"
-                            value={buy.product.name}
-                            onChange={(e) => {
-                              changeProduct(e, buy.art, index);
-                            }}
-                          >
-                            {productList[0] !== null &&
-                              productList.map((product) => {
-                                return (
-                                  <MenuItem value={product.name}>
-                                    {product.name}
-                                  </MenuItem>
-                                );
-                              })}
-                          </Select>
-                        </FormControl>
-                        {buy.product.variants.length > 0 && (
-                          <FormControl
-                            className={classes.formControl}
-                            style={{ minWidth: 200 }}
-                          >
-                            <InputLabel style={{ paddingLeft: 15 }}>
-                              {buy.product?.attributes[0]?.name}
-                            </InputLabel>
-                            <Select
-                              id={"variant " + index}
-                              variant="outlined"
-                              value={
-                                props.buyState[index].product.selection.name ||
-                                props.buyState[index].product.selection
-                              }
-                              onChange={(e) => {
-                                handleVariantProduct(
-                                  e.target.value,
-                                  index,
-                                  props.buyState[index].product
-                                );
-                              }}
-                            >
-                              {buy.product.hasSpecialVar && (
-                                <MenuItem value={custom.name}>
-                                  {custom.name}
-                                </MenuItem>
-                              )}
-                              {productList
-                                .find(
-                                  (product) => product.name === buy.product.name
-                                )
-                                ?.variants.map((a) => {
-                                  if (a.active === true)
-                                    return (
-                                      <MenuItem
-                                        value={
-                                          a.attributes[1] !== undefined
-                                            ? a.name +
-                                              " " +
-                                              a.attributes[1].value
-                                            : a.name
-                                        }
-                                      >
-                                        {/* {a.name} */}
-                                        {a.attributes[1] !== undefined
-                                          ? a.name + " " + a.attributes[1].value
-                                          : a.name}
-                                      </MenuItem>
-                                    );
-                                })}
-                            </Select>
-                            {(buy.product?.selection?.name ===
-                              "Personalizado" ||
-                              buy.product.selection === "Personalizado") && (
-                              <div
-                                style={{ display: "flex", marginTop: "-5px" }}
-                              >
-                                <TextField
-                                  variant="outlined"
-                                  label="Ancho"
-                                  className={classes.textField}
-                                  style={{ width: 100, marginRight: 10 }}
-                                  defaultValue={
-                                    buy.product.selection.attributes &&
-                                    buy.product?.selection?.attributes[0]?.value
-                                      ? buy.product?.selection?.attributes[0]?.value?.split(
-                                          "x"
-                                        )[0]
-                                      : 0
-                                  }
-                                  onChange={(e) =>
-                                    modifyVariant(
-                                      buy.product,
-                                      index,
-                                      "width",
-                                      e.target.value
-                                    )
-                                  }
-                                  InputProps={{
-                                    endAdornment: (
-                                      <InputAdornment position="end">
-                                        cm
-                                      </InputAdornment>
-                                    ),
-                                  }}
-                                  margin="normal"
-                                />
-                                <TextField
-                                  variant="outlined"
-                                  label="Alto"
-                                  className={classes.textField}
-                                  style={{ width: 100 }}
-                                  onChange={(e) =>
-                                    modifyVariant(
-                                      buy.product,
-                                      index,
-                                      "height",
-                                      e.target.value
-                                    )
-                                  }
-                                  defaultValue={
-                                    buy.product.selection.attributes &&
-                                    buy.product?.selection?.attributes[0]?.value
-                                      ? buy.product?.selection?.attributes[0]?.value
-                                          ?.split("x")[1]
-                                          .slice(0, -2)
-                                      : 0
-                                  }
-                                  InputProps={{
-                                    endAdornment: (
-                                      <InputAdornment position="end">
-                                        cm
-                                      </InputAdornment>
-                                    ),
-                                  }}
-                                  margin="normal"
-                                />
-                              </div>
-                            )}
-                          </FormControl>
-                        )}
-                        {props.discountList !== undefined &&
-                          props.discountList !== null &&
-                          typeof buy.product.discount === "string" && (
-                            <Typography
-                              variant="p"
-                              style={{ paddingTop: 5, color: "grey" }}
-                            >
-                              Este producto tiene aplicado un descuento de
-                              {props.discountList?.find(
-                                ({ _id }) => _id === buy.product.discount
-                              )?.type === "Porcentaje"
-                                ? " %" +
-                                  props.discountList?.find(
-                                    ({ _id }) => _id === buy.product.discount
-                                  ).value
-                                : props.discountList?.find(
-                                    ({ _id }) => _id === buy.product.discount
-                                  )?.type === "Monto" &&
-                                  " $" +
-                                    props.discountList?.find(
-                                      ({ _id }) => _id === buy.product.discount
-                                    ).value}
-                            </Typography>
-                          )}
-                      </div>
-                    </div>
-                  </Grid>
-                  <Grid item xs={7} style={{ display: "flex" }}>
-                    <div
+                <Grid item xs={5}>
+                  <div
+                    style={{
+                      display: "flex",
+                      height: 120,
+                      marginRight: 20,
+                      marginBottom: "-10px",
+                    }}
+                  >
+                    <Img
+                      placeholder="/imgLoading.svg"
                       style={{
                         backgroundColor: "#eeeeee",
-                        width: 120,
                         height: 120,
                         borderRadius: "10px",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        marginRight: 20,
+                        marginRight: "20px",
+                        marginLeft: "20px",
                       }}
-                    >
-                      {buy.art && (
-                        <Img
-                          placeholder="/imgLoading.svg"
-                          style={{
-                            backgroundColor: "#eeeeee",
-                            maxWidth: 120,
-                            maxHeight: 120,
-                            borderRadius: 10,
-                          }}
-                          src={
-                            buy.art
-                              ? buy.art.title === "Personalizado"
-                                ? x
-                                : buy.art?.squareThumbUrl
-                              : ""
-                          }
-                          debounce={1000}
-                          cache
-                          error="/imgError.svg"
-                          alt={buy.art && buy.art.title}
-                          id={buy.art && buy.art?.artId}
-                        />
-                      )}
-                    </div>
+                      src={
+                        buy.product?.sources?.images[0]?.url ||
+                        buy.product?.thumbUrl ||
+                        ""
+                      }
+                      debounce={1000}
+                      cache
+                      error="/imgError.svg"
+                      alt={buy.product && buy.product.name}
+                      id={index}
+                    />
                     <div
                       style={{
                         display: "flex",
                         flexDirection: "column",
-                        alignContent: "space-between",
+                        width: "100%",
                       }}
                     >
-                      <div style={{ display: "flex", flexDirection: "row" }}>
-                        <FormControl
-                          className={classes.formControl}
-                          style={{
-                            marginBottom: 10,
-                            display: "flex",
-                            flexDirection: "row",
-                            justifyContent: "space-between",
+                      <FormControl
+                        className={classes.formControl}
+                        style={{
+                          minWidth: 200,
+                          marginBottom: 10,
+                        }}
+                      >
+                        <InputLabel style={{ paddingLeft: 15 }}>
+                          {buy.product ? "Producto" : "Agrega un producto"}
+                        </InputLabel>
+                        <Select
+                          id={"product " + index}
+                          variant="outlined"
+                          value={buy.product.name}
+                          onChange={(e) => {
+                            changeProduct(e, buy.art, index);
                           }}
                         >
+                          {productList[0] !== null &&
+                            productList.map((product) => {
+                              return (
+                                <MenuItem value={product.name}>
+                                  {product.name}
+                                </MenuItem>
+                              );
+                            })}
+                        </Select>
+                      </FormControl>
+                      {buy.product.variants.length > 0 && (
+                        <FormControl
+                          className={classes.formControl}
+                          style={{ minWidth: 200 }}
+                        >
                           <InputLabel style={{ paddingLeft: 15 }}>
-                            {buy.art ? "Prixer" : "Selecciona un Prixer"}
+                            {buy.product?.attributes[0]?.name}
                           </InputLabel>
                           <Select
-                            value={
-                              buy.art
-                                ? buy.art.prixerUsername?.substring(0, 22)
-                                : selectedArtist[index]
-                            }
+                            id={"variant " + index}
                             variant="outlined"
-                            onChange={(e) =>
-                              changeArtistFilter(e.target.value, index)
+                            value={
+                              props.buyState[index].product.selection.name ||
+                              props.buyState[index].product.selection
                             }
-                            style={{ width: 180, marginRight: 10 }}
+                            onChange={(e) => {
+                              handleVariantProduct(
+                                e.target.value,
+                                index,
+                                props.buyState[index]
+                              );
+                            }}
                           >
-                            <MenuItem value={undefined}>Todos</MenuItem>
-                            {artist !== "" &&
-                              artist.map((art) => {
-                                return <MenuItem value={art}>{art}</MenuItem>;
+                            {buy.product.hasSpecialVar && (
+                              <MenuItem value={custom.name}>
+                                {custom.name}
+                              </MenuItem>
+                            )}
+                            {productList
+                              .find(
+                                (product) => product.name === buy.product.name
+                              )
+                              ?.variants.map((a) => {
+                                if (a.active === true)
+                                  return (
+                                    <MenuItem
+                                      value={
+                                        a.attributes[1] !== undefined
+                                          ? a.name + " " + a.attributes[1].value
+                                          : a.name
+                                      }
+                                    >
+                                      {/* {a.name} */}
+                                      {a.attributes[1] !== undefined
+                                        ? a.name + " " + a.attributes[1].value
+                                        : a.name}
+                                    </MenuItem>
+                                  );
                               })}
                           </Select>
-                        </FormControl>
-                        <FormControl
-                          className={classes.formControl}
-                          style={{
-                            marginBottom: 10,
-                            display: "flex",
-                            flexDirection: "row",
-                            justifyContent: "space-between",
-                          }}
-                        >
-                          <InputLabel style={{ paddingLeft: 15 }}>
-                            {buy.art ? "Arte" : "Agrega un arte"}
-                          </InputLabel>
-                          <Select
-                            value={buy?.art?.title?.substring(0, 22)}
-                            id={"Art " + index}
-                            variant="outlined"
-                            onChange={(e) =>
-                              changeArt(e.target.value, buy.product, index)
-                            }
-                            style={{ width: 210 }}
-                          >
-                            {selectedArtist[index] !== undefined
-                              ? artList0
-                                  .filter(
-                                    (art) =>
-                                      art.prixerUsername ===
-                                      selectedArtist[index]
+                          {(buy.product?.selection?.name === "Personalizado" ||
+                            buy.product.selection === "Personalizado") && (
+                            <div style={{ display: "flex", marginTop: "-5px" }}>
+                              <TextField
+                                variant="outlined"
+                                label="Ancho"
+                                className={classes.textField}
+                                style={{ width: 100, marginRight: 10 }}
+                                defaultValue={
+                                  buy.product.selection.attributes &&
+                                  buy.product?.selection?.attributes[0]?.value
+                                    ? buy.product?.selection?.attributes[0]?.value?.split(
+                                        "x"
+                                      )[0]
+                                    : 0
+                                }
+                                onChange={(e) =>
+                                  modifyVariant(
+                                    buy.product,
+                                    index,
+                                    "width",
+                                    e.target.value
                                   )
-                                  .map((art) => {
-                                    return (
-                                      <MenuItem value={art}>
-                                        <Img
-                                          placeholder="/imgLoading.svg"
-                                          style={{
-                                            backgroundColor: "#eeeeee",
-                                            maxWidth: 40,
-                                            maxHeight: 40,
-                                            borderRadius: 3,
-                                            marginRight: 10,
-                                          }}
-                                          src={
-                                            art.title === "Personalizado"
-                                              ? x
-                                              : art?.squareThumbUrl
-                                          }
-                                          debounce={1000}
-                                          cache
-                                          error="/imgError.svg"
-                                          alt={art.title}
-                                          id={art?.artId}
-                                        />
-                                        {art.title.substring(0, 22)}
-                                      </MenuItem>
-                                    );
-                                  })
-                              : artList0.map((art) => {
+                                }
+                                InputProps={{
+                                  endAdornment: (
+                                    <InputAdornment position="end">
+                                      cm
+                                    </InputAdornment>
+                                  ),
+                                }}
+                                margin="normal"
+                              />
+                              <TextField
+                                variant="outlined"
+                                label="Alto"
+                                className={classes.textField}
+                                style={{ width: 100 }}
+                                onChange={(e) =>
+                                  modifyVariant(
+                                    buy.product,
+                                    index,
+                                    "height",
+                                    e.target.value
+                                  )
+                                }
+                                defaultValue={
+                                  buy.product.selection.attributes &&
+                                  buy.product?.selection?.attributes[0]?.value
+                                    ? buy.product?.selection?.attributes[0]?.value
+                                        ?.split("x")[1]
+                                        .slice(0, -2)
+                                    : 0
+                                }
+                                InputProps={{
+                                  endAdornment: (
+                                    <InputAdornment position="end">
+                                      cm
+                                    </InputAdornment>
+                                  ),
+                                }}
+                                margin="normal"
+                              />
+                            </div>
+                          )}
+                        </FormControl>
+                      )}
+                      {props.discountList !== undefined &&
+                        props.discountList !== null &&
+                        typeof buy.product.discount === "string" && (
+                          <Typography
+                            variant="p"
+                            style={{ paddingTop: 5, color: "grey" }}
+                          >
+                            Este producto tiene aplicado un descuento de
+                            {props.discountList?.find(
+                              ({ _id }) => _id === buy.product.discount
+                            )?.type === "Porcentaje"
+                              ? " %" +
+                                props.discountList?.find(
+                                  ({ _id }) => _id === buy.product.discount
+                                ).value
+                              : props.discountList?.find(
+                                  ({ _id }) => _id === buy.product.discount
+                                )?.type === "Monto" &&
+                                " $" +
+                                  props.discountList?.find(
+                                    ({ _id }) => _id === buy.product.discount
+                                  ).value}
+                          </Typography>
+                        )}
+                    </div>
+                  </div>
+                </Grid>
+                <Grid item xs={6} style={{ display: "flex" }}>
+                  <div
+                    style={{
+                      backgroundColor: "#eeeeee",
+                      width: 120,
+                      height: 120,
+                      borderRadius: "10px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      marginRight: 20,
+                    }}
+                  >
+                    {buy.art && (
+                      <Img
+                        placeholder="/imgLoading.svg"
+                        style={{
+                          backgroundColor: "#eeeeee",
+                          maxWidth: 120,
+                          maxHeight: 120,
+                          borderRadius: 10,
+                        }}
+                        src={
+                          buy.art
+                            ? buy.art.title === "Personalizado"
+                              ? x
+                              : buy.art?.squareThumbUrl
+                            : ""
+                        }
+                        debounce={1000}
+                        cache
+                        error="/imgError.svg"
+                        alt={buy.art && buy.art.title}
+                        id={buy.art && buy.art?.artId}
+                      />
+                    )}
+                  </div>
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignContent: "space-between",
+                    }}
+                  >
+                    <div style={{ display: "flex", flexDirection: "row" }}>
+                      <FormControl
+                        className={classes.formControl}
+                        style={{
+                          marginBottom: 10,
+                          display: "flex",
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                        }}
+                      >
+                        <InputLabel style={{ paddingLeft: 15 }}>
+                          {buy.art ? "Prixer" : "Selecciona un Prixer"}
+                        </InputLabel>
+                        <Select
+                          value={
+                            buy.art
+                              ? buy.art.prixerUsername?.substring(0, 22)
+                              : selectedArtist[index]
+                          }
+                          variant="outlined"
+                          onChange={(e) =>
+                            changeArtistFilter(e.target.value, index)
+                          }
+                          style={{ width: 180, marginRight: 10 }}
+                        >
+                          <MenuItem value={undefined}>Todos</MenuItem>
+                          {artist !== "" &&
+                            artist.map((art) => {
+                              return <MenuItem value={art}>{art}</MenuItem>;
+                            })}
+                        </Select>
+                      </FormControl>
+                      <FormControl
+                        className={classes.formControl}
+                        style={{
+                          marginBottom: 10,
+                          display: "flex",
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                        }}
+                      >
+                        <InputLabel style={{ paddingLeft: 15 }}>
+                          {buy.art ? "Arte" : "Agrega un arte"}
+                        </InputLabel>
+                        <Select
+                          value={buy?.art?.title?.substring(0, 22)}
+                          id={"Art " + index}
+                          variant="outlined"
+                          onChange={(e) =>
+                            changeArt(e.target.value, buy.product, index)
+                          }
+                          style={{ width: 210 }}
+                        >
+                          {selectedArtist[index] !== undefined
+                            ? artList0
+                                .filter(
+                                  (art) =>
+                                    art.prixerUsername === selectedArtist[index]
+                                )
+                                .map((art) => {
                                   return (
                                     <MenuItem value={art}>
                                       <Img
@@ -956,135 +956,194 @@ export default function ShoppingCart(props) {
                                       {art.title.substring(0, 22)}
                                     </MenuItem>
                                   );
-                                })}
-                          </Select>
-                        </FormControl>
-                      </div>
-                      {buy.art && buy.art.title !== "Personalizado" && (
-                        <>
-                          <p
-                            style={{
-                              fontSize: "12px",
-                              // padding: 0,
-                              marginBottom: 10,
-                              marginTop: -2,
-                            }}
-                          >
-                            Arte: {buy.art?.artId}
-                          </p>
-                        </>
-                      )}
-                      {buy.product && (
-                        <Grid
-                          item
-                          xs
+                                })
+                            : artList0.map((art) => {
+                                return (
+                                  <MenuItem value={art}>
+                                    <Img
+                                      placeholder="/imgLoading.svg"
+                                      style={{
+                                        backgroundColor: "#eeeeee",
+                                        maxWidth: 40,
+                                        maxHeight: 40,
+                                        borderRadius: 3,
+                                        marginRight: 10,
+                                      }}
+                                      src={
+                                        art.title === "Personalizado"
+                                          ? x
+                                          : art?.squareThumbUrl
+                                      }
+                                      debounce={1000}
+                                      cache
+                                      error="/imgError.svg"
+                                      alt={art.title}
+                                      id={art?.artId}
+                                    />
+                                    {art.title.substring(0, 22)}
+                                  </MenuItem>
+                                );
+                              })}
+                        </Select>
+                      </FormControl>
+                    </div>
+                    {buy.art && buy.art.title !== "Personalizado" && (
+                      <>
+                        <p
                           style={{
-                            display: "flex",
-                            justifyContent: "space-between",
+                            fontSize: "12px",
+                            marginBottom: 10,
+                            marginTop: -2,
                           }}
                         >
-                          <TextField
-                            variant="outlined"
-                            label={
-                              buy.product.selection
-                                ? // props.buyState[index].product.selection
-                                  "Precio variante: " + UnitPrice(buy.product)
-                                : "Precio base: " + UnitPrice(buy.product)
-                            }
-                            InputProps={{
-                              startAdornment: (
-                                <InputAdornment position="start">
-                                  $
-                                </InputAdornment>
-                              ),
-                            }}
-                            style={{ width: 160, height: 80 }}
-                            defaultValue={UnitPrice(buy.product)}
-                            onChange={(e) => {
-                              modifyPrice(buy.product, index, e.target.value);
-                            }}
-                          />
+                          Arte: {buy.art?.artId}
+                        </p>
+                        <Typography
+                          variant="p"
+                          style={{
+                            fontSize: "12px",
+                            marginBottom: 10,
+                            marginTop: -2,
+                          }}
+                          color="secondary"
+                        >
+                          {`Este arte exclusivo tiene una comisión de 
+                            ${buy.art.comission}%`}
+                          {/* , ganaría $
+                            {
+                              buy.product?.comission 
+                               ? buy.product?.comission
+                               : getComission(
+                                   buy.product,
+                                  buy.art.comission,
+                                   props.currency,
+                                   props.dollarValue,
+                                   props.discountList
+                                 )
+                            }*/}
+                        </Typography>
+                      </>
+                    )}
+                    {buy.product && buy.art && (
+                      <Grid
+                        item
+                        xs
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                        }}
+                      >
+                        <TextField
+                          variant="outlined"
+                          label={
+                            buy.product.selection
+                              ? "Precio variante: " +
+                                UnitPriceSug(
+                                  buy.product,
+                                  buy.art,
+                                  props.currency,
+                                  props.dollarValue,
+                                  props.discountList,
+                                  props?.selectedPrixer?.username
+                                )
+                              : "Precio base: " +
+                                UnitPrice(
+                                  buy.product,
+                                  buy.art.comission,
+
+                                  props.currency,
+                                  props.dollarValue,
+                                  props.discountList
+                                )
+                          }
+                          InputProps={{
+                            startAdornment: (
+                              <InputAdornment position="start">
+                                $
+                              </InputAdornment>
+                            ),
+                          }}
+                          style={{ width: 160, height: 80 }}
+                          value={prices[index]}
+                          onChange={(e) => {
+                            modifyPrice(index, e.target.value);
+                          }}
+                        />
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "end",
+                          }}
+                        >
                           <div
                             style={{
                               display: "flex",
-                              alignItems: "end",
+                              alignItems: "center",
+                              marginBottom: "25px",
                             }}
                           >
-                            <div
+                            Cantidad:
+                            <input
                               style={{
-                                display: "flex",
-                                alignItems: "center",
-                                marginBottom: "10px",
+                                width: 80,
+                                padding: "10px",
+                                borderRadius: 4,
                               }}
-                            >
-                              Cantidad:
-                              <input
-                                style={{
-                                  width: 80,
-                                  padding: "10px",
-                                  borderRadius: 4,
-                                }}
-                                type="number"
-                                defaultValue={1}
-                                value={buy.quantity}
-                                min="1"
-                                InputLabelProps={{
-                                  shrink: true,
-                                }}
-                                onChange={(e) => {
-                                  props.changeQuantity({
-                                    index,
-                                    art: buy.art,
-                                    product: buy.product,
-                                    quantity: e.target.value,
-                                  });
-                                }}
-                              />
-                            </div>
+                              type="number"
+                              defaultValue={1}
+                              value={buy.quantity}
+                              min="1"
+                              InputLabelProps={{
+                                shrink: true,
+                              }}
+                              onChange={(e) => {
+                                props.changeQuantity({
+                                  index,
+                                  art: buy.art,
+                                  product: buy.product,
+                                  quantity: e.target.value,
+                                });
+                              }}
+                            />
                           </div>
-                        </Grid>
-                      )}
-                    </div>
-                    <Tooltip
-                      title="Eliminar item"
-                      style={{ height: 40, width: 40 }}
-                    >
-                      <IconButton
-                        size="small"
-                        onClick={() =>
-                          props.deleteItemInBuyState({ id: index })
-                        }
-                        color="primary"
-                      >
-                        <DeleteIcon />
-                      </IconButton>
-                    </Tooltip>
-                  </Grid>
-
-                  {/* <Grid
-                    item
-                    style={{
-                      display: "flex",
-                      justifyContent: "end",
-                      height: 160,
-                      width: 50,
-                    }}
+                        </div>
+                      </Grid>
+                    )}
+                  </div>
+                </Grid>
+                <Grid
+                  item
+                  xs={1}
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "end",
+                  }}
+                >
+                  <Tooltip
+                    title="Duplicar item"
+                    style={{ height: 40, width: 40 }}
                   >
-                    <Tooltip
-                      title="Eliminar item"
-                      style={{ height: 40, width: 40 }}
+                    <IconButton
+                      size="small"
+                      onClick={() => copyItem(index)}
+                      color="gainsboro"
                     >
-                      <IconButton
-                        size="small"
-                        onClick={() =>
-                          props.deleteItemInBuyState({ id: index })
-                        }
-                        color="primary"
-                      >
-                        <DeleteIcon />
-                      </IconButton>
-                    </Tooltip>
-                  </Grid> */}
+                      <FilterNoneIcon />
+                    </IconButton>
+                  </Tooltip>
+                  <Tooltip
+                    title="Eliminar item"
+                    style={{ height: 40, width: 40 }}
+                  >
+                    <IconButton
+                      size="small"
+                      onClick={() => props.deleteItemInBuyState({ id: index })}
+                      color="gainsboro"
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </Tooltip>
                 </Grid>
               </Paper>
             </Grid>
@@ -1092,8 +1151,6 @@ export default function ShoppingCart(props) {
         })}
       <Grid
         style={{
-          // height: isMobile ? "370px" : "240px",
-          // marginBottom: 20,
           width: "50%",
         }}
       >
@@ -1101,7 +1158,6 @@ export default function ShoppingCart(props) {
           style={{
             padding: 10,
             marginTop: "2px",
-            // height: isMobile ? "400px" : "230px",
             display: "flex",
             justifyContent: "center",
             flexDirection: isMobile ? "column" : "row",

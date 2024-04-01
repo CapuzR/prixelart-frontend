@@ -26,7 +26,7 @@ import CardActionArea from "@material-ui/core/CardActionArea";
 import Box from "@material-ui/core/Box";
 import AddShoppingCartIcon from "@material-ui/icons/AddShoppingCart";
 import FullscreenPhoto from "../fullscreenPhoto/fullscreenPhoto";
-import StarsIcon from "@material-ui/icons/Stars";
+import Star from "@material-ui/icons/StarRate";
 
 const IOSSwitch = withStyles((theme) => ({
   root: {
@@ -492,7 +492,15 @@ export default function Grid(props) {
                           // }}
                           style={{ position: "absolute", right: 0 }}
                         >
-                          <StarsIcon />
+                          <Star
+                            style={{
+                              color: "white",
+                              marginRight: "-1.842rem",
+                              marginTop: "-0.01rem",
+                            }}
+                            fontSize="large"
+                          />
+                          <Star color="primary" fontSize="medium" />
                         </IconButton>
                       </Tooltip>
                     )}

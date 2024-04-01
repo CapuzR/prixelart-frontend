@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 
 import Grid from "@material-ui/core/Grid";
@@ -15,6 +15,13 @@ import Img from "react-cool-img";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 
 import x from "../../../apple-touch-icon-180x180.png";
+import {
+  getPVP,
+  getPVM,
+  getTotalUnitsPVM,
+  getTotalUnitsPVP,
+  getComission,
+} from "../../../shoppingCart/pricesFunctions";
 const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
@@ -223,6 +230,7 @@ const useStyles = makeStyles((theme) => ({
 export default function OrderDetails(props) {
   const classes = useStyles();
   const moment = require("moment-timezone");
+  const [consumer, setConsumer] = useState(undefined);
 
   const checkMov = async (Id) => {
     const url =
@@ -238,6 +246,19 @@ export default function OrderDetails(props) {
     });
   };
 
+  const checkConsumer = async (Id) => {
+    const url = process.env.REACT_APP_BACKEND_URL + "/consumer/read-by-id";
+
+    const body = {
+      adminToken: localStorage.getItem("adminTokenV"),
+      consumer: Id,
+    };
+    await axios.post(url, body).then((res) => {
+      // console.log(res.data);
+      setConsumer(res.data);
+    });
+  };
+
   const updateItemStatus = async (newStatus, index, orderId) => {
     const url = process.env.REACT_APP_BACKEND_URL + "/order/updateItemStatus";
     const body = {
@@ -249,90 +270,33 @@ export default function OrderDetails(props) {
     await axios.put(url, body).then((res) => {
       if (res.data.auth) {
         props.setModalContent(res.data.order);
+        props.updateItemFromOrders(orderId, index, newStatus);
       }
     });
   };
 
-  const PriceSelect = (product) => {
-    let dis = props.discountList?.filter(
-      (dis) => dis._id === product.discount
-    )[0];
-    if (product.modifyPrice) {
-      return (
-        " $" +
-        Number(product.publicEquation).toLocaleString("de-DE", {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        })
-      );
-    } else if (
-      typeof product.discount === "string" &&
-      product.publicEquation !== ""
-    ) {
-      return (
-        <>
-          {dis?.type === "Porcentaje" &&
-            " $" +
-              Number(
-                product.publicEquation -
-                  (product.publicEquation / 100) * dis?.value
-              ).toLocaleString("de-DE", {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              })}
-          {dis?.type === "Monto" &&
-            " $" +
-              Number(product.publicEquation - dis?.value).toLocaleString(
-                "de-DE",
-                {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                }
-              )}
-        </>
-      );
-    } else if (typeof product.discount === "string") {
-      return (
-        <>
-          {dis?.type === "Porcentaje" &&
-            " $" +
-              Number(
-                product.publicPrice.from -
-                  (product.publicPrice.from / 100) * dis?.value
-              ).toLocaleString("de-DE", {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              })}
-          {dis?.type === "Monto" &&
-            " $" +
-              Number(product.publicPrice.from - dis?.value).toLocaleString(
-                "de-DE",
-                {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                }
-              )}
-        </>
-      );
-    } else if (product.publicEquation !== "") {
-      return (
-        " $" +
-        Number(product.publicEquation).toLocaleString("de-DE", {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        })
-      );
+  const PriceSelect = (item) => {
+    if (typeof item.selectedPrixer?.username === "string") {
+      return getPVM(
+        item,
+        false,
+        props?.dollarValue,
+        props.discountList,
+        props?.selectedPrixer?.username
+      ).toLocaleString("de-DE", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
     } else {
-      return (
-        " $" +
-        Number(product.publicPrice.from.replace(/[$]/gi, "")).toLocaleString(
-          "de-DE",
-          {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          }
-        )
-      );
+      return getPVP(
+        item,
+        false,
+        props?.dollarValue,
+        props.discountList
+      ).toLocaleString("de-DE", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
     }
   };
 
@@ -346,6 +310,10 @@ export default function OrderDetails(props) {
     } else return;
   }
   document.addEventListener("keydown", handleKeyDown);
+
+  useEffect(() => {
+    checkConsumer(props.modalContent.consumerId);
+  }, []);
 
   return (
     <Grid container className={classes.paper2}>
@@ -522,34 +490,42 @@ export default function OrderDetails(props) {
                             <div>{item.product.selection}</div>
                           )
                         )}
-                        {"Precio unitario: " + PriceSelect(item.product)}
+                        "Precio unitario: $"
+                        {item.product?.finalPrice
+                          ? item.product?.finalPrice?.toLocaleString("de-DE", {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                            })
+                          : PriceSelect(item.product)}
                         <div>
-                          {typeof item.product?.discount === "string" &&
-                            "Descuento: " +
-                              props.discountList?.find(
-                                ({ _id }) => _id === item.product.discount
-                              )?.name +
-                              " ("}
-                          {typeof item.product?.discount === "string" &&
-                          props.discountList?.find(
-                            ({ _id }) => _id === item.product.discount
-                          )?.type === "Monto"
-                            ? "$" +
-                              props.discountList?.find(
-                                ({ _id }) => _id === item.product.discount
-                              )?.value +
-                              ")"
-                            : typeof item.product?.discount === "string" &&
-                              props.discountList?.find(
-                                ({ _id }) => _id === item.product.discount
-                              )?.type === "Porcentaje" &&
-                              "%" +
-                                props.discountList?.find(
-                                  ({ _id }) => _id === item.product.discount
-                                )?.value +
-                                ")"}
+                          {
+                            typeof item.product?.discount === "string" &&
+                              "Descuento: " + item.product?.discount
+                            //     props.discountList?.find(
+                            //       ({ _id }) => _id === item.product.discount
+                            //     )?.name +
+                            //     " ("}
+                            // {typeof item.product?.discount === "string" &&
+                            // props.discountList?.find(
+                            //   ({ _id }) => _id === item.product.discount
+                            // )?.type === "Monto"
+                            //   ? "$" +
+                            //     props.discountList?.find(
+                            //       ({ _id }) => _id === item.product.discount
+                            //     )?.value +
+                            //     ")"
+                            //   : typeof item.product?.discount === "string" &&
+                            //     props.discountList?.find(
+                            //       ({ _id }) => _id === item.product.discount
+                            //     )?.type === "Porcentaje" &&
+                            //     "%" +
+                            //       props.discountList?.find(
+                            //         ({ _id }) => _id === item.product.discount
+                            //       )?.value +
+                            //       ")"
+                          }
+                          {consumer?.consumerType === "Prixer" && "No aplicado"}
                         </div>
-
                         <div
                           style={{
                             marginTop: 10,

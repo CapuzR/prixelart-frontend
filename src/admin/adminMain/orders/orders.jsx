@@ -22,6 +22,7 @@ import ReadOrders from "./readOrders";
 import OrderDetails from "./orderDetails";
 import CreateOrder from "./createOrder";
 import { nanoid } from "nanoid";
+import { getComission } from "../../../shoppingCart/pricesFunctions";
 const excelJS = require("exceljs");
 
 const drawerWidth = 240;
@@ -265,7 +266,7 @@ export default function Orders(props) {
   const [client, setClients] = useState();
 
   const getDiscounts = async () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + "/discount/read-allv1";
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/discount/read-allv2";
     await axios
       .post(base_url, { adminToken: localStorage.getItem("adminTokenV") })
       .then((response) => {
@@ -698,9 +699,10 @@ export default function Orders(props) {
       } else return x;
     });
     setOrders(updated);
-
-    const updatedv2 = rows.filter((x) => x.orderId !== order.orderId);
-    setRows(updatedv2);
+    if (filters.status !== undefined) {
+      const updatedv2 = rows.filter((x) => x.orderId !== order.orderId);
+      setRows(updatedv2);
+    }
 
     if (
       (order.payStatus === "Pagado" ||
@@ -714,71 +716,21 @@ export default function Orders(props) {
 
   const payComission = async (order) => {
     for (let item of order.requests) {
-      let unitPrice;
-      let discount = discountList.find(
-        (dis) => dis._id === item.product.discount
+      let unitPrice = getComission(
+        item.product,
+        item.art.comission,
+        false,
+        order.dollarValue,
+        discountList,
+        item.quantity
       );
-      if (item.product.modifyPrice) {
-        let alfa = Number(item.product.publicEquation?.replace(/[,]/gi, "."));
-        unitPrice = (alfa / 10) * (item.quantity || 1);
-      } else if (typeof item.product.discount === "string") {
-        if (item.product.publicEquation) {
-          unitPrice = Number(
-            item.product?.publicEquation?.replace(/[,]/gi, ".")
-          );
-        } else if (item.product.publicPrice) {
-          unitPrice = Number(
-            item.product.publicPrice.from?.replace(/[,]/gi, ".")
-          );
-        } else if (item.product.prixerEquation) {
-          unitPrice = Number(
-            item.product?.prixerEquation?.replace(/[,]/gi, ".")
-          );
-        } else if (item.product.prixerPrice) {
-          unitPrice = Number(
-            item.product.prixerPrice.from?.replace(/[,]/gi, ".")
-          );
-        }
-
-        if (discount?.type === "Porcentaje") {
-          let op = Number(
-            ((unitPrice - (unitPrice / 100) * discount.value) / 10) *
-              item.quantity
-          );
-          unitPrice = op;
-        } else if (discount?.type === "Monto") {
-          let op = Number(((unitPrice - discount.value) / 10) * item.quantity);
-          unitPrice = op;
-        }
-      } else {
-        if (item.product.publicEquation) {
-          unitPrice = Number(
-            item.product?.publicEquation.replace(/[,]/gi, ".")
-          );
-        } else if (item.product.publicPrice) {
-          unitPrice = Number(
-            item.product.publicPrice.from?.replace(/[,]/gi, ".")
-          );
-        } else if (item.product.prixerEquation) {
-          unitPrice = Number(
-            item.product?.prixerEquation?.replace(/[,]/gi, ".")
-          );
-        } else if (item.product.prixerPrice) {
-          unitPrice = Number(
-            item.product.prixerPrice.from?.replace(/[,]/gi, ".")
-          );
-        }
-        let op = Number((unitPrice / 10) * item.quantity);
-        unitPrice = op;
-      }
-
       if (
         item.art?.prixerUsername &&
         item.art?.prixerUsername !== "Personalizado" &&
         item.art?.prixerUsername !== undefined
       ) {
         const url1 = process.env.REACT_APP_BACKEND_URL + "/prixer/read";
-
+        console.log(unitPrice);
         await axios
           .post(url1, { username: item.art?.prixerUsername })
           .then(async (res) => {
@@ -895,6 +847,26 @@ export default function Orders(props) {
 
   const closeAd = () => {
     setSnackBarError(false);
+  };
+
+  const updateItemFromOrders = (order, index, status) => {
+    let orderv2 = orders;
+    let rowsv2 = rows;
+
+    orderv2.map((o) => {
+      if (o.orderId === order) {
+        o.requests[index].product.status = status;
+      }
+    });
+
+    rowsv2.map((o) => {
+      if (o.orderId === order) {
+        o.requests[index].product.status = status;
+      }
+    });
+
+    setRows(rowsv2);
+    setOrders(orderv2);
   };
 
   return (
@@ -1020,6 +992,7 @@ export default function Orders(props) {
           setShowVoucher={setShowVoucher}
           handleClose={handleClose}
           handleCloseVoucher={handleCloseVoucher}
+          updateItemFromOrders={updateItemFromOrders}
         ></OrderDetails>
       </Modal>
 

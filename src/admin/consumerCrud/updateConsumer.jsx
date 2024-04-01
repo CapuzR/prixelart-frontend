@@ -34,7 +34,7 @@ const useStyles = makeStyles((theme) => ({
 export default function UpdateConsumer(props) {
   const classes = useStyles();
   const history = useHistory();
-  const [active, setActive] = useState(props.consumer.active);
+  const [active, setActive] = useState(Boolean(props.consumer?.active));
   const [consumerType, setConsumerType] = useState(props.consumer.consumerType);
   const [consumerFirstname, setConsumerFirstname] = useState(
     props.consumer.firstname
@@ -42,7 +42,7 @@ export default function UpdateConsumer(props) {
   const [consumerLastname, setConsumerLastname] = useState(
     props.consumer.lastname
   );
-  const [username, setUsername] = useState(props.consumer.username);
+  const [username, setUsername] = useState(props.consumer?.username);
   const [phone, setPhone] = useState(props.consumer.phone);
   const [email, setEmail] = useState(props.consumer.email);
   const [billingAddress, setBillingAddress] = useState(
@@ -262,11 +262,14 @@ export default function UpdateConsumer(props) {
                     <MenuItem value="">
                       <em></em>
                     </MenuItem>
-                    {prixers?.map((n) => (
-                      <MenuItem key={n.username} value={n.username}>
-                        {n.username}
-                      </MenuItem>
-                    ))}
+                    {prixers?.map(
+                      (n) =>
+                        n !== null && (
+                          <MenuItem key={n?.username} value={n?.username}>
+                            {n.username}
+                          </MenuItem>
+                        )
+                    )}
                   </Select>
                 </FormControl>
               </Grid>

@@ -394,8 +394,12 @@ export default function ConsumerData(props) {
     setOptions(updatedv2);
   }, [props?.basicData?.name]);
 
-  const handleInputChange = (event, value) => {
-    if (event?.type === "change") {
+  const handleInputChange = (event, value, reason) => {
+    if (reason === "clear") {
+      props.setSelectedPrixer(undefined);
+      props.setSelectedConsumer(undefined);
+      props.setBasicData(undefined);
+    } else if (event?.type === "change") {
       props.setBasicData({
         ...props.basicData,
         name: value,
@@ -404,8 +408,8 @@ export default function ConsumerData(props) {
       const valuev2 = value.split(",");
       let prixer = prixers.find(
         (prixer) =>
-          prixer.firstName === valuev2[0] &&
-          prixer.lastName === valuev2[1]?.trim()
+          prixer?.firstName === valuev2[0] &&
+          prixer?.lastName === valuev2[1]?.trim()
       );
       let selected = consumers.find(
         (consumer) =>
@@ -437,7 +441,7 @@ export default function ConsumerData(props) {
           ci: selected?.ci,
         });
       }
-    } else return;
+    }
   };
 
   return (

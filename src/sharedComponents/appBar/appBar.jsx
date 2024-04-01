@@ -146,6 +146,11 @@ export default function MenuAppBar(props) {
     setAnchorEl(null);
   };
 
+  const handleOrg = () => {
+    // e.preventDefault();
+    history.push({ pathname: "/organizaciones" });
+  };
+
   const handleMyAccount = () => {
     history.push({
       pathname: "/prixer=" + JSON.parse(localStorage.getItem("token")).username,
@@ -321,6 +326,11 @@ export default function MenuAppBar(props) {
               />
               <Tab
                 className={classes.button}
+                onClick={handleOrg}
+                label="Organizaciones"
+              />
+              <Tab
+                className={classes.button}
                 label="Servicios"
                 onClick={handleServices}
               />
@@ -474,7 +484,7 @@ export default function MenuAppBar(props) {
                   </MenuItem>
                   <MenuItem onClick={handleLogout}>Cerrar Sesión</MenuItem>
                   <Divider />
-
+                  <MenuItem onClick={handleOrg}>Organizaciones</MenuItem>
                   <MenuItem
                     onClick={(e) => {
                       window.open("https://linktr.ee/prixelart", "_blank");
@@ -507,6 +517,8 @@ export default function MenuAppBar(props) {
                   open={open}
                   onClose={handleClose}
                 >
+                  <MenuItem onClick={handleOrg}>Organizaciones</MenuItem>
+
                   <MenuItem
                     onClick={(e) => {
                       window.open("https://linktr.ee/prixelart", "_blank");

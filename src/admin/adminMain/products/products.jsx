@@ -24,6 +24,8 @@ import UpdateDiscount from "./updateDiscount";
 import ListAltIcon from "@material-ui/icons/ListAlt";
 import PublishIcon from "@material-ui/icons/Publish";
 import Tooltip from "@material-ui/core/Tooltip";
+import CreateSurcharge from "./createSurcharge";
+import UpdateSurcharge from "./updateSurcharge";
 const excelJS = require("exceljs");
 
 const drawerWidth = 240;
@@ -154,7 +156,11 @@ export default function Products(props) {
       ? JSON.parse(localStorage.getItem("discount"))
       : undefined
   );
-
+  const [surcharge, setSurcharge] = useState(
+    localStorage.getItem("surcharge")
+      ? JSON.parse(localStorage.getItem("surcharge"))
+      : undefined
+  );
   const handleProductAction = (action) => {
     history.push({ pathname: "/admin/product/" + action });
   };
@@ -450,9 +456,13 @@ export default function Products(props) {
                 color="primary"
                 aria-label="add"
                 onClick={() => {
-                  page === 0
-                    ? handleProductAction("create")
-                    : handleProductAction("createDiscount");
+                  if (page === 0) {
+                    handleProductAction("create");
+                  } else if (page === 1) {
+                    handleProductAction("createDiscount");
+                  } else {
+                    handleProductAction("createSurcharge");
+                  }
                 }}
               >
                 <AddIcon />
@@ -475,6 +485,8 @@ export default function Products(props) {
                   setProduct={setProduct}
                   product={product}
                   setDiscount={setDiscount}
+                  setSurcharge={setSurcharge}
+                  surcharge={surcharge}
                   permissions={props.permissions}
                   setActiveCrud={setActiveCrud}
                   getProducts={getProducts}
@@ -493,9 +505,13 @@ export default function Products(props) {
                 />
               ) : activeCrud === "createDiscount" ? (
                 <CreateDiscount />
+              ) : activeCrud === "updateDiscount" ? (
+                <UpdateDiscount discount={discount} />
+              ) : activeCrud === "createSurcharge" ? (
+                <CreateSurcharge />
               ) : (
-                activeCrud === "updateDiscount" && (
-                  <UpdateDiscount discount={discount} />
+                activeCrud === "updateSurcharge" && (
+                  <UpdateSurcharge surcharge={surcharge} />
                 )
               )}
             </Paper>

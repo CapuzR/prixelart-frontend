@@ -23,6 +23,7 @@ import Checkbox from "@material-ui/core/Checkbox";
 import Backdrop from "@material-ui/core/Backdrop";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import { Typography } from "@material-ui/core";
+import { nanoid } from "nanoid";
 
 const useStyles = makeStyles((theme) => ({
   seeMore: {
@@ -65,22 +66,29 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function UpdateDiscount(props) {
+export default function UpdateSurcharge(props) {
   const classes = useStyles();
   const theme = useTheme();
   const history = useHistory();
 
-  // const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
-  const [active, setActive] = useState(props.discount.active);
-  const [name, setName] = useState(props.discount.name || undefined);
+  const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
+  const [active, setActive] = useState(props.surcharge.active);
+  const [name, setName] = useState(props.surcharge.name || undefined);
   const [description, setDescription] = useState(
-    props.discount.description || undefined
+    props.surcharge.description || undefined
   );
-  const [type, setType] = useState(props.discount.type || undefined);
-  const [value, setValue] = useState(props.discount.value || undefined);
+  const [type, setType] = useState(props.surcharge.type || undefined);
+  const [value, setValue] = useState(props.surcharge.value || undefined);
   const [appliedProducts, setAppliedProducts] = useState(
-    props.discount.appliedProducts || []
+    props.surcharge.appliedProducts || []
   );
+  const [appliedUsers, setAppliedUsers] = useState(
+    props.surcharge.appliedUsers || []
+  );
+  const [appliedPercentage, setAppliedPercentage] = useState(
+    props.surcharge.appliedPercentage || []
+  );
+  const [owners, setOwners] = useState(props.surcharge.owners || []);
   const [loading, setLoading] = useState(false);
   const [buttonState, setButtonState] = useState(false);
   const [products, setProducts] = useState();
@@ -92,23 +100,26 @@ export default function UpdateDiscount(props) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!name && !description && !type && !value) {
+    if (!name && !type && !value && !!appliedPercentage) {
       setErrorMessage("Por favor completa todos los campos requeridos.");
       setSnackBarError(true);
     } else {
       setLoading(true);
       setButtonState(true);
       const data = {
-        _id: props.discount._id,
+        surchargeId: nanoid(6),
+        _id: props.surcharge._id,
         name: name,
         active: active,
         description: description,
         type: type,
         value: value,
         appliedProducts: appliedProducts,
+        appliedUsers: appliedUsers,
+        appliedPercentage: appliedPercentage,
         adminToken: localStorage.getItem("adminTokenV"),
       };
-      const base_url = process.env.REACT_APP_BACKEND_URL + "/discount/update";
+      const base_url = process.env.REACT_APP_BACKEND_URL + "/surcharge/update";
       const response = await axios.put(base_url, data);
       if (response.data.success === false) {
         setLoading(false);
@@ -116,19 +127,19 @@ export default function UpdateDiscount(props) {
         setErrorMessage(response.data.message);
         setSnackBarError(true);
       } else {
-        setErrorMessage("Actualización de descuento exitoso.");
+        setErrorMessage("Actualización de recargo exitoso.");
         setSnackBarError(true);
         setActive(false);
         setName();
         setDescription();
         setType();
-        setValue("");
+        setValue();
         setAppliedProducts([]);
         history.push("/admin/product/read");
       }
     }
   };
-
+  console.log(value);
   const getProducts = async () => {
     setLoading(true);
     const base_url = process.env.REACT_APP_BACKEND_URL + "/product/read-allv1";
@@ -147,11 +158,34 @@ export default function UpdateDiscount(props) {
     setLoading(false);
   };
 
+  const getOwnersAndPrixers = async () => {
+    setLoading(true);
+    const base_url =
+      process.env.REACT_APP_BACKEND_URL + "/prixer/getOwnersAndPrixers";
+    await axios
+      .post(
+        base_url,
+        { adminToken: localStorage.getItem("adminTokenV") },
+        { withCredentials: true }
+      )
+      .then((response) => {
+        setOwners(response.data.users);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+    setLoading(false);
+  };
+
   useEffect(() => {
+    getOwnersAndPrixers();
     getProducts();
   }, []);
-  console.log(active);
-  console.log(value);
+
+  const changeAppliedUsers = (e) => {
+    setAppliedUsers(e.target.value);
+  };
+
   return (
     <React.Fragment>
       {
@@ -159,26 +193,36 @@ export default function UpdateDiscount(props) {
           <CircularProgress />
         </Backdrop>
       }
-      <Title>Actualizar Descuento</Title>
+      <Title>Crear Recargo</Title>
       <form
-        className={classes.form}
+        // className={classes.form}
+        style={{
+          height: "auto",
+        }}
         encType="multipart/form-data"
         noValidate
         onSubmit={handleSubmit}
       >
-        <Grid container spacing={2}>
+        <Grid container>
           <Grid item xs={12}>
             <Checkbox
               checked={active}
               color="primary"
               inputProps={{ "aria-label": "secondary checkbox" }}
               onChange={() => {
-                setActive(!active);
+                active ? setActive(false) : setActive(true);
               }}
             />
             Habilitado
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid
+            item
+            xs={12}
+            md={6}
+            style={{
+              padding: 5,
+            }}
+          >
             <FormControl
               className={clsx(classes.margin, classes.textField)}
               variant="outlined"
@@ -197,7 +241,7 @@ export default function UpdateDiscount(props) {
               />
             </FormControl>
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12} md={6} style={{ padding: 5 }}>
             <FormControl
               className={clsx(classes.margin, classes.textField)}
               variant="outlined"
@@ -206,7 +250,6 @@ export default function UpdateDiscount(props) {
             >
               <TextField
                 variant="outlined"
-                required
                 fullWidth
                 multiline
                 minRows={5}
@@ -218,16 +261,18 @@ export default function UpdateDiscount(props) {
               />
             </FormControl>
           </Grid>
-          <Grid item xs={12} md={3} style={{ marginTop: "-75px" }}>
+          <Grid item xs={12} md={3} style={{ marginTop: "-75px", padding: 5 }}>
             <FormControl
-              className={clsx(classes.margin, classes.textField)}
+              //   className={clsx(classes.margin, classes.textField)}
               variant="outlined"
               xs={12}
               fullWidth={true}
+              required
             >
               <InputLabel>Tipo</InputLabel>
               <Select
                 input={<OutlinedInput />}
+                required
                 value={type}
                 onChange={(e) => {
                   setType(e.target.value);
@@ -244,7 +289,7 @@ export default function UpdateDiscount(props) {
             item
             xs={12}
             md={3}
-            style={{ marginTop: "-75px", width: "50%" }}
+            style={{ marginTop: "-75px", width: "50%", padding: 5 }}
           >
             <FormControl
               className={clsx(classes.margin, classes.textField)}
@@ -257,6 +302,7 @@ export default function UpdateDiscount(props) {
                   variant="outlined"
                   required
                   fullWidth
+                  type="number"
                   label="Valor"
                   InputProps={{
                     startAdornment: (
@@ -300,8 +346,53 @@ export default function UpdateDiscount(props) {
               )}
             </FormControl>
           </Grid>
-          <Grid item xs={12}>
-            <Typography color="primary">Aplicado a:</Typography>
+          <Grid item xs={12} style={{ marginTop: 20 }}>
+            <Typography>Aplicado a:</Typography>
+          </Grid>
+          <Grid item xs={12} md={3} style={{ padding: 5 }}>
+            <FormControl
+              className={clsx(classes.margin, classes.textField)}
+              variant="outlined"
+              xs={12}
+              fullWidth={true}
+            >
+              <InputLabel>Prixer / Owner:</InputLabel>
+              <Select
+                input={<OutlinedInput />}
+                value={appliedUsers}
+                multiple
+                onChange={changeAppliedUsers}
+              >
+                {owners &&
+                  owners.map((o) => <MenuItem value={o}>{o}</MenuItem>)}
+              </Select>
+            </FormControl>
+          </Grid>
+
+          <Grid item xs={12} md={3} style={{ padding: 5 }}>
+            <FormControl
+              className={clsx(classes.margin, classes.textField)}
+              variant="outlined"
+              required
+              xs={12}
+              fullWidth={true}
+            >
+              <InputLabel>Porcentaje de:</InputLabel>
+              <Select
+                input={<OutlinedInput />}
+                value={appliedPercentage}
+                onChange={(e) => {
+                  setAppliedPercentage(e.target.value);
+                }}
+              >
+                <MenuItem value={"ownerComission"}>
+                  Comisión de Prixer/Owner
+                </MenuItem>
+                <MenuItem value={"prixelartProfit"}>
+                  Ganancia de Prixelart
+                </MenuItem>
+              </Select>
+            </FormControl>
           </Grid>
           <Grid item xs={12}>
             <Checkbox
@@ -351,7 +442,7 @@ export default function UpdateDiscount(props) {
           disabled={buttonState}
           style={{ marginTop: 20 }}
         >
-          Actualizar
+          Crear
         </Button>
       </form>
 

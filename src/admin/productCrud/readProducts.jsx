@@ -42,6 +42,7 @@ export default function ReadProducts(props) {
   const classes = useStyles();
   const [rows, setRows] = useState();
   const [discountList, setDiscountList] = useState([]);
+  const [surchargeList, setSurchargeList] = useState([]);
   const [value, setValue] = useState(0);
 
   const [openUpdateProduct, setUpdateProduct] = useState(false);
@@ -76,7 +77,6 @@ export default function ReadProducts(props) {
     );
   }
   const getRows = async () => {
-    props.setLoading(true);
     const base_url = process.env.REACT_APP_BACKEND_URL + "/product/read-allv1";
     await axios
       .post(
@@ -91,11 +91,8 @@ export default function ReadProducts(props) {
       .catch((error) => {
         console.log(error);
       });
-    props.setLoading(false);
   };
-
   const getDiscounts = async () => {
-    props.setLoading(true);
     const base_url = process.env.REACT_APP_BACKEND_URL + "/discount/read-allv1";
     await axios
       .post(
@@ -109,12 +106,30 @@ export default function ReadProducts(props) {
       .catch((error) => {
         console.log(error);
       });
-    props.setLoading(false);
+  };
+
+  const getSurcharges = async () => {
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/surcharge/read-all";
+    await axios
+      .post(
+        base_url,
+        { adminToken: localStorage.getItem("adminTokenV") },
+        { withCredentials: true }
+      )
+      .then((response) => {
+        setSurchargeList(response.data.surcharges);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
   useEffect(() => {
+    props.setLoading(true);
     getRows();
     getDiscounts();
+    getSurcharges();
+    props.setLoading(false);
   }, []);
 
   const handleActive = (product, action) => {
@@ -131,6 +146,13 @@ export default function ReadProducts(props) {
     props.setActiveCrud("updateDiscount");
   };
 
+  const handleActiveSurcharge = (surcharge, action) => {
+    props.setSurcharge(surcharge);
+    localStorage.setItem("surcharge", JSON.stringify(surcharge));
+    history.push("/admin/product/" + action + "/" + surcharge._id);
+    props.setActiveCrud("updateSurcharge");
+  };
+
   const deleteProduct = async (id) => {
     const URI = process.env.REACT_APP_BACKEND_URL + `/product/delete/${id}`;
     const res = await axios
@@ -142,7 +164,7 @@ export default function ReadProducts(props) {
       .then(
         setTimeout(() => {
           props.setDeleteOpen(true);
-          setDeleteMessage("Producto eliminado exitosamente.");
+          props.setDeleteMessage("Producto eliminado exitosamente.");
           getRows();
         }, 500)
       );
@@ -158,9 +180,26 @@ export default function ReadProducts(props) {
       )
       .then(
         setTimeout(() => {
-          setDeleteOpen(true);
-          setDeleteMessage("Descuento eliminado exitosamente.");
+          props.setDeleteOpen(true);
+          props.setDeleteMessage("Descuento eliminado exitosamente.");
           getDiscounts();
+        }, 500)
+      );
+  };
+
+  const deleteSurcharge = async (id) => {
+    const URI = process.env.REACT_APP_BACKEND_URL + `/surcharge/delete/${id}`;
+    const res = await axios
+      .put(
+        URI,
+        { adminToken: localStorage.getItem("adminTokenV") },
+        { withCredentials: true }
+      )
+      .then(
+        setTimeout(() => {
+          props.setDeleteOpen(true);
+          props.setDeleteMessage("Recargo eliminado exitosamente.");
+          getSurcharges();
         }, 500)
       );
   };
@@ -179,6 +218,7 @@ export default function ReadProducts(props) {
       >
         <Tab label="Productos" />
         <Tab label="Descuentos" />
+        <Tab label="Recargos" />
       </Tabs>
       <TabPanel value={value} index={0}>
         {rows && (
@@ -428,7 +468,96 @@ export default function ReadProducts(props) {
           </Typography>
         )}
       </TabPanel>
-
+      <TabPanel value={value} index={2}>
+        {surchargeList.length > 0 ? (
+          <Table size="small">
+            <TableHead>
+              <TableRow>
+                <TableCell align="center"></TableCell>
+                <TableCell align="center">Nombre</TableCell>
+                <TableCell align="center">Activo</TableCell>
+                <TableCell align="center">Tipo</TableCell>
+                <TableCell align="center">Valor</TableCell>
+                <TableCell align="center">Productos aplicados</TableCell>
+                <TableCell align="center">Usuarios aplicados</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {surchargeList &&
+                surchargeList.map((sur) => (
+                  <TableRow key={sur._id}>
+                    <TableCell align="center">
+                      {props.permissions?.createDiscount && (
+                        <Fab
+                          color="default"
+                          style={{ width: 35, height: 35 }}
+                          aria-label="edit"
+                          onClick={(e) => {
+                            handleActiveSurcharge(sur, "updateSurcharge");
+                          }}
+                        >
+                          <EditIcon />
+                        </Fab>
+                      )}
+                    </TableCell>
+                    <TableCell align="center">{sur.name}</TableCell>
+                    <TableCell align="center">
+                      <Checkbox
+                        disabled
+                        checked={sur.active}
+                        color="primary"
+                        inputProps={{ "aria-label": "secondary checkbox" }}
+                      />
+                    </TableCell>
+                    <TableCell align="center">{sur.type}</TableCell>
+                    <TableCell align="center">
+                      {sur.type === "Porcentaje"
+                        ? "%" + sur.value
+                        : "$" + sur.value}
+                    </TableCell>
+                    <TableCell align="center">
+                      <ul>
+                        {sur.appliedProducts.map((el) => (
+                          <li>{el}</li>
+                        ))}
+                      </ul>
+                    </TableCell>
+                    <TableCell align="center">
+                      <ul>
+                        {sur.appliedUsers.map((el) => (
+                          <li>{el}</li>
+                        ))}
+                      </ul>
+                    </TableCell>
+                    <TableCell align="center">
+                      {props.permissions?.deleteDiscount && (
+                        <Fab
+                          color="default"
+                          style={{ width: 35, height: 35 }}
+                          aria-label="Delete"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            deleteSurcharge(sur._id);
+                          }}
+                        >
+                          <DeleteIcon />
+                        </Fab>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                ))}
+            </TableBody>
+          </Table>
+        ) : (
+          <Typography
+            variant="h6"
+            color="secondary"
+            style={{ display: "flex", justifyContent: "center" }}
+          >
+            No tenemos recargos por ahora.
+          </Typography>
+        )}
+      </TabPanel>
       <Snackbar
         open={props.deleteOpen}
         autoHideDuration={3000}

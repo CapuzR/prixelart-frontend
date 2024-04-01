@@ -1,32 +1,17 @@
 import React from "react";
 import { useState, useEffect, useRef } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import Title from "../adminMain/Title";
 import axios from "axios";
-import InputLabel from "@material-ui/core/InputLabel";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
-import IconButton from "@material-ui/core/IconButton";
-import Dialog from "@material-ui/core/Dialog";
-import DialogActions from "@material-ui/core/DialogActions";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogContentText from "@material-ui/core/DialogContentText";
-import DialogTitle from "@material-ui/core/DialogTitle";
 import Grid from "@material-ui/core/Grid";
 import Snackbar from "@material-ui/core/Snackbar";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import FormControl from "@material-ui/core/FormControl";
-import clsx from "clsx";
 import { useHistory } from "react-router-dom";
 import { useTheme } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
-import HighlightOffOutlinedIcon from "@material-ui/icons/HighlightOffOutlined";
-import EditIcon from "@material-ui/icons/Edit";
-import MDEditor from "@uiw/react-md-editor";
-import Variants from "../adminMain/products/variants";
 import Backdrop from "@material-ui/core/Backdrop";
-import validations from "../../shoppingCart/validations";
-import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
 import Paper from "@material-ui/core/Paper";
 import { Typography } from "@material-ui/core";
 import FormLabel from "@material-ui/core/FormLabel";
@@ -35,7 +20,7 @@ import RadioGroup from "@material-ui/core/RadioGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Slider from "@material-ui/core/Slider";
 import Checkbox from "@material-ui/core/Checkbox";
-import * as THREE from "three";
+import WarpImage from "./warpImage";
 
 const useStyles = makeStyles((theme) => ({
   seeMore: {
@@ -101,18 +86,19 @@ export default function UpdateMockup(props) {
   const [topRight, setTopRight] = useState({ x: 0, y: 0 });
   const [bottomLeft, setBottomLeft] = useState({ x: 0, y: 0 });
   const [bottomRight, setBottomRight] = useState({ x: 0, y: 0 });
-  const [width, setWidth] = useState(250);
-  const [height, setHeight] = useState(250);
+  const [width, setWidth] = useState(350);
+  const [height, setHeight] = useState(350);
   const [perspective, setPerspective] = useState(0);
   const [skewX, setSkewX] = useState(0);
   const [skewY, setSkewY] = useState(0);
   const [translateX, setTranslateX] = useState(0);
   const [translateY, setTranslateY] = useState(0);
+  const [rotate, setRotate] = useState(0);
   const [rotateX, setRotateX] = useState(0);
   const [rotateY, setRotateY] = useState(0);
   const [aspectRatio, setAspectRatio] = useState(0);
   const [selectedImg, setSelectedImg] = useState(undefined);
-  const [warpPercentage, setWarpPercenteage] = useState(0.3);
+  const [warpPercentage, setWarpPercenteage] = useState(0);
   const [warpOrientation, setWarpOrientation] = useState("vertical");
   const [invertedWrap, setInvertedWrap] = useState(false);
   //Error states.
@@ -128,6 +114,10 @@ export default function UpdateMockup(props) {
 
   const handlePerspective = (event) => {
     setPerspective(event.target.value);
+  };
+
+  const handleRotate = (event) => {
+    setRotate(event.target.value);
   };
 
   const handleRotateX = (event) => {
@@ -176,6 +166,7 @@ export default function UpdateMockup(props) {
       setArt(response.data.arts);
     }
   };
+
   //Preview de imagen antes de enviar
   const convertToBase64 = (blob) => {
     return new Promise((resolve) => {
@@ -283,7 +274,6 @@ export default function UpdateMockup(props) {
 
   const handleChangeWarpPercentage = (event, newValue) => {
     setWarpPercenteage(newValue);
-    warpImage();
   };
 
   const handleSubmit = async (e) => {
@@ -307,12 +297,15 @@ export default function UpdateMockup(props) {
     newFormData.append("height", height);
 
     newFormData.append("perspective", perspective);
-    newFormData.append("rotateX", rotateX);
-    newFormData.append("rotateY", rotateY);
     newFormData.append("skewX", skewX);
     newFormData.append("skewY", skewY);
     newFormData.append("translateX", translateX);
     newFormData.append("translateY", translateY);
+    newFormData.append("rotate", rotate);
+    newFormData.append("rotateX", rotateX);
+    newFormData.append("rotateY", rotateY);
+    newFormData.append("warpPercentage", warpPercentage);
+    newFormData.append("warpOrientation", warpOrientation);
 
     const base_url =
       process.env.REACT_APP_BACKEND_URL +
@@ -331,168 +324,6 @@ export default function UpdateMockup(props) {
     }
   };
 
-  var warped_image = document.getElementById("warped_image"),
-    warp_canvas = document.createElement("canvas"),
-    warp_context = warp_canvas.getContext("2d");
-
-  function getQuadraticBezierXYatT(start_point, control_point, end_point, T) {
-    var pow1minusTsquared = Math.pow(1 - T, 2),
-      powTsquared = Math.pow(T, 2);
-
-    var x =
-        pow1minusTsquared * start_point.x +
-        2 * (1 - T) * T * control_point.x +
-        powTsquared * end_point.x,
-      y =
-        pow1minusTsquared * start_point.y +
-        2 * (1 - T) * T * control_point.y +
-        powTsquared * end_point.y;
-
-    return {
-      x: x,
-      y: y,
-    };
-  }
-
-  function warpHorizontally(image_to_warp, invert_curve) {
-    var image_width = image_to_warp.width,
-      image_height = image_to_warp.height,
-      warp_percentage = parseFloat(warpPercentage, 10),
-      // for fun purposes and nicer controls
-      // I chose to determine the offset by applying a percentage value to the image width
-      warp_x_offset = warp_percentage * image_width;
-
-    warp_canvas.width = image_width + Math.ceil(warp_x_offset * 2);
-    warp_canvas.height = image_height;
-
-    // see https://www.rgraph.net/blog/an-example-of-the-html5-canvas-quadraticcurveto-function.html
-    // for more details regarding start_point, control_point si end_point
-    var start_point = {
-      x: 0,
-      y: 0,
-    };
-    var control_point = {
-      x: invert_curve ? warp_x_offset : -warp_x_offset,
-      y: image_height / 2,
-    };
-    var end_point = {
-      x: 0,
-      y: image_height,
-    };
-
-    var offset_x_points = [],
-      t = 0;
-    for (; t < image_height; t++) {
-      var xyAtT = getQuadraticBezierXYatT(
-          start_point,
-          control_point,
-          end_point,
-          t / image_height
-        ),
-        x = parseInt(xyAtT.x);
-
-      offset_x_points.push(x);
-    }
-
-    warp_context.clearRect(0, 0, warp_canvas.width, warp_canvas.height);
-
-    var y = 0;
-    for (; y < image_height; y++) {
-      warp_context.drawImage(
-        image_to_warp,
-        // clip 1 pixel wide slice from the image
-        //x, 0, 1, image_height + warp_y_offset,
-        0,
-        y,
-        image_width + warp_x_offset,
-        1,
-        // draw that slice with a y-offset
-        //x, warp_y_offset + offset_y_points[x], 1, image_height + warp_y_offset
-        warp_x_offset + offset_x_points[y],
-        y,
-        image_width + warp_x_offset,
-        1
-      );
-    }
-  }
-
-  function warpVertically(image_to_warp, invert_curve) {
-    var image_width = image_to_warp.width,
-      image_height = image_to_warp.height,
-      warp_percentage = parseFloat(warpPercentage, 10),
-      // for fun purposes and nicer controls
-      // I chose to determine the offset by applying a percentage value to the image height
-      warp_y_offset = warp_percentage * image_height;
-
-    warp_canvas.width = image_width;
-    warp_canvas.height = image_height + Math.ceil(warp_y_offset * 2);
-
-    // see https://www.rgraph.net/blog/an-example-of-the-html5-canvas-quadraticcurveto-function.html
-    // for more details regarding start_point, control_point si end_point
-    var start_point = {
-      x: 0,
-      y: 0,
-    };
-    var control_point = {
-      x: image_width / 2,
-      y: invert_curve ? warp_y_offset : -warp_y_offset,
-    };
-    var end_point = {
-      x: image_width,
-      y: 0,
-    };
-
-    var offset_y_points = [],
-      t = 0;
-    for (; t < image_width; t++) {
-      var xyAtT = getQuadraticBezierXYatT(
-          start_point,
-          control_point,
-          end_point,
-          t / image_width
-        ),
-        y = parseInt(xyAtT.y);
-
-      offset_y_points.push(y);
-    }
-
-    warp_context.clearRect(0, 0, warp_canvas.width, warp_canvas.height);
-
-    var x = 0;
-    for (; x < image_width; x++) {
-      warp_context.drawImage(
-        image_to_warp,
-        // clip 1 pixel wide slice from the image
-        x,
-        0,
-        1,
-        image_height + warp_y_offset,
-        // draw that slice with a y-offset
-        x,
-        warp_y_offset + offset_y_points[x],
-        1,
-        image_height + warp_y_offset
-      );
-    }
-  }
-
-  const warpImage = () => {
-    var image_to_warp = new Image();
-
-    image_to_warp.onload = function () {
-      if (warpOrientation === "horizontal") {
-        warpHorizontally(image_to_warp, invertedWrap);
-      } else {
-        warpVertically(image_to_warp, invertedWrap);
-      }
-      warped_image.src = warp_canvas.toDataURL();
-    };
-
-    image_to_warp.src = randomArt.smallThumbUrl;
-  };
-
-  window.warpImage = warpImage;
-
   return (
     <React.Fragment>
       {
@@ -500,8 +331,6 @@ export default function UpdateMockup(props) {
           <CircularProgress />
         </Backdrop>
       }
-
-      {/* <form encType="multipart/form-data" noValidate onSubmit={handleSubmit}> */}
       <Grid
         container
         spacing={2}
@@ -512,331 +341,358 @@ export default function UpdateMockup(props) {
           flexDirection: "column",
         }}
       >
-        <label>Warp percentage </label>
-        <label>{warpPercentage}</label>
-        <Slider
-          style={{ width: 200 }}
-          id="warp_percentage"
-          type="range"
-          min={0}
-          max={1}
-          value={warpPercentage}
-          onChange={handleChangeWarpPercentage}
-          step={0.1}
-        />
-        <FormLabel component="legend">Orientación</FormLabel>
-        <RadioGroup value={warpOrientation} onChange={handleOrientation}>
-          <FormControlLabel
-            value="vertical"
-            control={<Radio />}
-            label="Vertical"
-          />
-          <FormControlLabel
-            value="horizontal"
-            control={<Radio />}
-            label="Horizontal"
-          />
-        </RadioGroup>
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={invertedWrap}
-              onChange={handleInvertedWrap}
-              name="checkedA"
-            />
-          }
-          label="Invertido"
-        />
-        <Button
-          onClick={(a) => {
-            a.preventDefault();
+        <>
+          <Paper
+            className={classes.paper}
+            style={{
+              height: "100%",
+              width: "100%",
+              backgroundColor: "gainsboro",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              flexDirection: "row",
+            }}
+            elevation={3}
+          >
+            <Grid item md={6}>
+              <FormControl style={{ width: "90%" }}>
+                <FormLabel component="legend">
+                  Selecciona el punto a definir:
+                </FormLabel>
+                <RadioGroup value={corner} onChange={handleCorner}>
+                  <div style={{ display: "flex", alignItems: "center" }}>
+                    <FormControlLabel
+                      value="topLeft"
+                      control={<Radio />}
+                      label="Superior izquierda"
+                    />
+                    <Typography variant="subtitle2" color="secondary">
+                      x: {topLeft.x}, y: {topLeft.y}
+                    </Typography>
+                  </div>
+                  <div style={{ display: "flex", alignItems: "center" }}>
+                    <FormControlLabel
+                      value="topRight"
+                      control={<Radio />}
+                      label="Superior derecha"
+                    />
+                    <Typography variant="subtitle2" color="secondary">
+                      x: {topRight.x}, y: {topRight.y}
+                    </Typography>
+                  </div>
 
-            warpImage();
-          }}
-        >
-          Warp Image
-        </Button>
-        <img id="warped_image" />
+                  <div style={{ display: "flex", alignItems: "center" }}>
+                    <FormControlLabel
+                      value="bottomLeft"
+                      control={<Radio />}
+                      label="Inferior izquierda"
+                    />
+                    <Typography variant="subtitle2" color="secondary">
+                      x: {bottomLeft.x}, y: {bottomLeft.y}
+                    </Typography>
+                  </div>
 
-        {/* {preview ? (
-            <Paper
-              className={classes.paper}
-              style={{
-                height: "100%",
-                width: "100%",
-                backgroundColor: "gainsboro",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                flexDirection: "row",
-              }}
-              elevation={3}
-            >
-              <Grid item md={6}>
-                <FormControl style={{ width: "90%" }}>
-                  <FormLabel component="legend">
-                    Selecciona el punto a definir:
-                  </FormLabel>
-                  <RadioGroup value={corner} onChange={handleCorner}>
-                    <div style={{ display: "flex", alignItems: "center" }}>
-                      <FormControlLabel
-                        value="topLeft"
-                        control={<Radio />}
-                        label="Superior izquierda"
+                  <div style={{ display: "flex", alignItems: "center" }}>
+                    <FormControlLabel
+                      value="bottomRight"
+                      control={<Radio />}
+                      label="Inferior derecha"
+                    />
+                    <Typography variant="subtitle2" color="secondary">
+                      x: {bottomRight.x}, y: {bottomRight.y}
+                    </Typography>
+                  </div>
+                </RadioGroup>
+                <Grid style={{ display: "flex" }}>
+                  <Grid
+                    container
+                    spacing={2}
+                    style={{
+                      display: "flex",
+                      alignItems: "start",
+                      flexDirection: "column",
+                    }}
+                  >
+                    <Grid item md>
+                      <TextField
+                        label="Ancho"
+                        value={width}
+                        onChange={handleWidth}
+                        type="number"
+                        variant="outlined"
+                        InputLabelProps={{
+                          shrink: true,
+                        }}
                       />
-                      <Typography variant="subtitle2" color="secondary">
-                        x: {topLeft.x}, y: {topLeft.y}
-                      </Typography>
-                    </div>
-                    <div style={{ display: "flex", alignItems: "center" }}>
-                      <FormControlLabel
-                        value="topRight"
-                        control={<Radio />}
-                        label="Superior derecha"
-                      />
-                      <Typography variant="subtitle2" color="secondary">
-                        x: {topRight.x}, y: {topRight.y}
-                      </Typography>
-                    </div>
-
-                    <div style={{ display: "flex", alignItems: "center" }}>
-                      <FormControlLabel
-                        value="bottomLeft"
-                        control={<Radio />}
-                        label="Inferior izquierda"
-                      />
-                      <Typography variant="subtitle2" color="secondary">
-                        x: {bottomLeft.x}, y: {bottomLeft.y}
-                      </Typography>
-                    </div>
-
-                    <div style={{ display: "flex", alignItems: "center" }}>
-                      <FormControlLabel
-                        value="bottomRight"
-                        control={<Radio />}
-                        label="Inferior derecha"
-                      />
-                      <Typography variant="subtitle2" color="secondary">
-                        x: {bottomRight.x}, y: {bottomRight.y}
-                      </Typography>
-                    </div>
-                  </RadioGroup>
-                  <Grid style={{ display: "flex" }}>
-                    <Grid
-                      container
-                      spacing={2}
-                      style={{
-                        display: "flex",
-                        alignItems: "start",
-                        flexDirection: "column",
-                      }}
-                    >
-                      <Grid item md>
-                        <TextField
-                          label="Ancho"
-                          value={width}
-                          onChange={handleWidth}
-                          type="number"
-                          variant="outlined"
-                          InputLabelProps={{
-                            shrink: true,
-                          }}
-                        />
-                      </Grid>
-
-                      <Grid item md>
-                        <TextField
-                          label="Alto"
-                          value={height}
-                          onChange={handleHeight}
-                          type="number"
-                          variant="outlined"
-                          InputLabelProps={{
-                            shrink: true,
-                          }}
-                        />
-                      </Grid>
-                      <Grid item md>
-                        <TextField
-                          label="Perspectiva"
-                          value={perspective}
-                          onChange={handlePerspective}
-                          max={500}
-                          min={-500}
-                          type="number"
-                          variant="outlined"
-                          InputLabelProps={{
-                            shrink: true,
-                          }}
-                        />
-                      </Grid>
-                      <Grid item md>
-                        <TextField
-                          label="Rotación horizontal"
-                          value={rotateX}
-                          onChange={handleRotateX}
-                          max={360}
-                          min={-360}
-                          type="number"
-                          variant="outlined"
-                          InputLabelProps={{
-                            shrink: true,
-                          }}
-                        />
-                      </Grid>
-                      <Grid item md>
-                        <TextField
-                          label="Rotación vertical"
-                          value={rotateY}
-                          onChange={handleRotateY}
-                          max={360}
-                          min={-360}
-                          type="number"
-                          variant="outlined"
-                          InputLabelProps={{
-                            shrink: true,
-                          }}
-                        />
-                      </Grid>
                     </Grid>
-                    <Grid
-                      container
-                      spacing={2}
-                      style={{
-                        display: "flex",
-                        alignItems: "start",
-                        flexDirection: "column",
-                        marginLeft: 10,
-                      }}
-                    >
-                      <Grid item md>
-                        <TextField
-                          label="Desplazamiento horizontal"
-                          value={translateX}
-                          onChange={handleTranslateX}
-                          max={300}
-                          min={-300}
-                          type="number"
-                          variant="outlined"
-                          InputLabelProps={{
-                            shrink: true,
-                          }}
-                        />
-                      </Grid>
-                      <Grid item md>
-                        <TextField
-                          label="Desplazamiento vertical"
-                          value={translateY}
-                          onChange={handleTranslateY}
-                          max={300}
-                          min={-300}
-                          type="number"
-                          variant="outlined"
-                          InputLabelProps={{
-                            shrink: true,
-                          }}
-                        />
-                      </Grid>
-                      <Grid item md>
-                        <TextField
-                          label="Deformación 2D horizontal"
-                          value={skewX}
-                          onChange={handleSkewX}
-                          max={300}
-                          min={-300}
-                          type="number"
-                          variant="outlined"
-                          InputLabelProps={{
-                            shrink: true,
-                          }}
-                        />
-                      </Grid>
 
-                      <Grid item md>
-                        <TextField
-                          label="Deformación 2D vertical"
-                          value={skewY}
-                          onChange={handleSkewY}
-                          max={300}
-                          min={-300}
-                          type="number"
-                          variant="outlined"
-                          InputLabelProps={{
-                            shrink: true,
-                          }}
-                        />
-                      </Grid>
+                    <Grid item md>
+                      <TextField
+                        label="Alto"
+                        value={height}
+                        onChange={handleHeight}
+                        type="number"
+                        variant="outlined"
+                        InputLabelProps={{
+                          shrink: true,
+                        }}
+                      />
+                    </Grid>
+                    <Grid item md>
+                      <TextField
+                        label="Perspectiva"
+                        value={perspective}
+                        onChange={handlePerspective}
+                        max={500}
+                        min={-500}
+                        type="number"
+                        variant="outlined"
+                        InputLabelProps={{
+                          shrink: true,
+                        }}
+                      />
+                    </Grid>
+                    <Grid item md>
+                      <TextField
+                        label="Rotar"
+                        value={rotate}
+                        onChange={handleRotate}
+                        max={360}
+                        min={-360}
+                        type="number"
+                        variant="outlined"
+                        InputLabelProps={{
+                          shrink: true,
+                        }}
+                      />
+                    </Grid>
+                    <Grid item md>
+                      <TextField
+                        label="Rotación horizontal"
+                        value={rotateX}
+                        onChange={handleRotateX}
+                        max={360}
+                        min={-360}
+                        type="number"
+                        variant="outlined"
+                        InputLabelProps={{
+                          shrink: true,
+                        }}
+                      />
+                    </Grid>
+                    <Grid item md>
+                      <TextField
+                        label="Rotación vertical"
+                        value={rotateY}
+                        onChange={handleRotateY}
+                        max={360}
+                        min={-360}
+                        type="number"
+                        variant="outlined"
+                        InputLabelProps={{
+                          shrink: true,
+                        }}
+                      />
                     </Grid>
                   </Grid>
-                </FormControl>
-              </Grid>
-              <Grid item md={6}>
-                <div style={{ width: 350, height: 350 }}>
-                   <div
+                  <Grid
+                    container
+                    spacing={2}
                     style={{
-                      backgroundImage: "url(" + preview + ")",
-                      marginTop: -350,
-                      width: 350,
-                      height: 350,
-                      backgroundSize: "cover",
-                      borderRadius: 5,
-                      marginTop: 5,
-                      marginRight: 10,
+                      display: "flex",
+                      alignItems: "start",
+                      flexDirection: "column",
+                      marginLeft: 10,
                     }}
-                    onClick={handleImageClick}
+                  >
+                    <Grid item md>
+                      <TextField
+                        label="Desplazamiento horizontal"
+                        value={translateX}
+                        onChange={handleTranslateX}
+                        max={300}
+                        min={-300}
+                        type="number"
+                        variant="outlined"
+                        InputLabelProps={{
+                          shrink: true,
+                        }}
+                      />
+                    </Grid>
+                    <Grid item md>
+                      <TextField
+                        label="Desplazamiento vertical"
+                        value={translateY}
+                        onChange={handleTranslateY}
+                        max={300}
+                        min={-300}
+                        type="number"
+                        variant="outlined"
+                        InputLabelProps={{
+                          shrink: true,
+                        }}
+                      />
+                    </Grid>
+                    <Grid item md>
+                      <TextField
+                        label="Deformación 2D horizontal"
+                        value={skewX}
+                        onChange={handleSkewX}
+                        max={300}
+                        min={-300}
+                        type="number"
+                        variant="outlined"
+                        InputLabelProps={{
+                          shrink: true,
+                        }}
+                      />
+                    </Grid>
+
+                    <Grid item md>
+                      <TextField
+                        label="Deformación 2D vertical"
+                        value={skewY}
+                        onChange={handleSkewY}
+                        max={300}
+                        min={-300}
+                        type="number"
+                        variant="outlined"
+                        InputLabelProps={{
+                          shrink: true,
+                        }}
+                      />
+                    </Grid>
+                    <Grid item md>
+                      <Typography color="secondary">
+                        Curvatura %{warpPercentage}
+                      </Typography>
+                      <Slider
+                        style={{ width: 200 }}
+                        id="warp_percentage"
+                        type="range"
+                        min={-1}
+                        max={1}
+                        value={warpPercentage}
+                        onChange={handleChangeWarpPercentage}
+                        step={0.001}
+                      />
+                    </Grid>
+
+                    <Grid item md>
+                      <FormLabel component="legend">
+                        Orientación de la curva
+                      </FormLabel>
+                      <RadioGroup
+                        value={warpOrientation}
+                        onChange={handleOrientation}
+                      >
+                        <FormControlLabel
+                          value="vertical"
+                          control={<Radio />}
+                          label="Vertical"
+                        />
+                        <FormControlLabel
+                          value="horizontal"
+                          control={<Radio />}
+                          label="Horizontal"
+                        />
+                      </RadioGroup>
+                    </Grid>
+                  </Grid>
+                </Grid>
+              </FormControl>
+            </Grid>
+            <Grid item md={6}>
+              <div style={{ width: 210, height: 210, position: "relative" }}>
+                <div
+                  style={{
+                    backgroundImage: "url(" + preview + ")",
+                    width: 210,
+                    height: 210,
+                    backgroundSize: "cover",
+                    borderRadius: 5,
+                    position: "absolute",
+                    top: "0",
+                    left: "0",
+                    zIndex: "2",
+                    opacity: 0.5,
+                  }}
+                  onClick={handleImageClick}
+                />
+                {randomArt && (
+                  <WarpImage
+                    warpPercentage={warpPercentage}
+                    warpOrientation={warpOrientation}
+                    invertedWrap={invertedWrap}
+                    randomArt={randomArt}
+                    topLeft={topLeft}
+                    width={width}
+                    height={height}
+                    perspective={perspective}
+                    rotate={rotate}
+                    rotateX={rotateX}
+                    rotateY={rotateY}
+                    skewX={skewX}
+                    skewY={skewY}
+                    translateX={translateX}
+                    translateY={translateY}
                   />
-                  {randomArt && (
-                    <div
-                      style={{
-                        width: "400px",
-                        height: "400px",
-                        backgroundImage: "url(" + randomArt.smallThumbUrl + ")",
-                        backgroundSize: "contain",
-                        backgroundRepeat: "no-repeat",
-                      }}
-                      id="container"
-                    />
-                  )}
-                </div>
-              </Grid>
-            </Paper>
-          ) : (
+                )}
+
+                {/* {randomArt && (
+                  <div
+                    style={{
+                      width: "400px",
+                      height: "400px",
+                      backgroundImage: "url(" + randomArt.smallThumbUrl + ")",
+                      backgroundSize: "contain",
+                      backgroundRepeat: "no-repeat",
+                    }}
+                    id="container"
+                  />
+                )} */}
+              </div>
+            </Grid>
+          </Paper>
+          {/* ) : (
             <Typography variant="h5" color="secondary" style={{ padding: 20 }}>
               No hay imagen seleccionada
             </Typography>
           )} */}
 
-        <Button
-          variant="contained"
-          component="label"
-          color="primary"
-          style={{ marginTop: 10 }}
-        >
-          {preview ? "Cambiar imagen" : "Subir imagen"}
-          <input
-            name="newMockupImage"
-            type="file"
-            accept="image/*"
-            hidden
-            onChange={(a) => {
-              a.preventDefault();
-              loadImage(a);
-            }}
-          />
-        </Button>
-
-        {preview !== undefined && (
           <Button
             variant="contained"
+            component="label"
             color="primary"
-            type="submit"
-            style={{ marginTop: 20 }}
+            style={{ marginTop: 10 }}
           >
-            Actualizar
+            {preview ? "Cambiar imagen" : "Subir imagen"}
+            <input
+              name="newMockupImage"
+              type="file"
+              accept="image/*"
+              hidden
+              onChange={(a) => {
+                a.preventDefault();
+                loadImage(a);
+              }}
+            />
           </Button>
-        )}
+
+          {preview !== undefined && (
+            <Button
+              variant="contained"
+              color="primary"
+              type="submit"
+              style={{ marginTop: 20 }}
+              onClick={handleSubmit}
+            >
+              Actualizar
+            </Button>
+          )}
+        </>
       </Grid>
-      {/* </form> */}
 
       <Snackbar
         open={snackBarError}

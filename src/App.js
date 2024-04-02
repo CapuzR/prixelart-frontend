@@ -30,7 +30,7 @@ import SoloService from "./prixerProfile/fullscreenPhoto/fullscreenService";
 import TestimonialsGrid from "./testimonials/testimonialsGrid";
 import Map from "./map/index";
 import OrgGrid from "./sharedComponents/prixerGrid/orgGrid";
-
+import { getComission } from "./shoppingCart/pricesFunctions";
 const useStyles = makeStyles((theme) => ({
   paper2: {
     position: "absolute",
@@ -52,6 +52,7 @@ const useStyles = makeStyles((theme) => ({
 
 function App() {
   const classes = useStyles();
+  const globalParams = window.location.pathname;
 
   const [buyState, setBuyState] = useState(
     localStorage.getItem("buyState")
@@ -77,7 +78,7 @@ function App() {
   const [permissions, setPermissions] = useState();
   const [termsAgreeVar, setTermsAgreeVar] = useState(true);
   const [value, setValue] = useState();
-
+  const [discountList, setDiscountList] = useState([]);
   document.addEventListener("contextmenu", (event) => {
     event.preventDefault();
   });
@@ -130,6 +131,18 @@ function App() {
       });
   };
 
+  const getDiscounts = async () => {
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/discount/read-allv2";
+    await axios
+      .post(base_url, { adminToken: localStorage.getItem("adminTokenV") })
+      .then((response) => {
+        setDiscountList(response.data.discounts);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
   useEffect(() => {
     readDollarValue();
     checkP();
@@ -152,6 +165,12 @@ function App() {
   useEffect(() => {
     if (JSON.parse(localStorage.getItem("token"))) {
       TermsAgreeModal();
+    }
+  }, []);
+
+  useEffect(() => {
+    if (globalParams === "/admin/order/read") {
+      getDiscounts();
     }
   }, []);
 
@@ -250,6 +269,15 @@ function App() {
   function changeQuantity(input) {
     const newState = [...buyState];
     if (input.quantity) {
+      newState[input.index].product.comission = getComission(
+        newState[input.index].product,
+        newState[input.index].art,
+        false,
+        1,
+        discountList,
+        input.quantity,
+        input.prixer
+      );
       newState[input.index].quantity = input.quantity;
       setBuyState(newState);
     }

@@ -266,7 +266,13 @@ export default function Checkout(props) {
       process.env.REACT_APP_BACKEND_URL + "/prixer/read-all-full";
 
     axios.get(base_url).then((response) => {
-      setPrixers(response.data.prixers);
+      let prev = response.data.prixers;
+      prev.map((prix) => {
+        if (prix !== null) {
+          return prix;
+        }
+      });
+      setPrixers(prev);
     });
     getDiscounts();
   }, []);
@@ -324,7 +330,7 @@ export default function Checkout(props) {
     if (props.selectedPrixer) {
       return getTotalUnitsPVM(
         state,
-        props.currency,
+        currency,
         props.dollarValue,
         discountList,
         props.selectedPrixer.username
@@ -335,7 +341,7 @@ export default function Checkout(props) {
     } else {
       return getTotalUnitsPVP(
         state,
-        props.currency,
+        currency,
         props.dollarValue,
         discountList
       ).toLocaleString("de-DE", {
@@ -388,12 +394,12 @@ export default function Checkout(props) {
     if (props.basicData && props.basicData.name && props.basicData.lastname) {
       prixers.map((prixer) => {
         if (
+          prixer?.firstName &&
           prixer?.firstName?.toLowerCase() ===
             props.basicData.name.toLowerCase().trim() &&
           prixer?.lastName?.toLowerCase() ===
             props.basicData.lastname.toLowerCase().trim()
         ) {
-          console.log(prixer);
           props.setSelectedPrixer(prixer);
         } else return;
       });
@@ -614,7 +620,7 @@ export default function Checkout(props) {
                                         Number(
                                           UnitPrice(
                                             item.product,
-                                            item.art.comission,
+                                            item.art,
                                             currency,
                                             props.dollarValue,
                                             discountList,

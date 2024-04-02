@@ -246,7 +246,6 @@ export default function CreateOrder(props) {
   const handleStep = (step) => () => {
     setActiveStep(step);
   };
-
   let shippingCost = Number(shippingMethod?.price);
 
   const getIvaCost = (state) => {
@@ -448,6 +447,7 @@ export default function CreateOrder(props) {
         {activeStep === 1 && (
           <ShoppingCart
             selectedPrixer={selectedPrixer}
+            selectedConsumer={selectedConsumer}
             buyState={props.buyState}
             discountList={props.discountList}
             AssociateProduct={props.AssociateProduct}

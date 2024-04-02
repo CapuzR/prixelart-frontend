@@ -1,17 +1,16 @@
 const UnitPrice = (
   product,
-  comission,
+  art,
   currency,
   dollarValue,
   discountList,
   prixer
 ) => {
-  let { base, prev, final } = 0;
-
+  let { base, final } = 0;
   if (product.modifyPrice) {
     final = product.finalPrice;
   } else if (prixer !== undefined) {
-    base = product.prixerEquation
+    final = product.prixerEquation
       ? Number(
           product?.prixerEquation?.replace(/[,]/gi, ".") -
             product?.prixerEquation?.replace(/[,]/gi, ".") / 10
@@ -20,9 +19,12 @@ const UnitPrice = (
           product?.prixerPrice?.from?.replace(/[,]/gi, ".") -
             product?.prixerPrice?.from?.replace(/[,]/gi, ".") / 10
         );
-    final = base / (1 - comission / 100);
+
+    if (art.prixerUsername !== prixer && art.owner !== prixer) {
+      final = final / (1 - art.comission / 100);
+    }
   } else {
-    base = product.publicEquation
+    final = product.publicEquation
       ? Number(
           product.publicEquation.replace(/[,]/gi, ".") -
             product.publicEquation.replace(/[,]/gi, ".") / 10
@@ -31,10 +33,11 @@ const UnitPrice = (
           product.publicPrice.from.replace(/[,]/gi, ".") -
             product.publicPrice.from.replace(/[,]/gi, ".") / 10
         );
-    final = base / (1 - comission / 100);
+    final = final / (1 - art.comission / 100);
   }
 
   if (
+    prixer === undefined &&
     typeof product.discount === "string" &&
     product.modifyPrice === (false || undefined)
   ) {
@@ -64,7 +67,24 @@ const UnitPriceSug = (
 ) => {
   let { price, base } = 0;
   let dis = discountList?.filter((dis) => dis._id === product.discount)[0];
-  if (prixer !== undefined) {
+  if (typeof product.selection === "string" && prixer !== undefined) {
+    base = product.prixerEquation
+      ? Number(
+          product.prixerEquation?.replace(/[,]/gi, ".") -
+            product.prixerEquation?.replace(/[,]/gi, ".") / 10
+        )
+      : Number(
+          product.prixerPrice.from?.replace(/[,]/gi, ".") -
+            product.prixerPrice.from?.replace(/[,]/gi, ".") / 10
+        );
+  } else if (typeof product.selection === "string") {
+    base = product.publicEquation
+      ? Number(product.publicEquation - product.publicEquation / 10)
+      : Number(
+          product.publicPrice.from?.replace(/[,]/gi, ".") -
+            product.publicPrice.from?.replace(/[,]/gi, ".") / 10
+        );
+  } else if (prixer !== undefined) {
     base = product.prixerEquation
       ? Number(
           product?.prixerEquation?.replace(/[,]/gi, ".") -
@@ -79,12 +99,13 @@ const UnitPriceSug = (
       ? Number(product.publicEquation - product.publicEquation / 10)
       : Number(product.publicPrice.from - product.publicPrice.from / 10);
   }
+
   if (prixer !== art.prixerUsername && prixer !== art.owner) {
     price = base / (1 - art.comission / 100);
   } else {
     price = base;
   }
-  if (typeof product.discount === "string") {
+  if (prixer === undefined && typeof product.discount === "string") {
     if (dis?.type === "Porcentaje") {
       price = Number(price - (price / 100) * dis?.value);
     } else if (dis?.type === "Monto") {
@@ -113,7 +134,6 @@ const getVariantPrice = (product, art) => {
   } else {
     price = base;
   }
-  console.log(price);
   let dis = discountList?.filter((dis) => dis._id === product.discount)[0];
   if (typeof product.discount === "string") {
     if (dis?.type === "Porcentaje") {
@@ -122,13 +142,11 @@ const getVariantPrice = (product, art) => {
       price = Number(price - dis?.value);
     }
   }
-  console.log(price);
 
   // Incluir recargo si es a PrixelartPrefit
   if (currency) {
     price = price * dollarValue;
   }
-  console.log(price);
   return price.toLocaleString("de-DE", {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
@@ -137,21 +155,26 @@ const getVariantPrice = (product, art) => {
 
 const getComission = (
   item,
-  comission,
+  art,
   currency,
   dollarValue,
   discountList,
-  quantity
+  quantity,
+  prixer
 ) => {
   const unit = Number(
-    UnitPrice(item, comission, currency, dollarValue, discountList).replace(
+    UnitPrice(item, art, currency, dollarValue, discountList, prixer).replace(
       /[,]/gi,
       "."
     )
   );
-  let total = (unit / 100) * comission * quantity;
+  let total = (unit / 100) * art.comission * quantity;
 
-  return total;
+  if (prixer !== art.prixerUsername && prixer !== art.owner) {
+    return total;
+  } else {
+    return 0;
+  }
 };
 
 const getPVPtext = (product, currency, dollarValue, discountList) => {
@@ -789,7 +812,7 @@ const getTotalUnitsPVP = (state, currency, dollarValue, discountList) => {
 
         let final = prev - dis.value;
         if (item.product.finalPrice !== undefined) {
-          final = item.product.finalPrice.replace(/[,]/gi, ".");
+          final = item.product.finalPrice;
         }
         prices.push(final * (item.quantity || 1));
       }

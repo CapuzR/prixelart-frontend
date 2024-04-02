@@ -496,7 +496,7 @@ export default function OrderDetails(props) {
                               minimumFractionDigits: 2,
                               maximumFractionDigits: 2,
                             })
-                          : PriceSelect(item.product)}
+                          : PriceSelect(item)}
                         <div>
                           {
                             typeof item.product?.discount === "string" &&

@@ -13,6 +13,8 @@ import Typography from "@material-ui/core/Typography";
 import TextField from "@material-ui/core/TextField";
 import SearchIcon from "@material-ui/icons/Search";
 import InputAdornment from "@material-ui/core/InputAdornment";
+import moment from "moment";
+import "moment/locale/es";
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -186,7 +188,6 @@ export default function ReadOrders(props) {
     });
     props.readOrders();
   };
-
   return (
     <>
       <Table>
@@ -355,12 +356,12 @@ export default function ReadOrders(props) {
                 <TableRow key={index}>
                   <TableCell align="center">{row.orderId}</TableCell>
                   <TableCell align="center" style={{ padding: 10 }}>
-                    {new Date(row.createdOn)?.toLocaleDateString()}
+                    {moment(row.createdOn).format("DD/MM/YYYY")}
                   </TableCell>
                   <TableCell align="center" style={{ padding: 10 }}>
-                    {new Date(
-                      row.shippingData?.shippingDate
-                    )?.toLocaleDateString()}
+                    {moment(row?.shippingData?.shippingDate).format(
+                      "DD/MM/YYYY"
+                    )}
                   </TableCell>
                   <TableCell align="center" style={{ padding: 10 }}>
                     {row.basicData?.firstname || row.basicData?.name}{" "}
@@ -426,7 +427,7 @@ export default function ReadOrders(props) {
                       </Select>
                       {row.payStatus === "Pagado" && row.payDate && (
                         <Typography variant="body2" color="secondary">
-                          el {new Date(row.payDate)?.toLocaleDateString()}
+                          el {moment(row.payDate).format("DD/MM/YYYY")}
                         </Typography>
                       )}
                     </FormControl>
@@ -477,8 +478,7 @@ export default function ReadOrders(props) {
                       </Select>
                       {row.status === "Concretado" && row.completionDate && (
                         <Typography variant="body2" color="secondary">
-                          el{" "}
-                          {new Date(row?.completionDate)?.toLocaleDateString()}
+                          el {moment(row?.completionDate).format("DD/MM/YYYY")}
                         </Typography>
                       )}
                     </FormControl>

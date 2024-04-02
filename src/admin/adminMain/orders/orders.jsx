@@ -716,21 +716,24 @@ export default function Orders(props) {
 
   const payComission = async (order) => {
     for (let item of order.requests) {
-      let unitPrice = getComission(
-        item.product,
-        item.art.comission,
-        false,
-        order.dollarValue,
-        discountList,
-        item.quantity
-      );
+      let unitPrice =
+        typeof item.product.comission === "number"
+          ? item.product.comission
+          : getComission(
+              item.product,
+              item.art,
+              false,
+              order.dollarValue,
+              discountList,
+              item.quantity
+            );
+
       if (
         item.art?.prixerUsername &&
         item.art?.prixerUsername !== "Personalizado" &&
         item.art?.prixerUsername !== undefined
       ) {
         const url1 = process.env.REACT_APP_BACKEND_URL + "/prixer/read";
-        console.log(unitPrice);
         await axios
           .post(url1, { username: item.art?.prixerUsername })
           .then(async (res) => {

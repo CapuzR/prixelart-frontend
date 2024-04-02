@@ -183,7 +183,15 @@ export default function Prixers(props) {
         process.env.REACT_APP_BACKEND_URL + "/prixer/read-all-full";
 
       const response = await axios.get(base_url);
-      setTiles(response.data.prixers);
+      let prev = response.data.prixers;
+      prev.map((prix) => {
+        if (prix !== null) {
+          return prix;
+        }
+      });
+      setTiles(prev);
+      console.log(prev);
+      // setTiles(response.data.prixers);
     } catch (error) {
       console.log(error);
     }

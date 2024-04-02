@@ -24,6 +24,7 @@ import {
   UnitPriceSug,
   getComission,
 } from "../../../shoppingCart/pricesFunctions";
+import { update } from "immutable";
 const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
@@ -300,16 +301,18 @@ export default function ShoppingCart(props) {
       if (item.art) {
         selected.push(item.art.prixerUsername);
       }
-      pricesList.push(
-        UnitPrice(
-          item.product,
-          item.art.comission,
-          false,
-          1,
-          props.discountList,
-          props?.selectedPrixer?.username
-        )
-      );
+      if (item.art && item.product) {
+        pricesList.push(
+          UnitPrice(
+            item.product,
+            item.art.comission,
+            false,
+            1,
+            props.discountList,
+            props?.selectedPrixer?.username
+          )
+        );
+      }
     });
     setPrices(pricesList);
     setSelectedArtist(selected);
@@ -367,10 +370,12 @@ export default function ShoppingCart(props) {
     prod.finalPrice = Number(newPrice?.replace(/[,]/gi, "."));
     prod.comission = getComission(
       prod,
-      art.comission,
-      currency,
-      dollarValue,
-      discountList
+      art,
+      props.currency,
+      props.dollarValue,
+      props.discountList,
+      1,
+      props?.selectedPrixer?.username
     );
     props.setSelectedProductToAssociate({
       index,
@@ -414,27 +419,32 @@ export default function ShoppingCart(props) {
     let selectedProductFull = productList.find(
       (result) => result.name === selectedProduct
     );
-    selectedProductFull.comission = getComission(
-      selectedProductFull,
-      art.comission,
-      currency,
-      dollarValue,
-      discountList
-    );
+    if (art) {
+      selectedProductFull.comission = getComission(
+        selectedProductFull,
+        art,
+        false,
+        1,
+        props.discountList,
+        1,
+        props?.selectedPrixer?.username
+      );
+
+      updatePrices(
+        index,
+        selectedProductFull,
+        art,
+        props.currency,
+        props.dollarValue,
+        props.discountList,
+        props?.selectedPrixer?.username
+      );
+    }
     props.AssociateProduct({
       index: index,
       item: selectedProductFull,
       type: "product",
     });
-    updatePrices(
-      index,
-      selectedProductFull,
-      art,
-      props.currency,
-      props.dollarValue,
-      props.discountList,
-      props?.selectedPrixer?.username
-    );
   };
 
   const handleVariantProduct = (variant, index, item) => {
@@ -457,26 +467,31 @@ export default function ShoppingCart(props) {
         (v) => v.name === namev2 && v.attributes[1].value === name[3]
       );
       prod.publicEquation = selectionv2?.publicPrice?.equation;
+      prod.prixerEquation = selectionv2?.prixerPrice?.equation;
     } else if (variant !== "Personalizado") {
-      selection = item.product.variants.find((v) => v.name === variant);
+      selection = prod.variants.find((v) => v.name === variant);
       prod.publicEquation = selection?.publicPrice?.equation;
+      prod.prixerEquation = selection?.prixerPrice?.equation;
+      if (item.art) {
+        prod.comission = getComission(
+          prod,
+          item.art,
+          props.currency,
+          props.dollarValue,
+          props.discountList,
+          item.quantity,
+          props?.selectedPrixer?.username
+        );
 
-      prod.comission = getComission(
-        prod,
-        item.art.comission,
-        currency,
-        dollarValue,
-        discountList
-      );
-
-      prod.finalPrice = UnitPriceSug(
-        item.product,
-        item.art,
-        false,
-        1,
-        props.discountList,
-        props?.selectedPrixer?.username
-      );
+        prod.finalPrice = UnitPriceSug(
+          prod,
+          item.art,
+          false,
+          1,
+          props.discountList,
+          props?.selectedPrixer?.username
+        );
+      }
     } else {
       prod.publicEquation = 0;
     }
@@ -487,34 +502,38 @@ export default function ShoppingCart(props) {
       type: "product",
     });
 
-    updatePrices(
-      index,
-      prod,
-      item.art,
-      false,
-      1,
-      props.discountList,
-      props?.selectedPrixer?.username
-    );
+    if (item.art) {
+      updatePrices(
+        index,
+        prod,
+        item.art,
+        false,
+        1,
+        props.discountList,
+        props?.selectedPrixer?.username
+      );
+    }
   };
 
   const modifyPrice = (index, newPrice) => {
     const purchase = props.buyState;
     let item = purchase[index];
     item.product.modifyPrice = true;
-    item.product.finalPrice = Number(newPrice.replace(/[,]/gi, "."));
+    item.product.finalPrice = newPrice.replace(/[,]/gi, ".");
 
     const updatedPrices = prices.map((price, i) =>
-      i === index ? Number(newPrice.replace(/[,]/gi, ".")) : price
+      i === index ? newPrice.replace(/[,]/gi, ".") : price
     );
     setPrices(updatedPrices);
 
     item.product.comission = getComission(
       item.product,
-      item.art.comission,
+      item.art,
       props.currency,
       props.dollarValue,
-      props.discountList
+      props.discountList,
+      item.quantity,
+      props?.selectedPrixer?.username
     );
     purchase.splice(index, 1, item);
     localStorage.setItem("buyState", JSON.stringify(purchase));
@@ -800,7 +819,8 @@ export default function ShoppingCart(props) {
                           )}
                         </FormControl>
                       )}
-                      {props.discountList !== undefined &&
+                      {props?.selectedPrixer?.username === undefined &&
+                        props.discountList !== undefined &&
                         props.discountList !== null &&
                         typeof buy.product.discount === "string" && (
                           <Typography
@@ -1007,20 +1027,35 @@ export default function ShoppingCart(props) {
                           }}
                           color="secondary"
                         >
-                          {`Este arte exclusivo tiene una comisión de 
-                            ${buy.art.comission}%`}
-                          {/* , ganaría $
-                            {
-                              buy.product?.comission 
-                               ? buy.product?.comission
-                               : getComission(
-                                   buy.product,
-                                  buy.art.comission,
-                                   props.currency,
-                                   props.dollarValue,
-                                   props.discountList
-                                 )
-                            }*/}
+                          {props?.selectedConsumer?.username ===
+                            buy.art.prixerUsername ||
+                          props?.selectedConsumer?.username === buy.art.owner
+                            ? "El cliente es el autor o propietario del arte, su comisión ha sido omitida."
+                            : `Este arte tiene una comisión de 
+                            ${buy.art.comission}% equivalente a $${
+                                typeof buy.product.comission === "string" ||
+                                typeof buy.product.comission === "number"
+                                  ? (
+                                      buy.product?.comission / buy.quantity
+                                    ).toLocaleString("de-DE", {
+                                      minimumFractionDigits: 2,
+                                      maximumFractionDigits: 2,
+                                    })
+                                  : (
+                                      getComission(
+                                        buy.product,
+                                        buy.art,
+                                        props.currency,
+                                        props.dollarValue,
+                                        props.discountList,
+                                        buy.quantity,
+                                        props?.selectedPrixer?.username
+                                      ) / buy.quantity
+                                    ).toLocaleString("de-DE", {
+                                      minimumFractionDigits: 2,
+                                      maximumFractionDigits: 2,
+                                    })
+                              }`}
                         </Typography>
                       </>
                     )}
@@ -1053,7 +1088,8 @@ export default function ShoppingCart(props) {
 
                                   props.currency,
                                   props.dollarValue,
-                                  props.discountList
+                                  props.discountList,
+                                  props?.selectedPrixer?.username
                                 )
                           }
                           InputProps={{
@@ -1102,6 +1138,7 @@ export default function ShoppingCart(props) {
                                   art: buy.art,
                                   product: buy.product,
                                   quantity: e.target.value,
+                                  prixer: props?.selectedPrixer?.username,
                                 });
                               }}
                             />

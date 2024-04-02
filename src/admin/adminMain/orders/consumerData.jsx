@@ -416,21 +416,9 @@ export default function ConsumerData(props) {
           consumer.firstname === valuev2[0] &&
           consumer.lastname === valuev2[1]?.trim()
       );
-      if (prixer) {
-        props.setSelectedPrixer(prixer);
-        props.setSelectedConsumer(undefined);
-        props.setBasicData({
-          ...props.basicData,
-          name: valuev2[0],
-          lastname: valuev2[1]?.trim(),
-          phone: prixer?.phone,
-          email: prixer?.email,
-          address: prixer?.address,
-          ci: prixer?.ci,
-        });
-      } else if (selected) {
+      if (selected) {
         props.setSelectedConsumer(selected);
-        props.setSelectedPrixer(undefined);
+        // props.setSelectedPrixer(undefined);
         props.setBasicData({
           ...props.basicData,
           name: valuev2[0],
@@ -440,6 +428,25 @@ export default function ConsumerData(props) {
           address: selected?.address,
           ci: selected?.ci,
         });
+      }
+      if (prixer) {
+        props.setSelectedPrixer(prixer);
+        // props.setSelectedConsumer(undefined);
+        props.setBasicData({
+          ...props.basicData,
+          name: valuev2[0],
+          lastname: valuev2[1]?.trim(),
+          phone: prixer?.phone,
+          email: prixer?.email,
+          address: prixer?.address,
+          ci: prixer?.ci,
+        });
+      } else if (prixer === undefined && selected.username) {
+        prixer = prixers.find(
+          (prixer) => prixer?.username === selected.username
+        );
+        console.log(prixer);
+        props.setSelectedPrixer(prixer);
       }
     }
   };

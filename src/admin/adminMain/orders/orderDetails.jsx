@@ -490,7 +490,7 @@ export default function OrderDetails(props) {
                             <div>{item.product.selection}</div>
                           )
                         )}
-                        "Precio unitario: $"
+                        Precio unitario: $
                         {item.product?.finalPrice
                           ? item.product?.finalPrice?.toLocaleString("de-DE", {
                               minimumFractionDigits: 2,

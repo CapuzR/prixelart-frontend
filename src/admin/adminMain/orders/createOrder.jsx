@@ -450,6 +450,7 @@ export default function CreateOrder(props) {
             selectedConsumer={selectedConsumer}
             buyState={props.buyState}
             discountList={props.discountList}
+            surchargeList={props.surchargeList}
             AssociateProduct={props.AssociateProduct}
             setSelectedArtToAssociate={props.setSelectedArtToAssociate}
             setSelectedProductToAssociate={props.setSelectedProductToAssociate}

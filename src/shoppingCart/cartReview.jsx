@@ -743,7 +743,9 @@ export default function CartReview(props) {
                           props.currency,
                           props.dollarValue,
                           discountList,
-                          buy.quantity
+                          buy.quantity,
+                          JSON.parse(localStorage?.getItem("token"))?.username,
+                          props.surchargeList
                         ).toLocaleString("de-DE", {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,

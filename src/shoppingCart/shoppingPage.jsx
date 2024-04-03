@@ -548,6 +548,7 @@ export default function ShoppingPage(props) {
                 deleteItemInBuyState={props.deleteItemInBuyState}
                 deleteProductInItem={props.deleteProductInItem}
                 setSelectedArtToAssociate={props.setSelectedArtToAssociate}
+                surchargeList={props.surchargeList}
                 dollarValue={dollarValue}
                 currency={currency}
               />

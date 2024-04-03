@@ -445,7 +445,6 @@ export default function ConsumerData(props) {
         prixer = prixers.find(
           (prixer) => prixer?.username === selected.username
         );
-        console.log(prixer);
         props.setSelectedPrixer(prixer);
       }
     }

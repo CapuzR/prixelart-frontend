@@ -160,7 +160,8 @@ const getComission = (
   dollarValue,
   discountList,
   quantity,
-  prixer
+  prixer,
+  surchargeList
 ) => {
   const unit = Number(
     UnitPrice(item, art, currency, dollarValue, discountList, prixer).replace(
@@ -169,6 +170,23 @@ const getComission = (
     )
   );
   let total = (unit / 100) * art.comission * quantity;
+  let surcharge;
+
+  if (surchargeList && surchargeList?.length > 0) {
+    surchargeList.map((sur) => {
+      if (
+        sur.appliedUsers.includes(art.prixerUsername) ||
+        sur.appliedUsers.includes(art.owner)
+      ) {
+        if (sur.type === "Porcentaje") {
+          surcharge = total - (total / 100) * sur.value;
+          total = surcharge;
+        } else if (sur.type === "Monto") {
+          total = total - sur.value;
+        }
+      }
+    });
+  }
 
   if (prixer !== art.prixerUsername && prixer !== art.owner) {
     return total;

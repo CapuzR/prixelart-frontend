@@ -99,8 +99,6 @@ export default function ReadConsumers(props) {
       })
       .then((response) => {
         setSnackbar(true);
-        console.log(response);
-
         setMessage("Cliente eliminado con éxito");
         readConsumers();
       });

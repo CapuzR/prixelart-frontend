@@ -79,6 +79,8 @@ function App() {
   const [termsAgreeVar, setTermsAgreeVar] = useState(true);
   const [value, setValue] = useState();
   const [discountList, setDiscountList] = useState([]);
+  const [surchargeList, setSurchargeList] = useState([]);
+
   document.addEventListener("contextmenu", (event) => {
     event.preventDefault();
   });
@@ -142,7 +144,18 @@ function App() {
         console.log(error);
       });
   };
-
+  const getSurcharges = async () => {
+    const base_url =
+      process.env.REACT_APP_BACKEND_URL + "/surcharge/read-active";
+    await axios
+      .get(base_url)
+      .then((response) => {
+        setSurchargeList(response.data.surcharges);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
   useEffect(() => {
     readDollarValue();
     checkP();
@@ -169,8 +182,9 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if (globalParams === "/admin/order/read") {
+    if (globalParams === ("/admin/order/read" || "/shopping")) {
       getDiscounts();
+      getSurcharges();
     }
   }, []);
 
@@ -276,7 +290,8 @@ function App() {
         1,
         discountList,
         input.quantity,
-        input.prixer
+        input.prixer,
+        surchargeList
       );
       newState[input.index].quantity = input.quantity;
       setBuyState(newState);
@@ -497,6 +512,7 @@ function App() {
             changeQuantity={changeQuantity}
             valuesConsumerForm={valuesConsumerForm}
             setValuesConsumerForm={setValuesConsumerForm}
+            surchargeList={surchargeList}
             dollarValue={dollarValue}
             setOpen={setOpen}
             setMessage={setMessage}

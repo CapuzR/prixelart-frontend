@@ -190,8 +190,6 @@ export default function Prixers(props) {
         }
       });
       setTiles(prev);
-      console.log(prev);
-      // setTiles(response.data.prixers);
     } catch (error) {
       console.log(error);
     }

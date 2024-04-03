@@ -252,6 +252,8 @@ export default function Orders(props) {
   const [errorMessage, setErrorMessage] = useState();
   const [snackBarError, setSnackBarError] = useState(false);
   const [discountList, setDiscountList] = useState([]);
+  const [surchargeList, setSurchargeList] = useState([]);
+
   const [orders, setOrders] = useState([]);
   const [movements, setMovements] = useState([]);
   const [consumers, setConsumers] = useState([]);
@@ -277,8 +279,21 @@ export default function Orders(props) {
       });
   };
 
+  const getSurcharges = async () => {
+    const base_url =
+      process.env.REACT_APP_BACKEND_URL + "/surcharge/read-active";
+    await axios
+      .get(base_url)
+      .then((response) => {
+        setSurchargeList(response.data.surcharges);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
   useEffect(() => {
     getDiscounts();
+    getSurcharges();
   }, []);
 
   const handleFilters = (filter, value) => {
@@ -725,7 +740,8 @@ export default function Orders(props) {
               false,
               order.dollarValue,
               discountList,
-              item.quantity
+              item.quantity,
+              surchargeList
             );
 
       if (
@@ -1006,6 +1022,7 @@ export default function Orders(props) {
           buyState={props.buyState}
           setBuyState={props.setBuyState}
           discountList={discountList}
+          surchargeList={surchargeList}
           deleteItemInBuyState={props.deleteItemInBuyState}
           setSelectedArtToAssociate={props.setSelectedArtToAssociate}
           setSelectedProductToAssociate={props.setSelectedProductToAssociate}

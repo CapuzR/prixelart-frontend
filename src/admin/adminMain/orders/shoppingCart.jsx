@@ -246,9 +246,9 @@ export default function ShoppingCart(props) {
 
   let custom = { name: "Personalizado", attributes: [{ value: "0x0cm" }] };
 
-  const getProducts = () => {
+  const getProducts = async () => {
     const base_url = process.env.REACT_APP_BACKEND_URL + "/product/read-all";
-    axios.get(base_url).then(async (response) => {
+    await axios.get(base_url).then(async (response) => {
       let productsAttTemp1 = response.data.products;
       await productsAttTemp1.map(async (p, iProd, pArr) => {
         productsAttTemp1 = await getEquation(p, iProd, pArr);
@@ -266,13 +266,10 @@ export default function ShoppingCart(props) {
       );
     });
   };
-  useEffect(() => {
-    getProducts();
-  }, []);
 
-  useEffect(() => {
+  const getArts = async () => {
     const base_url = process.env.REACT_APP_BACKEND_URL + "/art/read-all";
-    axios.get(base_url).then((response) => {
+    await axios.get(base_url).then((response) => {
       const arts = response.data.arts;
       arts.unshift({ title: "Personalizado" });
       let artist = [];
@@ -291,6 +288,11 @@ export default function ShoppingCart(props) {
       });
       setArtist(artist);
     });
+  };
+
+  useEffect(() => {
+    getProducts();
+    getArts();
   }, []);
 
   useEffect(() => {
@@ -375,7 +377,8 @@ export default function ShoppingCart(props) {
       props.dollarValue,
       props.discountList,
       1,
-      props?.selectedPrixer?.username
+      props?.selectedPrixer?.username,
+      props.surchargeList
     );
     props.setSelectedProductToAssociate({
       index,
@@ -427,7 +430,8 @@ export default function ShoppingCart(props) {
         1,
         props.discountList,
         1,
-        props?.selectedPrixer?.username
+        props?.selectedPrixer?.username,
+        props.surchargeList
       );
 
       updatePrices(
@@ -480,7 +484,8 @@ export default function ShoppingCart(props) {
           props.dollarValue,
           props.discountList,
           item.quantity,
-          props?.selectedPrixer?.username
+          props?.selectedPrixer?.username,
+          props.surchargeList
         );
 
         prod.finalPrice = UnitPriceSug(
@@ -533,7 +538,8 @@ export default function ShoppingCart(props) {
       props.dollarValue,
       props.discountList,
       item.quantity,
-      props?.selectedPrixer?.username
+      props?.selectedPrixer?.username,
+      props.surchargeList
     );
     purchase.splice(index, 1, item);
     localStorage.setItem("buyState", JSON.stringify(purchase));
@@ -819,13 +825,15 @@ export default function ShoppingCart(props) {
                           )}
                         </FormControl>
                       )}
+
                       {props?.selectedPrixer?.username === undefined &&
                         props.discountList !== undefined &&
                         props.discountList !== null &&
                         typeof buy.product.discount === "string" && (
                           <Typography
                             variant="p"
-                            style={{ paddingTop: 5, color: "grey" }}
+                            style={{ paddingTop: 5, fontSize: "12px" }}
+                            color="secondary"
                           >
                             Este producto tiene aplicado un descuento de
                             {props.discountList?.find(
@@ -844,6 +852,30 @@ export default function ShoppingCart(props) {
                                   ).value}
                           </Typography>
                         )}
+
+                      {buy.art &&
+                        props.surchargeList.length > 0 &&
+                        props.surchargeList.map((sur) => {
+                          if (
+                            sur.appliedUsers.includes(buy.art.prixerUsername) ||
+                            sur.appliedUsers.includes(buy.art.owner)
+                          ) {
+                            return (
+                              <Typography
+                                variant="p"
+                                style={{ paddingTop: 5, fontSize: "12px" }}
+                                color="secondary"
+                              >
+                                Este arte tiene aplicado un recargo de
+                                {sur.type === "Porcentaje" &&
+                                  " " + sur.value + "%"}
+                                {sur.type === "Monto" && " $" + sur.value}
+                                {sur.appliedPercentage === "ownerComission" &&
+                                  " sobre la comisión del Prixer/Org"}
+                              </Typography>
+                            );
+                          }
+                        })}
                     </div>
                   </div>
                 </Grid>
@@ -1049,7 +1081,8 @@ export default function ShoppingCart(props) {
                                         props.dollarValue,
                                         props.discountList,
                                         buy.quantity,
-                                        props?.selectedPrixer?.username
+                                        props?.selectedPrixer?.username,
+                                        props.surchargeList
                                       ) / buy.quantity
                                     ).toLocaleString("de-DE", {
                                       minimumFractionDigits: 2,

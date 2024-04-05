@@ -23,6 +23,8 @@ import OrderDetails from "./orderDetails";
 import CreateOrder from "./createOrder";
 import { nanoid } from "nanoid";
 import { getComission } from "../../../shoppingCart/pricesFunctions";
+import moment from "moment";
+import "moment/locale/es";
 const excelJS = require("exceljs");
 
 const drawerWidth = 240;
@@ -373,10 +375,8 @@ export default function Orders(props) {
 
   const downloadOrders = async () => {
     const workbook = new excelJS.Workbook();
-    const date = new Date()
-      .toLocaleString()
-      .substring(0, 10)
-      .replace(/\//g, "-");
+    let date = new Date();
+    date = moment(date).format("DD/MM/YYYY").replace(/\//g, "-");
     const worksheet = workbook.addWorksheet(`Pedidos`);
     worksheet.columns = [
       { header: "status", key: "status", width: 16 },
@@ -492,6 +492,7 @@ export default function Orders(props) {
         art = item.art.title;
 
         product = item.product.name;
+
         if (typeof item.product.selection === "string") {
           attributes = item.product.selection;
         } else if (
@@ -513,7 +514,10 @@ export default function Orders(props) {
         }
 
         quantity = item.quantity;
-        if (
+
+        if (item.product.finalPrice !== undefined) {
+          price = ("$", item.product.finalPrice);
+        } else if (
           item.product.publicEquation !== undefined &&
           item.product.publicEquation !== ""
         ) {
@@ -524,6 +528,7 @@ export default function Orders(props) {
         ) {
           price = ("$", item.product.prixerEquation);
         } else price = ("$", item.product?.publicPrice?.from);
+
         v2.prixer = prixer;
         v2.art = art;
         v2.product = product;

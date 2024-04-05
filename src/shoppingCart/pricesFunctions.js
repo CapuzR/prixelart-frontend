@@ -19,7 +19,6 @@ const UnitPrice = (
           product?.prixerPrice?.from?.replace(/[,]/gi, ".") -
             product?.prixerPrice?.from?.replace(/[,]/gi, ".") / 10
         );
-
     if (art.prixerUsername !== prixer && art.owner !== prixer) {
       final = final / (1 - art.comission / 100);
     }
@@ -99,7 +98,6 @@ const UnitPriceSug = (
       ? Number(product.publicEquation - product.publicEquation / 10)
       : Number(product.publicPrice.from - product.publicPrice.from / 10);
   }
-
   if (prixer !== art.prixerUsername && prixer !== art.owner) {
     price = base / (1 - art.comission / 100);
   } else {
@@ -225,8 +223,7 @@ const getPVPtext = (product, currency, dollarValue, discountList) => {
             borderRadius: 8,
           }}
         >
-          Descuento de
-          {dis?.type === "Porcentaje" && " %" + dis?.value}
+          `Descuento de `{dis?.type === "Porcentaje" && "%" + dis?.value}
           {dis?.type === "Monto" &&
             Number(dis?.value * dollarValue).toLocaleString("de-DE", {
               minimumFractionDigits: 2,
@@ -283,8 +280,7 @@ const getPVPtext = (product, currency, dollarValue, discountList) => {
             borderRadius: 8,
           }}
         >
-          Descuento de
-          {dis?.type === "Porcentaje" && " %" + dis?.value}
+          `Descuento de `{dis?.type === "Porcentaje" && "%" + dis?.value}
           {dis?.type === "Monto" && Number(dis?.value)}
         </div>
         {dis?.type === "Porcentaje" && (
@@ -352,8 +348,7 @@ const getPVPtext = (product, currency, dollarValue, discountList) => {
             borderRadius: 8,
           }}
         >
-          Descuento de
-          {dis?.type === "Porcentaje" && " %" + dis?.value}
+          `Descuento de ` {dis?.type === "Porcentaje" && "%" + dis?.value}
           {dis?.type === "Monto" &&
             Number(dis?.value * dollarValue).toLocaleString("de-DE", {
               minimumFractionDigits: 2,
@@ -434,8 +429,7 @@ const getPVPtext = (product, currency, dollarValue, discountList) => {
             borderRadius: 8,
           }}
         >
-          Descuento de
-          {dis?.type === "Porcentaje" && " %" + dis?.value}
+          `Descuento de ` {dis?.type === "Porcentaje" && "%" + dis?.value}
           {dis?.type === "Monto" && dis?.value}
         </div>
 
@@ -507,8 +501,7 @@ const getPVPtext = (product, currency, dollarValue, discountList) => {
             borderRadius: 8,
           }}
         >
-          Descuento de
-          {dis?.type === "Porcentaje" && " %" + dis?.value}
+          `Descuento de ` {dis?.type === "Porcentaje" && "%" + dis?.value}
           {dis?.type === "Monto" &&
             Number(dis?.value * dollarValue).toLocaleString("de-DE", {
               minimumFractionDigits: 2,
@@ -565,8 +558,7 @@ const getPVPtext = (product, currency, dollarValue, discountList) => {
             borderRadius: 8,
           }}
         >
-          Descuento de
-          {dis?.type === "Porcentaje" && " %" + dis?.value}
+          `Descuento de ` {dis?.type === "Porcentaje" && "%" + dis?.value}
           {dis?.type === "Monto" && dis?.value}
         </div>
 
@@ -917,7 +909,6 @@ const getTotalUnitsPVM = (
   let total = prices?.reduce(function (a, b) {
     return a + b;
   });
-  // console.log(prices);
   if (currency) {
     return total * dollarValue;
   } else return total;

@@ -502,7 +502,7 @@ export default function CartReview(props) {
             size="small"
             onClick={props.handleBuy}
           >
-            comprar
+            Comprar
           </Button>
         )}
       </Grid>

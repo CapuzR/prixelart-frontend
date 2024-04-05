@@ -241,7 +241,7 @@ export default function ShoppingCart(props) {
   const [artList, setArtList] = useState([]);
   const [artList0, setArtList0] = useState([]);
   const [artistFilter, setArtistFilter] = useState();
-  const [selectedArtist, setSelectedArtist] = useState([]);
+  const [selectedArtist, setSelectedArtist] = useState("");
   const [prices, setPrices] = useState([]);
 
   let custom = { name: "Personalizado", attributes: [{ value: "0x0cm" }] };
@@ -281,6 +281,7 @@ export default function ShoppingCart(props) {
           arts.push({
             title: "Personalizado",
             prixerUsername: art.prixerUsername,
+            comission: 10,
           });
           setArtList(arts);
           setArtList0(arts);
@@ -296,18 +297,18 @@ export default function ShoppingCart(props) {
   }, []);
 
   useEffect(() => {
-    let selected = [];
+    let selected;
     let pricesList = [];
 
     props.buyState.map((item) => {
       if (item.art) {
-        selected.push(item.art.prixerUsername);
+        selected = item.art.prixerUsername;
       }
       if (item.art && item.product) {
         pricesList.push(
           UnitPrice(
             item.product,
-            item.art.comission,
+            item.art,
             false,
             1,
             props.discountList,
@@ -322,9 +323,7 @@ export default function ShoppingCart(props) {
 
   const changeArtistFilter = (artist, i) => {
     setArtistFilter(artist);
-    const artists = selectedArtist;
-    artists[i] = artist;
-    setSelectedArtist(artists);
+    setSelectedArtist(artist);
   };
 
   const updatePrices = (
@@ -396,7 +395,7 @@ export default function ShoppingCart(props) {
     );
     props.AssociateProduct({
       index: index,
-      item: selectedArtFull,
+      item: art.title === "Personalizado" ? art : selectedArtFull,
       type: "art",
     });
     setArtistFilter(undefined);
@@ -940,7 +939,7 @@ export default function ShoppingCart(props) {
                           value={
                             buy.art
                               ? buy.art.prixerUsername?.substring(0, 22)
-                              : selectedArtist[index]
+                              : selectedArtist
                           }
                           variant="outlined"
                           onChange={(e) =>
@@ -976,11 +975,10 @@ export default function ShoppingCart(props) {
                           }
                           style={{ width: 210 }}
                         >
-                          {selectedArtist[index] !== undefined
+                          {selectedArtist !== ""
                             ? artList0
                                 .filter(
-                                  (art) =>
-                                    art.prixerUsername === selectedArtist[index]
+                                  (art) => art.prixerUsername === selectedArtist
                                 )
                                 .map((art) => {
                                   return (
@@ -1059,9 +1057,10 @@ export default function ShoppingCart(props) {
                           }}
                           color="secondary"
                         >
-                          {props?.selectedConsumer?.username ===
+                          {props?.selectedConsumer?.consumerType === "Prixer" &&
+                          (props?.selectedConsumer?.username ===
                             buy.art.prixerUsername ||
-                          props?.selectedConsumer?.username === buy.art.owner
+                            props?.selectedConsumer?.username === buy.art.owner)
                             ? "El cliente es el autor o propietario del arte, su comisión ha sido omitida."
                             : `Este arte tiene una comisión de 
                             ${buy.art.comission}% equivalente a $${
@@ -1117,8 +1116,7 @@ export default function ShoppingCart(props) {
                               : "Precio base: " +
                                 UnitPrice(
                                   buy.product,
-                                  buy.art.comission,
-
+                                  buy.art,
                                   props.currency,
                                   props.dollarValue,
                                   props.discountList,

@@ -20,6 +20,10 @@ import RadioGroup from "@material-ui/core/RadioGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Slider from "@material-ui/core/Slider";
 import Checkbox from "@material-ui/core/Checkbox";
+import IconButton from "@material-ui/core/IconButton";
+
+import DeleteIcon from "@material-ui/icons/Delete";
+
 import WarpImage from "./warpImage";
 
 const useStyles = makeStyles((theme) => ({
@@ -324,6 +328,35 @@ export default function UpdateMockup(props) {
     }
   };
 
+  const deleteMockupImg = async (e) => {
+    e.preventDefault();
+
+    setLoading(true);
+
+    const base_url =
+      process.env.REACT_APP_BACKEND_URL +
+      `/product/updateMockup/${props.product._id}`;
+    const response = await axios.put(
+      base_url,
+      { adminToken: localStorage.getItem("adminTokenV") },
+      {
+        withCredentials: true,
+      }
+    );
+    if (response.data.success === false) {
+      setLoading(false);
+      setErrorMessage(response.data.message);
+      setSnackBarError(true);
+    } else {
+      setErrorMessage("Actualización de producto exitosa.");
+      setPreview(undefined);
+      checkImages();
+      getRandomArt();
+      setLoading(false);
+      setSnackBarError(true);
+    }
+  };
+
   return (
     <React.Fragment>
       {
@@ -607,6 +640,24 @@ export default function UpdateMockup(props) {
               <div style={{ width: 210, height: 210, position: "relative" }}>
                 <div
                   style={{
+                    width: "100%",
+                    display: "flex",
+                    justifyContent: "end",
+                    position: "absolute",
+                    top: "-40px",
+                    left: "0",
+                  }}
+                >
+                  <IconButton
+                    size="small"
+                    onClick={deleteMockupImg}
+                    color="gainsboro"
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                </div>
+                <div
+                  style={{
                     backgroundImage: "url(" + preview + ")",
                     width: 210,
                     height: 210,
@@ -639,19 +690,6 @@ export default function UpdateMockup(props) {
                     translateY={translateY}
                   />
                 )}
-
-                {/* {randomArt && (
-                  <div
-                    style={{
-                      width: "400px",
-                      height: "400px",
-                      backgroundImage: "url(" + randomArt.smallThumbUrl + ")",
-                      backgroundSize: "contain",
-                      backgroundRepeat: "no-repeat",
-                    }}
-                    id="container"
-                  />
-                )} */}
               </div>
             </Grid>
           </Paper>

@@ -315,6 +315,8 @@ export default function OrderDetails(props) {
     checkConsumer(props.modalContent.consumerId);
   }, []);
 
+  console.log(props.modalContent);
+
   return (
     <Grid container className={classes.paper2}>
       <Grid

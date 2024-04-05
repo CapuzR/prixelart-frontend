@@ -10,6 +10,8 @@ import Tooltip from "@material-ui/core/Tooltip";
 import Paper from "@material-ui/core/Paper";
 import AddIcon from "@material-ui/icons/Add";
 import DeleteIcon from "@material-ui/icons/Delete";
+import FilterNoneIcon from "@material-ui/icons/FilterNone";
+
 import StarsIcon from "@material-ui/icons/Stars";
 import Img from "react-cool-img";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
@@ -45,7 +47,7 @@ export default function CartReview(props) {
   const classes = useStyles();
   const history = useHistory();
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isIphone = useMediaQuery(theme.breakpoints.down("xs"));
   const [discountList, setDiscountList] = useState([]);
 
@@ -87,7 +89,17 @@ export default function CartReview(props) {
   const allowMockup = (buy, index) => {
     if (buy.product?.mockUp !== undefined) {
       return (
-        <div style={{ width: 250, height: 350, position: "relative" }}>
+        <div
+          style={{ width: 250, height: 350, position: "relative" }}
+          onClick={() => {
+            props.setSelectedArtToAssociate({
+              index,
+              item: buy.product,
+              previous: true,
+            });
+            history.push({ pathname: "/galeria" });
+          }}
+        >
           <WarpImage
             warpPercentage={buy.product.mockUp.warpPercentage}
             warpOrientation={buy.product.mockUp.warpOrientation}
@@ -449,6 +461,15 @@ export default function CartReview(props) {
     }
   };
 
+  const copyItem = (i) => {
+    let newState = JSON.parse(localStorage.getItem("buyState"));
+    newState.push(newState[i]);
+    props.setBuyState(newState);
+    localStorage.setItem("buyState", JSON.stringify(newState));
+    props.setMessage("Item duplicado correctamente.");
+    props.setOpen(true);
+  };
+
   return (
     <>
       <Grid
@@ -459,9 +480,31 @@ export default function CartReview(props) {
           justifyContent: "space-between",
         }}
       >
-        <h1 style={{ marginBottom: 20, marginTop: 90, color: "#404e5c" }}>
-          Carrito de compras
+        <h1
+          style={{
+            marginBottom: isMobile ? 40 : 20,
+            marginTop: 100,
+            color: "#404e5c",
+          }}
+        >
+          {isMobile ? "Carrito" : "Carrito de compras"}
         </h1>
+        {isMobile && (
+          <Button
+            style={{
+              marginBottom: isMobile ? 40 : 20,
+              marginTop: 100,
+              textTransform: "none",
+              padding: 0,
+            }}
+            color="primary"
+            variant="contained"
+            size="small"
+            onClick={props.handleBuy}
+          >
+            Comprar
+          </Button>
+        )}
       </Grid>
       {props.buyState.map((buy, index) => {
         return (
@@ -482,6 +525,45 @@ export default function CartReview(props) {
               elevation={3}
             >
               <Grid container>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "end",
+                    marginBottom: "-30px",
+                    width: "100%",
+                  }}
+                >
+                  <Tooltip
+                    title="Duplicar item"
+                    style={{ height: 40, width: 40 }}
+                  >
+                    <IconButton
+                      size="small"
+                      onClick={() => copyItem(index)}
+                      color="gainsboro"
+                    >
+                      <FilterNoneIcon />
+                    </IconButton>
+                  </Tooltip>
+                  <Tooltip
+                    title="Eliminar item"
+                    style={{
+                      height: 40,
+                      width: 40,
+                      marginLeft: "-5px",
+                      marginRight: "-5px",
+                    }}
+                  >
+                    <IconButton
+                      size="small"
+                      onClick={() => props.deleteItemInBuyState({ id: index })}
+                      color="primary"
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </Tooltip>
+                </div>
                 <Grid
                   item
                   style={{
@@ -490,37 +572,6 @@ export default function CartReview(props) {
                   }}
                 >
                   {allowMockup(buy, index)}
-
-                  {isMobile && (
-                    <Grid
-                      item
-                      xs
-                      sm
-                      md
-                      lg
-                      xl
-                      style={{
-                        display: "flex",
-                        justifyContent: "end",
-                        height: 160,
-                      }}
-                    >
-                      <Tooltip
-                        title="Eliminar item"
-                        style={{ height: 40, width: 40 }}
-                      >
-                        <IconButton
-                          size="small"
-                          onClick={() =>
-                            props.deleteItemInBuyState({ id: index })
-                          }
-                          color="primary"
-                        >
-                          <DeleteIcon />
-                        </IconButton>
-                      </Tooltip>
-                    </Grid>
-                  )}
                 </Grid>
 
                 <Grid
@@ -639,6 +690,7 @@ export default function CartReview(props) {
                       </Button>
                     )}
                   </div>
+
                   {buy.product ? (
                     <Grid
                       item
@@ -706,20 +758,6 @@ export default function CartReview(props) {
                   )}
                 </Grid>
 
-                {!isMobile && (
-                  <Tooltip
-                    title="Eliminar item"
-                    style={{ height: 40, width: 40 }}
-                  >
-                    <IconButton
-                      size="small"
-                      onClick={() => props.deleteItemInBuyState({ id: index })}
-                      color="primary"
-                    >
-                      <DeleteIcon />
-                    </IconButton>
-                  </Tooltip>
-                )}
                 {buy.art &&
                   buy.product &&
                   buy.art.exclusive === "exclusive" && (

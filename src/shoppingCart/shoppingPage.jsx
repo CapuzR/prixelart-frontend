@@ -21,6 +21,8 @@ import { nanoid } from "nanoid";
 import validations from "./validations";
 import Switch from "@material-ui/core/Switch";
 import { Alert } from "@material-ui/lab";
+import useMediaQuery from "@material-ui/core/useMediaQuery";
+
 import {
   getPVP,
   getPVM,
@@ -135,6 +137,8 @@ export default function ShoppingPage(props) {
   const classes = useStyles();
   const history = useHistory();
   const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
   const [orderPaymentMethod, setOrderPaymentMethod] = useState(undefined);
   const [observations, setObservations] = useState();
   const [activeStep, setActiveStep] = React.useState(0);
@@ -472,6 +476,13 @@ export default function ShoppingPage(props) {
     setCurrency(!currency);
   };
 
+  const handleBuy = () => {
+    document.getElementById("next")?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  };
+
   return (
     <>
       <Backdrop className={classes.backdrop} open={loading}>
@@ -512,8 +523,8 @@ export default function ShoppingPage(props) {
                 flexDirection: "row",
                 alignItems: "center",
                 marginRight: 40,
-                // marginTop: "150px",
-                justifyContent: "end",
+                marginTop: isMobile && 40,
+                justifyContent: isMobile ? "start" : "end",
               }}
             >
               <Switch
@@ -540,10 +551,11 @@ export default function ShoppingPage(props) {
               md={6}
               lg={7}
               xl={7}
-              style={{ marginTop: "-150px" }}
+              style={{ marginTop: isMobile ? "-190px" : "-150px" }}
             >
               <CartReview
                 buyState={props.buyState}
+                setBuyState={props.setBuyState}
                 changeQuantity={props.changeQuantity}
                 deleteItemInBuyState={props.deleteItemInBuyState}
                 deleteProductInItem={props.deleteProductInItem}
@@ -551,6 +563,9 @@ export default function ShoppingPage(props) {
                 surchargeList={props.surchargeList}
                 dollarValue={dollarValue}
                 currency={currency}
+                setOpen={props.setOpen}
+                setMessage={props.setMessage}
+                handleBuy={handleBuy}
               />
             </Grid>
 
@@ -623,6 +638,7 @@ export default function ShoppingPage(props) {
                     Anterior
                   </Button>
                   <Button
+                    id="next"
                     variant="contained"
                     color="primary"
                     disabled={
@@ -658,11 +674,38 @@ export default function ShoppingPage(props) {
             </Grid>
           </Grid>
         ) : (
-          <div style={{ marginTop: 100 }}>
+          <div
+            style={{ marginTop: 100, display: "flex", flexDirection: "column" }}
+          >
             <Typography variant={"h5"} align={"center"} color="secondary">
               Actualmente no tienes ningun producto dentro del carrito de
               compra.
             </Typography>
+
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                marginTop: 20,
+              }}
+            >
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => {
+                  // props.setSelectedArtToAssociate({
+                  //   index,
+                  //   item: buy.art,
+                  //   previous: true,
+                  // });
+                  history.push({
+                    pathname: "/productos",
+                  });
+                }}
+              >
+                Elegir Producto
+              </Button>
+            </div>
           </div>
         )}
       </Container>

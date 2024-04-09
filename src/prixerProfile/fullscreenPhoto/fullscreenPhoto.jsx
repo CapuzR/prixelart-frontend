@@ -43,6 +43,7 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 import Tooltip from "@material-ui/core/Tooltip";
 import IconButton from "@material-ui/core/IconButton";
 import Star from "@material-ui/icons/StarRate";
+import StarOutline from "@material-ui/icons/StarOutline";
 
 const IOSSwitch = withStyles((theme) => ({
   root: {
@@ -646,13 +647,18 @@ export default function FullscreenPhoto(props) {
                               >
                                 <Star
                                   style={{
+                                    marginRight: "-2.2rem",
+                                    marginTop: "0.05rem",
+                                  }}
+                                  color="primary"
+                                  fontSize="large"
+                                />
+                                <StarOutline
+                                  style={{
                                     color: "white",
-                                    marginRight: "-1.842rem",
-                                    marginTop: "-0.01rem",
                                   }}
                                   fontSize="large"
                                 />
-                                <Star color="primary" fontSize="medium" />
                               </IconButton>
                             </Tooltip>
                           )}

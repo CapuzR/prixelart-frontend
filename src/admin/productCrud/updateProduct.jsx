@@ -945,7 +945,7 @@ export default function UpdateProduct(props) {
       </TabPanel>
 
       <TabPanel value={value} index={2}>
-        <Mockup product={props.product} />
+        <Mockup product={props.product} setProduct={props.setProduct} />
       </TabPanel>
 
       <Dialog open={open} onClose={handleClose}>

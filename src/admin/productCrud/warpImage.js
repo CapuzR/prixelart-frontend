@@ -170,8 +170,8 @@ const WarpImage = (props) => {
     <div
       style={{
         position: "absolute",
-        width: 250,
-        height: 250,
+        width: 210,
+        height: 210,
         top: "0",
         left: "0",
         zIndex: "1",

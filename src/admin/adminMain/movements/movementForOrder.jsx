@@ -261,10 +261,8 @@ export default function MovOrder(props) {
     let discount = discountList.find(
       (dis) => dis._id === item.product.discount
     );
-    if (item.product.modifyPrice) {
-      unitPrice = Number(
-        item.product.publicEquation?.replace(/[,]/gi, ".") * item.quantity
-      );
+    if (item.product.finalPrice !== undefined) {
+      unitPrice = Number(item.product.finalPrice * item.quantity);
       return unitPrice;
     } else if (typeof item.product.discount === "string") {
       unitPrice = item.product?.publicEquation
@@ -291,9 +289,40 @@ export default function MovOrder(props) {
       unitPrice = op;
       return unitPrice;
     }
-    // }
   };
 
+  const unitPrice = (item) => {
+    let unitPrice;
+    let discount = discountList.find(
+      (dis) => dis._id === item.product.discount
+    );
+    if (item.product.finalPrice !== undefined) {
+      unitPrice = item.product.finalPrice;
+      return unitPrice;
+    } else if (typeof item.product.discount === "string") {
+      unitPrice = item.product?.publicEquation
+        ? Number(item.product?.publicEquation)
+        : Number(item.product.publicPrice.from);
+
+      if (discount?.type === "Porcentaje") {
+        let op = Number(unitPrice - (unitPrice / 100) * discount.value);
+        unitPrice = op;
+        return unitPrice;
+      } else if (discount?.type === "Monto") {
+        let op = Number(unitPrice - discount.value);
+        unitPrice = op;
+        return unitPrice;
+      }
+    } else {
+      unitPrice = item.product?.publicEquation
+        ? item.product?.publicEquation
+        : item.product.publicPrice.from;
+
+      let op = Number(unitPrice);
+      unitPrice = op;
+      return unitPrice;
+    }
+  };
   const getDis = (discount) => {
     const s = discountList.find((dis) => dis._id === discount)?.name;
     return s;
@@ -333,7 +362,6 @@ export default function MovOrder(props) {
                     display: "flex",
                     flexDirection: "column",
                     marginBottom: 20,
-                    marginTop: -45,
                     borderWidth: "1px",
                     borderStyle: "solid",
                     borderRadius: 10,
@@ -431,6 +459,7 @@ export default function MovOrder(props) {
                   style={{
                     display: "flex",
                     flexDirection: "column",
+                    marginBottom: 30,
                   }}
                 >
                   <Grid
@@ -450,11 +479,7 @@ export default function MovOrder(props) {
                     </Typography>
                     <div>
                       {"Precio unitario: $" +
-                        Number(
-                          item.product?.publicEquation
-                            ? item.product?.publicEquation
-                            : item.product?.publicPrice.from
-                        ).toLocaleString("de-DE", {
+                        unitPrice(item).toLocaleString("de-DE", {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
                         })}
@@ -605,13 +630,7 @@ export default function MovOrder(props) {
                         <div>{"Cantidad: " + item.quantity}</div>
                         <div>
                           {"Precio unitario: $" +
-                            Number(
-                              item.product?.publicEquation
-                                ? item.product?.publicEquation
-                                : item.product?.publicPrice?.from ||
-                                    item.product?.prixerEquation ||
-                                    item.product?.prixerPrice?.price
-                            ).toLocaleString("de-DE", {
+                            unitPrice(item).toLocaleString("de-DE", {
                               minimumFractionDigits: 2,
                               maximumFractionDigits: 2,
                             })}

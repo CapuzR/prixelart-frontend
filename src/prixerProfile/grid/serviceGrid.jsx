@@ -33,6 +33,9 @@ import utils from "../../utils/utils";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import ServiceSearchBar from "../../sharedComponents/searchBar/serviceSearchBar";
+import FloatingAddButton from "../../sharedComponents/floatingAddButton/floatingAddButton";
+import ArtUploader from "../../sharedComponents/artUploader/artUploader";
+import CreateService from "../../sharedComponents/createService/createService";
 
 const IOSSwitch = withStyles((theme) => ({
   root: {
@@ -160,6 +163,10 @@ const useStyles = makeStyles((theme) => ({
     cursor: "pointer",
     padding: "5px",
   },
+  float: {
+    position: "relative",
+    marginLeft: "95%",
+  },
 }));
 
 export default function ServiceGrid(props) {
@@ -194,6 +201,10 @@ export default function ServiceGrid(props) {
   const [categories, setCategories] = useState();
   const [images, setImages] = useState([]); // Imágenes visaulizadas
   const [newImg, setNewImg] = useState([]);
+  const [openArtFormDialog, setOpenArtFormDialog] = useState(false);
+  const [openShoppingCart, setOpenShoppingCart] = useState(false);
+  const [openServiceFormDialog, setOpenServiceFormDialog] = useState(false);
+  const [createdService, setCreatedService] = useState(false);
 
   const toggleDescription = (index) => {
     const updatedShowFullDescription = [...showFullDescription];
@@ -244,7 +255,7 @@ export default function ServiceGrid(props) {
   };
 
   useEffect(() => {
-    if (localStorage.getItem("token") && prixer !== "services") {
+    if (localStorage.getItem("token") && view !== "services") {
       getMyServices();
     } else {
       getServices();
@@ -1203,6 +1214,28 @@ export default function ServiceGrid(props) {
           </Typography>
         )}
       </Grid>
+      <Grid className={classes.float}>
+        <FloatingAddButton
+          setOpenArtFormDialog={setOpenArtFormDialog}
+          setOpenShoppingCart={setOpenShoppingCart}
+          setOpenServiceFormDialog={setOpenServiceFormDialog}
+        />
+      </Grid>
+
+      {openArtFormDialog && (
+        <ArtUploader
+          openArtFormDialog={openArtFormDialog}
+          setOpenArtFormDialog={setOpenArtFormDialog}
+        />
+      )}
+
+      {openServiceFormDialog && (
+        <CreateService
+          openArtFormDialog={openServiceFormDialog}
+          setOpenServiceFormDialog={setOpenServiceFormDialog}
+          setCreatedService={setCreatedService}
+        />
+      )}
 
       <Snackbar
         open={snackBar}

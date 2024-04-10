@@ -144,11 +144,11 @@ export default function ReadMovements(props) {
   const getUsername = (fullname) => {
     const prixer = fullname?.split(" ");
     let selected;
-    if (prixer.length === 2) {
+    if (prixer && prixer?.length === 2) {
       selected = prixers?.find(
-        (p) => p.firstName === prixer[0] && p.lastName === prixer[1]
+        (p) => p?.firstName === prixer[0] && p?.lastName === prixer[1]
       );
-    } else if (prixer.length === 3) {
+    } else if (prixer && prixer?.length === 3) {
       selected = prixers?.find(
         (p) =>
           p.firstName === prixer[0] &&

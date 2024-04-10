@@ -31,6 +31,7 @@ import { useHistory } from "react-router-dom";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { useTheme } from "@material-ui/core/styles";
 import CartReview from "../shoppingCart/cartReview";
+import CreateService from "../sharedComponents/createService/createService";
 import ReactGA from "react-ga";
 
 ReactGA.initialize("G-0RWP9B33D8");
@@ -97,6 +98,8 @@ export default function ProductsCatalog(props) {
   const prixerUsername = "all";
   const classes = useStyles();
   const history = useHistory();
+  const [openServiceFormDialog, setOpenServiceFormDialog] = useState(false);
+  const [createdService, setCreatedService] = useState(false);
 
   const getBestSellers = async () => {
     const url = process.env.REACT_APP_BACKEND_URL + "/getBestSellers";
@@ -256,12 +259,23 @@ export default function ProductsCatalog(props) {
             setOpenArtFormDialog={setOpenArtFormDialog}
           />
         )}
+
+        {openServiceFormDialog && (
+          <CreateService
+            openArtFormDialog={openServiceFormDialog}
+            setOpenServiceFormDialog={setOpenServiceFormDialog}
+            setCreatedService={setCreatedService}
+          />
+        )}
+
         <Grid className={classes.float}>
           <FloatingAddButton
             setOpenArtFormDialog={setOpenArtFormDialog}
             setOpenShoppingCart={setOpenShoppingCart}
+            setOpenServiceFormDialog={setOpenServiceFormDialog}
           />
         </Grid>
+
         <Dialog
           open={props.isOpenAssociateArt}
           keepMounted
@@ -389,6 +403,7 @@ export default function ProductsCatalog(props) {
             )}
           </DialogActions>
         </Dialog>
+
         <Dialog
           maxWidth={"lg"}
           open={openShoppingCart}

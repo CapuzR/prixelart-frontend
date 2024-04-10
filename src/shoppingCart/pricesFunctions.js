@@ -828,8 +828,9 @@ const getTotalUnitsPVP = (state, currency, dollarValue, discountList) => {
       }
     } else if (item.product && item.art) {
       const base = Number(
-        item.product?.publicEquation.replace(/[,]/gi, ".") ||
-          item.product?.publicPrice?.from.replace(/[,]/gi, ".")
+        item.product?.publicEquation
+          ? item.product?.publicEquation?.replace(/[,]/gi, ".")
+          : item.product?.publicPrice?.from.replace(/[,]/gi, ".")
       );
       let final = base - base / 10;
       final = final / (1 - item.art.comission / 100);
@@ -887,8 +888,9 @@ const getTotalUnitsPVM = (
     // } else
     if (item.product && item.art) {
       const base = Number(
-        item.product?.prixerEquation?.replace(/[,]/gi, ".") ||
-          item.product?.prixerPrice?.from?.replace(/[,]/gi, ".")
+        item.product?.prixerEquation
+          ? item.product?.prixerEquation?.replace(/[,]/gi, ".")
+          : item.product?.prixerPrice?.from?.replace(/[,]/gi, ".")
       );
       let final = base - base / 10;
       if (

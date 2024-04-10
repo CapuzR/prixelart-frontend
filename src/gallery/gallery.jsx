@@ -24,6 +24,8 @@ import { useHistory } from "react-router-dom";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { useTheme } from "@material-ui/core/styles";
 import CartReview from "../shoppingCart/cartReview";
+import WarpImage from "../admin/productCrud/warpImage";
+import CreateService from "../sharedComponents/createService/createService";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -71,10 +73,103 @@ export default function Gallery(props) {
   const [selectedArt, setSelectedArt] = useState(undefined);
   const history = useHistory();
   const theme = useTheme();
+  const [openServiceFormDialog, setOpenServiceFormDialog] = useState(false);
+  const [createdService, setCreatedService] = useState(false);
 
   const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
   const isDeskTop = useMediaQuery(theme.breakpoints.up("sm"));
   const classes = useStyles();
+
+  const allowMockup = (buy, index) => {
+    if (buy.product?.mockUp !== undefined && buy.art !== undefined) {
+      return (
+        <div
+          style={{
+            width: 220,
+            height: 220,
+            position: "relative",
+            borderRadius: 15,
+            border: "2px",
+            borderStyle: "solid",
+            borderColor:
+              props.selectedProductToAssociate?.index === index
+                ? "#d33f49"
+                : "gainsboro",
+            opacity:
+              props.selectedProductToAssociate?.index === index ? "1" : "0.6",
+          }}
+        >
+          <WarpImage
+            warpPercentage={buy.product.mockUp.warpPercentage}
+            warpOrientation={buy.product.mockUp.warpOrientation}
+            invertedWrap={buy.product.mockUp.invertedWrap}
+            randomArt={
+              props.selectedProductToAssociate?.index === index
+                ? selectedArt
+                : buy.art
+            }
+            topLeft={buy.product.mockUp.topLeft}
+            width={buy.product.mockUp.width}
+            height={buy.product.mockUp.height}
+            perspective={buy.product.mockUp.perspective}
+            rotate={buy.product.mockUp.rotate}
+            rotateX={buy.product.mockUp.rotateX}
+            rotateY={buy.product.mockUp.rotateY}
+            skewX={buy.product.mockUp.skewX}
+            skewY={buy.product.mockUp.skewY}
+            translateX={buy.product.mockUp.translateX}
+            translateY={buy.product.mockUp.translateY}
+          />
+          <div
+            style={{
+              backgroundImage: "url(" + buy.product.mockUp.mockupImg + ")",
+              width: 210,
+              height: 210,
+              backgroundSize: "cover",
+              borderRadius: 20,
+              position: "absolute",
+              top: "0",
+              left: "0",
+              zIndex: "2",
+            }}
+          />
+        </div>
+      );
+    } else {
+      return (
+        <>
+          <Img
+            placeholder="/imgLoading.svg"
+            style={{
+              backgroundColor: "#eeeeee",
+              height: 180,
+              width: 180,
+              borderRadius: 15,
+              border: "2px",
+              borderStyle: "solid",
+              borderColor:
+                props.selectedProductToAssociate?.index === index
+                  ? "#d33f49"
+                  : "gainsboro",
+              opacity:
+                props.selectedProductToAssociate?.index === index ? "1" : "0.6",
+            }}
+            src={
+              buy.product
+                ? buy.product.sources.images[0]?.url || buy.product.thumbUrl
+                : ""
+            }
+            debounce={1000}
+            cache
+            error="/imgError.svg"
+            sizes="(min-width: 1600px) 850px, (min-width: 960px) 450px, (min-width: 640px) 400px, 200px"
+            alt={buy.product && buy.product.name}
+            id={index}
+          />
+        </>
+      );
+    }
+  };
 
   return (
     <>
@@ -129,10 +224,20 @@ export default function Gallery(props) {
             setOpenArtFormDialog={setOpenArtFormDialog}
           />
         )}
+
+        {openServiceFormDialog && (
+          <CreateService
+            openArtFormDialog={openServiceFormDialog}
+            setOpenServiceFormDialog={setOpenServiceFormDialog}
+            setCreatedService={setCreatedService}
+          />
+        )}
+
         <Grid className={classes.float}>
           <FloatingAddButton
             setOpenArtFormDialog={setOpenArtFormDialog}
             setOpenShoppingCart={setOpenShoppingCart}
+            setOpenServiceFormDialog={setOpenServiceFormDialog}
           />
         </Grid>
 
@@ -167,7 +272,8 @@ export default function Gallery(props) {
                       <div
                         style={{
                           display: "flex",
-                          width: 180,
+                          width: 220,
+                          marginRight: 10,
                         }}
                       >
                         {buy.product && (
@@ -175,20 +281,9 @@ export default function Gallery(props) {
                             key={index}
                             style={{
                               marginBottom: "32px",
-                              height: "180px",
-                              width: "180px",
-                              //                               backgroundImage: buy.product
-                              //   ? buy.product?.mockUp?.mockupImg &&
-                              //     "url(" + buy.product?.mockUp?.mockupImg + ")"
-                              //   : "url(" + buy.product.thumbUrl + ")",
-                              // height: 350,
-                              // width: 350,
-                              // backgroundSize: "cover",
-                              // opacity:
-                              //   props.selectedProductToAssociate?.index ===
-                              //   index
-                              //     ? "1"
-                              //     : "0.6",
+                              marginTop: 10,
+                              height: 220,
+                              width: 220,
                             }}
                             onClick={() =>
                               props.setSelectedProductToAssociate({
@@ -197,75 +292,7 @@ export default function Gallery(props) {
                               })
                             }
                           >
-                            {/* {props.selectedProductToAssociate?.index ===
-                              index && (
-                              <div
-                                style={{
-                                  width: 350,
-                                  height: 350,
-                                  borderRadius: 5,
-                                  marginTop: 5,
-                                  marginRight: 10,
-                                }}
-                              >
-                                <img
-                                  src={
-                                    selectedArt
-                                      ? selectedArt.mediumThumbUrl
-                                      : selectedArt.smallThumbUrl
-                                  }
-                                  alt="Imagen Superpuesta"
-                                  style={{
-                                    position: "relative",
-                                    top: `${
-                                      buy.product.mockUp.topLeft.split(" ")[1]
-                                    }px`,
-                                    left: `${
-                                      buy.product.mockUp.topLeft.split(" ")[0]
-                                    }px`,
-                                    width: `${buy.product.mockUp.width}px`,
-                                    height: `${buy.product.mockUp.height}px`,
-                                    transformOrigin: "top left",
-                                    objectFit: "cover",
-                                    transform: `perspective(${buy.product.mockUp.perspective}px) rotateX(${buy.product.mockUp.rotateX}deg) skew(${buy.product.mockUp.skewX}deg, ${buy.product.mockUp.skewY}deg) translateX(${buy.product.mockUp.translateX}px) translateY(${buy.product.mockUp.translateY}px) rotateY(${buy.product.mockUp.rotateY}deg)`,
-                                  }}
-                                />
-                              </div>
-                            )} */}
-                            <Img
-                              placeholder="/imgLoading.svg"
-                              style={{
-                                backgroundColor: "#eeeeee",
-                                height: 180,
-                                width: 180,
-                                borderRadius: 15,
-                                border: "2px",
-                                borderStyle: "solid",
-                                borderColor:
-                                  props.selectedProductToAssociate?.index ===
-                                  index
-                                    ? "#d33f49"
-                                    : "gainsboro",
-                                opacity:
-                                  props.selectedProductToAssociate?.index ===
-                                  index
-                                    ? "1"
-                                    : "0.6",
-                              }}
-                              src={
-                                buy.product
-                                  ? buy.product.sources.images[0]?.url ||
-                                    buy.product.thumbUrl
-                                  : ""
-                              }
-                              debounce={1000}
-                              cache
-                              error="/imgError.svg"
-                              // srcSet={tile.smallThumbUrl + ' 600w, ' + tile.mediumThumbUrl + ' 850w, ' + tile.largeThumbUrl + ' 1300w'}
-                              sizes="(min-width: 1600px) 850px, (min-width: 960px) 450px, (min-width: 640px) 400px, 200px"
-                              alt={buy.product && buy.product.name}
-                              id={index}
-                            />
+                            {allowMockup(buy, index)}
                           </div>
                         )}
                       </div>

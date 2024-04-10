@@ -12,7 +12,9 @@ import AddIcon from "@material-ui/icons/Add";
 import DeleteIcon from "@material-ui/icons/Delete";
 import FilterNoneIcon from "@material-ui/icons/FilterNone";
 
-import StarsIcon from "@material-ui/icons/Stars";
+import Star from "@material-ui/icons/Stars";
+import StarOutline from "@material-ui/icons/StarOutline";
+import Info from "@material-ui/icons/Info";
 import Img from "react-cool-img";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { useHistory } from "react-router-dom";
@@ -89,47 +91,69 @@ export default function CartReview(props) {
   const allowMockup = (buy, index) => {
     if (buy.product?.mockUp !== undefined) {
       return (
-        <div
-          style={{ width: 250, height: 350, position: "relative" }}
-          onClick={() => {
-            props.setSelectedArtToAssociate({
-              index,
-              item: buy.product,
-              previous: true,
-            });
-            history.push({ pathname: "/galeria" });
-          }}
-        >
-          <WarpImage
-            warpPercentage={buy.product.mockUp.warpPercentage}
-            warpOrientation={buy.product.mockUp.warpOrientation}
-            invertedWrap={buy.product.mockUp.invertedWrap}
-            randomArt={buy.art}
-            topLeft={buy.product.mockUp.topLeft}
-            width={buy.product.mockUp.width}
-            height={buy.product.mockUp.height}
-            perspective={buy.product.mockUp.perspective}
-            rotate={buy.product.mockUp.rotate}
-            rotateX={buy.product.mockUp.rotateX}
-            rotateY={buy.product.mockUp.rotateY}
-            skewX={buy.product.mockUp.skewX}
-            skewY={buy.product.mockUp.skewY}
-            translateX={buy.product.mockUp.translateX}
-            translateY={buy.product.mockUp.translateY}
-          />
+        <div>
           <div
             style={{
-              backgroundImage: "url(" + buy.product.mockUp.mockupImg + ")",
               width: 210,
               height: 210,
-              backgroundSize: "cover",
-              borderRadius: 5,
-              position: "absolute",
-              top: "0",
-              left: "0",
-              zIndex: "2",
+              position: "relative",
             }}
-          />
+            onClick={() => {
+              props.setSelectedArtToAssociate({
+                index,
+                item: buy.product,
+                previous: true,
+              });
+              history.push({ pathname: "/galeria" });
+            }}
+          >
+            <WarpImage
+              warpPercentage={buy.product.mockUp.warpPercentage}
+              warpOrientation={buy.product.mockUp.warpOrientation}
+              invertedWrap={buy.product.mockUp.invertedWrap}
+              randomArt={buy.art}
+              topLeft={buy.product.mockUp.topLeft}
+              width={buy.product.mockUp.width}
+              height={buy.product.mockUp.height}
+              perspective={buy.product.mockUp.perspective}
+              rotate={buy.product.mockUp.rotate}
+              rotateX={buy.product.mockUp.rotateX}
+              rotateY={buy.product.mockUp.rotateY}
+              skewX={buy.product.mockUp.skewX}
+              skewY={buy.product.mockUp.skewY}
+              translateX={buy.product.mockUp.translateX}
+              translateY={buy.product.mockUp.translateY}
+            />
+            <div
+              style={{
+                backgroundImage: "url(" + buy.product.mockUp.mockupImg + ")",
+                width: 210,
+                height: 210,
+                backgroundSize: "cover",
+                borderRadius: 5,
+                position: "absolute",
+                top: "0",
+                left: "0",
+                zIndex: "2",
+              }}
+            />
+          </div>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Tooltip title="Nuestro equipo se encargará de que se vea perfecto para ti.">
+              <IconButton size="small" color="gainsboro">
+                <Info />
+              </IconButton>
+            </Tooltip>
+            <Typography color="secondary" variant="p">
+              Imagen referencial
+            </Typography>
+          </div>
         </div>
       );
     } else if (buy.art && buy.product) {
@@ -517,14 +541,17 @@ export default function CartReview(props) {
           >
             <Paper
               style={{
-                padding: isMobile ? 10 : "10px 10px 0px 10px",
+                padding: isMobile ? 10 : "10px 10px 10px 10px",
                 marginTop: "2px",
                 display: "flex",
                 flexDirection: isMobile ? "column" : "row",
               }}
               elevation={3}
             >
-              <Grid container>
+              <Grid
+                container
+                style={{ display: "flex", justifyContent: "center" }}
+              >
                 <div
                   style={{
                     display: "flex",
@@ -568,7 +595,13 @@ export default function CartReview(props) {
                   item
                   style={{
                     display: "flex",
-                    height: isIphone ? 160 : 220,
+                    height:
+                      buy.product?.mockUp !== undefined && isIphone
+                        ? 210
+                        : isIphone
+                        ? 160
+                        : 220,
+                    marginBottom: buy.product?.mockUp !== undefined && 20,
                   }}
                 >
                   {allowMockup(buy, index)}
@@ -595,18 +628,21 @@ export default function CartReview(props) {
                         style={{
                           display: "flex",
                           justifyContent: "space-between",
+                          width: "80%",
                         }}
                       >
-                        <Typography variant="h6">
+                        <Typography variant="h6" color="secondary">
                           {buy.product.name +
-                            " X " +
+                            " - " +
                             buy.art.title.substring(0, 27)}
                         </Typography>
                       </div>
                     )}
                     {buy.product ? (
-                      <>
-                        <p
+                      <div style={{ display: "flex", flexDirection: "column" }}>
+                        <Typography
+                          variant="p"
+                          color="secondary"
                           style={{
                             fontSize: "12px",
                             padding: 0,
@@ -615,10 +651,12 @@ export default function CartReview(props) {
                         >
                           <strong> Producto: </strong>{" "}
                           {buy.product?.name.substring(0, 10)}
-                        </p>
+                        </Typography>
                         {buy.product.attributes.map((a, i) => {
                           return (
-                            <p
+                            <Typography
+                              variant="p"
+                              color="secondary"
                               style={{
                                 fontSize: 12,
                                 padding: 0,
@@ -630,10 +668,10 @@ export default function CartReview(props) {
                               "object"
                                 ? buy?.product?.selection?.attributes[i]?.value
                                 : buy.product.selection}
-                            </p>
+                            </Typography>
                           );
                         })}
-                      </>
+                      </div>
                     ) : (
                       <Button
                         style={{ fontSize: 14 }}
@@ -653,8 +691,10 @@ export default function CartReview(props) {
                       </Button>
                     )}
                     {buy.art ? (
-                      <>
-                        <p
+                      <div style={{ display: "flex", flexDirection: "column" }}>
+                        <Typography
+                          variant="p"
+                          color="secondary"
                           style={{
                             fontSize: "12px",
                             padding: 0,
@@ -662,8 +702,10 @@ export default function CartReview(props) {
                           }}
                         >
                           <strong> Arte: </strong> {buy.art?.title}
-                        </p>
-                        <p
+                        </Typography>
+                        <Typography
+                          variant="p"
+                          color="secondary"
                           style={{
                             fontSize: "12px",
                             padding: 0,
@@ -671,8 +713,8 @@ export default function CartReview(props) {
                           }}
                         >
                           <strong> Prixer: </strong> {buy.art?.prixerUsername}
-                        </p>
-                      </>
+                        </Typography>
+                      </div>
                     ) : (
                       <Button
                         style={{ fontSize: 14 }}
@@ -703,7 +745,9 @@ export default function CartReview(props) {
                     >
                       <div style={{ paddingBottom: 5 }}>
                         {buy.product.productionTime && (
-                          <p
+                          <Typography
+                            variant="p"
+                            color="secondary"
                             style={{
                               fontSize: "12px",
                               padding: 0,
@@ -713,14 +757,17 @@ export default function CartReview(props) {
                             <strong> Tiempo de producción estimado: </strong>{" "}
                             {buy.product.productionTime}{" "}
                             {buy.product.productionTime == 1 ? "día." : "días."}
-                          </p>
+                          </Typography>
                         )}
-                        <strong>Precio Unitario:</strong>
-                        {props.currency ? " Bs" : " $"}
-                        {PriceSelect(buy).toLocaleString("de-DE", {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                        })}
+                        <br />
+                        <Typography variant="p" color="secondary">
+                          <strong>Precio Unitario:</strong>
+                          {props.currency ? " Bs" : " $"}
+                          {PriceSelect(buy).toLocaleString("de-DE", {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })}
+                        </Typography>
                       </div>
                       <div
                         style={{
@@ -728,7 +775,9 @@ export default function CartReview(props) {
                           alignItems: "center",
                         }}
                       >
-                        <strong>Cantidad: </strong>
+                        <Typography variant="p" color="secondary">
+                          <strong>Cantidad: </strong>{" "}
+                        </Typography>
                         <input
                           style={{
                             width: 80,
@@ -771,7 +820,20 @@ export default function CartReview(props) {
                         alignItems: "center",
                       }}
                     >
-                      <StarsIcon color="primary" />
+                      <Star
+                        style={{
+                          marginRight: "-2.2rem",
+                          marginTop: "0.05rem",
+                        }}
+                        color="primary"
+                        fontSize="large"
+                      />
+                      <StarOutline
+                        style={{
+                          color: "white",
+                        }}
+                        fontSize="large"
+                      />
                       <Typography variant="p" color="primary">
                         Este arte es exclusivo, el artista recibirá
                         {props.currency ? " Bs" : "$"}

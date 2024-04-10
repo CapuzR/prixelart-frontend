@@ -286,7 +286,6 @@ export default function UpdateProduct(props) {
           !description &&
           !category &&
           !considerations &&
-          !cost &&
           !fromPublicPrice &&
           // !fromPrixerPrice &&
           !images
@@ -326,7 +325,7 @@ export default function UpdateProduct(props) {
           if (productionTime !== undefined && productionTime !== "") {
             newFormData.append("productionTime", productionTime);
           }
-          newFormData.append("cost", cost.replace(/[,]/gi, "."));
+          newFormData.append("cost", cost?.replace(/[,]/gi, "."));
           newFormData.append(
             "publicPriceFrom",
             data.publicPrice.from.replace(/[,]/gi, ".")

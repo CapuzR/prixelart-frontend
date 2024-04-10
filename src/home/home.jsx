@@ -37,6 +37,7 @@ import MaximizeIcon from "@material-ui/icons/Maximize";
 import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
 import ArrowForwardIosIcon from "@material-ui/icons/ArrowForwardIos";
 
+import CreateService from "../sharedComponents/createService/createService";
 import ArtUploader from "../sharedComponents/artUploader/artUploader";
 import TestimonialsFeed from "../admin/TestimonialsCrud/TestimonialsFeed";
 import CartReview from "../shoppingCart/cartReview";
@@ -157,6 +158,8 @@ export default function Home(props) {
   const [bestSellers, setBestSellers] = useState();
   const [latestArts, setLatestArts] = useState();
   const [mostSelledArts, setMostSelledArts] = useState();
+  const [openServiceFormDialog, setOpenServiceFormDialog] = useState(false);
+  const [createdService, setCreatedService] = useState(false);
 
   const [openArtFormDialog, setOpenArtFormDialog] = useState(false);
   const [openShoppingCart, setOpenShoppingCart] = useState(false);
@@ -943,10 +946,19 @@ export default function Home(props) {
           <Copyright />
         </footer>
       </Container>
+
       {openArtFormDialog && (
         <ArtUploader
           openArtFormDialog={openArtFormDialog}
           setOpenArtFormDialog={setOpenArtFormDialog}
+        />
+      )}
+
+      {openServiceFormDialog && (
+        <CreateService
+          openArtFormDialog={openServiceFormDialog}
+          setOpenServiceFormDialog={setOpenServiceFormDialog}
+          setCreatedService={setCreatedService}
         />
       )}
 
@@ -1015,6 +1027,7 @@ export default function Home(props) {
           buyState={props.buyState}
           setOpenArtFormDialog={setOpenArtFormDialog}
           setOpenShoppingCart={setOpenShoppingCart}
+          setOpenServiceFormDialog={setOpenServiceFormDialog}
         />
       </Grid>
       {openModal && (

@@ -297,6 +297,7 @@ export default function ReadMovements(props) {
                       ))}
                   </TableBody>
                 </Table>
+
                 <Box
                   style={{
                     display: "flex",

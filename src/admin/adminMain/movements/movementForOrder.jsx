@@ -475,7 +475,7 @@ export default function MovOrder(props) {
                       variant="h6"
                       style={{ textAlign: "center", margin: 5 }}
                     >
-                      Comisión para {props.selectedPrixer}
+                      Comisión para {item.art.prixerUsername}
                     </Typography>
                     <div>
                       {"Precio unitario: $" +
@@ -500,7 +500,7 @@ export default function MovOrder(props) {
                     </div>
                     <strong>
                       {"Comisión: $" +
-                        (finalPrice(item) / 10).toLocaleString("de-DE", {
+                        item.product.comission.toLocaleString("de-DE", {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
                         })}

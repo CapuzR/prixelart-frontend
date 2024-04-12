@@ -13,6 +13,7 @@ import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
 import Img from "react-cool-img";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
+import WarpImage from "../../productCrud/warpImage";
 
 import x from "../../../apple-touch-icon-180x180.png";
 import {
@@ -315,6 +316,116 @@ export default function OrderDetails(props) {
     checkConsumer(props.modalContent.consumerId);
   }, []);
 
+  const allowMockup = (item, index) => {
+    if (item.product?.mockUp !== undefined) {
+      return (
+        <div>
+          <div
+            style={{
+              width: 210,
+              height: 210,
+              position: "relative",
+            }}
+            onClick={() => {
+              props.setSelectedArtToAssociate({
+                index,
+                item: item.product,
+                previous: true,
+              });
+              history.push({ pathname: "/galeria" });
+            }}
+          >
+            <WarpImage
+              warpPercentage={item.product.mockUp.warpPercentage}
+              warpOrientation={item.product.mockUp.warpOrientation}
+              invertedWrap={item.product.mockUp.invertedWrap}
+              randomArt={item.art}
+              topLeft={item.product.mockUp.topLeft}
+              width={item.product.mockUp.width}
+              height={item.product.mockUp.height}
+              perspective={item.product.mockUp.perspective}
+              rotate={item.product.mockUp.rotate}
+              rotateX={item.product.mockUp.rotateX}
+              rotateY={item.product.mockUp.rotateY}
+              skewX={item.product.mockUp.skewX}
+              skewY={item.product.mockUp.skewY}
+              translateX={item.product.mockUp.translateX}
+              translateY={item.product.mockUp.translateY}
+            />
+            <div
+              style={{
+                backgroundImage: "url(" + item.product.mockUp.mockupImg + ")",
+                width: 210,
+                height: 210,
+                backgroundSize: "cover",
+                borderRadius: 5,
+                position: "absolute",
+                top: "0",
+                left: "0",
+                zIndex: "2",
+              }}
+            />
+          </div>
+        </div>
+      );
+    } else {
+      return (
+        <>
+          <Paper
+            style={{
+              width: 150,
+              height: 150,
+              borderRadius: 10,
+              backgroundColor: "#eeeeee",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+            elevation={3}
+          >
+            <Img
+              src={
+                item.art.title === "Personalizado"
+                  ? x
+                  : item.art?.squareThumbUrl
+              }
+              style={{
+                maxWidth: 150,
+                maxHeight: 150,
+                borderRadius: 10,
+              }}
+            />
+          </Paper>
+          <Paper
+            style={{
+              width: 150,
+              height: 150,
+              borderRadius: 10,
+              backgroundColor: "#eeeeee",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+            elevation={3}
+          >
+            <Img
+              src={
+                item.product?.thumbUrl && item.product?.thumbUrl !== "undefined"
+                  ? item.product?.thumbUrl
+                  : item.product?.sources?.images[0]?.url
+              }
+              style={{
+                maxWidth: 150,
+                maxHeight: 150,
+                borderRadius: 10,
+              }}
+            />
+          </Paper>
+        </>
+      );
+    }
+  };
+
   console.log(props.modalContent);
 
   return (
@@ -389,61 +500,12 @@ export default function OrderDetails(props) {
                           justifyContent: "space-evenly",
                         }}
                       >
-                        <Paper
-                          style={{
-                            width: 150,
-                            height: 150,
-                            borderRadius: 10,
-                            backgroundColor: "#eeeeee",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                          }}
-                          elevation={3}
-                        >
-                          <Img
-                            src={
-                              item.art.title === "Personalizado"
-                                ? x
-                                : item.art?.squareThumbUrl
-                            }
-                            style={{
-                              maxWidth: 150,
-                              maxHeight: 150,
-                              borderRadius: 10,
-                            }}
-                          />
-                        </Paper>
-                        <Paper
-                          style={{
-                            width: 150,
-                            height: 150,
-                            borderRadius: 10,
-                            backgroundColor: "#eeeeee",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                          }}
-                          elevation={3}
-                        >
-                          <Img
-                            src={
-                              item.product?.thumbUrl &&
-                              item.product?.thumbUrl !== "undefined"
-                                ? item.product?.thumbUrl
-                                : item.product?.sources?.images[0]?.url
-                            }
-                            style={{
-                              maxWidth: 150,
-                              maxHeight: 150,
-                              borderRadius: 10,
-                            }}
-                          />
-                        </Paper>
+                        {allowMockup(item, index)}
                       </div>
                       <div style={{ padding: 10 }}>
                         {item.art?.title !== "Personalizado" ? (
                           <>
+                            <div>{"Arte: " + item.art.title}</div>
                             <div>{"Id: " + item.art?.artId}</div>
                             <div style={{ marginBottom: 10 }}>
                               {item.art?.prixerUsername !== undefined &&
@@ -882,160 +944,193 @@ export default function OrderDetails(props) {
                       style={{
                         display: "flex",
                         flexDirection: "row",
-                        justifyContent: "space-evenly",
+                        justifyContent: "space-between",
                       }}
                     >
-                      <div style={{ display: "flex", flexDirection: "row" }}>
-                        <Paper
-                          style={{
-                            width: 150,
-                            height: 150,
-                            borderRadius: 10,
-                            backgroundColor: "#eeeeee",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            marginRight: 10,
-                            marginBottom: 10,
-                          }}
-                          elevation={3}
-                        >
-                          <Img
-                            src={item.art?.squareThumbUrl}
-                            style={{
-                              maxWidth: 150,
-                              maxHeight: 150,
-                              borderRadius: 10,
-                            }}
-                          />
-                        </Paper>
-                        <div>
-                          <div>{"Arte: " + item.art.title}</div>
-                          <div>{"Id: " + item.art?.artId}</div>
-                          <div style={{ marginBottom: 10 }}>
-                            {"Prixer: " + item.art?.prixerUsername}
-                          </div>
+                      {item.product?.mockUp !== undefined && (
+                        <div style={{ width: 210 }}>
+                          {allowMockup(item, index)}
                         </div>
-                      </div>
+                      )}
 
-                      <div style={{ display: "flex", flexDirection: "row" }}>
-                        <Paper
-                          style={{
-                            width: 150,
-                            height: 150,
-                            borderRadius: 10,
-                            backgroundColor: "#eeeeee",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            marginRight: 10,
-                          }}
-                          elevation={3}
-                        >
-                          <Img
-                            src={
-                              item.product.thumbUrl ||
-                              item.product.sources.images[0].url
-                            }
-                            style={{
-                              maxWidth: 150,
-                              maxHeight: 150,
-                              borderRadius: 10,
-                            }}
-                          />
-                        </Paper>
+                      <div
+                        style={{
+                          display: "flex",
+                          flexDirection: "row",
+                          justifyContent: "space-evenly",
+                          width: "100%",
+                        }}
+                      >
                         <div
                           style={{
                             display: "flex",
-                            flexDirection: "column",
-                            width: 400,
                           }}
                         >
-                          <div>{"Producto: " + item.product.name}</div>
-                          <div>{"Id: " + item.product._id}</div>
-                          {item.product.selection &&
-                          typeof item.product.selection === "object" ? (
-                            item.product.attributes.map((a, i) => {
-                              return (
-                                <p
-                                  style={{
-                                    padding: 0,
-                                    margin: 0,
-                                  }}
-                                >
-                                  {item.product?.selection?.attributes[i]
-                                    ?.name +
-                                    ": " +
-                                    item.product?.selection?.attributes[i]
-                                      ?.value}
-                                </p>
-                              );
-                            })
-                          ) : item.product.selection &&
-                            typeof item.product.selection === "string" &&
-                            item.product?.selection?.includes(" ") ? (
-                            <div>
-                              {item.product.selection}{" "}
-                              {item.products?.variants &&
-                                item.products?.variants.length > 0 &&
-                                item.product.variants.find(
-                                  (v) => v.name === item.product.selection
-                                ).attributes[1]?.value}
-                            </div>
-                          ) : (
-                            item.product.selection && (
-                              <div>{item.product.selection}</div>
-                            )
+                          {item.product?.mockUp === undefined && (
+                            <Paper
+                              style={{
+                                width: 150,
+                                height: 150,
+                                borderRadius: 10,
+                                backgroundColor: "#eeeeee",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                marginRight: 10,
+                                marginBottom: 10,
+                              }}
+                              elevation={3}
+                            >
+                              <Img
+                                src={item.art?.squareThumbUrl}
+                                style={{
+                                  maxWidth: 150,
+                                  maxHeight: 150,
+                                  borderRadius: 10,
+                                }}
+                              />
+                            </Paper>
                           )}
                           <div
                             style={{
-                              marginTop: 10,
                               display: "flex",
-                              justifyContent: "space-between",
+                              flexDirection: "column",
+                              paddingTop: 20,
                             }}
                           >
-                            {"Cantidad: " + (item.quantity || 1)}
-                            <Select
-                              input={<OutlinedInput />}
-                              id="status"
-                              value={
-                                item.product?.status
-                                  ? item.product?.status
-                                  : "Por producir"
-                              }
-                              onChange={(e) => {
-                                updateItemStatus(
-                                  e.target.value,
-                                  index,
-                                  props.modalContent.orderId
-                                );
+                            <div>{"Arte: " + item.art.title}</div>
+                            <div>{"Id: " + item.art?.artId}</div>
+                            <div style={{ marginBottom: 10 }}>
+                              {"Prixer: " + item.art?.prixerUsername}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div style={{ display: "flex", flexDirection: "row" }}>
+                          {item.product?.mockUp === undefined && (
+                            <Paper
+                              style={{
+                                width: 150,
+                                height: 150,
+                                borderRadius: 10,
+                                backgroundColor: "#eeeeee",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                marginRight: 10,
+                              }}
+                              elevation={3}
+                            >
+                              <Img
+                                src={
+                                  item.product.thumbUrl ||
+                                  item.product.sources.images[0].url
+                                }
+                                style={{
+                                  maxWidth: 150,
+                                  maxHeight: 150,
+                                  borderRadius: 10,
+                                }}
+                              />
+                            </Paper>
+                          )}
+                          <div
+                            style={{
+                              display: "flex",
+                              flexDirection: "column",
+                              justifyContent: "space-between",
+                              paddingTop: 20,
+                              width: 400,
+                            }}
+                          >
+                            <div>
+                              <div>{"Producto: " + item.product.name}</div>
+                              <div>{"Id: " + item.product._id}</div>
+                              {item.product.selection &&
+                              typeof item.product.selection === "object" ? (
+                                item.product.attributes.map((a, i) => {
+                                  return (
+                                    <p
+                                      style={{
+                                        padding: 0,
+                                        margin: 0,
+                                      }}
+                                    >
+                                      {item.product?.selection?.attributes[i]
+                                        ?.name +
+                                        ": " +
+                                        item.product?.selection?.attributes[i]
+                                          ?.value}
+                                    </p>
+                                  );
+                                })
+                              ) : item.product.selection &&
+                                typeof item.product.selection === "string" &&
+                                item.product?.selection?.includes(" ") ? (
+                                <div>
+                                  {item.product.selection}{" "}
+                                  {item.products?.variants &&
+                                    item.products?.variants.length > 0 &&
+                                    item.product.variants.find(
+                                      (v) => v.name === item.product.selection
+                                    ).attributes[1]?.value}
+                                </div>
+                              ) : (
+                                item.product.selection && (
+                                  <div>{item.product.selection}</div>
+                                )
+                              )}
+                            </div>
+                            <div
+                              style={{
+                                marginTop: 10,
+                                display: "flex",
+                                justifyContent: "space-between",
                               }}
                             >
-                              <MenuItem key={0} value={"Por producir"}>
-                                Por producir
-                              </MenuItem>
-                              <MenuItem key={1} value={"En impresión"}>
-                                En impresión
-                              </MenuItem>
-                              <MenuItem key={2} value={"En producción"}>
-                                En producción
-                              </MenuItem>
-                              <MenuItem key={0} value={"Por entregar"}>
-                                Por entregar
-                              </MenuItem>
-                              <MenuItem key={1} value={"Entregado"}>
-                                Entregado
-                              </MenuItem>
-                              <MenuItem key={2} value={"Concretado"}>
-                                Concretado
-                              </MenuItem>
-                              <MenuItem key={3} value={"Detenido"}>
-                                Detenido
-                              </MenuItem>
-                              <MenuItem key={4} value={"Anulado"}>
-                                Anulado
-                              </MenuItem>
-                            </Select>
+                              {"Cantidad: " + (item.quantity || 1)}
+                              <Select
+                                input={<OutlinedInput />}
+                                id="status"
+                                value={
+                                  item.product?.status
+                                    ? item.product?.status
+                                    : "Por producir"
+                                }
+                                onChange={(e) => {
+                                  updateItemStatus(
+                                    e.target.value,
+                                    index,
+                                    props.modalContent.orderId
+                                  );
+                                }}
+                              >
+                                <MenuItem key={0} value={"Por producir"}>
+                                  Por producir
+                                </MenuItem>
+                                <MenuItem key={1} value={"En impresión"}>
+                                  En impresión
+                                </MenuItem>
+                                <MenuItem key={2} value={"En producción"}>
+                                  En producción
+                                </MenuItem>
+                                <MenuItem key={0} value={"Por entregar"}>
+                                  Por entregar
+                                </MenuItem>
+                                <MenuItem key={1} value={"Entregado"}>
+                                  Entregado
+                                </MenuItem>
+                                <MenuItem key={2} value={"Concretado"}>
+                                  Concretado
+                                </MenuItem>
+                                <MenuItem key={3} value={"Detenido"}>
+                                  Detenido
+                                </MenuItem>
+                                <MenuItem key={4} value={"Anulado"}>
+                                  Anulado
+                                </MenuItem>
+                              </Select>
+                            </div>
                           </div>
                         </div>
                       </div>

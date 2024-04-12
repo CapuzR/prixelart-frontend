@@ -611,7 +611,6 @@ export default function ShoppingCart(props) {
     props.setErrorMessage("Item duplicado correctamente.");
     props.setSnackBarError(true);
   };
-
   return (
     <Grid container style={{ display: "flex", justifyContent: "center" }}>
       {props.buyState.length > 0 &&
@@ -935,6 +934,7 @@ export default function ShoppingCart(props) {
                         <InputLabel style={{ paddingLeft: 15 }}>
                           {buy.art ? "Prixer" : "Selecciona un Prixer"}
                         </InputLabel>
+                        {/* Mejorar el valor que muestra el Select pues se queda con el autor del arte seleccionado */}
                         <Select
                           value={
                             buy.art
@@ -1057,9 +1057,11 @@ export default function ShoppingCart(props) {
                           }}
                           color="secondary"
                         >
-                          {props?.selectedConsumer?.consumerType === "Prixer" &&
-                          (props?.selectedConsumer?.username ===
-                            buy.art.prixerUsername ||
+                          {(props?.selectedConsumer?.consumerType ===
+                            "Prixer" &&
+                            props?.selectedConsumer?.username ===
+                              buy.art.prixerUsername) ||
+                          (props?.selectedConsumer?.consumerType === "Prixer" &&
                             props?.selectedConsumer?.username === buy.art.owner)
                             ? "El cliente es el autor o propietario del arte, su comisión ha sido omitida."
                             : `Este arte tiene una comisión de 

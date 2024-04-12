@@ -418,7 +418,9 @@ export default function ConsumerData(props) {
       );
       if (selected) {
         props.setSelectedConsumer(selected);
-        // props.setSelectedPrixer(undefined);
+        if (selected.consumerType === "Prixer") {
+          props.setSelectedPrixer(prixer);
+        }
         props.setBasicData({
           ...props.basicData,
           name: valuev2[0],

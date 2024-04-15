@@ -7,20 +7,21 @@ const UnitPrice = (
   prixer
 ) => {
   let { base, final } = 0;
+
   if (product.modifyPrice) {
     final = product.finalPrice;
   } else if (prixer !== undefined) {
-    final = product.finalPrice
-      ? product.finalPrice
+    product.finalPrice
+      ? (final = product.finalPrice)
       : product.prixerEquation
-      ? Number(
+      ? (final = Number(
           product?.prixerEquation?.replace(/[,]/gi, ".") -
             product?.prixerEquation?.replace(/[,]/gi, ".") / 10
-        )
-      : Number(
+        ))
+      : (final = Number(
           product?.prixerPrice?.from?.replace(/[,]/gi, ".") -
             product?.prixerPrice?.from?.replace(/[,]/gi, ".") / 10
-        );
+        ));
     if (art.prixerUsername !== prixer && art.owner !== prixer) {
       final = final / (1 - art.comission / 100);
     }
@@ -28,14 +29,14 @@ const UnitPrice = (
     product.finalPrice
       ? (final = product.finalPrice)
       : product.publicEquation
-      ? Number(
+      ? (final = Number(
           product.publicEquation.replace(/[,]/gi, ".") -
             product.publicEquation.replace(/[,]/gi, ".") / 10
-        )
-      : Number(
+        ))
+      : (final = Number(
           product.publicPrice.from.replace(/[,]/gi, ".") -
             product.publicPrice.from.replace(/[,]/gi, ".") / 10
-        );
+        ));
     final = final / (1 - art.comission / 100);
   }
 
@@ -51,6 +52,7 @@ const UnitPrice = (
       final = final - dis?.value;
     }
   }
+
   if (currency) {
     final = final * dollarValue;
   }

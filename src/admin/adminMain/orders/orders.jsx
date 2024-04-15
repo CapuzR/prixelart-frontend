@@ -255,7 +255,7 @@ export default function Orders(props) {
   const [snackBarError, setSnackBarError] = useState(false);
   const [discountList, setDiscountList] = useState([]);
   const [surchargeList, setSurchargeList] = useState([]);
-
+  const [prixers, setPrixers] = useState([]);
   const [orders, setOrders] = useState([]);
   const [movements, setMovements] = useState([]);
   const [consumers, setConsumers] = useState([]);
@@ -293,10 +293,31 @@ export default function Orders(props) {
         console.log(error);
       });
   };
-  useEffect(() => {
-    getDiscounts();
-    getSurcharges();
-  }, []);
+
+  const getPrixers = async () => {
+    const base_url =
+      process.env.REACT_APP_BACKEND_URL + "/prixer/read-all-full";
+    await axios
+      .get(base_url)
+      .then((response) => {
+        setPrixers(response.data.prixers);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  const findPrixer = async (prx) => {
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/prixer/read";
+    await axios
+      .post(base_url, { username: prx })
+      .then((response) => {
+        return response.data.prixers;
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
 
   const handleFilters = (filter, value) => {
     let f = filters;
@@ -736,51 +757,135 @@ export default function Orders(props) {
 
   const payComission = async (order) => {
     for (let item of order.requests) {
-      let unitPrice =
-        typeof item.product.comission === "number"
-          ? item.product.comission
-          : getComission(
-              item.product,
-              item.art,
-              false,
-              order.dollarValue,
-              discountList,
-              item.quantity,
-              surchargeList
-            );
+      let unitPrice;
+      let amount;
+      let discount = discountList.find(
+        (dis) => dis._id === item.product.discount
+      );
+      let surcharge = surchargeList.find(
+        (sur) =>
+          sur.appliedUsers.includes(art.prixerUsername) ||
+          sur.appliedUsers.includes(art.owner)
+      );
+      let consumersFiltered = consumers.filter(
+        (con) => con.consumerType === "Prixer"
+      );
+
+      const prx = findPrixer(item.art.prixerUsername);
+
+      let prixer = consumersFiltered.find(
+        (con) =>
+          con.firstname
+            ?.toLowerCase()
+            .includes(props?.basicData?.name?.toLowerCase()) &&
+          con.lastname
+            ?.toLowerCase()
+            .includes(props?.basicData?.lastname?.toLowerCase())
+      );
+
+      if (item.product.modifyPrice) {
+        unitPrice = Number(item.product.finalPrice?.replace(/[,]/gi, "."));
+      } else if (item.product.finalPrice) {
+        unitPrice = Number(item.product.finalPrice?.replace(/[,]/gi, "."));
+      } else if (prixer !== undefined) {
+        item.product.prixerEquation
+          ? (unitPrice = Number(
+              item.product?.prixerEquation?.replace(/[,]/gi, ".")
+            ))
+          : (unitPrice = Number(
+              item.product?.prixerPrice?.from?.replace(/[,]/gi, ".")
+            ));
+      } else {
+        item.product.publicEquation
+          ? (unitPrice = Number(
+              item.product?.publicEquation.replace(/[,]/gi, ".")
+            ))
+          : (unitPrice = Number(
+              item.product.publicPrice.from?.replace(/[,]/gi, ".")
+            ));
+
+        // let op = Number((unitPrice / 10) * item.quantity);
+        // unitPrice = op;
+      }
+
+      // Hay que cambiar esto por un ID
+      if (
+        prx.firstName === order.basicData.name.trim() &&
+        prx.lastName === order.basicData.lastname.trim()
+      ) {
+        return;
+      } else {
+        unitPrice = unitPrice / (1 - item.art.comission / 100);
+      }
+      console.log(prixer);
+      console.log(prx);
+
+      if (
+        prixer === undefined &&
+        typeof product.discount === "string" &&
+        product.modifyPrice === (false || undefined)
+      ) {
+        if (discount?.type === "Porcentaje") {
+          let op = Number(
+            ((unitPrice - (unitPrice / 100) * discount.value) / 10) *
+              item.quantity
+          );
+          unitPrice = op;
+        } else if (discount?.type === "Monto") {
+          let op = Number(((unitPrice - discount.value) / 10) * item.quantity);
+          unitPrice = op;
+        }
+      }
+
+      amount = (unitPrice / 100) * (item.art.comission || 10);
+
+      if (surcharge) {
+        if (surcharge.type === "Porcentaje") {
+          surcharge = amount - (amount / 100) * sur.value;
+          total = surcharge;
+        } else if (surcharge.type === "Monto") {
+          amount = amount - sur.value;
+        }
+      }
+      amount = amount * item.quantity;
+
+      // =
+      //   typeof item.product.comission === "number"
+      //     ? item.product.comission
+      //     : getComission(
+      //         item.product,
+      //         item.art,
+      //         false,
+      //         order.dollarValue,
+      //         discountList,
+      //         item.quantity,
+      //         surchargeList
+      //       );
 
       if (
         item.art?.prixerUsername &&
         item.art?.prixerUsername !== "Personalizado" &&
         item.art?.prixerUsername !== undefined
       ) {
-        const url1 = process.env.REACT_APP_BACKEND_URL + "/prixer/read";
-        await axios
-          .post(url1, { username: item.art?.prixerUsername })
-          .then(async (res) => {
-            setAccount(res.data.account);
-            const url = process.env.REACT_APP_BACKEND_URL + "/movement/create";
-            const data = {
-              _id: nanoid(),
-              createdOn: new Date(),
-              createdBy: JSON.parse(localStorage.getItem("adminToken"))
-                .username,
-              date: new Date(),
-              destinatary: res.data.account,
-              description: `Comisión de la orden #${order.orderId}`,
-              type: "Depósito",
-              value: unitPrice,
-              adminToken: localStorage.getItem("adminTokenV"),
-            };
-            await axios.post(url, data).then(async (res) => {
-              if (res.data.success === false) {
-                setSnackBarError(true);
-                setErrorMessage(res.data.message);
-              }
-            });
-          });
+        const url = process.env.REACT_APP_BACKEND_URL + "/movement/create";
+        const data = {
+          _id: nanoid(),
+          createdOn: new Date(),
+          createdBy: JSON.parse(localStorage.getItem("adminToken")).username,
+          date: new Date(),
+          destinatary: prx.account,
+          description: `Comisión de la orden #${order.orderId}`,
+          type: "Depósito",
+          value: unitPrice,
+          adminToken: localStorage.getItem("adminTokenV"),
+        };
+        await axios.post(url, data).then(async (res) => {
+          if (res.data.success === false) {
+            setSnackBarError(true);
+            setErrorMessage(res.data.message);
+          }
+        });
       }
-      setAccount();
     }
   };
 
@@ -856,6 +961,9 @@ export default function Orders(props) {
     readMovements();
     readConsumers();
     updateOrders();
+    getDiscounts();
+    getSurcharges();
+    getPrixers();
   }, []);
 
   const readDollarValue = async () => {

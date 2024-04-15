@@ -324,10 +324,10 @@ export default function ConsumerData(props) {
       });
   };
 
-  const getPrixers = () => {
+  const getPrixers = async () => {
     const base_url =
       process.env.REACT_APP_BACKEND_URL + "/prixer/read-all-full";
-    axios
+    await axios
       .get(base_url)
       .then((response) => {
         setPrixers(response.data.prixers);

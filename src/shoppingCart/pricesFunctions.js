@@ -10,7 +10,9 @@ const UnitPrice = (
   if (product.modifyPrice) {
     final = product.finalPrice;
   } else if (prixer !== undefined) {
-    final = product.prixerEquation
+    final = product.finalPrice
+      ? product.finalPrice
+      : product.prixerEquation
       ? Number(
           product?.prixerEquation?.replace(/[,]/gi, ".") -
             product?.prixerEquation?.replace(/[,]/gi, ".") / 10
@@ -23,7 +25,9 @@ const UnitPrice = (
       final = final / (1 - art.comission / 100);
     }
   } else {
-    final = product.publicEquation
+    product.finalPrice
+      ? (final = product.finalPrice)
+      : product.publicEquation
       ? Number(
           product.publicEquation.replace(/[,]/gi, ".") -
             product.publicEquation.replace(/[,]/gi, ".") / 10

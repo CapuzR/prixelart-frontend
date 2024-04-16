@@ -307,12 +307,12 @@ export default function Orders(props) {
       });
   };
 
-  const findPrixer = async (prx) => {
+  const findPrixer = (prx) => {
     const base_url = process.env.REACT_APP_BACKEND_URL + "/prixer/read";
-    await axios
+    return axios
       .post(base_url, { username: prx })
       .then((response) => {
-        return response.data.prixers;
+        return response.data;
       })
       .catch((error) => {
         console.log(error);
@@ -757,23 +757,23 @@ export default function Orders(props) {
 
   const payComission = async (order) => {
     for (let item of order.requests) {
-      let unitPrice;
-      let amount;
+      let { unitPrice, amount } = 0;
+
       let discount = discountList.find(
         (dis) => dis._id === item.product.discount
       );
       let surcharge = surchargeList.find(
         (sur) =>
-          sur.appliedUsers.includes(art.prixerUsername) ||
-          sur.appliedUsers.includes(art.owner)
+          sur.appliedUsers.includes(item.art.prixerUsername) ||
+          sur.appliedUsers.includes(item.art.owner)
       );
       let consumersFiltered = consumers.filter(
         (con) => con.consumerType === "Prixer"
       );
 
-      const prx = findPrixer(item.art.prixerUsername);
+      const prx = await findPrixer(item.art.prixerUsername);
 
-      let prixer = consumersFiltered.find(
+      let prixer = await consumersFiltered.find(
         (con) =>
           con.firstname
             ?.toLowerCase()
@@ -783,10 +783,11 @@ export default function Orders(props) {
             .includes(props?.basicData?.lastname?.toLowerCase())
       );
 
+      // Obtener el precio base
       if (item.product.modifyPrice) {
-        unitPrice = Number(item.product.finalPrice?.replace(/[,]/gi, "."));
+        unitPrice = item.product.finalPrice;
       } else if (item.product.finalPrice) {
-        unitPrice = Number(item.product.finalPrice?.replace(/[,]/gi, "."));
+        unitPrice = item.product.finalPrice;
       } else if (prixer !== undefined) {
         item.product.prixerEquation
           ? (unitPrice = Number(
@@ -808,22 +809,23 @@ export default function Orders(props) {
         // unitPrice = op;
       }
 
+      // Restar 10% automático y calcular precio base con %comisión
       // Hay que cambiar esto por un ID
       if (
         prx.firstName === order.basicData.name.trim() &&
         prx.lastName === order.basicData.lastname.trim()
       ) {
         return;
-      } else {
-        unitPrice = unitPrice / (1 - item.art.comission / 100);
+      } else if (item.product.finalPrice === undefined) {
+        unitPrice =
+          (unitPrice - unitPrice / 10) / (1 - item.art.comission / 100);
       }
-      console.log(prixer);
-      console.log(prx);
 
+      // De existir descuentos y no ser Prixer se aplica el descuento
       if (
         prixer === undefined &&
-        typeof product.discount === "string" &&
-        product.modifyPrice === (false || undefined)
+        typeof item.product.discount === "string" &&
+        item.product.modifyPrice === (false || undefined)
       ) {
         if (discount?.type === "Porcentaje") {
           let op = Number(
@@ -837,8 +839,9 @@ export default function Orders(props) {
         }
       }
 
+      // Calcular comisión
       amount = (unitPrice / 100) * (item.art.comission || 10);
-
+      // Aplcar recargo
       if (surcharge) {
         if (surcharge.type === "Porcentaje") {
           surcharge = amount - (amount / 100) * sur.value;
@@ -861,7 +864,7 @@ export default function Orders(props) {
       //         item.quantity,
       //         surchargeList
       //       );
-
+      console.log("La comisión es de $", amount);
       if (
         item.art?.prixerUsername &&
         item.art?.prixerUsername !== "Personalizado" &&
@@ -876,7 +879,7 @@ export default function Orders(props) {
           destinatary: prx.account,
           description: `Comisión de la orden #${order.orderId}`,
           type: "Depósito",
-          value: unitPrice,
+          value: amount,
           adminToken: localStorage.getItem("adminTokenV"),
         };
         await axios.post(url, data).then(async (res) => {
@@ -898,12 +901,14 @@ export default function Orders(props) {
       adminToken: localStorage.getItem("adminTokenV"),
       payStatus: payStatus,
     };
+
     await axios.put(URI, body, { withCredentials: true }).then((res) => {
       if (res.data.message) {
         setErrorMessage(res.data.message);
         setSnackBarError(true);
       }
     });
+
     const updated = orders.map((x) => {
       if (x.orderId === order.orderId) {
         x.payStatus = payStatus;
@@ -912,8 +917,8 @@ export default function Orders(props) {
     });
     setOrders(updated);
 
-    const updatedv2 = rows.filter((x) => x.orderId !== order.orderId);
-    setRows(updatedv2);
+    // const updatedv2 = rows.filter((x) => x.orderId !== order.orderId);
+    // setRows(updatedv2);
 
     if (
       (payStatus === "Pagado" ||

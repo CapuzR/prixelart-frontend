@@ -280,6 +280,7 @@ export default function ShoppingCart(props) {
           artist.push(art.prixerUsername);
           arts.push({
             title: "Personalizado",
+            owner: art.prixerUsername,
             prixerUsername: art.prixerUsername,
             comission: 10,
           });
@@ -487,13 +488,15 @@ export default function ShoppingCart(props) {
           props.surchargeList
         );
 
-        prod.finalPrice = UnitPriceSug(
-          prod,
-          item.art,
-          false,
-          1,
-          props.discountList,
-          props?.selectedPrixer?.username
+        prod.finalPrice = Number(
+          UnitPriceSug(
+            prod,
+            item.art,
+            false,
+            1,
+            props.discountList,
+            props?.selectedPrixer?.username
+          )
         );
       }
     } else {
@@ -523,7 +526,7 @@ export default function ShoppingCart(props) {
     const purchase = props.buyState;
     let item = purchase[index];
     item.product.modifyPrice = true;
-    item.product.finalPrice = newPrice.replace(/[,]/gi, ".");
+    item.product.finalPrice = Number(newPrice.replace(/[,]/gi, "."));
 
     const updatedPrices = prices.map((price, i) =>
       i === index ? newPrice.replace(/[,]/gi, ".") : price

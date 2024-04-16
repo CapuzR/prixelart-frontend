@@ -317,7 +317,10 @@ export default function OrderDetails(props) {
   }, []);
 
   const allowMockup = (item, index) => {
-    if (item.product?.mockUp !== undefined) {
+    if (
+      item.product?.mockUp !== undefined &&
+      item.art.title !== "Personalizado"
+    ) {
       return (
         <div>
           <div

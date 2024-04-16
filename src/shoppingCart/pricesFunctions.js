@@ -11,32 +11,18 @@ const UnitPrice = (
   if (product.modifyPrice) {
     final = product.finalPrice;
   } else if (prixer !== undefined) {
-    product.finalPrice
-      ? (final = product.finalPrice)
-      : product.prixerEquation
-      ? (final = Number(
-          product?.prixerEquation?.replace(/[,]/gi, ".") -
-            product?.prixerEquation?.replace(/[,]/gi, ".") / 10
-        ))
-      : (final = Number(
-          product?.prixerPrice?.from?.replace(/[,]/gi, ".") -
-            product?.prixerPrice?.from?.replace(/[,]/gi, ".") / 10
-        ));
+    product.prixerEquation
+      ? (final = Number(product?.prixerEquation?.replace(/[,]/gi, ".")))
+      : (final = Number(product?.prixerPrice?.from?.replace(/[,]/gi, ".")));
+
     if (art.prixerUsername !== prixer && art.owner !== prixer) {
-      final = final / (1 - art.comission / 100);
+      final = (final - final / 10) / (1 - art.comission / 100);
     }
   } else {
-    product.finalPrice
-      ? (final = product.finalPrice)
-      : product.publicEquation
-      ? (final = Number(
-          product.publicEquation.replace(/[,]/gi, ".") -
-            product.publicEquation.replace(/[,]/gi, ".") / 10
-        ))
-      : (final = Number(
-          product.publicPrice.from.replace(/[,]/gi, ".") -
-            product.publicPrice.from.replace(/[,]/gi, ".") / 10
-        ));
+    product.publicEquation
+      ? (base = Number(product.publicEquation.replace(/[,]/gi, ".")))
+      : (base = Number(product.publicPrice.from.replace(/[,]/gi, ".")));
+    final = base - base / 10;
     final = final / (1 - art.comission / 100);
   }
 
@@ -52,7 +38,9 @@ const UnitPrice = (
       final = final - dis?.value;
     }
   }
-
+  if (product.finalPrice) {
+    final = product.finalPrice;
+  }
   if (currency) {
     final = final * dollarValue;
   }
@@ -840,13 +828,15 @@ const getTotalUnitsPVP = (state, currency, dollarValue, discountList) => {
       );
       let final = base - base / 10;
       final = final / (1 - item.art.comission / 100);
-      if (item.product.finalPrice !== undefined) {
+      if (
+        item.product.finalPrice !== undefined &&
+        item.product.finalPrice !== null
+      ) {
         final = item.product.finalPrice;
       }
       prices.push(final * (item.quantity || 1));
     }
   });
-
   let total = prices?.reduce(function (a, b) {
     return a + b;
   });
@@ -898,10 +888,11 @@ const getTotalUnitsPVM = (
           ? item.product?.prixerEquation?.replace(/[,]/gi, ".")
           : item.product?.prixerPrice?.from?.replace(/[,]/gi, ".")
       );
-      let final = base - base / 10;
+      let final = (base - base / 10) / (1 - item.art.comission / 100);
       if (
-        item.product.finalPrice !== undefined &&
-        item.product.modifyPrice === true
+        item.product.finalPrice !== undefined
+        // &&
+        // item.product.modifyPrice === true
       ) {
         final = item.product.finalPrice;
       } else if (
@@ -913,7 +904,6 @@ const getTotalUnitsPVM = (
       prices.push(final * (item.quantity || 1));
     }
   });
-
   let total = prices?.reduce(function (a, b) {
     return a + b;
   });

@@ -589,7 +589,7 @@ export default function Checkout(props) {
                                       display: "flex",
                                       justifyContent: isMobile
                                         ? "space-between"
-                                        : "",
+                                        : "end",
                                     }}
                                   >
                                     <div>Cantidad: {item.quantity || 1}</div>

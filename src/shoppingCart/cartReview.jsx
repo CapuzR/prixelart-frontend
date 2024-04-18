@@ -550,7 +550,11 @@ export default function CartReview(props) {
             >
               <Grid
                 container
-                style={{ display: "flex", justifyContent: "center" }}
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  padding: 15,
+                }}
               >
                 <div
                   style={{

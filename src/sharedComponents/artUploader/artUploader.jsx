@@ -449,7 +449,7 @@ export default function ArtUploader(props) {
             setErrorMessage(
               "Disculpa, tanto el ancho como el alto de tu arte es menor al establecido. Por favor sube un arte con mayor resolución."
             );
-          } else if (img.width <= 900) {
+          } else if (img.width <= 750) {
             setSnackBarError(true);
             setErrorMessage(
               "Disculpa, el ancho de tu arte es menor al establecido. Por favor sube un arte con mayor resolución."
@@ -492,7 +492,11 @@ export default function ArtUploader(props) {
   };
 
   useEffect(() => {
-    verifyStandardArts();
+    if (JSON.parse(localStorage.getItem("token")).role === "Prixer") {
+      verifyStandardArts();
+    } else {
+      setAllowExclusive(true);
+    }
   }, []);
 
   async function newArtPost() {
@@ -906,7 +910,7 @@ export default function ArtUploader(props) {
                         >
                           <MenuItem value="standard">Estándar</MenuItem>
                           <MenuItem value={"exclusive"}>Exclusivo</MenuItem>
-                          <MenuItem value={"private"}>Exclusivo</MenuItem>
+                          <MenuItem value={"private"}>Privado</MenuItem>
                         </Select>
                       </FormControl>
                     </Grid>

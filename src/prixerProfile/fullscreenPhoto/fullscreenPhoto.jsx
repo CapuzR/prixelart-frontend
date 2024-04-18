@@ -402,7 +402,7 @@ export default function FullscreenPhoto(props) {
     handleClose();
     setSnackBarMessage("Arte eliminado exitosamente");
     setSnackBar(true);
-    readArt();
+    history.push({ pathname: "/prixer=" + prixerUsername });
   };
 
   const setVisibleArt = async (art, id, event) => {

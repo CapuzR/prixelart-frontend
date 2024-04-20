@@ -773,7 +773,7 @@ export default function Orders(props) {
 
       const prx = await findPrixer(item.art.prixerUsername);
 
-      let prixer = await consumersFiltered.find(
+      const prixer = await consumersFiltered.find(
         (con) =>
           con.firstname
             ?.toLowerCase()
@@ -804,9 +804,6 @@ export default function Orders(props) {
           : (unitPrice = Number(
               item.product.publicPrice.from?.replace(/[,]/gi, ".")
             ));
-
-        // let op = Number((unitPrice / 10) * item.quantity);
-        // unitPrice = op;
       }
 
       // Restar 10% automático y calcular precio base con %comisión
@@ -822,19 +819,20 @@ export default function Orders(props) {
       }
 
       // De existir descuentos y no ser Prixer se aplica el descuento
-      if (
-        prixer === undefined &&
-        typeof item.product.discount === "string" &&
-        item.product.modifyPrice === (false || undefined)
-      ) {
-        if (discount?.type === "Porcentaje") {
-          let op = Number(
-            ((unitPrice - (unitPrice / 100) * discount.value) / 10) *
-              item.quantity
-          );
+      if (item.product.modifyPrice !== true) {
+        if (
+          typeof item.product.discount === "string" &&
+          discount?.type === "Porcentaje" &&
+          prixer === undefined
+        ) {
+          let op = Number(unitPrice - (unitPrice / 100) * discount.value);
           unitPrice = op;
-        } else if (discount?.type === "Monto") {
-          let op = Number(((unitPrice - discount.value) / 10) * item.quantity);
+        } else if (
+          typeof item.product.discount === "string" &&
+          discount?.type === "Monto" &&
+          prixer === undefined
+        ) {
+          let op = Number(unitPrice - discount.value);
           unitPrice = op;
         }
       }
@@ -843,13 +841,16 @@ export default function Orders(props) {
       amount = (unitPrice / 100) * (item.art.comission || 10);
       // Aplcar recargo
       if (surcharge) {
+        let total;
         if (surcharge.type === "Porcentaje") {
-          surcharge = amount - (amount / 100) * sur.value;
-          total = surcharge;
+          total = amount - (amount / 100) * surcharge.value;
+          amount = total;
         } else if (surcharge.type === "Monto") {
-          amount = amount - sur.value;
+          total = amount - surcharge.value;
+          amount = total;
         }
       }
+
       amount = amount * item.quantity;
 
       // =

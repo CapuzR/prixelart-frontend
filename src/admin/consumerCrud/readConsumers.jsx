@@ -65,14 +65,19 @@ export default function ReadConsumers(props) {
     setLoading(true);
     const base_url = process.env.REACT_APP_BACKEND_URL + "/consumer/read-all";
     axios
-      .post(base_url)
+      .post(base_url, { adminToken: localStorage.getItem("adminTokenV") })
       .then((response) => {
-        setRows(response.data);
-        setRowsv2(
-          response.data?.slice(itemsToSkip, itemsPerPage + itemsToSkip)
-        );
-        setTotalConsumers(response.data.length);
-        setLoading(false);
+        if (response.data.success === false) {
+          setSnackbar(true);
+          setMessage(response.data.error_message);
+        } else {
+          setRows(response.data);
+          setRowsv2(
+            response?.data?.slice(itemsToSkip, itemsPerPage + itemsToSkip)
+          );
+          setTotalConsumers(response.data.length);
+          setLoading(false);
+        }
       })
       .catch((error) => {
         console.log(error);

@@ -241,7 +241,7 @@ export default function ShoppingCart(props) {
   const [artList, setArtList] = useState([]);
   const [artList0, setArtList0] = useState([]);
   const [artistFilter, setArtistFilter] = useState();
-  const [selectedArtist, setSelectedArtist] = useState("");
+  const [selectedArtist, setSelectedArtist] = useState([]);
   const [prices, setPrices] = useState([]);
 
   let custom = { name: "Personalizado", attributes: [{ value: "0x0cm" }] };
@@ -298,12 +298,14 @@ export default function ShoppingCart(props) {
   }, []);
 
   useEffect(() => {
-    let selected;
     let pricesList = [];
+    let artists = selectedArtist;
 
     props.buyState.map((item) => {
       if (item.art) {
-        selected = item.art.prixerUsername;
+        artists.push(item.art.prixerUsername);
+      } else {
+        artists.push(undefined);
       }
       if (item.art && item.product) {
         pricesList.push(
@@ -319,12 +321,14 @@ export default function ShoppingCart(props) {
       }
     });
     setPrices(pricesList);
-    setSelectedArtist(selected);
+    setSelectedArtist(artists);
   }, []);
 
   const changeArtistFilter = (artist, i) => {
     setArtistFilter(artist);
-    setSelectedArtist(artist);
+    let artists = selectedArtist;
+    artists[i] = artist;
+    setSelectedArtist(artists);
   };
 
   const updatePrices = (
@@ -357,6 +361,12 @@ export default function ShoppingCart(props) {
         UnitPriceSug(prod, art, currency, dollarValue, discountList, prixer),
       ]);
     }
+  };
+
+  const removePrixer = (index) => {
+    let artists = selectedArtist;
+    artists.splice(index, 1);
+    setSelectedArtist(artists);
   };
 
   const changeArt = async (art, product, index) => {
@@ -410,6 +420,10 @@ export default function ShoppingCart(props) {
       props.discountList,
       props?.selectedPrixer?.username
     );
+
+    let prev = selectedArtist;
+    prev.splice(index, 1, art.prixerUsername);
+    setSelectedArtist(prev);
   };
 
   const changeProduct = (event, art, index) => {
@@ -604,6 +618,8 @@ export default function ShoppingCart(props) {
       type: "product",
       item: selectedProduct,
     });
+
+    setSelectedArtist([...selectedArtist, undefined]);
   };
 
   const copyItem = (i) => {
@@ -613,7 +629,13 @@ export default function ShoppingCart(props) {
     localStorage.setItem("buyState", JSON.stringify(newState));
     props.setErrorMessage("Item duplicado correctamente.");
     props.setSnackBarError(true);
+
+    const prev = selectedArtist;
+    const lastIndex = prev.length;
+
+    setSelectedArtist([...selectedArtist, prev[i]]);
   };
+
   return (
     <Grid container style={{ display: "flex", justifyContent: "center" }}>
       {props.buyState.length > 0 &&
@@ -937,12 +959,12 @@ export default function ShoppingCart(props) {
                         <InputLabel style={{ paddingLeft: 15 }}>
                           {buy.art ? "Prixer" : "Selecciona un Prixer"}
                         </InputLabel>
-                        {/* Mejorar el valor que muestra el Select pues se queda con el autor del arte seleccionado */}
                         <Select
                           value={
-                            buy.art
-                              ? buy.art.prixerUsername?.substring(0, 22)
-                              : selectedArtist
+                            // buy.art
+                            //   ? buy.art.prixerUsername?.substring(0, 22)
+                            //   :
+                            selectedArtist[index]
                           }
                           variant="outlined"
                           onChange={(e) =>
@@ -978,10 +1000,11 @@ export default function ShoppingCart(props) {
                           }
                           style={{ width: 210 }}
                         >
-                          {selectedArtist !== ""
+                          {selectedArtist[index] !== undefined
                             ? artList0
                                 .filter(
-                                  (art) => art.prixerUsername === selectedArtist
+                                  (art) =>
+                                    art.prixerUsername === selectedArtist[index]
                                 )
                                 .map((art) => {
                                   return (
@@ -1211,7 +1234,10 @@ export default function ShoppingCart(props) {
                   >
                     <IconButton
                       size="small"
-                      onClick={() => props.deleteItemInBuyState({ id: index })}
+                      onClick={() => {
+                        props.deleteItemInBuyState({ id: index });
+                        removePrixer(index);
+                      }}
                       color="gainsboro"
                     >
                       <DeleteIcon />

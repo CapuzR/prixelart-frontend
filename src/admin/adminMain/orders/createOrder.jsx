@@ -355,7 +355,7 @@ export default function CreateOrder(props) {
 
     const base_url3 = process.env.REACT_APP_BACKEND_URL + "/order/sendEmail";
     await axios.post(base_url, input).then(async (response) => {
-      if (basicData.email.length > 8) {
+      if (basicData.email && basicData.email.length > 8) {
         await axios.post(base_url3, input).then(async (response) => {
           props.setErrorMessage(response.data.info);
           props.setSnackBarError(true);

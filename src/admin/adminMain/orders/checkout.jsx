@@ -569,8 +569,19 @@ export default function Checkout(props) {
                               primary={
                                 <Grid container>
                                   <Grid item xs={12} md={8}>
-                                    {item.product.name + " X " + item.art.title}
-                                    <br></br>
+                                    <Grid style={{ display: "flex" }}>
+                                      <Typography
+                                        style={{
+                                          fontWeight: "bold",
+                                          marginRight: 4,
+                                        }}
+                                      >
+                                        Producto:
+                                      </Typography>
+                                      <Typography>
+                                        {item.product.name}
+                                      </Typography>
+                                    </Grid>
                                     {item.product?.selection &&
                                     typeof item.product.selection === "string"
                                       ? item.product?.selection
@@ -580,6 +591,31 @@ export default function Checkout(props) {
                                       item.product.selection?.attributes[0]
                                         ?.value &&
                                       ` (${item.product.selection?.attributes[0]?.value})`}
+
+                                    <Grid style={{ display: "flex" }}>
+                                      <Typography
+                                        style={{
+                                          fontWeight: "bold",
+                                          marginRight: 4,
+                                        }}
+                                      >
+                                        Arte:
+                                      </Typography>
+                                      <Typography>{item.art.title}</Typography>
+                                    </Grid>
+                                    <Grid style={{ display: "flex" }}>
+                                      <Typography
+                                        style={{
+                                          fontWeight: "bold",
+                                          marginRight: 4,
+                                        }}
+                                      >
+                                        Prixer:
+                                      </Typography>
+                                      <Typography>
+                                        {item.art.prixerUsername}
+                                      </Typography>
+                                    </Grid>
                                   </Grid>
                                   <Grid
                                     item

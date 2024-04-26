@@ -526,7 +526,7 @@ export default function ServiceGrid(props) {
           width: "100%",
           display: "flex",
           justifyContent: "center",
-          marginBottom: 10,
+          marginBottom: 15,
         }}
       >
         <ServiceSearchBar

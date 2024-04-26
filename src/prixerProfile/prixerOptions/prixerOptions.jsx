@@ -1,9 +1,10 @@
 import React from "react";
 import Button from "@material-ui/core/Button";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles, useTheme } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
+import useMediaQuery from "@material-ui/core/useMediaQuery";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -13,21 +14,19 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
     marginTop: 15,
     marginBottom: 15,
-    // "& > *": {
-    //   margin: theme.spacing(1),
-    // },
   },
   paper: {
-    width: "100%",
     display: "flex",
     justifyContent: "space-evenly",
-    maxWidth: "400px",
-    // color: "primary",
+    margin: "auto",
+    maxWidth: 616,
   },
 }));
 
 export default function BasicButtonGroup(props) {
   const classes = useStyles();
+  const theme = useTheme();
+  const isDesktop = useMediaQuery(theme.breakpoints.up("lg"));
 
   const changeFeed = (op) => {
     props.setFeed(op);
@@ -44,7 +43,11 @@ export default function BasicButtonGroup(props) {
           display: "flex",
         }}
       >
-        <Paper className={classes.paper} elevation={3}>
+        <Paper
+          className={classes.paper}
+          elevation={3}
+          style={{ width: isDesktop ? "50%" : "100%" }}
+        >
           <Button
             onClick={(e) => {
               changeFeed("Bio");

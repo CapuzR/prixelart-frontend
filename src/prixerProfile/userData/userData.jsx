@@ -78,9 +78,6 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     "& > *": {},
     objectFit: "cover",
-    borderStyle: "solid",
-    borderWidth: 1,
-    borderColor: "#000",
     backgroundColor: "#fff",
     width: "160px",
     height: "160px",
@@ -221,12 +218,14 @@ export default function UserData(props) {
         setBackdrop(false);
         setPrixerExists(true);
         setPrixerDataState("read");
+        props.setFeed("Artes");
       } else {
         setReady(true);
         setBackdrop(false);
       }
     } else {
       setPrixerDataState("edit");
+      props.setFeed("Settings");
     }
   };
 
@@ -253,31 +252,31 @@ export default function UserData(props) {
       >
         {prixerDataState === "read" && (
           <>
-            <Box style={{ textAlign: "end", marginBottom: "4px" }}>
+            <Box style={{ textAlign: "end" }}>
               {JSON.parse(localStorage.getItem("token")) &&
                 JSON.parse(localStorage.getItem("token")).username ===
                   username && (
                   <IconButton
                     title="Profile Edit"
-                    component="span"
                     color="primary"
                     onClick={handleProfileDataEdit}
                     variant="contained"
-                    // style={{ marginBottom: "8px" }}
                   >
                     <EditIcon />
                   </IconButton>
                 )}
-              <Grid container spacing={2}>
-                <Grid
-                  item
-                  xs={12}
-                  sm={4}
-                  md={4}
-                  lg={4}
-                  xl={4}
-                  // style={{ marginLeft: 15 }}
-                >
+              <Grid
+                container
+                spacing={2}
+                style={{
+                  marginTop:
+                    JSON.parse(localStorage.getItem("token")) &&
+                    JSON.parse(localStorage.getItem("token")).username ===
+                      username &&
+                    "-46px",
+                }}
+              >
+                <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
                   <Box
                     style={{
                       marginBottom: "4px",
@@ -286,38 +285,74 @@ export default function UserData(props) {
                     }}
                   >
                     {avatarObj ? (
-                      <Avatar
-                        className={classes.avatar}
-                        src={profilePic}
-                        alt="Prixer profile avatar"
-                      />
+                      <div
+                        style={{
+                          borderStyle: "solid",
+                          borderWidth: 2,
+                          borderColor: "gray",
+                          borderRadius: "50%",
+                          padding: 8,
+                          marginTop: "-8px",
+                        }}
+                      >
+                        <Avatar
+                          className={classes.avatar}
+                          src={profilePic}
+                          alt="Prixer profile avatar"
+                        />
+                      </div>
                     ) : (
                       JSON.parse(localStorage.getItem("token")) &&
                       JSON.parse(localStorage.getItem("token")).username ===
                         username && (
-                        <Avatar className={classes.avatar}>
-                          <label htmlFor="file-input">
-                            <img
-                              src="/PrixLogo.png"
-                              alt="Prixer profile avatar"
-                              style={{ maxHeight: 200, height: 120 }}
-                              onClick={handleProfileDataEdit}
-                            />
-                          </label>
-                        </Avatar>
+                        <div
+                          style={{
+                            borderStyle: "solid",
+                            borderWidth: 2,
+                            borderColor: "gray",
+                            borderRadius: "50%",
+                            padding: 8,
+                          }}
+                        >
+                          <Avatar className={classes.avatar}>
+                            <label htmlFor="file-input">
+                              <img
+                                src="/PrixLogo.png"
+                                alt="Prixer profile avatar"
+                                style={{ maxHeight: 200, height: 120 }}
+                                onClick={handleProfileDataEdit}
+                              />
+                            </label>
+                          </Avatar>
+                        </div>
                       )
                     )}
                   </Box>
                 </Grid>
                 <Grid item xs={12} sm={8} md={8} lg={8} xl={8}>
                   <Box
-                    display={"flex"}
                     style={{
+                      display: "flex",
                       marginBottom: "4px",
-                      justifyContent: isMobile ? "center" : "flexstart",
+                      alignItems: isMobile ? "center" : "start",
+                      flexDirection: "column",
                     }}
                   >
-                    <Typography variant="body1">
+                    <div style={{ display: "flex", alignItems: "center" }}>
+                      <Typography
+                        variant="h5"
+                        color="secondary"
+                        style={{ fontWeight: "bold" }}
+                      >
+                        {firstName} {lastName}
+                      </Typography>
+                      {prixer.role === "Organization" && (
+                        <Tooltip title="Organización verificada">
+                          <VerifiedUserIcon color="primary" />
+                        </Tooltip>
+                      )}
+                    </div>
+                    <Typography style={{ fontSize: 16 }} color="secondary">
                       {specialtyArt?.map(
                         (specialty, index) =>
                           specialty !== "" &&
@@ -326,9 +361,6 @@ export default function UserData(props) {
                             : `${specialty}, `)
                       )}
                     </Typography>
-                    {/* <Typography variant="h5">
-                    {firstName} {lastName}
-                  </Typography> */}
                   </Box>
                   <Box
                     display={"flex"}
@@ -336,29 +368,7 @@ export default function UserData(props) {
                       marginBottom: "4px",
                       justifyContent: isMobile ? "center" : "flexstart",
                     }}
-                  >
-                    <Typography variant="body1" color="textSecondary">
-                      {username}
-                    </Typography>
-                    {prixer.role === "Organization" && (
-                      <Tooltip
-                        title="Organización verificada"
-                        // style={{ height: 40, width: 40 }}
-                      >
-                        <VerifiedUserIcon color="primary" />
-                      </Tooltip>
-                    )}{" "}
-                  </Box>
-                  {/* <Box style={{ marginBottom: "4px" }}>
-                  <Typography variant="body1">
-                    {specialtyArt?.map((specialty, index) =>
-                      specialtyArt?.length === index + 1
-                        ? specialty
-                        : `${specialty}, `
-                    )}
-                  </Typography>
-                </Box> */}
-
+                  ></Box>
                   <Box
                     display={"flex"}
                     style={{
@@ -366,7 +376,11 @@ export default function UserData(props) {
                       justifyContent: isMobile ? "center" : "flexstart",
                     }}
                   >
-                    <Typography align={isMobile ? "center" : "left"}>
+                    <Typography
+                      align={isMobile ? "center" : "left"}
+                      style={{ fontSize: 14 }}
+                      color="secondary"
+                    >
                       {description}
                     </Typography>
                   </Box>
@@ -378,61 +392,52 @@ export default function UserData(props) {
                       alignItems: "center",
                     }}
                   >
-                    <InstagramIcon style={{ marginRight: "4px" }} />
-                    <a
+                    <IconButton
+                      size="small"
                       target="_blank"
                       href={
                         "https://www.instagram.com/" +
                         instagram?.replace(/[@]/gi, "")
                       }
-                      style={{ textDecoration: "none", color: "#d33f49" }}
+                      style={{
+                        textDecoration: "none",
+                        backgroundColor: "#d33f49",
+                        color: "white",
+                      }}
                     >
-                      {instagram}
-                    </a>
-                  </Box>
-                  <Box
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      marginBottom: "4px",
-                      justifyContent: isMobile ? "center" : "flexstart",
-                    }}
-                  >
+                      <InstagramIcon />
+                    </IconButton>
                     {facebook && (
-                      <>
-                        <FacebookIcon style={{ marginRight: "4px" }} />
-                        <a
-                          target="_blank"
-                          href={"https://www.facebook.com/" + facebook}
-                          style={{ textDecoration: "none", color: "#d33f49" }}
-                        >
-                          {facebook}
-                        </a>
-                      </>
+                      <IconButton
+                        size="small"
+                        target="_blank"
+                        href={"https://www.facebook.com/" + facebook}
+                        style={{
+                          textDecoration: "none",
+                          backgroundColor: "#d33f49",
+                          color: "white",
+                        }}
+                      >
+                        <FacebookIcon />
+                      </IconButton>
                     )}
-                  </Box>
-                  <Box
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      marginBottom: "4px",
-                      justifyContent: isMobile ? "center" : "flexstart",
-                    }}
-                  >
                     {twitter && twitter !== "undefined" && (
-                      <>
-                        <TwitterIcon style={{ marginRight: "4px" }} />
-                        <a
-                          target="_blank"
-                          href={
-                            "https://www.twitter.com/" +
-                            twitter?.replace(/[@]/gi, "")
-                          }
-                          style={{ textDecoration: "none", color: "#d33f49" }}
-                        >
-                          {twitter}
-                        </a>
-                      </>
+                      <IconButton
+                        size="small"
+                        target="_blank"
+                        href={
+                          "https://www.twitter.com/" +
+                          twitter?.replace(/[@]/gi, "")
+                        }
+                        style={{
+                          textDecoration: "none",
+                          backgroundColor: "#d33f49",
+                          color: "white",
+                          marginLeft: 20,
+                        }}
+                      >
+                        <TwitterIcon />
+                      </IconButton>
                     )}
                   </Box>
                 </Grid>

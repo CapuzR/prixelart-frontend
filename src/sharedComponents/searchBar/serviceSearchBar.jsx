@@ -17,12 +17,8 @@ import useMediaQuery from "@material-ui/core/useMediaQuery";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    padding: "2px 4px",
     display: "flex",
     alignItems: "center",
-    // width: isMobile ? "100%" : 600,
-    marginTop: 5,
-    marginBottom: 10,
   },
   input: {
     marginLeft: theme.spacing(1),
@@ -43,6 +39,7 @@ export default function serviceSearchBar(props) {
   const theme = useTheme();
   let params = new URLSearchParams(window.location.search);
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isDesktop = useMediaQuery(theme.breakpoints.up("lg"));
 
   const serviceAreas = ["Diseño", "Fotografía", "Artes Plásticas", "Otro"];
 
@@ -60,17 +57,14 @@ export default function serviceSearchBar(props) {
   const [isShowFilter, setIsShowFilter] = useState();
 
   return (
-    <div>
-      <Paper
-        component="form"
-        className={classes.root}
-        elevation={3}
-        style={{
-          width: isMobile ? "auto" : 650,
-          marginLeft: isMobile && 2,
-          marginRight: isMobile && 2,
-        }}
-      >
+    <div
+      style={{
+        width: isDesktop ? "50%" : "100%",
+        margin: "auto",
+        maxWidth: 616,
+      }}
+    >
+      <Paper component="form" className={classes.root} elevation={3}>
         <div style={{ display: "flex", width: "100%", alignItems: "center" }}>
           <IconButton
             type="submit"

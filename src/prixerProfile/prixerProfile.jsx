@@ -89,6 +89,9 @@ export default function PrixerProfile(props) {
 
   const showPrixerGrid = () => {
     switch (feed) {
+      case "Settings":
+        return <div></div>;
+
       case "Artes":
         return (
           <ArtsGrid
@@ -123,8 +126,14 @@ export default function PrixerProfile(props) {
       <Grid>
         <AppBar prixerUsername={username} />
       </Grid>
-      <UserData prixerUsername={username} />
-      <PrixerOptions prixerUsername={username} feed={feed} setFeed={setFeed} />
+      <UserData prixerUsername={username} feed={feed} setFeed={setFeed} />
+      {feed !== "Settings" && (
+        <PrixerOptions
+          prixerUsername={username}
+          feed={feed}
+          setFeed={setFeed}
+        />
+      )}
       {showPrixerGrid()}
 
       {openArtFormDialog && (

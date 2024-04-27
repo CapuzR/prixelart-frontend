@@ -101,9 +101,6 @@ const useStyles = makeStyles((theme) => ({
 export default function Biography(props) {
   const classes = useStyles();
   const history = useHistory();
-  const globalParams = new URLSearchParams(window.location.pathname);
-  const prixer = globalParams.get("/prixer");
-
   const [backdrop, setBackdrop] = useState(false);
   const theme = useTheme();
   const [snackBar, setSnackBar] = useState(false);
@@ -124,8 +121,14 @@ export default function Biography(props) {
   const [newImg, setNewImg] = useState([]);
 
   const getBio = async () => {
-    const base_url =
-      process.env.REACT_APP_BACKEND_URL + "/prixer/getBio/" + prixer;
+    setBackdrop(true);
+    const base_url = window.location.pathname.includes("/org=")
+      ? process.env.REACT_APP_BACKEND_URL +
+        "/organization/getBio/" +
+        props.prixerUsername
+      : process.env.REACT_APP_BACKEND_URL +
+        "/prixer/getBio/" +
+        props.prixerUsername;
     await axios
       .get(base_url)
       .then((response) => {

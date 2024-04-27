@@ -381,7 +381,7 @@ export default function UserData(props) {
                       style={{ fontSize: 14 }}
                       color="secondary"
                     >
-                      {description}
+                      {description !== "undefined" && description}
                     </Typography>
                   </Box>
                   <Box
@@ -407,7 +407,7 @@ export default function UserData(props) {
                     >
                       <InstagramIcon />
                     </IconButton>
-                    {facebook && (
+                    {facebook && facebook !== "undefined" && (
                       <IconButton
                         size="small"
                         target="_blank"
@@ -416,6 +416,7 @@ export default function UserData(props) {
                           textDecoration: "none",
                           backgroundColor: "#d33f49",
                           color: "white",
+                          marginLeft: 20,
                         }}
                       >
                         <FacebookIcon />

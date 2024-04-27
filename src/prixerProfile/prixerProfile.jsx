@@ -75,11 +75,9 @@ export default function PrixerProfile(props) {
   const globalParams = new URLSearchParams(window.location.pathname);
   const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
   const isDeskTop = useMediaQuery(theme.breakpoints.up("sm"));
-  const [username, setUsername] = useState(
-    window.location.pathname.includes("org")
-      ? globalParams.get("/org")
-      : globalParams.get("/prixer")
-  );
+  const username = window.location.pathname.includes("org")
+    ? globalParams.get("/org")
+    : globalParams.get("/prixer");
   const [openArtFormDialog, setOpenArtFormDialog] = useState(false);
   const [openServiceFormDialog, setOpenServiceFormDialog] = useState(false);
   const [openShoppingCart, setOpenShoppingCart] = useState(false);

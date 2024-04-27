@@ -174,9 +174,8 @@ export default function ServiceGrid(props) {
   const [tiles, setTiles] = useState([]);
   const [services, setServices] = useState([]);
   const history = useHistory();
-  const globalParams = new URLSearchParams(window.location.pathname);
   const view = window.location.pathname.slice(1);
-  const prixer = globalParams.get("/prixer");
+  const prixer = props.prixerUsername;
   const [backdrop, setBackdrop] = useState(true);
   const theme = useTheme();
   const [snackBar, setSnackBar] = useState(false);

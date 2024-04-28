@@ -37,6 +37,11 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import backG from "../images/Rectangle108.png";
+// import brand1 from "../images/brands/Adidas_logo.png";
+// import brand2 from "../images/brands/BBVA_2019.svg.png";
+// import brand3 from "../images/brands/Ford-Motor-Company-Logo.png";
+// import brand4 from "../images/brands/Wikimedia-logo.png";
+// import brand5 from "../images/brands/lg.png";
 
 ReactGA.initialize("G-0RWP9B33D8");
 ReactGA.pageview("/");
@@ -157,6 +162,7 @@ export default function Home(props) {
   const [value, setValue] = useState("");
   const history = useHistory();
 
+  // const brands = [brand1, brand2, brand3, brand4, brand5];
   const imgsMobile = [
     {
       url: "https://devprix.nyc3.digitaloceanspaces.com/Portada%20de%20Pagina%20Web_Museo%20Chuao%20Espejo_Telefono_V1.jpg",
@@ -277,6 +283,7 @@ export default function Home(props) {
     speed: 1000,
     infinite: true,
     dots: true,
+    pauseOnHover: true,
   };
 
   const settings2 = {
@@ -287,18 +294,21 @@ export default function Home(props) {
     speed: 1000,
     infinite: true,
     dots: true,
+    pauseOnHover: true,
   };
 
   const settings3 = {
-    slidesToShow: (isDesktop && 3) || (isMobile && 1) || (isTab && 2),
-    slidesToScroll: 1,
-    autoplay: true,
+    // className: "center",
+    centerMode: true,
+    infinite: true,
+    // centerPadding: "100px",
+    slidesToShow: (isDesktop && 4) || (isMobile && 2) || (isTab && 3),
     autoplaySpeed: 4000,
     speed: 1000,
+    autoplay: true,
     infinite: true,
-    dots: true,
+    pauseOnHover: true,
   };
-
   return (
     <React.Fragment>
       <AppBar prixerUsername={prixerUsername} />
@@ -632,8 +642,6 @@ export default function Home(props) {
                   style={{
                     display: "flex",
                     justifyItems: "center",
-                    padding: "5px 10px 5px 25px",
-                    paddingLeft: isMobile ? 15 : 25,
                     margin: "15px",
                     backgroundColor: "#404e5c",
                     alignItems: "start",
@@ -647,7 +655,8 @@ export default function Home(props) {
                       flexDirection: "column",
                       width: "50%",
                       margin: 10,
-                      paddingLeft: 40,
+                      paddingLeft:
+                        (isDesktop && 40) || (isMobile && 5) || (isTab && 20),
                     }}
                   >
                     <Typography
@@ -706,7 +715,8 @@ export default function Home(props) {
                       backgroundPosition: "right",
                       width: "70%",
                       height: "100%",
-                      borderRadius: 40,
+                      borderRadius:
+                        (isDesktop && 47) || (isMobile && 30) || (isTab && 35),
                     }}
                   />
                 </div>
@@ -780,8 +790,6 @@ export default function Home(props) {
                   style={{
                     display: "flex",
                     justifyItems: "center",
-                    padding: "5px 10px 5px 10px",
-                    paddingLeft: isMobile ? 15 : 25,
                     margin: "15px",
                     backgroundColor: "#404e5c",
                     alignItems: "start",
@@ -799,7 +807,8 @@ export default function Home(props) {
                       backgroundPosition: "left",
                       width: "70%",
                       height: "100%",
-                      borderRadius: 40,
+                      borderRadius:
+                        (isDesktop && 47) || (isMobile && 30) || (isTab && 35),
                     }}
                   />
                   <div
@@ -809,7 +818,8 @@ export default function Home(props) {
                       width: "50%",
                       margin: 10,
                       alignItems: "end",
-                      paddingRight: 40,
+                      paddingRight:
+                        (isDesktop && 40) || (isMobile && 5) || (isTab && 20),
                     }}
                   >
                     <Typography
@@ -910,7 +920,44 @@ export default function Home(props) {
               </Paper>
             )}
           </Grid>
+          {/* {brands && (
+            <Grid
+              style={{
+                backgroundColor: "#d33f49",
+                display: "flex",
+                flexDirection: "column",
+                width: "100vw",
+                marginLeft: "-24px",
+                padding: isMobile ? 0 : "0px 30px 0px 30px",
+              }}
+            >
+              <Slider {...settings3}>
+                {brands?.map((art) => (
+                  <div
+                    key={art._id}
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      height: 200,
+                    }}
+                  >
+                    <div
+                      style={{
+                        backgroundImage: `url(${encodeURI(art)})`,
+                        height: 100,
+                        width: 100,
+                        backgroundSize: "contain",
+                        backgroundRepeat: "no-repeat",
+                        backgroundPosition: "center",
+                      }}
+                    />
+                  </div>
+                ))}
+              </Slider>
+            </Grid>
+          )} */}
         </main>
+
         <footer className={classes.footer}>
           <Typography
             variant="h6"

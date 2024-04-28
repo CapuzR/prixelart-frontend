@@ -519,7 +519,7 @@ function App() {
           />
         </Route>
 
-        <Route path="/services">
+        <Route path="/servicios">
           <PrixersService
             buyState={buyState}
             setPrixer={setPrixer}
@@ -536,7 +536,7 @@ function App() {
             permissions={permissions}
           />
         </Route>
-        <Route path="/testimonials">
+        <Route path="/testimonios">
           <TestimonialsGrid
             buyState={buyState}
             setPrixer={setPrixer}

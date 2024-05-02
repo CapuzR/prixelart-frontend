@@ -114,7 +114,7 @@ export default function OrgGrid(props) {
                     .map(
                       (tile) =>
                         tile.status && (
-                          <Grid item key={tile._id} xs={6} sm={6} md={3}>
+                          <Grid item key={tile._id} xs={12} sm={6} md={3}>
                             <Paper elevation={5} className={classes.card}>
                               <CardMedia
                                 alt={tile.title}

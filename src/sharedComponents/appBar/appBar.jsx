@@ -195,12 +195,12 @@ export default function MenuAppBar(props) {
 
   const handleServices = (e) => {
     e.preventDefault();
-    history.push({ pathname: "/services" });
+    history.push({ pathname: "/servicios" });
   };
 
   const handleTestimonials = (e) => {
     e.preventDefault();
-    history.push({ pathname: "/testimonials" });
+    history.push({ pathname: "/testimonios" });
   };
 
   const handleDrawerOpen = () => {

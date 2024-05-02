@@ -233,7 +233,7 @@ export default function ServiceGrid(props) {
   const getServices = async () => {
     let base_url;
 
-    if (prixer === null) {
+    if (prixer === (null || undefined)) {
       base_url = process.env.REACT_APP_BACKEND_URL + "/service/getAllActive";
     } else {
       base_url =
@@ -254,7 +254,7 @@ export default function ServiceGrid(props) {
   };
 
   useEffect(() => {
-    if (localStorage.getItem("token") && view !== "services") {
+    if (localStorage.getItem("token") && view !== "servicios") {
       getMyServices();
     } else {
       getServices();
@@ -849,7 +849,7 @@ export default function ServiceGrid(props) {
                         )
                       )}
                     </div>
-                    {view === "services" && (
+                    {view === "servicios" && (
                       <Button
                         size="small"
                         style={{

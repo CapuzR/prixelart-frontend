@@ -206,6 +206,8 @@ export default function CreateService(props) {
       setBackdrop(false);
       props.setOpenServiceFormDialog(false);
       props.setCreatedService(true);
+      setSnackBarError(true);
+      setErrorMessage("Servicio creado exitosamente.");
     } else {
       setSnackBarError(true);
       setErrorMessage(

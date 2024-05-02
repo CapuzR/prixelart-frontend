@@ -37,8 +37,11 @@ const generateProductMessage = (tile, type) => {
   return productMessage;
 };
 
-const generateServiceMessage = (tile) => {
-  const waNumber = "584126377748";
+const generateServiceMessage = (tile, phone) => {
+  if (phone.startsWith("0")) {
+    phone = phone.substring(1);
+  }
+  const waNumber = "58" + phone;
   const message =
     "Hola, quiero solicitar el servicio de " +
     `*${tile.title}*` +

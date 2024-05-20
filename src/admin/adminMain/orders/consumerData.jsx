@@ -398,6 +398,7 @@ export default function ConsumerData(props) {
     if (reason === "clear") {
       props.setSelectedPrixer(undefined);
       props.setSelectedConsumer(undefined);
+      props.setConsumerType("Particular");
       props.setBasicData(undefined);
     } else if (event?.type === "change") {
       props.setBasicData({
@@ -418,8 +419,11 @@ export default function ConsumerData(props) {
       );
       if (selected) {
         props.setSelectedConsumer(selected);
+        props.setConsumerType(selected.consumerType);
+
         if (selected.consumerType === "Prixer") {
           props.setSelectedPrixer(prixer);
+          props.setConsumerType("Prixer");
         }
         props.setBasicData({
           ...props.basicData,
@@ -433,7 +437,6 @@ export default function ConsumerData(props) {
       }
       if (prixer) {
         props.setSelectedPrixer(prixer);
-        // props.setSelectedConsumer(undefined);
         props.setBasicData({
           ...props.basicData,
           name: valuev2[0],
@@ -443,6 +446,7 @@ export default function ConsumerData(props) {
           address: prixer?.address,
           ci: prixer?.ci,
         });
+        props.setConsumerType("Prixer");
       } else if (prixer === undefined && selected.username) {
         prixer = prixers.find(
           (prixer) => prixer?.username === selected.username
@@ -575,6 +579,33 @@ export default function ConsumerData(props) {
                 ),
               }}
             />
+          </Grid>
+          <Grid item lg={4} md={4} sm={4} xs={12} className={classes.gridInput}>
+            <FormControl
+              style={{ minWidth: "100%", marginTop: 15 }}
+              variant="outlined"
+            >
+              <InputLabel>Tipo de cliente</InputLabel>
+              <Select
+                label="Método de entrega"
+                className={classes.textField}
+                value={props.consumerType}
+                onChange={(e) => {
+                  props.setConsumerType(e.target.value);
+                }}
+              >
+                <MenuItem value="">
+                  <em></em>
+                </MenuItem>
+                {["Particular", "DAs", "Corporativo", "Prixer", "Artista"].map(
+                  (n) => (
+                    <MenuItem key={n} value={n}>
+                      {n}
+                    </MenuItem>
+                  )
+                )}
+              </Select>
+            </FormControl>
           </Grid>
           <Grid
             item

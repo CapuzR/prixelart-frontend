@@ -31,6 +31,10 @@ import TestimonialsGrid from "./testimonials/testimonialsGrid";
 import Map from "./map/index";
 import OrgGrid from "./sharedComponents/prixerGrid/orgGrid";
 import { getComission } from "./shoppingCart/pricesFunctions";
+import ChiguireHome from "./orgLanding/chiguireHome";
+import ProductDetail from "./orgLanding/productDetail";
+import ShoppingCartCB from "./orgLanding/shoppingCartCB";
+
 const useStyles = makeStyles((theme) => ({
   paper2: {
     position: "absolute",
@@ -80,6 +84,7 @@ function App() {
   const [value, setValue] = useState();
   const [discountList, setDiscountList] = useState([]);
   const [surchargeList, setSurchargeList] = useState([]);
+  const [orgs, setOrgs] = useState([]);
 
   document.addEventListener("contextmenu", (event) => {
     event.preventDefault();
@@ -115,6 +120,7 @@ function App() {
       console.log(e);
     }
   };
+
   const checkP = async () => {
     const base_url =
       process.env.REACT_APP_BACKEND_URL + "/admin/CheckPermissions";
@@ -185,8 +191,22 @@ function App() {
     if (globalParams === ("/admin/order/read" || "/shopping")) {
       getDiscounts();
       getSurcharges();
+      getORGs();
     }
   }, []);
+
+  const getORGs = async () => {
+    const base_url =
+      process.env.REACT_APP_BACKEND_URL + "/organization/read-all-full";
+    await axios
+      .get(base_url)
+      .then((response) => {
+        setOrgs(response.data.organizations);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
 
   const TermsAgreeModal = () => {
     const GetId = JSON.parse(localStorage.getItem("token")).username;
@@ -280,6 +300,11 @@ function App() {
     );
   };
 
+  const checkOrgs = (art) => {
+    const org = orgs.find((el) => el.username === art.owner);
+    return org;
+  };
+
   function changeQuantity(input) {
     const newState = [...buyState];
     if (input.quantity) {
@@ -291,7 +316,8 @@ function App() {
         discountList,
         input.quantity,
         input.prixer,
-        surchargeList
+        surchargeList,
+        checkOrgs(newState[input.index].art)
       );
       newState[input.index].quantity = input.quantity;
       setBuyState(newState);
@@ -638,6 +664,15 @@ function App() {
             permissions={permissions}
           />
         </Route>
+        <Route path="/ChiguireBipolar/carrito">
+          <ShoppingCartCB />
+        </Route>
+        <Route path="/ChiguireBipolar/item=:id">
+          <ProductDetail />
+        </Route>
+        <Route path="/ChiguireBipolar">
+          <ChiguireHome />
+        </Route>
 
         <Route path="/">
           <Home
@@ -667,6 +702,7 @@ function App() {
             permissions={permissions}
           />
         </Route>
+
         <Route component={Home} />
       </Switch>
 

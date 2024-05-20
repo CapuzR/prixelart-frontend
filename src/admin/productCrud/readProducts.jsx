@@ -44,6 +44,7 @@ export default function ReadProducts(props) {
   const [discountList, setDiscountList] = useState([]);
   const [surchargeList, setSurchargeList] = useState([]);
   const [value, setValue] = useState(0);
+  const [loading, setLoading] = useState(false);
 
   const [openUpdateProduct, setUpdateProduct] = useState(false);
 
@@ -124,12 +125,12 @@ export default function ReadProducts(props) {
       });
   };
 
-  useEffect(() => {
-    props.setLoading(true);
-    getRows();
-    getDiscounts();
-    getSurcharges();
-    props.setLoading(false);
+  useEffect(async () => {
+    setLoading(true);
+    await getRows();
+    await getDiscounts();
+    await getSurcharges();
+    setLoading(false);
   }, []);
 
   const handleActive = (product, action) => {
@@ -206,7 +207,7 @@ export default function ReadProducts(props) {
 
   return (
     <React.Fragment>
-      <Backdrop className={classes.backdrop} open={props.loading}>
+      <Backdrop className={classes.backdrop} open={loading}>
         <CircularProgress />
       </Backdrop>
       <Tabs

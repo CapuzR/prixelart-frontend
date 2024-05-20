@@ -190,7 +190,7 @@ export default function ReadOrders(props) {
   };
   return (
     <>
-      <Table>
+      <Table style={{ overflowX: "scroll" }}>
         <TableHead>
           <TableRow>
             <TableCell align="center">
@@ -204,8 +204,10 @@ export default function ReadOrders(props) {
             </TableCell>
             <TableCell align="center">
               <div style={{ display: "flex", justifyContent: "end" }}>
-                <FormControl className={classes.formControl}>
-                  <InputLabel id="demo-simple-select-label">Fecha</InputLabel>
+                <FormControl className={classes.formControl} variant="outlined">
+                  <InputLabel id="demo-simple-select-label">
+                    Fecha de creación
+                  </InputLabel>
                   <Select
                     labelId="demo-simple-select-label"
                     id="demo-simple-select"
@@ -224,7 +226,7 @@ export default function ReadOrders(props) {
             </TableCell>
             <TableCell align="center">
               <div style={{ display: "flex", justifyContent: "end" }}>
-                <FormControl className={classes.formControl}>
+                <FormControl className={classes.formControl} variant="outlined">
                   <InputLabel>Fecha de entrega</InputLabel>
                   <Select
                     value={props.filters.shippingDate}
@@ -242,7 +244,7 @@ export default function ReadOrders(props) {
             </TableCell>
             <TableCell align="center">
               <div style={{ display: "flex", justifyContent: "end" }}>
-                <FormControl className={classes.formControl}>
+                <FormControl className={classes.formControl} variant="outlined">
                   <InputLabel>Cliente</InputLabel>
                   <Select value={props.filters.client} onChange={handleClient}>
                     <MenuItem style={{ color: "gray" }} value={undefined}>
@@ -258,10 +260,12 @@ export default function ReadOrders(props) {
                 </FormControl>
               </div>
             </TableCell>
-            <TableCell align="center">Productos</TableCell>
+            <TableCell align="center">
+              <Typography color="secondary">Productos</Typography>
+            </TableCell>
             <TableCell align="center">
               <div style={{ display: "flex", justifyContent: "end" }}>
-                <FormControl className={classes.formControl}>
+                <FormControl className={classes.formControl} variant="outlined">
                   <InputLabel> Status de Pago</InputLabel>
                   <Select
                     value={props.filters.payStatus}
@@ -294,7 +298,7 @@ export default function ReadOrders(props) {
             </TableCell>
             <TableCell align="center">
               <div style={{ display: "flex", justifyContent: "end" }}>
-                <FormControl className={classes.formControl}>
+                <FormControl className={classes.formControl} variant="outlined">
                   <InputLabel>Status</InputLabel>
                   <Select value={props.filters.status} onChange={handleStatus}>
                     <MenuItem value={undefined}>
@@ -331,7 +335,7 @@ export default function ReadOrders(props) {
             </TableCell>
             <TableCell align="center">
               <div style={{ display: "flex", justifyContent: "end" }}>
-                <FormControl className={classes.formControl}>
+                <FormControl className={classes.formControl} variant="outlined">
                   <InputLabel>Asesor</InputLabel>
                   <Select value={props.filters.seller} onChange={handleSeller}>
                     <MenuItem style={{ color: "gray" }} value={undefined}>

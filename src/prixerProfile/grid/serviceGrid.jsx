@@ -501,6 +501,17 @@ export default function ServiceGrid(props) {
     setSnackBar(true);
     setLoading(false);
   };
+
+  const checkPhone = async (service) => {
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/prixer/read";
+    const prixer = await axios.post(base_url, { username: service.prixer });
+    console.log(prixer);
+    await window.open(
+      utils.generateServiceMessage(service, prixer.data.phone),
+      "_blank"
+    );
+  };
+
   const settings = {
     slidesToShow: (isDesktop && 1) || (isMobile && 1) || (isTab && 1),
     slidesToScroll: 1,
@@ -1155,10 +1166,7 @@ export default function ServiceGrid(props) {
                               marginTop: 20,
                             }}
                             onClick={(e) => {
-                              window.open(
-                                utils.generateServiceMessage(tile),
-                                "_blank"
-                              );
+                              checkPhone(tile);
                             }}
                           >
                             Contactar
@@ -1174,10 +1182,7 @@ export default function ServiceGrid(props) {
                             marginTop: 20,
                           }}
                           onClick={(e) => {
-                            window.open(
-                              utils.generateServiceMessage(tile),
-                              "_blank"
-                            );
+                            checkPhone(tile);
                           }}
                         >
                           Contactar

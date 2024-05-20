@@ -256,6 +256,7 @@ export default function Orders(props) {
   const [discountList, setDiscountList] = useState([]);
   const [surchargeList, setSurchargeList] = useState([]);
   const [prixers, setPrixers] = useState([]);
+  const [orgs, setOrgs] = useState([]);
   const [orders, setOrders] = useState([]);
   const [movements, setMovements] = useState([]);
   const [consumers, setConsumers] = useState([]);
@@ -301,6 +302,19 @@ export default function Orders(props) {
       .get(base_url)
       .then((response) => {
         setPrixers(response.data.prixers);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  const getORGs = async () => {
+    const base_url =
+      process.env.REACT_APP_BACKEND_URL + "/organization/read-all-full";
+    await axios
+      .get(base_url)
+      .then((response) => {
+        setOrgs(response.data.organizations);
       })
       .catch((error) => {
         console.log(error);
@@ -969,7 +983,8 @@ export default function Orders(props) {
     updateOrders();
     getDiscounts();
     getSurcharges();
-    getPrixers();
+    // getPrixers();
+    getORGs();
   }, []);
 
   const readDollarValue = async () => {
@@ -1150,6 +1165,7 @@ export default function Orders(props) {
           changeQuantity={props.changeQuantity}
           handleClose={handleClose}
           dollarValue={dollarValue}
+          orgs={orgs}
           setErrorMessage={setErrorMessage}
           setSnackBarError={setSnackBarError}
         ></CreateOrder>

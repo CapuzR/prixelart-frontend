@@ -3,7 +3,6 @@ import axios from "axios";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Paper from "@material-ui/core/Paper";
-import AppBar from "@material-ui/core/AppBar";
 import Grid from "@material-ui/core/Grid";
 import Box from "@material-ui/core/Box";
 import Switch from "@material-ui/core/Switch";
@@ -18,22 +17,16 @@ import Button from "@material-ui/core/Button";
 import Modal from "@material-ui/core/Modal";
 import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
-import TextField from "@material-ui/core/TextField";
-import InputAdornment from "@material-ui/core/InputAdornment";
 import DehazeIcon from "@material-ui/icons/Dehaze";
-import Table from "@material-ui/core/Table";
-import TableBody from "@material-ui/core/TableBody";
-import TableCell from "@material-ui/core/TableCell";
-import TableHead from "@material-ui/core/TableHead";
-import TableRow from "@material-ui/core/TableRow";
+
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
-import Menu from "@material-ui/core/Menu";
-import MenuItem from "@material-ui/core/MenuItem";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
-import { nanoid } from "nanoid";
-import Toolbar from "@material-ui/core/Toolbar";
-import { SelectAllOutlined } from "@material-ui/icons";
+import CreateWallet from "./createWallet";
+import CreateMovement from "./createMovement";
+import MovementRecord from "./movementRecord";
+import PrixerInfo from "./prixerInfo";
+import OrgCommission from "./orgCommission";
 
 const useStyles = makeStyles((theme) => ({
   loading: {
@@ -84,18 +77,20 @@ const useStyles = makeStyles((theme) => ({
   },
   paper1: {
     position: "absolute",
-    width: 800,
+    width: "80%",
     maxHeight: "90%",
     overflowY: "auto",
-    right: "33%",
-    top: "10%",
-    left: "25%",
     backgroundColor: "white",
     boxShadow: theme.shadows[2],
     padding: "16px 32px 24px",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
     textAlign: "justify",
     minWidth: 320,
     borderRadius: 10,
+    display: "flex",
+    flexDirection: "row",
   },
   paper2: {
     position: "fixed",
@@ -144,11 +139,7 @@ export default function Prixers(props) {
   const [tiles, setTiles] = useState([]);
   const [consumers, setConsumers] = useState([]);
   const [org, setOrg] = useState([]);
-
-  const [backdrop, setBackdrop] = useState(true);
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
-  // const isDeskTop = useMediaQuery(theme.breakpoints.up("sm"));
   const [state, setState] = useState({
     checkedA: true,
   });
@@ -160,18 +151,12 @@ export default function Prixers(props) {
   const [balance, setBalance] = useState(0);
   const [type, setType] = useState();
   const [date, setDate] = useState(new Date());
-  const [description, setDescription] = useState();
   const [accounts, setAccounts] = useState();
-  const [movements, setMovements] = useState();
   const [message, setMessage] = useState();
   const [open, setOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const [openInfo, setOpenInfo] = useState(false);
-  const [value1, setValue1] = useState(0);
-
-  const handleChange1 = (event, newValue) => {
-    setValue1(newValue);
-  };
+  const [openComission, setOpenComission] = useState(false);
 
   const handleSection = (event, newValue) => {
     setValue(newValue);
@@ -200,12 +185,15 @@ export default function Prixers(props) {
       const base_url =
         process.env.REACT_APP_BACKEND_URL + "/consumer/read-prixers";
 
-      const response = await axios.post(base_url);
+      const response = await axios.post(base_url, {
+        adminToken: localStorage.getItem("adminTokenV"),
+      });
       setConsumers(response.data);
     } catch (error) {
       console.log(error);
     }
   };
+
   const readOrg = async () => {
     try {
       const base_url =
@@ -218,9 +206,9 @@ export default function Prixers(props) {
     }
   };
 
-  const getBalance = () => {
+  const getBalance = async () => {
     const base_url = process.env.REACT_APP_BACKEND_URL + "/account/readAll";
-    axios
+    await axios
       .post(base_url, {
         adminToken: localStorage.getItem("adminTokenV"),
       })
@@ -229,33 +217,18 @@ export default function Prixers(props) {
       });
   };
 
-  const getMovements = async (account) => {
-    const base_url =
-      process.env.REACT_APP_BACKEND_URL + "/movement/readByPrixer";
-    axios
-      .post(base_url, {
-        adminToken: localStorage.getItem("adminTokenV"),
-        _id: account,
-      })
-      .then((res) => {
-        setMovements(res.data.movements);
-      });
-  };
-
   useEffect(() => {
     setLoading(true);
-
     readPrixers();
     readOrg();
     readConsumers();
     getBalance();
-    setBackdrop(false);
     setLoading(false);
   }, []);
 
   const handleChange = (event) => {
     setState({ ...state, [event.target.name]: event.target.checked });
-  }; //Switch
+  };
 
   const ChangeVisibility = async (e, prixer) => {
     e.preventDefault();
@@ -277,83 +250,16 @@ export default function Prixers(props) {
     setLoading(false);
   };
 
-  const openNewAccount = () => {
-    let ID;
-    const data = {
-      _id: nanoid(24),
-      balance: 0,
-      email: selectedPrixer.email,
-      adminToken: localStorage.getItem("adminTokenV"),
-    };
-    const base_url = process.env.REACT_APP_BACKEND_URL + "/account/create";
-    axios.post(base_url, data).then((response) => {
-      if (response.status === 200 && balance > 0) {
-        ID = response.data.createAccount.newAccount._id;
-        const data2 = {
-          _id: nanoid(),
-          createdOn: new Date(),
-          createdBy: JSON.parse(localStorage.getItem("adminToken")).username,
-          date: date,
-          destinatary: ID,
-          description: "Saldo inicial",
-          type: "Depósito",
-          value: balance,
-          adminToken: localStorage.getItem("adminTokenV"),
-        };
-        const base_url2 =
-          process.env.REACT_APP_BACKEND_URL + "/movement/create";
-        axios.post(base_url2, data2);
-      }
-    });
-
-    setOpen(true);
-    setMessage("Cartera creada y balance actualizado exitosamente.");
-    handleClose();
-    setSelectedPrixer();
-    setSelectedConsumer();
-    setBalance(0);
-    setTimeout(() => {
-      readPrixers();
-      getBalance();
-    }, 1000);
-  };
-
-  const createPayMovement = () => {
-    const data = {
-      _id: nanoid(),
-      createdOn: new Date(),
-      createdBy: JSON.parse(localStorage.getItem("adminToken")).username,
-      date: date,
-      destinatary: selectedPrixer.account,
-      description: description,
-      type: type,
-      value: balance,
-      adminToken: localStorage.getItem("adminTokenV"),
-    };
-    const url = process.env.REACT_APP_BACKEND_URL + "/movement/create";
-    axios.post(url, data);
-    setOpen(true);
-    setMessage("Balance actualizado exitosamente.");
-    handleClose();
-    setSelectedPrixer();
-    setBalance(0);
-    setTimeout(() => {
-      readPrixers();
-      getBalance();
-    }, 1000);
-  };
-
   const handleClose = () => {
     setOpenNewBalance(false);
     setOpenNewMovement(false);
+    setOpenComission(false);
     setOpenList(false);
     setBalance(0);
     setOpenInfo(false);
     setSelectedPrixer();
     setSelectedConsumer();
     setDate();
-    setDescription();
-    setMovements();
     setAnchorEl(null);
   };
 
@@ -372,20 +278,6 @@ export default function Prixers(props) {
           </Box>
         )}
       </div>
-    );
-  }
-
-  if (movements) {
-    const july = movements.filter(
-      (mov) =>
-        mov.date?.substring(5, 7) === "07" ||
-        mov.createdOn.substring(5, 7) === "07"
-    );
-    let comissions = [];
-    july.map(
-      (mov) =>
-        mov.description.substring(0, 20) === "Comisión de la orden" &&
-        comissions.push(mov.value)
     );
   }
 
@@ -417,13 +309,13 @@ export default function Prixers(props) {
     }
   };
 
-  const addrole = async () => {
-    const url = process.env.REACT_APP_BACKEND_URL + "/prixers/addRole";
+  // const addrole = async () => {
+  //   const url = process.env.REACT_APP_BACKEND_URL + "/prixers/addRole";
 
-    await axios.put(url);
-    setOpen(true);
-    setMessage("Rol de Prixer agregado a todos los usuarios.");
-  };
+  //   await axios.put(url);
+  //   setOpen(true);
+  //   setMessage("Rol de Prixer agregado a todos los usuarios.");
+  // };
 
   // function handleKeyDown(event) {
   //   if (event.key === "*") {
@@ -451,6 +343,7 @@ export default function Prixers(props) {
       </div>
     );
   }
+
   return (
     <div>
       <Backdrop className={classes.backdrop} open={loading}>
@@ -701,7 +594,6 @@ export default function Prixers(props) {
                               style={{ textTransform: "none" }}
                               onClick={() => {
                                 setSelectedPrixer(tile);
-                                getMovements(tile?.account);
                                 setOpenList(true);
                               }}
                             >
@@ -788,6 +680,24 @@ export default function Prixers(props) {
                         <Typography gutterBottom variant="h5" component="h2">
                           {tile?.firstName} {tile?.lastName}
                         </Typography>
+                        {props.permissions?.readConsumers && (
+                          <Button
+                            style={{
+                              backgroundColor: "#e5e7e9",
+                              textTransform: "none",
+                            }}
+                            onClick={() => {
+                              setOpenInfo(true);
+                              consumers?.map((cons) => {
+                                if (cons.prixerId === tile.prixerId) {
+                                  setSelectedConsumer(cons);
+                                }
+                              });
+                            }}
+                          >
+                            Ver información
+                          </Button>
+                        )}
                         {props.permissions?.setPrixerBalance && (
                           <Box
                             style={{
@@ -841,6 +751,17 @@ export default function Prixers(props) {
                             />
                           </Box>
                         )}
+                        <Button
+                          style={{
+                            backgroundColor: "#e5e7e9",
+                            textTransform: "none",
+                          }}
+                          onClick={() => {
+                            setOpenComission(true);
+                          }}
+                        >
+                          Definir comisión
+                        </Button>
                       </CardContent>
                     </Card>
                   </Grid>
@@ -961,7 +882,6 @@ export default function Prixers(props) {
                             <Button
                               onClick={() => {
                                 setSelectedPrixer(tile);
-                                getMovements(tile?.account);
                                 setOpenList(true);
                               }}
                             >
@@ -1013,341 +933,63 @@ export default function Prixers(props) {
       </Paper>
 
       <Modal open={openNewBalance} onClose={handleClose}>
-        <Grid container className={classes.paper2}>
-          <Grid
-            item
-            style={{
-              width: "100%",
-              display: "flex",
-            }}
-          >
-            <div
-              style={{
-                display: "flex",
-                width: "100%",
-
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
-            >
-              <Typography>
-                Balance de
-                {" " +
-                  selectedPrixer?.firstName +
-                  " " +
-                  selectedPrixer?.lastName}
-              </Typography>
-
-              <IconButton onClick={handleClose}>
-                <CloseIcon />
-              </IconButton>
-            </div>
-          </Grid>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-            }}
-          >
-            <TextField
-              variant="outlined"
-              value={balance}
-              onChange={(e) => {
-                setBalance(e.target.value);
-              }}
-              type={"number"}
-            />
-            <Button
-              variant="contained"
-              color="primary"
-              size="small"
-              onClick={() => {
-                openNewAccount();
-              }}
-              style={{ marginRight: 10, marginLeft: 10, marginTop: 5 }}
-            >
-              Guardar
-            </Button>
-          </div>
-        </Grid>
+        <CreateWallet
+          selectedPrixer={selectedPrixer}
+          balance={balance}
+          date={date}
+          setOpen={setOpen}
+          setMessage={setMessage}
+          handleClose={handleClose}
+          setBalance={setBalance}
+          readPrixers={readPrixers}
+          readOrg={readOrg}
+          getBalance={getBalance}
+        />
       </Modal>
+
       <Modal open={openNewMovement} onClose={handleClose}>
-        <Grid container className={classes.paper3}>
-          <Grid
-            item
-            style={{
-              width: "100%",
-              display: "flex",
-            }}
-          >
-            <div
-              style={{
-                display: "flex",
-                width: "100%",
-
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
-            >
-              <Typography variant="h6">
-                {type} de
-                {" " +
-                  selectedPrixer?.firstName +
-                  " " +
-                  selectedPrixer?.lastName}
-              </Typography>
-
-              <IconButton onClick={handleClose}>
-                <CloseIcon />
-              </IconButton>
-            </div>
-          </Grid>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              width: "100%",
-            }}
-          >
-            <Grid
-              container
-              style={{
-                display: "flex",
-              }}
-            >
-              <Grid item sm={3} style={{ flexBasis: "0" }}>
-                <TextField
-                  variant="outlined"
-                  label="Fecha"
-                  value={date}
-                  onChange={(e) => {
-                    setDate(e.target.value);
-                  }}
-                  type={"date"}
-                />
-              </Grid>
-              <Grid
-                item
-                sm={6}
-                style={{ paddingRight: "-20px", marginLeft: "10px" }}
-              >
-                <TextField
-                  fullWidth
-                  variant="outlined"
-                  label="descripción"
-                  value={description}
-                  onChange={(e) => {
-                    setDescription(e.target.value);
-                  }}
-                />
-              </Grid>
-              <Grid item sm={3} style={{ marginLeft: "10px" }}>
-                <TextField
-                  variant="outlined"
-                  label="Monto"
-                  value={balance}
-                  onChange={(e) => {
-                    setBalance(e.target.value);
-                  }}
-                  type="number"
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">$</InputAdornment>
-                    ),
-                  }}
-                />
-              </Grid>
-            </Grid>
-            <Button
-              variant="contained"
-              color="primary"
-              size="small"
-              onClick={() => {
-                // openNewAccount();
-                createPayMovement();
-              }}
-              style={{ marginRight: 10, marginLeft: 10, marginTop: 5 }}
-            >
-              Guardar
-            </Button>
-          </div>
-        </Grid>
+        <CreateMovement
+          selectedPrixer={selectedPrixer}
+          handleClose={handleClose}
+          date={date}
+          setDate={setDate}
+          balance={balance}
+          setBalance={setBalance}
+          type={type}
+          setOpen={setOpen}
+          setMessage={setMessage}
+          readPrixers={readPrixers}
+          readOrg={readOrg}
+          getBalance={getBalance}
+        />
       </Modal>
+
       <Modal open={openList} onClose={handleClose}>
-        <Grid container className={classes.paper1}>
-          <div
-            style={{
-              display: "flex",
-              width: "100%",
-
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <Typography variant="h6">
-              Historial de
-              {" " + selectedPrixer?.firstName + " " + selectedPrixer?.lastName}
-            </Typography>
-
-            <IconButton onClick={handleClose}>
-              <CloseIcon />
-            </IconButton>
-          </div>
-
-          {movements?.length > 0 ? (
-            <Table size="small">
-              <TableHead>
-                <TableRow>
-                  <TableCell align="center">Fecha efectiva</TableCell>
-                  <TableCell align="center">Descripción</TableCell>
-                  <TableCell align="center">Monto</TableCell>
-                  <TableCell align="center">Fecha</TableCell>
-                  <TableCell align="center">Creado por</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {movements.map((mov) => (
-                  <TableRow>
-                    <TableCell>
-                      {mov?.date?.substring(0, 10) ||
-                        mov.createdOn.substring(0, 10)}
-                    </TableCell>
-                    <TableCell>{mov.description}</TableCell>
-                    <TableCell>
-                      {mov.type === "Retiro" && "-"}$
-                      {mov.value.toLocaleString("de-DE", {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
-                    </TableCell>
-                    <TableCell align="center">
-                      {mov.createdOn.substring(0, 10)}
-                    </TableCell>
-                    <TableCell align="center">{mov.createdBy}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          ) : (
-            <Typography style={{ display: "flex", justifyContent: "center" }}>
-              Aún no hay movimientos registrados para este Prixer.
-            </Typography>
-          )}
-        </Grid>
+        <MovementRecord
+          selectedPrixer={selectedPrixer}
+          handleClose={handleClose}
+        />
       </Modal>
 
       <Modal open={openInfo} onClose={handleClose}>
-        <Grid container className={classes.paper1}>
-          <div
-            style={{
-              display: "flex",
-              width: "100%",
-
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <Typography variant="h5" color="secondary">
-              {selectedPrixer?.firstName + " " + selectedPrixer?.lastName}
-            </Typography>
-
-            <IconButton onClick={handleClose}>
-              <CloseIcon />
-            </IconButton>
-          </div>
-          <Tabs
-            value={value1}
-            onChange={handleChange1}
-            indicatorColor="primary"
-            textColor="primary"
-          >
-            <Tab
-              style={{ textTransform: "none" }}
-              label="Información de Prixer"
-            />
-            <Tab
-              style={{ textTransform: "none" }}
-              label="Información de Cliente"
-            />
-            <Tab style={{ textTransform: "none" }} label="Historial" />
-          </Tabs>
-          <TabPanel value={value1} index={0}>
-            <Grid
-              container
-              style={{
-                display: "flex",
-                width: "100%",
-                flexDirection: "column",
-              }}
-            >
-              <Typography>
-                {` Fecha de nacimiento: ${new Date(
-                  selectedPrixer?.dateOfBirth
-                )?.toLocaleDateString()}`}
-              </Typography>
-              <Typography>{`Teléfono: ${selectedPrixer?.phone}`}</Typography>
-              <Typography>{`Correo: ${selectedPrixer?.email}`}</Typography>
-              <Typography
-                style={{ marginBottom: 10 }}
-              >{`Ubicación: ${selectedPrixer?.city}, ${selectedPrixer?.country}`}</Typography>
-              <Typography>
-                Redes sociales:
-                {selectedPrixer?.instagram && (
-                  <>
-                    <br></br>Instagram: {selectedPrixer?.instagram}
-                  </>
-                )}
-                {selectedPrixer?.facebook && (
-                  <>
-                    <br></br>Facebook: {selectedPrixer?.facebook}
-                  </>
-                )}
-                {selectedPrixer?.twitter && (
-                  <>
-                    <br></br>Twitter: {selectedPrixer?.twitter}
-                  </>
-                )}
-              </Typography>
-            </Grid>
-          </TabPanel>
-
-          <TabPanel value={value1} index={1}>
-            <Grid
-              container
-              style={{
-                display: "flex",
-                width: "100%",
-                flexDirection: "column",
-              }}
-            >
-              {selectedConsumer?.gender && (
-                <Typography>Género: {selectedConsumer?.gender} </Typography>
-              )}
-              {selectedConsumer?.address && (
-                <Typography>Dirección: {selectedConsumer?.address} </Typography>
-              )}
-              {selectedConsumer?.billingAddress && (
-                <Typography>
-                  Dirección de facturación: {selectedConsumer?.billingAddress}{" "}
-                </Typography>
-              )}
-              {selectedConsumer?.shippingAddress && (
-                <Typography>
-                  Dirección de envío: {selectedConsumer?.shippingAddress}{" "}
-                </Typography>
-              )}
-              {selectedConsumer?.nationalId && (
-                <Typography>
-                  Documento de identidad: {selectedConsumer?.nationalIdType}{" "}
-                  {selectedConsumer?.nationalId}{" "}
-                </Typography>
-              )}
-            </Grid>
-          </TabPanel>
-        </Grid>
+        <PrixerInfo
+          selectedPrixer={selectedPrixer}
+          selectedConsumer={selectedConsumer}
+          handleClose={handleClose}
+        />
       </Modal>
+
+      <Modal open={openComission} onClose={handleClose}>
+        <OrgCommission
+          selectedPrixer={selectedPrixer}
+          handleClose={handleClose}
+          setOpenComission={setOpenComission}
+          setOpen={setOpen}
+          setMessage={setMessage}
+          readOrg={readOrg}
+        />
+      </Modal>
+
       <Snackbar
         open={open}
         autoHideDuration={3000}

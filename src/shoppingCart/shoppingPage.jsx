@@ -141,7 +141,7 @@ export default function ShoppingPage(props) {
 
   const [orderPaymentMethod, setOrderPaymentMethod] = useState(undefined);
   const [observations, setObservations] = useState();
-  const [activeStep, setActiveStep] = React.useState(0);
+  const [activeStep, setActiveStep] = useState(0);
   const [loading, setLoading] = useState(false);
   const steps = [`Tus datos`, `Orden de compra`];
   const [dollarValue, setDollarValue] = useState(1);

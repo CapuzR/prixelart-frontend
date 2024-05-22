@@ -321,9 +321,9 @@ export default function Orders(props) {
       });
   };
 
-  const findPrixer = (prx) => {
+  const findPrixer = async (prx) => {
     const base_url = process.env.REACT_APP_BACKEND_URL + "/prixer/read";
-    return axios
+    return await axios
       .post(base_url, { username: prx })
       .then((response) => {
         return response.data;
@@ -772,7 +772,7 @@ export default function Orders(props) {
   const payComission = async (order) => {
     for (let item of order.requests) {
       let { unitPrice, amount } = 0;
-
+      let destinatary = undefined;
       let discount = discountList.find(
         (dis) => dis._id === item.product.discount
       );
@@ -784,7 +784,7 @@ export default function Orders(props) {
       let consumersFiltered = consumers.filter(
         (con) => con.consumerType === "Prixer"
       );
-
+      const ORG = orgs.find((o) => o.usename === item.art.owner);
       const prx = await findPrixer(item.art.prixerUsername);
 
       const prixer = await consumersFiltered.find(
@@ -796,94 +796,92 @@ export default function Orders(props) {
             ?.toLowerCase()
             .includes(props?.basicData?.lastname?.toLowerCase())
       );
-
-      // Obtener el precio base
-      if (item.product.modifyPrice) {
-        unitPrice = item.product.finalPrice;
-      } else if (item.product.finalPrice) {
-        unitPrice = item.product.finalPrice;
-      } else if (prixer !== undefined) {
-        item.product.prixerEquation
-          ? (unitPrice = Number(
-              item.product?.prixerEquation?.replace(/[,]/gi, ".")
-            ))
-          : (unitPrice = Number(
-              item.product?.prixerPrice?.from?.replace(/[,]/gi, ".")
-            ));
+      if (ORG !== undefined) {
+        destinatary = ORG.account;
+        let profit = item.product.finalPrice - item.product.basePrice;
+        let co =
+          ORG.agreement.appliedProducts.find((p) => p.id === item.product._id)
+            .cporg || ORG.agreement.comission;
+        let prev = (profit / 100) * (co || ORG.agreement.comission);
+        amount = prev * item.quantity;
       } else {
-        item.product.publicEquation
-          ? (unitPrice = Number(
-              item.product?.publicEquation.replace(/[,]/gi, ".")
-            ))
-          : (unitPrice = Number(
-              item.product.publicPrice.from?.replace(/[,]/gi, ".")
-            ));
-      }
+        destinatary = prx.account;
+        // Obtener el precio base
+        if (item.product.modifyPrice) {
+          unitPrice = item.product.finalPrice;
+        } else if (item.product.finalPrice) {
+          unitPrice = item.product.finalPrice;
+        } else if (prixer !== undefined) {
+          item.product.prixerEquation
+            ? (unitPrice = Number(
+                item.product?.prixerEquation?.replace(/[,]/gi, ".")
+              ))
+            : (unitPrice = Number(
+                item.product?.prixerPrice?.from?.replace(/[,]/gi, ".")
+              ));
+        } else {
+          item.product.publicEquation
+            ? (unitPrice = Number(
+                item.product?.publicEquation.replace(/[,]/gi, ".")
+              ))
+            : (unitPrice = Number(
+                item.product.publicPrice.from?.replace(/[,]/gi, ".")
+              ));
+        }
 
-      // Restar 10% automático y calcular precio base con %comisión
-      // Hay que cambiar esto por un ID
-      if (
-        prx.firstName === order.basicData.name.trim() &&
-        prx.lastName === order.basicData.lastname.trim()
-      ) {
-        return;
-      } else if (item.product.finalPrice === undefined) {
-        unitPrice =
-          (unitPrice - unitPrice / 10) / (1 - item.art.comission / 100);
-      }
-
-      // De existir descuentos y no ser Prixer se aplica el descuento
-      if (item.product.modifyPrice !== true) {
+        // Restar 10% automático y calcular precio base con %comisión
+        // Hay que cambiar esto por un ID
         if (
-          typeof item.product.discount === "string" &&
-          discount?.type === "Porcentaje" &&
-          prixer === undefined
+          prx.firstName === order.basicData.firstname.trim() &&
+          prx.lastName === order.basicData.lastname.trim()
         ) {
-          let op = Number(unitPrice - (unitPrice / 100) * discount.value);
-          unitPrice = op;
-        } else if (
-          typeof item.product.discount === "string" &&
-          discount?.type === "Monto" &&
-          prixer === undefined
-        ) {
-          let op = Number(unitPrice - discount.value);
-          unitPrice = op;
+          return;
+        } else if (item.product.finalPrice === undefined) {
+          unitPrice =
+            (unitPrice - unitPrice / 10) / (1 - item.art.comission / 100);
         }
-      }
 
-      // Calcular comisión
-      amount = (unitPrice / 100) * (item.art.comission || 10);
-      // Aplcar recargo
-      if (surcharge) {
-        let total;
-        if (surcharge.type === "Porcentaje") {
-          total = amount - (amount / 100) * surcharge.value;
-          amount = total;
-        } else if (surcharge.type === "Monto") {
-          total = amount - surcharge.value;
-          amount = total;
+        // De existir descuentos y no ser Prixer se aplica el descuento
+        if (item.product.modifyPrice !== true) {
+          if (
+            typeof item.product.discount === "string" &&
+            discount?.type === "Porcentaje" &&
+            prixer === undefined
+          ) {
+            let op = Number(unitPrice - (unitPrice / 100) * discount.value);
+            unitPrice = op;
+          } else if (
+            typeof item.product.discount === "string" &&
+            discount?.type === "Monto" &&
+            prixer === undefined
+          ) {
+            let op = Number(unitPrice - discount.value);
+            unitPrice = op;
+          }
         }
+
+        // Calcular comisión
+        amount = (unitPrice / 100) * (item.art.comission || 10);
+        // Aplcar recargo
+        if (surcharge) {
+          let total;
+          if (surcharge.type === "Porcentaje") {
+            total = amount - (amount / 100) * surcharge.value;
+            amount = total;
+          } else if (surcharge.type === "Monto") {
+            total = amount - surcharge.value;
+            amount = total;
+          }
+        }
+
+        amount = amount * item.quantity;
       }
-
-      amount = amount * item.quantity;
-
-      // =
-      //   typeof item.product.comission === "number"
-      //     ? item.product.comission
-      //     : getComission(
-      //         item.product,
-      //         item.art,
-      //         false,
-      //         order.dollarValue,
-      //         discountList,
-      //         item.quantity,
-      //         surchargeList
-      //       );
       console.log("La comisión es de $", amount);
       if (
         item.art?.prixerUsername &&
         item.art?.prixerUsername !== "Personalizado" &&
-        item.art?.prixerUsername !== undefined
+        item.art?.prixerUsername !== undefined &&
+        destinatary !== undefined
       ) {
         const url = process.env.REACT_APP_BACKEND_URL + "/movement/create";
         const data = {
@@ -891,7 +889,7 @@ export default function Orders(props) {
           createdOn: new Date(),
           createdBy: JSON.parse(localStorage.getItem("adminToken")).username,
           date: new Date(),
-          destinatary: prx.account,
+          destinatary: destinatary,
           description: `Comisión de la orden #${order.orderId}`,
           type: "Depósito",
           value: amount,
@@ -903,6 +901,11 @@ export default function Orders(props) {
             setErrorMessage(res.data.message);
           }
         });
+      } else if (destinatary === undefined) {
+        setSnackBarError(true);
+        setErrorMessage(
+          "La cartera no ha sido encontrada, verifique que el propietario y/o owner tenga una cartera válida e inténtelo de nuevo."
+        );
       }
     }
   };

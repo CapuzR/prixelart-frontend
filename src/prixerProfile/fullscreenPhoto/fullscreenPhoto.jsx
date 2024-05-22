@@ -20,7 +20,6 @@ import ArtUploader from "../../sharedComponents/artUploader/artUploader";
 import WhatsAppIcon from "@material-ui/icons/WhatsApp";
 import ShareIcon from "@material-ui/icons/Share";
 import utils from "../../utils/utils";
-import MenuItem from "@material-ui/core/MenuItem";
 import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
 import Select from "@material-ui/core/Select";
@@ -44,6 +43,10 @@ import Tooltip from "@material-ui/core/Tooltip";
 import IconButton from "@material-ui/core/IconButton";
 import Star from "@material-ui/icons/StarRate";
 import StarOutline from "@material-ui/icons/StarOutline";
+import Menu from "@material-ui/core/Menu";
+import MenuItem from "@material-ui/core/MenuItem";
+import MoreVertIcon from "@material-ui/icons/MoreVert";
+import CloseIcon from "@material-ui/icons/Close";
 
 const IOSSwitch = withStyles((theme) => ({
   root: {
@@ -168,10 +171,12 @@ export default function FullscreenPhoto(props) {
   const [openShoppingCart, setOpenShoppingCart] = useState(false);
   const [allowExclusive, setAllowExclusive] = useState(false);
   const [comission, setComission] = useState(10);
-
+  const [openSettings, setOpenSettings] = useState(false);
   const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
   const isDeskTop = useMediaQuery(theme.breakpoints.up("sm"));
-
+  const [code, setCode] = useState("XX");
+  const [serial, setSerial] = useState(0);
+  const [sequence, setSequence] = useState(0);
   const totalArts = tiles?.length;
   const itemsPerPage = 8;
   const noOfPages = Math.ceil(totalArts / itemsPerPage);
@@ -294,13 +299,17 @@ export default function FullscreenPhoto(props) {
   const handleClickOpen = () => {
     setOpen(true);
   };
+
   const handleClickVisible = () => {
     setOpenV(true);
   };
+
   const handleClose = () => {
     setOpen(false);
     setSelectedArt(undefined);
+    setOpenSettings(false);
   };
+
   const handleCloseVisible = () => {
     setOpenV(false);
     setHiddenArt(undefined);
@@ -444,6 +453,12 @@ export default function FullscreenPhoto(props) {
     setLoading(true);
     const URI = process.env.REACT_APP_BACKEND_URL + "/art/rank/" + id;
     art.points = parseInt(points);
+    const certificate = {
+      code: code,
+      serial: serial,
+      sequence: sequence,
+    };
+    art.certificate = certificate;
     const response = await axios.put(
       URI,
       art,
@@ -745,16 +760,29 @@ export default function FullscreenPhoto(props) {
                                 {JSON.parse(
                                   localStorage.getItem("adminToken")
                                 ) && (
-                                  <Button
-                                    size="small"
-                                    color="primary"
-                                    variant="contained"
-                                    disabled
-                                  >
-                                    <Typography>
-                                      Puntos: {tile.points}
-                                    </Typography>
-                                  </Button>
+                                  <div>
+                                    <IconButton
+                                      onClick={(e) => {
+                                        if (
+                                          selectedArt !== undefined &&
+                                          tile.artId === selectedArt?.artId
+                                        ) {
+                                          setSelectedArt(undefined);
+                                          setOpenSettings(false);
+                                        } else {
+                                          setSelectedArt(tile);
+                                          setOpenSettings(true);
+                                        }
+                                      }}
+                                    >
+                                      {selectedArt !== undefined &&
+                                      tile.artId === selectedArt?.artId ? (
+                                        <CloseIcon />
+                                      ) : (
+                                        <MoreVertIcon />
+                                      )}
+                                    </IconButton>
+                                  </div>
                                 )}
                               </Grid>
                             </Grid>
@@ -829,113 +857,178 @@ export default function FullscreenPhoto(props) {
                               </Typography>
                             )}
                         </CardContent>
-                        <CardActions
-                          style={{
-                            display: "flex",
-                            justifyContent: "space-around",
-                          }}
-                        >
-                          <Button
-                            size="small"
-                            color="primary"
-                            onClick={(e) => {
-                              addingToCart(e, tile);
-                            }}
-                          >
-                            <AddShoppingCartIcon /> Comprar
-                          </Button>
-                          <Button
-                            size="small"
-                            color="primary"
-                            onClick={(e) => {
-                              window.open(
-                                utils.generateWaMessage(tile),
-                                "_blank"
-                              );
-                            }}
-                          >
-                            <ShareIcon /> Compartir
-                          </Button>
-                          {JSON.parse(localStorage.getItem("token")) &&
-                            JSON.parse(localStorage.getItem("token"))
-                              .username === tile.prixerUsername && (
-                              <Button
-                                size="small"
-                                color="primary"
-                                onClick={(e) => {
-                                  handleArtEdit(e, tile);
-                                  setSelectedArt(tile.artId);
-                                }}
-                              >
-                                Editar
-                              </Button>
-                            )}
+                        <CardActions>
                           {props.permissions?.artBan && (
-                            <IOSSwitch
-                              color="primary"
-                              size="normal"
-                              checked={tile.visible}
-                              onChange={(e) => {
-                                setHiddenArt(tile.artId);
-                                if (e.target.checked === false) {
-                                  handleClickVisible();
-                                  setVisible(e.target.checked);
-                                } else {
-                                  setVisibleArt(tile, tile.artId, e);
-                                  setVisible(e.target.checked);
-                                }
+                            <div
+                              style={{
+                                display: "flex",
+                                alignItems: "center",
                               }}
-                            />
+                            >
+                              <Typography variant="body2" color="textSecondary">
+                                Activo:
+                              </Typography>
+                              <IOSSwitch
+                                color="primary"
+                                size="normal"
+                                checked={tile.visible}
+                                onChange={(e) => {
+                                  setHiddenArt(tile.artId);
+                                  if (e.target.checked === false) {
+                                    handleClickVisible();
+                                    setVisible(e.target.checked);
+                                  } else {
+                                    setVisibleArt(tile, tile.artId, e);
+                                    setVisible(e.target.checked);
+                                  }
+                                }}
+                              />
+                            </div>
                           )}
-                          {JSON.parse(localStorage.getItem("adminToken")) && (
-                            <FormControl>
+                          {openSettings === true &&
+                          selectedArt !== undefined &&
+                          tile.artId === selectedArt.artId ? (
+                            <div
+                              style={{
+                                display: "flex",
+                                justifyContent: "space-around",
+                                width: "100%",
+                              }}
+                            >
                               <Grid
                                 container
                                 spacing={0.5}
                                 flexWrap="nowrap"
-                                justifyContent="center"
+                                justifyContent="space-between"
                                 alignItems="center"
                                 flexDirection="row"
                               >
-                                <Grid item xs={8}>
+                                <Grid item xs={2}>
                                   <TextField
                                     type="number"
                                     variant="outlined"
-                                    placeholder="Points"
+                                    label="Puntos"
                                     inputProps={propsRank}
+                                    defaultValue={tile.points}
                                     onChange={(e) => {
                                       setPoints(e.target.value);
                                     }}
                                   />
                                 </Grid>
-                                <Grid item xs={3}>
+                                <Grid item xs={6} style={{ display: "flex" }}>
+                                  <TextField
+                                    style={{ marginRight: 8 }}
+                                    variant="outlined"
+                                    label="Código"
+                                    onChange={(e) => {
+                                      setCode(e.target.value);
+                                    }}
+                                    value={code}
+                                  />
+                                  <TextField
+                                    style={{ marginRight: 8 }}
+                                    type="number"
+                                    variant="outlined"
+                                    label="Arte"
+                                    value={serial}
+                                    onChange={(e) => {
+                                      setSerial(e.target.value);
+                                    }}
+                                  />
+                                  <TextField
+                                    type="number"
+                                    variant="outlined"
+                                    label="Seguimiento"
+                                    value={sequence}
+                                    onChange={(e) => {
+                                      setSequence(e.target.value);
+                                    }}
+                                  />
+                                </Grid>
+
+                                <div
+                                  style={{
+                                    width: "100%",
+                                    display: "flex",
+                                    justifyContent: "end",
+                                  }}
+                                >
                                   <Button
                                     color="primary"
                                     variant="outlined"
+                                    style={{
+                                      textTransform: "none",
+                                      marginTop: 8,
+                                    }}
                                     onClick={(e) => {
                                       rankArt(tile, tile.artId, e);
                                     }}
                                   >
-                                    Enviar
+                                    Guardar
                                   </Button>
-                                </Grid>
+                                </div>
                               </Grid>
-                            </FormControl>
-                          )}
-                          {JSON.parse(localStorage.getItem("token")) &&
-                            JSON.parse(localStorage.getItem("token"))
-                              .username == tile.prixerUsername && (
+                            </div>
+                          ) : (
+                            <div
+                              style={{
+                                display: "flex",
+                                justifyContent: "space-around",
+                                width: "100%",
+                              }}
+                            >
                               <Button
-                                color="primary"
                                 size="small"
+                                color="primary"
                                 onClick={(e) => {
-                                  handleClickOpen(e);
-                                  setSelectedArt(tile.artId);
+                                  addingToCart(e, tile);
                                 }}
                               >
-                                Eliminar
+                                <AddShoppingCartIcon /> Comprar
                               </Button>
-                            )}
+                              <Button
+                                size="small"
+                                color="primary"
+                                onClick={(e) => {
+                                  window.open(
+                                    utils.generateWaMessage(tile),
+                                    "_blank"
+                                  );
+                                }}
+                              >
+                                <ShareIcon /> Compartir
+                              </Button>
+                              {JSON.parse(localStorage.getItem("token")) &&
+                                JSON.parse(localStorage.getItem("token"))
+                                  .username === tile.prixerUsername && (
+                                  <Button
+                                    size="small"
+                                    color="primary"
+                                    onClick={(e) => {
+                                      handleArtEdit(e, tile);
+                                      setSelectedArt(tile.artId);
+                                    }}
+                                  >
+                                    Editar
+                                  </Button>
+                                )}
+
+                              {JSON.parse(localStorage.getItem("token")) &&
+                                JSON.parse(localStorage.getItem("token"))
+                                  .username == tile.prixerUsername && (
+                                  <Button
+                                    color="primary"
+                                    size="small"
+                                    onClick={(e) => {
+                                      handleClickOpen(e);
+                                      setSelectedArt(tile.artId);
+                                    }}
+                                  >
+                                    Eliminar
+                                  </Button>
+                                )}
+                            </div>
+                          )}
                         </CardActions>
                       </Card>
                       <Dialog

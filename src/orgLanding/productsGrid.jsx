@@ -28,31 +28,75 @@ const useStyles = makeStyles((theme) => ({
   typography: { fontFamily: "Uncut Sans" },
 }));
 
-export default function CBProducts({ addItemToBuyState }) {
+export default function CBProducts() {
   const classes = useStyles();
+  const [all, setAll] = useState([]);
   const [tiles, setTiles] = useState([]);
   const history = useHistory();
+  const [checkedProducts, setCheckedProducts] = useState([]);
+  const [checkedDesigns, setCheckedDesigns] = useState([]);
+
+  const handleChange = (prod, filterType) => {
+    let copyP = [...checkedProducts];
+    let copyD = [...checkedDesigns];
+
+    let result = all;
+
+    if (filterType === "product") {
+      const index = copyP.indexOf(prod);
+
+      if (index !== -1) {
+        copyP.splice(index, 1);
+      } else {
+        copyP.push(prod);
+      }
+      setCheckedProducts(copyP);
+    } else if (filterType === "art") {
+      const index = copyD.indexOf(prod);
+      if (index !== -1) {
+        copyD.splice(index, 1);
+      } else {
+        copyD.push(prod);
+      }
+      setCheckedDesigns(copyD);
+    }
+
+    if (copyP.length > 0) {
+      result = result.filter((item) => {
+        return copyP.some((param) =>
+          item.product.name.includes(param.slice(0, -1))
+        );
+      });
+    }
+    if (copyD.length > 0) {
+      result = result.filter((item) => {
+        return copyD.some((param) =>
+          item.art.title.includes(param.slice(0, -1))
+        );
+      });
+    }
+    setTiles(result);
+  };
 
   useEffect(() => {
     setTiles(getProducts());
+    setAll(getProducts());
   }, []);
 
-  const products = ["Franelas", "Tazas", "Termos", "Totes"];
-  const colors = [
-    { name: "Verde", code: "#006134" },
-    { name: "Azul", code: "#789BEC" },
-    { name: "Negro", code: "#090909" },
-  ];
+  const products = ["Franelas", "Botella Rock", "Tazas", "Totes"];
+
   const designs = [
-    "Pasante subpagado",
+    "Cartoon",
+    "Cafecito",
     "Independizar",
+
+    "Pasante Subpagado",
     "Sobreviví",
-    "Cafesito",
   ];
 
   const viewDetails = (item) => {
     history.push({
-      pathname: "/chiguirebipolar/item=" + item.product.id,
+      pathname: "/chiguirebipolar/item=" + item.product.item,
     });
   };
 
@@ -111,8 +155,8 @@ export default function CBProducts({ addItemToBuyState }) {
 
   return (
     <Grid
-      container
       id="productos"
+      container
       style={{
         marginBottom: 40,
         marginLeft: 20,
@@ -122,11 +166,7 @@ export default function CBProducts({ addItemToBuyState }) {
     >
       <Grid item xs={2}>
         <Accordion style={{ marginBottom: 20 }}>
-          <AccordionSummary
-            expandIcon={<ExpandMoreIcon />}
-            aria-controls="panel1a-content"
-            id="panel1a-header"
-          >
+          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
             <Typography className={classes.heading}>Productos</Typography>
           </AccordionSummary>
           <AccordionDetails
@@ -140,7 +180,10 @@ export default function CBProducts({ addItemToBuyState }) {
                   alignItems: "center",
                 }}
               >
-                <Checkbox />
+                <Checkbox
+                  checked={checkedProducts.includes(prod)}
+                  onClick={() => handleChange(prod, "product")}
+                />
 
                 <Typography>{prod}</Typography>
               </Box>
@@ -166,45 +209,12 @@ export default function CBProducts({ addItemToBuyState }) {
                   alignItems: "center",
                 }}
               >
-                <Checkbox />
+                <Checkbox
+                  checked={checkedDesigns.includes(des)}
+                  onClick={() => handleChange(des, "art")}
+                />
 
                 <Typography>{des}</Typography>
-              </Box>
-            ))}
-          </AccordionDetails>
-        </Accordion>
-        <Accordion>
-          <AccordionSummary
-            expandIcon={<ExpandMoreIcon />}
-            aria-controls="panel1a-content"
-            id="panel1a-header"
-          >
-            <Typography className={classes.heading}>Color de diseño</Typography>
-          </AccordionSummary>
-          <AccordionDetails
-            style={{ display: "flex", flexDirection: "column" }}
-          >
-            {colors.map((color) => (
-              <Box
-                m={1}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                }}
-              >
-                <Button style={{ textTransform: "none" }}>
-                  <div
-                    style={{
-                      width: 30,
-                      height: 30,
-                      backgroundColor: color.code,
-                      borderRadius: 8,
-                      marginRight: 10,
-                    }}
-                  />
-
-                  <Typography>{color.name}</Typography>
-                </Button>
               </Box>
             ))}
           </AccordionDetails>
@@ -253,6 +263,7 @@ export default function CBProducts({ addItemToBuyState }) {
                           backgroundSize: "contain",
                           backgroundRepeat: "no-repeat",
                           backgroundPosition: "center",
+                          borderRadius: 10,
                         }}
                       ></div>
                     </div>
@@ -273,7 +284,7 @@ export default function CBProducts({ addItemToBuyState }) {
                     flexDirection: "column",
                     justifyContent: "space-between",
                   }}
-                  onClick={() => viewDetails(tile)}
+                  //   onClick={() => viewDetails(tile)}
                 >
                   <div>
                     <Typography
@@ -318,9 +329,9 @@ export default function CBProducts({ addItemToBuyState }) {
                     backgroundColor: "#F4DF46",
                     borderRadius: 10,
                   }}
-                  onClick={() => addItemToBuyState(tile)}
+                  onClick={() => viewDetails(tile)}
                 >
-                  Añadir al carrito
+                  Ver detalles{" "}
                 </Button>
               </div>
             </Grid>

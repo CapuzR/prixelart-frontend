@@ -4,6 +4,7 @@ import { Typography } from "@material-ui/core";
 import InstagramIcon from "@material-ui/icons/Instagram";
 import LanguageIcon from "@material-ui/icons/Language";
 import IconButton from "@material-ui/core/IconButton";
+import Copyright from "../sharedComponents/Copyright/copyright";
 
 export default function CBFooter() {
   return (
@@ -15,6 +16,7 @@ export default function CBFooter() {
           display: "flex",
           width: "100%",
           flexDirection: "column",
+          fontFamily: "Uncut Sans",
         }}
       >
         <Typography
@@ -26,7 +28,10 @@ export default function CBFooter() {
             display: "flex",
           }}
         >
-          Desarrollado por Prixelart
+          {"Copyright © Prixelart "}
+
+          {new Date().getFullYear()}
+          {"."}
         </Typography>
         <Grid style={{ justifyContent: "center", display: "flex" }}>
           <IconButton

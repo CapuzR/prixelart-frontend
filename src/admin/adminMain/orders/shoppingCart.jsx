@@ -380,6 +380,7 @@ export default function ShoppingCart(props) {
     }
   };
   console.log(prices);
+
   const removePrixer = (index) => {
     let artists = selectedArtist;
     artists.splice(index, 1);
@@ -387,12 +388,12 @@ export default function ShoppingCart(props) {
   };
 
   const checkOrgs = (art) => {
-    const org = props.orgs.find((el) => el.username === art.owner);
+    const org = props?.orgs.find((el) => el.username === art.owner);
     return org;
   };
 
   const getCporg = (item) => {
-    const org = props.orgs.find((el) => el.username === item.art.owner);
+    const org = props?.orgs.find((el) => el.username === item.art.owner);
 
     const applied = org?.agreement.appliedProducts.find(
       (el) => el.id === item.product._id

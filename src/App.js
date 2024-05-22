@@ -301,7 +301,7 @@ function App() {
   };
 
   const checkOrgs = (art) => {
-    const org = orgs.find((el) => el.username === art.owner);
+    const org = orgs?.find((el) => el.username === art.owner);
     return org;
   };
 

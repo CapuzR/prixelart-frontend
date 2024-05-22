@@ -164,7 +164,9 @@ export default function OrderFormCB(props) {
   };
 
   let shippingCost = Number(
-    props.valuesConsumer.shippingMethod?.price.replace(/[$]/gi, "")
+    props.valuesConsumer?.shippingMethod
+      ? props.valuesConsumer?.shippingMethod?.price?.replace(/[$]/gi, "")
+      : 0
   );
 
   return (

@@ -133,7 +133,7 @@ export default function ShoppingCartCB() {
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("");
-  const [openModal, setOpenModal] = useState(true);
+  const [openModal, setOpenModal] = useState(false);
   const [values, setValues] = useState("");
   const [activeStep, setActiveStep] = useState(0);
   const [orderPaymentMethod, setOrderPaymentMethod] = useState(undefined);
@@ -231,8 +231,16 @@ export default function ShoppingCartCB() {
     localStorage.setItem("CBbuyState", JSON.stringify(newState));
   };
 
+  const finish = () => {
+    handleMain();
+    handleClose();
+  };
   const handleClose = () => {
     setOpenModal(false);
+    setValues(undefined);
+    localStorage.removeItem("CBbuyState");
+    setBuyState([]);
+    setLoading(false);
   };
 
   const createOrder = async () => {
@@ -356,9 +364,6 @@ export default function ShoppingCartCB() {
             }
 
             setOpenModal(true);
-            // setMessage(response.data.info);
-            // setMessage("¡Gracias por tu compra! Por favor revisa tu correo");
-
             const base_url3 =
               process.env.REACT_APP_BACKEND_URL + "/order/sendEmail";
             await axios.post(base_url3, input).then(async (response) => {
@@ -371,11 +376,6 @@ export default function ShoppingCartCB() {
         .catch((error) => {
           console.log(error.response);
         });
-      //   history.push({ pathname: "/chiguirebipolar" });
-      setValues(undefined);
-      localStorage.removeItem("CBbuyState");
-      setBuyState([]);
-      setLoading(false);
     } else {
       setOpen(true);
       setMessage("Por favor selecciona una forma de pago.");
@@ -1675,7 +1675,7 @@ export default function ShoppingCartCB() {
               borderRadius: 10,
               fontSize: 18,
             }}
-            onClick={() => handleMain()}
+            onClick={() => finish()}
           >
             Volver
           </Button>

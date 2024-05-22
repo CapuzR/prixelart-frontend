@@ -32,9 +32,6 @@ const useStyles = makeStyles((theme) => ({
   menuButton: {
     marginRight: theme.spacing(2),
   },
-  title: {
-    flexGrow: 1,
-  },
   button: {
     fontFamily: "Uncut Sans",
     textTransform: "none",
@@ -84,7 +81,9 @@ export default function ChiguireHome() {
 
   const addItemToBuyState = (input) => {
     const newState = [...buyState];
-    const prevItem = newState.find((item) => item.id === input.id);
+    const prevItem = newState.find(
+      (item) => item.product.item === input.product.item
+    );
 
     if (!prevItem) {
       newState.push({
@@ -96,7 +95,7 @@ export default function ChiguireHome() {
     } else {
       setBuyState((prev) =>
         prev.map((item) => {
-          if (item.id === input.id) {
+          if (item.product.item === input.product.item) {
             return { ...item, quantity: item.quantity++ };
           }
           return item;
@@ -143,7 +142,7 @@ export default function ChiguireHome() {
   }))(Badge);
 
   return (
-    <div className={classes.root}>
+    <div>
       <HideOnScroll>
         <AppBar elevation={3} className={classes.appBar}>
           <div className={classes.backgroundImage}>
@@ -165,6 +164,7 @@ export default function ChiguireHome() {
           </div>
         </AppBar>
       </HideOnScroll>
+
       <AppBar
         position="fixed"
         elevation={0}
@@ -219,6 +219,7 @@ export default function ChiguireHome() {
           </div>
         </Toolbar>
       </AppBar>
+
       <Grid
         container
         style={{
@@ -247,7 +248,7 @@ export default function ChiguireHome() {
             }}
             align={"center"}
           >
-            16 años de humor irreverente y conexión con Venezuela.
+            ¡Bienvenidos al e-tarantín de El Chigüire Bipolar!
           </Typography>
         </Grid>
         <Grid
@@ -269,12 +270,21 @@ export default function ChiguireHome() {
             paddingBottom: 40,
           }}
         >
-          <Typography className={classes.button} style={{ fontSize: 18 }}>
-            Celebramos nuestro aniversario con una colección exclusiva. De la
-            mano de la talentosa Marisa Quiroz, plasmamos nuestra esencia en
-            piezas únicas que expresan nuestra identidad como venezolanos. Llena
-            tu vida de color y alegría con esta colección que captura el
-            espíritu de Chigüire Bipolar.
+          <Typography
+            className={classes.button}
+            style={{ fontSize: 18, textAlign: "center" }}
+          >
+            Nos emociona muchísimo compartir con ustedes esta colección
+            exclusiva de merch, hecha en alianza con nuestros panas de
+            Prixelart, para que demuestres tu amor por nuestro Chigüi. Tenemos
+            franelas, tazas, tote bags y termos con diseños exclusivos para ti.
+            No importa si nos sigues desde los tiempos en los que María
+            Alejandra López le tenía fe a Capriles o si justo acabas de
+            descubrirnos: seguro encontrarás algo para ti. Con cada compra
+            podrás demostrarle al mundo que para ti, las noticias son un asunto
+            muy serio y, al mismo tiempo, apoyas nuestra explotación laboral al
+            pasante subpagado. ¡Una situación ganar-ganar para todos, menos para
+            él! Gracias por formar parte de nuestra comunidad.
           </Typography>
         </Grid>
       </Grid>

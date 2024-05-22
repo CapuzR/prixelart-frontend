@@ -342,7 +342,15 @@ export default function ShoppingCart(props) {
   ) => {
     if (prices.length === 0) {
       setPrices([
-        UnitPriceSug(prod, art, currency, dollarValue, discountList, prixer),
+        UnitPriceSug(
+          prod,
+          art,
+          currency,
+          dollarValue,
+          discountList,
+          prixer,
+          checkOrgs(art)
+        ),
       ]);
     } else if (index <= prices.length) {
       let prev = prices;
@@ -352,21 +360,53 @@ export default function ShoppingCart(props) {
         currency,
         dollarValue,
         discountList,
-        prixer
+        prixer,
+        checkOrgs(art)
       );
       setPrices(prev);
     } else {
       setPrices([
         ...prices,
-        UnitPriceSug(prod, art, currency, dollarValue, discountList, prixer),
+        UnitPriceSug(
+          prod,
+          art,
+          currency,
+          dollarValue,
+          discountList,
+          prixer,
+          checkOrgs(art)
+        ),
       ]);
     }
   };
-
+  console.log(prices);
   const removePrixer = (index) => {
     let artists = selectedArtist;
     artists.splice(index, 1);
     setSelectedArtist(artists);
+  };
+
+  const checkOrgs = (art) => {
+    const org = props.orgs.find((el) => el.username === art.owner);
+    return org;
+  };
+
+  const getCporg = (item) => {
+    const org = props.orgs.find((el) => el.username === item.art.owner);
+
+    const applied = org?.agreement.appliedProducts.find(
+      (el) => el.id === item.product._id
+    );
+    const varApplied = applied.variants.find(
+      (v) => v.name === item.product.selection
+    );
+    let percentage =
+      item.product.selection !== undefined &&
+      typeof item.product.selection === "string"
+        ? varApplied.cporg
+        : applied.cporg;
+
+    return percentage;
   };
 
   const changeArt = async (art, product, index) => {
@@ -377,7 +417,8 @@ export default function ShoppingCart(props) {
       false,
       props.dollarValue,
       props.discountList,
-      props?.selectedPrixer?.username
+      props?.selectedPrixer?.username,
+      checkOrgs(art)
     );
     prod.finalPrice = Number(newPrice?.replace(/[,]/gi, "."));
     prod.comission = getComission(
@@ -388,7 +429,8 @@ export default function ShoppingCart(props) {
       props.discountList,
       1,
       props?.selectedPrixer?.username,
-      props.surchargeList
+      props.surchargeList,
+      checkOrgs(art)
     );
     props.setSelectedProductToAssociate({
       index,
@@ -445,7 +487,8 @@ export default function ShoppingCart(props) {
         props.discountList,
         1,
         props?.selectedPrixer?.username,
-        props.surchargeList
+        props.surchargeList,
+        checkOrgs(art)
       );
 
       updatePrices(
@@ -490,6 +533,7 @@ export default function ShoppingCart(props) {
       selection = prod.variants.find((v) => v.name === variant);
       prod.publicEquation = selection?.publicPrice?.equation;
       prod.prixerEquation = selection?.prixerPrice?.equation;
+
       if (item.art) {
         prod.comission = getComission(
           prod,
@@ -499,7 +543,8 @@ export default function ShoppingCart(props) {
           props.discountList,
           item.quantity,
           props?.selectedPrixer?.username,
-          props.surchargeList
+          props.surchargeList,
+          checkOrgs(item.art)
         );
 
         prod.finalPrice = Number(
@@ -509,9 +554,11 @@ export default function ShoppingCart(props) {
             false,
             1,
             props.discountList,
-            props?.selectedPrixer?.username
-          )
+            props?.selectedPrixer?.username,
+            checkOrgs(item.art)
+          )?.replace(/[,]/gi, ".")
         );
+        console.log(prod.finalPrice);
       }
     } else {
       prod.publicEquation = 0;
@@ -555,7 +602,8 @@ export default function ShoppingCart(props) {
       props.discountList,
       item.quantity,
       props?.selectedPrixer?.username,
-      props.surchargeList
+      props.surchargeList,
+      checkOrgs(item.art)
     );
     purchase.splice(index, 1, item);
     localStorage.setItem("buyState", JSON.stringify(purchase));
@@ -1091,30 +1139,36 @@ export default function ShoppingCart(props) {
                             props?.selectedConsumer?.username === buy.art.owner)
                             ? "El cliente es el autor o propietario del arte, su comisión ha sido omitida."
                             : `Este arte tiene una comisión de 
-                            ${buy.art.comission}% equivalente a $${
-                                typeof buy.product.comission === "string" ||
-                                typeof buy.product.comission === "number"
-                                  ? (
-                                      buy.product?.comission / buy.quantity
-                                    ).toLocaleString("de-DE", {
-                                      minimumFractionDigits: 2,
-                                      maximumFractionDigits: 2,
-                                    })
-                                  : (
-                                      getComission(
-                                        buy.product,
-                                        buy.art,
-                                        props.currency,
-                                        props.dollarValue,
-                                        props.discountList,
-                                        buy.quantity,
-                                        props?.selectedPrixer?.username,
-                                        props.surchargeList
-                                      ) / buy.quantity
-                                    ).toLocaleString("de-DE", {
-                                      minimumFractionDigits: 2,
-                                      maximumFractionDigits: 2,
-                                    })
+                            ${
+                              checkOrgs(buy.art)
+                                ? getCporg(buy)
+                                : buy.art.comission
+                            }% equivalente a $${
+                                // typeof buy.product.comission === "string" ||
+                                // (typeof buy.product.comission === "number" &&
+                                // ? (
+                                //     buy.product?.comission / buy.quantity
+                                //   ).toLocaleString("de-DE", {
+                                //     minimumFractionDigits: 2,
+                                //     maximumFractionDigits: 2,
+                                //   })
+                                // : (
+                                (
+                                  getComission(
+                                    buy.product,
+                                    buy.art,
+                                    props.currency,
+                                    props.dollarValue,
+                                    props.discountList,
+                                    buy.quantity,
+                                    props?.selectedPrixer?.username,
+                                    props.surchargeList,
+                                    checkOrgs(buy.art)
+                                  ) / buy.quantity
+                                ).toLocaleString("de-DE", {
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 2,
+                                })
                               }`}
                         </Typography>
                       </>
@@ -1139,7 +1193,9 @@ export default function ShoppingCart(props) {
                                   props.currency,
                                   props.dollarValue,
                                   props.discountList,
-                                  props?.selectedPrixer?.username
+                                  props?.selectedPrixer?.username,
+                                  checkOrgs(buy.art)
+                                  // meter el tipo de consumidor
                                 )
                               : "Precio base: " +
                                 UnitPrice(

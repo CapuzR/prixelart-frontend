@@ -399,31 +399,34 @@ export default function OrderDetails(props) {
               }}
             />
           </Paper>
-          <Paper
-            style={{
-              width: 150,
-              height: 150,
-              borderRadius: 10,
-              backgroundColor: "#eeeeee",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-            elevation={3}
-          >
-            <Img
-              src={
-                item.product?.thumbUrl && item.product?.thumbUrl !== "undefined"
-                  ? item.product?.thumbUrl
-                  : item.product?.sources?.images[0]?.url
-              }
+          {item.product.item === undefined && (
+            <Paper
               style={{
-                maxWidth: 150,
-                maxHeight: 150,
+                width: 150,
+                height: 150,
                 borderRadius: 10,
+                backgroundColor: "#eeeeee",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
               }}
-            />
-          </Paper>
+              elevation={3}
+            >
+              <Img
+                src={
+                  item.product?.thumbUrl &&
+                  item.product?.thumbUrl !== "undefined"
+                    ? item.product?.thumbUrl
+                    : item.product?.sources?.images[0]?.url
+                }
+                style={{
+                  maxWidth: 150,
+                  maxHeight: 150,
+                  borderRadius: 10,
+                }}
+              />
+            </Paper>
+          )}
         </>
       );
     }
@@ -546,8 +549,8 @@ export default function OrderDetails(props) {
                           item.product?.selection?.includes(" ") ? (
                           <div>
                             {item.product.selection}{" "}
-                            {item.products?.variants &&
-                              item.products?.variants.length > 0 &&
+                            {item.product?.variants &&
+                              item.product?.variants.length > 0 &&
                               item.product.variants?.find(
                                 (v) => v.name === item.product.selection
                               )?.attributes[1]?.value}

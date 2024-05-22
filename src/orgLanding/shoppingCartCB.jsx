@@ -26,7 +26,13 @@ import Stepper from "@material-ui/core/Stepper";
 import Step from "@material-ui/core/Step";
 import StepLabel from "@material-ui/core/StepLabel";
 import StepIcon from "@material-ui/core/StepIcon";
-import OrderForm from "../shoppingCart/orderForm";
+import OrderFormCB from "./cartComponents/orderFormCB";
+import { Backdrop } from "@material-ui/core";
+import CircularProgress from "@material-ui/core/CircularProgress";
+import { nanoid } from "nanoid";
+import Modal from "@material-ui/core/Modal";
+import CheckIcon from "@material-ui/icons/Check";
+import isotipo from "./assets/isotipo.svg";
 
 const useStyles = makeStyles((theme) => ({
   typography: { fontFamily: "Uncut Sans" },
@@ -56,7 +62,6 @@ const useStyles = makeStyles((theme) => ({
     textAlign: "center",
     width: 30,
     height: 30,
-    marginRight: 10,
   },
   gridInput: {
     display: "flex",
@@ -98,22 +103,48 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
     marginRight: "20px",
   },
+  paper2: {
+    position: "absolute",
+    width: 640,
+    maxHeight: "90%",
+    overflowY: "visible",
+    backgroundColor: "white",
+    boxShadow: theme.shadows[2],
+    padding: "16px 32px 24px",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    justifyContent: "center",
+    minWidth: 320,
+    borderRadius: 10,
+    marginTop: "12px",
+    display: "flex",
+    flexDirection: "row",
+  },
+  modal: {
+    overflow: "visible !important",
+  },
 }));
 
 export default function ShoppingCartCB() {
   const classes = useStyles();
   const history = useHistory();
+
+  const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("");
+  const [openModal, setOpenModal] = useState(true);
   const [values, setValues] = useState("");
   const [activeStep, setActiveStep] = useState(0);
-  const steps = getSteps();
   const [orderPaymentMethod, setOrderPaymentMethod] = useState(undefined);
   const [observations, setObservations] = useState();
   const [paymentVoucher, setPaymentVoucher] = useState();
   const [dollarValue, setDollarValue] = useState(1);
   const [currency, setCurrency] = useState(false);
   const [seller, setSeller] = useState();
+  const [subtotal, setSubtotal] = useState(0);
+  const [total, setTotal] = useState(0);
+  let shippingCost = Number(values?.shippingMethod?.price);
 
   const [buyState, setBuyState] = useState(
     localStorage.getItem("CBbuyState")
@@ -150,7 +181,6 @@ export default function ShoppingCartCB() {
     return (
       <StepIcon
         icon={active ? <div className={classes.stepIcon}>✔️</div> : null}
-        // Otros props del StepIcon
       />
     );
   };
@@ -201,9 +231,156 @@ export default function ShoppingCartCB() {
     localStorage.setItem("CBbuyState", JSON.stringify(newState));
   };
 
-  function getSteps() {
-    return ["Tus datos", "Orden de compra"];
-  }
+  const handleClose = () => {
+    setOpenModal(false);
+  };
+
+  const createOrder = async () => {
+    if (orderPaymentMethod) {
+      setLoading(true);
+      setOpen(true);
+
+      const consumerData = {
+        active: true,
+        _id: nanoid(6),
+        createdBy: {
+          username: "web",
+        },
+        consumerType: "Particular",
+        firstname: values.name,
+        lastname: values.lastName,
+        username: values.username,
+        ci: values.ci,
+        phone: values.phone,
+        email: values.email,
+        address: values.address,
+        billingAddress: values.billingAddress || values.address,
+        shippingAddress: values.shippingAddress || values.address,
+      };
+      const input = {
+        orderId: nanoid(8),
+        requests: buyState,
+        basicData: {
+          firstname: consumerData.firstname,
+          lastname: consumerData.lastname,
+          ci: consumerData.ci,
+          email: consumerData.email,
+          phone: consumerData.phone,
+          address: consumerData.address,
+        },
+        shippingData: {
+          name: values.shippingName,
+          lastname: values.shippingLastName,
+          phone: values.shippingPhone,
+          address: values.shippingAddress,
+          shippingMethod: values.shippingMethod,
+          shippingDate: values.shippingDate,
+        },
+        billingData: {
+          name: values.billingShName,
+          lastname: values.billingShLastName,
+          ci: values.billingCi,
+          company: values.billingCompany,
+          phone: values.billingPhone,
+          address: values.billingAddress,
+          orderPaymentMethod: orderPaymentMethod.name,
+        },
+        dollarValue: dollarValue,
+        tax: 0,
+        subtotal: subtotal,
+        shippingCost: shippingCost,
+        total: total,
+        createdOn: new Date(),
+        createdBy: seller ? { username: seller } : "Prixelart Page",
+        orderType: "Particular",
+        consumerId: consumerData._id,
+        status: "Por producir",
+        observations: observations,
+      };
+      //   if (
+      //     JSON.parse(localStorage.getItem("token")) &&
+      //     JSON.parse(localStorage.getItem("token")).username
+      //   ) {
+      //     orderLines.map((item) => {
+      //       item.product.publicEquation = undefined;
+      //       item.product.publicPrice = undefined;
+      //     });
+      //     consumerData.consumerType = "Prixer";
+      //     consumerData.prixerId = JSON.parse(
+      //       localStorage.getItem("token")
+      //     ).prixerId;
+      //     input.billingData.destinatary = JSON.parse(
+      //       localStorage.getItem("token")
+      //     ).account;
+      //   } else {
+      //     orderLines.map((item) => {
+      //       item.product.prixerEquation = undefined;
+      //       item.product.prixerPrice = undefined;
+      //     });
+      //   }
+
+      let data = {
+        consumerData,
+        input,
+      };
+      if (orderPaymentMethod.name === "Balance Prixer") {
+        const movement = {
+          _id: nanoid(),
+          createdOn: new Date(),
+          createdBy: "Prixelart Page",
+          date: new Date(),
+          destinatary: JSON.parse(localStorage.getItem("token")).account,
+          description: `Pago de la orden #${input.orderId}`,
+          type: "Retiro",
+          value: total,
+        };
+        data.movement = movement;
+      }
+
+      const base_url = process.env.REACT_APP_BACKEND_URL + "/order/createv2";
+      const create = await axios
+        .post(base_url, data, {
+          "Content-Type": "multipart/form-data",
+        })
+        .then(async (response) => {
+          if (response.status === 200) {
+            if (paymentVoucher !== undefined) {
+              const formData = new FormData();
+              formData.append("paymentVoucher", paymentVoucher);
+              let ID = input.orderId;
+              const base_url2 =
+                process.env.REACT_APP_BACKEND_URL + "/order/addVoucher/" + ID;
+              await axios.put(base_url2, formData, {
+                "Content-Type": "multipart/form-data",
+              });
+            }
+
+            setOpenModal(true);
+            // setMessage(response.data.info);
+            // setMessage("¡Gracias por tu compra! Por favor revisa tu correo");
+
+            const base_url3 =
+              process.env.REACT_APP_BACKEND_URL + "/order/sendEmail";
+            await axios.post(base_url3, input).then(async (response) => {
+              if (response.data.success === false) {
+                await axios.post(base_url3, input);
+              } else return;
+            });
+          }
+        })
+        .catch((error) => {
+          console.log(error.response);
+        });
+      //   history.push({ pathname: "/chiguirebipolar" });
+      setValues(undefined);
+      localStorage.removeItem("CBbuyState");
+      setBuyState([]);
+      setLoading(false);
+    } else {
+      setOpen(true);
+      setMessage("Por favor selecciona una forma de pago.");
+    }
+  };
 
   function getStepContent(step) {
     switch (step) {
@@ -218,6 +395,7 @@ export default function ShoppingCartCB() {
               setMessage={setMessage}
               values={values}
               setValues={setValues}
+              currency={currency}
             />
             <Button
               className={classes.typography}
@@ -239,7 +417,7 @@ export default function ShoppingCartCB() {
       case 1:
         return (
           <div>
-            <OrderForm
+            <OrderFormCB
               buyState={buyState}
               setBuyState={setBuyState}
               open={open}
@@ -256,6 +434,8 @@ export default function ShoppingCartCB() {
               dollarValue={dollarValue}
               currency={currency}
               setSeller={setSeller}
+              setSubtotal={setSubtotal}
+              setTotal={setTotal}
             />
             <Button
               className={classes.typography}
@@ -282,7 +462,7 @@ export default function ShoppingCartCB() {
                 marginTop: 20,
                 marginBottom: 40,
               }}
-              //   onClick={() => setActiveStep(0)}
+              onClick={() => createOrder()}
             >
               Ordenar
             </Button>
@@ -293,6 +473,10 @@ export default function ShoppingCartCB() {
 
   return (
     <>
+      <Backdrop className={classes.backdrop} open={loading}>
+        <CircularProgress />
+      </Backdrop>
+
       <AppBar
         position="fixed"
         elevation={0}
@@ -373,7 +557,7 @@ export default function ShoppingCartCB() {
               >
                 <Grid item xs={7} style={{ display: "flex" }}>
                   <img
-                    src={item?.product?.images[0]?.img}
+                    src={item?.art?.images[0]?.img}
                     alt="Item de Chiguire Bipolar"
                     style={{
                       width: 170,
@@ -394,7 +578,7 @@ export default function ShoppingCartCB() {
                       className={classes.typography}
                       style={{ fontSize: 20 }}
                     >
-                      {item?.product?.name} {item.art}
+                      {item?.product?.name} {item.art.title}
                     </Typography>
                     <Typography
                       className={classes.typography}
@@ -455,7 +639,7 @@ export default function ShoppingCartCB() {
                       style={{ fontSize: 18, fontWeight: 600 }}
                     >
                       $
-                      {item?.product?.price?.toLocaleString("de-DE", {
+                      {item?.product?.finalPrice?.toLocaleString("de-DE", {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
                       })}
@@ -492,7 +676,7 @@ export default function ShoppingCartCB() {
             }}
           >
             <Stepper activeStep={activeStep}>
-              {steps.map((label, index) => {
+              {["Tus datos", "Orden de compra"].map((label, index) => {
                 const stepProps = {};
                 const labelProps = {
                   StepIconComponent: CustomStepIcon,
@@ -1403,6 +1587,100 @@ export default function ShoppingCartCB() {
         message={message}
         onClose={() => setOpen(false)}
       />
+      <Modal open={openModal} onClose={handleClose} className={classes.modal}>
+        <Grid container className={classes.paper2}>
+          <Grid
+            item
+            xs={12}
+            style={{ display: "flex", justifyContent: "center" }}
+          >
+            <div
+              style={{
+                width: 130,
+                height: 130,
+                borderRadius: "50%",
+                backgroundColor: "#00A650",
+                display: "flex",
+                placeContent: "center",
+                alignItems: "center",
+                marginTop: -81,
+                borderColor: "white",
+                borderWidth: 8,
+                borderStyle: "solid",
+              }}
+            >
+              <CheckIcon style={{ color: "white", fontSize: 66 }} />
+            </div>
+          </Grid>
+          <Grid
+            item
+            style={{
+              display: "flex",
+              width: "100%",
+              justifyContent: "center",
+              alignItems: "center",
+              marginTop: 30,
+            }}
+          >
+            <div
+              style={{
+                backgroundImage: `url(${isotipo})`,
+                backgroundSize: "contain",
+                backgroundRepeat: "no-repeat",
+                backgroundPosition: "center",
+                width: 117,
+                height: 112,
+                marginRight: 40,
+              }}
+            />
+            <div>
+              {" "}
+              <Typography
+                className={classes.typography}
+                style={{ fontSize: 16 }}
+              >
+                <strong>¡Felicidades!</strong> Tu compra ha sido todo un
+                éxito...
+              </Typography>
+              <Typography
+                className={classes.typography}
+                style={{ fontSize: 16 }}
+              >
+                <strong>¡Más chigüire que nunca!</strong>
+              </Typography>
+            </div>
+          </Grid>
+
+          <Grid
+            item
+            style={{
+              display: "flex",
+              width: "100%",
+              justifyContent: "center",
+              alignItems: "center",
+              marginTop: 10,
+              marginBottom: 50,
+            }}
+          >
+            <Typography className={classes.typography} style={{ fontSize: 16 }}>
+              Te enviaremos un correo con todos los detalles
+            </Typography>
+          </Grid>
+          <Button
+            className={classes.typography}
+            style={{
+              textTransform: "none",
+              width: 360,
+              backgroundColor: "#F4DF46",
+              borderRadius: 10,
+              fontSize: 18,
+            }}
+            onClick={() => handleMain()}
+          >
+            Volver
+          </Button>
+        </Grid>
+      </Modal>
     </>
   );
 }

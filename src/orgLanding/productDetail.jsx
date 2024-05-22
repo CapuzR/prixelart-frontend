@@ -80,7 +80,7 @@ export default function ProductDetail(props) {
   useEffect(() => {
     const products = getProducts();
 
-    const x = products.find((item) => item.product.id === id);
+    const x = products.find((item) => item.product.item === id);
     setSelectedItem(x);
   }, []);
 
@@ -89,32 +89,46 @@ export default function ProductDetail(props) {
       setOpen(true);
       setMessage("Por favor selecciona un color.");
     } else if (
-      Object.keys(input.attributes).length === 2 &&
+      Object.keys(input.product.attributes).length === 2 &&
       selectedSize === undefined
     ) {
       setOpen(true);
       setMessage("Por favor selecciona una talla.");
     } else {
       const newState = [...buyState];
-      const prevItem = newState.find((item) => item.id === input.id);
-      let prod = input;
+
+      let prod = input.product;
+      let art = input.art;
+
       let selection =
         selectedSize !== undefined
           ? selectedSize + " " + selectedColor
           : selectedColor;
       prod.selection = selection;
+      art.squareThumbUrl = art.images.find(
+        (a) => a.color === selectedColor
+      ).img;
+
+      const prevItem = newState.find(
+        (item) =>
+          item.product.item === input.product.item &&
+          item.product.selection === selection
+      );
 
       if (!prevItem) {
         newState.push({
-          art: input.art,
-          product: input,
+          art: art,
+          product: prod,
           quantity: 1,
         });
         setCartLength((prevCartLength) => prevCartLength + 1);
       } else {
         setBuyState((prev) =>
           prev.map((item) => {
-            if (item.id === input.id) {
+            if (
+              item.product.item === input.product.item &&
+              item.product.selection === selection
+            ) {
               return { ...item, quantity: item.quantity++ };
             }
             return item;
@@ -388,25 +402,25 @@ export default function ProductDetail(props) {
               </Typography>
               <div>
                 <Radio
-                  checked={selectedColor === "black"}
+                  checked={selectedColor === "Negro"}
                   onChange={handleColor}
-                  value="black"
+                  value="Negro"
                   style={{
                     color: "black",
                   }}
                 />
                 <Radio
-                  checked={selectedColor === "blue"}
+                  checked={selectedColor === "Azul"}
                   onChange={handleColor}
-                  value="blue"
+                  value="Azul"
                   style={{
                     color: "blue",
                   }}
                 />
                 <Radio
-                  checked={selectedColor === "green"}
+                  checked={selectedColor === "Verde"}
                   onChange={handleColor}
-                  value="green"
+                  value="Verde"
                   style={{
                     color: "green",
                   }}

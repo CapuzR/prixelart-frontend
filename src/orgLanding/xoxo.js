@@ -52,6 +52,7 @@ import bagIndependizar3 from "./assets/BagAssets/bagIndependizar3.png";
 import bagPasante1 from "./assets/BagAssets/bagPasante1.png";
 import bagPasante2 from "./assets/BagAssets/bagPasante2.png";
 import bagPasante3 from "./assets/BagAssets/bagPasante3.png";
+import bagPasanteSubpagado1 from "./assets/BagAssets/bagPasanteSubpagado1.jpg";
 import bagPasanteSubpagado2 from "./assets/BagAssets/bagPasanteSubpagado2.png";
 import bagPasanteSubpagado3 from "./assets/BagAssets/bagPasanteSubpagado3.png";
 import bagSobrevivi1 from "./assets/BagAssets/bagSobrevivi1.png";
@@ -65,6 +66,9 @@ const getProducts = () => {
         title: "Pasante Subpagado",
         owner: "ChiguireBipolar",
         prixerUsername: "ChiguireBipolar",
+        squareThumbUrl: undefined,
+        artId: 1,
+        comission: 60,
         images: [
           { color: "Negro", img: franelaPasanteFront1 },
           { color: "Negro", img: franelaPasanteBack1 },
@@ -75,18 +79,21 @@ const getProducts = () => {
         ],
       },
       product: {
+        thumbUrl: undefined,
+        _id: "6413349c2657ac0012046477",
         attributes: {
           color: ["Negro", "Azul", "Verde"],
-          talla: ["S", "M", "L", "XL"],
+          talla: ["S", "M", "L", "XL", "XXL"],
         },
         description:
           "Fresca e ideal para las cualquier momento en regiones cálidas. Viste al mejor estilo Chigüire.",
         finalPrice: 25,
+        basePrice: 9.8,
         count: 0,
         points: 4.7,
-        id: "CBfr01",
+        item: "CBfr01",
         name: "Franela",
-        productionTime: "3",
+        productionTime: "4",
       },
       quantity: 1,
     },
@@ -95,29 +102,35 @@ const getProducts = () => {
         title: "Independizar",
         owner: "ChiguireBipolar",
         prixerUsername: "ChiguireBipolar",
+        squareThumbUrl: undefined,
+        artId: 2,
+        comission: 60,
         images: [
           { color: "Negro", img: franelaIndependizarFront1 },
-          { color: "Negro", img: franelaIndependizarFront2 },
-          { color: "Azul", img: franelaIndependizarFront3 },
-          { color: "Azul", img: franelaIndependizarBack1 },
-          { color: "Verde", img: franelaIndependizarBack2 },
+          { color: "Negro", img: franelaIndependizarBack1 },
+          { color: "Azul", img: franelaIndependizarFront2 },
+          { color: "Azul", img: franelaIndependizarBack2 },
+          { color: "Verde", img: franelaIndependizarFront3 },
           { color: "Verde", img: franelaIndependizarBack3 },
         ],
       },
       product: {
+        thumbUrl: undefined,
+        _id: "6413349c2657ac0012046477",
         attributes: {
           color: ["Negro", "Azul", "Verde"],
-          talla: ["S", "M", "L", "XL"],
+          talla: ["S", "M", "L", "XL", "XXL"],
         },
         description:
           "Fresca e ideal para las cualquier momento en regiones cálidas. Viste al mejor estilo Chigüire.",
         finalPrice: 25,
-        id: "CBfr02",
+        basePrice: 9.8,
 
+        item: "CBfr02",
         name: "Franela",
         count: 0,
         points: 4.7,
-        productionTime: "3",
+        productionTime: "4",
       },
       quantity: 1,
     },
@@ -126,16 +139,21 @@ const getProducts = () => {
         title: "Sobreviví",
         owner: "ChiguireBipolar",
         prixerUsername: "ChiguireBipolar",
+        squareThumbUrl: undefined,
+        artId: 3,
+        comission: 60,
         images: [
           { color: "Negro", img: franelaSobreviviFront1 },
-          { color: "Negro", img: franelaSobreviviFront2 },
-          { color: "Azul", img: franelaSobreviviFront3 },
-          { color: "Azul", img: franelaSobreviviBack1 },
-          { color: "Verde", img: franelaSobreviviBack2 },
+          { color: "Negro", img: franelaSobreviviBack1 },
+          { color: "Azul", img: franelaSobreviviFront2 },
+          { color: "Azul", img: franelaSobreviviBack2 },
+          { color: "Verde", img: franelaSobreviviFront3 },
           { color: "Verde", img: franelaSobreviviBack3 },
         ],
       },
       product: {
+        thumbUrl: undefined,
+        _id: "6413349c2657ac0012046477",
         attributes: {
           color: ["Negro", "Azul", "Verde"],
           talla: ["S", "M", "L", "XL"],
@@ -144,10 +162,12 @@ const getProducts = () => {
         description:
           "Fresca e ideal para las cualquier momento en regiones cálidas. Viste al mejor estilo Chigüire.",
         finalPrice: 25,
+        basePrice: 9.8,
+
         count: 0,
         points: 4.7,
-        id: "CBfr03",
-        productionTime: "3",
+        item: "CBfr03",
+        productionTime: "4",
       },
       quantity: 1,
     },
@@ -156,6 +176,9 @@ const getProducts = () => {
         title: "Cafecito",
         owner: "ChiguireBipolar",
         prixerUsername: "ChiguireBipolar",
+        squareThumbUrl: undefined,
+        artId: 1,
+        comission: 60,
         images: [
           { color: "Negro", img: peltreCafecito1 },
           { color: "Azul", img: peltreCafecito2 },
@@ -163,16 +186,21 @@ const getProducts = () => {
         ],
       },
       product: {
+        thumbUrl: undefined,
+        _id: "6177f8697404fa0011b10417",
         attributes: {
           color: ["Negro", "Azul", "Verde"],
         },
         name: "Taza de Peltre",
         description:
           "Tu café sabe mejor en tu taza de peltre al estilo Chigüire.",
-        finalPrice: 25,
+        finalPrice: 15,
+        basePrice: 7,
+
         count: 0,
         points: 4.7,
-        id: "CBtp01",
+        item: "CBtp01",
+        productionTime: "3",
       },
       quantity: 1,
     },
@@ -181,6 +209,9 @@ const getProducts = () => {
         title: "Independizar",
         owner: "ChiguireBipolar",
         prixerUsername: "ChiguireBipolar",
+        squareThumbUrl: undefined,
+        artId: 1,
+        comission: 60,
         images: [
           { color: "Negro", img: peltreIndependizar1 },
           { color: "Azul", img: peltreIndependizar2 },
@@ -188,23 +219,31 @@ const getProducts = () => {
         ],
       },
       product: {
-        id: "CBtp02",
+        thumbUrl: undefined,
+        _id: "6177f8697404fa0011b10417",
+        item: "CBtp02",
         name: "Taza de Peltre",
         description:
           "Tu café sabe mejor en tu taza de peltre al estilo Chigüire.",
-        finalPrice: 25,
+        finalPrice: 15,
+        basePrice: 7,
+
         count: 0,
         points: 4.7,
         productionTime: "3",
         attributes: {
           color: ["Negro", "Azul", "Verde"],
         },
+        productionTime: "3",
       },
       quantity: 1,
     },
     {
       art: {
-        title: "Pasante1",
+        title: "Pasante Subpagado",
+        squareThumbUrl: undefined,
+        artId: 1,
+        comission: 60,
         images: [
           { color: "Negro", img: peltrePasante1 },
           { color: "Azul", img: peltrePasante2 },
@@ -214,11 +253,14 @@ const getProducts = () => {
         prixerUsername: "ChiguireBipolar",
       },
       product: {
-        id: "CBtp03",
+        thumbUrl: undefined,
+        _id: "6177f8697404fa0011b10417",
+        item: "CBtp03",
         name: "Taza de Peltre",
         description:
           "Tu café sabe mejor en tu taza de peltre al estilo Chigüire.",
         finalPrice: 15,
+        basePrice: 7,
         count: 0,
         points: 4.7,
         attributes: {
@@ -230,7 +272,10 @@ const getProducts = () => {
     },
     {
       art: {
-        title: "Pasante2",
+        squareThumbUrl: undefined,
+        artId: 1,
+        comission: 60,
+        title: "Pasante Subpagado 2",
         images: [
           { color: "Negro", img: peltrePasante21 },
           { color: "Azul", img: peltrePasante22 },
@@ -240,11 +285,14 @@ const getProducts = () => {
         prixerUsername: "ChiguireBipolar",
       },
       product: {
-        id: "CBtp04",
+        thumbUrl: undefined,
+        _id: "6177f8697404fa0011b10417",
+        item: "CBtp04",
         name: "Taza de Peltre",
         description:
           "Tu café sabe mejor en tu taza de peltre al estilo Chigüire.",
         finalPrice: 15,
+        basePrice: 7,
         count: 0,
         points: 4.7,
         attributes: {
@@ -256,7 +304,10 @@ const getProducts = () => {
     },
     {
       art: {
-        title: "Pasante3",
+        squareThumbUrl: undefined,
+        artId: 1,
+        comission: 60,
+        title: "Pasante Subpagado 3",
         images: [
           { color: "Negro", img: peltrePasante31 },
           { color: "Azul", img: peltrePasante32 },
@@ -266,11 +317,14 @@ const getProducts = () => {
         prixerUsername: "ChiguireBipolar",
       },
       product: {
-        id: "CBtp05",
+        thumbUrl: undefined,
+        _id: "6177f8697404fa0011b10417",
+        item: "CBtp05",
         name: "Taza de Peltre",
         description:
           "Tu café sabe mejor en tu taza de peltre al estilo Chigüire.",
         finalPrice: 15,
+        basePrice: 7,
         count: 0,
         points: 4.7,
         attributes: {
@@ -282,7 +336,10 @@ const getProducts = () => {
     },
     {
       art: {
-        title: "Cafecito",
+        squareThumbUrl: undefined,
+        artId: 1,
+        comission: 60,
+        title: "Sobreviví",
         images: [
           { color: "Negro", img: peltreSobrevivi1 },
           { color: "Azul", img: peltreSobrevivi2 },
@@ -292,11 +349,14 @@ const getProducts = () => {
         prixerUsername: "ChiguireBipolar",
       },
       product: {
-        id: "CBtp06",
+        thumbUrl: undefined,
+        _id: "6177f8697404fa0011b10417",
+        item: "CBtp06",
         name: "Taza de Peltre",
         description:
           "Tu café sabe mejor en tu taza de peltre al estilo Chigüire.",
         finalPrice: 15,
+        basePrice: 7,
         count: 0,
         points: 4.7,
         attributes: {
@@ -308,6 +368,9 @@ const getProducts = () => {
     },
     {
       art: {
+        squareThumbUrl: undefined,
+        artId: 1,
+        comission: 60,
         title: "Cafecito",
         images: [
           { color: "Negro", img: thermoCafecito1 },
@@ -318,11 +381,14 @@ const getProducts = () => {
         prixerUsername: "ChiguireBipolar",
       },
       product: {
-        id: "CBbr01",
+        thumbUrl: undefined,
+        id: "6360260eaf8bc30011a35f02",
+        item: "CBbr01",
         name: "Botella Rock",
         description:
           "Ligero y cómodo. Ideal para la excursión e ir al gimnasio.",
         finalPrice: 20,
+        basePrice: 11.2,
         count: 0,
         point: 4.7,
         attributes: {
@@ -334,6 +400,9 @@ const getProducts = () => {
     },
     {
       art: {
+        squareThumbUrl: undefined,
+        artId: 1,
+        comission: 60,
         title: "Independizar",
         images: [
           { color: "Negro", img: thermoIndependizar1 },
@@ -344,11 +413,14 @@ const getProducts = () => {
         prixerUsername: "ChiguireBipolar",
       },
       product: {
+        thumbUrl: undefined,
+        _id: "6360260eaf8bc30011a35f02",
         id: "CBbr02",
         name: "Botella Rock",
         description:
           "Ligero y cómodo. Ideal para la excursión e ir al gimnasio.",
         finalPrice: 20,
+        basePrice: 11.2,
         count: 0,
         point: 4.7,
         attributes: {
@@ -360,7 +432,10 @@ const getProducts = () => {
     },
     {
       art: {
-        title: "Pasante",
+        squareThumbUrl: undefined,
+        artId: 1,
+        comission: 60,
+        title: "Pasante Subpagado",
         images: [
           { color: "Negro", img: thermoPasante1 },
           { color: "Azul", img: thermoPasante2 },
@@ -370,11 +445,14 @@ const getProducts = () => {
         prixerUsername: "ChiguireBipolar",
       },
       product: {
-        id: "CBbr03",
+        thumbUrl: undefined,
+        id: "6360260eaf8bc30011a35f02",
+        item: "CBbr03",
         name: "Botella Rock",
         description:
           "Ligero y cómodo. Ideal para la excursión e ir al gimnasio.",
         finalPrice: 20,
+        basePrice: 11.2,
         count: 0,
         point: 4.7,
         attributes: {
@@ -386,6 +464,9 @@ const getProducts = () => {
     },
     {
       art: {
+        squareThumbUrl: undefined,
+        artId: 1,
+        comission: 60,
         title: "Cartoon",
         images: [
           { color: "Negro", img: bagCartoon1 },
@@ -396,11 +477,14 @@ const getProducts = () => {
         prixerUsername: "ChiguireBipolar",
       },
       product: {
-        id: "CBtb01",
+        thumbUrl: undefined,
+        id: undefined,
+        item: "CBtb01",
         name: "Tote Bag",
         description:
           "Tote bag resistente. Ideal para un vivir cada día al mejor estilo Chigüire.",
         finalPrice: 15,
+        basePrice: 4.9,
         count: 0,
         point: 4.7,
         attributes: {
@@ -412,6 +496,9 @@ const getProducts = () => {
     },
     {
       art: {
+        squareThumbUrl: undefined,
+        artId: 1,
+        comission: 60,
         title: "Independizar",
         images: [
           { color: "Negro", img: bagIndependizar1 },
@@ -422,11 +509,14 @@ const getProducts = () => {
         prixerUsername: "ChiguireBipolar",
       },
       product: {
-        id: "CBtb02",
+        thumbUrl: undefined,
+        id: undefined,
+        item: "CBtb02",
         name: "Tote Bag",
         description:
           "Tote bag resistente. Ideal para un vivir cada día al mejor estilo Chigüire.",
         finalPrice: 15,
+        basePrice: 4.9,
         count: 0,
         point: 4.7,
         attributes: {
@@ -438,6 +528,9 @@ const getProducts = () => {
     },
     {
       art: {
+        squareThumbUrl: undefined,
+        artId: 1,
+        comission: 60,
         title: "Pasante Subpagado 1",
         images: [
           { color: "Negro", img: bagPasante1 },
@@ -448,11 +541,14 @@ const getProducts = () => {
         prixerUsername: "ChiguireBipolar",
       },
       product: {
-        id: "CBtb03",
+        thumbUrl: undefined,
+        id: undefined,
+        item: "CBtb03",
         name: "Tote Bag",
         description:
           "Tote bag resistente. Ideal para un vivir cada día al mejor estilo Chigüire.",
         finalPrice: 15,
+        basePrice: 4.9,
         count: 0,
         point: 4.7,
         attributes: {
@@ -464,9 +560,12 @@ const getProducts = () => {
     },
     {
       art: {
+        squareThumbUrl: undefined,
+        artId: 1,
+        comission: 60,
         title: "Pasante Subpagado 2",
         images: [
-          // { color: "Negro", img: thermoPasante1 },
+          { color: "Negro", img: bagPasanteSubpagado1 },
           { color: "Azul", img: bagPasanteSubpagado2 },
           { color: "Verde", img: bagPasanteSubpagado3 },
         ],
@@ -474,11 +573,14 @@ const getProducts = () => {
         prixerUsername: "ChiguireBipolar",
       },
       product: {
-        id: "CBtb04",
+        thumbUrl: undefined,
+        _id: "6360260eaf8bc30011a35f02",
+        item: "CBtb04",
         name: "Tote Bag",
         description:
           "Tote bag resistente. Ideal para un vivir cada día al mejor estilo Chigüire.",
         finalPrice: 15,
+        basePrice: 4.9,
         count: 0,
         point: 4.7,
         attributes: {
@@ -490,6 +592,9 @@ const getProducts = () => {
     },
     {
       art: {
+        squareThumbUrl: undefined,
+        artId: 1,
+        comission: 60,
         title: "Sobreviví",
         images: [
           { color: "Negro", img: bagSobrevivi1 },
@@ -500,12 +605,15 @@ const getProducts = () => {
         prixerUsername: "ChiguireBipolar",
       },
       product: {
-        id: "CBtb05",
+        thumbUrl: undefined,
+        id: undefined,
+        item: "CBtb05",
         name: "Tote Bag",
         title: "Sobreviví",
         description:
           "Tote bag resistente. Ideal para un vivir cada día al mejor estilo Chigüire.",
         finalPrice: 15,
+        basePrice: 4.9,
         count: 0,
         point: 4.7,
         attributes: {

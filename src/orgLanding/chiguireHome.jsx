@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import React, { useState } from "react";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
@@ -24,6 +23,12 @@ import CBProducts from "./productsGrid";
 import CBFooter from "./footer";
 import PrixelartSection from "./prixelart";
 import { useHistory } from "react-router-dom";
+import isotipo from "./assets/isotipo.svg";
+import useMediaQuery from "@material-ui/core/useMediaQuery";
+import { useTheme } from "@material-ui/core/styles";
+import MenuItem from "@material-ui/core/MenuItem";
+import Menu from "@material-ui/core/Menu";
+import MenuIcon from "@material-ui/icons/Menu";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -44,7 +49,6 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: "#006134",
     borderRadius: 60,
     position: "relative",
-    minHeight: 330,
   },
   backgroundImage: {
     display: "flex",
@@ -65,8 +69,15 @@ const useStyles = makeStyles((theme) => ({
 export default function ChiguireHome() {
   const classes = useStyles();
   const history = useHistory();
+  const theme = useTheme();
+
+  const isMobile = useMediaQuery(theme.breakpoints.down("xs"));
+  const isTab = useMediaQuery(theme.breakpoints.down("sm"));
 
   const [open, setOpen] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const openMenu = Boolean(anchorEl);
+
   const [message, setMessage] = useState("");
   const [buyState, setBuyState] = useState(
     localStorage.getItem("CBbuyState")
@@ -78,6 +89,14 @@ export default function ChiguireHome() {
       ? JSON.parse(localStorage.getItem("CBbuyState")).length
       : 0
   );
+
+  const handleMenu = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
 
   const addItemToBuyState = (input) => {
     const newState = [...buyState];
@@ -144,23 +163,29 @@ export default function ChiguireHome() {
   return (
     <div>
       <HideOnScroll>
-        <AppBar elevation={3} className={classes.appBar}>
+        <AppBar
+          elevation={3}
+          className={classes.appBar}
+          style={{ minHeight: isMobile ? 150 : isTab ? 220 : 330 }}
+        >
           <div className={classes.backgroundImage}>
-            <Toolbar
-              style={{
-                display: "flex",
-                alignItems: "end",
-                height: "100%",
-                bottom: "-28px",
-              }}
-            >
-              <Fab
-                className={classes.fabButton}
-                onClick={() => scrollToSection("#productos")}
+            {!isTab && (
+              <Toolbar
+                style={{
+                  display: "flex",
+                  alignItems: "end",
+                  height: "100%",
+                  bottom: "-28px",
+                }}
               >
-                <ExpandMore />
-              </Fab>
-            </Toolbar>
+                <Fab
+                  className={classes.fabButton}
+                  onClick={() => scrollToSection("#prods")}
+                >
+                  <ExpandMore />
+                </Fab>
+              </Toolbar>
+            )}
           </div>
         </AppBar>
       </HideOnScroll>
@@ -179,62 +204,97 @@ export default function ChiguireHome() {
         >
           <IconButton>
             <img
-              src={CB_isologo}
+              src={isTab ? isotipo : CB_isologo}
               alt="Chiguire Bipolar isologo"
-              style={{ width: 238 }}
+              style={{ height: 40 }}
             />
           </IconButton>
 
-          <Tabs>
-            <Tab
-              className={classes.button}
-              onClick={() => scrollToSection("#productos")}
-              label="Productos"
-            />
-            <Tab
-              className={classes.button}
-              label="Prixelart"
-              onClick={() => scrollToSection("#prixelart")}
-            />
-          </Tabs>
-
-          <div
-            style={{
-              width: 258,
-              display: "flex",
-              justifyContent: "center",
-            }}
-          >
-            <IconButton onClick={handleCart}>
-              <StyledBadge
-                badgeContent={cartLength}
-                //   color="#FF9934"
-                //   style={{ color: "black" }}
+          {isTab ? (
+            <>
+              <IconButton
+                onClick={handleMenu}
+                style={{ color: "white" }}
+                size="medium"
               >
-                <div style={{ color: "white" }}>
-                  <ShoppingCartOutlined />
-                </div>
-              </StyledBadge>
-            </IconButton>
-          </div>
+                <StyledBadge badgeContent={cartLength}>
+                  <MenuIcon />
+                </StyledBadge>
+              </IconButton>
+
+              <Menu
+                style={{ zIndex: 100000 }}
+                anchorEl={anchorEl}
+                anchorOrigin={{
+                  vertical: "top",
+                  horizontal: "right",
+                }}
+                keepMounted
+                transformOrigin={{
+                  vertical: "top",
+                  horizontal: "right",
+                }}
+                open={openMenu}
+                onClose={handleClose}
+              >
+                <MenuItem onClick={() => scrollToSection("#prods")}>
+                  Productos
+                </MenuItem>
+                <MenuItem onClick={() => scrollToSection("#prixelart")}>
+                  Prixelart
+                </MenuItem>
+                <MenuItem onClick={handleCart}>Carrito</MenuItem>
+              </Menu>
+            </>
+          ) : (
+            <>
+              <Tabs>
+                <Tab
+                  className={classes.button}
+                  onClick={() => scrollToSection("#prods")}
+                  label="Productos"
+                />
+                <Tab
+                  className={classes.button}
+                  label="Prixelart"
+                  onClick={() => scrollToSection("#prixelart")}
+                />
+              </Tabs>
+              <div
+                style={{
+                  width: 258,
+                  display: "flex",
+                  justifyContent: "center",
+                }}
+              >
+                <IconButton onClick={handleCart}>
+                  <StyledBadge badgeContent={cartLength}>
+                    <div style={{ color: "white" }}>
+                      <ShoppingCartOutlined />
+                    </div>
+                  </StyledBadge>
+                </IconButton>
+              </div>
+            </>
+          )}
         </Toolbar>
       </AppBar>
 
       <Grid
         container
         style={{
-          marginTop: 60,
-          marginLeft: 20,
-          paddingRight: 45,
+          marginTop: isTab ? 20 : 60,
+          marginLeft: !isTab && 20,
+          paddingRight: !isTab && 45,
           display: "flex",
           justifyContent: "space-between",
         }}
       >
-        <Grid xs={3} style={{ alignContent: "center" }}>
+        <Grid xs={2} style={{ alignContent: "center" }}>
           <img src={arrowRight} style={{ width: "90%" }} />
         </Grid>
         <Grid
-          xs={6}
+          xs={7}
           style={{
             display: "flex",
             justifyContent: "center",
@@ -243,16 +303,17 @@ export default function ChiguireHome() {
           <Typography
             className={classes.button}
             style={{
-              fontSize: 45,
+              fontSize: isMobile ? 19 : isTab ? 30 : 45,
               alignContent: "center",
+              fontWeight: 600,
             }}
             align={"center"}
           >
-            ¡Bienvenidos al e-tarantín de El Chigüire Bipolar!
+            ¡Bienvenidos al e-tarantín de <br /> El Chigüire Bipolar!
           </Typography>
         </Grid>
         <Grid
-          xs={3}
+          xs={2}
           style={{
             alignContent: "center",
             display: "flex",
@@ -264,15 +325,15 @@ export default function ChiguireHome() {
         <Grid
           xs={12}
           style={{
-            paddingLeft: "15%",
-            paddingRight: "15%",
+            paddingLeft: isTab ? 24 : "15%",
+            paddingRight: isTab ? 24 : "15%",
             paddingTop: 40,
             paddingBottom: 40,
           }}
         >
           <Typography
             className={classes.button}
-            style={{ fontSize: 18, textAlign: "center" }}
+            style={{ fontSize: isTab ? 13 : 18, textAlign: "center" }}
           >
             Nos emociona muchísimo compartir con ustedes esta colección
             exclusiva de merch, hecha en alianza con nuestros panas de
@@ -280,15 +341,24 @@ export default function ChiguireHome() {
             franelas, tazas, tote bags y termos con diseños exclusivos para ti.
             No importa si nos sigues desde los tiempos en los que María
             Alejandra López le tenía fe a Capriles o si justo acabas de
-            descubrirnos: seguro encontrarás algo para ti. Con cada compra
-            podrás demostrarle al mundo que para ti, las noticias son un asunto
-            muy serio y, al mismo tiempo, apoyas nuestra explotación laboral al
-            pasante subpagado. ¡Una situación ganar-ganar para todos, menos para
-            él! Gracias por formar parte de nuestra comunidad.
+            descubrirnos: seguro encontrarás algo para ti. <br />
+            <br /> Con cada compra podrás demostrarle al mundo que para ti, las
+            noticias son un asunto muy serio y, al mismo tiempo, apoyas nuestra
+            explotación laboral al pasante subpagado. ¡Una situación ganar-ganar
+            para todos, menos para él! <br />
+            <br /> Gracias por formar parte de nuestra comunidad.
           </Typography>
         </Grid>
       </Grid>
-      <CBProducts addItemToBuyState={addItemToBuyState} />
+      <div
+        style={{
+          marginBottom: 40,
+          marginLeft: !isTab && 20,
+          marginTop: 40,
+        }}
+      >
+        <CBProducts addItemToBuyState={addItemToBuyState} />
+      </div>
       <PrixelartSection />
       <CBFooter />
 

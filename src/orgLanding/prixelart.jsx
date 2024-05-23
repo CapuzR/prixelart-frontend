@@ -4,6 +4,8 @@ import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import { useHistory } from "react-router-dom";
+import useMediaQuery from "@material-ui/core/useMediaQuery";
+import { useTheme } from "@material-ui/core/styles";
 
 import logo from "../sharedComponents/appBar/Logotipo_Prixelart_H#2.png";
 import vector from "./assets/vector_azul.svg";
@@ -27,6 +29,10 @@ export default function PrixelartSection() {
   const [products, setProducts] = useState(0);
   const sectionRef = useRef(null);
   const history = useHistory();
+  const theme = useTheme();
+
+  const isMobile = useMediaQuery(theme.breakpoints.down("xs"));
+  const isTab = useMediaQuery(theme.breakpoints.down("sm"));
 
   const targetPrixers = 20;
   const targetArts = 200;
@@ -104,10 +110,20 @@ export default function PrixelartSection() {
   };
 
   return (
-    <Grid container ref={sectionRef}>
+    <Grid
+      container
+      style={{
+        marginTop: isTab ? 20 : 60,
+        marginLeft: !isTab && 20,
+        paddingRight: !isTab && 45,
+        display: "flex",
+        justifyContent: "space-between",
+      }}
+      ref={sectionRef}
+    >
       <div id="prixelart" style={{ marginTop: "-65px" }}></div>
       <Grid
-        xs={3}
+        xs={2}
         style={{
           alignContent: "center",
           display: "flex",
@@ -116,7 +132,7 @@ export default function PrixelartSection() {
       >
         <img src={yellowArrowRight} style={{ width: "90%" }} />
       </Grid>
-      <Grid item xs={6}>
+      <Grid item xs={7}>
         <div
           style={{
             backgroundImage: `url(${vector})`,
@@ -126,14 +142,18 @@ export default function PrixelartSection() {
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
-            height: 145,
+            height: isTab ? 100 : 145,
           }}
         >
-          <img src={logo} alt="Prixelart logo" style={{ height: 70 }} />
+          <img
+            src={logo}
+            alt="Prixelart logo"
+            style={{ height: isTab ? 50 : 70 }}
+          />
         </div>
       </Grid>
       <Grid
-        xs={3}
+        xs={2}
         style={{
           alignContent: "center",
           display: "flex",
@@ -156,12 +176,16 @@ export default function PrixelartSection() {
           className={classes.typography}
           style={{ fontWeight: 600, fontSize: 20, marginBottom: 20 }}
         >
-          Llevando el arte venezolano a tu vida diaria.{" "}
+          Llevando el arte venezolano a tu vida diaria.
         </Typography>
         <Typography
           align="center"
           className={classes.typography}
-          style={{ marginLeft: "20%", marginRight: "20%" }}
+          style={{
+            marginLeft: isTab ? 24 : "20%",
+            marginRight: isTab ? 24 : "20%",
+            fontSize: isTab ? 13 : 18,
+          }}
         >
           Somos una compañía que representa a más de 20 talentosos fotógrafos,
           diseñadores y artistas plásticos. Plasmamos su creatividad en una
@@ -169,7 +193,7 @@ export default function PrixelartSection() {
           tazas hasta lienzos y cuadros decorativos. Impulsamos el talento
           nacional y llenamos los hogares venezolanos con piezas únicas que
           reflejan la riqueza cultural del país. Descubre nuestra colección y
-          enamórate del arte venezolano.{" "}
+          enamórate del arte venezolano.
         </Typography>
       </Grid>
       <Grid item xs={12} style={{ marginTop: 40, marginBottom: 60 }}>
@@ -184,18 +208,18 @@ export default function PrixelartSection() {
             style={{
               borderRadius: 27,
               backgroundColor: "#66a085",
-              padding: "43.5px 32px",
-              marginRight: 20,
+              padding: isTab ? "10px 40px" : "43.5px 32px",
+              marginRight: isTab ? 10 : 20,
               display: "flex",
               justifyContent: "center",
             }}
           >
             <Typography
               variant="h4"
-              style={{ color: "white" }}
+              style={{ color: "white", fontSize: isTab && 24 }}
               className={classes.typography}
             >
-              <strong>+{prixers}</strong> Prixers
+              <strong>+{prixers}</strong> <br /> Prixers
             </Typography>
           </Grid>
           <Grid
@@ -204,18 +228,18 @@ export default function PrixelartSection() {
             style={{
               borderRadius: 27,
               backgroundColor: "#404E5C",
-              padding: "43.5px 32px",
-              marginRight: 20,
+              padding: isTab ? "10px 40px" : "43.5px 32px",
+              marginRight: isTab ? 10 : 20,
               display: "flex",
               justifyContent: "center",
             }}
           >
             <Typography
               variant="h4"
-              style={{ color: "white" }}
+              style={{ color: "white", fontSize: isTab && 24 }}
               className={classes.typography}
             >
-              <strong>+{arts}</strong> Artes
+              <strong>+{arts}</strong> <br /> Artes
             </Typography>
           </Grid>
           <Grid
@@ -224,23 +248,24 @@ export default function PrixelartSection() {
             style={{
               borderRadius: 27,
               backgroundColor: "#66a085",
-              padding: "43.5px 32px",
+              padding: isTab ? "10px 40px" : "43.5px 32px",
               display: "flex",
               justifyContent: "center",
             }}
           >
             <Typography
               variant="h4"
-              style={{ color: "white" }}
+              style={{ color: "white", fontSize: isTab && 24 }}
               className={classes.typography}
             >
-              <strong>+{products}</strong> Productos
+              <strong>+{products}</strong>
+              <br /> Productos
             </Typography>
           </Grid>
         </Grid>
       </Grid>
       <Grid
-        xs={3}
+        xs={2}
         style={{
           alignContent: "center",
           display: "flex",
@@ -266,7 +291,7 @@ export default function PrixelartSection() {
         </Button>
       </Grid>
       <Grid
-        xs={3}
+        xs={2}
         style={{
           alignContent: "center",
           display: "flex",

@@ -114,14 +114,15 @@ const UnitPriceSug = (
       } else if (dis?.type === "Monto") {
         price = Number(price - dis?.value);
       }
+    } else if (prixer === undefined) {
+      price = base / (1 - art.comission / 100);
     }
   }
 
   // Incluir recargo si es a PrixelartPrefit
   if (currency) {
-    price = price * dollarValue;
+    price = price * (dollarValue || 1);
   }
-  console.log(price);
   return price.toLocaleString("de-DE", {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,

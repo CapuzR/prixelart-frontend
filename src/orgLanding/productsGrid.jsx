@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import { useHistory } from "react-router-dom";
 
 import Grid from "@material-ui/core/Grid";
@@ -16,6 +15,8 @@ import { getProducts } from "./xoxo";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import useMediaQuery from "@material-ui/core/useMediaQuery";
+import { useTheme } from "@material-ui/core/styles";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -30,6 +31,10 @@ const useStyles = makeStyles((theme) => ({
 
 export default function CBProducts() {
   const classes = useStyles();
+  const theme = useTheme();
+
+  const isTab = useMediaQuery(theme.breakpoints.down("sm"));
+
   const [all, setAll] = useState([]);
   const [tiles, setTiles] = useState([]);
   const history = useHistory();
@@ -89,7 +94,6 @@ export default function CBProducts() {
     "Cartoon",
     "Cafecito",
     "Independizar",
-
     "Pasante Subpagado",
     "Sobreviví",
   ];
@@ -113,6 +117,16 @@ export default function CBProducts() {
     prevArrow: <SamplePrevArrow />,
   };
 
+  const settings2 = {
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    autoplay: true,
+    autoplaySpeed: 4000,
+    speed: 1000,
+    infinite: true,
+    pauseOnHover: true,
+    arrows: false,
+  };
   function SampleNextArrow(props) {
     const { className, style, onClick } = props;
     return (
@@ -154,79 +168,77 @@ export default function CBProducts() {
   }
 
   return (
-    <Grid
-      id="productos"
-      container
-      style={{
-        marginBottom: 40,
-        marginLeft: 20,
-        marginTop: 40,
-        marginRight: "-20px",
-      }}
-    >
-      <Grid item xs={2}>
-        <Accordion style={{ marginBottom: 20 }}>
-          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography className={classes.heading}>Productos</Typography>
-          </AccordionSummary>
-          <AccordionDetails
-            style={{ display: "flex", flexDirection: "column" }}
-          >
-            {products.map((prod) => (
-              <Box
-                m={1}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                }}
-              >
-                <Checkbox
-                  checked={checkedProducts.includes(prod)}
-                  onClick={() => handleChange(prod, "product")}
-                />
+    <Grid id="prods" container>
+      {!isTab && (
+        <Grid item md={2}>
+          <Accordion style={{ marginBottom: 20 }}>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+              <Typography className={classes.heading}>Productos</Typography>
+            </AccordionSummary>
+            <AccordionDetails
+              style={{ display: "flex", flexDirection: "column" }}
+            >
+              {products.map((prod) => (
+                <Box
+                  m={1}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                  }}
+                >
+                  <Checkbox
+                    checked={checkedProducts.includes(prod)}
+                    onClick={() => handleChange(prod, "product")}
+                  />
 
-                <Typography>{prod}</Typography>
-              </Box>
-            ))}
-          </AccordionDetails>
-        </Accordion>
-        <Accordion style={{ marginBottom: 20 }}>
-          <AccordionSummary
-            expandIcon={<ExpandMoreIcon />}
-            aria-controls="panel1a-content"
-            id="panel1a-header"
-          >
-            <Typography className={classes.heading}>Diseños</Typography>
-          </AccordionSummary>
-          <AccordionDetails
-            style={{ display: "flex", flexDirection: "column" }}
-          >
-            {designs.map((des) => (
-              <Box
-                m={1}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                }}
-              >
-                <Checkbox
-                  checked={checkedDesigns.includes(des)}
-                  onClick={() => handleChange(des, "art")}
-                />
+                  <Typography>{prod}</Typography>
+                </Box>
+              ))}
+            </AccordionDetails>
+          </Accordion>
+          <Accordion style={{ marginBottom: 20 }}>
+            <AccordionSummary
+              expandIcon={<ExpandMoreIcon />}
+              aria-controls="panel1a-content"
+              id="panel1a-header"
+            >
+              <Typography className={classes.heading}>Diseños</Typography>
+            </AccordionSummary>
+            <AccordionDetails
+              style={{ display: "flex", flexDirection: "column" }}
+            >
+              {designs.map((des) => (
+                <Box
+                  m={1}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                  }}
+                >
+                  <Checkbox
+                    checked={checkedDesigns.includes(des)}
+                    onClick={() => handleChange(des, "art")}
+                  />
 
-                <Typography>{des}</Typography>
-              </Box>
-            ))}
-          </AccordionDetails>
-        </Accordion>
-      </Grid>
+                  <Typography>{des}</Typography>
+                </Box>
+              ))}
+            </AccordionDetails>
+          </Accordion>
+        </Grid>
+      )}
 
-      <Grid item xs={9} style={{ marginRight: 30 }}>
-        <Grid container spacing={4} style={{ marginLeft: 20 }}>
+      <Grid item xs={12} md={9} style={{ marginRight: !isTab && 30 }}>
+        <Grid
+          container
+          spacing={isTab ? 3 : 4}
+          style={{ marginLeft: !isTab && 20 }}
+        >
           {tiles.map((tile) => (
             <Grid
               item
-              xs={6}
+              sm={6}
+              xs={12}
               style={{
                 display: "flex",
                 justifyContent: "start",
@@ -238,27 +250,29 @@ export default function CBProducts() {
                   flexDirection: "column",
                   justifyContent: "center",
                   position: "relative",
-                  width: 250,
-                  height: 180,
+                  width: isTab ? 215 : 250,
+                  height: isTab ? 135 : 180,
                   padding: "0px 30px 0px 30px",
+                  margin: isTab && "0px -15px 0px -15px",
                 }}
               >
-                <Slider {...settings}>
+                <Slider {...(isTab ? settings2 : settings)}>
                   {tile.art?.images.map((art, i) => (
                     <div
                       key={i}
                       style={{
                         display: "flex",
                         flexDirection: "column",
-                        height: 181,
-                        width: 200,
+                        height: isTab ? 130 : 181,
+                        width: isTab ? 154 : 200,
                         marginRight: 10,
+                        placeContent: "center",
                       }}
                     >
                       <div
                         style={{
-                          width: "95%",
-                          height: 181,
+                          width: isTab ? 154 : "95%",
+                          height: isTab ? 130 : 181,
                           backgroundImage: `url(${art.img})`,
                           backgroundSize: "contain",
                           backgroundRepeat: "no-repeat",
@@ -284,41 +298,30 @@ export default function CBProducts() {
                     flexDirection: "column",
                     justifyContent: "space-between",
                   }}
-                  //   onClick={() => viewDetails(tile)}
                 >
                   <div>
                     <Typography
                       className={classes.typography}
-                      style={{ fontSize: 20, fontWeight: 600 }}
+                      style={{ fontSize: isTab ? 16 : 20, fontWeight: 600 }}
                     >{`${tile.product.name} ${tile.art.title}`}</Typography>
                     <Typography
                       className={classes.typography}
-                      style={{ fontSize: 16 }}
+                      style={{ fontSize: isTab ? 13 : 16 }}
                     >
                       {tile?.product.description}
                     </Typography>
                   </div>
                   <Typography
                     className={classes.typography}
-                    style={{ fontSize: 20, fontWeight: 600 }}
+                    style={{
+                      fontSize: isTab ? 16 : 20,
+                      fontWeight: 600,
+                      color: "#00A650",
+                    }}
                   >{`$${tile?.product.finalPrice?.toLocaleString("de-DE", {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
                   })}`}</Typography>
-                  <div>
-                    <Typography
-                      className={classes.typography}
-                      style={{ color: "#00A650" }}
-                    >
-                      Envío gratis
-                    </Typography>
-                    <Typography
-                      className={classes.typography}
-                      style={{ color: "gray", fontSize: 14 }}
-                    >
-                      (sólo las primeras 100 compras)
-                    </Typography>
-                  </div>
                 </div>
 
                 <Button
@@ -331,7 +334,7 @@ export default function CBProducts() {
                   }}
                   onClick={() => viewDetails(tile)}
                 >
-                  Ver detalles{" "}
+                  Ver detalles
                 </Button>
               </div>
             </Grid>

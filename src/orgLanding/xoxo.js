@@ -82,6 +82,7 @@ const getProducts = () => {
         thumbUrl: undefined,
         _id: "6413349c2657ac0012046477",
         attributes: {
+          corte: ["Caballero", "Dama"],
           color: ["Negro", "Azul", "Verde"],
           talla: ["S", "M", "L", "XL", "XXL"],
         },
@@ -118,6 +119,8 @@ const getProducts = () => {
         thumbUrl: undefined,
         _id: "6413349c2657ac0012046477",
         attributes: {
+          corte: ["Caballero", "Dama"],
+
           color: ["Negro", "Azul", "Verde"],
           talla: ["S", "M", "L", "XL", "XXL"],
         },
@@ -155,6 +158,8 @@ const getProducts = () => {
         thumbUrl: undefined,
         _id: "6413349c2657ac0012046477",
         attributes: {
+          corte: ["Caballero", "Dama"],
+
           color: ["Negro", "Azul", "Verde"],
           talla: ["S", "M", "L", "XL"],
         },

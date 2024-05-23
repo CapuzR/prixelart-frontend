@@ -21,6 +21,11 @@ import FormControl from "@material-ui/core/FormControl";
 import Select from "@material-ui/core/Select";
 import Radio from "@material-ui/core/Radio";
 import { useHistory } from "react-router-dom";
+import isotipo from "./assets/isotipo.svg";
+import useMediaQuery from "@material-ui/core/useMediaQuery";
+import { useTheme } from "@material-ui/core/styles";
+import Menu from "@material-ui/core/Menu";
+import MenuIcon from "@material-ui/icons/Menu";
 
 const useStyles = makeStyles((theme) => ({
   typography: { fontFamily: "Uncut Sans" },
@@ -50,11 +55,18 @@ const useStyles = makeStyles((theme) => ({
 export default function ProductDetail(props) {
   const classes = useStyles();
   const history = useHistory();
+  const theme = useTheme();
+
+  const isMobile = useMediaQuery(theme.breakpoints.down("xs"));
+  const isTab = useMediaQuery(theme.breakpoints.down("sm"));
+  const [anchorEl, setAnchorEl] = useState(null);
+  const openMenu = Boolean(anchorEl);
 
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("");
   const [selectedColor, setSelectedColor] = useState(undefined);
   const [selectedSize, setSelectedSize] = useState(undefined);
+  const [selectedShape, setSelectedShape] = useState(undefined);
   const [selectedItem, setSelectedItem] = useState(undefined);
   const [buyState, setBuyState] = useState(
     localStorage.getItem("CBbuyState")
@@ -69,12 +81,24 @@ export default function ProductDetail(props) {
   const url = window.location.pathname;
   const id = url.substring(url.lastIndexOf("=") + 1);
 
+  const handleMenu = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
   const handleSize = (event) => {
     setSelectedSize(event.target.value);
   };
 
   const handleColor = (event) => {
     setSelectedColor(event.target.value);
+  };
+
+  const handleShape = (event) => {
+    setSelectedShape(event.target.value);
   };
 
   useEffect(() => {
@@ -89,11 +113,17 @@ export default function ProductDetail(props) {
       setOpen(true);
       setMessage("Por favor selecciona un color.");
     } else if (
-      Object.keys(input.product.attributes).length === 2 &&
+      Object.keys(input.product.attributes).length > 1 &&
       selectedSize === undefined
     ) {
       setOpen(true);
       setMessage("Por favor selecciona una talla.");
+    } else if (
+      Object.keys(input.product.attributes).length > 1 &&
+      selectedShape === undefined
+    ) {
+      setOpen(true);
+      setMessage("Por favor selecciona un corte.");
     } else {
       const newState = [...buyState];
 
@@ -101,8 +131,8 @@ export default function ProductDetail(props) {
       let art = input.art;
 
       let selection =
-        selectedSize !== undefined
-          ? selectedSize + " " + selectedColor
+        Object.keys(input.product.attributes).length > 1
+          ? selectedSize + " " + selectedColor + " " + selectedShape
           : selectedColor;
       prod.selection = selection;
       art.squareThumbUrl = art.images.find(
@@ -152,7 +182,16 @@ export default function ProductDetail(props) {
 
   const settings = {
     customPaging: function (i) {
-      const image = selectedItem?.art.images[i]?.img;
+      let image;
+
+      if (selectedColor) {
+        const matchingImages = selectedItem?.art.images.filter(
+          (image) => image.color === selectedColor
+        );
+        image = matchingImages?.length > 0 ? matchingImages[i]?.img : null;
+      } else {
+        image = selectedItem?.art.images[i]?.img;
+      }
 
       return (
         <li
@@ -165,7 +204,11 @@ export default function ProductDetail(props) {
           <a style={{ display: "block", textDecoration: "none" }}>
             <img
               src={image}
-              style={{ width: 70, height: 70, objectFit: "cover" }}
+              style={{
+                width: isTab ? 45 : 70,
+                height: isTab ? 45 : 70,
+                objectFit: "cover",
+              }}
             />
           </a>
         </li>
@@ -218,7 +261,6 @@ export default function ProductDetail(props) {
         position="fixed"
         elevation={0}
         style={{
-          backgroundColor: "#white",
           zIndex: 10000,
           backgroundColor: "white",
         }}
@@ -232,55 +274,104 @@ export default function ProductDetail(props) {
         >
           <Button onClick={handleMain}>
             <img
-              src={CB_isologo}
+              src={isTab ? isotipo : CB_isologo}
               alt="Chiguire Bipolar isologo"
-              style={{ width: 238 }}
+              style={{ width: isTab ? 40 : 238 }}
             />
           </Button>
 
-          <Tabs>
-            <Tab
-              className={classes.button}
-              onClick={handleToProduct}
-              label="Productos"
-            />
-            <Tab
-              className={classes.button}
-              label="Prixelart"
-              onClick={handleToPrixelart}
-            />
-          </Tabs>
+          {isTab ? (
+            <>
+              <IconButton onClick={handleMenu} size="medium">
+                <StyledBadge badgeContent={cartLength}>
+                  <MenuIcon />
+                </StyledBadge>
+              </IconButton>
 
-          <div
-            style={{
-              width: 257.93,
-              display: "flex",
-              justifyContent: "center",
-            }}
-          >
-            <IconButton onClick={handleCart}>
-              <StyledBadge badgeContent={cartLength}>
-                <div style={{ color: "black" }}>
-                  <ShoppingCartOutlined />
-                </div>
-              </StyledBadge>{" "}
-            </IconButton>
-          </div>
+              <Menu
+                style={{ zIndex: 100000 }}
+                anchorEl={anchorEl}
+                anchorOrigin={{
+                  vertical: "top",
+                  horizontal: "right",
+                }}
+                keepMounted
+                transformOrigin={{
+                  vertical: "top",
+                  horizontal: "right",
+                }}
+                open={openMenu}
+                onClose={handleClose}
+              >
+                <MenuItem onClick={() => scrollToSection("#prods")}>
+                  Productos
+                </MenuItem>
+                <MenuItem onClick={() => scrollToSection("#prixelart")}>
+                  Prixelart
+                </MenuItem>
+                <MenuItem onClick={handleCart}>Carrito</MenuItem>
+              </Menu>
+            </>
+          ) : (
+            <>
+              <Tabs>
+                <Tab
+                  className={classes.button}
+                  onClick={handleToProduct}
+                  label="Productos"
+                />
+                <Tab
+                  className={classes.button}
+                  label="Prixelart"
+                  onClick={handleToPrixelart}
+                />
+              </Tabs>
+              <div
+                style={{
+                  width: 257.93,
+                  display: "flex",
+                  justifyContent: "center",
+                }}
+              >
+                <IconButton onClick={handleCart}>
+                  <StyledBadge badgeContent={cartLength}>
+                    <div style={{ color: "black" }}>
+                      <ShoppingCartOutlined />
+                    </div>
+                  </StyledBadge>{" "}
+                </IconButton>
+              </div>{" "}
+            </>
+          )}
         </Toolbar>
       </AppBar>
       <Grid
         container
         style={{
           marginLeft: "5%",
-          paddingRight: "12.5%",
+          paddingRight: isTab ? "5%" : "12.5%",
           display: "flex",
           justifyContent: "space-evenly",
-          marginTop: 120,
+          marginTop: isTab ? 75 : 120,
         }}
       >
+        {isTab && (
+          <Typography
+            className={classes.typography}
+            style={{
+              fontSize: 22,
+              fontWeight: 600,
+              display: "flex",
+              width: "100%",
+            }}
+          >
+            {selectedItem?.product.name} {selectedItem?.art.title}
+          </Typography>
+        )}
         <Grid
           item
-          xs={6}
+          xs={12}
+          sm={6}
           style={{
             display: "flex",
             flexDirection: "column",
@@ -288,61 +379,93 @@ export default function ProductDetail(props) {
             position: "relative",
             width: "50%",
             height: 468,
-            //   marginLeft: 20,
-            //   padding: "0px 30px 0px 30px",
-            // marginTop: "-5px",
           }}
         >
           <Slider dotsClass={classes.dotsContainer} {...settings}>
-            {selectedItem?.art.images.map((art, i) => (
-              <div
-                key={i}
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  height: 360,
-                  width: "100%",
-                  marginRight: 10,
-                }}
-              >
-                <div
-                  style={{
-                    marginTop: 5,
+            {selectedColor
+              ? selectedItem?.art.images.map(
+                  (art, i) =>
+                    art.color === selectedColor && (
+                      <div
+                        key={i}
+                        style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          height: 360,
+                          width: "100%",
+                          marginRight: 10,
+                        }}
+                      >
+                        <div
+                          style={{
+                            marginTop: 5,
 
-                    width: "95%",
-                    height: 360,
-                    backgroundImage: `url(${art.img})`,
-                    backgroundSize: "contain",
-                    backgroundRepeat: "no-repeat",
-                    backgroundPosition: "center",
-                  }}
-                ></div>
-              </div>
-            ))}
+                            width: "95%",
+                            height: 360,
+                            backgroundImage: `url(${art.img})`,
+                            backgroundSize: "contain",
+                            backgroundRepeat: "no-repeat",
+                            backgroundPosition: "center",
+                          }}
+                        />
+                      </div>
+                    )
+                )
+              : selectedItem?.art.images.map((art, i) => (
+                  <div
+                    key={i}
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      height: 360,
+                      width: "100%",
+                      marginRight: 10,
+                    }}
+                  >
+                    <div
+                      style={{
+                        marginTop: 5,
+
+                        width: "95%",
+                        height: 360,
+                        backgroundImage: `url(${art.img})`,
+                        backgroundSize: "contain",
+                        backgroundRepeat: "no-repeat",
+                        backgroundPosition: "center",
+                      }}
+                    />
+                  </div>
+                ))}
           </Slider>
         </Grid>
 
         <Grid
           item
-          xs={4}
+          xs={12}
+          sm={4}
           style={{
             display: "flex",
             flexDirection: "column",
             justifyContent: "center",
+            marginRight: 20,
           }}
         >
+          {!isTab && (
+            <Typography
+              className={classes.typography}
+              style={{ fontSize: 40, fontWeight: 600 }}
+            >
+              {selectedItem?.product.name} {selectedItem?.art.title}
+            </Typography>
+          )}{" "}
+          {!isTab && (
+            <Typography className={classes.typography} style={{ fontSize: 20 }}>
+              {selectedItem?.product.description}
+            </Typography>
+          )}
           <Typography
             className={classes.typography}
-            style={{ fontSize: 40, fontWeight: 600 }}
-          >
-            {selectedItem?.product.name} {selectedItem?.art.title}
-          </Typography>
-          <Typography className={classes.typography} style={{ fontSize: 20 }}>
-            {selectedItem?.product.description}
-          </Typography>
-          <Typography
-            className={classes.typography}
-            style={{ fontSize: 24, fontWeight: 600 }}
+            style={{ fontSize: 24, fontWeight: 600, color: "#00A650" }}
           >
             $
             {selectedItem?.product.finalPrice?.toLocaleString("de-DE", {
@@ -350,84 +473,122 @@ export default function ProductDetail(props) {
               maximumFractionDigits: 2,
             })}
           </Typography>
-          <div>
-            <Typography
-              className={classes.typography}
-              style={{ color: "#00A650", fontSize: 20 }}
-            >
-              Envío gratis
-            </Typography>
-            <Typography
-              className={classes.typography}
-              style={{ color: "gray", fontSize: 14 }}
-            >
-              (sólo las primeras 100 compras)
-            </Typography>
-          </div>
-          {selectedItem && selectedItem.product.attributes.talla && (
-            <>
-              <Typography
-                className={classes.typography}
-                style={{ fontSize: 17, marginTop: 20, marginBottom: 10 }}
+          <Grid
+            container
+            style={{ display: "flex", justifyContent: "space-between" }}
+          >
+            {selectedItem && selectedItem.product.attributes.talla && (
+              <Grid
+                item
+                xs={6}
+                md={4}
+                style={{ display: "flex", flexDirection: "column" }}
               >
-                Talla
-              </Typography>
-              <Select
-                variant="outlined"
-                style={{
-                  width: 120,
+                <Typography
+                  className={classes.typography}
+                  style={{ fontSize: 17, marginTop: 20, marginBottom: 10 }}
+                >
+                  Talla
+                </Typography>
+                <Select
+                  variant="outlined"
+                  style={{
+                    width: 120,
 
-                  boxShadow: "0px 1px 12px rgba(0, 0, 0, 0.2)",
-                  borderRadius: 15,
-                  textAlign: "center",
+                    boxShadow: "0px 1px 12px rgba(0, 0, 0, 0.2)",
+                    borderRadius: 15,
+                    textAlign: "center",
+                  }}
+                  value={selectedSize}
+                  onChange={handleSize}
+                >
+                  {selectedItem?.product.attributes?.talla.map((t) => (
+                    <MenuItem value={t} style={{ justifyContent: "center" }}>
+                      {t}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </Grid>
+            )}
+            {selectedItem && selectedItem.product.attributes.corte && (
+              <Grid
+                item
+                xs={6}
+                md={4}
+                style={{ display: "flex", flexDirection: "column" }}
+              >
+                <Typography
+                  className={classes.typography}
+                  style={{ fontSize: 17, marginTop: 20, marginBottom: 10 }}
+                >
+                  Corte
+                </Typography>
+                <Select
+                  variant="outlined"
+                  style={{
+                    width: 120,
+
+                    boxShadow: "0px 1px 12px rgba(0, 0, 0, 0.2)",
+                    borderRadius: 15,
+                    textAlign: "center",
+                  }}
+                  value={selectedShape}
+                  onChange={handleShape}
+                >
+                  {selectedItem?.product.attributes?.corte.map((t) => (
+                    <MenuItem value={t} style={{ justifyContent: "center" }}>
+                      {t}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </Grid>
+            )}
+            {selectedItem && selectedItem.product.attributes.color && (
+              <Grid
+                item
+                xs={6}
+                md={4}
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  width: isTab && "100%",
                 }}
-                value={selectedSize}
-                onChange={handleSize}
               >
-                {selectedItem?.product.attributes?.talla.map((t) => (
-                  <MenuItem value={t} style={{ justifyContent: "center" }}>
-                    {t}
-                  </MenuItem>
-                ))}
-              </Select>
-            </>
-          )}
-          {selectedItem && selectedItem.product.attributes.color && (
-            <>
-              <Typography
-                className={classes.typography}
-                style={{ fontSize: 17, marginTop: 20, marginBottom: 10 }}
-              >
-                Color
-              </Typography>
-              <div>
-                <Radio
-                  checked={selectedColor === "Negro"}
-                  onChange={handleColor}
-                  value="Negro"
-                  style={{
-                    color: "black",
-                  }}
-                />
-                <Radio
-                  checked={selectedColor === "Azul"}
-                  onChange={handleColor}
-                  value="Azul"
-                  style={{
-                    color: "blue",
-                  }}
-                />
-                <Radio
-                  checked={selectedColor === "Verde"}
-                  onChange={handleColor}
-                  value="Verde"
-                  style={{
-                    color: "green",
-                  }}
-                />
-              </div>
-            </>
-          )}
+                <Typography
+                  className={classes.typography}
+                  style={{ fontSize: 17, marginTop: 20, marginBottom: 10 }}
+                >
+                  Color
+                </Typography>
+                <div>
+                  <Radio
+                    checked={selectedColor === "Negro"}
+                    onChange={handleColor}
+                    value="Negro"
+                    style={{
+                      color: "black",
+                    }}
+                  />
+                  <Radio
+                    checked={selectedColor === "Azul"}
+                    onChange={handleColor}
+                    value="Azul"
+                    style={{
+                      color: "blue",
+                    }}
+                  />
+                  <Radio
+                    checked={selectedColor === "Verde"}
+                    onChange={handleColor}
+                    value="Verde"
+                    style={{
+                      color: "green",
+                    }}
+                  />
+                </div>
+              </Grid>
+            )}
+          </Grid>
           <Button
             className={classes.typography}
             style={{

@@ -443,6 +443,7 @@ export default function CreateOrder(props) {
             selectedConsumer={selectedConsumer}
             setSelectedPrixer={setSelectedPrixer}
             selectedPrixer={selectedPrixer}
+            orgs={props.orgs}
           />
         )}
         {activeStep === 1 && (
@@ -461,6 +462,7 @@ export default function CreateOrder(props) {
             deleteItemInBuyState={props.deleteItemInBuyState}
             setErrorMessage={props.setErrorMessage}
             setSnackBarError={props.setSnackBarError}
+            orgs={props.orgs}
           />
         )}
         {activeStep === 2 && (
@@ -481,6 +483,7 @@ export default function CreateOrder(props) {
             setOrderPaymentMethod={setOrderPaymentMethod}
             discountList={props.discountList}
             loadingOrder={loadingOrder}
+            orgs={props.orgs}
           ></Checkout>
         )}
       </div>

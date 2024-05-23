@@ -379,7 +379,6 @@ export default function ShoppingCart(props) {
       ]);
     }
   };
-  console.log(prices);
 
   const removePrixer = (index) => {
     let artists = selectedArtist;
@@ -388,7 +387,7 @@ export default function ShoppingCart(props) {
   };
 
   const checkOrgs = (art) => {
-    const org = props?.orgs.find((el) => el.username === art.owner);
+    const org = props?.orgs?.find((el) => el.username === art.owner);
     return org;
   };
 

@@ -87,7 +87,7 @@ const getProducts = () => {
           talla: ["S", "M", "L", "XL", "XXL"],
         },
         description:
-          "Fresca e ideal para las cualquier momento en regiones cálidas. Viste al mejor estilo Chigüire.",
+          "Todos hemos sido alguna vez el Pasante Subpagado. Ahora puedes verte como él con esta franela. ¡Aprovecha!",
         finalPrice: 25,
         basePrice: 9.8,
         count: 0,
@@ -125,7 +125,7 @@ const getProducts = () => {
           talla: ["S", "M", "L", "XL", "XXL"],
         },
         description:
-          "Fresca e ideal para las cualquier momento en regiones cálidas. Viste al mejor estilo Chigüire.",
+          "Independizarse es algo difícil de alcanzar. Comprar esta franela, en cambio, es sencillísimo.",
         finalPrice: 25,
         basePrice: 9.8,
 
@@ -165,7 +165,7 @@ const getProducts = () => {
         },
         name: "Franela",
         description:
-          "Fresca e ideal para las cualquier momento en regiones cálidas. Viste al mejor estilo Chigüire.",
+          "Si estos últimos años te dejaron muerto por dentro, al menos puedes lucir fresco y elegante por fuera con esta franela.",
         finalPrice: 25,
         basePrice: 9.8,
 
@@ -198,7 +198,7 @@ const getProducts = () => {
         },
         name: "Taza de Peltre",
         description:
-          "Tu café sabe mejor en tu taza de peltre al estilo Chigüire.",
+          "Tu café sabrá mucho mejor en esta taza de peltre al estilo Chigüire, ideal para leer las noticias cada mañana.",
         finalPrice: 15,
         basePrice: 7,
 
@@ -229,7 +229,7 @@ const getProducts = () => {
         item: "CBtp02",
         name: "Taza de Peltre",
         description:
-          "Tu café sabe mejor en tu taza de peltre al estilo Chigüire.",
+          "Ahora tú también podrás tomar café en la misma taza que usa el Rey de Inglaterra para tomar té por las mañanas.",
         finalPrice: 15,
         basePrice: 7,
 
@@ -263,7 +263,7 @@ const getProducts = () => {
         item: "CBtp03",
         name: "Taza de Peltre",
         description:
-          "Tu café sabe mejor en tu taza de peltre al estilo Chigüire.",
+          "Añade a tu colección de tazas increíbles este modelo de taza, antes de que Iker Casillas la agote.",
         finalPrice: 15,
         basePrice: 7,
         count: 0,
@@ -295,7 +295,7 @@ const getProducts = () => {
         item: "CBtp04",
         name: "Taza de Peltre",
         description:
-          "Tu café sabe mejor en tu taza de peltre al estilo Chigüire.",
+          "Esta taza es una réplica legítima de las tazas que usa el Pasante Subpagado para servirnos café cada mañana.",
         finalPrice: 15,
         basePrice: 7,
         count: 0,
@@ -327,7 +327,7 @@ const getProducts = () => {
         item: "CBtp05",
         name: "Taza de Peltre",
         description:
-          "Tu café sabe mejor en tu taza de peltre al estilo Chigüire.",
+          "Todo el mundo lo sabe: por cada taza de arroz, dos de agua. Y si es esta taza, mejor aún.",
         finalPrice: 15,
         basePrice: 7,
         count: 0,
@@ -359,7 +359,7 @@ const getProducts = () => {
         item: "CBtp06",
         name: "Taza de Peltre",
         description:
-          "Tu café sabe mejor en tu taza de peltre al estilo Chigüire.",
+          "La señora María Alejandra López asegura que esta taza es la mejor para darle a la cacerola. Descubre por qué.",
         finalPrice: 15,
         basePrice: 7,
         count: 0,
@@ -391,7 +391,7 @@ const getProducts = () => {
         item: "CBbr01",
         name: "Botella Rock",
         description:
-          "Ligero y cómodo. Ideal para la excursión e ir al gimnasio.",
+          "Con estos calorones que están haciendo, no olvides tomar agua de tu flamante botella.",
         finalPrice: 20,
         basePrice: 11.2,
         count: 0,
@@ -423,7 +423,7 @@ const getProducts = () => {
         id: "CBbr02",
         name: "Botella Rock",
         description:
-          "Ligero y cómodo. Ideal para la excursión e ir al gimnasio.",
+          "¿De excursión, al gimnasio o a tomar curda con los panas? Esta botella sirve para todo eso y más.",
         finalPrice: 20,
         basePrice: 11.2,
         count: 0,
@@ -455,7 +455,7 @@ const getProducts = () => {
         item: "CBbr03",
         name: "Botella Rock",
         description:
-          "Ligero y cómodo. Ideal para la excursión e ir al gimnasio.",
+          "Si buscas algo ligero, cómodo y que apoye la explotación laboral a los pasantes, esta botella es ideal para ti.",
         finalPrice: 20,
         basePrice: 11.2,
         count: 0,
@@ -487,7 +487,7 @@ const getProducts = () => {
         item: "CBtb01",
         name: "Tote Bag",
         description:
-          "Tote bag resistente. Ideal para un vivir cada día al mejor estilo Chigüire.",
+          "Salva al planeta con este tote bag del Chigüire, ideal para llevar lo que sea. Hasta las penas y los traumas.",
         finalPrice: 15,
         basePrice: 4.9,
         count: 0,
@@ -519,7 +519,7 @@ const getProducts = () => {
         item: "CBtb02",
         name: "Tote Bag",
         description:
-          "Tote bag resistente. Ideal para un vivir cada día al mejor estilo Chigüire.",
+          "Demuéstrale al mundo que tú llevas tus cargas con dignidad y estilo. Lúcete con tu tote bag.",
         finalPrice: 15,
         basePrice: 4.9,
         count: 0,
@@ -551,7 +551,7 @@ const getProducts = () => {
         item: "CBtb03",
         name: "Tote Bag",
         description:
-          "Tote bag resistente. Ideal para un vivir cada día al mejor estilo Chigüire.",
+          "Fun fact: el pasante usa un tote bag como este cuando lo mandamos a hacernos las compras.",
         finalPrice: 15,
         basePrice: 4.9,
         count: 0,
@@ -583,7 +583,7 @@ const getProducts = () => {
         item: "CBtb04",
         name: "Tote Bag",
         description:
-          "Tote bag resistente. Ideal para un vivir cada día al mejor estilo Chigüire.",
+          "¿Todavía usando bolsas de plástico para la compra? Compra tu tote bag y haz que Greta Thumberg sonría de nuevo.",
         finalPrice: 15,
         basePrice: 4.9,
         count: 0,
@@ -616,7 +616,7 @@ const getProducts = () => {
         name: "Tote Bag",
         title: "Sobreviví",
         description:
-          "Tote bag resistente. Ideal para un vivir cada día al mejor estilo Chigüire.",
+          "Si algo nos enseñaron estos años es que se podrá estar muerto por dentro, pero siempre con estilo",
         finalPrice: 15,
         basePrice: 4.9,
         count: 0,

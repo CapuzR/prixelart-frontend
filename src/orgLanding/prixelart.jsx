@@ -15,7 +15,7 @@ import yellowArrowRight from "./assets/yellowArrowRight.svg";
 import yellowArrowLeft from "./assets/yellowArrowLeft.svg";
 
 const useStyles = makeStyles((theme) => ({
-  typography: { fontFamily: "Uncut Sans" },
+  typography: { fontFamily: "Lastik" },
   paper: {
     padding: theme.spacing(2),
     textAlign: "center",
@@ -216,7 +216,7 @@ export default function PrixelartSection() {
           >
             <Typography
               variant="h4"
-              style={{ color: "white", fontSize: isTab && 24 }}
+              style={{ color: "white", fontSize: isMobile ? 18 : isTab && 24 }}
               className={classes.typography}
             >
               <strong>+{prixers}</strong> <br /> Prixers
@@ -236,7 +236,7 @@ export default function PrixelartSection() {
           >
             <Typography
               variant="h4"
-              style={{ color: "white", fontSize: isTab && 24 }}
+              style={{ color: "white", fontSize: isMobile ? 18 : isTab && 24 }}
               className={classes.typography}
             >
               <strong>+{arts}</strong> <br /> Artes
@@ -255,7 +255,7 @@ export default function PrixelartSection() {
           >
             <Typography
               variant="h4"
-              style={{ color: "white", fontSize: isTab && 24 }}
+              style={{ color: "white", fontSize: isMobile ? 18 : isTab && 24 }}
               className={classes.typography}
             >
               <strong>+{products}</strong>

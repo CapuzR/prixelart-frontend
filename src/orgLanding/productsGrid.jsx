@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme) => ({
     fontSize: theme.typography.pxToRem(15),
     fontWeight: theme.typography.fontWeightRegular,
   },
-  typography: { fontFamily: "Uncut Sans" },
+  typography: { fontFamily: "Lastik" },
 }));
 
 export default function CBProducts() {

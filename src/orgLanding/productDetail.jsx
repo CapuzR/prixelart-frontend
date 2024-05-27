@@ -28,13 +28,13 @@ import Menu from "@material-ui/core/Menu";
 import MenuIcon from "@material-ui/icons/Menu";
 
 const useStyles = makeStyles((theme) => ({
-  typography: { fontFamily: "Uncut Sans" },
+  typography: { fontFamily: "Lastik" },
   paper: {
     padding: theme.spacing(2),
     textAlign: "center",
   },
   button: {
-    fontFamily: "Uncut Sans",
+    fontFamily: "Lastik",
     textTransform: "none",
     color: "black",
     fontWeight: 600,

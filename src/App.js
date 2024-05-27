@@ -90,6 +90,10 @@ function App() {
     event.preventDefault();
   });
 
+  const onCloseModal = () => {
+    setTermsAgreeVar(true);
+  };
+
   const readDollarValue = async () => {
     const base_url = process.env.REACT_APP_BACKEND_URL + "/dollarValue/read";
     await axios.get(base_url).then((response) => {
@@ -712,8 +716,8 @@ function App() {
         md={480}
         sm={360}
         xs={360}
-        open={termsAgreeVar === false}
-        onClose={termsAgreeVar === true}
+        open={!termsAgreeVar}
+        onClose={onCloseModal}
       >
         <div className={classes.paper2}>
           <h2 style={{ textAlign: "center", fontWeight: "Normal" }}>

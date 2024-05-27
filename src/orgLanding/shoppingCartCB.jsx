@@ -36,13 +36,13 @@ import MenuIcon from "@material-ui/icons/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 
 const useStyles = makeStyles((theme) => ({
-  typography: { fontFamily: "Uncut Sans" },
+  typography: { fontFamily: "Lastik" },
   paper: {
     padding: theme.spacing(2),
     textAlign: "center",
   },
   button: {
-    fontFamily: "Uncut Sans",
+    fontFamily: "Lastik",
     textTransform: "none",
     color: "black",
     fontWeight: 600,
@@ -67,7 +67,7 @@ const useStyles = makeStyles((theme) => ({
   gridInput: {
     display: "flex",
     width: "100%",
-    fontFamily: "Uncut Sans",
+    fontFamily: "Lastik",
     borderRadius: 20,
   },
   textfield: {

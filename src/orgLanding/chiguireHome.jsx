@@ -38,9 +38,10 @@ const useStyles = makeStyles((theme) => ({
     marginRight: theme.spacing(2),
   },
   button: {
-    fontFamily: "Uncut Sans",
+    fontFamily: "Lastik ",
     textTransform: "none",
   },
+  mainTypography: { fontFamily: "Lastik" },
   fabButton: {
     backgroundColor: "#F4DF46",
     margin: "0 auto",
@@ -301,7 +302,7 @@ export default function ChiguireHome() {
           }}
         >
           <Typography
-            className={classes.button}
+            className={classes.mainTypography}
             style={{
               fontSize: isMobile ? 19 : isTab ? 30 : 45,
               alignContent: "center",

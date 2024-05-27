@@ -448,7 +448,7 @@ export default function CreateProduct() {
                 </>
               )}
             </Grid>
-            <Grid container xs={isDesktop ? 12 : 12}>
+            <Grid container>
               <Grid item xs={12} md={6}>
                 <Checkbox
                   checked={active}
@@ -680,7 +680,7 @@ export default function CreateProduct() {
                   required
                   fullWidth
                   multiline
-                  rows={2}
+                  minRows={2}
                   id="considerations"
                   label="Consideraciones"
                   name="considerations"

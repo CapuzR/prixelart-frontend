@@ -56,7 +56,6 @@ export default function ReadProducts(props) {
     if (reason === "clickaway") {
       return;
     }
-
     setUpdateProduct(false);
   };
 
@@ -77,7 +76,10 @@ export default function ReadProducts(props) {
       </div>
     );
   }
+
   const getRows = async () => {
+    setLoading(true);
+
     const base_url = process.env.REACT_APP_BACKEND_URL + "/product/read-allv1";
     await axios
       .post(
@@ -88,11 +90,13 @@ export default function ReadProducts(props) {
       .then((response) => {
         setRows(response.data.products);
         props.getProducts(response.data.products);
+        setLoading(false);
       })
       .catch((error) => {
         console.log(error);
       });
   };
+
   const getDiscounts = async () => {
     const base_url = process.env.REACT_APP_BACKEND_URL + "/discount/read-allv1";
     await axios
@@ -125,12 +129,10 @@ export default function ReadProducts(props) {
       });
   };
 
-  useEffect(async () => {
-    setLoading(true);
-    await getRows();
-    await getDiscounts();
-    await getSurcharges();
-    setLoading(false);
+  useEffect(() => {
+    getRows();
+    getDiscounts();
+    getSurcharges();
   }, []);
 
   const handleActive = (product, action) => {
@@ -434,8 +436,8 @@ export default function ReadProducts(props) {
                     </TableCell>
                     <TableCell align="center">
                       <ul>
-                        {dis.appliedProducts.map((el) => (
-                          <li>{el}</li>
+                        {dis.appliedProducts.map((el, i) => (
+                          <li key={i}>{el}</li>
                         ))}
                       </ul>
                     </TableCell>
@@ -565,7 +567,6 @@ export default function ReadProducts(props) {
         message={props.deleteMessage}
         onClose={handleClose}
       />
-
       <Modal open={openUpdateProduct} onClose={handleClose}>
         <UpdateProductV2
           product={props.product}
@@ -574,7 +575,7 @@ export default function ReadProducts(props) {
           handleClose={handleClose}
         ></UpdateProductV2>
       </Modal>
-      {props.handleCallback(value)}
+      {/* {props.handleCallback && props.handleCallback(value)} */}
     </React.Fragment>
   );
 }

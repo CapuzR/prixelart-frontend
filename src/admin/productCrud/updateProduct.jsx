@@ -124,7 +124,7 @@ export default function UpdateProduct(props) {
     props?.product?._id || window.location.pathname.slice(22)
   );
   const [images, newImages] = useState({ images: [] });
-  const [thumbUrl, setThumbUrl] = useState(props.product?.thumbUrl);
+  const [thumbUrl, setThumbUrl] = useState(props?.product?.thumbUrl);
   const [imagesList, setImagesList] = useState(props?.product?.sources.images);
   const [active, setActive] = useState(props?.product?.active);
   const [productName, setProductName] = useState(props?.product?.name);
@@ -135,7 +135,7 @@ export default function UpdateProduct(props) {
     props?.product?.considerations || undefined
   );
   const [productionTime, setProductionTime] = useState(
-    props.product?.productionTime || undefined
+    props?.product?.productionTime || undefined
   );
   const [cost, setCost] = useState(props?.product?.cost || undefined);
   const [fromPublicPrice, setFromPublicPrice] = useState(
@@ -176,6 +176,16 @@ export default function UpdateProduct(props) {
   const [loaDOpen, setLoaDOpen] = useState(false);
   const [mustImage, setMustImages] = useState(false);
 
+  const readProduct = () => {
+    const base_url2 = process.env.REACT_APP_BACKEND_URL + "/product/read";
+    axios.post(base_url2, { _id: productId }).then((response) => {
+      let product = response.data.products[0];
+      props.setProduct(product);
+      localStorage.setItem("product", JSON.stringify(product));
+    });
+    props.setProductEdit(false);
+  };
+
   useEffect(() => {
     readProduct();
     const indexImage =
@@ -202,16 +212,6 @@ export default function UpdateProduct(props) {
       localStorage.removeItem("product");
     };
   }, []);
-
-  const readProduct = () => {
-    const base_url2 = process.env.REACT_APP_BACKEND_URL + "/product/read";
-    axios.post(base_url2, { _id: productId }).then((response) => {
-      let product = response.data.products[0];
-      props.setProduct(product);
-      localStorage.setItem("product", JSON.stringify(product));
-    });
-    props.setProductEdit(false);
-  };
 
   const handleClickOpen = () => {
     setOpen(true);

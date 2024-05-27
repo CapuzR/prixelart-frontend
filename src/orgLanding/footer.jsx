@@ -20,12 +20,12 @@ export default function CBFooter() {
           display: "flex",
           width: "100%",
           flexDirection: "column",
-          fontFamily: "Uncut Sans",
+          fontFamily: "Lastik",
         }}
       >
         <Typography
           style={{
-            fontFamily: "Uncut Sans",
+            fontFamily: "Lastik",
             fontSize: isTab ? 12 : 18,
             marginBottom: 10,
             justifyContent: "center",

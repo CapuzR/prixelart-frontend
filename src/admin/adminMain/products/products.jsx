@@ -143,9 +143,7 @@ export default function Products(props) {
   const [loading, setLoading] = useState(false);
   const [deleteMessage, setDeleteMessage] = useState();
   const [deleteOpen, setDeleteOpen] = useState(false);
-  function Callback(childData) {
-    setPage(childData);
-  }
+
   const [product, setProduct] = useState(
     localStorage.getItem("product")
       ? JSON.parse(localStorage.getItem("product"))
@@ -178,6 +176,10 @@ export default function Products(props) {
 
   const getProducts = (x) => {
     setProducts(x);
+  };
+
+  const Callback = (childData) => {
+    setPage(childData);
   };
 
   const downloadProducts = async () => {
@@ -421,7 +423,6 @@ export default function Products(props) {
                       cursor: "pointer",
                     }}
                     ref={inputRef}
-                    // className={classes.input}
                     onChange={updateManyProds}
                   />
                   <Tooltip

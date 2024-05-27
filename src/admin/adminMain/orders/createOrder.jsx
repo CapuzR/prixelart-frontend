@@ -241,6 +241,7 @@ export default function CreateOrder(props) {
   const [selectedPrixer, setSelectedPrixer] = useState();
   const [shippingMethod, setShippingMethod] = useState();
   const [selectedConsumer, setSelectedConsumer] = useState();
+  const [consumerType, setConsumerType] = useState("Particular");
   const steps = [`Datos del comprador`, `Productos`, `Orden de compra`];
 
   const handleStep = (step) => () => {
@@ -306,7 +307,7 @@ export default function CreateOrder(props) {
         JSON.parse(localStorage.getItem("adminToken")).firstname +
         " " +
         JSON.parse(localStorage.getItem("adminToken")).lastname,
-      consumerType: selectedPrixer ? "Prixer" : "Particular",
+      consumerType: selectedPrixer ? "Prixer" : consumerType,
       firstname: basicData?.name,
       lastname: basicData?.lastname,
       ci: basicData?.ci,
@@ -347,7 +348,7 @@ export default function CreateOrder(props) {
           JSON.parse(localStorage.getItem("adminToken")).lastname,
       },
       consumerId: consumerData._id,
-      consumerType: consumerData.consumerType,
+      consumerType: consumerType,
       orderType: "Particular",
       status: "Por producir",
       payStatus: "Pendiente",
@@ -372,6 +373,7 @@ export default function CreateOrder(props) {
     setBasicData();
     setShippingData();
     setBillingData();
+    setConsumerType("Particular");
     localStorage.removeItem("buyState");
     props.setBuyState([]);
     props.readOrders();
@@ -444,6 +446,8 @@ export default function CreateOrder(props) {
             setSelectedPrixer={setSelectedPrixer}
             selectedPrixer={selectedPrixer}
             orgs={props.orgs}
+            setConsumerType={setConsumerType}
+            consumerType={consumerType}
           />
         )}
         {activeStep === 1 && (

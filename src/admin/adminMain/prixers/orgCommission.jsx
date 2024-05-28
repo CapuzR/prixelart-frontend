@@ -64,7 +64,7 @@ export default function OrgCommission({
   const [selectedSurcharges, setSelectedSurcharges] = useState([]);
   const [base, setBase] = useState(undefined);
   const [comission, setComission] = useState(
-    selectedPrixer?.agreement.comission || 10
+    selectedPrixer?.agreement?.comission || 10
   );
   const [considerations, setConsiderations] = useState({
     artista: 0,

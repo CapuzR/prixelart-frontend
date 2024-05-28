@@ -387,16 +387,16 @@ export default function OrgCommission({
   const reducedComission = (v) => {
     let result = null;
 
-    if (considerations.artista > 0) {
+    if (considerations?.artista > 0) {
       result = considerationFormat(v, "artista");
     }
-    if (considerations.corporativo > 0) {
+    if (considerations?.corporativo > 0) {
       result = considerationFormat(v, "corporativo");
     }
-    if (considerations.da > 0) {
+    if (considerations?.da > 0) {
       result = considerationFormat(v, "da");
     }
-    if (considerations.prixer > 0) {
+    if (considerations?.prixer > 0) {
       result = considerationFormat(v, "prixer");
     }
 
@@ -549,7 +549,7 @@ export default function OrgCommission({
                       size="small"
                       variant="outlined"
                       style={{ marginLeft: 10, width: 100 }}
-                      value={considerations.artista}
+                      value={considerations?.artista}
                       onChange={(e) => {
                         handleConsiderations("artista", e.target.value);
                       }}
@@ -578,7 +578,7 @@ export default function OrgCommission({
                       size="small"
                       variant="outlined"
                       style={{ marginLeft: 10, width: 100 }}
-                      value={considerations.corporativo}
+                      value={considerations?.corporativo}
                       onChange={(e) => {
                         handleConsiderations("corporativo", e.target.value);
                       }}
@@ -607,7 +607,7 @@ export default function OrgCommission({
                       size="small"
                       variant="outlined"
                       style={{ marginLeft: 10, width: 100 }}
-                      value={considerations.da}
+                      value={considerations?.da}
                       onChange={(e) => {
                         handleConsiderations("da", e.target.value);
                       }}
@@ -635,7 +635,7 @@ export default function OrgCommission({
                       size="small"
                       variant="outlined"
                       style={{ marginLeft: 10, width: 100 }}
-                      value={considerations.prixer}
+                      value={considerations?.prixer}
                       onChange={(e) => {
                         handleConsiderations("prixer", e.target.value);
                       }}
@@ -822,7 +822,7 @@ export default function OrgCommission({
                                   ))}
                                 {(base === "pvprixer" || base === undefined) &&
                                   v.pvm !== undefined &&
-                                  considerations.artista > 0 && (
+                                  considerations?.artista > 0 && (
                                     <Typography
                                       variant="p"
                                       style={{
@@ -838,7 +838,7 @@ export default function OrgCommission({
                                                 Number(
                                                   comission -
                                                     (comission / 100) *
-                                                      considerations.artista
+                                                      considerations?.artista
                                                 ) /
                                                   100)
                                           ).toLocaleString("de-DE", {
@@ -851,7 +851,7 @@ export default function OrgCommission({
                                                 Number(
                                                   v.cporg -
                                                     (v.cporg / 100) *
-                                                      considerations.artista
+                                                      considerations?.artista
                                                 ) /
                                                   100)
                                           ).toLocaleString("de-DE", {
@@ -862,7 +862,7 @@ export default function OrgCommission({
                                   )}
                                 {(base === "pvprixer" || base === undefined) &&
                                   v.pvm !== undefined &&
-                                  considerations.corporativo > 0 && (
+                                  considerations?.corporativo > 0 && (
                                     <Typography
                                       variant="p"
                                       style={{
@@ -878,7 +878,7 @@ export default function OrgCommission({
                                                 Number(
                                                   comission -
                                                     (comission / 100) *
-                                                      considerations.corporativo
+                                                      considerations?.corporativo
                                                 ) /
                                                   100)
                                           ).toLocaleString("de-DE", {
@@ -891,7 +891,7 @@ export default function OrgCommission({
                                                 Number(
                                                   v.cporg -
                                                     (v.cporg / 100) *
-                                                      considerations.corporativo
+                                                      considerations?.corporativo
                                                 ) /
                                                   100)
                                           ).toLocaleString("de-DE", {
@@ -902,7 +902,7 @@ export default function OrgCommission({
                                   )}
                                 {(base === "pvprixer" || base === undefined) &&
                                   v.pvm !== undefined &&
-                                  considerations.da > 0 && (
+                                  considerations?.da > 0 && (
                                     <Typography
                                       variant="p"
                                       style={{
@@ -918,7 +918,7 @@ export default function OrgCommission({
                                                 Number(
                                                   comission -
                                                     (comission / 100) *
-                                                      considerations.da
+                                                      considerations?.da
                                                 ) /
                                                   100)
                                           ).toLocaleString("de-DE", {
@@ -931,7 +931,7 @@ export default function OrgCommission({
                                                 Number(
                                                   v.cporg -
                                                     (v.cporg / 100) *
-                                                      considerations.da
+                                                      considerations?.da
                                                 ) /
                                                   100)
                                           ).toLocaleString("de-DE", {
@@ -942,7 +942,7 @@ export default function OrgCommission({
                                   )}
                                 {(base === "pvprixer" || base === undefined) &&
                                   v.pvm !== undefined &&
-                                  considerations.prixer > 0 && (
+                                  considerations?.prixer > 0 && (
                                     <Typography
                                       variant="p"
                                       style={{
@@ -958,7 +958,7 @@ export default function OrgCommission({
                                                 Number(
                                                   comission -
                                                     (comission / 100) *
-                                                      considerations.prixer
+                                                      considerations?.prixer
                                                 ) /
                                                   100)
                                           ).toLocaleString("de-DE", {
@@ -971,7 +971,7 @@ export default function OrgCommission({
                                                 Number(
                                                   v.cporg -
                                                     (v.cporg / 100) *
-                                                      considerations.prixer
+                                                      considerations?.prixer
                                                 ) /
                                                   100)
                                           ).toLocaleString("de-DE", {
@@ -1005,7 +1005,7 @@ export default function OrgCommission({
                                   </Typography>
                                 )}
                                 {(base === "pvp" || base === undefined) &&
-                                  considerations.artista > 0 && (
+                                  considerations?.artista > 0 && (
                                     <Typography
                                       variant="p"
                                       style={{
@@ -1021,7 +1021,7 @@ export default function OrgCommission({
                                                 Number(
                                                   comission -
                                                     (comission / 100) *
-                                                      considerations.artista
+                                                      considerations?.artista
                                                 ) /
                                                   100)
                                           ).toLocaleString("de-DE", {
@@ -1034,7 +1034,7 @@ export default function OrgCommission({
                                                 Number(
                                                   v.cporg -
                                                     (v.cporg / 100) *
-                                                      considerations.artista
+                                                      considerations?.artista
                                                 ) /
                                                   100)
                                           ).toLocaleString("de-DE", {
@@ -1044,7 +1044,7 @@ export default function OrgCommission({
                                     </Typography>
                                   )}
                                 {(base === "pvp" || base === undefined) &&
-                                  considerations.corporativo > 0 && (
+                                  considerations?.corporativo > 0 && (
                                     <Typography
                                       variant="p"
                                       style={{
@@ -1060,7 +1060,7 @@ export default function OrgCommission({
                                                 Number(
                                                   comission -
                                                     (comission / 100) *
-                                                      considerations.corporativo
+                                                      considerations?.corporativo
                                                 ) /
                                                   100)
                                           ).toLocaleString("de-DE", {
@@ -1073,7 +1073,7 @@ export default function OrgCommission({
                                                 Number(
                                                   v.cporg -
                                                     (v.cporg / 100) *
-                                                      considerations.corporativo
+                                                      considerations?.corporativo
                                                 ) /
                                                   100)
                                           ).toLocaleString("de-DE", {
@@ -1083,7 +1083,7 @@ export default function OrgCommission({
                                     </Typography>
                                   )}
                                 {(base === "pvp" || base === undefined) &&
-                                  considerations.da > 0 && (
+                                  considerations?.da > 0 && (
                                     <Typography
                                       variant="p"
                                       style={{
@@ -1099,7 +1099,7 @@ export default function OrgCommission({
                                                 Number(
                                                   comission -
                                                     (comission / 100) *
-                                                      considerations.da
+                                                      considerations?.da
                                                 ) /
                                                   100)
                                           ).toLocaleString("de-DE", {
@@ -1112,7 +1112,7 @@ export default function OrgCommission({
                                                 Number(
                                                   v.cporg -
                                                     (v.cporg / 100) *
-                                                      considerations.da
+                                                      considerations?.da
                                                 ) /
                                                   100)
                                           ).toLocaleString("de-DE", {
@@ -1122,7 +1122,7 @@ export default function OrgCommission({
                                     </Typography>
                                   )}
                                 {(base === "pvp" || base === undefined) &&
-                                  considerations.prixer > 0 && (
+                                  considerations?.prixer > 0 && (
                                     <Typography
                                       variant="p"
                                       style={{
@@ -1138,7 +1138,7 @@ export default function OrgCommission({
                                                 Number(
                                                   comission -
                                                     (comission / 100) *
-                                                      considerations.prixer
+                                                      considerations?.prixer
                                                 ) /
                                                   100)
                                           ).toLocaleString("de-DE", {
@@ -1151,7 +1151,7 @@ export default function OrgCommission({
                                                 Number(
                                                   v.cporg -
                                                     (v.cporg / 100) *
-                                                      considerations.prixer
+                                                      considerations?.prixer
                                                 ) /
                                                   100)
                                           ).toLocaleString("de-DE", {
@@ -1185,7 +1185,7 @@ export default function OrgCommission({
                                   </Typography>
                                 )}
                                 {(base === "pvm" || base === undefined) &&
-                                  considerations.artista > 0 && (
+                                  considerations?.artista > 0 && (
                                     <Typography
                                       variant="p"
                                       style={{
@@ -1201,7 +1201,7 @@ export default function OrgCommission({
                                                 Number(
                                                   comission -
                                                     (comission / 100) *
-                                                      considerations.artista
+                                                      considerations?.artista
                                                 ) /
                                                   100)
                                           ).toLocaleString("de-DE", {
@@ -1214,7 +1214,7 @@ export default function OrgCommission({
                                                 Number(
                                                   v.cporg -
                                                     (v.cporg / 100) *
-                                                      considerations.artista
+                                                      considerations?.artista
                                                 ) /
                                                   100)
                                           ).toLocaleString("de-DE", {
@@ -1224,7 +1224,7 @@ export default function OrgCommission({
                                     </Typography>
                                   )}
                                 {(base === "pvm" || base === undefined) &&
-                                  considerations.corporativo > 0 && (
+                                  considerations?.corporativo > 0 && (
                                     <Typography
                                       variant="p"
                                       style={{
@@ -1240,7 +1240,7 @@ export default function OrgCommission({
                                                 Number(
                                                   comission -
                                                     (comission / 100) *
-                                                      considerations.corporativo
+                                                      considerations?.corporativo
                                                 ) /
                                                   100)
                                           ).toLocaleString("de-DE", {
@@ -1253,7 +1253,7 @@ export default function OrgCommission({
                                                 Number(
                                                   v.cporg -
                                                     (v.cporg / 100) *
-                                                      considerations.corporativo
+                                                      considerations?.corporativo
                                                 ) /
                                                   100)
                                           ).toLocaleString("de-DE", {
@@ -1263,7 +1263,7 @@ export default function OrgCommission({
                                     </Typography>
                                   )}
                                 {(base === "pvm" || base === undefined) &&
-                                  considerations.da > 0 && (
+                                  considerations?.da > 0 && (
                                     <Typography
                                       variant="p"
                                       style={{
@@ -1279,7 +1279,7 @@ export default function OrgCommission({
                                                 Number(
                                                   comission -
                                                     (comission / 100) *
-                                                      considerations.da
+                                                      considerations?.da
                                                 ) /
                                                   100)
                                           ).toLocaleString("de-DE", {
@@ -1292,7 +1292,7 @@ export default function OrgCommission({
                                                 Number(
                                                   v.cporg -
                                                     (v.cporg / 100) *
-                                                      considerations.da
+                                                      considerations?.da
                                                 ) /
                                                   100)
                                           ).toLocaleString("de-DE", {
@@ -1302,7 +1302,7 @@ export default function OrgCommission({
                                     </Typography>
                                   )}
                                 {(base === "pvm" || base === undefined) &&
-                                  considerations.prixer > 0 && (
+                                  considerations?.prixer > 0 && (
                                     <Typography
                                       variant="p"
                                       style={{
@@ -1318,7 +1318,7 @@ export default function OrgCommission({
                                                 Number(
                                                   comission -
                                                     (comission / 100) *
-                                                      considerations.prixer
+                                                      considerations?.prixer
                                                 ) /
                                                   100)
                                           ).toLocaleString("de-DE", {
@@ -1331,7 +1331,7 @@ export default function OrgCommission({
                                                 Number(
                                                   v.cporg -
                                                     (v.cporg / 100) *
-                                                      considerations.prixer
+                                                      considerations?.prixer
                                                 ) /
                                                   100)
                                           ).toLocaleString("de-DE", {
@@ -1485,7 +1485,7 @@ export default function OrgCommission({
                                   </Typography>
                                 ))}
                               {(base === "pvprixer" || base === undefined) &&
-                                considerations.artista > 0 &&
+                                considerations?.artista > 0 &&
                                 product.pvm !== undefined && (
                                   <Typography
                                     variant="p"
@@ -1502,7 +1502,7 @@ export default function OrgCommission({
                                               Number(
                                                 comission -
                                                   (comission / 100) *
-                                                    considerations.artista
+                                                    considerations?.artista
                                               ) /
                                                 100)
                                         ).toLocaleString("de-DE", {
@@ -1515,7 +1515,7 @@ export default function OrgCommission({
                                               Number(
                                                 product.cporg -
                                                   (product.cporg / 100) *
-                                                    considerations.artista
+                                                    considerations?.artista
                                               ) /
                                                 100)
                                         ).toLocaleString("de-DE", {
@@ -1525,7 +1525,7 @@ export default function OrgCommission({
                                   </Typography>
                                 )}
                               {(base === "pvprixer" || base === undefined) &&
-                                considerations.corporativo > 0 &&
+                                considerations?.corporativo > 0 &&
                                 product.pvm !== undefined && (
                                   <Typography
                                     variant="p"
@@ -1542,7 +1542,7 @@ export default function OrgCommission({
                                               Number(
                                                 comission -
                                                   (comission / 100) *
-                                                    considerations.corporativo
+                                                    considerations?.corporativo
                                               ) /
                                                 100)
                                         ).toLocaleString("de-DE", {
@@ -1555,7 +1555,7 @@ export default function OrgCommission({
                                               Number(
                                                 product.cporg -
                                                   (product.cporg / 100) *
-                                                    considerations.corporativo
+                                                    considerations?.corporativo
                                               ) /
                                                 100)
                                         ).toLocaleString("de-DE", {
@@ -1565,7 +1565,7 @@ export default function OrgCommission({
                                   </Typography>
                                 )}
                               {(base === "pvprixer" || base === undefined) &&
-                                considerations.da > 0 &&
+                                considerations?.da > 0 &&
                                 product.pvm !== undefined && (
                                   <Typography
                                     variant="p"
@@ -1582,7 +1582,7 @@ export default function OrgCommission({
                                               Number(
                                                 comission -
                                                   (comission / 100) *
-                                                    considerations.da
+                                                    considerations?.da
                                               ) /
                                                 100)
                                         ).toLocaleString("de-DE", {
@@ -1595,7 +1595,7 @@ export default function OrgCommission({
                                               Number(
                                                 product.cporg -
                                                   (product.cporg / 100) *
-                                                    considerations.da
+                                                    considerations?.da
                                               ) /
                                                 100)
                                         ).toLocaleString("de-DE", {
@@ -1605,7 +1605,7 @@ export default function OrgCommission({
                                   </Typography>
                                 )}
                               {(base === "pvprixer" || base === undefined) &&
-                                considerations.prixer > 0 &&
+                                considerations?.prixer > 0 &&
                                 product.pvm !== undefined && (
                                   <Typography
                                     variant="p"
@@ -1622,7 +1622,7 @@ export default function OrgCommission({
                                               Number(
                                                 comission -
                                                   (comission / 100) *
-                                                    considerations.prixer
+                                                    considerations?.prixer
                                               ) /
                                                 100)
                                         ).toLocaleString("de-DE", {
@@ -1635,7 +1635,7 @@ export default function OrgCommission({
                                               Number(
                                                 product.cporg -
                                                   (product.cporg / 100) *
-                                                    considerations.prixer
+                                                    considerations?.prixer
                                               ) /
                                                 100)
                                         ).toLocaleString("de-DE", {
@@ -1669,7 +1669,7 @@ export default function OrgCommission({
                                 </Typography>
                               )}
                               {(base === "pvm" || base === undefined) &&
-                                considerations.artista > 0 && (
+                                considerations?.artista > 0 && (
                                   <Typography
                                     variant="p"
                                     style={{
@@ -1685,7 +1685,7 @@ export default function OrgCommission({
                                               Number(
                                                 comission -
                                                   (comission / 100) *
-                                                    considerations.artista
+                                                    considerations?.artista
                                               ) /
                                                 100)
                                         ).toLocaleString("de-DE", {
@@ -1698,7 +1698,7 @@ export default function OrgCommission({
                                               Number(
                                                 product.cporg -
                                                   (product.cporg / 100) *
-                                                    considerations.artista
+                                                    considerations?.artista
                                               ) /
                                                 100)
                                         ).toLocaleString("de-DE", {
@@ -1708,7 +1708,7 @@ export default function OrgCommission({
                                   </Typography>
                                 )}
                               {(base === "pvm" || base === undefined) &&
-                                considerations.corporativo > 0 && (
+                                considerations?.corporativo > 0 && (
                                   <Typography
                                     variant="p"
                                     style={{
@@ -1724,7 +1724,7 @@ export default function OrgCommission({
                                               Number(
                                                 comission -
                                                   (comission / 100) *
-                                                    considerations.corporativo
+                                                    considerations?.corporativo
                                               ) /
                                                 100)
                                         ).toLocaleString("de-DE", {
@@ -1737,7 +1737,7 @@ export default function OrgCommission({
                                               Number(
                                                 product.cporg -
                                                   (product.cporg / 100) *
-                                                    considerations.corporativo
+                                                    considerations?.corporativo
                                               ) /
                                                 100)
                                         ).toLocaleString("de-DE", {
@@ -1747,7 +1747,7 @@ export default function OrgCommission({
                                   </Typography>
                                 )}
                               {(base === "pvm" || base === undefined) &&
-                                considerations.da > 0 && (
+                                considerations?.da > 0 && (
                                   <Typography
                                     variant="p"
                                     style={{
@@ -1763,7 +1763,7 @@ export default function OrgCommission({
                                               Number(
                                                 comission -
                                                   (comission / 100) *
-                                                    considerations.da
+                                                    considerations?.da
                                               ) /
                                                 100)
                                         ).toLocaleString("de-DE", {
@@ -1776,7 +1776,7 @@ export default function OrgCommission({
                                               Number(
                                                 product.cporg -
                                                   (product.cporg / 100) *
-                                                    considerations.da
+                                                    considerations?.da
                                               ) /
                                                 100)
                                         ).toLocaleString("de-DE", {
@@ -1786,7 +1786,7 @@ export default function OrgCommission({
                                   </Typography>
                                 )}
                               {(base === "pvm" || base === undefined) &&
-                                considerations.prixer > 0 && (
+                                considerations?.prixer > 0 && (
                                   <Typography
                                     variant="p"
                                     style={{
@@ -1802,7 +1802,7 @@ export default function OrgCommission({
                                               Number(
                                                 comission -
                                                   (comission / 100) *
-                                                    considerations.prixer
+                                                    considerations?.prixer
                                               ) /
                                                 100)
                                         ).toLocaleString("de-DE", {
@@ -1815,7 +1815,7 @@ export default function OrgCommission({
                                               Number(
                                                 product.cporg -
                                                   (product.cporg / 100) *
-                                                    considerations.prixer
+                                                    considerations?.prixer
                                               ) /
                                                 100)
                                         ).toLocaleString("de-DE", {
@@ -1849,7 +1849,7 @@ export default function OrgCommission({
                                 </Typography>
                               )}
                               {(base === "pvp" || base === undefined) &&
-                                considerations.artista > 0 && (
+                                considerations?.artista > 0 && (
                                   <Typography
                                     variant="p"
                                     style={{
@@ -1865,7 +1865,7 @@ export default function OrgCommission({
                                               Number(
                                                 comission -
                                                   (comission / 100) *
-                                                    considerations.artista
+                                                    considerations?.artista
                                               ) /
                                                 100)
                                         ).toLocaleString("de-DE", {
@@ -1878,7 +1878,7 @@ export default function OrgCommission({
                                               Number(
                                                 product.cporg -
                                                   (product.cporg / 100) *
-                                                    considerations.artista
+                                                    considerations?.artista
                                               ) /
                                                 100)
                                         ).toLocaleString("de-DE", {
@@ -1888,7 +1888,7 @@ export default function OrgCommission({
                                   </Typography>
                                 )}
                               {(base === "pvp" || base === undefined) &&
-                                considerations.corporativo > 0 && (
+                                considerations?.corporativo > 0 && (
                                   <Typography
                                     variant="p"
                                     style={{
@@ -1904,7 +1904,7 @@ export default function OrgCommission({
                                               Number(
                                                 comission -
                                                   (comission / 100) *
-                                                    considerations.corporativo
+                                                    considerations?.corporativo
                                               ) /
                                                 100)
                                         ).toLocaleString("de-DE", {
@@ -1917,7 +1917,7 @@ export default function OrgCommission({
                                               Number(
                                                 product.cporg -
                                                   (product.cporg / 100) *
-                                                    considerations.corporativo
+                                                    considerations?.corporativo
                                               ) /
                                                 100)
                                         ).toLocaleString("de-DE", {
@@ -1927,7 +1927,7 @@ export default function OrgCommission({
                                   </Typography>
                                 )}
                               {(base === "pvp" || base === undefined) &&
-                                considerations.da > 0 && (
+                                considerations?.da > 0 && (
                                   <Typography
                                     variant="p"
                                     style={{
@@ -1943,7 +1943,7 @@ export default function OrgCommission({
                                               Number(
                                                 comission -
                                                   (comission / 100) *
-                                                    considerations.da
+                                                    considerations?.da
                                               ) /
                                                 100)
                                         ).toLocaleString("de-DE", {
@@ -1956,7 +1956,7 @@ export default function OrgCommission({
                                               Number(
                                                 product.cporg -
                                                   (product.cporg / 100) *
-                                                    considerations.da
+                                                    considerations?.da
                                               ) /
                                                 100)
                                         ).toLocaleString("de-DE", {
@@ -1966,7 +1966,7 @@ export default function OrgCommission({
                                   </Typography>
                                 )}
                               {(base === "pvp" || base === undefined) &&
-                                considerations.prixer > 0 && (
+                                considerations?.prixer > 0 && (
                                   <Typography
                                     variant="p"
                                     style={{
@@ -1982,7 +1982,7 @@ export default function OrgCommission({
                                               Number(
                                                 comission -
                                                   (comission / 100) *
-                                                    considerations.prixer
+                                                    considerations?.prixer
                                               ) /
                                                 100)
                                         ).toLocaleString("de-DE", {
@@ -1995,7 +1995,7 @@ export default function OrgCommission({
                                               Number(
                                                 product.cporg -
                                                   (product.cporg / 100) *
-                                                    considerations.prixer
+                                                    considerations?.prixer
                                               ) /
                                                 100)
                                         ).toLocaleString("de-DE", {

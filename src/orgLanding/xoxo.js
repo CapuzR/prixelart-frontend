@@ -92,7 +92,7 @@ const getProducts = () => {
         description:
           "Todos hemos sido alguna vez el Pasante Subpagado. Ahora puedes verte como él con esta franela. ¡Aprovecha!",
         specs:
-          "ESPECIFICACIÓN TÉCNICA\nPresentación: unitario.\nMaterial: tela de microdurazno.\nColor: negro, blanco.\nImpresión: tinta de sublimación y en telas oscuras vinil textil.\nTamaño: S - M - L - XL - XXL.\nPeso neto: 200g.\nEmpaque: bolsa plástica.\nObservaciones: corte para damas y caballeros.\n\nTiempo de producción estimado: 3 días.",
+          "ESPECIFICACIÓN TÉCNICA\nPresentación: unitario.\nMaterial: tela de microdurazno.\nColor de tela: blanco.\nImpresión: tinta de sublimación.\nTamaño: S - M - L - XL - XXL.\nPeso neto: 200g.\nEmpaque: bolsa plástica.\nObservaciones: corte para damas y caballeros.\n\nTiempo de producción estimado: 3 días.",
         finalPrice: 25,
         basePrice: 9.8,
         count: 0,
@@ -132,7 +132,7 @@ const getProducts = () => {
         description:
           "Independizarse es algo difícil de alcanzar. Comprar esta franela, en cambio, es sencillísimo.",
         specs:
-          "ESPECIFICACIÓN TÉCNICA\nPresentación: unitario.\nMaterial: tela de microdurazno.\nColor: negro, blanco.\nImpresión: tinta de sublimación y en telas oscuras vinil textil.\nTamaño: S - M - L - XL - XXL.\nPeso neto: 200g.\nEmpaque: bolsa plástica.\nObservaciones: corte para damas y caballeros.\n\nTiempo de producción estimado: 3 días.",
+          "ESPECIFICACIÓN TÉCNICA\nPresentación: unitario.\nMaterial: tela de microdurazno.\nColor de tela: blanco.\nImpresión: tinta de sublimación.\nTamaño: S - M - L - XL - XXL.\nPeso neto: 200g.\nEmpaque: bolsa plástica.\nObservaciones: corte para damas y caballeros.\n\nTiempo de producción estimado: 3 días.",
         finalPrice: 25,
         basePrice: 9.8,
 
@@ -174,7 +174,7 @@ const getProducts = () => {
         description:
           "Si estos últimos años te dejaron muerto por dentro, al menos puedes lucir fresco y elegante por fuera con esta franela.",
         specs:
-          "ESPECIFICACIÓN TÉCNICA\nPresentación: unitario.\nMaterial: tela de microdurazno.\nColor: negro, blanco.\nImpresión: tinta de sublimación y en telas oscuras vinil textil.\nTamaño: S - M - L - XL - XXL.\nPeso neto: 200g.\nEmpaque: bolsa plástica.\nObservaciones: corte para damas y caballeros.\n\nTiempo de producción estimado: 3 días.",
+          "ESPECIFICACIÓN TÉCNICA\nPresentación: unitario.\nMaterial: tela de microdurazno.\nColor de tela: blanco.\nImpresión: tinta de sublimación.\nTamaño: S - M - L - XL - XXL.\nPeso neto: 200g.\nEmpaque: bolsa plástica.\nObservaciones: corte para damas y caballeros.\n\nTiempo de producción estimado: 3 días.",
         finalPrice: 25,
         basePrice: 9.8,
 

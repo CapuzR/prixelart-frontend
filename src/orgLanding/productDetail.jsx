@@ -26,6 +26,7 @@ import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { useTheme } from "@material-ui/core/styles";
 import Menu from "@material-ui/core/Menu";
 import MenuIcon from "@material-ui/icons/Menu";
+import MDEditor from "@uiw/react-md-editor";
 
 const useStyles = makeStyles((theme) => ({
   typography: { fontFamily: "Lastik" },
@@ -368,6 +369,11 @@ export default function ProductDetail(props) {
             {selectedItem?.product.name} {selectedItem?.art.title}
           </Typography>
         )}
+        {isTab && (
+          <Typography className={classes.typography} style={{ fontSize: 13 }}>
+            {selectedItem?.product.description}
+          </Typography>
+        )}
         <Grid
           item
           xs={12}
@@ -378,7 +384,7 @@ export default function ProductDetail(props) {
             justifyContent: "center",
             position: "relative",
             width: "50%",
-            height: 468,
+            height: 420,
           }}
         >
           <Slider dotsClass={classes.dotsContainer} {...settings}>
@@ -391,7 +397,7 @@ export default function ProductDetail(props) {
                         style={{
                           display: "flex",
                           flexDirection: "column",
-                          height: 360,
+                          height: 320,
                           width: "100%",
                           marginRight: 10,
                         }}
@@ -457,7 +463,7 @@ export default function ProductDetail(props) {
             >
               {selectedItem?.product.name} {selectedItem?.art.title}
             </Typography>
-          )}{" "}
+          )}
           {!isTab && (
             <Typography className={classes.typography} style={{ fontSize: 20 }}>
               {selectedItem?.product.description}
@@ -605,6 +611,26 @@ export default function ProductDetail(props) {
             Comprar ahora
           </Button>
         </Grid>
+        {selectedItem?.product?.specs && (
+          <Grid
+            item
+            xs={11}
+            md={8}
+            data-color-mode="light"
+            style={{
+              marginTop: 30,
+              marginBottom: 30,
+              display: "flex",
+              justifyContent: "center",
+            }}
+          >
+            <MDEditor.Markdown
+              source={selectedItem.product?.specs}
+              style={{ whiteSpace: "pre-wrap" }}
+              className={classes.typography}
+            />
+          </Grid>
+        )}
       </Grid>
       <Snackbar
         open={open}

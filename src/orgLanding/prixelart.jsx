@@ -287,7 +287,7 @@ export default function PrixelartSection() {
           }}
           onClick={handleMain}
         >
-          Conoce Prixelart
+          Conoce a Prixelart
         </Button>
       </Grid>
       <Grid

@@ -347,8 +347,10 @@ export default function CreateOrder(props) {
           " " +
           JSON.parse(localStorage.getItem("adminToken")).lastname,
       },
-      consumerId: consumerData._id,
-      consumerType: consumerType,
+      consumerData: {
+        consumerId: consumerData._id,
+        consumerType: consumerType,
+      },
       orderType: "Particular",
       status: "Por producir",
       payStatus: "Pendiente",

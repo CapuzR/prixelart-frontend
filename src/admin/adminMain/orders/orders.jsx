@@ -388,8 +388,10 @@ export default function Orders(props) {
       .then((response) => {
         setConsumers(response.data);
       })
-      .catch((error) => {
-        console.log(error);
+      .catch((response) => {
+        // console.log(error);
+        setErrorMessage(response.data.message);
+        setSnackBarError(true);
       });
   };
 
@@ -784,9 +786,8 @@ export default function Orders(props) {
       let consumersFiltered = consumers.filter(
         (con) => con.consumerType === "Prixer"
       );
-      const ORG = orgs.find((o) => o.usename === item.art.owner);
+      const ORG = orgs.find((o) => o.username === item.art.owner);
       const prx = await findPrixer(item.art.prixerUsername);
-
       const prixer = await consumersFiltered.find(
         (con) =>
           con.firstname
@@ -798,12 +799,46 @@ export default function Orders(props) {
       );
       if (ORG !== undefined) {
         destinatary = ORG.account;
-        let profit = item.product.finalPrice - item.product.basePrice;
+        let profit = item.product.finalPrice;
         let co =
           ORG.agreement.appliedProducts.find((p) => p.id === item.product._id)
             .cporg || ORG.agreement.comission;
+
+        if (
+          order.consumerData.consumerType === "DAs" &&
+          ORG.agreement.considerations["da"] > 0
+        ) {
+          co = co - (co / 100) * ORG.agreement.considerations["da"];
+        } else if (
+          order.consumerData.consumerType === "Corporativo" &&
+          ORG.agreement.considerations["corporativo"] > 0
+        ) {
+          co = co - (co / 100) * ORG.agreement.considerations["corporativo"];
+        } else if (
+          order.consumerData.consumerType === "Prixer" &&
+          ORG.agreement.considerations["prixer"] > 0
+        ) {
+          co = co - (co / 100) * ORG.agreement.considerations["prixer"];
+        } else if (
+          order.consumerData.consumerType === "Artista" &&
+          ORG.agreement.considerations["artista"] > 0
+        ) {
+          co = co - (co / 100) * ORG.agreement.considerations["artista"];
+        }
+
         let prev = (profit / 100) * (co || ORG.agreement.comission);
+        if (surcharge) {
+          let total;
+          if (surcharge.type === "Porcentaje") {
+            total = prev - (prev / 100) * surcharge.value;
+          } else if (surcharge.type === "Monto") {
+            total = prev - surcharge.value;
+          }
+
+          prev = total;
+        }
         amount = prev * item.quantity;
+        console.log("La comisión es de $", amount);
       } else {
         destinatary = prx.account;
         // Obtener el precio base
@@ -832,7 +867,7 @@ export default function Orders(props) {
         // Restar 10% automático y calcular precio base con %comisión
         // Hay que cambiar esto por un ID
         if (
-          prx.firstName === order.basicData.firstname.trim() &&
+          prx.firstName === order.basicData.name.trim() &&
           prx.lastName === order.basicData.lastname.trim()
         ) {
           return;
@@ -876,7 +911,6 @@ export default function Orders(props) {
 
         amount = amount * item.quantity;
       }
-      console.log("La comisión es de $", amount);
       if (
         item.art?.prixerUsername &&
         item.art?.prixerUsername !== "Personalizado" &&

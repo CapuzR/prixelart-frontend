@@ -79,8 +79,8 @@ export default function OrgCommission({
   useEffect(() => {
     setLoading(true);
     getProducts();
-    setBase(selectedPrixer?.agreement.base);
-    setConsiderations(selectedPrixer?.agreement.considerations);
+    setBase(selectedPrixer?.agreement?.base);
+    setConsiderations(selectedPrixer?.agreement?.considerations);
   }, []);
 
   useEffect(() => {
@@ -170,7 +170,7 @@ export default function OrgCommission({
         pvp: prod.publicPrice.from,
         pvm: prod.prixerPrice.from,
         cost: prod.cost,
-        cporg: selectedPrixer?.agreement.comission || comission,
+        cporg: selectedPrixer?.agreement?.comission || comission,
         appliedGlobalCporg: true,
         variants: [],
         surcharge: prod?.surcharge,
@@ -183,7 +183,7 @@ export default function OrgCommission({
           pvp: variant.publicPrice.equation,
           pvm: variant.prixerPrice.equation,
           cost: variant.cost,
-          cporg: selectedPrixer?.agreement.comission || comission,
+          cporg: selectedPrixer?.agreement?.comission || comission,
           appliedGlobalCporg: true,
           surcharge: prod?.surcharge,
         });

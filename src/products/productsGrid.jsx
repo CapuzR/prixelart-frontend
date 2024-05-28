@@ -35,6 +35,7 @@ import AddShoppingCartIcon from "@material-ui/icons/ShoppingCart";
 import { useHistory } from "react-router-dom";
 import Switch from "@material-ui/core/Switch";
 import { getPVPtext, getPVMtext } from "../shoppingCart/pricesFunctions.js";
+
 const useStyles = makeStyles((theme) => ({
   formControl: {
     margin: theme.spacing(1),

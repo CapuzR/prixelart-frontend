@@ -18,6 +18,11 @@
 .env.test.local
 .env.production.local
 .env
+babel.config.js
+jest-setup.js
+jest.config.js
+.babelrc
+.gitignore
 
 npm-debug.log*
 yarn-debug.log*

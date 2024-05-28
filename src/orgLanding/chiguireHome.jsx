@@ -15,7 +15,7 @@ import useScrollTrigger from "@material-ui/core/useScrollTrigger";
 import Slide from "@material-ui/core/Slide";
 import ShoppingCartOutlined from "@material-ui/icons/ShoppingCartOutlined";
 import CB_isologo from "./assets/CB_isologo.svg";
-import CB_banner from "./assets/CB_Banner.svg";
+import CB_banner from "./assets/Banner-CHBP-2.1.png";
 import arrowLeft from "./assets/arrow_left.svg";
 import arrowRight from "./assets/arrow_right.svg";
 import Grid from "@material-ui/core/Grid";
@@ -59,7 +59,7 @@ const useStyles = makeStyles((theme) => ({
     top: 0,
     left: 0,
     width: "100vw",
-    height: "100.2%",
+    height: "100%",
     backgroundImage: `url(${CB_banner})`,
     backgroundSize: "contain",
     backgroundRepeat: "no-repeat",

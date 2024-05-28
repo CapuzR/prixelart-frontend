@@ -91,6 +91,8 @@ const getProducts = () => {
         },
         description:
           "Todos hemos sido alguna vez el Pasante Subpagado. Ahora puedes verte como él con esta franela. ¡Aprovecha!",
+        specs:
+          "ESPECIFICACIÓN TÉCNICA\nPresentación: unitario.\nMaterial: tela de microdurazno.\nColor: negro, blanco.\nImpresión: tinta de sublimación y en telas oscuras vinil textil.\nTamaño: S - M - L - XL - XXL.\nPeso neto: 200g.\nEmpaque: bolsa plástica.\nObservaciones: corte para damas y caballeros.\n\nTiempo de producción estimado: 3 días.",
         finalPrice: 25,
         basePrice: 9.8,
         count: 0,
@@ -129,6 +131,8 @@ const getProducts = () => {
         },
         description:
           "Independizarse es algo difícil de alcanzar. Comprar esta franela, en cambio, es sencillísimo.",
+        specs:
+          "ESPECIFICACIÓN TÉCNICA\nPresentación: unitario.\nMaterial: tela de microdurazno.\nColor: negro, blanco.\nImpresión: tinta de sublimación y en telas oscuras vinil textil.\nTamaño: S - M - L - XL - XXL.\nPeso neto: 200g.\nEmpaque: bolsa plástica.\nObservaciones: corte para damas y caballeros.\n\nTiempo de producción estimado: 3 días.",
         finalPrice: 25,
         basePrice: 9.8,
 
@@ -169,6 +173,8 @@ const getProducts = () => {
         name: "Franela",
         description:
           "Si estos últimos años te dejaron muerto por dentro, al menos puedes lucir fresco y elegante por fuera con esta franela.",
+        specs:
+          "ESPECIFICACIÓN TÉCNICA\nPresentación: unitario.\nMaterial: tela de microdurazno.\nColor: negro, blanco.\nImpresión: tinta de sublimación y en telas oscuras vinil textil.\nTamaño: S - M - L - XL - XXL.\nPeso neto: 200g.\nEmpaque: bolsa plástica.\nObservaciones: corte para damas y caballeros.\n\nTiempo de producción estimado: 3 días.",
         finalPrice: 25,
         basePrice: 9.8,
 
@@ -202,6 +208,8 @@ const getProducts = () => {
         name: "Taza de Peltre",
         description:
           "Tu café sabrá mucho mejor en esta taza de peltre al estilo Chigüire, ideal para leer las noticias cada mañana.",
+        specs:
+          "ESPECIFICACIÓN TÉCNICA\nPresentación: unitario.\nMaterial: peltre.\nColor: blanco y borde metálizado.\nImpresión: tinta de sublimación.\nTamaño: 10oz\nEmpaque: bolsa de tela.\nPeso neto: 142g\nObservaciones: una pared. Ideal para llevar de excursión.\n\nTiempo de producción estimado: 3 días.",
         finalPrice: 15,
         basePrice: 7,
 
@@ -233,6 +241,8 @@ const getProducts = () => {
         name: "Taza de Peltre",
         description:
           "Ahora tú también podrás tomar café en la misma taza que usa el Rey de Inglaterra para tomar té por las mañanas.",
+        specs:
+          "ESPECIFICACIÓN TÉCNICA\nPresentación: unitario.\nMaterial: peltre.\nColor: blanco y borde metálizado.\nImpresión: tinta de sublimación.\nTamaño: 10oz\nEmpaque: bolsa de tela.\nPeso neto: 142g\nObservaciones: una pared. Ideal para llevar de excursión.\n\nTiempo de producción estimado: 3 días.",
         finalPrice: 15,
         basePrice: 7,
 
@@ -267,6 +277,8 @@ const getProducts = () => {
         name: "Taza de Peltre",
         description:
           "Añade a tu colección de tazas increíbles este modelo de taza, antes de que Iker Casillas la agote.",
+        specs:
+          "ESPECIFICACIÓN TÉCNICA\nPresentación: unitario.\nMaterial: peltre.\nColor: blanco y borde metálizado.\nImpresión: tinta de sublimación.\nTamaño: 10oz\nEmpaque: bolsa de tela.\nPeso neto: 142g\nObservaciones: una pared. Ideal para llevar de excursión.\n\nTiempo de producción estimado: 3 días.",
         finalPrice: 15,
         basePrice: 7,
         count: 0,
@@ -299,6 +311,8 @@ const getProducts = () => {
         name: "Taza de Peltre",
         description:
           "Esta taza es una réplica legítima de las tazas que usa el Pasante Subpagado para servirnos café cada mañana.",
+        specs:
+          "ESPECIFICACIÓN TÉCNICA\nPresentación: unitario.\nMaterial: peltre.\nColor: blanco y borde metálizado.\nImpresión: tinta de sublimación.\nTamaño: 10oz\nEmpaque: bolsa de tela.\nPeso neto: 142g\nObservaciones: una pared. Ideal para llevar de excursión.\n\nTiempo de producción estimado: 3 días.",
         finalPrice: 15,
         basePrice: 7,
         count: 0,
@@ -331,6 +345,8 @@ const getProducts = () => {
         name: "Taza de Peltre",
         description:
           "Todo el mundo lo sabe: por cada taza de arroz, dos de agua. Y si es esta taza, mejor aún.",
+        specs:
+          "ESPECIFICACIÓN TÉCNICA\nPresentación: unitario.\nMaterial: peltre.\nColor: blanco y borde metálizado.\nImpresión: tinta de sublimación.\nTamaño: 10oz\nEmpaque: bolsa de tela.\nPeso neto: 142g\nObservaciones: una pared. Ideal para llevar de excursión.\n\nTiempo de producción estimado: 3 días.",
         finalPrice: 15,
         basePrice: 7,
         count: 0,
@@ -363,6 +379,8 @@ const getProducts = () => {
         name: "Taza de Peltre",
         description:
           "La señora María Alejandra López asegura que esta taza es la mejor para darle a la cacerola. Descubre por qué.",
+        specs:
+          "ESPECIFICACIÓN TÉCNICA\nMaterial: Aluminio.\nColor: Blanco.\nImpresión: Tinta de sublimación.\nTamaño: 750ml y 25cm.\nPeso neto: 142g.\nEmpaque: bolsa de tela.\nObservación: una pared (no térmico).\n\nTiempo de producción estimado: 3 días.",
         finalPrice: 15,
         basePrice: 7,
         count: 0,
@@ -395,6 +413,8 @@ const getProducts = () => {
         name: "Botella Rock",
         description:
           "Con estos calorones que están haciendo, no olvides tomar agua de tu flamante botella.",
+        specs:
+          "ESPECIFICACIÓN TÉCNICA\nMaterial: Aluminio.\nColor: Blanco.\nImpresión: Tinta de sublimación.\nTamaño: 750ml y 25cm.\nPeso neto: 142g.\nEmpaque: bolsa de tela.\nObservación: una pared (no térmico).\n\nTiempo de producción estimado: 3 días.",
         finalPrice: 20,
         basePrice: 11.2,
         count: 0,
@@ -423,10 +443,12 @@ const getProducts = () => {
       product: {
         thumbUrl: undefined,
         _id: "6360260eaf8bc30011a35f02",
-        id: "CBbr02",
+        item: "CBbr02",
         name: "Botella Rock",
         description:
           "¿De excursión, al gimnasio o a tomar curda con los panas? Esta botella sirve para todo eso y más.",
+        specs:
+          "ESPECIFICACIÓN TÉCNICA\nMaterial: Aluminio.\nColor: Blanco.\nImpresión: Tinta de sublimación.\nTamaño: 750ml y 25cm.\nPeso neto: 142g.\nEmpaque: bolsa de tela.\nObservación: una pared (no térmico).\n\nTiempo de producción estimado: 3 días.",
         finalPrice: 20,
         basePrice: 11.2,
         count: 0,
@@ -459,6 +481,8 @@ const getProducts = () => {
         name: "Botella Rock",
         description:
           "Si buscas algo ligero, cómodo y que apoye la explotación laboral a los pasantes, esta botella es ideal para ti.",
+        specs:
+          "ESPECIFICACIÓN TÉCNICA\nMaterial: Aluminio.\nColor: Blanco.\nImpresión: Tinta de sublimación.\nTamaño: 750ml y 25cm.\nPeso neto: 142g.\nEmpaque: bolsa de tela.\nObservación: una pared (no térmico).\n\nTiempo de producción estimado: 3 días.",
         finalPrice: 20,
         basePrice: 11.2,
         count: 0,
@@ -491,6 +515,8 @@ const getProducts = () => {
         name: "Tote Bag",
         description:
           "Salva al planeta con este tote bag del Chigüire, ideal para llevar lo que sea. Hasta las penas y los traumas.",
+        specs:
+          "ESPECIFICACIÓN TÉCNICA\nMaterial: gabardina Toscana.\nColor: beige clara.\n\nImpresión: tinta de sublimación.\nTamaño: 38x44cm apróx.\nEmpaque: bolsa plástica.\n\nTiempo de producción estimado: 3 días.",
         finalPrice: 15,
         basePrice: 4.9,
         count: 0,
@@ -523,6 +549,8 @@ const getProducts = () => {
         name: "Tote Bag",
         description:
           "Demuéstrale al mundo que tú llevas tus cargas con dignidad y estilo. Lúcete con tu tote bag.",
+        specs:
+          "ESPECIFICACIÓN TÉCNICA\nMaterial: gabardina Toscana.\nColor: beige clara.\n\nImpresión: tinta de sublimación.\nTamaño: 38x44cm apróx.\nEmpaque: bolsa plástica.\n\nTiempo de producción estimado: 3 días.",
         finalPrice: 15,
         basePrice: 4.9,
         count: 0,
@@ -555,6 +583,8 @@ const getProducts = () => {
         name: "Tote Bag",
         description:
           "Fun fact: el pasante usa un tote bag como este cuando lo mandamos a hacernos las compras.",
+        specs:
+          "ESPECIFICACIÓN TÉCNICA\nMaterial: gabardina Toscana.\nColor: beige clara.\n\nImpresión: tinta de sublimación.\nTamaño: 38x44cm apróx.\nEmpaque: bolsa plástica.\n\nTiempo de producción estimado: 3 días.",
         finalPrice: 15,
         basePrice: 4.9,
         count: 0,
@@ -587,6 +617,8 @@ const getProducts = () => {
         name: "Tote Bag",
         description:
           "¿Todavía usando bolsas de plástico para la compra? Compra tu tote bag y haz que Greta Thumberg sonría de nuevo.",
+        specs:
+          "ESPECIFICACIÓN TÉCNICA\nMaterial: gabardina Toscana.\nColor: beige clara.\n\nImpresión: tinta de sublimación.\nTamaño: 38x44cm apróx.\nEmpaque: bolsa plástica.\n\nTiempo de producción estimado: 3 días.",
         finalPrice: 15,
         basePrice: 4.9,
         count: 0,
@@ -619,7 +651,9 @@ const getProducts = () => {
         name: "Tote Bag",
         title: "Sobreviví",
         description:
-          "Si algo nos enseñaron estos años es que se podrá estar muerto por dentro, pero siempre con estilo",
+          "Si algo nos enseñaron estos años es que se podrá estar muerto por dentro, pero siempre con estilo.",
+        specs:
+          "ESPECIFICACIÓN TÉCNICA\nMaterial: gabardina Toscana.\nColor: beige clara.\n\nImpresión: tinta de sublimación.\nTamaño: 38x44cm apróx.\nEmpaque: bolsa plástica.\n\nTiempo de producción estimado: 3 días.",
         finalPrice: 15,
         basePrice: 4.9,
         count: 0,

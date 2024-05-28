@@ -370,7 +370,10 @@ export default function ProductDetail(props) {
           </Typography>
         )}
         {isTab && (
-          <Typography className={classes.typography} style={{ fontSize: 13 }}>
+          <Typography
+            className={classes.typography}
+            style={{ fontSize: 13, marginBottom: 35 }}
+          >
             {selectedItem?.product.description}
           </Typography>
         )}
@@ -610,27 +613,23 @@ export default function ProductDetail(props) {
           >
             Comprar ahora
           </Button>
+          {selectedItem?.product?.specs && (
+            <div
+              data-color-mode="light"
+              style={{
+                marginTop: 50,
+                marginBottom: 30,
+                display: "flex",
+              }}
+            >
+              <MDEditor.Markdown
+                source={selectedItem.product?.specs}
+                style={{ whiteSpace: "pre-wrap", fontSize: isTab ? 13 : 16 }}
+                className={classes.typography}
+              />
+            </div>
+          )}
         </Grid>
-        {selectedItem?.product?.specs && (
-          <Grid
-            item
-            xs={11}
-            md={8}
-            data-color-mode="light"
-            style={{
-              marginTop: 30,
-              marginBottom: 30,
-              display: "flex",
-              justifyContent: "center",
-            }}
-          >
-            <MDEditor.Markdown
-              source={selectedItem.product?.specs}
-              style={{ whiteSpace: "pre-wrap" }}
-              className={classes.typography}
-            />
-          </Grid>
-        )}
       </Grid>
       <Snackbar
         open={open}

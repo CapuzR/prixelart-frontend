@@ -575,7 +575,7 @@ export default function ReadProducts(props) {
           handleClose={handleClose}
         ></UpdateProductV2>
       </Modal>
-      {/* {props.handleCallback && props.handleCallback(value)} */}
+      {props.handleCallback(value)}
     </React.Fragment>
   );
 }

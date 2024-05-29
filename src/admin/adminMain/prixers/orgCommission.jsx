@@ -430,7 +430,7 @@ export default function OrgCommission({
             }}
           >
             {selectedPrixer?.firstName + " " + selectedPrixer?.lastName}
-            {selectedSurcharges.length > 0 && (
+            {selectedSurcharges?.length > 0 && (
               <Tooltip
                 title={"Esta ORG tiene aplicado recargo(s)"}
                 style={{ height: 40, width: 40 }}
@@ -712,7 +712,7 @@ export default function OrgCommission({
                           <Checkbox
                             color="primary"
                             checked={
-                              product.variants.length > 0
+                              product.variants?.length > 0
                                 ? product.variants.every(
                                     (item) => item.appliedGlobalCporg === true
                                   )

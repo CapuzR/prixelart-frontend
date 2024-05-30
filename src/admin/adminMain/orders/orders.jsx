@@ -810,21 +810,25 @@ export default function Orders(props) {
             .cporg || ORG.agreement.comission;
 
         if (
+          order.consumerData &&
           order.consumerData.consumerType === "DAs" &&
           ORG.agreement.considerations["da"] > 0
         ) {
           co = co - (co / 100) * ORG.agreement.considerations["da"];
         } else if (
+          order.consumerData &&
           order.consumerData.consumerType === "Corporativo" &&
           ORG.agreement.considerations["corporativo"] > 0
         ) {
           co = co - (co / 100) * ORG.agreement.considerations["corporativo"];
         } else if (
+          order.consumerData &&
           order.consumerData.consumerType === "Prixer" &&
           ORG.agreement.considerations["prixer"] > 0
         ) {
           co = co - (co / 100) * ORG.agreement.considerations["prixer"];
         } else if (
+          order.consumerData &&
           order.consumerData.consumerType === "Artista" &&
           ORG.agreement.considerations["artista"] > 0
         ) {

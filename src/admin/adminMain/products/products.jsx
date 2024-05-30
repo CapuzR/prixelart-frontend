@@ -162,7 +162,6 @@ export default function Products(props) {
   const handleProductAction = (action) => {
     history.push({ pathname: "/admin/product/" + action });
   };
-
   useEffect(() => {
     location.pathname.split("/").length === 5
       ? setActiveCrud(

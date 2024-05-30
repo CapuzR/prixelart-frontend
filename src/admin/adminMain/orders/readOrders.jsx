@@ -188,6 +188,7 @@ export default function ReadOrders(props) {
     });
     props.readOrders();
   };
+
   return (
     <>
       <Table style={{ overflowX: "scroll" }}>

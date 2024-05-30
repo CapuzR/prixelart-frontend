@@ -316,9 +316,13 @@ export default function ShoppingCartCB() {
         createdOn: new Date(),
         createdBy: seller ? { username: seller } : "Prixelart Page",
         orderType: "Particular",
-        consumerId: consumerData._id,
+        consumerData: {
+          consumerId: consumerData._id,
+          consumerType: consumerData.consumerType,
+        },
         status: "Por producir",
         observations: observations,
+        payStatus: "Pendiente",
       };
 
       let data = {

@@ -374,6 +374,11 @@ export default function ShoppingPage(props) {
         consumerId: consumerData._id,
         status: "Por producir",
         observations: observations,
+        payStatus: "Pendiente",
+        consumerData: {
+          consumerId: consumerData._id,
+          consumerType: consumerData.consumerType,
+        },
       };
       if (
         JSON.parse(localStorage.getItem("token")) &&

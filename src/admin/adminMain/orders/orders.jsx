@@ -713,6 +713,11 @@ export default function Orders(props) {
     if (filters.status !== undefined) {
       ordersv2 = ordersv2.filter((row) => row.status === filters.status);
     }
+    if (filters.seller !== undefined) {
+      ordersv2 = ordersv2.filter(
+        (row) => row?.createdBy?.username === filters.seller
+      );
+    }
     setRows(ordersv2);
     setLoading(false);
   };
@@ -801,7 +806,7 @@ export default function Orders(props) {
         destinatary = ORG.account;
         let profit = item.product.finalPrice;
         let co =
-          ORG.agreement.appliedProducts.find((p) => p.id === item.product._id)
+          ORG.agreement.appliedProducts.find((p) => p._id === item.product._id)
             .cporg || ORG.agreement.comission;
 
         if (
@@ -838,6 +843,7 @@ export default function Orders(props) {
           prev = total;
         }
         amount = prev * item.quantity;
+
         console.log("La comisión es de $", amount);
       } else {
         destinatary = prx.account;

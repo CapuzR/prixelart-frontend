@@ -805,6 +805,7 @@ export default function Orders(props) {
       if (ORG !== undefined) {
         destinatary = ORG.account;
         let profit = item.product.finalPrice;
+        console.log(profit);
         let co =
           ORG.agreement.appliedProducts.find((p) => p._id === item.product._id)
             .cporg || ORG.agreement.comission;
@@ -847,6 +848,7 @@ export default function Orders(props) {
         } else {
           total = prev;
         }
+        console.log(total);
         amount = total * item.quantity;
 
         console.log("La comisión es de $", amount);

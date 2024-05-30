@@ -836,17 +836,18 @@ export default function Orders(props) {
         }
 
         let prev = (profit / 100) * (co || ORG.agreement.comission);
+        let total;
+
         if (surcharge) {
-          let total;
           if (surcharge.type === "Porcentaje") {
             total = prev - (prev / 100) * surcharge.value;
           } else if (surcharge.type === "Monto") {
             total = prev - surcharge.value;
           }
-
-          prev = total;
+        } else {
+          total = prev;
         }
-        amount = prev * item.quantity;
+        amount = total * item.quantity;
 
         console.log("La comisión es de $", amount);
       } else {

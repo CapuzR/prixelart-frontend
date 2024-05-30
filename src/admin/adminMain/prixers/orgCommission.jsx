@@ -85,7 +85,7 @@ export default function OrgCommission({
 
   useEffect(() => {
     const allAreTrue = appliedProducts.every((product) =>
-      product.variants.every((variant) => variant.appliedGlobalCporg === true)
+      product?.variants?.every((variant) => variant.appliedGlobalCporg === true)
     );
     setAppliedAll(allAreTrue);
   }, [appliedProducts]);

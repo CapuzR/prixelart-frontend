@@ -606,15 +606,15 @@ export default function ShoppingCartCB() {
                     src={item?.art?.images[0]?.img}
                     alt="Item de Chiguire Bipolar"
                     style={{
-                      width: isMobile ? 88 : 170,
-                      height: isMobile ? 76 : 115,
+                      width: isMobile ? 88 : 181,
+                      height: isMobile ? 76 : 180,
                       borderRadius: 15,
                       marginRight: 10,
                     }}
                   />
                   <div
                     style={{
-                      width: isMobile ? "100% " : isTab ? 240 : 170,
+                      width: isMobile ? "100% " : isTab ? 240 : 181,
                       display: "flex",
                       flexDirection: "column",
                       justifyContent: "center",

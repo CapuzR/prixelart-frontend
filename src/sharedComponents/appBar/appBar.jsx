@@ -272,13 +272,30 @@ export default function MenuAppBar(props) {
                 color="inherit"
                 aria-label="open drawer"
                 onClick={handleDrawerOpen}
-                className={clsx(classes.menuButton, open2 && classes.hide)}
+                className={clsx(open2 && classes.hide)}
               >
                 <MenuIcon />
               </IconButton>
-              <IconButton className={classes.a} onClick={handleMain}>
-                <img src={logo} alt="Prixelart logo" style={{ width: 100 }} />
-              </IconButton>
+              <div style={{ display: "flex" }}>
+                <IconButton className={classes.a} onClick={handleMain}>
+                  <img src={logo} alt="Prixelart logo" style={{ width: 100 }} />
+                </IconButton>
+                <div
+                  style={{
+                    display: "flex",
+                    placeContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <IconButton onClick={handleCB} size="medium">
+                    <img
+                      className={classes.brillante}
+                      src={CB}
+                      style={{ height: 45 }}
+                    />
+                  </IconButton>
+                </div>
+              </div>
               <IconButton
                 aria-label="account of current user"
                 aria-controls="menu-appbar"

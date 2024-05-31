@@ -282,15 +282,15 @@ export default function ReadMovements(props) {
 
                           <TableCell align="center">
                             {row.type === "Retiro" && "-"}$
-                            {row.value.toLocaleString("de-DE", {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2,
-                            })}
+                            {row.value
+                              .toLocaleString("de-DE", {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2,
+                              })
+                              .replace("-", "")}
                           </TableCell>
                           <TableCell align="center">
                             {new Date(row.createdOn).toLocaleDateString()}
-                            {/* <br></br>
-                            {row.createdOn.substring(0, 10)} */}
                           </TableCell>
                           <TableCell align="center">{row.createdBy}</TableCell>
                         </TableRow>

@@ -34,6 +34,10 @@ import { getComission } from "./shoppingCart/pricesFunctions";
 import ChiguireHome from "./orgLanding/chiguireHome";
 import ProductDetail from "./orgLanding/productDetail";
 import ShoppingCartCB from "./orgLanding/shoppingCartCB";
+import ReactGA from "react-ga";
+
+ReactGA.initialize("G-0RWP9B33D8");
+ReactGA.pageview(window.location);
 
 const useStyles = makeStyles((theme) => ({
   paper2: {

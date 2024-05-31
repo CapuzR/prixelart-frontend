@@ -98,7 +98,7 @@ export default function MovementRecord(props) {
                 </TableCell>
                 <TableCell>{mov.description}</TableCell>
                 <TableCell align="right">
-                  {mov.value < 0 && "-"}$
+                  {mov.type === "Retiro" && "-"}$
                   {mov.value
                     .toLocaleString("de-DE", {
                       minimumFractionDigits: 2,

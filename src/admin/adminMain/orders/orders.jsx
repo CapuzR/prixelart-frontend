@@ -806,12 +806,11 @@ export default function Orders(props) {
       if (ORG !== undefined) {
         destinatary = ORG.account;
         let profit = item.product.finalPrice;
-
         let p = ORG?.agreement?.appliedProducts?.find(
           (p) => p._id === item.product._id
         );
 
-        let co = p.variants.length > 0 ? p.variants[0].cporg : p.cporg;
+        let co = p?.variants?.length > 0 ? p?.variants[0]?.cporg : p?.cporg;
 
         if (
           order.consumerData &&

@@ -482,7 +482,6 @@ export default function ShoppingCartCB() {
         position="fixed"
         elevation={0}
         style={{
-          zIndex: 10000,
           backgroundColor: "white",
         }}
       >
@@ -811,6 +810,7 @@ export default function ShoppingCartCB() {
         message={message}
         onClose={() => setOpen(false)}
       />
+
       <Modal open={openModal} onClose={handleClose} className={classes.modal}>
         <Grid
           container

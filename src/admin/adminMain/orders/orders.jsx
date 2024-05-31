@@ -802,13 +802,16 @@ export default function Orders(props) {
             ?.toLowerCase()
             .includes(props?.basicData?.lastname?.toLowerCase())
       );
+
       if (ORG !== undefined) {
         destinatary = ORG.account;
         let profit = item.product.finalPrice;
-        console.log(profit);
-        let co =
-          ORG.agreement.appliedProducts.find((p) => p._id === item.product._id)
-            .cporg || ORG.agreement.comission;
+
+        let p = ORG?.agreement?.appliedProducts?.find(
+          (p) => p._id === item.product._id
+        );
+
+        let co = p.variants.length > 0 ? p.variants[0].cporg : p.cporg;
 
         if (
           order.consumerData &&
@@ -835,7 +838,6 @@ export default function Orders(props) {
         ) {
           co = co - (co / 100) * ORG.agreement.considerations["artista"];
         }
-
         let prev = (profit / 100) * (co || ORG.agreement.comission);
         let total;
 
@@ -848,7 +850,6 @@ export default function Orders(props) {
         } else {
           total = prev;
         }
-        console.log(total);
         amount = total * item.quantity;
 
         console.log("La comisión es de $", amount);

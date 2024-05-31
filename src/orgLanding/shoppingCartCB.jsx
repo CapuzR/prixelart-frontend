@@ -284,7 +284,7 @@ export default function ShoppingCartCB() {
         orderId: nanoid(8),
         requests: buyState,
         basicData: {
-          firstname: consumerData.firstname,
+          name: consumerData.firstname,
           lastname: consumerData.lastname,
           ci: consumerData.ci,
           email: consumerData.email,

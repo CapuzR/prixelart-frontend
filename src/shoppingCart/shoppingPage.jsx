@@ -339,7 +339,7 @@ export default function ShoppingPage(props) {
         orderId: nanoid(8),
         requests: orderLines,
         basicData: {
-          firstname: consumerData.firstname,
+          name: consumerData.firstname,
           lastname: consumerData.lastname,
           ci: consumerData.ci,
           email: consumerData.email,

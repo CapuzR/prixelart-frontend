@@ -21,6 +21,7 @@ import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import logo from "./Logotipo_Prixelart_H#2.png";
+import CB from "../../orgLanding/assets/isotipo.svg";
 
 const drawerWidth = 240;
 
@@ -105,6 +106,24 @@ const useStyles = makeStyles((theme) => ({
       duration: theme.transitions.duration.enteringScreen,
     }),
     marginLeft: 0,
+  },
+  brillante: {
+    width: 45,
+    height: 45,
+    borderRadius: "50%",
+    // backgroundColor: "black",
+    animation: "$animacion-brillo 2s infinite",
+  },
+  "@keyframes animacion-brillo": {
+    "0%": {
+      boxShadow: "0 0 0 0 rgba(255, 255, 255, 0.7)",
+    },
+    "50%": {
+      boxShadow: "0 0 0 20px rgba(255, 255, 255, 0)",
+    },
+    "100%": {
+      boxShadow: "0 0 0 0 rgba(255, 255, 255, 0)",
+    },
   },
 }));
 
@@ -203,6 +222,11 @@ export default function MenuAppBar(props) {
     history.push({ pathname: "/testimonios" });
   };
 
+  const handleCB = (e) => {
+    e.preventDefault();
+    history.push({ pathname: "/chiguirebipolar" });
+  };
+
   const handleDrawerOpen = () => {
     setOpen(true);
   };
@@ -248,13 +272,30 @@ export default function MenuAppBar(props) {
                 color="inherit"
                 aria-label="open drawer"
                 onClick={handleDrawerOpen}
-                className={clsx(classes.menuButton, open2 && classes.hide)}
+                className={clsx(open2 && classes.hide)}
               >
                 <MenuIcon />
               </IconButton>
-              <IconButton className={classes.a} onClick={handleMain}>
-                <img src={logo} alt="Prixelart logo" style={{ width: 100 }} />
-              </IconButton>
+              <div style={{ display: "flex" }}>
+                <IconButton className={classes.a} onClick={handleMain}>
+                  <img src={logo} alt="Prixelart logo" style={{ width: 100 }} />
+                </IconButton>
+                <div
+                  style={{
+                    display: "flex",
+                    placeContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <IconButton onClick={handleCB} size="medium">
+                    <img
+                      className={classes.brillante}
+                      src={CB}
+                      style={{ height: 45 }}
+                    />
+                  </IconButton>
+                </div>
+              </div>
               <IconButton
                 aria-label="account of current user"
                 aria-controls="menu-appbar"
@@ -424,6 +465,22 @@ export default function MenuAppBar(props) {
                 label="Testimonios"
                 onClick={handleTestimonials}
               />
+              <div
+                style={{
+                  display: "flex",
+                  placeContent: "center",
+                  alignItems: "center",
+                  paddingRight: 20,
+                }}
+              >
+                <IconButton onClick={handleCB} size="medium">
+                  <img
+                    className={classes.brillante}
+                    src={CB}
+                    style={{ marginLeft: 20, height: 45 }}
+                  />
+                </IconButton>
+              </div>
             </Tabs>
 
             <div>

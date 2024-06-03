@@ -808,8 +808,8 @@ export default function Orders(props) {
         let profit = item.product.finalPrice;
         console.log(profit);
 
-        let p = ORG?.agreement?.appliedProducts?.find(
-          (p) => p._id === item.product._id
+        let p = ORG?.agreement?.appliedProducts?.find((p) =>
+          p._id.includes(item.product._id)
         );
         console.log(p);
 

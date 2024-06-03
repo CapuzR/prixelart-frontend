@@ -20,21 +20,43 @@ import franelaSobreviviBack3 from "./assets/TshirtsAssets/FRANELA-Detras_Sobrevi
 import peltreCafecito1 from "./assets/PeltreAssets/PELTRE-2_Cafecito_Negro.jpg";
 import peltreCafecito2 from "./assets/PeltreAssets/PELTRE-2_Cafecito_Azul.jpg";
 import peltreCafecito3 from "./assets/PeltreAssets/PELTRE-2_Cafecito_Verde.jpg";
+import peltreCafecito4 from "./assets/PeltreAssets/PELTRE-1_Cafecito-1_Negro.jpg";
+import peltreCafecito5 from "./assets/PeltreAssets/PELTRE-1_Cafecito_Azul.jpg";
+import peltreCafecito6 from "./assets/PeltreAssets/PELTRE-1_Cafecito_Verde.jpg";
 import peltreIndependizar1 from "./assets/PeltreAssets/PELTRE-2_Independizar_Negro.jpg";
 import peltreIndependizar2 from "./assets/PeltreAssets/PELTRE-2_Indepejdizar_Azul.jpg";
 import peltreIndependizar3 from "./assets/PeltreAssets/PELTRE-2_Independizar_Verde.jpg";
+import peltreIndependizar4 from "./assets/PeltreAssets/PELTRE-1_Independizar_Negro.jpg";
+import peltreIndependizar5 from "./assets/PeltreAssets/PELTRE-1_Indepejdizar_Azul.jpg";
+import peltreIndependizar6 from "./assets/PeltreAssets/PELTRE-1_Independizar_Verde.jpg";
+
 import peltrePasante1 from "./assets/PeltreAssets/PELTRE-2_Pasante-Subpagado_Negro.jpg";
 import peltrePasante2 from "./assets/PeltreAssets/PELTRE-2_Pasante_Subpagado_Azul.jpg";
 import peltrePasante3 from "./assets/PeltreAssets/PELTRE-2_Pasante-Subpagado_Verde.jpg";
+import peltrePasante4 from "./assets/PeltreAssets/PELTRE-1_Pasante-Subpagado_Negro.jpg";
+import peltrePasante5 from "./assets/PeltreAssets/PELTRE-1_Pasante_Subpagado_Azul.jpg";
+import peltrePasante6 from "./assets/PeltreAssets/PELTRE-1_Pasante-Subpagado_Verde.jpg";
+
 import peltrePasante21 from "./assets/PeltreAssets/PELTRE-2_Cafe-Pasante_Negro.jpg";
 import peltrePasante22 from "./assets/PeltreAssets/PELTRE-2_Pasante_Azul.jpg";
 import peltrePasante23 from "./assets/PeltreAssets/PELTRE-2_Cafe-Pasante_Verde.png";
+import peltrePasante24 from "./assets/PeltreAssets/PELTRE-1_Cafe-Pasante_Negro.jpg";
+import peltrePasante25 from "./assets/PeltreAssets/PELTRE-1_Pasante_Azul.jpg";
+import peltrePasante26 from "./assets/PeltreAssets/PELTRE-1_Cafe-Pasante_Verde.jpg";
+
 import peltrePasante31 from "./assets/PeltreAssets/PELTRE-2_Cafe-Pasante-2_Negro.jpg";
 import peltrePasante32 from "./assets/PeltreAssets/PELTRE-2_Pasante-2_Azul.jpg";
 import peltrePasante33 from "./assets/PeltreAssets/PELTRE-2_Cafe-Pasante-2_Verde.jpg";
+import peltrePasante34 from "./assets/PeltreAssets/PELTRE-1_Cafe-Pasante-2_Negro.jpg";
+import peltrePasante35 from "./assets/PeltreAssets/PELTRE-1_Pasante-2_Azul.jpg";
+import peltrePasante36 from "./assets/PeltreAssets/PELTRE-1_Cafe-Pasante-2_Verde.jpg";
+
 import peltreSobrevivi1 from "./assets/PeltreAssets/PELTRE-2_Sobrevivi_Negro.jpg";
 import peltreSobrevivi2 from "./assets/PeltreAssets/PELTRE-2_Sobrevivi-1_Azul.jpg";
 import peltreSobrevivi3 from "./assets/PeltreAssets/PELTRE-2_Sobrevivi_Verde.jpg";
+import peltreSobrevivi4 from "./assets/PeltreAssets/PELTRE-1_Sobrevivi_Negro.jpg";
+import peltreSobrevivi5 from "./assets/PeltreAssets/PELTRE-1_Sobrevivi-2_Azul.jpg";
+import peltreSobrevivi6 from "./assets/PeltreAssets/PELTRE-1_Sobrevivi_Verde.jpg";
 
 import thermoCafecito1 from "./assets/ThermoAssets/TERMO-Cafecito_Negro.jpg";
 import thermoCafecito2 from "./assets/ThermoAssets/TERMO-Cafecito_Azul.jpg";
@@ -195,8 +217,11 @@ const getProducts = () => {
         comission: 60,
         images: [
           { color: "Negro", img: peltreCafecito1 },
+          { color: "Negro", img: peltreCafecito4 },
           { color: "Azul", img: peltreCafecito2 },
+          { color: "Azul", img: peltreCafecito5 },
           { color: "Verde", img: peltreCafecito3 },
+          { color: "Verde", img: peltreCafecito6 },
         ],
       },
       product: {
@@ -230,8 +255,11 @@ const getProducts = () => {
         comission: 60,
         images: [
           { color: "Negro", img: peltreIndependizar1 },
+          { color: "Negro", img: peltreIndependizar4 },
           { color: "Azul", img: peltreIndependizar2 },
+          { color: "Azul", img: peltreIndependizar5 },
           { color: "Verde", img: peltreIndependizar3 },
+          { color: "Verde", img: peltreIndependizar6 },
         ],
       },
       product: {
@@ -264,8 +292,11 @@ const getProducts = () => {
         comission: 60,
         images: [
           { color: "Negro", img: peltrePasante1 },
+          { color: "Negro", img: peltrePasante4 },
           { color: "Azul", img: peltrePasante2 },
+          { color: "Azul", img: peltrePasante5 },
           { color: "Verde", img: peltrePasante3 },
+          { color: "Verde", img: peltrePasante6 },
         ],
         owner: "ChiguireBipolar",
         prixerUsername: "ChiguireBipolar",
@@ -298,8 +329,11 @@ const getProducts = () => {
         title: "Pasante Subpagado 2",
         images: [
           { color: "Negro", img: peltrePasante21 },
+          { color: "Negro", img: peltrePasante24 },
           { color: "Azul", img: peltrePasante22 },
+          { color: "Azul", img: peltrePasante25 },
           { color: "Verde", img: peltrePasante23 },
+          { color: "Verde", img: peltrePasante26 },
         ],
         owner: "ChiguireBipolar",
         prixerUsername: "ChiguireBipolar",
@@ -332,8 +366,11 @@ const getProducts = () => {
         title: "Pasante Subpagado 3",
         images: [
           { color: "Negro", img: peltrePasante31 },
+          { color: "Negro", img: peltrePasante34 },
           { color: "Azul", img: peltrePasante32 },
+          { color: "Azul", img: peltrePasante35 },
           { color: "Verde", img: peltrePasante33 },
+          { color: "Verde", img: peltrePasante36 },
         ],
         owner: "ChiguireBipolar",
         prixerUsername: "ChiguireBipolar",
@@ -366,8 +403,11 @@ const getProducts = () => {
         title: "Sobreviví",
         images: [
           { color: "Negro", img: peltreSobrevivi1 },
+          { color: "Negro", img: peltreSobrevivi4 },
           { color: "Azul", img: peltreSobrevivi2 },
+          { color: "Azul", img: peltreSobrevivi5 },
           { color: "Verde", img: peltreSobrevivi3 },
+          { color: "Verde", img: peltreSobrevivi6 },
         ],
         owner: "ChiguireBipolar",
         prixerUsername: "ChiguireBipolar",
@@ -612,7 +652,7 @@ const getProducts = () => {
       },
       product: {
         thumbUrl: undefined,
-        _id: "6360260eaf8bc30011a35f02",
+        _id: "6657f83b7a000200122b54de",
         item: "CBtb04",
         name: "Tote Bag",
         description:

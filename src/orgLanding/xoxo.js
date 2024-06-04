@@ -448,7 +448,7 @@ const getProducts = () => {
       },
       product: {
         thumbUrl: undefined,
-        id: "6360260eaf8bc30011a35f02",
+        _id: "6360260eaf8bc30011a35f02",
         item: "CBbr01",
         name: "Botella Rock",
         description:
@@ -516,7 +516,7 @@ const getProducts = () => {
       },
       product: {
         thumbUrl: undefined,
-        id: "6360260eaf8bc30011a35f02",
+        _id: "6360260eaf8bc30011a35f02",
         item: "CBbr03",
         name: "Botella Rock",
         description:
@@ -550,7 +550,7 @@ const getProducts = () => {
       },
       product: {
         thumbUrl: undefined,
-        id: "6657f83b7a000200122b54de",
+        _id: "6657f83b7a000200122b54de",
         item: "CBtb01",
         name: "Tote Bag",
         description:
@@ -584,7 +584,7 @@ const getProducts = () => {
       },
       product: {
         thumbUrl: undefined,
-        id: "6657f83b7a000200122b54de",
+        _id: "6657f83b7a000200122b54de",
         item: "CBtb02",
         name: "Tote Bag",
         description:
@@ -618,7 +618,7 @@ const getProducts = () => {
       },
       product: {
         thumbUrl: undefined,
-        id: "6657f83b7a000200122b54de",
+        _id: "6657f83b7a000200122b54de",
         item: "CBtb03",
         name: "Tote Bag",
         description:
@@ -686,7 +686,7 @@ const getProducts = () => {
       },
       product: {
         thumbUrl: undefined,
-        id: "6657f83b7a000200122b54de",
+        _id: "6657f83b7a000200122b54de",
         item: "CBtb05",
         name: "Tote Bag",
         title: "Sobreviví",

@@ -636,9 +636,7 @@ export default function CartReview(props) {
                         }}
                       >
                         <Typography variant="h6" color="secondary">
-                          {buy.product.name +
-                            " - " +
-                            buy.art.title.substring(0, 27)}
+                          {buy.product.name + " - " + buy.art.title}
                         </Typography>
                       </div>
                     )}
@@ -653,8 +651,7 @@ export default function CartReview(props) {
                             margin: 0,
                           }}
                         >
-                          <strong> Producto: </strong>{" "}
-                          {buy.product?.name.substring(0, 10)}
+                          <strong> Producto: </strong> {buy.product?.name}
                         </Typography>
                         {buy.product.attributes.map((a, i) => {
                           return (

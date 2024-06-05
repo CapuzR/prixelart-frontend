@@ -255,12 +255,12 @@ export default function MovOrder(props) {
       (dis) => dis._id === item.product.discount
     );
     if (item.product.modifyPrice) {
-      unitPrice = Number(
-        item.product.publicEquation?.replace(/[,]/gi, ".") * item.quantity
-      );
+      unitPrice = Number(item.product.finalPrice * item.quantity);
       return unitPrice;
     } else if (typeof item.product.discount === "string") {
-      unitPrice = item.product?.publicEquation
+      unitPrice = item.product.finalPrice
+        ? item.product.finalPrice
+        : item.product?.publicEquation
         ? Number(item.product?.publicEquation)
         : Number(item.product.publicPrice?.from) ||
           Number(item.product.prixerEquation) ||
@@ -278,7 +278,9 @@ export default function MovOrder(props) {
         return unitPrice;
       }
     } else {
-      unitPrice = item.product?.publicEquation
+      unitPrice = item.product.finalPrice
+        ? item.product.finalPrice
+        : item.product?.publicEquation
         ? item.product?.publicEquation
         : item.product.publicPrice.from ||
           item.product.prixerEquation ||
@@ -349,8 +351,13 @@ export default function MovOrder(props) {
                       variant="h6"
                       style={{ marginTop: -38, textAlign: "center" }}
                     >
-                      {"Orden #"}
-                      {order.orderId}
+                      {`Orden #${order.orderId}`}
+                    </Typography>
+                    <Typography
+                      variant="body1"
+                      style={{ textAlign: "center", marginBottom: 6 }}
+                    >
+                      {`para ${order.basicData.name} ${order.basicData.lastname}`}
                     </Typography>
                     <div
                       style={{
@@ -449,14 +456,14 @@ export default function MovOrder(props) {
                         )}
                       <div>
                         {"Precio final: $" +
-                          finalPrice(item).toLocaleString("de-DE", {
+                          finalPrice(item)?.toLocaleString("de-DE", {
                             minimumFractionDigits: 2,
                             maximumFractionDigits: 2,
                           })}
                       </div>
                       <strong>
                         {"Tu comisión: $" +
-                          (finalPrice(item) / 10).toLocaleString("de-DE", {
+                          (finalPrice(item) / 10)?.toLocaleString("de-DE", {
                             minimumFractionDigits: 2,
                             maximumFractionDigits: 2,
                           })}

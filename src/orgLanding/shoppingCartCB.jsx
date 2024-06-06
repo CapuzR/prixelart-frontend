@@ -34,6 +34,9 @@ import { useTheme } from "@material-ui/core/styles";
 import Menu from "@material-ui/core/Menu";
 import MenuIcon from "@material-ui/icons/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
+import ReactGA from "react-ga";
+
+ReactGA.initialize("G-0RWP9B33D8");
 
 const useStyles = makeStyles((theme) => ({
   typography: { fontFamily: "Lastik" },
@@ -360,6 +363,11 @@ export default function ShoppingCartCB() {
                 "Content-Type": "multipart/form-data",
               });
             }
+            ReactGA.event({
+              category: "shoppingCart",
+              action: "ordenar",
+              label: "crear_pedido_CB",
+            });
 
             setOpenModal(true);
             const base_url3 =

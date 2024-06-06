@@ -267,7 +267,9 @@ export default function PrixerRegistration() {
             const token = JSON.parse(localStorage.getItem("token"));
             token.prixerId = token.id;
             localStorage.setItem("token", JSON.stringify(token));
-            history.push({ pathname: "/" + response.data.prixerData.username });
+            history.push({
+              pathname: "/prixer=" + response.data.prixerData.username,
+            });
           }
         })
         .catch((error) => {

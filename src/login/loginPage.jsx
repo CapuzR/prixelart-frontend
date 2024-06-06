@@ -117,7 +117,11 @@ export default function Login() {
               "tokenExpire",
               JSON.stringify(now.getTime() + 21600000)
             );
-            history.push({ pathname: "/" + response.data.username });
+            const role = token.role
+              ? "Organization" && "org="
+              : "Prixer" && "prixer=";
+
+            history.push({ pathname: "/" + role + response.data.username });
           }
         })
         .catch((error) => {

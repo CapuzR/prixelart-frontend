@@ -29,6 +29,10 @@ import { useTheme } from "@material-ui/core/styles";
 import MenuItem from "@material-ui/core/MenuItem";
 import Menu from "@material-ui/core/Menu";
 import MenuIcon from "@material-ui/icons/Menu";
+import ReactGA from "react-ga";
+
+ReactGA.initialize("G-0RWP9B33D8");
+ReactGA.pageview(window.location);
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -149,6 +153,11 @@ export default function ChiguireHome() {
     if (section) {
       section.scrollIntoView({ behavior: "smooth" });
     }
+    ReactGA.event({
+      category: "Home CB",
+      action: "Leer_mas",
+      label: selector,
+    });
   };
 
   const handleCart = () => {

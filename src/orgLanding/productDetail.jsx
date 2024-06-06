@@ -27,6 +27,8 @@ import { useTheme } from "@material-ui/core/styles";
 import Menu from "@material-ui/core/Menu";
 import MenuIcon from "@material-ui/icons/Menu";
 import MDEditor from "@uiw/react-md-editor";
+import ReactGA from "react-ga";
+ReactGA.initialize("G-0RWP9B33D8");
 
 const useStyles = makeStyles((theme) => ({
   typography: { fontFamily: "Lastik" },
@@ -110,6 +112,11 @@ export default function ProductDetail(props) {
   }, []);
 
   const addItemToBuyState = (input) => {
+    ReactGA.event({
+      category: "Carrito CB",
+      action: "agregar_al_carrito",
+      label: input.product.item,
+    });
     if (selectedColor === undefined) {
       setOpen(true);
       setMessage("Por favor selecciona un color.");

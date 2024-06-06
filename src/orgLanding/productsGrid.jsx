@@ -17,6 +17,9 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { useTheme } from "@material-ui/core/styles";
+import ReactGA from "react-ga";
+
+ReactGA.initialize("G-0RWP9B33D8");
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -101,6 +104,11 @@ export default function CBProducts() {
   const viewDetails = (item) => {
     history.push({
       pathname: "/chiguirebipolar/item=" + item.product.item,
+    });
+    ReactGA.event({
+      category: "Home CB",
+      action: "Ver_mas",
+      label: item.product.item,
     });
   };
 

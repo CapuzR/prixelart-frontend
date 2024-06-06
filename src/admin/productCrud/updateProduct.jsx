@@ -156,6 +156,10 @@ export default function UpdateProduct(props) {
   const [hasSpecialVar, setHasSpecialVar] = useState(
     props?.product?.hasSpecialVar || false
   );
+  const [autoCertified, setAutoCertified] = useState(
+    props?.product?.autoCertified || false
+  );
+
   const [videoUrl, setVideoUrl] = useState(props?.product?.sources.video);
   const [imageLoader, setLoadImage] = useState({
     loader: [],
@@ -349,6 +353,8 @@ export default function UpdateProduct(props) {
             );
           }
           newFormData.append("hasSpecialVar", hasSpecialVar);
+          newFormData.append("autoCertified", autoCertified);
+
           if (imagesList[0] !== undefined && imagesList.length > 0) {
             const images = [];
 
@@ -607,23 +613,32 @@ export default function UpdateProduct(props) {
                       color="primary"
                       inputProps={{ "aria-label": "secondary checkbox" }}
                       onChange={() => {
-                        active ? setActive(false) : setActive(true);
+                        setActive(!active);
                       }}
                     />
                     Habilitado / Visible
                   </Grid>
-                  <Grid item xs={12} md={6}>
+                  <Grid item xs={12} md={3}>
                     <Checkbox
                       checked={hasSpecialVar}
                       color="primary"
                       inputProps={{ "aria-label": "secondary checkbox" }}
                       onChange={() => {
-                        hasSpecialVar
-                          ? setHasSpecialVar(false)
-                          : setHasSpecialVar(true);
+                        setHasSpecialVar(!hasSpecialVar);
                       }}
-                    />{" "}
+                    />
                     ¿Tiene variables especiales?
+                  </Grid>
+                  <Grid item xs={12} md={3}>
+                    <Checkbox
+                      checked={autoCertified}
+                      color="primary"
+                      inputProps={{ "aria-label": "secondary checkbox" }}
+                      onChange={() => {
+                        setAutoCertified(!autoCertified);
+                      }}
+                    />
+                    ¿Agregar certificado automáticamente?
                   </Grid>
                 </Grid>
               </Grid>

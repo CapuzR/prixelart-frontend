@@ -13,6 +13,9 @@ import blueArrowRight from "./assets/blueArrowRight.svg";
 import blueArrowLeft from "./assets/blueArrowLeft.svg";
 import yellowArrowRight from "./assets/yellowArrowRight.svg";
 import yellowArrowLeft from "./assets/yellowArrowLeft.svg";
+import ReactGA from "react-ga";
+
+ReactGA.initialize("G-0RWP9B33D8");
 
 const useStyles = makeStyles((theme) => ({
   typography: { fontFamily: "Lastik" },
@@ -107,6 +110,11 @@ export default function PrixelartSection() {
 
   const handleMain = () => {
     history.push({ pathname: "/" });
+    ReactGA.event({
+      category: "Home CB",
+      action: "Leer_mas",
+      label: "inicio",
+    });
   };
 
   return (

@@ -1013,33 +1013,34 @@ export default function OrderDetails(props) {
                         </div>
 
                         <div style={{ display: "flex", flexDirection: "row" }}>
-                          {item.product?.mockUp === undefined && (
-                            <Paper
-                              style={{
-                                width: 150,
-                                height: 150,
-                                borderRadius: 10,
-                                backgroundColor: "#eeeeee",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                marginRight: 10,
-                              }}
-                              elevation={3}
-                            >
-                              <Img
-                                src={
-                                  item.product.thumbUrl ||
-                                  item.product.sources.images[0].url
-                                }
+                          {item.product?.mockUp === undefined &&
+                            item.product?.sources?.images.length > 0 && (
+                              <Paper
                                 style={{
-                                  maxWidth: 150,
-                                  maxHeight: 150,
+                                  width: 150,
+                                  height: 150,
                                   borderRadius: 10,
+                                  backgroundColor: "#eeeeee",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                  marginRight: 10,
                                 }}
-                              />
-                            </Paper>
-                          )}
+                                elevation={3}
+                              >
+                                <Img
+                                  src={
+                                    item.product.thumbUrl ||
+                                    item.product?.sources?.images[0].url
+                                  }
+                                  style={{
+                                    maxWidth: 150,
+                                    maxHeight: 150,
+                                    borderRadius: 10,
+                                  }}
+                                />
+                              </Paper>
+                            )}
                           <div
                             style={{
                               display: "flex",

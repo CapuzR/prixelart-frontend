@@ -76,7 +76,7 @@ export default function PrixerProfile() {
     const data = { _id: account };
     await axios
       .post(url, data)
-      .then((response) => setMovements(response.data.movements));
+      .then((response) => setMovements(response.data.movements.reverse()));
   };
 
   const getOrders = async () => {

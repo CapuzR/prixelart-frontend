@@ -469,6 +469,7 @@ export default function CreateOrder(props) {
             setErrorMessage={props.setErrorMessage}
             setSnackBarError={props.setSnackBarError}
             orgs={props.orgs}
+            consumerType={consumerType}
           />
         )}
         {activeStep === 2 && (

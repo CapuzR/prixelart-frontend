@@ -164,6 +164,9 @@ export default function ChiguireHome() {
     history.push({ pathname: "/chiguirebipolar/carrito" });
   };
 
+  const handleCB = () => {
+    window.open("https:/www.elchiguirebipolar.net", "_blank");
+  };
   const StyledBadge = withStyles((theme) => ({
     badge: {
       backgroundColor: "#FF9934",
@@ -212,7 +215,7 @@ export default function ChiguireHome() {
             justifyContent: "space-between",
           }}
         >
-          <IconButton>
+          <IconButton onClick={handleCB}>
             <img
               src={isTab ? isotipo : CB_isologo}
               alt="Chiguire Bipolar isologo"

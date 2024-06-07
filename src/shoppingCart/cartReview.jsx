@@ -846,7 +846,11 @@ export default function CartReview(props) {
                           discountList,
                           buy.quantity,
                           JSON.parse(localStorage?.getItem("token"))?.username,
-                          props.surchargeList
+                          props.surchargeList,
+                          undefined,
+                          localStorage?.getItem("token")
+                            ? "Prixer"
+                            : "Particular"
                         ).toLocaleString("de-DE", {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,

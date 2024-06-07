@@ -349,7 +349,8 @@ export default function ShoppingCart(props) {
           dollarValue,
           discountList,
           prixer,
-          checkOrgs(art)
+          checkOrgs(art),
+          props.consumerType
         ),
       ]);
     } else if (index <= prices.length) {
@@ -361,7 +362,8 @@ export default function ShoppingCart(props) {
         dollarValue,
         discountList,
         prixer,
-        checkOrgs(art)
+        checkOrgs(art),
+        props.consumerType
       );
       setPrices(prev);
     } else {
@@ -374,7 +376,8 @@ export default function ShoppingCart(props) {
           dollarValue,
           discountList,
           prixer,
-          checkOrgs(art)
+          checkOrgs(art),
+          props.consumerType
         ),
       ]);
     }
@@ -418,7 +421,8 @@ export default function ShoppingCart(props) {
       props.dollarValue,
       props.discountList,
       props?.selectedPrixer?.username,
-      checkOrgs(art)
+      checkOrgs(art),
+      props.consumerType
     );
     prod.finalPrice = Number(newPrice?.replace(/[,]/gi, "."));
     prod.comission = getComission(
@@ -430,7 +434,8 @@ export default function ShoppingCart(props) {
       1,
       props?.selectedPrixer?.username,
       props.surchargeList,
-      checkOrgs(art)
+      checkOrgs(art),
+      props.consumerType
     );
     props.setSelectedProductToAssociate({
       index,
@@ -488,7 +493,8 @@ export default function ShoppingCart(props) {
         1,
         props?.selectedPrixer?.username,
         props.surchargeList,
-        checkOrgs(art)
+        checkOrgs(art),
+        props.consumerType
       );
 
       updatePrices(
@@ -544,7 +550,8 @@ export default function ShoppingCart(props) {
           item.quantity,
           props?.selectedPrixer?.username,
           props.surchargeList,
-          checkOrgs(item.art)
+          checkOrgs(item.art),
+          props.consumerType
         );
 
         prod.finalPrice = Number(
@@ -555,7 +562,8 @@ export default function ShoppingCart(props) {
             1,
             props.discountList,
             props?.selectedPrixer?.username,
-            checkOrgs(item.art)
+            checkOrgs(item.art),
+            props.consumerType
           )?.replace(/[,]/gi, ".")
         );
         console.log(prod.finalPrice);
@@ -603,7 +611,8 @@ export default function ShoppingCart(props) {
       item.quantity,
       props?.selectedPrixer?.username,
       props.surchargeList,
-      checkOrgs(item.art)
+      checkOrgs(item.art),
+      props.consumerType
     );
     purchase.splice(index, 1, item);
     localStorage.setItem("buyState", JSON.stringify(purchase));
@@ -1163,7 +1172,8 @@ export default function ShoppingCart(props) {
                                     buy.quantity,
                                     props?.selectedPrixer?.username,
                                     props.surchargeList,
-                                    checkOrgs(buy.art)
+                                    checkOrgs(buy.art),
+                                    props.consumerType
                                   ) / buy.quantity
                                 ).toLocaleString("de-DE", {
                                   minimumFractionDigits: 2,
@@ -1194,8 +1204,8 @@ export default function ShoppingCart(props) {
                                   props.dollarValue,
                                   props.discountList,
                                   props?.selectedPrixer?.username,
-                                  checkOrgs(buy.art)
-                                  // meter el tipo de consumidor
+                                  checkOrgs(buy.art),
+                                  props.consumerType
                                 )
                               : "Precio base: " +
                                 UnitPrice(

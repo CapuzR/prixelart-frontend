@@ -57,13 +57,13 @@ const UnitPriceSug = (
   dollarValue,
   discountList,
   prixer,
-  org
+  org,
+  consumerType
 ) => {
   let { price, base } = 0;
   let dis = discountList?.filter((dis) => dis._id === product.discount)[0];
-
   if (org !== undefined) {
-    price = UnitPriceForOrg(product, art, prixer, org);
+    price = UnitPriceForOrg(product, art, prixer, org, consumerType);
   } else {
     if (typeof product.selection === "string" && prixer !== undefined) {
       base = product.prixerEquation
@@ -129,34 +129,52 @@ const UnitPriceSug = (
   });
 };
 
-const UnitPriceForOrg = (product, art, prixer, org) => {
+const UnitPriceForOrg = (product, art, prixer, org, consumerType) => {
   let { base, price } = 0;
   if (org !== undefined && org?.agreement.base === "pvprixer") {
     base =
       product.prixerEquation !== "" && product.prixerEquation !== undefined
-        ? Number(product.prixerEquation - product.prixerEquation / 10)
-        : Number(product.prixerPrice.from - product.prixerPrice.from / 10);
+        ? Number(
+            product.prixerEquation.replace(/[,]/gi, ".") -
+              product.prixerEquation.replace(/[,]/gi, ".") / 10
+          )
+        : Number(
+            product.prixerPrice.from.replace(/[,]/gi, ".") -
+              product.prixerPrice.from.replace(/[,]/gi, ".") / 10
+          );
   } else if (org !== undefined && org?.agreement.base === "pvm") {
     base =
       product.prixerEquation !== "" && product.prixerEquation !== undefined
-        ? Number(product.prixerEquation)
-        : Number(product.prixerPrice.from);
+        ? Number(product.prixerEquation.replace(/[,]/gi, "."))
+        : Number(product.prixerPrice.from.replace(/[,]/gi, "."));
   } else if (org !== undefined && org.agreement.base === "pvp") {
     base =
       product.publicEquation !== "" && product.publicEquation !== undefined
-        ? Number(product.publicEquation)
-        : Number(product.publicPrice.from);
+        ? Number(product.publicEquation.replace(/[,]/gi, "."))
+        : Number(product.publicPrice.from.replace(/[,]/gi, "."));
   }
   const applied = org?.agreement.appliedProducts.find(
     (el) => el.id === product._id
   );
   const varApplied = applied.variants.find((v) => v.name === product.selection);
-  // evaluar el tipo de consumidor y aplicar si es necesario un ajuste
   let percentage =
     product.selection !== undefined && typeof product.selection === "string"
       ? varApplied.cporg
       : applied.cporg;
+
+  let consumerVar = consumerType.toLowerCase();
+  for (const p in org.agreement.considerations) {
+    const prop = p.toLowerCase();
+    if (consumerVar?.includes(prop)) {
+      let c = (percentage / 100) * org.agreement.considerations[p];
+      percentage = percentage - c;
+      console.log(percentage);
+    }
+  }
+  console.log(percentage);
+
   price = base / (1 - Number(percentage) / 100);
+  console.log(price);
   return price;
 };
 
@@ -199,11 +217,12 @@ const getComission = (
   quantity,
   prixer,
   surchargeList,
-  org
+  org,
+  consumerType
 ) => {
   let { unit, total } = 0;
   if (org !== undefined) {
-    unit = UnitPriceForOrg(item, art, prixer, org);
+    unit = UnitPriceForOrg(item, art, prixer, org, consumerType);
     const applied = org?.agreement.appliedProducts.find(
       (el) => el.id === item._id
     );
@@ -213,14 +232,18 @@ const getComission = (
       item.selection !== undefined && typeof item.selection === "string"
         ? varApplied.cporg
         : applied.cporg;
-
     total = (unit / 100) * percentage;
   } else {
     unit = Number(
-      UnitPrice(item, art, currency, dollarValue, discountList, prixer).replace(
-        /[,]/gi,
-        "."
-      )
+      UnitPrice(
+        item,
+        art,
+        currency,
+        dollarValue,
+        discountList,
+        prixer,
+        consumerType
+      ).replace(/[,]/gi, ".")
     );
     total = (unit / 100) * art.comission * quantity;
   }

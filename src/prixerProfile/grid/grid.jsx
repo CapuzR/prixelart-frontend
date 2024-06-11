@@ -165,36 +165,21 @@ export default function Grid(props) {
 
   const setVisibleArt = async (art, id, event) => {
     setLoading(true);
-    if (event.target.checked === true) {
-      const base_url = process.env.REACT_APP_BACKEND_URL + "/art/disable/" + id;
-      art.visible = visible;
-      const response = await axios.put(
-        base_url,
-        art,
-        { adminToken: localStorage.getItem("adminTokenV") },
-        { withCredentials: true }
-      );
-      setSnackBarMessage("Arte modificado exitosamente");
-      setSnackBar(true);
-      setLoading(false);
-      setDisabledReason("");
-      setSelectedArt(undefined);
-    } else {
-      const base_url = process.env.REACT_APP_BACKEND_URL + "/art/disable/" + id;
-      art.visible = visible;
-      art.disabledReason = disabledReason;
-      const response = await axios.put(
-        base_url,
-        art,
-        { adminToken: localStorage.getItem("adminTokenV") },
-        { withCredentials: true }
-      );
-      handleClose();
-      setSnackBarMessage("Arte modificado exitosamente");
-      setSnackBar(true);
-      setLoading(false);
-      setDisabledReason("");
-    }
+    const base_url =
+      process.env.REACT_APP_BACKEND_URL + "/art/disable/" + art.artId;
+    art.visible = !art.visible;
+    const response = await axios.put(
+      base_url,
+      art,
+      { adminToken: localStorage.getItem("adminTokenV") },
+      { withCredentials: true }
+    );
+    setSnackBarMessage("Arte modificado exitosamente");
+    setSnackBar(true);
+    setLoading(false);
+    handleClose();
+    setDisabledReason("");
+    setSelectedArt(undefined);
   };
 
   useEffect(() => {

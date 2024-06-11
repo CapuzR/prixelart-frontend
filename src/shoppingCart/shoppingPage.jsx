@@ -149,6 +149,7 @@ export default function ShoppingPage(props) {
   const [paymentVoucher, setPaymentVoucher] = useState();
   const [discountList, setDiscountList] = useState([]);
   const [seller, setSeller] = useState();
+  const [expanded, setExpanded] = useState(false);
 
   const getDiscounts = async () => {
     const base_url = process.env.REACT_APP_BACKEND_URL + "/discount/read-allv2";
@@ -608,6 +609,8 @@ export default function ShoppingPage(props) {
                       buyState={props.buyState}
                       setOpen={props.setOpen}
                       setMessage={props.setMessage}
+                      expanded={expanded}
+                      setExpanded={setExpanded}
                     />
                   ) : (
                     <OrderForm

@@ -552,19 +552,28 @@ export default function Orders(props) {
 
         quantity = item.quantity;
 
-        if (item.product.finalPrice !== undefined) {
+        if (
+          item.product.finalPrice !== undefined &&
+          typeof item.product.finalPrice === "string"
+        ) {
+          price = ("$", Number(item.product.finalPrice.replace(/[,]/gi, ".")));
+        } else if (item.product.finalPrice !== undefined) {
           price = ("$", item.product.finalPrice);
         } else if (
           item.product.publicEquation !== undefined &&
           item.product.publicEquation !== ""
         ) {
-          price = ("$", item.product.publicEquation);
+          price =
+            ("$", Number(item.product.publicEquation.replace(/[,]/gi, ".")));
         } else if (
           item.product.prixerEquation !== undefined &&
           item.product.prixerEquation !== ""
         ) {
           price = ("$", item.product.prixerEquation);
-        } else price = ("$", item.product?.publicPrice?.from);
+        } else
+          price =
+            ("$",
+            Number(item.product?.publicPrice?.from.replace(/[,]/gi, ".")));
 
         v2.prixer = prixer;
         v2.art = art;
@@ -735,6 +744,8 @@ export default function Orders(props) {
   const handleClose = () => {
     setIsShowDetails(false);
     setOpenCreateOrder(false);
+    setModalContent(undefined);
+    setShowVoucher(false);
   };
 
   const handleCloseVoucher = () => {

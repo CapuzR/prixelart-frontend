@@ -254,7 +254,10 @@ export default function ServiceGrid(props) {
   };
 
   useEffect(() => {
-    if (localStorage.getItem("token") && view !== "servicios") {
+    if (
+      JSON.parse(localStorage.getItem("token")).username === prixer &&
+      view !== "servicios"
+    ) {
       getMyServices();
     } else {
       getServices();

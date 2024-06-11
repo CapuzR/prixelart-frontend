@@ -891,7 +891,6 @@ export default function OrderDetails(props) {
                           src={props.modalContent?.paymentVoucher}
                           alt="voucher"
                           onClick={() => {
-                            // setIsShowDetails(false);
                             props.setShowVoucher(!props.showVoucher);
                           }}
                         />

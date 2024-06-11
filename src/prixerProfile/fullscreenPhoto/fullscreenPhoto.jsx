@@ -146,7 +146,6 @@ export default function FullscreenPhoto(props) {
   const history = useHistory();
   const theme = useTheme();
   const globalParams = new URLSearchParams(window.location.pathname);
-
   const [ready, setReady] = useState(false);
   const [tiles, setTiles] = useState(props.searchResult);
   // const [newTag, setNewTag] = useState([]);
@@ -411,41 +410,26 @@ export default function FullscreenPhoto(props) {
     handleClose();
     setSnackBarMessage("Arte eliminado exitosamente");
     setSnackBar(true);
-    history.push({ pathname: "/prixer=" + prixerUsername });
+    history.goBack();
   };
 
   const setVisibleArt = async (art, id, event) => {
     setLoading(true);
-    if (event.target.checked === true) {
-      const base_url = process.env.REACT_APP_BACKEND_URL + "/art/disable/" + id;
-      art.visible = visible;
-      const response = await axios.put(
-        base_url,
-        art,
-        { adminToken: localStorage.getItem("adminTokenV") },
-        { withCredentials: true }
-      );
-      setSnackBarMessage("Arte modificado exitosamente");
-      setSnackBar(true);
-      setLoading(false);
-      setDisabledReason("");
-      setHiddenArt(undefined);
-    } else {
-      const base_url = process.env.REACT_APP_BACKEND_URL + "/art/disable/" + id;
-      art.visible = visible;
-      art.disabledReason = disabledReason;
-      const response = await axios.put(
-        base_url,
-        art,
-        { adminToken: localStorage.getItem("adminTokenV") },
-        { withCredentials: true }
-      );
-      handleClose();
-      setSnackBarMessage("Arte modificado exitosamente");
-      setSnackBar(true);
-      setLoading(false);
-      setDisabledReason("");
-    }
+    art.visible = !art.visible;
+
+    const base_url =
+      process.env.REACT_APP_BACKEND_URL + "/art/disable/" + art.artId;
+    const response = await axios.put(base_url, {
+      art: art,
+      disabledReason: disabledReason,
+      adminToken: localStorage.getItem("adminTokenV"),
+    });
+    setSnackBarMessage("Arte modificado exitosamente");
+    setSnackBar(true);
+    setLoading(false);
+    setDisabledReason("");
+    setHiddenArt(undefined);
+    handleClose();
     readArt();
   };
 

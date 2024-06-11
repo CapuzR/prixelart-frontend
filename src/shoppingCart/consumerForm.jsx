@@ -36,13 +36,30 @@ const useStyles = makeStyles((theme) => ({
   textField: {
     marginRight: "8px",
   },
+  brillante: {
+    // width: 45,
+    // height: 45,
+    // borderRadius: "50%",
+    // backgroundColor: "black",
+    animation: "$animacion-brillo 2s infinite",
+  },
+  "@keyframes animacion-brillo": {
+    "0%": {
+      boxShadow: "0 0 0 0 #d33f49",
+    },
+    "50%": {
+      boxShadow: "0 0 0 20px #d33f4900",
+    },
+    "100%": {
+      boxShadow: "0 0 0 0 #d33f4900",
+    },
+  },
 }));
 function ConsumerForm(props) {
   const classes = useStyles();
   const [shippingDataCheck, setShippingDataCheck] = useState(true);
   const [billingDataCheck, setBillingDataCheck] = useState(true);
   const [billingShDataCheck, setBillingShDataCheck] = useState(false);
-  const [expanded, setExpanded] = useState(false);
   const [shippingList, setShippingList] = useState();
   const [openTooltip, setOpenTooltip] = useState(false);
   const [openTooltip2, setOpenTooltip2] = useState(false);
@@ -188,7 +205,7 @@ function ConsumerForm(props) {
   }, []);
 
   const handleAccordionExpansion = (panel) => (event, isExpanded) => {
-    setExpanded(isExpanded ? panel : false);
+    props.setExpanded(isExpanded ? panel : false);
   };
 
   const handleShippingDataCheck = () => {
@@ -279,11 +296,26 @@ function ConsumerForm(props) {
     });
   }
 
+  useEffect(() => {
+    if (
+      typeof props.values === "object" &&
+      props.warning === true &&
+      props.values.name !== undefined &&
+      props.values.lastName !== undefined &&
+      props.values.ci !== undefined &&
+      props.values.email !== undefined &&
+      props.values.phone !== undefined
+    ) {
+      props.setWarning(false);
+    }
+  }, [props.values]);
+
   return (
     <>
       <div>
         <Accordion
-          expanded={expanded === "basic"}
+          className={props.warning && classes.brillante}
+          expanded={props.expanded === "basic"}
           onChange={handleAccordionExpansion("basic")}
         >
           <AccordionSummary
@@ -537,7 +569,7 @@ function ConsumerForm(props) {
         </Accordion>
 
         <Accordion
-          expanded={expanded === "shipping"}
+          expanded={props.expanded === "shipping"}
           onChange={handleAccordionExpansion("shipping")}
         >
           <AccordionSummary
@@ -819,7 +851,7 @@ function ConsumerForm(props) {
         </Accordion>
 
         <Accordion
-          expanded={expanded === "billing"}
+          expanded={props.expanded === "billing"}
           onChange={handleAccordionExpansion("billing")}
         >
           <AccordionSummary

@@ -12,6 +12,8 @@ import MenuItem from "@material-ui/core/MenuItem";
 import Select from "@material-ui/core/Select";
 import Backdrop from "@material-ui/core/Backdrop";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import { useTheme } from "@material-ui/core/styles";
+import useMediaQuery from "@material-ui/core/useMediaQuery";
 
 import { useState } from "react";
 import axios from "axios";
@@ -95,6 +97,9 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 
 export default function CreateService(props) {
   const classes = useStyles();
+  const theme = useTheme();
+
+  const isMobile = useMediaQuery(theme.breakpoints.down("xs"));
 
   const [title, setTitle] = useState();
   const [description, setDescription] = useState();
@@ -481,7 +486,12 @@ export default function CreateService(props) {
                   />
                 </Grid>
 
-                <Grid item xs={12} sm={12}>
+                <Grid
+                  item
+                  xs={12}
+                  sm={12}
+                  style={{ marginTop: isMobile && 30 }}
+                >
                   <FormControlLabel
                     control={
                       <Checkbox
@@ -531,32 +541,44 @@ export default function CreateService(props) {
                   <Typography variant="subtitle1" fullWidth>
                     Valor
                   </Typography>
-                  <TextField
-                    style={{ marginRight: 45 }}
-                    required
-                    variant="outlined"
-                    label="Desde"
-                    type="Number"
-                    value={priceFrom}
-                    onChange={(e) => setPriceFrom(e.target.value)}
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">$</InputAdornment>
-                      ),
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      marginTop: 10,
                     }}
-                  />
-                  <TextField
-                    variant="outlined"
-                    label="Hasta"
-                    type="Number"
-                    value={priceTo}
-                    onChange={(e) => setPriceTo(e.target.value)}
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">$</InputAdornment>
-                      ),
-                    }}
-                  />
+                  >
+                    <Grid item xs={5}>
+                      <TextField
+                        // style={{ marginRight: 45 }}
+                        required
+                        variant="outlined"
+                        label="Desde"
+                        type="Number"
+                        value={priceFrom}
+                        onChange={(e) => setPriceFrom(e.target.value)}
+                        InputProps={{
+                          startAdornment: (
+                            <InputAdornment position="start">$</InputAdornment>
+                          ),
+                        }}
+                      />
+                    </Grid>
+                    <Grid item xs={5}>
+                      <TextField
+                        variant="outlined"
+                        label="Hasta"
+                        type="Number"
+                        value={priceTo}
+                        onChange={(e) => setPriceTo(e.target.value)}
+                        InputProps={{
+                          startAdornment: (
+                            <InputAdornment position="start">$</InputAdornment>
+                          ),
+                        }}
+                      />
+                    </Grid>
+                  </div>
                 </Grid>
                 <Grid
                   item
@@ -574,7 +596,7 @@ export default function CreateService(props) {
               </Grid>
             </form>
           </div>
-          <Box mt={5}>
+          <Box mt={5} mb={4}>
             <Copyright />
           </Box>
           <Snackbar

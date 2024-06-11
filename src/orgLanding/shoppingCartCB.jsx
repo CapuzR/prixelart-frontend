@@ -134,11 +134,11 @@ export default function ShoppingCartCB() {
   const classes = useStyles();
   const history = useHistory();
   const theme = useTheme();
-
   const isMobile = useMediaQuery(theme.breakpoints.down("xs"));
   const isTab = useMediaQuery(theme.breakpoints.down("sm"));
   const [anchorEl, setAnchorEl] = useState(null);
   const openMenu = Boolean(anchorEl);
+  const [expanded, setExpanded] = useState(false);
 
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
@@ -154,6 +154,7 @@ export default function ShoppingCartCB() {
   const [seller, setSeller] = useState();
   const [subtotal, setSubtotal] = useState(0);
   const [total, setTotal] = useState(0);
+  const [warning, setWarning] = useState(false);
   let shippingCost = Number(values?.shippingMethod?.price);
 
   const [buyState, setBuyState] = useState(
@@ -262,7 +263,14 @@ export default function ShoppingCartCB() {
   };
 
   const createOrder = async () => {
-    if (orderPaymentMethod) {
+    if (
+      orderPaymentMethod &&
+      values?.name &&
+      values?.lastName &&
+      values?.ci &&
+      values?.email &&
+      values?.phone
+    ) {
       setLoading(true);
       setOpen(true);
 
@@ -382,9 +390,16 @@ export default function ShoppingCartCB() {
         .catch((error) => {
           console.log(error.response);
         });
-    } else {
+    } else if (orderPaymentMethod === undefined) {
       setOpen(true);
       setMessage("Por favor selecciona una forma de pago.");
+    } else {
+      setOpen(true);
+      setMessage("Por favor completa los datos básicos.");
+
+      setActiveStep(0);
+      setExpanded("basic");
+      setWarning(true);
     }
   };
 
@@ -394,6 +409,10 @@ export default function ShoppingCartCB() {
         return (
           <div>
             <ConsumerForm
+              expanded={expanded}
+              setExpanded={setExpanded}
+              warning={warning}
+              setWarning={setWarning}
               buyState={buyState}
               open={open}
               setOpen={setOpen}
@@ -480,6 +499,7 @@ export default function ShoppingCartCB() {
   const handleCart = () => {
     history.push({ pathname: "/chiguirebipolar/carrito" });
   };
+
   return (
     <>
       <Backdrop className={classes.backdrop} open={loading}>

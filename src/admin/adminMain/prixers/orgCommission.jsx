@@ -160,7 +160,11 @@ export default function OrgCommission({
     let uniqueProducts = [];
 
     selectedPrixer?.agreement?.appliedProducts?.forEach((product) => {
-      uniqueProducts.push(product);
+      const prev = uniqueProducts.some((element) => element.id === product.id);
+
+      if (!prev) {
+        uniqueProducts.push(product);
+      }
     });
 
     prods?.forEach((prod) => {
@@ -188,13 +192,21 @@ export default function OrgCommission({
           surcharge: prod?.surcharge,
         });
       });
-      // Falta agregar nuevas variantes || eliminar a previos productos
-      const foundPrev = () => {
-        return uniqueProducts.some((element) => element.id === p.id);
-      };
 
-      if (foundPrev() === false) {
-        uniqueProducts.push(prod);
+      const foundPrev = uniqueProducts.find((element) => element.id === p.id);
+
+      if (foundPrev) {
+        p.variants.forEach((variant) => {
+          const existingVariant = foundPrev.variants.find(
+            (v) => v.id === variant.id
+          );
+
+          if (!existingVariant) {
+            p.variants.push(variant);
+          }
+        });
+      } else {
+        uniqueProducts.push(p);
       }
     });
 

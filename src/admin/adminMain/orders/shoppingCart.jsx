@@ -391,6 +391,7 @@ export default function ShoppingCart(props) {
 
   const checkOrgs = (art) => {
     const org = props?.orgs?.find((el) => el.username === art.owner);
+    console.log(org);
     return org;
   };
 
@@ -566,7 +567,7 @@ export default function ShoppingCart(props) {
             props.consumerType
           )?.replace(/[,]/gi, ".")
         );
-        console.log(prod.finalPrice);
+        // console.log(prod.finalPrice);
       }
     } else {
       prod.publicEquation = 0;

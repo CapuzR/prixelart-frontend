@@ -118,7 +118,7 @@ const UnitPriceSug = (
       price = base / (1 - art.comission / 100);
     }
   }
-
+  console.log(price);
   // Incluir recargo si es a PrixelartPrefit
   if (currency) {
     price = price * (dollarValue || 1);
@@ -168,13 +168,13 @@ const UnitPriceForOrg = (product, art, prixer, org, consumerType) => {
     if (consumerVar?.includes(prop)) {
       let c = (percentage / 100) * org.agreement.considerations[p];
       percentage = percentage - c;
-      console.log(percentage);
+      console.log(percentage, "percentage 1");
     }
   }
-  console.log(percentage);
+  console.log(percentage, "percentage");
 
   price = base / (1 - Number(percentage) / 100);
-  console.log(price);
+  console.log(price, "final price ORG");
   return price;
 };
 

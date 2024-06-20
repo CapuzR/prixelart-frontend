@@ -50,25 +50,6 @@ export default function MovementRecord(props) {
       });
   };
 
-  // const deleteMov = async () => {
-  //   const url = process.env.REACT_APP_BACKEND_URL + "/movement/deleteByPrixer";
-
-  //   await axios.put(url, {
-  //     adminToken: localStorage.getItem("adminTokenV"),
-  //     _id: props.selectedPrixer.account,
-  //   });
-  //   setOpen(true);
-  //   setMessage("Rol de Prixer agregado a todos los usuarios.");
-  // };
-
-  // function handleKeyDown(event) {
-  //   if (event.key === "*") {
-  //     deleteMov();
-  //   } else return;
-  // }
-
-  // document.addEventListener("keydown", handleKeyDown);
-
   useEffect(() => {
     getMovements(props.selectedPrixer.account);
   }, []);

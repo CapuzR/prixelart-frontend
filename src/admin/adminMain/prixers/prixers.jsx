@@ -458,7 +458,7 @@ export default function Prixers(props) {
                               checked={tile?.status}
                               color="primary"
                               onChange={(event) =>
-                                handleChange(event, tile?.state) ||
+                                // handleChange(event, tile?.state) ||
                                 ChangeVisibility(event, tile)
                               }
                               name="checkedA"
@@ -740,7 +740,7 @@ export default function Prixers(props) {
                               checked={tile?.status}
                               color="primary"
                               onChange={(event) =>
-                                handleChange(event, tile?.state) ||
+                                // handleChange(event, tile?.state) ||
                                 ChangeVisibility(event, tile)
                               }
                               name="checkedA"

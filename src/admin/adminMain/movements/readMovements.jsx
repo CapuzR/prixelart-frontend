@@ -28,6 +28,8 @@ import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 import Grow from "@material-ui/core/Grow";
 import Popper from "@material-ui/core/Popper";
 import Box from "@material-ui/core/Box";
+import Fab from "@material-ui/core/Fab";
+import DeleteIcon from "@material-ui/icons/Delete";
 
 // import CircularProgress from '@material-ui/core/CircularProgress';
 // import Backdrop from '@material-ui/core/Backdrop';
@@ -69,6 +71,7 @@ export default function ReadMovements(props) {
   const [openOrderDetails, setOpenOrderDetails] = useState(false);
   const [orderId, setOrderId] = useState();
   const [prixers, setPrixers] = useState();
+  const [orgs, setOrgs] = useState([]);
   const [selectedPrixer, setSelectedPrixer] = useState();
   const [type, setType] = useState();
 
@@ -134,28 +137,54 @@ export default function ReadMovements(props) {
     }
   };
 
+  const getORGs = async () => {
+    const base_url =
+      process.env.REACT_APP_BACKEND_URL + "/organization/read-all-full";
+    await axios
+      .get(base_url)
+      .then((response) => {
+        setOrgs(response.data.organizations);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
   useEffect(() => {
     setLoading(true);
     readMovements();
     readPrixers();
+    getORGs();
     setLoading(false);
   }, []);
 
   const getUsername = (fullname) => {
-    const prixer = fullname?.split(" ");
+    const name = fullname?.split(" ");
     let selected;
-    if (prixer && prixer?.length === 2) {
-      selected = prixers?.find(
-        (p) => p?.firstName === prixer[0] && p?.lastName === prixer[1]
+    if (name && name?.length === 2) {
+      selected = orgs.find(
+        (p) => p?.firstName === name[0] && p?.lastName === name[1]
       );
-    } else if (prixer && prixer?.length === 3) {
-      selected = prixers?.find(
-        (p) =>
-          p.firstName === prixer[0] &&
-          p.lastName === prixer[1] + " " + prixer[2]
+      if (selected === undefined) {
+        selected = prixers?.find(
+          (p) => p?.firstName === name[0] && p?.lastName === name[1]
+        );
+      }
+      console.log(selected);
+    } else if (name && name?.length === 3) {
+      selected = orgs.find(
+        (p) => p.firstName === name[0] && p.lastName === name[1] + " " + name[2]
       );
+      if (selected === undefined) {
+        selected = prixers?.find(
+          (p) =>
+            p.firstName === name[0] && p.lastName === name[1] + " " + name[2]
+        );
+      }
     }
+    console.log(selected);
     setSelectedPrixer(selected?.username);
+    return selected;
   };
 
   const getPrixersNames = (list) => {
@@ -192,6 +221,23 @@ export default function ReadMovements(props) {
     setOpenOrderDetails(false);
     setSelectedPrixer(undefined);
     setAnchorEl(null);
+    setSnackBarError(false);
+  };
+
+  const deleteMov = async (mov) => {
+    setLoading(true);
+    const URI =
+      process.env.REACT_APP_BACKEND_URL + "/movement/delete/" + mov._id;
+    const body = {
+      adminToken: localStorage.getItem("adminTokenV"),
+      movement: mov._id,
+      user: getUsername(mov.destinatary).username,
+    };
+    await axios.put(URI, body, { withCredentials: true });
+    setErrorMessage("Movimiento eliminado exitosamente.");
+    setSnackBarError(true);
+    readMovements();
+    setLoading(false);
   };
 
   return (
@@ -242,6 +288,7 @@ export default function ReadMovements(props) {
                       <TableCell align="center">Monto</TableCell>
                       <TableCell align="center">Fecha de creación</TableCell>
                       <TableCell align="center">Creado por</TableCell>
+                      <TableCell></TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -293,6 +340,24 @@ export default function ReadMovements(props) {
                             {new Date(row.createdOn).toLocaleDateString()}
                           </TableCell>
                           <TableCell align="center">{row.createdBy}</TableCell>
+                          <TableCell align="center">
+                            {props.permissions?.deletePaymentMethod && (
+                              <Fab
+                                color="default"
+                                style={{
+                                  width: 35,
+                                  height: 35,
+                                  marginLeft: 100,
+                                }}
+                                aria-label="edit"
+                                onClick={() => {
+                                  deleteMov(row);
+                                }}
+                              >
+                                <DeleteIcon />
+                              </Fab>
+                            )}
+                          </TableCell>
                         </TableRow>
                       ))}
                   </TableBody>
@@ -420,8 +485,9 @@ export default function ReadMovements(props) {
         </Grid>
       </Grid>
       <Snackbar
+        onClose={handleClose}
         open={snackBarError}
-        autoHideDuration={1000}
+        autoHideDuration={5000}
         message={errorMessage}
         className={classes.snackbar}
       />

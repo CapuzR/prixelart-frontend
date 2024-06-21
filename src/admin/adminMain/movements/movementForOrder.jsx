@@ -500,7 +500,7 @@ export default function MovOrder(props) {
                     </div>
                     <strong>
                       {"Comisión: $" +
-                        item.product.comission.toLocaleString("de-DE", {
+                        item.product?.comission?.toLocaleString("de-DE", {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
                         })}

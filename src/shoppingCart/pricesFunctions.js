@@ -62,6 +62,7 @@ const UnitPriceSug = (
 ) => {
   let { price, base } = 0;
   let dis = discountList?.filter((dis) => dis._id === product.discount)[0];
+  console.log(org)
   if (org !== undefined) {
     price = UnitPriceForOrg(product, art, prixer, org, consumerType);
   } else {
@@ -116,9 +117,9 @@ const UnitPriceSug = (
       }
     } else if (prixer === undefined) {
       price = base / (1 - art.comission / 100);
+        console.log(price, "precio normal");
     }
   }
-  console.log(price);
   // Incluir recargo si es a PrixelartPrefit
   if (currency) {
     price = price * (dollarValue || 1);
@@ -227,12 +228,24 @@ const getComission = (
       (el) => el.id === item._id
     );
     const varApplied = applied.variants.find((v) => v.name === item.selection);
-    // evaluar el tipo de consumidor y aplicar si es necesario un ajuste
+
     let percentage =
       item.selection !== undefined && typeof item.selection === "string"
         ? varApplied.cporg
         : applied.cporg;
     total = (unit / 100) * percentage;
+
+        if (consumerType !== "Particular") {
+      let consumer = consumerType.toLowerCase();
+        for (const p in org.agreement.considerations) {
+          const prop = p.toLowerCase();
+          if (consumer?.includes(prop)) {
+            let c = (percentage / 100) * org.agreement.considerations[p];
+            total = percentage - c;
+            console.log(total, "porcentaje para" + prop);
+          }
+        }
+    }
   } else {
     unit = Number(
       UnitPrice(

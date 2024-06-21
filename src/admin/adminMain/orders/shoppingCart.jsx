@@ -567,7 +567,6 @@ export default function ShoppingCart(props) {
             props.consumerType
           )?.replace(/[,]/gi, ".")
         );
-        // console.log(prod.finalPrice);
       }
     } else {
       prod.publicEquation = 0;

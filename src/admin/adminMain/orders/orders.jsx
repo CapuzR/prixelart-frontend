@@ -389,7 +389,6 @@ export default function Orders(props) {
         setConsumers(response.data);
       })
       .catch((response) => {
-        // console.log(error);
         setErrorMessage(response.data.message);
         setSnackBarError(true);
       });
@@ -802,7 +801,8 @@ export default function Orders(props) {
       let consumersFiltered = consumers.filter(
         (con) => con.consumerType === "Prixer"
       );
-      const ORG = orgs.find((o) => o.username === item.art.owner);
+      const ORGS = orgs.find((o) => o.username === item.art.owner);
+      const ORG = ORGS[0]
       const prx = await findPrixer(item.art.prixerUsername);
       const prixer = await consumersFiltered.find(
         (con) =>
@@ -813,8 +813,10 @@ export default function Orders(props) {
             ?.toLowerCase()
             .includes(props?.basicData?.lastname?.toLowerCase())
       );
+        console.log(ORG)
 
       if (ORG !== undefined) {
+
         destinatary = ORG.account;
         let profit = item.product.finalPrice;
 

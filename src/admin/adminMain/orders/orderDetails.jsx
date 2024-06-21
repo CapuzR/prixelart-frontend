@@ -255,7 +255,6 @@ export default function OrderDetails(props) {
       consumer: Id,
     };
     await axios.post(url, body).then((res) => {
-      // console.log(res.data);
       setConsumer(res.data);
     });
   };

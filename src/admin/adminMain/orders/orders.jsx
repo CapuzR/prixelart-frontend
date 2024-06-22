@@ -798,6 +798,7 @@ export default function Orders(props) {
           sur.appliedUsers.includes(item.art.prixerUsername) ||
           sur.appliedUsers.includes(item.art.owner)
       );
+      console.log(surcharge, "recargo encontrado")
       let consumersFiltered = consumers.filter(
         (con) => con.consumerType === "Prixer"
       );
@@ -813,7 +814,8 @@ export default function Orders(props) {
             ?.toLowerCase()
             .includes(props?.basicData?.lastname?.toLowerCase())
       );
-        console.log(ORG)
+      console.log(prixer, "prixer encontrado")
+        console.log(ORG, "org in payComission function")
 
       if (ORG !== undefined) {
 
@@ -857,11 +859,11 @@ export default function Orders(props) {
         let prev = (profit / 100) * (co || ORG.agreement.comission);
         let total;
 
-        if (surcharge) {
-          if (surcharge.type === "Porcentaje") {
-            total = prev - (prev / 100) * surcharge.value;
-          } else if (surcharge.type === "Monto") {
-            total = prev - surcharge.value;
+        if (surcharge.length > 0) {
+          if (surcharge[0].type === "Porcentaje") {
+            total = prev - (prev / 100) * surcharge[0].value;
+          } else if (surcharge[0].type === "Monto") {
+            total = prev - surcharge[0].value;
           }
         } else {
           total = prev;

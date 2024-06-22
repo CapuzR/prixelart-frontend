@@ -309,7 +309,7 @@ export default function OrderFormCB(props) {
                               ))}
                           </Select>
                         </FormControl>
-                        {props.orderPaymentMethod && (
+                        {/* {props.orderPaymentMethod && (
                           <>
                             <div
                               style={{
@@ -323,7 +323,7 @@ export default function OrderFormCB(props) {
                                 <br></br>
                                 {props?.orderPaymentMethod?.paymentData}
                               </p>
-                              <div>
+                               <div>
                                 {props.paymentVoucher && (
                                   <img
                                     src={previewVoucher}
@@ -347,10 +347,10 @@ export default function OrderFormCB(props) {
                                     Cargar comprobante
                                   </Button>
                                 </label>
-                              </div>
+                              </div> 
                             </div>
                           </>
-                        )}
+                        )} */}
                       </Grid>
                       <Grid
                         item
@@ -435,7 +435,7 @@ export default function OrderFormCB(props) {
                       xs={12}
                       style={{ paddingLeft: 0, marginTop: 30 }}
                     >
-                      <div
+                      {/* <div
                         style={{
                           width: "100%",
                           display: "flex",
@@ -482,7 +482,7 @@ export default function OrderFormCB(props) {
                               ))}
                           </Select>
                         </FormControl>
-                      </div>
+                      </div> */}
                     </Grid>
                     <Grid
                       item

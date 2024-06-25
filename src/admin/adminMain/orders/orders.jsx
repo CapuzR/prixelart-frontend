@@ -320,7 +320,7 @@ export default function Orders(props) {
         console.log(error);
       });
   };
-
+  console.log(orgs);
   const findPrixer = async (prx) => {
     const base_url = process.env.REACT_APP_BACKEND_URL + "/prixer/read";
     return await axios
@@ -802,6 +802,8 @@ export default function Orders(props) {
       let consumersFiltered = consumers.filter(
         (con) => con.consumerType === "Prixer"
       );
+      console.log(item.art.owner, "owner");
+      console.log(orgs);
       const ORGS = orgs.find((o) => o.username === item.art.owner);
       const prx = await findPrixer(item.art.prixerUsername);
       const prixer = await consumersFiltered.find(

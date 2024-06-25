@@ -309,7 +309,7 @@ export default function OrderFormCB(props) {
                               ))}
                           </Select>
                         </FormControl>
-                        {/* {props.orderPaymentMethod && (
+                        {props.orderPaymentMethod && (
                           <>
                             <div
                               style={{
@@ -350,7 +350,7 @@ export default function OrderFormCB(props) {
                               </div> 
                             </div>
                           </>
-                        )} */}
+                        )}
                       </Grid>
                       <Grid
                         item

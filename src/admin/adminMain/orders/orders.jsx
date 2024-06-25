@@ -798,12 +798,11 @@ export default function Orders(props) {
           sur.appliedUsers.includes(item.art.prixerUsername) ||
           sur.appliedUsers.includes(item.art.owner)
       );
-      console.log(surcharge, "recargo encontrado")
+      // console.log(surcharge, "recargo encontrado") Si lo encuentra
       let consumersFiltered = consumers.filter(
         (con) => con.consumerType === "Prixer"
       );
       const ORGS = orgs.find((o) => o.username === item.art.owner);
-      const ORG = ORGS[0]
       const prx = await findPrixer(item.art.prixerUsername);
       const prixer = await consumersFiltered.find(
         (con) =>
@@ -814,15 +813,15 @@ export default function Orders(props) {
             ?.toLowerCase()
             .includes(props?.basicData?.lastname?.toLowerCase())
       );
-      console.log(prixer, "prixer encontrado")
-        console.log(ORG, "org in payComission function")
+      // console.log(prixer, "prixer encontrado") Undefined pero no importa de momento
+        console.log(ORGS, "org in payComission function")
 
-      if (ORG !== undefined) {
+      if (ORGS !== undefined) {
 
-        destinatary = ORG.account;
+        destinatary = ORGS.account;
         let profit = item.product.finalPrice;
 
-        let p = ORG?.agreement?.appliedProducts?.find(
+        let p = ORGS?.agreement?.appliedProducts?.find(
           (p) => p._id === item.product._id
         );
 
@@ -834,29 +833,29 @@ export default function Orders(props) {
         if (
           order.consumerData &&
           order.consumerData.consumerType === "DAs" &&
-          ORG.agreement.considerations["da"] > 0
+          ORGS.agreement.considerations["da"] > 0
         ) {
-          co = co - (co / 100) * ORG.agreement.considerations["da"];
+          co = co - (co / 100) * ORGS.agreement.considerations["da"];
         } else if (
           order.consumerData &&
           order.consumerData.consumerType === "Corporativo" &&
-          ORG.agreement.considerations["corporativo"] > 0
+          ORGS.agreement.considerations["corporativo"] > 0
         ) {
-          co = co - (co / 100) * ORG.agreement.considerations["corporativo"];
+          co = co - (co / 100) * ORGS.agreement.considerations["corporativo"];
         } else if (
           order.consumerData &&
           order.consumerData.consumerType === "Prixer" &&
-          ORG.agreement.considerations["prixer"] > 0
+          ORGS.agreement.considerations["prixer"] > 0
         ) {
-          co = co - (co / 100) * ORG.agreement.considerations["prixer"];
+          co = co - (co / 100) * ORGS.agreement.considerations["prixer"];
         } else if (
           order.consumerData &&
           order.consumerData.consumerType === "Artista" &&
-          ORG.agreement.considerations["artista"] > 0
+          ORGS.agreement.considerations["artista"] > 0
         ) {
-          co = co - (co / 100) * ORG.agreement.considerations["artista"];
+          co = co - (co / 100) * ORGS.agreement.considerations["artista"];
         }
-        let prev = (profit / 100) * (co || ORG.agreement.comission);
+        let prev = (profit / 100) * (co || ORGS.agreement.comission);
         let total;
 
         if (surcharge.length > 0) {

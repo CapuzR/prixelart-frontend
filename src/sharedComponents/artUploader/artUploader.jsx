@@ -90,7 +90,7 @@ const useStyles = makeStyles((theme) => ({
 
 const photoIsos = ["100", "200", "400"];
 
-const artTypes = ["Diseño", "Foto"];
+const artTypes = ["Diseño", "Foto", "Pintura", "Arte plástica"];
 
 // const useValues = [
 //   'Impresión',
@@ -109,12 +109,14 @@ const categories = [
   "Ciudades",
   "Comida",
   "Edificios",
+  "Escultura",
   "Fauna",
   "Flora",
   "Lanchas, barcos o yates",
   "Montañas",
   "Naturaleza",
   "Navidad",
+  "Pintura",
   "Playas",
   "Puentes",
   "Surrealista",
@@ -675,8 +677,7 @@ export default function ArtUploader(props) {
                             fontSize: "0.7em",
                           }}
                         >
-                          {" "}
-                          Medida del archivo <br /> original en px{" "}
+                          Medida del archivo <br /> original en px
                         </Typography>
                       </Grid>
                       <Grid item container xs={8} sm={8}>
@@ -825,6 +826,59 @@ export default function ArtUploader(props) {
                           </Grid>
                         </Grid>
                       )}
+                  </React.Fragment>
+                )}
+                {(artType === "Pintura" ||
+                  artType === "Arte plástica") && (
+                  <React.Fragment>
+                    <Grid item container xs={12}>
+                      <Grid item xs={4} sm={4}>
+                        <Typography
+                          style={{
+                            whiteSpace: "pre-line",
+                            padding: 15,
+                            fontSize: "0.7em",
+                          }}
+                        >
+                          Medida del arte <br /> original en cm
+                        </Typography>
+                      </Grid>
+                      <Grid item container xs={8} sm={8}>
+                        <Grid item xs={5} sm={5}>
+                          <TextField
+                            variant="outlined"
+                            fullWidth
+                            required={requiredPhoto}
+                            id="originalPhotoWidth"
+                            label="Ancho"
+                            type="number"
+                            name="originalPhotoWidth"
+                            autoComplete="originalPhotoWidth"
+                            value={originalPhotoWidth}
+                            onChange={(e) => {
+                              setOriginalPhotoWidth(e.target.value);
+                            }}
+                          />
+                        </Grid>
+                        <Typography style={{ padding: 10 }}> x </Typography>
+                        <Grid item xs={5} sm={5}>
+                          <TextField
+                            variant="outlined"
+                            fullWidth
+                            required={requiredPhoto}
+                            type="number"
+                            id="originalPhotoHeight"
+                            label="Alto"
+                            name="originalPhotoHeight"
+                            autoComplete="originalPhotoHeight"
+                            value={originalPhotoHeight}
+                            onChange={(e) => {
+                              setOriginalPhotoHeight(e.target.value);
+                            }}
+                          />
+                        </Grid>
+                      </Grid>
+                    </Grid>
                   </React.Fragment>
                 )}
                 <Grid item xs={12} sm={12}>

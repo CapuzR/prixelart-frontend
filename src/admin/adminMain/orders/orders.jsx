@@ -798,7 +798,6 @@ export default function Orders(props) {
           sur.appliedUsers.includes(item.art.prixerUsername) ||
           sur.appliedUsers.includes(item.art.owner)
       );
-      // console.log(surcharge, "recargo encontrado") Si lo encuentra
       let consumersFiltered = consumers.filter(
         (con) => con.consumerType === "Prixer"
       );
@@ -831,7 +830,7 @@ export default function Orders(props) {
           p?.variants?.length > 0
             ? Number(p?.variants[0]?.cporg)
             : Number(p?.cporg);
-
+console.log(co)
         if (
           order.consumerData &&
           order.consumerData.consumerType === "DAs" &&
@@ -857,6 +856,8 @@ export default function Orders(props) {
         ) {
           co = co - (co / 100) * ORGS.agreement.considerations["artista"];
         }
+        console.log(co)
+
         let prev = (profit / 100) * (co || ORGS.agreement.comission);
         let total;
 
@@ -931,6 +932,7 @@ export default function Orders(props) {
         // Calcular comisión
         amount = (unitPrice / 100) * (item.art.comission || 10);
         // Aplcar recargo
+        console.log(surcharge, "recargo")
         if (surcharge) {
           let total;
           if (surcharge.type === "Porcentaje") {
@@ -941,9 +943,11 @@ export default function Orders(props) {
             amount = total;
           }
         }
-
+console.log(amount, "amount after surcharge")
         amount = amount * item.quantity;
       }
+      console.log(item.art?.prixerUsername, "author")
+      console.log(destinatary, "account destinatary")
       if (
         item.art?.prixerUsername &&
         item.art?.prixerUsername !== "Personalizado" &&

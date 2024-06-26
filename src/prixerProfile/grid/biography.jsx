@@ -106,7 +106,10 @@ export default function Biography(props) {
   const [snackBar, setSnackBar] = useState(false);
   const [loading, setLoading] = useState(false);
   const [snackBarMessage, setSnackBarMessage] = useState(false);
-
+  const globalParams = new URLSearchParams(window.location.pathname);
+  const entries = globalParams.entries();
+const firstEntry = entries.next().value;
+const [key, value] = firstEntry;
   const [data, setData] = useState(undefined);
   const [openEdit, setOpenEdit] = useState(false);
 
@@ -116,7 +119,7 @@ export default function Biography(props) {
   const isMobile = useMediaQuery(theme.breakpoints.down("xs"));
   const isnDesk = useMediaQuery(theme.breakpoints.down("md"));
   const [showFullDescription, setShowFullDescription] = useState([]);
-
+  const [disableButton, setDisableButton] = useState(false);
   const [images, setImages] = useState([]); // Imágenes visaulizadas
   const [newImg, setNewImg] = useState([]);
 
@@ -146,7 +149,11 @@ export default function Biography(props) {
 
   const updateBio = async () => {
     let formData = new FormData();
-
+    setDisableButton(true);
+    setLoading(true);
+    setBackdrop(true);
+    setSnackBar(true);
+    setSnackBarMessage('No cierres esta ventana mientras se sube tu biografía, por favor espera.')
     formData.append("biography", data.biography);
     formData.append(
       "prixerId",
@@ -159,11 +166,12 @@ export default function Biography(props) {
     if (newImg.length > 0) {
       newImg.map((file) => formData.append("newBioImages", file));
     }
-
-    const base_url =
-      process.env.REACT_APP_BACKEND_URL +
-      "/prixer/updateBio/" +
+    const espc_url = key.includes("org") ? "/organization" : "/prixer";
+    const ID = key.includes("org") ? JSON.parse(localStorage.getItem("token")).orgId :
       JSON.parse(localStorage.getItem("token")).prixerId;
+    const base_url =
+      process.env.REACT_APP_BACKEND_URL + espc_url +
+      "/updateBio/" + ID;
 
     const petition = await axios.put(base_url, formData, {
       "Content-Type": "multipart/form-data",
@@ -182,6 +190,9 @@ export default function Biography(props) {
       );
       setSnackBar(true);
     }
+      setLoading(false);
+      setBackdrop(false);
+      setDisableButton(false);
   };
 
   const checkImages = async () => {
@@ -440,7 +451,7 @@ export default function Biography(props) {
               onChange={handleEditorChange}
               placeholder="Escribe tu biografía aquí..."
             />
-            <Button color="primary" size="large" onClick={updateBio}>
+            <Button color="primary" size="large" onClick={updateBio} disabled={disableButton}>
               Guardar
             </Button>
           </div>

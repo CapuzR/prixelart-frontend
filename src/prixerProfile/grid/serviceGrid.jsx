@@ -176,6 +176,10 @@ export default function ServiceGrid(props) {
   const history = useHistory();
   const view = window.location.pathname.slice(1);
   const prixer = props.prixerUsername;
+    const globalParams = new URLSearchParams(window.location.pathname);
+  const entries = globalParams.entries();
+const firstEntry = entries.next().value;
+const [key, value] = firstEntry;
   const [backdrop, setBackdrop] = useState(true);
   const theme = useTheme();
   const [snackBar, setSnackBar] = useState(false);
@@ -216,9 +220,12 @@ export default function ServiceGrid(props) {
 
     const base_url =
       process.env.REACT_APP_BACKEND_URL + "/service/readMyServices";
+    const spec_url = key.includes("org") ? JSON.parse(localStorage.getItem("token")).orgId :
+      JSON.parse(localStorage.getItem("token")).prixerId;
+
     await axios
       .post(base_url, {
-        prixer: JSON.parse(localStorage.getItem("token")).prixerId,
+        prixer: spec_url
       })
       .then((response) => {
         setTiles(response.data.services);

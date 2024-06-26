@@ -119,6 +119,7 @@ const categories = [
   "Pintura",
   "Playas",
   "Puentes",
+  "Retrato",
   "Surrealista",
   "Transportes",
   "Vehículos",
@@ -360,11 +361,13 @@ export default function ArtUploader(props) {
     try {
       if (title && description && category && tags) {
         if (
-          artType === "Diseño" ||
+          (artType === "Foto" &&
           (originalPhotoWidth &&
             originalPhotoHeight &&
             originalPhotoPpi &&
-            originalPhotoIso)
+              originalPhotoIso)) ||
+          (artType !== undefined &&
+            artType !== "Foto")
         ) {
           setBackdrop(true);
           await newArtPost();
@@ -554,7 +557,7 @@ export default function ArtUploader(props) {
       >
         <Backdrop className={classes.backdrop} open={backdrop}>
           <CircularProgress color="inherit" />
-          <p>Esto puede tardar unos pocos minutos.</p>
+          <p>Esto puede tardar unos pocos minutos <br/> no cierres esta ventana aún.</p>
         </Backdrop>
         <AppBar className={classes.appBar}>
           <Toolbar>

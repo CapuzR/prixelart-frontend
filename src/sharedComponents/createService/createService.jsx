@@ -175,6 +175,11 @@ export default function CreateService(props) {
 
   async function newService() {
     var formData = new FormData();
+    
+    const ID = JSON.parse(localStorage.getItem("token")).role === "Organization" ?
+      JSON.parse(localStorage.getItem("token")).orgId :
+      JSON.parse(localStorage.getItem("token")).prixerId;
+    
     formData.append("title", title);
     formData.append("description", description);
     formData.append("serviceArea", serviceArea);
@@ -197,7 +202,7 @@ export default function CreateService(props) {
     );
     formData.append(
       "prixer",
-      JSON.parse(localStorage.getItem("token")).prixerId
+      ID
     );
     formData.append("active", active);
 

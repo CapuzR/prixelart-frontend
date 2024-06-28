@@ -805,15 +805,13 @@ export default function OrgCommission({
                                     >
                                       PVPrixer: $
                                       {v.appliedGlobalCporg
-                                        ? Number(
-                                            (v.pvm - v.pvm / 10) /
-                                              (1 - comission / 100)
-                                          ).toLocaleString("de-DE", {
+                                        ? (Number(v.pvm) - Number(v.pvm) / 10) /
+                                              (1 - comission / 100).toLocaleString("de-DE", {
                                             minimumFractionDigits: 2,
                                             maximumFractionDigits: 2,
                                           })
-                                        : Number(
-                                            (v.pvm - v.pvm / 10) /
+                                        : (
+                                            (Number(v.pvm) - Number(v.pvm) / 10) /
                                               (1 - v.cporg / 100)
                                           ).toLocaleString("de-DE", {
                                             minimumFractionDigits: 2,

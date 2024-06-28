@@ -265,6 +265,17 @@ export default function Login(props) {
               >
                 Inicia sesión
               </Button>
+              <Grid item>
+                <Link
+                  href="#"
+                  onClick={() => {
+                    history.push({ pathname: "/olvido-contraseña" });
+                  }}
+                  variant="body2"
+                >
+                  {"¿Olvidaste tu contraseña? Recupérala"}
+                </Link>
+              </Grid>
               <Box mt={5}>
                 <Copyright />
               </Box>

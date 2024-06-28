@@ -227,7 +227,7 @@ const getComission = (
     const applied = org?.agreement.appliedProducts.find(
       (el) => el.id === item._id
     );
-    const varApplied = applied.variants.find((v) => v.name === item.selection);
+    const varApplied = applied?.variants.find((v) => v.name === item.selection);
 
     let percentage =
       item.selection !== undefined && typeof item.selection === "string"

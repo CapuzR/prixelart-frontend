@@ -866,7 +866,7 @@ export default function UpdateSurcharge(props) {
           disabled={buttonState}
           style={{ marginTop: 20 }}
         >
-          Crear
+          Actualizar
         </Button>
       </form>
 

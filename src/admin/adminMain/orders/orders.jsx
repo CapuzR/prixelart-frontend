@@ -798,11 +798,10 @@ export default function Orders(props) {
           sur.appliedUsers.includes(item.art.prixerUsername) ||
           sur.appliedUsers.includes(item.art.owner)
       );
+      console.log(surcharge, "recargo")
       let consumersFiltered = consumers.filter(
         (con) => con.consumerType === "Prixer"
       );
-      console.log(item.art.owner, "owner");
-      console.log(orgs);
       const ORGS = orgs.find((o) => o.username === item.art.owner);
       const prx = await findPrixer(item.art.prixerUsername);
       const prixer = await consumersFiltered.find(
@@ -823,14 +822,14 @@ export default function Orders(props) {
         let profit = item.product.finalPrice;
 
         let p = ORGS?.agreement?.appliedProducts?.find(
-          (p) => p._id === item.product._id
+          (p) => p.id === item.product._id
         );
-
+        console.log(p, "producto")
         let co =
           p?.variants?.length > 0
             ? Number(p?.variants[0]?.cporg)
             : Number(p?.cporg);
-console.log(co)
+        console.log(co, "cporg")
         if (
           order.consumerData &&
           order.consumerData.consumerType === "DAs" &&
@@ -856,20 +855,22 @@ console.log(co)
         ) {
           co = co - (co / 100) * ORGS.agreement.considerations["artista"];
         }
-        console.log(co)
+        console.log(co, "modified cporg")
 
         let prev = (profit / 100) * (co || ORGS.agreement.comission);
         let total;
 
-        if (surcharge.length > 0) {
-          if (surcharge[0].type === "Porcentaje") {
-            total = prev - (prev / 100) * surcharge[0].value;
-          } else if (surcharge[0].type === "Monto") {
-            total = prev - surcharge[0].value;
+        if (surcharge !== undefined) {
+          if (surcharge.type === "Porcentaje") {
+            total = prev - (prev / 100) * surcharge.value;
+
+          } else if (surcharge.type === "Monto") {
+            total = prev - surcharge.value;
           }
         } else {
           total = prev;
         }
+        console.log(total)
         amount = total * item.quantity;
 
         console.log("La comisión es de $", amount);
@@ -946,8 +947,6 @@ console.log(co)
 console.log(amount, "amount after surcharge")
         amount = amount * item.quantity;
       }
-      console.log(item.art?.prixerUsername, "author")
-      console.log(destinatary, "account destinatary")
       if (
         item.art?.prixerUsername &&
         item.art?.prixerUsername !== "Personalizado" &&

@@ -340,6 +340,8 @@ export default function ShoppingCart(props) {
     discountList,
     prixer
   ) => {
+        let selectedOrg =  checkOrgs(art)
+
     if (prices.length === 0) {
       setPrices([
         UnitPriceSug(
@@ -349,7 +351,7 @@ export default function ShoppingCart(props) {
           dollarValue,
           discountList,
           prixer,
-          checkOrgs(art),
+          selectedOrg,
           props.consumerType
         ),
       ]);
@@ -362,8 +364,7 @@ export default function ShoppingCart(props) {
         dollarValue,
         discountList,
         prixer,
-        checkOrgs(art),
-        props.consumerType
+selectedOrg,        props.consumerType
       );
       setPrices(prev);
     } else {
@@ -376,8 +377,7 @@ export default function ShoppingCart(props) {
           dollarValue,
           discountList,
           prixer,
-          checkOrgs(art),
-          props.consumerType
+selectedOrg,          props.consumerType
         ),
       ]);
     }
@@ -390,7 +390,7 @@ export default function ShoppingCart(props) {
   };
 
   const checkOrgs = (art) => {
-    const org = props?.orgs?.find((el) => el.username === art.owner);
+    const org = props?.orgs?.find((el) => el.username === art.prixerUsername);
     console.log(org);
     return org;
   };
@@ -415,6 +415,7 @@ export default function ShoppingCart(props) {
 
   const changeArt = async (art, product, index) => {
     let prod = product;
+    let selectedOrg = checkOrgs(art);
     let newPrice = await UnitPriceSug(
       prod,
       art,
@@ -422,7 +423,7 @@ export default function ShoppingCart(props) {
       props.dollarValue,
       props.discountList,
       props?.selectedPrixer?.username,
-      checkOrgs(art),
+      selectedOrg,
       props.consumerType
     );
     prod.finalPrice = Number(newPrice?.replace(/[,]/gi, "."));
@@ -435,7 +436,7 @@ export default function ShoppingCart(props) {
       1,
       props?.selectedPrixer?.username,
       props.surchargeList,
-      checkOrgs(art),
+      selectedOrg,
       props.consumerType
     );
     props.setSelectedProductToAssociate({
@@ -484,6 +485,8 @@ export default function ShoppingCart(props) {
     let selectedProductFull = productList.find(
       (result) => result.name === selectedProduct
     );
+    let selectedOrg = checkOrgs(art)
+
     if (art) {
       selectedProductFull.comission = getComission(
         selectedProductFull,
@@ -494,7 +497,7 @@ export default function ShoppingCart(props) {
         1,
         props?.selectedPrixer?.username,
         props.surchargeList,
-        checkOrgs(art),
+       selectedOrg,
         props.consumerType
       );
 
@@ -540,6 +543,7 @@ export default function ShoppingCart(props) {
       selection = prod.variants.find((v) => v.name === variant);
       prod.publicEquation = selection?.publicPrice?.equation;
       prod.prixerEquation = selection?.prixerPrice?.equation;
+    let selectedOrg = checkOrgs(item.art);
 
       if (item.art) {
         prod.comission = getComission(
@@ -551,8 +555,7 @@ export default function ShoppingCart(props) {
           item.quantity,
           props?.selectedPrixer?.username,
           props.surchargeList,
-          checkOrgs(item.art),
-          props.consumerType
+selectedOrg,          props.consumerType
         );
 
         prod.finalPrice = Number(
@@ -563,8 +566,7 @@ export default function ShoppingCart(props) {
             1,
             props.discountList,
             props?.selectedPrixer?.username,
-            checkOrgs(item.art),
-            props.consumerType
+selectedOrg,            props.consumerType
           )?.replace(/[,]/gi, ".")
         );
       }
@@ -601,6 +603,7 @@ export default function ShoppingCart(props) {
       i === index ? newPrice.replace(/[,]/gi, ".") : price
     );
     setPrices(updatedPrices);
+    let selectedOrg = checkOrgs(item.art);
 
     item.product.comission = getComission(
       item.product,
@@ -611,8 +614,7 @@ export default function ShoppingCart(props) {
       item.quantity,
       props?.selectedPrixer?.username,
       props.surchargeList,
-      checkOrgs(item.art),
-      props.consumerType
+selectedOrg,      props.consumerType
     );
     purchase.splice(index, 1, item);
     localStorage.setItem("buyState", JSON.stringify(purchase));

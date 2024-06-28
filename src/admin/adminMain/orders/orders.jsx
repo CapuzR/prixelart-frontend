@@ -320,7 +320,7 @@ export default function Orders(props) {
         console.log(error);
       });
   };
-  console.log(orgs);
+
   const findPrixer = async (prx) => {
     const base_url = process.env.REACT_APP_BACKEND_URL + "/prixer/read";
     return await axios
@@ -798,7 +798,6 @@ export default function Orders(props) {
           sur.appliedUsers.includes(item.art.prixerUsername) ||
           sur.appliedUsers.includes(item.art.owner)
       );
-      console.log(surcharge, "recargo")
       let consumersFiltered = consumers.filter(
         (con) => con.consumerType === "Prixer"
       );
@@ -813,23 +812,18 @@ export default function Orders(props) {
             ?.toLowerCase()
             .includes(props?.basicData?.lastname?.toLowerCase())
       );
-      // console.log(prixer, "prixer encontrado") Undefined pero no importa de momento
-        console.log(ORGS, "org in payComission function")
-
       if (ORGS !== undefined) {
 
         destinatary = ORGS.account;
         let profit = item.product.finalPrice;
 
         let p = ORGS?.agreement?.appliedProducts?.find(
-          (p) => p.id === item.product._id
+          (p) => p._id === item.product._id
         );
-        console.log(p, "producto")
         let co =
           p?.variants?.length > 0
             ? Number(p?.variants[0]?.cporg)
             : Number(p?.cporg);
-        console.log(co, "cporg")
         if (
           order.consumerData &&
           order.consumerData.consumerType === "DAs" &&
@@ -855,7 +849,6 @@ export default function Orders(props) {
         ) {
           co = co - (co / 100) * ORGS.agreement.considerations["artista"];
         }
-        console.log(co, "modified cporg")
 
         let prev = (profit / 100) * (co || ORGS.agreement.comission);
         let total;
@@ -870,7 +863,6 @@ export default function Orders(props) {
         } else {
           total = prev;
         }
-        console.log(total)
         amount = total * item.quantity;
 
         console.log("La comisión es de $", amount);
@@ -933,7 +925,6 @@ export default function Orders(props) {
         // Calcular comisión
         amount = (unitPrice / 100) * (item.art.comission || 10);
         // Aplcar recargo
-        console.log(surcharge, "recargo")
         if (surcharge) {
           let total;
           if (surcharge.type === "Porcentaje") {

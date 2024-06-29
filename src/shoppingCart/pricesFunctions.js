@@ -62,7 +62,6 @@ const UnitPriceSug = (
 ) => {
   let { price, base } = 0;
   let dis = discountList?.filter((dis) => dis._id === product.discount)[0];
-  console.log(org)
   if (org !== undefined) {
     price = UnitPriceForOrg(product, art, prixer, org, consumerType);
   } else {
@@ -157,10 +156,10 @@ const UnitPriceForOrg = (product, art, prixer, org, consumerType) => {
   const applied = org?.agreement.appliedProducts.find(
     (el) => el.id === product._id
   );
-  const varApplied = applied.variants.find((v) => v.name === product.selection);
+  const varApplied = applied.variants?.find((v) => v.name.includes(product.selection));
   let percentage =
     product.selection !== undefined && typeof product.selection === "string"
-      ? varApplied.cporg
+      ? varApplied?.cporg
       : applied.cporg;
 
   let consumerVar = consumerType.toLowerCase();
@@ -169,11 +168,8 @@ const UnitPriceForOrg = (product, art, prixer, org, consumerType) => {
     if (consumerVar?.includes(prop)) {
       let c = (percentage / 100) * org.agreement.considerations[p];
       percentage = percentage - c;
-      console.log(percentage, "percentage 1");
     }
   }
-  console.log(percentage, "percentage");
-
   price = base / (1 - Number(percentage) / 100);
   console.log(price, "final price ORG");
   return price;
@@ -242,7 +238,6 @@ const getComission = (
           if (consumer?.includes(prop)) {
             let c = (percentage / 100) * org.agreement.considerations[p];
             total = percentage - c;
-            console.log(total, "porcentaje para" + prop);
           }
         }
     }
@@ -1012,6 +1007,7 @@ const getTotalUnitsPVM = (
 export {
   UnitPrice,
   UnitPriceSug,
+  UnitPriceForOrg,
   getComission,
   getPVPtext,
   getPVMtext,

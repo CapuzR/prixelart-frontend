@@ -399,9 +399,9 @@ selectedOrg,          props.consumerType
     const org = props?.orgs.find((el) => el.username === item.art.owner);
 
     const applied = org?.agreement.appliedProducts.find(
-      (el) => el.id === item.product._id
+      (el) => el._id === item.product._id
     );
-    const varApplied = applied.variants.find(
+    const varApplied = applied?.variants.find(
       (v) => v.name === item.product.selection
     );
     let percentage =
@@ -534,13 +534,13 @@ selectedOrg,          props.consumerType
       } else {
         namev2 = name[0];
       }
-      let selectionv2 = item.product.variants.find(
+      let selectionv2 = item.product?.variants.find(
         (v) => v.name === namev2 && v.attributes[1].value === name[3]
       );
       prod.publicEquation = selectionv2?.publicPrice?.equation;
       prod.prixerEquation = selectionv2?.prixerPrice?.equation;
     } else if (variant !== "Personalizado") {
-      selection = prod.variants.find((v) => v.name === variant);
+      selection = prod?.variants.find((v) => v.name === variant);
       prod.publicEquation = selection?.publicPrice?.equation;
       prod.prixerEquation = selection?.prixerPrice?.equation;
     let selectedOrg = checkOrgs(item.art);
@@ -790,7 +790,7 @@ selectedOrg,      props.consumerType
                             })}
                         </Select>
                       </FormControl>
-                      {buy.product.variants.length > 0 && (
+                      {buy.product?.variants.length > 0 && (
                         <FormControl
                           className={classes.formControl}
                           style={{ minWidth: 200 }}

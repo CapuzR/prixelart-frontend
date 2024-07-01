@@ -150,6 +150,7 @@ export default function ShoppingPage(props) {
   const [discountList, setDiscountList] = useState([]);
   const [seller, setSeller] = useState();
   const [expanded, setExpanded] = useState(false);
+  const [orgs, setOrgs] = useState([]);
 
   const getDiscounts = async () => {
     const base_url = process.env.REACT_APP_BACKEND_URL + "/discount/read-allv2";
@@ -163,8 +164,22 @@ export default function ShoppingPage(props) {
       });
   };
 
+    const getORGs = async () => {
+    const base_url =
+      process.env.REACT_APP_BACKEND_URL + "/organization/read-all-full";
+    await axios
+      .get(base_url)
+      .then((response) => {
+        setOrgs(response.data.organizations);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
   useEffect(() => {
     getDiscounts();
+    getORGs();
   }, []);
 
   const handleBack = () => {
@@ -572,6 +587,7 @@ export default function ShoppingPage(props) {
                 setOpen={props.setOpen}
                 setMessage={props.setMessage}
                 handleBuy={handleBuy}
+                orgs={orgs}
               />
             </Grid>
 
@@ -628,6 +644,7 @@ export default function ShoppingPage(props) {
                       dollarValue={dollarValue}
                       currency={currency}
                       setSeller={setSeller}
+                      orgs={orgs}
                     />
                   )}
                 </div>

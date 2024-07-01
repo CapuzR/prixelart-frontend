@@ -26,6 +26,7 @@ import {
   getPVM,
   getTotalUnitsPVP,
   getTotalUnitsPVM,
+  UnitPriceForOrg
 } from "./pricesFunctions";
 
 const useStyles = makeStyles((theme) => ({
@@ -64,7 +65,14 @@ export default function OrderForm(props) {
 
   useEffect(() => {
     getDiscounts();
+    getPaymentMethod();
+    getSellers();
   }, []);
+
+      const checkOrgs = (art) => {
+    const org = props.orgs?.find((el) => el.username === art.prixerUsername);
+    return org;
+  };
 
   const getBalance = async () => {
     const url = process.env.REACT_APP_BACKEND_URL + "/account/readById";
@@ -100,11 +108,6 @@ export default function OrderForm(props) {
   };
 
   useEffect(() => {
-    getPaymentMethod();
-    getSellers();
-  }, []);
-
-  useEffect(() => {
     if (
       JSON.parse(localStorage.getItem("token")) &&
       JSON.parse(localStorage.getItem("token")).username
@@ -121,6 +124,8 @@ export default function OrderForm(props) {
   };
 
   const getTotalPrice = (state) => {
+        // const org = checkOrgs(item.art)
+
     if (
       JSON.parse(localStorage?.getItem("token")) &&
       JSON.parse(localStorage?.getItem("token"))?.username
@@ -148,7 +153,20 @@ export default function OrderForm(props) {
     }
   };
   const PriceSelect = (item) => {
-    if (
+        const org = checkOrgs(item.art)
+    if (org !== undefined) {
+      return (UnitPriceForOrg(
+        item.product,
+        item.art,
+        prixer,
+         org,
+        "Particular"
+      )* (item.quantity || 1)).toLocaleString("de-DE", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      })
+    }
+    else if (
       JSON.parse(localStorage?.getItem("token")) &&
       JSON.parse(localStorage?.getItem("token"))?.username
     ) {

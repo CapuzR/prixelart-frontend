@@ -21,7 +21,7 @@ import { useHistory } from "react-router-dom";
 import IconButton from "@material-ui/core/IconButton";
 import { Typography } from "@material-ui/core";
 import WarpImage from "../admin/productCrud/warpImage";
-import { getPVM, getPVP, getComission } from "./pricesFunctions";
+import { getPVM, getPVP, getComission, UnitPriceSug, UnitPriceForOrg } from "./pricesFunctions";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -65,16 +65,33 @@ export default function CartReview(props) {
       });
   };
 
+
   useEffect(() => {
     getDiscounts();
   }, []);
 
+    const checkOrgs = (art) => {
+    const org = props.orgs?.find((el) => el.username === art.prixerUsername);
+    return org;
+  };
+
   const PriceSelect = (item) => {
-    if (
+    const org = checkOrgs(item.art)
+          const prixer = JSON.parse(localStorage?.getItem("token"))?.username;
+// Falta hacer funcionar los precios de ORG para Particulares
+    if (org !== undefined) {
+      return UnitPriceForOrg(
+        item.product,
+        item.art,
+        prixer,
+         org,
+        "Particular"
+      )
+    }
+    else if (
       JSON.parse(localStorage?.getItem("token")) &&
       JSON.parse(localStorage?.getItem("token"))?.username
     ) {
-      const prixer = JSON.parse(localStorage?.getItem("token"))?.username;
 
       return getPVM(
         item,
@@ -808,7 +825,7 @@ export default function CartReview(props) {
                   )}
                 </Grid>
 
-                {buy.art &&
+                {/* {buy.art &&
                   buy.product &&
                   buy.art.exclusive === "exclusive" && (
                     <Grid
@@ -858,7 +875,7 @@ export default function CartReview(props) {
                         de comisión
                       </Typography>
                     </Grid>
-                  )}
+                  )} */}
               </Grid>
             </Paper>
           </Grid>

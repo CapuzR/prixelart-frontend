@@ -407,8 +407,8 @@ selectedOrg,          props.consumerType
     let percentage =
       item.product.selection !== undefined &&
       typeof item.product.selection === "string"
-        ? varApplied.cporg
-        : applied.cporg;
+        ? varApplied?.cporg
+        : applied?.cporg;
 
     return percentage;
   };
@@ -1266,6 +1266,7 @@ selectedOrg,      props.consumerType
                                   product: buy.product,
                                   quantity: e.target.value,
                                   prixer: props?.selectedPrixer?.username,
+                                  consumerType: props.consumerType
                                 });
                               }}
                             />

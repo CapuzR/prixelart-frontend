@@ -170,6 +170,7 @@ function App() {
         console.log(error);
       });
   };
+
   useEffect(() => {
     readDollarValue();
     checkP();
@@ -325,7 +326,8 @@ function App() {
         input.quantity,
         input.prixer,
         surchargeList,
-        checkOrgs(newState[input.index].art)
+        checkOrgs(newState[input.index].art),
+        input.consumerType
       );
       newState[input.index].quantity = input.quantity;
       setBuyState(newState);

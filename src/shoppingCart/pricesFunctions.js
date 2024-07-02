@@ -162,7 +162,7 @@ const UnitPriceForOrg = (product, art, prixer, org, consumerType) => {
       ? varApplied?.cporg
       : applied.cporg;
 
-  let consumerVar = consumerType.toLowerCase();
+  let consumerVar = consumerType?.toLowerCase();
   for (const p in org.agreement.considerations) {
     const prop = p.toLowerCase();
     if (consumerVar?.includes(prop)) {
@@ -227,11 +227,11 @@ const getComission = (
 
     let percentage =
       item.selection !== undefined && typeof item.selection === "string"
-        ? varApplied.cporg
-        : applied.cporg;
+        ? varApplied?.cporg
+        : applied?.cporg || 10;
     total = (unit / 100) * percentage;
 
-        if (consumerType !== "Particular") {
+        if (consumerType && consumerType !== "Particular") {
       let consumer = consumerType.toLowerCase();
         for (const p in org.agreement.considerations) {
           const prop = p.toLowerCase();

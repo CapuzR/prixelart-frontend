@@ -1,31 +1,33 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-import Grid from "@material-ui/core/Grid";
-import Paper from "@material-ui/core/Paper";
-import { useTheme } from "@material-ui/core/styles";
-import { makeStyles } from "@material-ui/core/styles";
-import { Typography } from "@material-ui/core";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
-import IconButton from "@material-ui/core/IconButton";
-import MenuItem from "@material-ui/core/MenuItem";
-import Select from "@material-ui/core/Select";
-import DeleteIcon from "@material-ui/icons/Delete";
-import FilterNoneIcon from "@material-ui/icons/FilterNone";
-import FormControl from "@material-ui/core/FormControl";
-import InputLabel from "@material-ui/core/InputLabel";
-import TextField from "@material-ui/core/TextField";
-import InputAdornment from "@material-ui/core/InputAdornment";
-import Img from "react-cool-img";
-import Tooltip from "@material-ui/core/Tooltip";
-import { getAttributes, getEquation } from "../../../products/services";
-import x from "../../../apple-touch-icon-180x180.png";
+import React, { useEffect, useState } from "react"
+import axios from "axios"
+import Grid from "@material-ui/core/Grid"
+import Paper from "@material-ui/core/Paper"
+import { useTheme } from "@material-ui/core/styles"
+import { makeStyles } from "@material-ui/core/styles"
+import { Typography } from "@material-ui/core"
+import useMediaQuery from "@material-ui/core/useMediaQuery"
+import IconButton from "@material-ui/core/IconButton"
+import MenuItem from "@material-ui/core/MenuItem"
+import Select from "@material-ui/core/Select"
+import DeleteIcon from "@material-ui/icons/Delete"
+import FilterNoneIcon from "@material-ui/icons/FilterNone"
+import FormControl from "@material-ui/core/FormControl"
+import InputLabel from "@material-ui/core/InputLabel"
+import TextField from "@material-ui/core/TextField"
+import InputAdornment from "@material-ui/core/InputAdornment"
+import Img from "react-cool-img"
+import Tooltip from "@material-ui/core/Tooltip"
+import { getAttributes, getEquation } from "../../../products/services"
+import StarOutline from "@material-ui/icons/StarOutline"
+
+import x from "../../../apple-touch-icon-180x180.png"
 import {
   UnitPrice,
   UnitPriceSug,
   getComission,
-} from "../../../shoppingCart/pricesFunctions";
-import { update } from "immutable";
-const drawerWidth = 240;
+} from "../../../shoppingCart/pricesFunctions"
+import { update } from "immutable"
+const drawerWidth = 240
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -228,84 +230,84 @@ const useStyles = makeStyles((theme) => ({
       width: "25ch",
     },
   },
-}));
+}))
 
 export default function ShoppingCart(props) {
-  const classes = useStyles();
-  const theme = useTheme();
+  const classes = useStyles()
+  const theme = useTheme()
 
-  const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
-  const [productList, setProductList] = useState([]);
-  const [artist, setArtist] = useState([]);
-  const [artList, setArtList] = useState([]);
-  const [artList0, setArtList0] = useState([]);
-  const [artistFilter, setArtistFilter] = useState();
-  const [selectedArtist, setSelectedArtist] = useState([]);
-  const [prices, setPrices] = useState([]);
+  const isDesktop = useMediaQuery(theme.breakpoints.up("md"))
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"))
+  const [productList, setProductList] = useState([])
+  const [artist, setArtist] = useState([])
+  const [artList, setArtList] = useState([])
+  const [artList0, setArtList0] = useState([])
+  const [artistFilter, setArtistFilter] = useState()
+  const [selectedArtist, setSelectedArtist] = useState([])
+  const [prices, setPrices] = useState([])
 
-  let custom = { name: "Personalizado", attributes: [{ value: "0x0cm" }] };
+  let custom = { name: "Personalizado", attributes: [{ value: "0x0cm" }] }
 
   const getProducts = async () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + "/product/read-all";
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/product/read-all"
     await axios.get(base_url).then(async (response) => {
-      let productsAttTemp1 = response.data.products;
+      let productsAttTemp1 = response.data.products
       await productsAttTemp1.map(async (p, iProd, pArr) => {
-        productsAttTemp1 = await getEquation(p, iProd, pArr);
-      });
+        productsAttTemp1 = await getEquation(p, iProd, pArr)
+      })
       setProductList(
         getAttributes(productsAttTemp1).sort(function (a, b) {
           if (a.name.toLowerCase() > b.name.toLowerCase()) {
-            return 1;
+            return 1
           }
           if (a.name.toLowerCase() < b.name.toLowerCase()) {
-            return -1;
+            return -1
           }
-          return 0;
+          return 0
         })
-      );
-    });
-  };
+      )
+    })
+  }
 
   const getArts = async () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + "/art/read-all";
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/art/read-all"
     await axios.get(base_url).then((response) => {
-      const arts = response.data.arts;
-      arts.unshift({ title: "Personalizado" });
-      let artist = [];
+      const arts = response.data.arts
+      arts.unshift({ title: "Personalizado" })
+      let artist = []
       arts.map((art) => {
         if (artist.includes(art.prixerUsername)) {
-          return;
+          return
         } else {
-          artist.push(art.prixerUsername);
+          artist.push(art.prixerUsername)
           arts.push({
             title: "Personalizado",
             owner: art.prixerUsername,
             prixerUsername: art.prixerUsername,
             comission: 10,
-          });
-          setArtList(arts);
-          setArtList0(arts);
+          })
+          setArtList(arts)
+          setArtList0(arts)
         }
-      });
-      setArtist(artist);
-    });
-  };
+      })
+      setArtist(artist)
+    })
+  }
 
   useEffect(() => {
-    getProducts();
-    getArts();
-  }, []);
+    getProducts()
+    getArts()
+  }, [])
 
   useEffect(() => {
-    let pricesList = [];
-    let artists = selectedArtist;
+    let pricesList = []
+    let artists = selectedArtist
 
     props.buyState.map((item) => {
       if (item.art) {
-        artists.push(item.art.prixerUsername);
+        artists.push(item.art.prixerUsername)
       } else {
-        artists.push(undefined);
+        artists.push(undefined)
       }
       if (item.art && item.product) {
         pricesList.push(
@@ -317,19 +319,19 @@ export default function ShoppingCart(props) {
             props.discountList,
             props?.selectedPrixer?.username
           )
-        );
+        )
       }
-    });
-    setPrices(pricesList);
-    setSelectedArtist(artists);
-  }, []);
+    })
+    setPrices(pricesList)
+    setSelectedArtist(artists)
+  }, [])
 
   const changeArtistFilter = (artist, i) => {
-    setArtistFilter(artist);
-    let artists = selectedArtist;
-    artists[i] = artist;
-    setSelectedArtist(artists);
-  };
+    setArtistFilter(artist)
+    let artists = selectedArtist
+    artists[i] = artist
+    setSelectedArtist(artists)
+  }
 
   const updatePrices = (
     index,
@@ -340,7 +342,7 @@ export default function ShoppingCart(props) {
     discountList,
     prixer
   ) => {
-        let selectedOrg =  checkOrgs(art)
+    let selectedOrg = checkOrgs(art)
 
     if (prices.length === 0) {
       setPrices([
@@ -354,9 +356,9 @@ export default function ShoppingCart(props) {
           selectedOrg,
           props.consumerType
         ),
-      ]);
+      ])
     } else if (index <= prices.length) {
-      let prev = prices;
+      let prev = prices
       prev[index] = UnitPriceSug(
         prod,
         art,
@@ -364,9 +366,10 @@ export default function ShoppingCart(props) {
         dollarValue,
         discountList,
         prixer,
-selectedOrg,        props.consumerType
-      );
-      setPrices(prev);
+        selectedOrg,
+        props.consumerType
+      )
+      setPrices(prev)
     } else {
       setPrices([
         ...prices,
@@ -377,45 +380,47 @@ selectedOrg,        props.consumerType
           dollarValue,
           discountList,
           prixer,
-selectedOrg,          props.consumerType
+          selectedOrg,
+          props.consumerType
         ),
-      ]);
+      ])
     }
-  };
+  }
 
   const removePrixer = (index) => {
-    let artists = selectedArtist;
-    artists.splice(index, 1);
-    setSelectedArtist(artists);
-  };
+    let artists = selectedArtist
+    artists.splice(index, 1)
+    setSelectedArtist(artists)
+  }
 
   const checkOrgs = (art) => {
-    const org = props?.orgs?.find((el) => el.username === art.prixerUsername);
-    console.log(org);
-    return org;
-  };
+    if (art !== undefined) {
+      const org = props?.orgs?.find((el) => el.username === art?.prixerUsername)
+      return org
+    }
+  }
 
   const getCporg = (item) => {
-    const org = props?.orgs.find((el) => el.username === item.art.owner);
+    const org = props?.orgs.find((el) => el.username === item.art.owner)
 
     const applied = org?.agreement.appliedProducts.find(
       (el) => el._id === item.product._id
-    );
+    )
     const varApplied = applied?.variants.find(
       (v) => v.name === item.product.selection
-    );
+    )
     let percentage =
       item.product.selection !== undefined &&
       typeof item.product.selection === "string"
         ? varApplied?.cporg
-        : applied?.cporg;
+        : applied?.cporg
 
-    return percentage;
-  };
+    return percentage
+  }
 
   const changeArt = async (art, product, index) => {
-    let prod = product;
-    let selectedOrg = checkOrgs(art);
+    let prod = product
+    let selectedOrg = checkOrgs(art)
     let newPrice = await UnitPriceSug(
       prod,
       art,
@@ -425,8 +430,8 @@ selectedOrg,          props.consumerType
       props?.selectedPrixer?.username,
       selectedOrg,
       props.consumerType
-    );
-    prod.finalPrice = Number(newPrice?.replace(/[,]/gi, "."));
+    )
+    prod.finalPrice = Number(newPrice?.replace(/[,]/gi, "."))
     prod.comission = getComission(
       prod,
       art,
@@ -438,27 +443,27 @@ selectedOrg,          props.consumerType
       props.surchargeList,
       selectedOrg,
       props.consumerType
-    );
+    )
     props.setSelectedProductToAssociate({
       index,
       item: prod,
       previous: true,
-    });
+    })
     props.AssociateProduct({
       index: index,
       item: prod,
       type: "product",
-    });
-    let selectedArt = art;
+    })
+    let selectedArt = art
     let selectedArtFull = artList.find(
       (result) => result.artId === selectedArt.artId
-    );
+    )
     props.AssociateProduct({
       index: index,
       item: art.title === "Personalizado" ? art : selectedArtFull,
       type: "art",
-    });
-    setArtistFilter(undefined);
+    })
+    setArtistFilter(undefined)
 
     updatePrices(
       index,
@@ -468,23 +473,23 @@ selectedOrg,          props.consumerType
       props.dollarValue,
       props.discountList,
       props?.selectedPrixer?.username
-    );
+    )
 
-    let prev = selectedArtist;
-    prev.splice(index, 1, art.prixerUsername);
-    setSelectedArtist(prev);
-  };
+    let prev = selectedArtist
+    prev.splice(index, 1, art.prixerUsername)
+    setSelectedArtist(prev)
+  }
 
   const changeProduct = (event, art, index) => {
     props.setSelectedArtToAssociate({
       index,
       item: art,
       previous: true,
-    });
-    let selectedProduct = event.target.value;
+    })
+    let selectedProduct = event.target.value
     let selectedProductFull = productList.find(
       (result) => result.name === selectedProduct
-    );
+    )
     let selectedOrg = checkOrgs(art)
 
     if (art) {
@@ -497,9 +502,9 @@ selectedOrg,          props.consumerType
         1,
         props?.selectedPrixer?.username,
         props.surchargeList,
-       selectedOrg,
+        selectedOrg,
         props.consumerType
-      );
+      )
 
       updatePrices(
         index,
@@ -509,41 +514,41 @@ selectedOrg,          props.consumerType
         props.dollarValue,
         props.discountList,
         props?.selectedPrixer?.username
-      );
+      )
     }
     props.AssociateProduct({
       index: index,
       item: selectedProductFull,
       type: "product",
-    });
-  };
+    })
+  }
 
   const handleVariantProduct = (variant, index, item) => {
-    let prod = item.product;
-    prod.selection = variant;
-    let selection;
+    let prod = item.product
+    prod.selection = variant
+    let selection
     if (
       variant !== "Personalizado" &&
       item.product.attributes.length > 1 &&
       item.product.name !== "Qrvo"
     ) {
-      let name = variant.split(" ");
-      let namev2;
+      let name = variant.split(" ")
+      let namev2
       if (name.length === 4) {
-        namev2 = `${name[0]} ${name[1]} ${name[2]}`;
+        namev2 = `${name[0]} ${name[1]} ${name[2]}`
       } else {
-        namev2 = name[0];
+        namev2 = name[0]
       }
       let selectionv2 = item.product?.variants.find(
         (v) => v.name === namev2 && v.attributes[1].value === name[3]
-      );
-      prod.publicEquation = selectionv2?.publicPrice?.equation;
-      prod.prixerEquation = selectionv2?.prixerPrice?.equation;
+      )
+      prod.publicEquation = selectionv2?.publicPrice?.equation
+      prod.prixerEquation = selectionv2?.prixerPrice?.equation
     } else if (variant !== "Personalizado") {
-      selection = prod?.variants.find((v) => v.name === variant);
-      prod.publicEquation = selection?.publicPrice?.equation;
-      prod.prixerEquation = selection?.prixerPrice?.equation;
-    let selectedOrg = checkOrgs(item.art);
+      selection = prod?.variants.find((v) => v.name === variant)
+      prod.publicEquation = selection?.publicPrice?.equation
+      prod.prixerEquation = selection?.prixerPrice?.equation
+      let selectedOrg = checkOrgs(item.art)
 
       if (item.art) {
         prod.comission = getComission(
@@ -555,8 +560,9 @@ selectedOrg,          props.consumerType
           item.quantity,
           props?.selectedPrixer?.username,
           props.surchargeList,
-selectedOrg,          props.consumerType
-        );
+          selectedOrg,
+          props.consumerType
+        )
 
         prod.finalPrice = Number(
           UnitPriceSug(
@@ -566,19 +572,20 @@ selectedOrg,          props.consumerType
             1,
             props.discountList,
             props?.selectedPrixer?.username,
-selectedOrg,            props.consumerType
+            selectedOrg,
+            props.consumerType
           )?.replace(/[,]/gi, ".")
-        );
+        )
       }
     } else {
-      prod.publicEquation = 0;
+      prod.publicEquation = 0
     }
 
     props.AssociateProduct({
       index: index,
       item: prod,
       type: "product",
-    });
+    })
 
     if (item.art) {
       updatePrices(
@@ -589,21 +596,21 @@ selectedOrg,            props.consumerType
         1,
         props.discountList,
         props?.selectedPrixer?.username
-      );
+      )
     }
-  };
+  }
 
   const modifyPrice = (index, newPrice) => {
-    const purchase = props.buyState;
-    let item = purchase[index];
-    item.product.modifyPrice = true;
-    item.product.finalPrice = Number(newPrice.replace(/[,]/gi, "."));
+    const purchase = props.buyState
+    let item = purchase[index]
+    item.product.modifyPrice = true
+    item.product.finalPrice = Number(newPrice.replace(/[,]/gi, "."))
 
     const updatedPrices = prices.map((price, i) =>
       i === index ? newPrice.replace(/[,]/gi, ".") : price
-    );
-    setPrices(updatedPrices);
-    let selectedOrg = checkOrgs(item.art);
+    )
+    setPrices(updatedPrices)
+    let selectedOrg = checkOrgs(item.art)
 
     item.product.comission = getComission(
       item.product,
@@ -614,37 +621,38 @@ selectedOrg,            props.consumerType
       item.quantity,
       props?.selectedPrixer?.username,
       props.surchargeList,
-selectedOrg,      props.consumerType
-    );
-    purchase.splice(index, 1, item);
-    localStorage.setItem("buyState", JSON.stringify(purchase));
-    props.setBuyState(purchase);
-  };
+      selectedOrg,
+      props.consumerType
+    )
+    purchase.splice(index, 1, item)
+    localStorage.setItem("buyState", JSON.stringify(purchase))
+    props.setBuyState(purchase)
+  }
 
   const modifyVariant = (product, index, dimension, value) => {
-    const purchase = props.buyState;
-    let item = purchase[index];
+    const purchase = props.buyState
+    let item = purchase[index]
     if (product.selection?.attributes) {
-      let prev = product.selection.attributes[0].value;
-      let v2 = prev.split("x");
+      let prev = product.selection.attributes[0].value
+      let v2 = prev.split("x")
       if (dimension === "width") {
         product.selection.attributes = [
           {
             name: "Medida",
             value: `${value}x${v2[1]}`,
           },
-        ];
+        ]
       } else if (dimension === "height") {
         product.selection.attributes = [
           {
             name: "Medida",
             value: `${v2[0]}x${value}cm`,
           },
-        ];
+        ]
       }
     } else {
-      let selection = { name: "Personalizado" };
-      product.selection = selection;
+      let selection = { name: "Personalizado" }
+      product.selection = selection
 
       if (dimension === "width") {
         product.selection.attributes = [
@@ -652,51 +660,54 @@ selectedOrg,      props.consumerType
             name: "Medida",
             value: `${value}x0cm`,
           },
-        ];
+        ]
       } else if (dimension === "height") {
         product.selection.attributes = [
           {
             name: "Medida",
             value: `0x${value}cm`,
           },
-        ];
+        ]
       }
     }
-    let prev = product.selection?.attributes[0]?.value;
-    let v2 = prev.split("x");
+    let prev = product.selection?.attributes[0]?.value
+    let v2 = prev.split("x")
 
-    item.product = product;
-    purchase.splice(index, 1, item);
-    localStorage.setItem("buyState", JSON.stringify(purchase));
-    props.setBuyState(purchase);
-  };
+    item.product = product
+    purchase.splice(index, 1, item)
+    localStorage.setItem("buyState", JSON.stringify(purchase))
+    props.setBuyState(purchase)
+  }
 
   const handleProduct = (event) => {
-    let selectedProduct = event.target.value;
+    let selectedProduct = event.target.value
     props.addItemToBuyState({
       type: "product",
       item: selectedProduct,
-    });
+    })
 
-    setSelectedArtist([...selectedArtist, undefined]);
-  };
+    setSelectedArtist([...selectedArtist, undefined])
+  }
 
   const copyItem = (i) => {
-    let newState = JSON.parse(localStorage.getItem("buyState"));
-    newState.push(newState[i]);
-    props.setBuyState(newState);
-    localStorage.setItem("buyState", JSON.stringify(newState));
-    props.setErrorMessage("Item duplicado correctamente.");
-    props.setSnackBarError(true);
+    let newState = JSON.parse(localStorage.getItem("buyState"))
+    newState.push(newState[i])
+    props.setBuyState(newState)
+    localStorage.setItem("buyState", JSON.stringify(newState))
+    props.setErrorMessage("Item duplicado correctamente.")
+    props.setSnackBarError(true)
 
-    const prev = selectedArtist;
-    const lastIndex = prev.length;
+    const prev = selectedArtist
+    const lastIndex = prev.length
 
-    setSelectedArtist([...selectedArtist, prev[i]]);
-  };
+    setSelectedArtist([...selectedArtist, prev[i]])
+  }
 
   return (
-    <Grid container style={{ display: "flex", justifyContent: "center" }}>
+    <Grid
+      container
+      style={{ display: "flex", justifyContent: "center" }}
+    >
       {props.buyState.length > 0 &&
         props.buyState.map((buy, index) => {
           return (
@@ -726,7 +737,10 @@ selectedOrg,      props.consumerType
                 }}
                 elevation={3}
               >
-                <Grid item xs={5}>
+                <Grid
+                  item
+                  xs={5}
+                >
                   <div
                     style={{
                       display: "flex",
@@ -777,7 +791,7 @@ selectedOrg,      props.consumerType
                           variant="outlined"
                           value={buy.product.name}
                           onChange={(e) => {
-                            changeProduct(e, buy.art, index);
+                            changeProduct(e, buy.art, index)
                           }}
                         >
                           {productList[0] !== null &&
@@ -786,7 +800,7 @@ selectedOrg,      props.consumerType
                                 <MenuItem value={product.name}>
                                   {product.name}
                                 </MenuItem>
-                              );
+                              )
                             })}
                         </Select>
                       </FormControl>
@@ -810,7 +824,7 @@ selectedOrg,      props.consumerType
                                 e.target.value,
                                 index,
                                 props.buyState[index]
-                              );
+                              )
                             }}
                           >
                             {buy.product.hasSpecialVar && (
@@ -837,7 +851,7 @@ selectedOrg,      props.consumerType
                                         ? a.name + " " + a.attributes[1].value
                                         : a.name}
                                     </MenuItem>
-                                  );
+                                  )
                               })}
                           </Select>
                           {(buy.product?.selection?.name === "Personalizado" ||
@@ -955,13 +969,17 @@ selectedOrg,      props.consumerType
                                 {sur.appliedPercentage === "ownerComission" &&
                                   " sobre la comisión del Prixer/Org"}
                               </Typography>
-                            );
+                            )
                           }
                         })}
                     </div>
                   </div>
                 </Grid>
-                <Grid item xs={6} style={{ display: "flex" }}>
+                <Grid
+                  item
+                  xs={6}
+                  style={{ display: "flex" }}
+                >
                   <div
                     style={{
                       backgroundColor: "#eeeeee",
@@ -1019,12 +1037,7 @@ selectedOrg,      props.consumerType
                           {buy.art ? "Prixer" : "Selecciona un Prixer"}
                         </InputLabel>
                         <Select
-                          value={
-                            // buy.art
-                            //   ? buy.art.prixerUsername?.substring(0, 22)
-                            //   :
-                            selectedArtist[index]
-                          }
+                          value={selectedArtist[index]}
                           variant="outlined"
                           onChange={(e) =>
                             changeArtistFilter(e.target.value, index)
@@ -1034,7 +1047,7 @@ selectedOrg,      props.consumerType
                           <MenuItem value={undefined}>Todos</MenuItem>
                           {artist !== "" &&
                             artist.map((art) => {
-                              return <MenuItem value={art}>{art}</MenuItem>;
+                              return <MenuItem value={art}>{art}</MenuItem>
                             })}
                         </Select>
                       </FormControl>
@@ -1088,9 +1101,26 @@ selectedOrg,      props.consumerType
                                         alt={art.title}
                                         id={art?.artId}
                                       />
-                                      {art.title.substring(0, 22)}
+                                      <div
+                                        style={{
+                                          display: "flex",
+                                          justifyContent: "space-between",
+                                          width: "100%",
+                                        }}
+                                      >
+                                        {art.title.substring(0, 22)}
+                                        {art.comission > 10 && (
+                                          <StarOutline
+                                            style={{
+                                              color: "#d33f49",
+                                              marginLeft: "10px",
+                                            }}
+                                            fontSize="large"
+                                          />
+                                        )}
+                                      </div>
                                     </MenuItem>
-                                  );
+                                  )
                                 })
                             : artList0.map((art) => {
                                 return (
@@ -1117,7 +1147,7 @@ selectedOrg,      props.consumerType
                                     />
                                     {art.title.substring(0, 22)}
                                   </MenuItem>
-                                );
+                                )
                               })}
                         </Select>
                       </FormControl>
@@ -1147,9 +1177,14 @@ selectedOrg,      props.consumerType
                             props?.selectedConsumer?.username ===
                               buy.art.prixerUsername) ||
                           (props?.selectedConsumer?.consumerType === "Prixer" &&
-                            props?.selectedConsumer?.username === buy.art.owner)
+                            props?.selectedConsumer?.username ===
+                              buy.art.owner &&
+                            buy.art !== undefined &&
+                            buy.product !== undefined)
                             ? "El cliente es el autor o propietario del arte, su comisión ha sido omitida."
-                            : `Este arte tiene una comisión de 
+                            : buy.art !== undefined &&
+                              buy.product !== undefined &&
+                              `Este arte tiene una comisión de 
                             ${
                               checkOrgs(buy.art)
                                 ? getCporg(buy)
@@ -1229,7 +1264,7 @@ selectedOrg,      props.consumerType
                           style={{ width: 160, height: 80 }}
                           value={prices[index]}
                           onChange={(e) => {
-                            modifyPrice(index, e.target.value);
+                            modifyPrice(index, e.target.value)
                           }}
                         />
                         <div
@@ -1266,8 +1301,8 @@ selectedOrg,      props.consumerType
                                   product: buy.product,
                                   quantity: e.target.value,
                                   prixer: props?.selectedPrixer?.username,
-                                  consumerType: props.consumerType
-                                });
+                                  consumerType: props.consumerType,
+                                })
                               }}
                             />
                           </div>
@@ -1304,8 +1339,8 @@ selectedOrg,      props.consumerType
                     <IconButton
                       size="small"
                       onClick={() => {
-                        props.deleteItemInBuyState({ id: index });
-                        removePrixer(index);
+                        props.deleteItemInBuyState({ id: index })
+                        removePrixer(index)
                       }}
                       color="gainsboro"
                     >
@@ -1315,7 +1350,7 @@ selectedOrg,      props.consumerType
                 </Grid>
               </Paper>
             </Grid>
-          );
+          )
         })}
       <Grid
         style={{
@@ -1351,12 +1386,12 @@ selectedOrg,      props.consumerType
             >
               {productList !== "" &&
                 productList.map((product, index) => {
-                  return <MenuItem value={product}>{product.name}</MenuItem>;
+                  return <MenuItem value={product}>{product.name}</MenuItem>
                 })}
             </Select>
           </FormControl>
         </Paper>
       </Grid>
     </Grid>
-  );
+  )
 }

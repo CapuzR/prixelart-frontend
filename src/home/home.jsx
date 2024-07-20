@@ -1,62 +1,69 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import { useTheme } from "@material-ui/core/styles";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
-import Carousel from "react-material-ui-carousel";
-import Card from "@material-ui/core/Card";
-import CssBaseline from "@material-ui/core/CssBaseline";
-import Grid from "@material-ui/core/Grid";
-import Typography from "@material-ui/core/Typography";
-import { makeStyles } from "@material-ui/core/styles";
-import Container from "@material-ui/core/Container";
-import Link from "@material-ui/core/Link";
-import AppBar from "../sharedComponents/appBar/appBar";
-import Paper from "@material-ui/core/Paper";
+import React, { useState, useEffect } from "react"
+import axios from "axios"
+import { useTheme } from "@material-ui/core/styles"
+import useMediaQuery from "@material-ui/core/useMediaQuery"
+import Carousel from "react-material-ui-carousel"
+import Card from "@material-ui/core/Card"
+import CssBaseline from "@material-ui/core/CssBaseline"
+import Grid from "@material-ui/core/Grid"
+import Typography from "@material-ui/core/Typography"
+import { makeStyles } from "@material-ui/core/styles"
+import Container from "@material-ui/core/Container"
+import Link from "@material-ui/core/Link"
+import AppBar from "../sharedComponents/appBar/appBar"
+import Paper from "@material-ui/core/Paper"
 
-import InstagramIcon from "@material-ui/icons/Instagram";
-import SimpleDialog from "../sharedComponents/simpleDialog/simpleDialog";
-import FloatingAddButton from "../sharedComponents/floatingAddButton/floatingAddButton";
-import Button from "@material-ui/core/Button";
-import Dialog from "@material-ui/core/Dialog";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogContentText from "@material-ui/core/DialogContentText";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import DialogActions from "@material-ui/core/DialogActions";
-import Img from "react-cool-img";
-import { useHistory } from "react-router-dom";
+import InstagramIcon from "@material-ui/icons/Instagram"
+import SimpleDialog from "../sharedComponents/simpleDialog/simpleDialog"
+import FloatingAddButton from "../sharedComponents/floatingAddButton/floatingAddButton"
+import Button from "@material-ui/core/Button"
+import Dialog from "@material-ui/core/Dialog"
+import DialogContent from "@material-ui/core/DialogContent"
+import DialogContentText from "@material-ui/core/DialogContentText"
+import DialogTitle from "@material-ui/core/DialogTitle"
+import DialogActions from "@material-ui/core/DialogActions"
+import Img from "react-cool-img"
+import { useHistory } from "react-router-dom"
 
-import MaximizeIcon from "@material-ui/icons/Maximize";
-import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
-import ArrowForwardIosIcon from "@material-ui/icons/ArrowForwardIos";
+import MaximizeIcon from "@material-ui/icons/Maximize"
+import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos"
+import ArrowForwardIosIcon from "@material-ui/icons/ArrowForwardIos"
 
-import CreateService from "../sharedComponents/createService/createService";
-import ArtUploader from "../sharedComponents/artUploader/artUploader";
-import CartReview from "../shoppingCart/cartReview";
-import ReactGA from "react-ga";
-import Slider from "react-slick";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
-import backG from "../images/Rectangle108.png";
+import CreateService from "../sharedComponents/createService/createService"
+import ArtUploader from "../sharedComponents/artUploader/artUploader"
+import CartReview from "../shoppingCart/cartReview"
+import ReactGA from "react-ga"
+import Slider from "react-slick"
+import "slick-carousel/slick/slick.css"
+import "slick-carousel/slick/slick-theme.css"
+import backG from "../images/Rectangle108.png"
 // import brand1 from "../images/brands/Adidas_logo.png";
 // import brand2 from "../images/brands/BBVA_2019.svg.png";
 // import brand3 from "../images/brands/Ford-Motor-Company-Logo.png";
 // import brand4 from "../images/brands/Wikimedia-logo.png";
 // import brand5 from "../images/brands/lg.png";
 
-ReactGA.initialize("G-0RWP9B33D8");
-ReactGA.pageview("/");
+ReactGA.initialize("G-0RWP9B33D8")
+ReactGA.pageview("/")
 
 function Copyright() {
   return (
-    <Typography variant="body2" color="textSecondary" align="center">
+    <Typography
+      variant="body2"
+      color="textSecondary"
+      align="center"
+    >
       {"Copyright © "}
-      <Link color="inherit" href="https://prixelart.com/">
+      <Link
+        color="inherit"
+        href="https://prixelart.com/"
+      >
         Prixelart C.A.
       </Link>{" "}
       {new Date().getFullYear()}
       {"."}
     </Typography>
-  );
+  )
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -135,32 +142,32 @@ const useStyles = makeStyles((theme) => ({
     width: "80%",
     maxHeight: 450,
   },
-}));
+}))
 
 export default function Home(props) {
-  const theme = useTheme();
-  const isDesktop = useMediaQuery(theme.breakpoints.up("lg"));
-  const isDeskTop = useMediaQuery(theme.breakpoints.up("sm"));
-  const isTab = useMediaQuery(theme.breakpoints.down("lg"));
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  const classes = useStyles();
-  const prixerUsername = "all";
-  const [imagesDesktop, newImagesDesktop] = useState({ images: [] });
-  const [imagesMobile, newImagesMobile] = useState({ images: [] });
-  const [tabValue, setTabValue] = useState(0);
-  const [openModal, setOpenModal] = useState(false);
-  const [openArts, setOpenArts] = useState(true);
-  const [selectedArt, setSelectedArt] = useState(undefined);
-  const [bestSellers, setBestSellers] = useState();
-  const [latestArts, setLatestArts] = useState();
-  const [mostSelledArts, setMostSelledArts] = useState();
-  const [openServiceFormDialog, setOpenServiceFormDialog] = useState(false);
-  const [createdService, setCreatedService] = useState(false);
+  const theme = useTheme()
+  const isDesktop = useMediaQuery(theme.breakpoints.up("lg"))
+  const isDeskTop = useMediaQuery(theme.breakpoints.up("sm"))
+  const isTab = useMediaQuery(theme.breakpoints.down("lg"))
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
+  const classes = useStyles()
+  const prixerUsername = "all"
+  const [imagesDesktop, newImagesDesktop] = useState({ images: [] })
+  const [imagesMobile, newImagesMobile] = useState({ images: [] })
+  const [tabValue, setTabValue] = useState(0)
+  const [openModal, setOpenModal] = useState(false)
+  const [openArts, setOpenArts] = useState(true)
+  const [selectedArt, setSelectedArt] = useState(undefined)
+  const [bestSellers, setBestSellers] = useState()
+  const [latestArts, setLatestArts] = useState()
+  const [mostSelledArts, setMostSelledArts] = useState()
+  const [openServiceFormDialog, setOpenServiceFormDialog] = useState(false)
+  const [createdService, setCreatedService] = useState(false)
 
-  const [openArtFormDialog, setOpenArtFormDialog] = useState(false);
-  const [openShoppingCart, setOpenShoppingCart] = useState(false);
-  const [value, setValue] = useState("");
-  const history = useHistory();
+  const [openArtFormDialog, setOpenArtFormDialog] = useState(false)
+  const [openShoppingCart, setOpenShoppingCart] = useState(false)
+  const [value, setValue] = useState("")
+  const history = useHistory()
 
   // const brands = [brand1, brand2, brand3, brand4, brand5];
   const imgsMobile = [
@@ -182,10 +189,10 @@ export default function Home(props) {
     {
       url: "https://devprix.nyc3.digitaloceanspaces.com/Foto%20de%20Daria%20Shevtsova%20en%20Pexels.jpg",
     },
-  ];
+  ]
 
   const getImagesForTheCarousel = () => {
-    const URI = process.env.REACT_APP_BACKEND_URL + "/carousel";
+    const URI = process.env.REACT_APP_BACKEND_URL + "/carousel"
     fetch(URI)
       .then((res) =>
         res
@@ -194,86 +201,86 @@ export default function Home(props) {
             const imagesDesktop = data.imagesCarousels.filter(
               (result) =>
                 result.images?.type === "desktop" || result.carouselImages
-            );
+            )
             const imagesMobile = data.imagesCarousels.filter(
               (result) => result.images?.type === "mobile"
-            );
+            )
             newImagesDesktop({
               images:
                 imagesDesktop.length > 0 ? imagesDesktop : data.imagesCarousels,
-            });
+            })
             newImagesMobile({
               images: imagesMobile.length > 0 ? imagesMobile : imgsMobile,
-            });
+            })
           })
           .catch((err) => console.error(`Your request is wrong: ${err}`))
       )
-      .catch((err) => console.error(err));
-  };
+      .catch((err) => console.error(err))
+  }
 
   const getBestSellers = async () => {
-    const url = process.env.REACT_APP_BACKEND_URL + "/product/bestSellers";
+    const url = process.env.REACT_APP_BACKEND_URL + "/product/bestSellers"
     try {
-      const bestS = await axios.get(url);
-      setBestSellers(bestS.data.products);
+      const bestS = await axios.get(url)
+      setBestSellers(bestS.data.products)
     } catch (error) {
-      console.log(error);
+      console.log(error)
     }
-  };
+  }
 
   const getBestArts = async () => {
-    const url = process.env.REACT_APP_BACKEND_URL + "/art/bestSellers";
+    const url = process.env.REACT_APP_BACKEND_URL + "/art/bestSellers"
     try {
-      const getArts = await axios.get(url);
-      setMostSelledArts(getArts.data.arts);
+      const getArts = await axios.get(url)
+      setMostSelledArts(getArts.data.arts)
     } catch (error) {
-      console.log(error);
+      console.log(error)
     }
-  };
+  }
 
   const getLatest = async () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + "/art/get-latest";
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/art/get-latest"
     try {
-      const getLatestArts = await axios.get(base_url);
-      setLatestArts(getLatestArts.data.arts);
+      const getLatestArts = await axios.get(base_url)
+      setLatestArts(getLatestArts.data.arts)
     } catch (error) {
-      console.log(error);
+      console.log(error)
     }
-  };
+  }
 
   useEffect(() => {
-    getImagesForTheCarousel();
-    getBestSellers();
-    getBestArts();
-    getLatest();
-  }, []);
+    getImagesForTheCarousel()
+    getBestSellers()
+    getBestArts()
+    getLatest()
+  }, [])
 
   const handleProductCatalog = (e) => {
-    e.preventDefault();
-    history.push({ pathname: "/productos" });
-  };
+    e.preventDefault()
+    history.push({ pathname: "/productos" })
+  }
 
   const handleProduct = async (product) => {
-    props.setPointedProduct(product.name);
-    history.push({ pathname: "/productos" });
+    props.setPointedProduct(product.name)
+    history.push({ pathname: "/productos" })
     setTimeout(() => {
       document.getElementById(product.name)?.scrollIntoView({
         behavior: "smooth",
         block: "start",
-      });
-    }, 1000);
-  };
+      })
+    }, 1000)
+  }
 
   const handleGallery = (e) => {
-    e.preventDefault();
-    history.push({ pathname: "/galeria" });
-  };
+    e.preventDefault()
+    history.push({ pathname: "/galeria" })
+  }
 
   const handleArt = async (art) => {
     history.push({
       pathname: "/art=" + art.artId,
-    });
-  };
+    })
+  }
 
   const settings = {
     slidesToShow: (isDesktop && 5) || (isMobile && 2) || (isTab && 4),
@@ -284,7 +291,7 @@ export default function Home(props) {
     infinite: true,
     dots: true,
     pauseOnHover: true,
-  };
+  }
 
   const settings2 = {
     slidesToShow: (isDesktop && 3) || (isMobile && 1) || (isTab && 3),
@@ -295,7 +302,7 @@ export default function Home(props) {
     infinite: true,
     dots: true,
     pauseOnHover: true,
-  };
+  }
 
   const settings3 = {
     // className: "center",
@@ -308,11 +315,15 @@ export default function Home(props) {
     autoplay: true,
     infinite: true,
     pauseOnHover: true,
-  };
+  }
   return (
     <React.Fragment>
       <AppBar prixerUsername={prixerUsername} />
-      <Container component="main" maxWidth="s" className={classes.paper}>
+      <Container
+        component="main"
+        maxWidth="s"
+        className={classes.paper}
+      >
         <CssBaseline />
 
         <main>
@@ -422,7 +433,7 @@ export default function Home(props) {
                 bottom: 0,
                 position: "absolute",
                 margin: 0,
-                padding: 10,
+                padding: "1rem",
               }}
             >
               <div style={{ left: 10, alignItems: "center", width: "400px" }}>
@@ -434,6 +445,7 @@ export default function Home(props) {
                     fontSize: "1.7em",
                     paddingLeft: 10,
                     textAlign: "center",
+                    marginBottom: 0,
                   }}
                   gutterBottom
                 >
@@ -458,10 +470,12 @@ export default function Home(props) {
                   position: "relative",
                   width: "100%",
                   borderRadius:
-                    (isDesktop && 47) || (isMobile && 30) || (isTab && 35),
+                    (isDesktop && "2.9375rem") ||
+                    (isMobile && "1.875rem") ||
+                    (isTab && "2.1875rem"),
                   backgroundColor: "gainsboro",
-                  marginBottom: 20,
-                  padding: 15,
+                  marginBottom: "1.8rem",
+                  padding: "1.2rem",
                 }}
                 elevation={5}
               >
@@ -475,9 +489,9 @@ export default function Home(props) {
                     display: "flex",
                     flexDirection: "column",
                     justifyItems: "center",
-                    padding: "15px 25px 10px 0px",
-                    paddingRight: isMobile ? 15 : 25,
-                    marginBottom: 14,
+                    padding: "1.5rem 1.5625rem 1.5rem 0px",
+                    paddingRight: isMobile ? "0.9375rem" : "1.5625rem",
+                    marginBottom: "1.2rem",
                     backgroundColor: "#404e5c",
                     alignItems: "end",
                     borderRadius:
@@ -629,12 +643,16 @@ export default function Home(props) {
                   flexDirection: "column",
                   position: "relative",
                   width: "100%",
-                  height:
-                    (isDesktop && 460) || (isMobile && 330) || (isTab && 380),
+                  // height:
+                  //   (isDesktop && 470) || (isMobile && 330) || (isTab && 380),
                   borderRadius:
-                    (isDesktop && 47) || (isMobile && 30) || (isTab && 35),
+                    (isDesktop && "2.9375rem") ||
+                    (isMobile && "1.875rem") ||
+                    (isTab && "2.1875rem"),
                   backgroundColor: "gainsboro",
-                  marginBottom: 20,
+                  padding: "1rem",
+                  paddingBottom: "3rem",
+                  marginBottom: "1.8rem",
                 }}
                 elevation={5}
               >
@@ -642,7 +660,8 @@ export default function Home(props) {
                   style={{
                     display: "flex",
                     justifyItems: "center",
-                    margin: "15px",
+                    margin: "1rem",
+                    marginBottom: "1.2rem",
                     backgroundColor: "#404e5c",
                     alignItems: "start",
                     borderRadius:
@@ -654,7 +673,7 @@ export default function Home(props) {
                       display: "flex",
                       flexDirection: "column",
                       width: "50%",
-                      margin: 10,
+                      margin: "1.2rem",
                       paddingLeft:
                         (isDesktop && 40) || (isMobile && 5) || (isTab && 20),
                     }}
@@ -731,7 +750,6 @@ export default function Home(props) {
                       (isDesktop && 240) || (isMobile && 190) || (isTab && 220),
                     marginLeft: isMobile && 20,
                     padding: isMobile ? 0 : "0px 30px 0px 30px",
-                    marginTop: "-5px",
                   }}
                 >
                   <Slider {...settings2}>
@@ -777,12 +795,16 @@ export default function Home(props) {
                   flexDirection: "column",
                   position: "relative",
                   width: "100%",
-                  height:
-                    (isDesktop && 460) || (isMobile && 330) || (isTab && 380),
+                  // height:
+                  //   (isDesktop && 460) || (isMobile && 330) || (isTab && 380),
                   borderRadius:
-                    (isDesktop && 47) || (isMobile && 30) || (isTab && 35),
+                    (isDesktop && "2.9375rem") ||
+                    (isMobile && "1.875rem") ||
+                    (isTab && "2.1875rem"),
                   backgroundColor: "gainsboro",
-                  marginBottom: 20,
+                  padding: "1rem",
+                  paddingBottom: "3rem",
+                  marginBottom: "1.8rem",
                 }}
                 elevation={5}
               >
@@ -790,7 +812,8 @@ export default function Home(props) {
                   style={{
                     display: "flex",
                     justifyItems: "center",
-                    margin: "15px",
+                    margin: "1rem",
+                    marginBottom: "1.2rem",
                     backgroundColor: "#404e5c",
                     alignItems: "start",
                     borderRadius:
@@ -816,7 +839,7 @@ export default function Home(props) {
                       display: "flex",
                       flexDirection: "column",
                       width: "50%",
-                      margin: 10,
+                      margin: "1.2rem",
                       alignItems: "end",
                       paddingRight:
                         (isDesktop && 40) || (isMobile && 5) || (isTab && 20),
@@ -966,7 +989,10 @@ export default function Home(props) {
             style={{ color: "#404e5c" }}
           >
             Si quieres convertirte en un Prixer{" "}
-            <a target="blank" href="https://prixelart.com/registrar">
+            <a
+              target="blank"
+              href="https://prixelart.com/registrar"
+            >
               regístrate
             </a>
             .
@@ -977,7 +1003,10 @@ export default function Home(props) {
             color="textSecondary"
             component="p"
           >
-            <a target="blank" href="https://instagram.com/prixelart">
+            <a
+              target="blank"
+              href="https://instagram.com/prixelart"
+            >
               <InstagramIcon />
             </a>
           </Typography>
@@ -1026,7 +1055,11 @@ export default function Home(props) {
           </div>
         ) : (
           <div style={{ margin: "90px 10px 40px 10px" }}>
-            <Typography variant={"h6"} align={"Center"} justify={"center"}>
+            <Typography
+              variant={"h6"}
+              align={"Center"}
+              justify={"center"}
+            >
               Actualmente no tienes ningun producto dentro del carrito de
               compra.
             </Typography>
@@ -1041,7 +1074,7 @@ export default function Home(props) {
         >
           <Button
             onClick={() => {
-              setOpenShoppingCart(false);
+              setOpenShoppingCart(false)
             }}
             color="primary"
           >
@@ -1050,7 +1083,7 @@ export default function Home(props) {
           {props.buyState?.length > 0 && (
             <Button
               onClick={() => {
-                history.push({ pathname: "/shopping" });
+                history.push({ pathname: "/shopping" })
               }}
               color="primary"
             >
@@ -1151,7 +1184,7 @@ export default function Home(props) {
                         </div>
                       )}
                     </div>
-                  );
+                  )
                 })
               ) : (
                 <strong>
@@ -1167,8 +1200,8 @@ export default function Home(props) {
           <Button
             onClick={() => {
               !props.selectedProductToAssociate?.previous &&
-                props.setSelectedProductToAssociate(undefined);
-              props.setIsOpenAssociateProduct(false);
+                props.setSelectedProductToAssociate(undefined)
+              props.setIsOpenAssociateProduct(false)
             }}
             color="primary"
           >
@@ -1183,10 +1216,10 @@ export default function Home(props) {
                     index: props.selectedProductToAssociate.index,
                     item: selectedArt,
                     type: "art",
-                  });
-                  props.setSelectedProductToAssociate(undefined);
-                  setSelectedArt(undefined);
-                  props.setIsOpenAssociateProduct(false);
+                  })
+                  props.setSelectedProductToAssociate(undefined)
+                  setSelectedArt(undefined)
+                  props.setIsOpenAssociateProduct(false)
                 }}
                 color="primary"
               >
@@ -1199,10 +1232,10 @@ export default function Home(props) {
                 props.addItemToBuyState({
                   type: "art",
                   item: selectedArt,
-                });
+                })
 
-                setSelectedArt(undefined);
-                history.push({ pathname: "/productos" });
+                setSelectedArt(undefined)
+                history.push({ pathname: "/productos" })
               }}
               color="primary"
             >
@@ -1212,5 +1245,5 @@ export default function Home(props) {
         </DialogActions>
       </Dialog>
     </React.Fragment>
-  );
+  )
 }

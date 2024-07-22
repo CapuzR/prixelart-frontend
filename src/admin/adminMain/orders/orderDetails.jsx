@@ -1,29 +1,32 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
+import React, { useEffect, useState } from "react"
+import axios from "axios"
 
-import Grid from "@material-ui/core/Grid";
-import Paper from "@material-ui/core/Paper";
-import { makeStyles } from "@material-ui/core/styles";
-import { Typography } from "@material-ui/core";
-import MenuItem from "@material-ui/core/MenuItem";
-import Select from "@material-ui/core/Select";
-import OutlinedInput from "@material-ui/core/OutlinedInput";
+import Grid from "@material-ui/core/Grid"
+import Paper from "@material-ui/core/Paper"
+import { makeStyles } from "@material-ui/core/styles"
+import { Typography } from "@material-ui/core"
+import MenuItem from "@material-ui/core/MenuItem"
+import Select from "@material-ui/core/Select"
+import OutlinedInput from "@material-ui/core/OutlinedInput"
 
-import IconButton from "@material-ui/core/IconButton";
-import CloseIcon from "@material-ui/icons/Close";
-import Img from "react-cool-img";
-import ArrowBackIcon from "@material-ui/icons/ArrowBack";
-import WarpImage from "../../productCrud/warpImage";
+import IconButton from "@material-ui/core/IconButton"
+import CloseIcon from "@material-ui/icons/Close"
+import Img from "react-cool-img"
+import ArrowBackIcon from "@material-ui/icons/ArrowBack"
+import WarpImage from "../../productCrud/warpImage"
 
-import x from "../../../apple-touch-icon-180x180.png";
+import x from "../../../apple-touch-icon-180x180.png"
 import {
   getPVP,
   getPVM,
   getTotalUnitsPVM,
   getTotalUnitsPVP,
   getComission,
-} from "../../../shoppingCart/pricesFunctions";
-const drawerWidth = 240;
+} from "../../../shoppingCart/pricesFunctions"
+import moment from "moment"
+import "moment/locale/es"
+
+const drawerWidth = 240
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -226,54 +229,54 @@ const useStyles = makeStyles((theme) => ({
       width: "25ch",
     },
   },
-}));
+}))
 
 export default function OrderDetails(props) {
-  const classes = useStyles();
-  const moment = require("moment-timezone");
-  const [consumer, setConsumer] = useState(undefined);
+  const classes = useStyles()
+  const moment = require("moment-timezone")
+  const [consumer, setConsumer] = useState(undefined)
 
   const checkMov = async (Id) => {
     const url =
-      process.env.REACT_APP_BACKEND_URL + "/movement/readMovementByOrderId";
+      process.env.REACT_APP_BACKEND_URL + "/movement/readMovementByOrderId"
 
     const body = {
       adminToken: localStorage.getItem("adminTokenV"),
       order: Id,
-    };
+    }
     await axios.post(url, body).then((res) => {
-      const oDate = res.data.createdOn;
-      const Datev2 = moment(oDate).tz("America/Caracas").format();
-    });
-  };
+      const oDate = res.data.createdOn
+      const Datev2 = moment(oDate).tz("America/Caracas").format()
+    })
+  }
 
   const checkConsumer = async (Id) => {
-    const url = process.env.REACT_APP_BACKEND_URL + "/consumer/read-by-id";
+    const url = process.env.REACT_APP_BACKEND_URL + "/consumer/read-by-id"
 
     const body = {
       adminToken: localStorage.getItem("adminTokenV"),
       consumer: Id,
-    };
+    }
     await axios.post(url, body).then((res) => {
-      setConsumer(res.data);
-    });
-  };
+      setConsumer(res.data)
+    })
+  }
 
   const updateItemStatus = async (newStatus, index, orderId) => {
-    const url = process.env.REACT_APP_BACKEND_URL + "/order/updateItemStatus";
+    const url = process.env.REACT_APP_BACKEND_URL + "/order/updateItemStatus"
     const body = {
       adminToken: localStorage.getItem("adminTokenV"),
       status: newStatus,
       index: index,
       order: orderId,
-    };
+    }
     await axios.put(url, body).then((res) => {
       if (res.data.auth) {
-        props.setModalContent(res.data.order);
-        props.updateItemFromOrders(orderId, index, newStatus);
+        props.setModalContent(res.data.order)
+        props.updateItemFromOrders(orderId, index, newStatus)
       }
-    });
-  };
+    })
+  }
 
   const PriceSelect = (item) => {
     if (typeof item.selectedPrixer?.username === "string") {
@@ -286,7 +289,7 @@ export default function OrderDetails(props) {
       ).toLocaleString("de-DE", {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
-      });
+      })
     } else {
       return getPVP(
         item,
@@ -296,24 +299,24 @@ export default function OrderDetails(props) {
       ).toLocaleString("de-DE", {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
-      });
+      })
     }
-  };
+  }
 
   const RenderHTML = ({ htmlString }) => {
-    return <div dangerouslySetInnerHTML={{ __html: htmlString }} />;
-  };
+    return <div dangerouslySetInnerHTML={{ __html: htmlString }} />
+  }
 
   function handleKeyDown(event) {
     if (event.key === "Escape") {
-      props.handleClose();
-    } else return;
+      props.handleClose()
+    } else return
   }
-  document.addEventListener("keydown", handleKeyDown);
+  document.addEventListener("keydown", handleKeyDown)
 
   useEffect(() => {
-    checkConsumer(props.modalContent.consumerId);
-  }, []);
+    checkConsumer(props.modalContent.consumerId)
+  }, [])
 
   const allowMockup = (item, index) => {
     if (
@@ -333,8 +336,8 @@ export default function OrderDetails(props) {
                 index,
                 item: item.product,
                 previous: true,
-              });
-              history.push({ pathname: "/galeria" });
+              })
+              history.push({ pathname: "/galeria" })
             }}
           >
             <WarpImage
@@ -369,7 +372,7 @@ export default function OrderDetails(props) {
             />
           </div>
         </div>
-      );
+      )
     } else {
       return (
         <>
@@ -427,14 +430,17 @@ export default function OrderDetails(props) {
             </Paper>
           )}
         </>
-      );
+      )
     }
-  };
+  }
 
-  console.log(props.modalContent);
+  console.log(props.modalContent)
 
   return (
-    <Grid container className={classes.paper2}>
+    <Grid
+      container
+      className={classes.paper2}
+    >
       <Grid
         item
         style={{
@@ -444,14 +450,25 @@ export default function OrderDetails(props) {
         }}
       >
         <Typography
-          variant="h6"
-          style={{ display: "flex", width: "100%", justifyContent: "center" }}
+          // variant="h6"
+          style={{
+            display: "flex",
+            width: "100%",
+            justifyContent: "center",
+            fontSize: "1.4rem",
+            alignItems: "center",
+            gap: "0.6rem",
+          }}
         >
-          Pedido de{" "}
-          {(props.modalContent.basicData.firstname ||
-            props.modalContent.basicData.name) +
-            " " +
-            props.modalContent.basicData.lastname}
+          {"Pedido"}
+          <strong>#{props.modalContent.orderId}</strong>
+          {"de"}
+          <strong>
+            {(props.modalContent.basicData.firstname ||
+              props.modalContent.basicData.name) +
+              " " +
+              props.modalContent.basicData.lastname}
+          </strong>
         </Typography>
         {props.showVoucher && (
           <IconButton onClick={props.handleCloseVoucher}>
@@ -541,7 +558,7 @@ export default function OrderDetails(props) {
                                   ": " +
                                   item.product?.selection?.attributes[i]?.value}
                               </p>
-                            );
+                            )
                           })
                         ) : item.product.selection &&
                           typeof item.product.selection === "string" &&
@@ -616,31 +633,55 @@ export default function OrderDetails(props) {
                                 e.target.value,
                                 index,
                                 props.modalContent.orderId
-                              );
+                              )
                             }}
                           >
-                            <MenuItem key={0} value={"Por producir"}>
+                            <MenuItem
+                              key={0}
+                              value={"Por producir"}
+                            >
                               Por producir
                             </MenuItem>
-                            <MenuItem key={1} value={"En impresión"}>
+                            <MenuItem
+                              key={1}
+                              value={"En impresión"}
+                            >
                               En impresión
                             </MenuItem>
-                            <MenuItem key={2} value={"En producción"}>
+                            <MenuItem
+                              key={2}
+                              value={"En producción"}
+                            >
                               En producción
                             </MenuItem>
-                            <MenuItem key={0} value={"Por entregar"}>
+                            <MenuItem
+                              key={0}
+                              value={"Por entregar"}
+                            >
                               Por entregar
                             </MenuItem>
-                            <MenuItem key={1} value={"Entregado"}>
+                            <MenuItem
+                              key={1}
+                              value={"Entregado"}
+                            >
                               Entregado
                             </MenuItem>
-                            <MenuItem key={2} value={"Concretado"}>
+                            <MenuItem
+                              key={2}
+                              value={"Concretado"}
+                            >
                               Concretado
                             </MenuItem>
-                            <MenuItem key={3} value={"Detenido"}>
+                            <MenuItem
+                              key={3}
+                              value={"Detenido"}
+                            >
                               Detenido
                             </MenuItem>
-                            <MenuItem key={4} value={"Anulado"}>
+                            <MenuItem
+                              key={4}
+                              value={"Anulado"}
+                            >
                               Anulado
                             </MenuItem>
                           </Select>
@@ -741,9 +782,9 @@ export default function OrderDetails(props) {
                       {props.modalContent.shippingData?.shippingDate && (
                         <div>
                           {"Fecha de entrega: " +
-                            new Date(
+                            moment(
                               props.modalContent?.shippingData?.shippingDate
-                            )?.toLocaleDateString()}
+                            )?.format("DD/MM/YYYY")}
                         </div>
                       )}
                     </Grid>
@@ -890,7 +931,7 @@ export default function OrderDetails(props) {
                           src={props.modalContent?.paymentVoucher}
                           alt="voucher"
                           onClick={() => {
-                            props.setShowVoucher(!props.showVoucher);
+                            props.setShowVoucher(!props.showVoucher)
                           }}
                         />
                       </Paper>
@@ -1067,7 +1108,7 @@ export default function OrderDetails(props) {
                                         item.product?.selection?.attributes[i]
                                           ?.value}
                                     </p>
-                                  );
+                                  )
                                 })
                               ) : item.product.selection &&
                                 typeof item.product.selection === "string" &&
@@ -1107,31 +1148,55 @@ export default function OrderDetails(props) {
                                     e.target.value,
                                     index,
                                     props.modalContent.orderId
-                                  );
+                                  )
                                 }}
                               >
-                                <MenuItem key={0} value={"Por producir"}>
+                                <MenuItem
+                                  key={0}
+                                  value={"Por producir"}
+                                >
                                   Por producir
                                 </MenuItem>
-                                <MenuItem key={1} value={"En impresión"}>
+                                <MenuItem
+                                  key={1}
+                                  value={"En impresión"}
+                                >
                                   En impresión
                                 </MenuItem>
-                                <MenuItem key={2} value={"En producción"}>
+                                <MenuItem
+                                  key={2}
+                                  value={"En producción"}
+                                >
                                   En producción
                                 </MenuItem>
-                                <MenuItem key={0} value={"Por entregar"}>
+                                <MenuItem
+                                  key={0}
+                                  value={"Por entregar"}
+                                >
                                   Por entregar
                                 </MenuItem>
-                                <MenuItem key={1} value={"Entregado"}>
+                                <MenuItem
+                                  key={1}
+                                  value={"Entregado"}
+                                >
                                   Entregado
                                 </MenuItem>
-                                <MenuItem key={2} value={"Concretado"}>
+                                <MenuItem
+                                  key={2}
+                                  value={"Concretado"}
+                                >
                                   Concretado
                                 </MenuItem>
-                                <MenuItem key={3} value={"Detenido"}>
+                                <MenuItem
+                                  key={3}
+                                  value={"Detenido"}
+                                >
                                   Detenido
                                 </MenuItem>
-                                <MenuItem key={4} value={"Anulado"}>
+                                <MenuItem
+                                  key={4}
+                                  value={"Anulado"}
+                                >
                                   Anulado
                                 </MenuItem>
                               </Select>
@@ -1185,5 +1250,5 @@ export default function OrderDetails(props) {
         </Paper>
       )}
     </Grid>
-  );
+  )
 }

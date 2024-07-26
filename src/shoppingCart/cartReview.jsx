@@ -1,27 +1,34 @@
-import React, { useState, useEffect, useRef } from "react";
-import axios from "axios";
+import React, { useState, useEffect, useRef } from "react"
+import axios from "axios"
 
-import Button from "@material-ui/core/Button";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
+import Button from "@material-ui/core/Button"
+import { makeStyles, useTheme } from "@material-ui/core/styles"
 // import utils from "../utils/utils";
 
-import Grid from "@material-ui/core/Grid";
-import Tooltip from "@material-ui/core/Tooltip";
-import Paper from "@material-ui/core/Paper";
-import AddIcon from "@material-ui/icons/Add";
-import DeleteIcon from "@material-ui/icons/Delete";
-import FilterNoneIcon from "@material-ui/icons/FilterNone";
+import Grid from "@material-ui/core/Grid"
+import Tooltip from "@material-ui/core/Tooltip"
+import Paper from "@material-ui/core/Paper"
+import AddIcon from "@material-ui/icons/Add"
+import DeleteIcon from "@material-ui/icons/Delete"
+import FilterNoneIcon from "@material-ui/icons/FilterNone"
 
-import Star from "@material-ui/icons/Stars";
-import StarOutline from "@material-ui/icons/StarOutline";
-import Info from "@material-ui/icons/Info";
-import Img from "react-cool-img";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
-import { useHistory } from "react-router-dom";
-import IconButton from "@material-ui/core/IconButton";
-import { Typography } from "@material-ui/core";
-import WarpImage from "../admin/productCrud/warpImage";
-import { getPVM, getPVP, getComission, UnitPriceSug, UnitPriceForOrg } from "./pricesFunctions";
+import Star from "@material-ui/icons/Stars"
+import StarOutline from "@material-ui/icons/StarOutline"
+import Info from "@material-ui/icons/Info"
+import Img from "react-cool-img"
+import useMediaQuery from "@material-ui/core/useMediaQuery"
+import { useHistory } from "react-router-dom"
+import IconButton from "@material-ui/core/IconButton"
+import { Typography } from "@material-ui/core"
+import WarpImage from "../admin/productCrud/warpImage"
+import {
+  getPVM,
+  getPVP,
+  getComission,
+  UnitPriceSug,
+  UnitPriceForOrg,
+} from "./pricesFunctions"
+import html2canvas from "html2canvas"
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -43,73 +50,76 @@ const useStyles = makeStyles((theme) => ({
       margin: theme.spacing(1),
     },
   },
-}));
+}))
 
 export default function CartReview(props) {
-  const classes = useStyles();
-  const history = useHistory();
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  const isIphone = useMediaQuery(theme.breakpoints.down("xs"));
-  const [discountList, setDiscountList] = useState([]);
-
+  const classes = useStyles()
+  const history = useHistory()
+  const theme = useTheme()
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
+  const isIphone = useMediaQuery(theme.breakpoints.down("xs"))
+  const [discountList, setDiscountList] = useState([])
+  const mockupRef = useRef()
   const getDiscounts = async () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + "/discount/read-allv2";
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/discount/read-allv2"
     await axios
       .post(base_url)
       .then((response) => {
-        setDiscountList(response.data.discounts);
+        setDiscountList(response.data.discounts)
       })
       .catch((error) => {
-        console.log(error);
-      });
-  };
-
+        console.log(error)
+      })
+  }
 
   useEffect(() => {
-    getDiscounts();
-  }, []);
+    getDiscounts()
+  }, [])
 
-    const checkOrgs = (art) => {
-    const org = props.orgs?.find((el) => el.username === art.prixerUsername);
-    return org;
-  };
+  const checkOrgs = (art) => {
+    const org = props.orgs?.find((el) => el.username === art?.prixerUsername)
+    return org
+  }
 
   const PriceSelect = (item) => {
     const org = checkOrgs(item.art)
-          const prixer = JSON.parse(localStorage?.getItem("token"))?.username;
-// Falta hacer funcionar los precios de ORG para Particulares
+    const prixer = JSON.parse(localStorage?.getItem("token"))?.username
+    // Falta hacer funcionar los precios de ORG para Particulares
     if (org !== undefined) {
-      return UnitPriceForOrg(
-        item.product,
-        item.art,
-        prixer,
-         org,
-        "Particular"
-      )
-    }
-    else if (
+      return UnitPriceForOrg(item.product, item.art, prixer, org, "Particular")
+    } else if (
       JSON.parse(localStorage?.getItem("token")) &&
       JSON.parse(localStorage?.getItem("token"))?.username
     ) {
-
       return getPVM(
         item,
         props.currency,
         props.dollarValue,
         discountList,
         prixer
-      );
+      )
     } else {
-      return getPVP(item, props.currency, props.dollarValue, discountList);
+      return getPVP(item, props.currency, props.dollarValue, discountList)
     }
-  };
+  }
+
+  const handleDownloadImage = () => {
+    html2canvas(mockupRef.current).then((canvas) => {
+      const link = document.createElement("a")
+      link.href = canvas.toDataURL("image/jpeg", 1.0) // La calidad de la imagen se establece en 1.0 (máxima calidad)
+      link.download = "imagen.jpg"
+      link.click()
+    })
+  }
+
+  console.log(props.buyState)
 
   const allowMockup = (buy, index) => {
     if (buy.product?.mockUp !== undefined) {
       return (
         <div>
           <div
+            ref={mockupRef}
             style={{
               width: 210,
               height: 210,
@@ -120,8 +130,8 @@ export default function CartReview(props) {
                 index,
                 item: buy.product,
                 previous: true,
-              });
-              history.push({ pathname: "/galeria" });
+              })
+              history.push({ pathname: "/galeria" })
             }}
           >
             <WarpImage
@@ -140,6 +150,8 @@ export default function CartReview(props) {
               skewY={buy.product.mockUp.skewY}
               translateX={buy.product.mockUp.translateX}
               translateY={buy.product.mockUp.translateY}
+              setOpen={props.setOpen}
+              setMessage={props.setMessage}
             />
             <div
               style={{
@@ -163,16 +175,23 @@ export default function CartReview(props) {
             }}
           >
             <Tooltip title="Nuestro equipo se encargará de que se vea perfecto para ti.">
-              <IconButton size="small" color="gainsboro">
+              <IconButton
+                size="small"
+                color="gainsboro"
+              >
                 <Info />
               </IconButton>
             </Tooltip>
-            <Typography color="secondary" variant="p">
+            <Typography
+              color="secondary"
+              variant="p"
+            >
               Imagen referencial
             </Typography>
           </div>
+          {/* <Button onClick={handleDownloadImage}>JPG</Button> */}
         </div>
-      );
+      )
     } else if (buy.art && buy.product) {
       return (
         <>
@@ -238,8 +257,8 @@ export default function CartReview(props) {
                     index,
                     item: buy.product,
                     previous: true,
-                  });
-                  history.push({ pathname: "/galeria" });
+                  })
+                  history.push({ pathname: "/galeria" })
                 }}
               >
                 <AddIcon fontSize="medium" />
@@ -301,8 +320,8 @@ export default function CartReview(props) {
                     index,
                     item: buy.art,
                     previous: true,
-                  });
-                  history.push({ pathname: "/productos" });
+                  })
+                  history.push({ pathname: "/productos" })
                 }}
               >
                 <AddIcon fontSize="medium" />
@@ -310,7 +329,7 @@ export default function CartReview(props) {
             </div>
           </div>
         </>
-      );
+      )
     } else if (buy.art) {
       return (
         <>
@@ -376,8 +395,8 @@ export default function CartReview(props) {
                     index,
                     item: buy.product,
                     previous: true,
-                  });
-                  history.push({ pathname: "/galeria" });
+                  })
+                  history.push({ pathname: "/galeria" })
                 }}
               >
                 <AddIcon fontSize="medium" />
@@ -400,15 +419,18 @@ export default function CartReview(props) {
                   index,
                   item: buy.art,
                   previous: true,
-                });
-                history.push({ pathname: "/productos" });
+                })
+                history.push({ pathname: "/productos" })
               }}
             >
-              <AddIcon style={{ fontSize: 80 }} color="primary" />
+              <AddIcon
+                style={{ fontSize: 80 }}
+                color="primary"
+              />
             </IconButton>
           </div>
         </>
-      );
+      )
     } else if (buy.product) {
       return (
         <>
@@ -467,8 +489,8 @@ export default function CartReview(props) {
                     index,
                     item: buy.art,
                     previous: true,
-                  });
-                  history.push({ pathname: "/productos" });
+                  })
+                  history.push({ pathname: "/productos" })
                 }}
               >
                 <AddIcon fontSize="medium" />
@@ -490,26 +512,29 @@ export default function CartReview(props) {
                   index,
                   item: buy.art,
                   previous: true,
-                });
-                history.push({ pathname: "/galeria" });
+                })
+                history.push({ pathname: "/galeria" })
               }}
             >
-              <AddIcon style={{ fontSize: 80 }} color="primary" />
+              <AddIcon
+                style={{ fontSize: 80 }}
+                color="primary"
+              />
             </IconButton>
           </div>
         </>
-      );
+      )
     }
-  };
+  }
 
   const copyItem = (i) => {
-    let newState = JSON.parse(localStorage.getItem("buyState"));
-    newState.push(newState[i]);
-    props.setBuyState(newState);
-    localStorage.setItem("buyState", JSON.stringify(newState));
-    props.setMessage("Item duplicado correctamente.");
-    props.setOpen(true);
-  };
+    let newState = JSON.parse(localStorage.getItem("buyState"))
+    newState.push(newState[i])
+    props.setBuyState(newState)
+    localStorage.setItem("buyState", JSON.stringify(newState))
+    props.setMessage("Item duplicado correctamente.")
+    props.setOpen(true)
+  }
 
   return (
     <>
@@ -652,7 +677,10 @@ export default function CartReview(props) {
                           width: "80%",
                         }}
                       >
-                        <Typography variant="h6" color="secondary">
+                        <Typography
+                          variant="h6"
+                          color="secondary"
+                        >
                           {buy.product.name + " - " + buy.art.title}
                         </Typography>
                       </div>
@@ -687,7 +715,7 @@ export default function CartReview(props) {
                                 ? buy?.product?.selection?.attributes[i]?.value
                                 : buy.product.selection}
                             </Typography>
-                          );
+                          )
                         })}
                       </div>
                     ) : (
@@ -699,10 +727,10 @@ export default function CartReview(props) {
                             index,
                             item: buy.art,
                             previous: true,
-                          });
+                          })
                           history.push({
                             pathname: "/productos",
-                          });
+                          })
                         }}
                       >
                         Elige tu producto
@@ -742,8 +770,8 @@ export default function CartReview(props) {
                             index,
                             item: buy.product,
                             previous: true,
-                          });
-                          history.push({ pathname: "/galeria" });
+                          })
+                          history.push({ pathname: "/galeria" })
                         }}
                       >
                         Elige tu arte
@@ -778,7 +806,10 @@ export default function CartReview(props) {
                           </Typography>
                         )}
                         <br />
-                        <Typography variant="p" color="secondary">
+                        <Typography
+                          variant="p"
+                          color="secondary"
+                        >
                           <strong>Precio Unitario:</strong>
                           {props.currency ? " Bs" : " $"}
                           {PriceSelect(buy).toLocaleString("de-DE", {
@@ -793,7 +824,10 @@ export default function CartReview(props) {
                           alignItems: "center",
                         }}
                       >
-                        <Typography variant="p" color="secondary">
+                        <Typography
+                          variant="p"
+                          color="secondary"
+                        >
                           <strong>Cantidad: </strong>{" "}
                         </Typography>
                         <input
@@ -815,7 +849,7 @@ export default function CartReview(props) {
                               art: buy.art,
                               product: buy.product,
                               quantity: e.target.value,
-                            });
+                            })
                           }}
                         />
                       </div>
@@ -879,8 +913,8 @@ export default function CartReview(props) {
               </Grid>
             </Paper>
           </Grid>
-        );
+        )
       })}
     </>
-  );
+  )
 }

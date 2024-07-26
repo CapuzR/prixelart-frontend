@@ -119,6 +119,8 @@ export default function Gallery(props) {
             skewY={buy.product.mockUp.skewY}
             translateX={buy.product.mockUp.translateX}
             translateY={buy.product.mockUp.translateY}
+            setOpen={props.setOpen}
+              setMessage={props.setMessage}
           />
           <div
             style={{

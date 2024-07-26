@@ -280,12 +280,12 @@ const getComission = (
 };
 
 const getPVPtext = (product, currency, dollarValue, discountList) => {
-  if (
-    typeof product.discount === "string" &&
+  if (product?.discount !== undefined &&
+    typeof product?.discount === "string" &&
     product.publicEquation !== "" &&
     currency
   ) {
-    let dis = discountList?.filter((dis) => dis._id === product.discount)[0];
+    let dis = discountList?.filter((dis) => dis._id === product?.discount)[0];
     return (
       <>
         <del>
@@ -341,11 +341,11 @@ const getPVPtext = (product, currency, dollarValue, discountList) => {
         )}
       </>
     );
-  } else if (
-    typeof product.discount === "string" &&
+  } else if ( product?.discount !== undefined &&
+    typeof product?.discount === "string" &&
     product.publicEquation !== ""
   ) {
-    let dis = discountList?.filter((dis) => dis._id === product.discount)[0];
+    let dis = discountList?.filter((dis) => dis._id === product?.discount)[0];
     return (
       <>
         <del>
@@ -395,13 +395,13 @@ const getPVPtext = (product, currency, dollarValue, discountList) => {
         )}
       </>
     );
-  } else if (
-    typeof product.discount === "string" &&
+  } else if ( product?.discount !== undefined &&
+    typeof product?.discount === "string" &&
     typeof product.publicPrice.to === "string" &&
     product.publicPrice.to.length > 0 &&
     currency
   ) {
-    let dis = discountList?.filter((dis) => dis._id === product.discount)[0];
+    let dis = discountList?.filter((dis) => dis._id === product?.discount)[0];
     return (
       <>
         <del>
@@ -483,12 +483,12 @@ const getPVPtext = (product, currency, dollarValue, discountList) => {
         )}
       </>
     );
-  } else if (
-    typeof product.discount === "string" &&
+  } else if ( product.discount !== undefined &&
+    typeof product?.discount === "string" &&
     typeof product.publicPrice.to === "string" &&
     product.publicPrice.to.length > 0
   ) {
-    let dis = discountList?.filter((dis) => dis._id === product.discount)[0];
+    let dis = discountList?.filter((dis) => dis._id === product?.discount)[0];
     return (
       <>
         <del>
@@ -561,8 +561,8 @@ const getPVPtext = (product, currency, dollarValue, discountList) => {
         )}
       </>
     );
-  } else if (typeof product.discount === "string" && currency) {
-    let dis = discountList?.filter((dis) => dis._id === product.discount)[0];
+  } else if (product.discount !== undefined && typeof product?.discount === "string" && currency) {
+    let dis = discountList?.filter((dis) => dis._id === product?.discount)[0];
     return (
       <>
         <del>
@@ -621,8 +621,8 @@ const getPVPtext = (product, currency, dollarValue, discountList) => {
         )}
       </>
     );
-  } else if (typeof product.discount === "string") {
-    let dis = discountList?.filter((dis) => dis._id === product.discount)[0];
+  } else if (product.discount !== undefined && typeof product?.discount === "string") {
+    let dis = discountList?.filter((dis) => dis._id === product?.discount)[0];
     return (
       <>
         <del>
@@ -827,7 +827,7 @@ const getPVMtext = (product, currency, dollarValue, discountList) => {
 
 const getPVP = (item, currency, dollarValue, discountList) => {
   let { base, prev, final } = 0;
-  let dis = discountList?.filter((dis) => dis._id === item.product.discount)[0];
+  let dis = discountList?.filter((dis) => dis._id === item.product?.discount)[0];
 
   base = Number(
     item.product?.publicEquation?.replace(/[,]/gi, ".") ||
@@ -841,7 +841,7 @@ const getPVP = (item, currency, dollarValue, discountList) => {
     (1 - (item.art?.comission !== undefined ? item.art.comission : 10) / 100);
   final = prev;
 
-  if (typeof item.product.discount === "string") {
+  if (typeof item.product?.discount === "string") {
     if (dis?.type === "Porcentaje") {
       final = prev - (base / 100) * dis.value;
     } else if (dis?.type === "Monto") {

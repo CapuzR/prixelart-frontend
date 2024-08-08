@@ -816,8 +816,8 @@ export default function ShoppingCart(props) {
                             id={"variant " + index}
                             variant="outlined"
                             value={
-                              props.buyState[index].product.selection.name ||
-                              props.buyState[index].product.selection
+                              props.buyState[index].product?.selection?.name ||
+                              props.buyState[index].product?.selection
                             }
                             onChange={(e) => {
                               handleVariantProduct(

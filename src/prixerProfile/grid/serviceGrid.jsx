@@ -1,41 +1,41 @@
-import React, { useState, useEffect } from "react";
-import { makeStyles, withStyles } from "@material-ui/core/styles";
-import { useTheme } from "@material-ui/core/styles";
-import axios from "axios";
-import { useHistory } from "react-router-dom";
-import Paper from "@material-ui/core/Paper";
-import Button from "@material-ui/core/Button";
-import Backdrop from "@material-ui/core/Backdrop";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import Typography from "@material-ui/core/Typography";
-import IconButton from "@material-ui/core/IconButton";
-import Grid from "@material-ui/core/Grid";
-import Slider from "react-slick";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
-import DirectionsBikeIcon from "@material-ui/icons/DirectionsBike";
-import BusinessIcon from "@material-ui/icons/Business";
-import EditIcon from "@material-ui/icons/Edit";
-import { TextField } from "@material-ui/core";
-import clsx from "clsx";
-import FormControl from "@material-ui/core/FormControl";
-import MenuItem from "@material-ui/core/MenuItem";
-import Select from "@material-ui/core/Select";
-import InputLabel from "@material-ui/core/InputLabel";
-import Switch from "@material-ui/core/Switch";
-import InputAdornment from "@material-ui/core/InputAdornment";
-import HighlightOffOutlinedIcon from "@material-ui/icons/HighlightOffOutlined";
-import AddIcon from "@material-ui/icons/Add";
-import Snackbar from "@material-ui/core/Snackbar";
-import DeleteIcon from "@material-ui/icons/Delete";
-import utils from "../../utils/utils";
-import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css";
-import ServiceSearchBar from "../../sharedComponents/searchBar/serviceSearchBar";
-import FloatingAddButton from "../../sharedComponents/floatingAddButton/floatingAddButton";
-import ArtUploader from "../../sharedComponents/artUploader/artUploader";
-import CreateService from "../../sharedComponents/createService/createService";
+import React, { useState, useEffect } from "react"
+import { makeStyles, withStyles } from "@material-ui/core/styles"
+import { useTheme } from "@material-ui/core/styles"
+import axios from "axios"
+import { useHistory } from "react-router-dom"
+import Paper from "@material-ui/core/Paper"
+import Button from "@material-ui/core/Button"
+import Backdrop from "@material-ui/core/Backdrop"
+import CircularProgress from "@material-ui/core/CircularProgress"
+import Typography from "@material-ui/core/Typography"
+import IconButton from "@material-ui/core/IconButton"
+import Grid from "@material-ui/core/Grid"
+import Slider from "react-slick"
+import "slick-carousel/slick/slick.css"
+import "slick-carousel/slick/slick-theme.css"
+import useMediaQuery from "@material-ui/core/useMediaQuery"
+import DirectionsBikeIcon from "@material-ui/icons/DirectionsBike"
+import BusinessIcon from "@material-ui/icons/Business"
+import EditIcon from "@material-ui/icons/Edit"
+import { TextField } from "@material-ui/core"
+import clsx from "clsx"
+import FormControl from "@material-ui/core/FormControl"
+import MenuItem from "@material-ui/core/MenuItem"
+import Select from "@material-ui/core/Select"
+import InputLabel from "@material-ui/core/InputLabel"
+import Switch from "@material-ui/core/Switch"
+import InputAdornment from "@material-ui/core/InputAdornment"
+import HighlightOffOutlinedIcon from "@material-ui/icons/HighlightOffOutlined"
+import AddIcon from "@material-ui/icons/Add"
+import Snackbar from "@material-ui/core/Snackbar"
+import DeleteIcon from "@material-ui/icons/Delete"
+import utils from "../../utils/utils"
+import ReactQuill from "react-quill"
+import "react-quill/dist/quill.snow.css"
+import ServiceSearchBar from "../../sharedComponents/searchBar/serviceSearchBar"
+import FloatingAddButton from "../../sharedComponents/floatingAddButton/floatingAddButton"
+import ArtUploader from "../../sharedComponents/artUploader/artUploader"
+import CreateService from "../../sharedComponents/createService/createService"
 
 const IOSSwitch = withStyles((theme) => ({
   root: {
@@ -89,8 +89,8 @@ const IOSSwitch = withStyles((theme) => ({
       }}
       {...props}
     />
-  );
-});
+  )
+})
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -167,95 +167,95 @@ const useStyles = makeStyles((theme) => ({
     position: "relative",
     marginLeft: "95%",
   },
-}));
+}))
 
 export default function ServiceGrid(props) {
-  const classes = useStyles();
-  const [tiles, setTiles] = useState([]);
-  const [services, setServices] = useState([]);
-  const history = useHistory();
-  const view = window.location.pathname.slice(1);
-  const prixer = props.prixerUsername;
-    const globalParams = new URLSearchParams(window.location.pathname);
-  const entries = globalParams.entries();
-const firstEntry = entries.next().value;
-const [key, value] = firstEntry;
-  const [backdrop, setBackdrop] = useState(true);
-  const theme = useTheme();
-  const [snackBar, setSnackBar] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [snackBarMessage, setSnackBarMessage] = useState(false);
-  const [openEdit, setOpenEdit] = useState(false);
-  const totalOrders = tiles?.length;
-  const itemsPerPage = 30;
-  const noOfPages = Math.ceil(totalOrders / itemsPerPage);
-  const [pageNumber, setPageNumber] = useState(1);
-  const itemsToSkip = (pageNumber - 1) * itemsPerPage;
-  const tilesv2 = tiles?.slice(itemsToSkip, itemsPerPage + itemsToSkip);
-  const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
-  const isDeskTop = useMediaQuery(theme.breakpoints.up("sm"));
-  const isTab = useMediaQuery(theme.breakpoints.up("xs"));
-  const isMobile = useMediaQuery(theme.breakpoints.down("xs"));
-  const isnDesk = useMediaQuery(theme.breakpoints.down("md"));
-  const serviceAreas = ["Diseño", "Fotografía", "Artes Plásticas", "Otro"];
-  const [serviceOnEdit, setServiceOnEdit] = useState(); //Data inicial
-  const [showFullDescription, setShowFullDescription] = useState([]);
-  const [query, setQuery] = useState();
-  const [categories, setCategories] = useState();
-  const [images, setImages] = useState([]); // Imágenes visaulizadas
-  const [newImg, setNewImg] = useState([]);
-  const [openArtFormDialog, setOpenArtFormDialog] = useState(false);
-  const [openShoppingCart, setOpenShoppingCart] = useState(false);
-  const [openServiceFormDialog, setOpenServiceFormDialog] = useState(false);
-  const [createdService, setCreatedService] = useState(false);
+  const classes = useStyles()
+  const [tiles, setTiles] = useState([])
+  const [services, setServices] = useState([])
+  const history = useHistory()
+  const view = window.location.pathname.slice(1)
+  const prixer = props.prixerUsername
+  const globalParams = new URLSearchParams(window.location.pathname)
+  const entries = globalParams.entries()
+  const firstEntry = entries.next().value
+  const [key, value] = firstEntry
+  const [backdrop, setBackdrop] = useState(true)
+  const theme = useTheme()
+  const [snackBar, setSnackBar] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [snackBarMessage, setSnackBarMessage] = useState(false)
+  const [openEdit, setOpenEdit] = useState(false)
+  const totalOrders = tiles?.length
+  const itemsPerPage = 30
+  const noOfPages = Math.ceil(totalOrders / itemsPerPage)
+  const [pageNumber, setPageNumber] = useState(1)
+  const itemsToSkip = (pageNumber - 1) * itemsPerPage
+  const tilesv2 = tiles?.slice(itemsToSkip, itemsPerPage + itemsToSkip)
+  const isDesktop = useMediaQuery(theme.breakpoints.up("md"))
+  const isDeskTop = useMediaQuery(theme.breakpoints.up("sm"))
+  const isTab = useMediaQuery(theme.breakpoints.up("xs"))
+  const isMobile = useMediaQuery(theme.breakpoints.down("xs"))
+  const isnDesk = useMediaQuery(theme.breakpoints.down("md"))
+  const serviceAreas = ["Diseño", "Fotografía", "Artes Plásticas", "Otro"]
+  const [serviceOnEdit, setServiceOnEdit] = useState() //Data inicial
+  const [showFullDescription, setShowFullDescription] = useState([])
+  const [query, setQuery] = useState()
+  const [categories, setCategories] = useState()
+  const [images, setImages] = useState([]) // Imágenes visaulizadas
+  const [newImg, setNewImg] = useState([])
+  const [openArtFormDialog, setOpenArtFormDialog] = useState(false)
+  const [openShoppingCart, setOpenShoppingCart] = useState(false)
+  const [openServiceFormDialog, setOpenServiceFormDialog] = useState(false)
+  const [createdService, setCreatedService] = useState(false)
 
   const toggleDescription = (index) => {
-    const updatedShowFullDescription = [...showFullDescription];
-    updatedShowFullDescription[index] = !updatedShowFullDescription[index];
-    setShowFullDescription(updatedShowFullDescription);
-  };
+    const updatedShowFullDescription = [...showFullDescription]
+    updatedShowFullDescription[index] = !updatedShowFullDescription[index]
+    setShowFullDescription(updatedShowFullDescription)
+  }
 
   const getMyServices = async () => {
-    setBackdrop(true);
+    setBackdrop(true)
 
     const base_url =
-      process.env.REACT_APP_BACKEND_URL + "/service/readMyServices";
+      process.env.REACT_APP_BACKEND_URL + "/service/readMyServices"
     await axios
       .post(base_url, {
-        prixer: JSON.parse(localStorage.getItem("token")).username
+        prixer: JSON.parse(localStorage.getItem("token")).username,
       })
       .then((response) => {
-        setTiles(response.data.services);
-        setServices(response.data.services);
+        setTiles(response.data.services)
+        setServices(response.data.services)
       })
       .catch((error) => {
-        console.log(error);
-      });
-    setBackdrop(false);
-  };
+        console.log(error)
+      })
+    setBackdrop(false)
+  }
 
   const getServices = async () => {
-    let base_url;
+    let base_url
 
     if (prixer === (null || undefined)) {
-      base_url = process.env.REACT_APP_BACKEND_URL + "/service/getAllActive";
+      base_url = process.env.REACT_APP_BACKEND_URL + "/service/getAllActive"
     } else {
       base_url =
         process.env.REACT_APP_BACKEND_URL +
         "/service/getServiceByPrixer/" +
-        prixer;
+        prixer
     }
     await axios
       .get(base_url)
       .then((response) => {
-        setTiles(response.data.services);
-        setServices(response.data.services);
+        setTiles(response.data.services)
+        setServices(response.data.services)
       })
       .catch((error) => {
-        console.log(error);
-      });
-    setBackdrop(false);
-  };
+        console.log(error)
+      })
+    setBackdrop(false)
+  }
 
   useEffect(() => {
     if (
@@ -263,25 +263,25 @@ const [key, value] = firstEntry;
       JSON.parse(localStorage.getItem("token")).username === prixer &&
       view !== "servicios"
     ) {
-      getMyServices();
+      getMyServices()
     } else {
-      getServices();
+      getServices()
     }
-  }, []);
+  }, [])
 
   if (props.createdService) {
   }
   useEffect(() => {
     if (props.createdService) {
-      getMyServices();
-      setSnackBar(true);
-      setSnackBarMessage("¡Servicio creado exitosamente!");
-    } else return;
-  }, [props.createdService]);
+      getMyServices()
+      setSnackBar(true)
+      setSnackBarMessage("¡Servicio creado exitosamente!")
+    } else return
+  }, [props.createdService])
 
   useEffect(() => {
     if (categories && query?.length > 0) {
-      const result = [];
+      const result = []
       services.map((tile) => {
         if (
           tile.serviceArea === categories &&
@@ -293,15 +293,15 @@ const [key, value] = firstEntry;
                   tile.serviceArea.toLowerCase().includes(query.toLowerCase())
               ))
         ) {
-          result.push(tile);
+          result.push(tile)
         }
-      });
-      setTiles(result);
+      })
+      setTiles(result)
     } else if (categories !== undefined) {
-      const result = services.filter((tile) => tile.serviceArea === categories);
-      setTiles(result);
+      const result = services.filter((tile) => tile.serviceArea === categories)
+      setTiles(result)
     } else if (query?.length > 0) {
-      const result = [];
+      const result = []
       services.map((tile) => {
         if (
           tile.title.toLowerCase().includes(query.toLowerCase()) ||
@@ -312,213 +312,213 @@ const [key, value] = firstEntry;
                 tile.serviceArea.toLowerCase().includes(query.toLowerCase())
             )
         ) {
-          result.push(tile);
+          result.push(tile)
         }
-      });
-      setTiles(result);
+      })
+      setTiles(result)
     } else {
-      setTiles(services);
+      setTiles(services)
     }
-  }, [query, categories]);
+  }, [query, categories])
 
   const updateService = async () => {
-    var formData = new FormData();
-    formData.append("_id", serviceOnEdit._id);
-    formData.append("title", serviceOnEdit.title);
-    formData.append("description", serviceOnEdit.description);
-    formData.append("serviceArea", serviceOnEdit.serviceArea);
-    formData.append("isLocal", serviceOnEdit.isLocal);
-    formData.append("isRemote", serviceOnEdit.isRemote);
+    var formData = new FormData()
+    formData.append("_id", serviceOnEdit._id)
+    formData.append("title", serviceOnEdit.title)
+    formData.append("description", serviceOnEdit.description)
+    formData.append("serviceArea", serviceOnEdit.serviceArea)
+    formData.append("isLocal", serviceOnEdit.isLocal)
+    formData.append("isRemote", serviceOnEdit.isRemote)
     if (serviceOnEdit.location !== ("" || undefined)) {
-      formData.append("location", serviceOnEdit.location);
+      formData.append("location", serviceOnEdit.location)
     }
     if (serviceOnEdit.productionTime !== ("" || undefined)) {
-      formData.append("productionTime", serviceOnEdit.productionTime);
+      formData.append("productionTime", serviceOnEdit.productionTime)
     }
-    formData.append("priceFrom", serviceOnEdit.publicPrice.from);
+    formData.append("priceFrom", serviceOnEdit.publicPrice.from)
     if (serviceOnEdit.publicPrice.to !== ("" || undefined)) {
-      formData.append("priceTo", serviceOnEdit.publicPrice.to);
+      formData.append("priceTo", serviceOnEdit.publicPrice.to)
     }
-    formData.append("userId", JSON.parse(localStorage.getItem("token")).id);
+    formData.append("userId", JSON.parse(localStorage.getItem("token")).id)
     formData.append(
       "prixerUsername",
       JSON.parse(localStorage.getItem("token")).username
-    );
+    )
     formData.append(
       "prixer",
       JSON.parse(localStorage.getItem("token")).prixerId
-    );
-    formData.append("active", serviceOnEdit.active || true);
+    )
+    formData.append("active", serviceOnEdit.active || true)
 
     if (serviceOnEdit.sources.images.length > 0) {
       serviceOnEdit.sources.images.map((file) =>
         formData.append("images", file.url)
-      );
+      )
     }
 
     if (newImg.length > 0) {
-      newImg.map((file) => formData.append("newServiceImages", file));
+      newImg.map((file) => formData.append("newServiceImages", file))
     }
 
     const base_url =
       process.env.REACT_APP_BACKEND_URL +
       "/service/updateMyService/" +
-      serviceOnEdit._id;
+      serviceOnEdit._id
     const data = await axios.put(base_url, formData, {
       "Content-Type": "multipart/form-data",
-    });
+    })
     if (data.data.success) {
-      setBackdrop(false);
-      setSnackBarMessage(data.data.message);
-      setSnackBar(true);
-      getMyServices();
+      setBackdrop(false)
+      setSnackBarMessage(data.data.message)
+      setSnackBar(true)
+      getMyServices()
     } else {
       setSnackBarMessage(
         "Por favor vuelve a intentarlo, puede que exista algún inconveniente de conexión. Si aún no lo has hecho por favor inicia sesión."
-      );
-      setSnackBar(true);
+      )
+      setSnackBar(true)
     }
-  };
+  }
 
   const deleteService = async (id) => {
     const url =
-      process.env.REACT_APP_BACKEND_URL + "/service/deleteService/" + id;
-    const serviceToDelete = await axios.put(url);
+      process.env.REACT_APP_BACKEND_URL + "/service/deleteService/" + id
+    const serviceToDelete = await axios.put(url)
     if (serviceToDelete.data.success) {
-      setSnackBarMessage(serviceToDelete.data.message);
-      setSnackBar(true);
-      getMyServices();
+      setSnackBarMessage(serviceToDelete.data.message)
+      setSnackBar(true)
+      getMyServices()
     }
-  };
+  }
 
   const checkImages = async (tile) => {
-    const prevImg = [];
+    const prevImg = []
     await tile.sources.images.map((images) => {
-      prevImg.push(images.url);
-    });
-    setImages(prevImg);
-  };
+      prevImg.push(images.url)
+    })
+    setImages(prevImg)
+  }
 
   const adjustPrice = async (type, e) => {
-    const newPrice = serviceOnEdit.publicPrice;
+    const newPrice = serviceOnEdit.publicPrice
     if (type === "from") {
-      newPrice.from = e;
+      newPrice.from = e
     } else {
-      newPrice.to = e;
+      newPrice.to = e
     }
-    setServiceOnEdit({ ...serviceOnEdit, publicPrice: newPrice });
-  };
+    setServiceOnEdit({ ...serviceOnEdit, publicPrice: newPrice })
+  }
 
   const loadNewImage = async (e) => {
-    e.preventDefault();
+    e.preventDefault()
     if (images.length === 6) {
-      setSnackBar(true);
-      setSnackBarMessage("Has alcanzado el máximo de imágenes (6).");
+      setSnackBar(true)
+      setSnackBarMessage("Has alcanzado el máximo de imágenes (6).")
     } else {
-      const file = e.target.files[0];
-      const resizedString = await convertToBase64(file);
-      setImages([...images, { name: file.name, url: resizedString }]);
-      setNewImg([...newImg, file]);
+      const file = e.target.files[0]
+      const resizedString = await convertToBase64(file)
+      setImages([...images, { name: file.name, url: resizedString }])
+      setNewImg([...newImg, file])
     }
-  };
+  }
 
   const replaceImage = async (e, x, index) => {
     const filteredPrev = serviceOnEdit.sources.images.filter(
       (prev) => prev.url !== x
-    );
-    setServiceOnEdit({ ...serviceOnEdit, sources: { images: filteredPrev } });
+    )
+    setServiceOnEdit({ ...serviceOnEdit, sources: { images: filteredPrev } })
 
-    const file = e.target.files[0];
-    const resizedString = await convertToBase64(file);
-    const prevImg = [...images];
-    prevImg[index] = resizedString;
-    setImages(prevImg);
+    const file = e.target.files[0]
+    const resizedString = await convertToBase64(file)
+    const prevImg = [...images]
+    prevImg[index] = resizedString
+    setImages(prevImg)
 
     if (newImg.length > 0) {
-      const filteredNewImg = newImg.filter((img) => img.name !== x.name);
-      setNewImg([...filteredNewImg, file]);
+      const filteredNewImg = newImg.filter((img) => img.name !== x.name)
+      setNewImg([...filteredNewImg, file])
     } else {
-      setNewImg([...newImg, file]);
+      setNewImg([...newImg, file])
     }
-  };
+  }
 
   const deleteImg = async (x, i2) => {
     const filteredPrev = serviceOnEdit.sources.images.filter(
       (prev) => prev.url !== x
-    );
-    setServiceOnEdit({ ...serviceOnEdit, sources: { images: filteredPrev } });
+    )
+    setServiceOnEdit({ ...serviceOnEdit, sources: { images: filteredPrev } })
     if (newImg.length > 0) {
-      const filteredNewImg = newImg.filter((img) => img.name !== x.name);
-      setNewImg(filteredNewImg);
+      const filteredNewImg = newImg.filter((img) => img.name !== x.name)
+      setNewImg(filteredNewImg)
     }
-    const filteredImg = images.filter((img) => img !== x);
-    setImages(filteredImg);
-  };
+    const filteredImg = images.filter((img) => img !== x)
+    setImages(filteredImg)
+  }
 
   const convertToBase64 = (blob) => {
     return new Promise((resolve) => {
-      var reader = new FileReader();
+      var reader = new FileReader()
       reader.onload = function () {
-        resolve(reader.result);
-      };
-      reader.readAsDataURL(blob);
-    });
-  };
+        resolve(reader.result)
+      }
+      reader.readAsDataURL(blob)
+    })
+  }
 
   const closeAd = () => {
-    setSnackBar(false);
-  };
+    setSnackBar(false)
+  }
 
   const handleChangeIsLocal = () => {
     setServiceOnEdit({
       ...serviceOnEdit,
       isLocal: !serviceOnEdit.isLocal,
-    });
-  };
+    })
+  }
 
   const handleChangeIsRemote = () => {
     setServiceOnEdit({
       ...serviceOnEdit,
       isRemote: !serviceOnEdit.isRemote,
-    });
-  };
+    })
+  }
 
   const RenderHTML = ({ htmlString }) => {
-    return <div dangerouslySetInnerHTML={{ __html: htmlString }} />;
-  };
+    return <div dangerouslySetInnerHTML={{ __html: htmlString }} />
+  }
 
   const handleEditorChange = (value) => {
-    setServiceOnEdit({
-      ...serviceOnEdit,
+    setServiceOnEdit((prevState) => ({
+      ...prevState,
       description: value,
-    });
-  };
+    }))
+  }
 
   const setVisibleService = async (service, event) => {
-    setLoading(true);
+    setLoading(true)
     const base_url =
-      process.env.REACT_APP_BACKEND_URL + "/service/disable/" + service._id;
-    service.visible = event;
+      process.env.REACT_APP_BACKEND_URL + "/service/disable/" + service._id
+    service.visible = event
     const response = await axios.put(
       base_url,
       { visible: event, adminToken: localStorage.getItem("adminTokenV") },
       { withCredentials: true }
-    );
-    setSnackBarMessage("Servicio modificado exitosamente");
-    getServices();
-    setSnackBar(true);
-    setLoading(false);
-  };
+    )
+    setSnackBarMessage("Servicio modificado exitosamente")
+    getServices()
+    setSnackBar(true)
+    setLoading(false)
+  }
 
   const checkPhone = async (service) => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + "/prixer/read";
-    const prixer = await axios.post(base_url, { username: service.prixer });
-    console.log(prixer);
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/prixer/read"
+    const prixer = await axios.post(base_url, { username: service.prixer })
+    console.log(prixer)
     await window.open(
       utils.generateServiceMessage(service, prixer.data.phone),
       "_blank"
-    );
-  };
+    )
+  }
 
   const settings = {
     slidesToShow: (isDesktop && 1) || (isMobile && 1) || (isTab && 1),
@@ -529,12 +529,16 @@ const [key, value] = firstEntry;
     speed: 1000,
     infinite: true,
     dots: true,
-  };
+    adaptiveHeight: true,
+  }
 
   return (
     <>
       <div className={classes.root}>
-        <Backdrop className={classes.backdrop} open={backdrop}>
+        <Backdrop
+          className={classes.backdrop}
+          open={backdrop}
+        >
           <CircularProgress color="inherit" />
         </Backdrop>
       </div>
@@ -555,11 +559,23 @@ const [key, value] = firstEntry;
         />
       </div>
 
-      <Grid container style={{ justifyContent: "center", marginBottom: 20 }}>
+      <Grid
+        container
+        style={{ justifyContent: "center", marginBottom: 20 }}
+      >
         {tiles?.length > 0 ? (
           tilesv2.map((tile, i) => (
-            <Grid item xs={12} md={10} lg={8} key={i}>
-              <Paper elevation={3} style={{ padding: 20, marginBottom: 20 }}>
+            <Grid
+              item
+              xs={12}
+              md={10}
+              lg={8}
+              key={i}
+            >
+              <Paper
+                elevation={3}
+                style={{ padding: 20, marginBottom: 20 }}
+              >
                 {props.permissions?.artBan && (
                   <div
                     style={{
@@ -573,7 +589,7 @@ const [key, value] = firstEntry;
                       size="normal"
                       checked={tile.visible}
                       onChange={(e) => {
-                        setVisibleService(tile, e.target.checked);
+                        setVisibleService(tile, e.target.checked)
                       }}
                     />
                   </div>
@@ -595,8 +611,8 @@ const [key, value] = firstEntry;
                         marginLeft: 10,
                       }}
                       onClick={() => {
-                        updateService();
-                        setOpenEdit(false);
+                        updateService()
+                        setOpenEdit(false)
                       }}
                     >
                       Guardar
@@ -619,9 +635,9 @@ const [key, value] = firstEntry;
                           component="span"
                           color="primary"
                           onClick={() => {
-                            setOpenEdit(i);
-                            setServiceOnEdit(tile);
-                            checkImages(tile);
+                            setOpenEdit(i)
+                            setServiceOnEdit(tile)
+                            checkImages(tile)
                           }}
                           variant="contained"
                         >
@@ -632,7 +648,7 @@ const [key, value] = firstEntry;
                           component="span"
                           color="primary"
                           onClick={() => {
-                            deleteService(tile._id);
+                            deleteService(tile._id)
                           }}
                           variant="contained"
                         >
@@ -665,7 +681,7 @@ const [key, value] = firstEntry;
                               setServiceOnEdit({
                                 ...serviceOnEdit,
                                 active: e.target.value,
-                              });
+                              })
                             }}
                             color="primary"
                           />
@@ -699,7 +715,7 @@ const [key, value] = firstEntry;
                                     accept="image/*"
                                     hidden
                                     onChange={(a) => {
-                                      replaceImage(a, img, i2);
+                                      replaceImage(a, img, i2)
                                     }}
                                   />
                                   <EditIcon />
@@ -707,7 +723,7 @@ const [key, value] = firstEntry;
                                 <IconButton
                                   className={classes.buttonImgLoader}
                                   onClick={(d) => {
-                                    deleteImg(img, i2);
+                                    deleteImg(img, i2)
                                   }}
                                 >
                                   <HighlightOffOutlinedIcon />
@@ -744,7 +760,7 @@ const [key, value] = firstEntry;
                             accept="image/*"
                             hidden
                             onChange={(a) => {
-                              loadNewImage(a);
+                              loadNewImage(a)
                             }}
                           />
                           <AddIcon fontSize="large" />
@@ -808,11 +824,14 @@ const [key, value] = firstEntry;
                             setServiceOnEdit({
                               ...serviceOnEdit,
                               title: e.target.value,
-                            });
+                            })
                           }}
                         />
                       ) : (
-                        <Typography variant="h5" color="secondary">
+                        <Typography
+                          variant="h5"
+                          color="secondary"
+                        >
                           {tile.title}
                         </Typography>
                       )}
@@ -829,8 +848,8 @@ const [key, value] = firstEntry;
                             marginLeft: 10,
                           }}
                           onClick={() => {
-                            updateService();
-                            setOpenEdit(false);
+                            updateService()
+                            setOpenEdit(false)
                           }}
                         >
                           Guardar
@@ -845,9 +864,9 @@ const [key, value] = firstEntry;
                               component="span"
                               color="primary"
                               onClick={() => {
-                                setOpenEdit(i);
-                                setServiceOnEdit(tile);
-                                checkImages(tile);
+                                setOpenEdit(i)
+                                setServiceOnEdit(tile)
+                                checkImages(tile)
                               }}
                               variant="contained"
                             >
@@ -858,7 +877,7 @@ const [key, value] = firstEntry;
                               component="span"
                               color="primary"
                               onClick={() => {
-                                deleteService(tile._id);
+                                deleteService(tile._id)
                               }}
                               variant="contained"
                             >
@@ -878,7 +897,7 @@ const [key, value] = firstEntry;
                           padding: "1px 5px",
                         }}
                         onClick={() => {
-                          history.push({ pathname: "/prixer=" + tile.prixer });
+                          history.push({ pathname: "/prixer=" + tile.prixer })
                         }}
                       >
                         de {tile.prixer}
@@ -907,14 +926,17 @@ const [key, value] = firstEntry;
                               setServiceOnEdit({
                                 ...serviceOnEdit,
                                 serviceArea: e.target.value,
-                              });
+                              })
                             }}
                           >
                             <MenuItem value="">
                               <em></em>
                             </MenuItem>
                             {serviceAreas.map((n) => (
-                              <MenuItem key={n} value={n}>
+                              <MenuItem
+                                key={n}
+                                value={n}
+                              >
                                 {n}
                               </MenuItem>
                             ))}
@@ -933,7 +955,7 @@ const [key, value] = firstEntry;
                               setServiceOnEdit({
                                 ...serviceOnEdit,
                                 productionTime: e.target.value,
-                              });
+                              })
                             }}
                           />
                         </FormControl>
@@ -959,7 +981,7 @@ const [key, value] = firstEntry;
                           ],
                         }}
                         value={serviceOnEdit.description}
-                        onChange={handleEditorChange}
+                        onChange={   handleEditorChange}
                         placeholder="Escribe la descripción aquí..."
                       />
                     ) : (
@@ -1041,7 +1063,10 @@ const [key, value] = firstEntry;
                                 color="secondary"
                                 style={{ paddingRight: 5 }}
                               />
-                              <Typography variant="body2" color="secondary">
+                              <Typography
+                                variant="body2"
+                                color="secondary"
+                              >
                                 Disponible para trabajar en locaciones
                               </Typography>
                             </>
@@ -1053,7 +1078,10 @@ const [key, value] = firstEntry;
                                 color="secodary"
                                 style={{ paddingRight: 5 }}
                               />
-                              <Typography variant="body2" color="secondary">
+                              <Typography
+                                variant="body2"
+                                color="secondary"
+                              >
                                 {tile.location}
                               </Typography>
                             </>
@@ -1072,7 +1100,7 @@ const [key, value] = firstEntry;
                           setServiceOnEdit({
                             ...serviceOnEdit,
                             location: e.target.value,
-                          });
+                          })
                         }}
                         style={{ marginTop: 10 }}
                         minRows={3}
@@ -1080,7 +1108,10 @@ const [key, value] = firstEntry;
                     )}
 
                     {openEdit !== i && tile.productionTime && (
-                      <Typography variant="body2" color="secondary">
+                      <Typography
+                        variant="body2"
+                        color="secondary"
+                      >
                         {tile.productionTime}
                       </Typography>
                     )}
@@ -1100,7 +1131,7 @@ const [key, value] = firstEntry;
                           type="Number"
                           value={serviceOnEdit?.publicPrice?.from}
                           onChange={(e) => {
-                            adjustPrice("from", e.target.value);
+                            adjustPrice("from", e.target.value)
                           }}
                           InputProps={{
                             startAdornment: (
@@ -1116,7 +1147,7 @@ const [key, value] = firstEntry;
                           type="Number"
                           value={serviceOnEdit.publicPrice?.to}
                           onChange={(e) => {
-                            adjustPrice("to", e.target.value);
+                            adjustPrice("to", e.target.value)
                           }}
                           InputProps={{
                             startAdornment: (
@@ -1157,7 +1188,7 @@ const [key, value] = firstEntry;
                           window.open(
                             utils.generateLikeServiceMessage(tile),
                             "_blank"
-                          );
+                          )
                         }}
                       >
                         Compartir
@@ -1174,7 +1205,7 @@ const [key, value] = firstEntry;
                               marginTop: 20,
                             }}
                             onClick={(e) => {
-                              checkPhone(tile);
+                              checkPhone(tile)
                             }}
                           >
                             Contactar
@@ -1190,7 +1221,7 @@ const [key, value] = firstEntry;
                             marginTop: 20,
                           }}
                           onClick={(e) => {
-                            checkPhone(tile);
+                            checkPhone(tile)
                           }}
                         >
                           Contactar
@@ -1256,5 +1287,5 @@ const [key, value] = firstEntry;
         onClose={closeAd}
       />
     </>
-  );
+  )
 }

@@ -6,24 +6,24 @@ const UnitPrice = (
   discountList,
   prixer
 ) => {
-  let { base, final } = 0;
+  let { base, final } = 0
 
   if (product.modifyPrice) {
-    final = product.finalPrice;
+    final = product.finalPrice
   } else if (prixer !== undefined) {
     product.prixerEquation
-      ? (final = Number(product?.prixerEquation?.replace(/[,]/gi, ".")))
-      : (final = Number(product?.prixerPrice?.from?.replace(/[,]/gi, ".")));
+      ? (final = Number(product?.prixerEquation))
+      : (final = Number(product?.prixerPrice?.from))
 
     if (art.prixerUsername !== prixer && art.owner !== prixer) {
-      final = (final - final / 10) / (1 - art.comission / 100);
+      final = (final - final / 10) / (1 - art.comission / 100)
     }
   } else {
     product.publicEquation
-      ? (base = Number(product.publicEquation.replace(/[,]/gi, ".")))
-      : (base = Number(product.publicPrice.from.replace(/[,]/gi, ".")));
-    final = base - base / 10;
-    final = final / (1 - art.comission / 100);
+      ? (base = Number(product.publicEquation))
+      : (base = Number(product.publicPrice.from))
+    final = base - base / 10
+    final = final / (1 - art.comission / 100)
   }
 
   if (
@@ -31,24 +31,24 @@ const UnitPrice = (
     typeof product.discount === "string" &&
     product.modifyPrice === (false || undefined)
   ) {
-    let dis = discountList?.filter((dis) => dis._id === product.discount)[0];
+    let dis = discountList?.filter((dis) => dis._id === product.discount)[0]
     if (dis?.type === "Porcentaje") {
-      final = final - (final / 100) * dis?.value;
+      final = final - (final / 100) * dis?.value
     } else if (dis?.type === "Monto") {
-      final = final - dis?.value;
+      final = final - dis?.value
     }
   }
   if (product.finalPrice) {
-    final = product.finalPrice;
+    final = product.finalPrice
   }
   if (currency) {
-    final = final * dollarValue;
+    final = final * dollarValue
   }
   return final?.toLocaleString("de-DE", {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
-  });
-};
+  })
+}
 
 const UnitPriceSug = (
   product,
@@ -60,10 +60,10 @@ const UnitPriceSug = (
   org,
   consumerType
 ) => {
-  let { price, base } = 0;
-  let dis = discountList?.filter((dis) => dis._id === product.discount)[0];
+  let { price, base } = 0
+  let dis = discountList?.filter((dis) => dis._id === product.discount)[0]
   if (org !== undefined) {
-    price = UnitPriceForOrg(product, art, prixer, org, consumerType);
+    price = UnitPriceForOrg(product, art, prixer, org, consumerType)
   } else {
     if (typeof product.selection === "string" && prixer !== undefined) {
       base = product.prixerEquation
@@ -74,14 +74,14 @@ const UnitPriceSug = (
         : Number(
             product.prixerPrice.from?.replace(/[,]/gi, ".") -
               product.prixerPrice.from?.replace(/[,]/gi, ".") / 10
-          );
+          )
     } else if (typeof product.selection === "string") {
       base = product.publicEquation
         ? Number(product.publicEquation - product.publicEquation / 10)
         : Number(
             product.publicPrice.from?.replace(/[,]/gi, ".") -
               product.publicPrice.from?.replace(/[,]/gi, ".") / 10
-          );
+          )
     } else if (prixer !== undefined) {
       base = product.prixerEquation
         ? Number(
@@ -91,11 +91,11 @@ const UnitPriceSug = (
         : Number(
             product?.prixerPrice?.from?.replace(/[,]/gi, ".") -
               product?.prixerPrice?.from?.replace(/[,]/gi, ".") / 10
-          );
+          )
     } else {
       base = product.publicEquation
         ? Number(product.publicEquation - product.publicEquation / 10)
-        : Number(product.publicPrice.from - product.publicPrice.from / 10);
+        : Number(product.publicPrice.from - product.publicPrice.from / 10)
     }
     // refinar esta función
     if (
@@ -103,34 +103,34 @@ const UnitPriceSug = (
       prixer !== art.prixerUsername &&
       prixer !== art.owner
     ) {
-      price = base / (1 - art.comission / 100);
+      price = base / (1 - art.comission / 100)
     } else if (prixer === art.prixerUsername || prixer === art.owner) {
-      price = base;
+      price = base
     }
 
     if (prixer === undefined && typeof product.discount === "string") {
       if (dis?.type === "Porcentaje") {
-        price = Number(price - (price / 100) * dis?.value);
+        price = Number(price - (price / 100) * dis?.value)
       } else if (dis?.type === "Monto") {
-        price = Number(price - dis?.value);
+        price = Number(price - dis?.value)
       }
     } else if (prixer === undefined) {
-      price = base / (1 - art.comission / 100);
-        console.log(price, "precio normal");
+      price = base / (1 - art.comission / 100)
+      console.log(price, "precio normal")
     }
   }
   // Incluir recargo si es a PrixelartPrefit
   if (currency) {
-    price = price * (dollarValue || 1);
+    price = price * (dollarValue || 1)
   }
   return price.toLocaleString("de-DE", {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
-  });
-};
+  })
+}
 
 const UnitPriceForOrg = (product, art, prixer, org, consumerType) => {
-  let { base, price } = 0;
+  let { base, price } = 0
   if (org !== undefined && org?.agreement.base === "pvprixer") {
     base =
       product.prixerEquation !== "" && product.prixerEquation !== undefined
@@ -141,69 +141,71 @@ const UnitPriceForOrg = (product, art, prixer, org, consumerType) => {
         : Number(
             product.prixerPrice.from.replace(/[,]/gi, ".") -
               product.prixerPrice.from.replace(/[,]/gi, ".") / 10
-          );
+          )
   } else if (org !== undefined && org?.agreement.base === "pvm") {
     base =
       product.prixerEquation !== "" && product.prixerEquation !== undefined
         ? Number(product.prixerEquation.replace(/[,]/gi, "."))
-        : Number(product.prixerPrice.from.replace(/[,]/gi, "."));
+        : Number(product.prixerPrice.from.replace(/[,]/gi, "."))
   } else if (org !== undefined && org.agreement.base === "pvp") {
     base =
       product.publicEquation !== "" && product.publicEquation !== undefined
         ? Number(product.publicEquation.replace(/[,]/gi, "."))
-        : Number(product.publicPrice.from.replace(/[,]/gi, "."));
+        : Number(product.publicPrice.from.replace(/[,]/gi, "."))
   }
   const applied = org?.agreement.appliedProducts.find(
     (el) => el.id === product._id
-  );
-  const varApplied = applied.variants?.find((v) => v.name.includes(product.selection));
+  )
+  const varApplied = applied.variants?.find((v) =>
+    v.name.includes(product.selection)
+  )
   let percentage =
     product.selection !== undefined && typeof product.selection === "string"
       ? varApplied?.cporg
-      : applied.cporg;
+      : applied.cporg
 
-  let consumerVar = consumerType?.toLowerCase();
+  let consumerVar = consumerType?.toLowerCase()
   for (const p in org.agreement.considerations) {
-    const prop = p.toLowerCase();
+    const prop = p.toLowerCase()
     if (consumerVar?.includes(prop)) {
-      let c = (percentage / 100) * org.agreement.considerations[p];
-      percentage = percentage - c;
+      let c = (percentage / 100) * org.agreement.considerations[p]
+      percentage = percentage - c
     }
   }
-  price = base / (1 - Number(percentage) / 100);
-  console.log(price, "final price ORG");
-  return price;
-};
+  price = base / (1 - Number(percentage) / 100)
+  console.log(price, "final price ORG")
+  return price
+}
 
 const getVariantPrice = (product, art) => {
-  let { price, base } = 0;
+  let { price, base } = 0
 
   base = product.publicEquation
     ? Number(product.publicEquation - product.publicEquation / 10)
-    : Number(product.publicPrice.from - product.publicPrice.from / 10);
+    : Number(product.publicPrice.from - product.publicPrice.from / 10)
   if (prixer !== art.prixerUsername && prixer !== art.owner) {
-    price = base / (1 - art.comission / 100);
+    price = base / (1 - art.comission / 100)
   } else {
-    price = base;
+    price = base
   }
-  let dis = discountList?.filter((dis) => dis._id === product.discount)[0];
+  let dis = discountList?.filter((dis) => dis._id === product.discount)[0]
   if (typeof product.discount === "string") {
     if (dis?.type === "Porcentaje") {
-      price = Number(price - (price / 100) * dis?.value);
+      price = Number(price - (price / 100) * dis?.value)
     } else if (dis?.type === "Monto") {
-      price = Number(price - dis?.value);
+      price = Number(price - dis?.value)
     }
   }
 
   // Incluir recargo si es a PrixelartPrefit
   if (currency) {
-    price = price * dollarValue;
+    price = price * dollarValue
   }
   return price.toLocaleString("de-DE", {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
-  });
-};
+  })
+}
 
 const getComission = (
   item,
@@ -217,29 +219,29 @@ const getComission = (
   org,
   consumerType
 ) => {
-  let { unit, total } = 0;
+  let { unit, total } = 0
   if (org !== undefined) {
-    unit = UnitPriceForOrg(item, art, prixer, org, consumerType);
+    unit = UnitPriceForOrg(item, art, prixer, org, consumerType)
     const applied = org?.agreement.appliedProducts.find(
       (el) => el.id === item._id
-    );
-    const varApplied = applied?.variants.find((v) => v.name === item.selection);
+    )
+    const varApplied = applied?.variants.find((v) => v.name === item.selection)
 
     let percentage =
       item.selection !== undefined && typeof item.selection === "string"
         ? varApplied?.cporg
-        : applied?.cporg || 10;
-    total = (unit / 100) * percentage;
+        : applied?.cporg || 10
+    total = (unit / 100) * percentage
 
-        if (consumerType && consumerType !== "Particular") {
-      let consumer = consumerType.toLowerCase();
-        for (const p in org.agreement.considerations) {
-          const prop = p.toLowerCase();
-          if (consumer?.includes(prop)) {
-            let c = (percentage / 100) * org.agreement.considerations[p];
-            total = percentage - c;
-          }
+    if (consumerType && consumerType !== "Particular") {
+      let consumer = consumerType.toLowerCase()
+      for (const p in org.agreement.considerations) {
+        const prop = p.toLowerCase()
+        if (consumer?.includes(prop)) {
+          let c = (percentage / 100) * org.agreement.considerations[p]
+          total = percentage - c
         }
+      }
     }
   } else {
     unit = Number(
@@ -252,10 +254,10 @@ const getComission = (
         prixer,
         consumerType
       ).replace(/[,]/gi, ".")
-    );
-    total = (unit / 100) * art.comission * quantity;
+    )
+    total = (unit / 100) * art.comission * quantity
   }
-  let surcharge;
+  let surcharge
   if (surchargeList && surchargeList?.length > 0) {
     surchargeList.map((sur) => {
       if (
@@ -263,29 +265,32 @@ const getComission = (
         sur.appliedUsers.includes(art.owner)
       ) {
         if (sur.type === "Porcentaje") {
-          surcharge = total - (total / 100) * sur.value;
-          total = surcharge;
+          surcharge = total - (total / 100) * sur.value
+          total = surcharge
         } else if (sur.type === "Monto") {
-          total = total - sur.value;
+          total = total - sur.value
         }
       }
-    });
+    })
   }
 
   if (prixer !== art.prixerUsername && prixer !== art.owner) {
-    return total;
+    return total
   } else {
-    return 0;
+    return 0
   }
-};
+}
 
 const getPVPtext = (product, currency, dollarValue, discountList) => {
-  if (product?.discount !== undefined &&
+  if (
+    product?.discount !== undefined &&
     typeof product?.discount === "string" &&
-    product.publicEquation !== "" &&
+    product.publicEquation !== undefined &&
+    product?.publicEquation !== "" &&
+    typeof product.publicEquation === "string" &&
     currency
   ) {
-    let dis = discountList?.filter((dis) => dis._id === product?.discount)[0];
+    let dis = discountList?.filter((dis) => dis._id === product?.discount)[0]
     return (
       <>
         <del>
@@ -340,12 +345,15 @@ const getPVPtext = (product, currency, dollarValue, discountList) => {
           </div>
         )}
       </>
-    );
-  } else if ( product?.discount !== undefined &&
+    )
+  } else if (
+    product?.discount !== undefined &&
     typeof product?.discount === "string" &&
-    product.publicEquation !== ""
+    product.publicEquation !== undefined &&
+    product?.publicEquation !== "" &&
+    typeof product.publicEquation === "string"
   ) {
-    let dis = discountList?.filter((dis) => dis._id === product?.discount)[0];
+    let dis = discountList?.filter((dis) => dis._id === product?.discount)[0]
     return (
       <>
         <del>
@@ -394,14 +402,15 @@ const getPVPtext = (product, currency, dollarValue, discountList) => {
           </div>
         )}
       </>
-    );
-  } else if ( product?.discount !== undefined &&
+    )
+  } else if (
+    product?.discount !== undefined &&
     typeof product?.discount === "string" &&
     typeof product.publicPrice.to === "string" &&
     product.publicPrice.to.length > 0 &&
     currency
   ) {
-    let dis = discountList?.filter((dis) => dis._id === product?.discount)[0];
+    let dis = discountList?.filter((dis) => dis._id === product?.discount)[0]
     return (
       <>
         <del>
@@ -482,13 +491,14 @@ const getPVPtext = (product, currency, dollarValue, discountList) => {
           </div>
         )}
       </>
-    );
-  } else if ( product.discount !== undefined &&
+    )
+  } else if (
+    product?.discount !== undefined &&
     typeof product?.discount === "string" &&
     typeof product.publicPrice.to === "string" &&
     product.publicPrice.to.length > 0
   ) {
-    let dis = discountList?.filter((dis) => dis._id === product?.discount)[0];
+    let dis = discountList?.filter((dis) => dis._id === product?.discount)[0]
     return (
       <>
         <del>
@@ -560,9 +570,13 @@ const getPVPtext = (product, currency, dollarValue, discountList) => {
           </div>
         )}
       </>
-    );
-  } else if (product.discount !== undefined && typeof product?.discount === "string" && currency) {
-    let dis = discountList?.filter((dis) => dis._id === product?.discount)[0];
+    )
+  } else if (
+    product?.discount !== undefined &&
+    typeof product?.discount === "string" &&
+    currency
+  ) {
+    let dis = discountList?.filter((dis) => dis._id === product?.discount)[0]
     return (
       <>
         <del>
@@ -620,9 +634,12 @@ const getPVPtext = (product, currency, dollarValue, discountList) => {
           </div>
         )}
       </>
-    );
-  } else if (product.discount !== undefined && typeof product?.discount === "string") {
-    let dis = discountList?.filter((dis) => dis._id === product?.discount)[0];
+    )
+  } else if (
+    product?.discount !== undefined &&
+    typeof product?.discount === "string"
+  ) {
+    let dis = discountList?.filter((dis) => dis._id === product?.discount)[0]
     return (
       <>
         <del>
@@ -673,25 +690,30 @@ const getPVPtext = (product, currency, dollarValue, discountList) => {
           </div>
         )}
       </>
-    );
-  } else if (product.publicEquation !== "" && currency) {
+    )
+  } else if (product?.publicEquation !== "" && currency) {
     return (
       "PVP: Bs" +
       Number(product.publicEquation * dollarValue).toLocaleString("de-DE", {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       })
-    );
-  } else if (product.publicEquation !== "") {
+    )
+  } else if (
+    product?.publicEquation !== undefined &&
+    product?.publicEquation !== "" &&
+    typeof product.publicEquation === "string"
+  ) {
     return (
       "PVP: $" +
       Number(product.publicEquation).toLocaleString("de-DE", {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       })
-    );
+    )
   } else if (
-    product.attributes.length > 0 &&
+    product?.attributes &&
+    product?.attributes.length > 0 &&
     product.publicPrice.to !== product.publicPrice.from &&
     typeof product.publicPrice.to === "string" &&
     product.publicPrice.to.length > 0 &&
@@ -708,8 +730,8 @@ const getPVPtext = (product, currency, dollarValue, discountList) => {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       })
-    );
-  } else if (
+    )
+  } else if (product?.attributes &&
     product.attributes.length > 0 &&
     product.publicPrice.to !== product.publicPrice.from &&
     typeof product.publicPrice.to === "string" &&
@@ -726,7 +748,7 @@ const getPVPtext = (product, currency, dollarValue, discountList) => {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       })
-    );
+    )
   } else if (currency) {
     return (
       "PVP: Bs" +
@@ -734,17 +756,17 @@ const getPVPtext = (product, currency, dollarValue, discountList) => {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       })
-    );
+    )
   } else {
     return (
       "PVP: $" +
-      Number(product.publicPrice.from).toLocaleString("de-DE", {
+      Number(product.publicPrice?.from).toLocaleString("de-DE", {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       })
-    );
+    )
   }
-};
+}
 
 const getPVMtext = (product, currency, dollarValue, discountList) => {
   if (product.prixerEquation !== "" && currency) {
@@ -754,16 +776,18 @@ const getPVMtext = (product, currency, dollarValue, discountList) => {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       })
-    );
+    )
   }
-  if (product.prixerEquation !== "") {
+  if (product?.prixerEquation !== undefined &&
+    product?.prixerEquation !== "" 
+  ) {
     return (
       "PVM: $" +
-      product.prixerEquation.toLocaleString("de-DE", {
+      product?.prixerEquation.toLocaleString("de-DE", {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       })
-    );
+    )
   } else if (
     product.attributes.length > 0 &&
     product.prixerPrice.to !== product.prixerPrice.from &&
@@ -773,16 +797,19 @@ const getPVMtext = (product, currency, dollarValue, discountList) => {
   ) {
     return (
       "PVM: Bs" +
-      (Number(product.prixerPrice.from) * dollarValue).toLocaleString("de-DE", {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      }) +
+      (Number(product.prixerPrice?.from) * dollarValue).toLocaleString(
+        "de-DE",
+        {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        }
+      ) +
       " - " +
       Number(product.prixerPrice?.to * dollarValue).toLocaleString("de-DE", {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       })
-    );
+    )
   } else if (
     product.attributes.length > 0 &&
     product.prixerPrice.to !== product.prixerPrice.from &&
@@ -800,7 +827,7 @@ const getPVMtext = (product, currency, dollarValue, discountList) => {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       })
-    );
+    )
   } else if (currency) {
     {
       return (
@@ -812,7 +839,7 @@ const getPVMtext = (product, currency, dollarValue, discountList) => {
             maximumFractionDigits: 2,
           }
         )
-      );
+      )
     }
   } else {
     return (
@@ -821,53 +848,53 @@ const getPVMtext = (product, currency, dollarValue, discountList) => {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       })
-    );
+    )
   }
-};
+}
 
 const getPVP = (item, currency, dollarValue, discountList) => {
-  let { base, prev, final } = 0;
-  let dis = discountList?.filter((dis) => dis._id === item.product?.discount)[0];
+  let { base, prev, final } = 0
+  let dis = discountList?.filter((dis) => dis._id === item.product?.discount)[0]
 
   base = Number(
     item.product?.publicEquation?.replace(/[,]/gi, ".") ||
       item.product?.publicPrice?.from?.replace(/[,]/gi, ".")
-  );
+  )
 
-  prev = base - base / 10;
+  prev = base - base / 10
 
   prev =
     prev /
-    (1 - (item.art?.comission !== undefined ? item.art.comission : 10) / 100);
-  final = prev;
+    (1 - (item.art?.comission !== undefined ? item.art.comission : 10) / 100)
+  final = prev
 
   if (typeof item.product?.discount === "string") {
     if (dis?.type === "Porcentaje") {
-      final = prev - (base / 100) * dis.value;
+      final = prev - (base / 100) * dis.value
     } else if (dis?.type === "Monto") {
-      final = prev - dis.value;
+      final = prev - dis.value
     }
   }
   if (currency) {
-    return Number(final * dollarValue);
-  } else return final;
-};
+    return Number(final * dollarValue)
+  } else return final
+}
 
 const getPVM = (item, currency, dollarValue, discountList, prixer) => {
-  let { base, prev, final } = 0;
-  let dis = discountList?.filter((dis) => dis._id === item.product.discount)[0];
+  let { base, prev, final } = 0
+  let dis = discountList?.filter((dis) => dis._id === item.product.discount)[0]
 
   base = Number(
     item.product?.prixerEquation?.replace(/[,]/gi, ".") ||
       item.product?.prixerPrice?.from?.replace(/[,]/gi, ".")
-  );
-  prev = base - base / 10;
+  )
+  prev = base - base / 10
   if (item.art.prixerUsername !== prixer && item.art.owner !== prixer) {
     prev =
       prev /
-      (1 - (item.art?.comission !== undefined ? item.art.comission : 10) / 100);
+      (1 - (item.art?.comission !== undefined ? item.art.comission : 10) / 100)
   }
-  final = prev;
+  final = prev
   // if (typeof item.product.discount === "string") {
   //   if (dis?.type === "Porcentaje") {
   //     final = prev - (base / 100) * dis.value;
@@ -876,66 +903,66 @@ const getPVM = (item, currency, dollarValue, discountList, prixer) => {
   //   }
   // }
   if (currency) {
-    return final * dollarValue;
-  } else return final;
-};
+    return final * dollarValue
+  } else return final
+}
 
 const getTotalUnitsPVP = (state, currency, dollarValue, discountList) => {
-  let prices = [0];
+  let prices = [0]
   state.map((item) => {
     if (item.product && item.art && typeof item.product.discount === "string") {
-      let dis = discountList?.find(({ _id }) => _id === item.product.discount);
+      let dis = discountList?.find(({ _id }) => _id === item.product.discount)
       if (dis?.type === "Porcentaje") {
         const base = Number(
           item.product?.publicEquation?.replace(/[,]/gi, ".") ||
             item.product?.publicPrice?.from?.replace(/[,]/gi, ".")
-        );
-        let prev = base - base / 10;
-        prev = prev / (1 - item.art.comission / 100);
+        )
+        let prev = base - base / 10
+        prev = prev / (1 - item.art.comission / 100)
 
-        let final = prev - (base / 100) * dis.value;
+        let final = prev - (base / 100) * dis.value
         if (item.product.finalPrice !== undefined) {
-          final = item.product.finalPrice;
+          final = item.product.finalPrice
         }
-        prices.push(Number(final) * (item.quantity || 1));
+        prices.push(Number(final) * (item.quantity || 1))
       } else if (dis?.type === "Monto") {
         const base = Number(
           item.product?.publicEquation?.replace(/[,]/gi, ".") ||
             item.product?.publicPrice?.from?.replace(/[,]/gi, ".")
-        );
-        let prev = base - base / 10;
-        prev = prev / (1 - item.art.comission / 100);
+        )
+        let prev = base - base / 10
+        prev = prev / (1 - item.art.comission / 100)
 
-        let final = prev - dis.value;
+        let final = prev - dis.value
         if (item.product.finalPrice !== undefined) {
-          final = item.product.finalPrice;
+          final = item.product.finalPrice
         }
-        prices.push(final * (item.quantity || 1));
+        prices.push(final * (item.quantity || 1))
       }
     } else if (item.product && item.art) {
       const base = Number(
         item.product?.publicEquation
           ? item.product?.publicEquation?.replace(/[,]/gi, ".")
           : item.product?.publicPrice?.from.replace(/[,]/gi, ".")
-      );
-      let final = base - base / 10;
-      final = final / (1 - item.art.comission / 100);
+      )
+      let final = base - base / 10
+      final = final / (1 - item.art.comission / 100)
       if (
         item.product.finalPrice !== undefined &&
         item.product.finalPrice !== null
       ) {
-        final = item.product.finalPrice;
+        final = item.product.finalPrice
       }
-      prices.push(final * (item.quantity || 1));
+      prices.push(final * (item.quantity || 1))
     }
-  });
+  })
   let total = prices?.reduce(function (a, b) {
-    return a + b;
-  });
+    return a + b
+  })
   if (currency) {
-    return total * dollarValue;
-  } else return total;
-};
+    return total * dollarValue
+  } else return total
+}
 const getTotalUnitsPVM = (
   state,
   currency,
@@ -943,7 +970,7 @@ const getTotalUnitsPVM = (
   discountList,
   prixer
 ) => {
-  let prices = [];
+  let prices = []
   state.map((item) => {
     // if (item.product && item.art && typeof item.product.discount === "string") {
     //   let dis = discountList?.filter(
@@ -979,30 +1006,30 @@ const getTotalUnitsPVM = (
         item.product?.prixerEquation
           ? item.product?.prixerEquation?.replace(/[,]/gi, ".")
           : item.product?.prixerPrice?.from?.replace(/[,]/gi, ".")
-      );
-      let final = (base - base / 10) / (1 - item.art.comission / 100);
+      )
+      let final = (base - base / 10) / (1 - item.art.comission / 100)
       if (
         item.product.finalPrice !== undefined
         // &&
         // item.product.modifyPrice === true
       ) {
-        final = item.product.finalPrice;
+        final = item.product.finalPrice
       } else if (
         item.art.prixerUsername !== prixer &&
         item.art.owner !== prixer
       ) {
-        final = final / (1 - item.art.comission / 100);
+        final = final / (1 - item.art.comission / 100)
       }
-      prices.push(final * (item.quantity || 1));
+      prices.push(final * (item.quantity || 1))
     }
-  });
+  })
   let total = prices?.reduce(function (a, b) {
-    return a + b;
-  });
+    return a + b
+  })
   if (currency) {
-    return total * dollarValue;
-  } else return total;
-};
+    return total * dollarValue
+  } else return total
+}
 
 export {
   UnitPrice,
@@ -1015,4 +1042,4 @@ export {
   getPVM,
   getTotalUnitsPVP,
   getTotalUnitsPVM,
-};
+}

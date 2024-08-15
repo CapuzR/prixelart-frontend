@@ -32,7 +32,8 @@ const generateProductMessage = (tile, type) => {
 
   const productMainMessage = "Holaa, este es uno de los Prix que me gustan:";
   const productMessage =
-    productMainMessage + lineBreak + " *Modelo:* " + tile.name;
+    productMainMessage + lineBreak + " *Modelo:* " + tile.name + lineBreak + " *Enlace:* prixelart.com/producto=" +
+    tile._id;
 
   return productMessage;
 };

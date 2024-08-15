@@ -1,25 +1,25 @@
-import React, { useState, useEffect } from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import { useTheme } from "@material-ui/core/styles";
-import axios from "axios";
-import { useHistory } from "react-router-dom";
-import Paper from "@material-ui/core/Paper";
-import Button from "@material-ui/core/Button";
-import Backdrop from "@material-ui/core/Backdrop";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import Typography from "@material-ui/core/Typography";
-import IconButton from "@material-ui/core/IconButton";
-import Grid from "@material-ui/core/Grid";
-import Slider from "react-slick";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
-import EditIcon from "@material-ui/icons/Edit";
-import HighlightOffOutlinedIcon from "@material-ui/icons/HighlightOffOutlined";
-import Snackbar from "@material-ui/core/Snackbar";
-import ReactQuill, { Quill } from "react-quill";
-import "react-quill/dist/quill.snow.css";
-import Tooltip from "@material-ui/core/Tooltip";
+import React, { useState, useEffect } from "react"
+import { makeStyles } from "@material-ui/core/styles"
+import { useTheme } from "@material-ui/core/styles"
+import axios from "axios"
+import { useHistory } from "react-router-dom"
+import Paper from "@material-ui/core/Paper"
+import Button from "@material-ui/core/Button"
+import Backdrop from "@material-ui/core/Backdrop"
+import CircularProgress from "@material-ui/core/CircularProgress"
+import Typography from "@material-ui/core/Typography"
+import IconButton from "@material-ui/core/IconButton"
+import Grid from "@material-ui/core/Grid"
+import Slider from "react-slick"
+import "slick-carousel/slick/slick.css"
+import "slick-carousel/slick/slick-theme.css"
+import useMediaQuery from "@material-ui/core/useMediaQuery"
+import EditIcon from "@material-ui/icons/Edit"
+import HighlightOffOutlinedIcon from "@material-ui/icons/HighlightOffOutlined"
+import Snackbar from "@material-ui/core/Snackbar"
+import ReactQuill, { Quill } from "react-quill"
+import "react-quill/dist/quill.snow.css"
+import Tooltip from "@material-ui/core/Tooltip"
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -96,151 +96,153 @@ const useStyles = makeStyles((theme) => ({
     cursor: "pointer",
     padding: "5px",
   },
-}));
+}))
 
 export default function Biography(props) {
-  const classes = useStyles();
-  const history = useHistory();
-  const [backdrop, setBackdrop] = useState(false);
-  const theme = useTheme();
-  const [snackBar, setSnackBar] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [snackBarMessage, setSnackBarMessage] = useState(false);
-  const globalParams = new URLSearchParams(window.location.pathname);
-  const entries = globalParams.entries();
-const firstEntry = entries.next().value;
-const [key, value] = firstEntry;
-  const [data, setData] = useState(undefined);
-  const [openEdit, setOpenEdit] = useState(false);
+  const classes = useStyles()
+  const history = useHistory()
+  const [backdrop, setBackdrop] = useState(false)
+  const theme = useTheme()
+  const [snackBar, setSnackBar] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [snackBarMessage, setSnackBarMessage] = useState(false)
+  const globalParams = new URLSearchParams(window.location.pathname)
+  const entries = globalParams.entries()
+  const firstEntry = entries.next().value
+  const [key, value] = firstEntry
+  const [data, setData] = useState({ biography: "" })
+  const [openEdit, setOpenEdit] = useState(false)
 
-  const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
-  const isDeskTop = useMediaQuery(theme.breakpoints.up("sm"));
-  const isTab = useMediaQuery(theme.breakpoints.up("xs"));
-  const isMobile = useMediaQuery(theme.breakpoints.down("xs"));
-  const isnDesk = useMediaQuery(theme.breakpoints.down("md"));
-  const [showFullDescription, setShowFullDescription] = useState([]);
-  const [disableButton, setDisableButton] = useState(false);
-  const [images, setImages] = useState([]); // Imágenes visaulizadas
-  const [newImg, setNewImg] = useState([]);
+  const isDesktop = useMediaQuery(theme.breakpoints.up("md"))
+  const isDeskTop = useMediaQuery(theme.breakpoints.up("sm"))
+  const isTab = useMediaQuery(theme.breakpoints.up("xs"))
+  const isMobile = useMediaQuery(theme.breakpoints.down("xs"))
+  const isnDesk = useMediaQuery(theme.breakpoints.down("md"))
+  const [showFullDescription, setShowFullDescription] = useState([])
+  const [disableButton, setDisableButton] = useState(false)
+  const [images, setImages] = useState([]) // Imágenes visaulizadas
+  const [newImg, setNewImg] = useState([])
 
   const getBio = async () => {
-    setBackdrop(true);
+    setBackdrop(true)
     const base_url = window.location.pathname.includes("/org=")
       ? process.env.REACT_APP_BACKEND_URL +
         "/organization/getBio/" +
         props.prixerUsername
       : process.env.REACT_APP_BACKEND_URL +
         "/prixer/getBio/" +
-        props.prixerUsername;
+        props.prixerUsername
     await axios
       .get(base_url)
       .then((response) => {
-        setData(response.data.data);
+        setData(response.data.data)
       })
       .catch((error) => {
-        console.log(error);
-      });
-    setBackdrop(false);
-  };
+        console.log(error)
+      })
+    setBackdrop(false)
+  }
 
   useEffect(() => {
-    getBio();
-  }, []);
+    getBio()
+  }, [])
 
   const updateBio = async () => {
-    let formData = new FormData();
-    setDisableButton(true);
-    setLoading(true);
-    setBackdrop(true);
-    setSnackBar(true);
-    setSnackBarMessage('No cierres esta ventana mientras se sube tu biografía, por favor espera.')
-    formData.append("biography", data.biography);
+    let formData = new FormData()
+    setDisableButton(true)
+    setLoading(true)
+    setBackdrop(true)
+    setSnackBar(true)
+    setSnackBarMessage(
+      "No cierres esta ventana mientras se sube tu biografía, por favor espera."
+    )
+    formData.append("biography", data.biography)
     formData.append(
       "prixerId",
       JSON.parse(localStorage.getItem("token")).prixerId
-    );
+    )
     if (data?.images?.length > 0) {
-      data?.images?.map((file) => formData.append("bioImages", file));
+      data?.images?.map((file) => formData.append("bioImages", file))
     }
 
     if (newImg.length > 0) {
-      newImg.map((file) => formData.append("newBioImages", file));
+      newImg.map((file) => formData.append("newBioImages", file))
     }
-    const espc_url = key.includes("org") ? "/organization" : "/prixer";
-    const ID = key.includes("org") ? JSON.parse(localStorage.getItem("token")).orgId :
-      JSON.parse(localStorage.getItem("token")).prixerId;
+    const espc_url = key.includes("org") ? "/organization" : "/prixer"
+    const ID = key.includes("org")
+      ? JSON.parse(localStorage.getItem("token")).orgId
+      : JSON.parse(localStorage.getItem("token")).prixerId
     const base_url =
-      process.env.REACT_APP_BACKEND_URL + espc_url +
-      "/updateBio/" + ID;
+      process.env.REACT_APP_BACKEND_URL + espc_url + "/updateBio/" + ID
 
     const petition = await axios.put(base_url, formData, {
       "Content-Type": "multipart/form-data",
-    });
+    })
     if (petition.data.success) {
-      setBackdrop(false);
-      setSnackBarMessage(petition.data.message);
-      setSnackBar(true);
-      changeState("read");
-      setNewImg([]);
-      setImages([]);
-      getBio();
+      setBackdrop(false)
+      setSnackBarMessage(petition.data.message)
+      setSnackBar(true)
+      changeState("read")
+      setNewImg([])
+      setImages([])
+      getBio()
     } else {
       setSnackBarMessage(
         "Por favor vuelve a intentarlo, puede que exista algún inconveniente de conexión. Si aún no lo has hecho por favor inicia sesión."
-      );
-      setSnackBar(true);
+      )
+      setSnackBar(true)
     }
-      setLoading(false);
-      setBackdrop(false);
-      setDisableButton(false);
-  };
+    setLoading(false)
+    setBackdrop(false)
+    setDisableButton(false)
+  }
 
   const checkImages = async () => {
-    const prevImg = [];
+    const prevImg = []
     await data?.images?.map((img) => {
-      prevImg.push(img);
-    });
-    setImages(prevImg);
-  };
+      prevImg.push(img)
+    })
+    setImages(prevImg)
+  }
 
   const loadNewImage = async (e) => {
-    e.preventDefault();
+    e.preventDefault()
     if (images.length === 4) {
-      setSnackBar(true);
-      setSnackBarMessage("Has alcanzado el máximo de imágenes (4).");
+      setSnackBar(true)
+      setSnackBarMessage("Has alcanzado el máximo de imágenes (4).")
     } else {
-      const file = e.target.files[0];
-      const resizedString = await convertToBase64(file);
-      setImages([...images, resizedString]);
-      setNewImg([...newImg, file]);
+      const file = e.target.files[0]
+      const resizedString = await convertToBase64(file)
+      setImages([...images, resizedString])
+      setNewImg([...newImg, file])
     }
-  };
+  }
 
   const deleteImg = async (e, x) => {
-    e.preventDefault();
-    const filteredPrev = data?.images?.filter((prev) => prev !== x);
-    setData({ ...data, images: filteredPrev });
-    const filteredImg = images.filter((img) => img !== x);
-    setImages(filteredImg);
+    e.preventDefault()
+    const filteredPrev = data?.images?.filter((prev) => prev !== x)
+    setData({ ...data, images: filteredPrev })
+    const filteredImg = images.filter((img) => img !== x)
+    setImages(filteredImg)
     if (newImg.length > 0) {
-      const filteredNewImg = newImg.filter((img) => img !== x);
-      setNewImg(filteredNewImg);
+      const filteredNewImg = newImg.filter((img) => img !== x)
+      setNewImg(filteredNewImg)
     }
-  };
+  }
 
   const convertToBase64 = (blob) => {
     return new Promise((resolve) => {
-      var reader = new FileReader();
+      var reader = new FileReader()
       reader.onload = function () {
-        resolve(reader.result);
-      };
-      reader.readAsDataURL(blob);
-    });
-  };
+        resolve(reader.result)
+      }
+      reader.readAsDataURL(blob)
+    })
+  }
 
   const closeAd = () => {
-    setSnackBar(false);
-  };
+    setSnackBar(false)
+  }
 
   const RenderHTML = ({ htmlString }) => {
     return (
@@ -248,15 +250,18 @@ const [key, value] = firstEntry;
         dangerouslySetInnerHTML={{ __html: htmlString }}
         style={{ margin: 10 }}
       />
-    );
-  };
+    )
+  }
 
   const handleEditorChange = (value) => {
-    setData({ ...data, biography: value });
-  };
+    setData((prevState) => ({
+      ...prevState,
+      biography: value,
+    }))
+  }
 
   function SampleNextArrow(props) {
-    const { className, style, onClick } = props;
+    const { className, style, onClick } = props
     return (
       <div
         className={className}
@@ -269,11 +274,11 @@ const [key, value] = firstEntry;
         }}
         onClick={onClick}
       />
-    );
+    )
   }
 
   function SamplePrevArrow(props) {
-    const { className, style, onClick } = props;
+    const { className, style, onClick } = props
     return (
       <div
         className={className}
@@ -286,7 +291,7 @@ const [key, value] = firstEntry;
         }}
         onClick={onClick}
       />
-    );
+    )
   }
 
   const settings = {
@@ -300,7 +305,8 @@ const [key, value] = firstEntry;
     speed: 500,
     infinite: true,
     dots: true,
-  };
+    adaptiveHeight: true,
+  }
 
   const setting2 = {
     slidesToShow: 1,
@@ -310,23 +316,30 @@ const [key, value] = firstEntry;
     speed: 500,
     infinite: true,
     dots: true,
+    adaptiveHeight: true,
     nextArrow: <SampleNextArrow />,
     prevArrow: <SamplePrevArrow />,
-  };
+  }
 
   const changeState = () => {
-    setOpenEdit(!openEdit);
-    checkImages();
-  };
+    setOpenEdit(!openEdit)
+    checkImages()
+  }
 
   return (
     <>
       <div className={classes.root}>
-        <Backdrop className={classes.backdrop} open={backdrop}>
+        <Backdrop
+          className={classes.backdrop}
+          open={backdrop}
+        >
           <CircularProgress color="inherit" />
         </Backdrop>
       </div>
-      <Grid container style={{ justifyContent: "center", marginBottom: 20 }}>
+      <Grid
+        container
+        style={{ justifyContent: "center", marginBottom: 20 }}
+      >
         {openEdit ? (
           <div
             style={{
@@ -381,7 +394,7 @@ const [key, value] = firstEntry;
                           <IconButton
                             className={classes.buttonImgLoader}
                             onClick={(d) => {
-                              deleteImg(d, img);
+                              deleteImg(d, img)
                             }}
                           >
                             <HighlightOffOutlinedIcon />
@@ -423,7 +436,7 @@ const [key, value] = firstEntry;
                     accept="image/*"
                     hidden
                     onChange={(a) => {
-                      loadNewImage(a);
+                      loadNewImage(a)
                     }}
                   />
                   Cargar imagen
@@ -451,7 +464,12 @@ const [key, value] = firstEntry;
               onChange={handleEditorChange}
               placeholder="Escribe tu biografía aquí..."
             />
-            <Button color="primary" size="large" onClick={updateBio} disabled={disableButton}>
+            <Button
+              color="primary"
+              size="large"
+              onClick={updateBio}
+              disabled={disableButton}
+            >
               Guardar
             </Button>
           </div>
@@ -476,7 +494,7 @@ const [key, value] = firstEntry;
                   component="span"
                   color="primary"
                   onClick={(e) => {
-                    changeState("edit");
+                    changeState("edit")
                   }}
                   variant="contained"
                 >
@@ -534,7 +552,10 @@ const [key, value] = firstEntry;
                 </Slider>
               </div>
             )}
-            <div class="ql-editor" style={{ height: "auto" }}>
+            <div
+              class="ql-editor"
+              style={{ height: "auto" }}
+            >
               <RenderHTML
                 htmlString={
                   //   showFullDescription[i]
@@ -563,7 +584,7 @@ const [key, value] = firstEntry;
               color="primary"
               size="large"
               onClick={(e) => {
-                changeState("edit");
+                changeState("edit")
               }}
             >
               Crear ahora
@@ -625,7 +646,10 @@ const [key, value] = firstEntry;
                 </Slider>
               </div>
             )}
-            <div class="ql-editor" style={{ height: "auto" }}>
+            <div
+              class="ql-editor"
+              style={{ height: "auto" }}
+            >
               <RenderHTML
                 htmlString={
                   //   showFullDescription[i]
@@ -655,5 +679,5 @@ const [key, value] = firstEntry;
         onClose={closeAd}
       />
     </>
-  );
+  )
 }

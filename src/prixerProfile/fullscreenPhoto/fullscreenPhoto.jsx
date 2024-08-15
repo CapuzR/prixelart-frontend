@@ -1,52 +1,52 @@
-import React, { useState, useEffect } from "react";
-import { useHistory } from "react-router-dom";
-import { makeStyles, withStyles } from "@material-ui/core/styles";
-import Card from "@material-ui/core/Card";
-import CardActionArea from "@material-ui/core/CardActionArea";
-import CardActions from "@material-ui/core/CardActions";
-import CardContent from "@material-ui/core/CardContent";
-import Button from "@material-ui/core/Button";
-import Typography from "@material-ui/core/Typography";
-import axios from "axios";
-import AppBar from "../../sharedComponents/appBar/appBar";
-import Container from "@material-ui/core/Container";
-import Grid from "@material-ui/core/Grid";
-import TextField from "@material-ui/core/TextField";
-import Snackbar from "@material-ui/core/Snackbar";
-import Autocomplete from "@material-ui/lab/Autocomplete";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import FloatingAddButton from "../../sharedComponents/floatingAddButton/floatingAddButton";
-import ArtUploader from "../../sharedComponents/artUploader/artUploader";
-import WhatsAppIcon from "@material-ui/icons/WhatsApp";
-import ShareIcon from "@material-ui/icons/Share";
-import utils from "../../utils/utils";
-import FormControl from "@material-ui/core/FormControl";
-import InputLabel from "@material-ui/core/InputLabel";
-import Select from "@material-ui/core/Select";
-import Img from "react-cool-img";
-import Dialog from "@material-ui/core/Dialog";
-import DialogActions from "@material-ui/core/DialogActions";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogContentText from "@material-ui/core/DialogContentText";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import Switch from "@material-ui/core/Switch";
-import Chip from "@material-ui/core/Chip";
-import Modal from "@material-ui/core/Modal";
-import MDEditor from "@uiw/react-md-editor";
-import AddShoppingCartIcon from "@material-ui/icons/AddShoppingCart";
-import CartReview from "../../shoppingCart/cartReview";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
-import { useTheme } from "@material-ui/core/styles";
-import Box from "@material-ui/core/Box";
-import InputAdornment from "@material-ui/core/InputAdornment";
-import Tooltip from "@material-ui/core/Tooltip";
-import IconButton from "@material-ui/core/IconButton";
-import Star from "@material-ui/icons/StarRate";
-import StarOutline from "@material-ui/icons/StarOutline";
-import Menu from "@material-ui/core/Menu";
-import MenuItem from "@material-ui/core/MenuItem";
-import MoreVertIcon from "@material-ui/icons/MoreVert";
-import CloseIcon from "@material-ui/icons/Close";
+import React, { useState, useEffect } from "react"
+import { useHistory } from "react-router-dom"
+import { makeStyles, withStyles } from "@material-ui/core/styles"
+import Card from "@material-ui/core/Card"
+import CardActionArea from "@material-ui/core/CardActionArea"
+import CardActions from "@material-ui/core/CardActions"
+import CardContent from "@material-ui/core/CardContent"
+import Button from "@material-ui/core/Button"
+import Typography from "@material-ui/core/Typography"
+import axios from "axios"
+import AppBar from "../../sharedComponents/appBar/appBar"
+import Container from "@material-ui/core/Container"
+import Grid from "@material-ui/core/Grid"
+import TextField from "@material-ui/core/TextField"
+import Snackbar from "@material-ui/core/Snackbar"
+import Autocomplete from "@material-ui/lab/Autocomplete"
+import CircularProgress from "@material-ui/core/CircularProgress"
+import FloatingAddButton from "../../sharedComponents/floatingAddButton/floatingAddButton"
+import ArtUploader from "../../sharedComponents/artUploader/artUploader"
+import WhatsAppIcon from "@material-ui/icons/WhatsApp"
+import ShareIcon from "@material-ui/icons/Share"
+import utils from "../../utils/utils"
+import FormControl from "@material-ui/core/FormControl"
+import InputLabel from "@material-ui/core/InputLabel"
+import Select from "@material-ui/core/Select"
+import Img from "react-cool-img"
+import Dialog from "@material-ui/core/Dialog"
+import DialogActions from "@material-ui/core/DialogActions"
+import DialogContent from "@material-ui/core/DialogContent"
+import DialogContentText from "@material-ui/core/DialogContentText"
+import DialogTitle from "@material-ui/core/DialogTitle"
+import Switch from "@material-ui/core/Switch"
+import Chip from "@material-ui/core/Chip"
+import Modal from "@material-ui/core/Modal"
+import MDEditor from "@uiw/react-md-editor"
+import AddShoppingCartIcon from "@material-ui/icons/AddShoppingCart"
+import CartReview from "../../shoppingCart/cartReview"
+import useMediaQuery from "@material-ui/core/useMediaQuery"
+import { useTheme } from "@material-ui/core/styles"
+import Box from "@material-ui/core/Box"
+import InputAdornment from "@material-ui/core/InputAdornment"
+import Tooltip from "@material-ui/core/Tooltip"
+import IconButton from "@material-ui/core/IconButton"
+import Star from "@material-ui/icons/StarRate"
+import StarOutline from "@material-ui/icons/StarOutline"
+import Menu from "@material-ui/core/Menu"
+import MenuItem from "@material-ui/core/MenuItem"
+import MoreVertIcon from "@material-ui/icons/MoreVert"
+import CloseIcon from "@material-ui/icons/Close"
 
 const IOSSwitch = withStyles((theme) => ({
   root: {
@@ -98,8 +98,8 @@ const IOSSwitch = withStyles((theme) => ({
       }}
       {...props}
     />
-  );
-});
+  )
+})
 
 const useStyles = makeStyles((theme) => ({
   loading: {
@@ -137,84 +137,84 @@ const useStyles = makeStyles((theme) => ({
     transform: "translate(-50%, -50%)",
     textAlign: "justify",
   },
-}));
+}))
 
-const photoIsos = ["100", "200", "400"];
+const photoIsos = ["100", "200", "400"]
 
 export default function FullscreenPhoto(props) {
-  const classes = useStyles();
-  const history = useHistory();
-  const theme = useTheme();
-  const globalParams = new URLSearchParams(window.location.pathname);
-  const [ready, setReady] = useState(false);
-  const [tiles, setTiles] = useState(props.searchResult);
+  const classes = useStyles()
+  const history = useHistory()
+  const theme = useTheme()
+  const globalParams = new URLSearchParams(window.location.pathname)
+  const [ready, setReady] = useState(false)
+  const [tiles, setTiles] = useState(props.searchResult)
   // const [newTag, setNewTag] = useState([]);
-  const [updatedTile, setUpdatedTile] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [artDataState, setArtDataState] = useState();
-  const [snackBar, setSnackBar] = useState(false);
-  const [snackBarMessage, setSnackBarMessage] = useState(false);
-  const [openArtFormDialog, setOpenArtFormDialog] = useState(false);
+  const [updatedTile, setUpdatedTile] = useState([])
+  const [loading, setLoading] = useState(false)
+  const [artDataState, setArtDataState] = useState()
+  const [snackBar, setSnackBar] = useState(false)
+  const [snackBarMessage, setSnackBarMessage] = useState(false)
+  const [openArtFormDialog, setOpenArtFormDialog] = useState(false)
   const [fullArt, setFullArt] = useState(
     props.fullArt?.artId || globalParams.get("/art")
-  );
-  const [selectedArt, setSelectedArt] = useState(undefined);
-  const [hiddenArt, setHiddenArt] = useState(undefined);
-  const [open, setOpen] = useState(false);
-  const [openV, setOpenV] = useState(false);
-  const [disabledReason, setDisabledReason] = useState("");
-  const [visible, setVisible] = useState(true);
-  const [points, setPoints] = useState(50);
-  const [termsAgreeVar, setTermsAgreeVar] = useState(true);
-  const [value, setValue] = useState("");
-  const [openShoppingCart, setOpenShoppingCart] = useState(false);
-  const [allowExclusive, setAllowExclusive] = useState(false);
-  const [comission, setComission] = useState(10);
-  const [openSettings, setOpenSettings] = useState(false);
-  const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
-  const isDeskTop = useMediaQuery(theme.breakpoints.up("sm"));
-  const [code, setCode] = useState("XX");
-  const [serial, setSerial] = useState(0);
-  const [sequence, setSequence] = useState(0);
-  const totalArts = tiles?.length;
-  const itemsPerPage = 8;
-  const noOfPages = Math.ceil(totalArts / itemsPerPage);
-  const [pageNumber, setPageNumber] = useState(1);
-  const itemsToSkip = (pageNumber - 1) * itemsPerPage;
-  const tilesv2 = tiles?.slice(itemsToSkip, itemsPerPage + itemsToSkip);
+  )
+  const [selectedArt, setSelectedArt] = useState(undefined)
+  const [hiddenArt, setHiddenArt] = useState(undefined)
+  const [open, setOpen] = useState(false)
+  const [openV, setOpenV] = useState(false)
+  const [disabledReason, setDisabledReason] = useState("")
+  const [visible, setVisible] = useState(true)
+  const [points, setPoints] = useState(50)
+  const [termsAgreeVar, setTermsAgreeVar] = useState(true)
+  const [value, setValue] = useState("")
+  const [openShoppingCart, setOpenShoppingCart] = useState(false)
+  const [allowExclusive, setAllowExclusive] = useState(false)
+  const [comission, setComission] = useState(10)
+  const [openSettings, setOpenSettings] = useState(false)
+  const isDesktop = useMediaQuery(theme.breakpoints.up("md"))
+  const isDeskTop = useMediaQuery(theme.breakpoints.up("sm"))
+  const [code, setCode] = useState("XX")
+  const [serial, setSerial] = useState(0)
+  const [sequence, setSequence] = useState(0)
+  const totalArts = tiles?.length
+  const itemsPerPage = 8
+  const noOfPages = Math.ceil(totalArts / itemsPerPage)
+  const [pageNumber, setPageNumber] = useState(1)
+  const itemsToSkip = (pageNumber - 1) * itemsPerPage
+  const tilesv2 = tiles?.slice(itemsToSkip, itemsPerPage + itemsToSkip)
 
   // const [isOpenAssociateProduct, setIsOpenAssociateProduct] = useState(false);
 
   const propsRank = {
     min: 0,
     max: 100,
-  };
+  }
 
   const verifyStandardArts = async () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + "/art/read-by-prixer";
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/art/read-by-prixer"
     const body = {
       username: JSON.parse(localStorage.getItem("token")).username,
-    };
+    }
     axios.post(base_url, body).then((response) => {
       if (response.data.arts.length > 5) {
-        setAllowExclusive(true);
+        setAllowExclusive(true)
       }
-    });
-  };
+    })
+  }
 
   useEffect(() => {
     if (JSON.parse(localStorage.getItem("token"))) {
-      verifyStandardArts();
+      verifyStandardArts()
     }
-  }, []);
+  }, [])
 
   const handleArtEdit = async (e, tile) => {
-    setLoading(true);
+    setLoading(true)
     if (artDataState === tile.artId) {
       if (updatedTile.title !== "" && updatedTile.description !== "") {
-        setUpdatedTile(tile);
+        setUpdatedTile(tile)
         const base_url =
-          process.env.REACT_APP_BACKEND_URL + "/art/update/" + selectedArt;
+          process.env.REACT_APP_BACKEND_URL + "/art/update/" + selectedArt
         const data = {
           title: tile.title,
           description: tile.description,
@@ -225,166 +225,166 @@ export default function FullscreenPhoto(props) {
           artLocation: tile.artLocation,
           exclusive: tile.exclusive,
           comission: Number(tile.comission),
-        };
+        }
         await axios
           .put(base_url, data)
           .then((response) => {
             if (response.data.data.success == true) {
-              setSnackBarMessage(response.data.data.success);
-              setSnackBar(true);
-              setSelectedArt(undefined);
+              setSnackBarMessage(response.data.data.success)
+              setSnackBar(true)
+              setSelectedArt(undefined)
             } else {
-              setSnackBarMessage(response.data.data.error_message);
-              setSnackBar(true);
-              setSelectedArt(undefined);
+              setSnackBarMessage(response.data.data.error_message)
+              setSnackBar(true)
+              setSelectedArt(undefined)
             }
           })
           .catch((error) => {
-            setSelectedArt(undefined);
-          });
-        setArtDataState("");
+            setSelectedArt(undefined)
+          })
+        setArtDataState("")
       } else {
-        setSnackBarMessage("Por favor llena los campos requeridos");
-        setSnackBar(true);
+        setSnackBarMessage("Por favor llena los campos requeridos")
+        setSnackBar(true)
       }
     } else {
-      setArtDataState(tile.artId);
+      setArtDataState(tile.artId)
     }
-    setLoading(false);
-  };
+    setLoading(false)
+  }
 
   const handleArtDescriptionEdit = async (e, tile) => {
-    let tempTiles = tiles;
-    let result = await descriptionEdit(tempTiles, tile, e);
-    setTiles(result);
-  };
+    let tempTiles = tiles
+    let result = await descriptionEdit(tempTiles, tile, e)
+    setTiles(result)
+  }
 
   const handleArtTitleEdit = async (e, tile) => {
-    let tempTiles = tiles;
-    let result = await titleEdit(tempTiles, tile, e);
-    setTiles(result);
-  };
+    let tempTiles = tiles
+    let result = await titleEdit(tempTiles, tile, e)
+    setTiles(result)
+  }
 
   const handleOriginalPhotoHeight = async (e, tile) => {
-    let tempTiles = tiles;
-    let result = await originalPhotoHeightEdit(tempTiles, tile, e);
-    setTiles(result);
-  };
+    let tempTiles = tiles
+    let result = await originalPhotoHeightEdit(tempTiles, tile, e)
+    setTiles(result)
+  }
 
   const handleOriginalPhotoWidth = async (e, tile) => {
-    let tempTiles = tiles;
-    let result = await originalPhotoWidthEdit(tempTiles, tile, e);
-    setTiles(result);
-  };
+    let tempTiles = tiles
+    let result = await originalPhotoWidthEdit(tempTiles, tile, e)
+    setTiles(result)
+  }
 
   const handleOriginalPhotoPpi = async (e, tile) => {
-    let tempTiles = tiles;
-    let result = await originalPhotoPpiEdit(tempTiles, tile, e);
-    setTiles(result);
-  };
+    let tempTiles = tiles
+    let result = await originalPhotoPpiEdit(tempTiles, tile, e)
+    setTiles(result)
+  }
 
   const handleOriginalPhotoIso = async (e, tile) => {
-    let tempTiles = tiles;
-    let result = await originalPhotoIsoEdit(tempTiles, tile, e);
-    setTiles(result);
-  };
+    let tempTiles = tiles
+    let result = await originalPhotoIsoEdit(tempTiles, tile, e)
+    setTiles(result)
+  }
 
   const handleArtLocationEdit = async (e, tile) => {
-    let tempTiles = tiles;
-    let result = await locationEdit(tempTiles, tile, e);
-    setTiles(result);
-  };
+    let tempTiles = tiles
+    let result = await locationEdit(tempTiles, tile, e)
+    setTiles(result)
+  }
 
   const handleClickOpen = () => {
-    setOpen(true);
-  };
+    setOpen(true)
+  }
 
   const handleClickVisible = () => {
-    setOpenV(true);
-  };
+    setOpenV(true)
+  }
 
   const handleClose = () => {
-    setOpen(false);
-    setSelectedArt(undefined);
-    setOpenSettings(false);
-  };
+    setOpen(false)
+    setSelectedArt(undefined)
+    setOpenSettings(false)
+  }
 
   const handleCloseVisible = () => {
-    setOpenV(false);
-    setHiddenArt(undefined);
-  };
+    setOpenV(false)
+    setHiddenArt(undefined)
+  }
 
   function tagsEdit(tempTiles, tile, e, tags) {
     return tempTiles.map((item) => {
-      const result = tags.trim().split(/\s+/);
+      const result = tags.trim().split(/\s+/)
       if (item.artId === tile.artId) {
-        item.tags = tags;
+        item.tags = tags
       }
-      return item;
-    });
+      return item
+    })
   }
 
   function locationEdit(tempTiles, tile, e) {
     return tempTiles.map((item) => {
       if (item.artId === tile.artId) {
-        item.artLocation = e.target.value;
+        item.artLocation = e.target.value
       }
-      return item;
-    });
+      return item
+    })
   }
 
   function titleEdit(tempTiles, tile, e) {
     return tempTiles.map((item) => {
       if (item.artId === tile.artId) {
-        item.title = e.target.value;
+        item.title = e.target.value
       }
-      return item;
-    });
+      return item
+    })
   }
 
   function originalPhotoHeightEdit(tempTiles, tile, e) {
     return tempTiles.map((item) => {
       if (item.artId === tile.artId) {
-        item.originalPhotoHeight = e.target.value;
+        item.originalPhotoHeight = e.target.value
       }
-      return item;
-    });
+      return item
+    })
   }
 
   function originalPhotoWidthEdit(tempTiles, tile, e) {
     return tempTiles.map((item) => {
       if (item.artId === tile.artId) {
-        item.originalPhotoWidth = e.target.value;
+        item.originalPhotoWidth = e.target.value
       }
-      return item;
-    });
+      return item
+    })
   }
 
   function originalPhotoPpiEdit(tempTiles, tile, e) {
     return tempTiles.map((item) => {
       if (item.artId === tile.artId) {
-        item.originalPhotoPpi = e.target.value;
+        item.originalPhotoPpi = e.target.value
       }
-      return item;
-    });
+      return item
+    })
   }
 
   function originalPhotoIsoEdit(tempTiles, tile, e) {
     return tempTiles.map((item) => {
       if (item.artId === tile.artId) {
-        item.originalPhotoIso = e.target.value;
+        item.originalPhotoIso = e.target.value
       }
-      return item;
-    });
+      return item
+    })
   }
 
   function descriptionEdit(tempTiles, tile, e) {
     return tempTiles.map((item) => {
       if (item.artId === tile.artId) {
-        item.description = e.target.value;
+        item.description = e.target.value
       }
-      return item;
-    });
+      return item
+    })
   }
 
   const maxPrintValues = (tile) => {
@@ -393,112 +393,112 @@ export default function FullscreenPhoto(props) {
       tile.originalPhotoHeight,
       tile.originalPhotoPpi,
       tile.originalPhotoIso
-    );
+    )
 
-    return maxPrintWidthCm + " x " + maxPrintHeightCm + " cm";
-  };
+    return maxPrintWidthCm + " x " + maxPrintHeightCm + " cm"
+  }
 
   const navigateToPrixer = (e, prixerUsername) => {
-    e.preventDefault();
-    history.push({ pathname: "/prixer=" + prixerUsername });
-  };
+    e.preventDefault()
+    history.push({ pathname: "/prixer=" + prixerUsername })
+  }
 
   const deleteArt = async () => {
     const base_url =
-      process.env.REACT_APP_BACKEND_URL + "/art/delete/" + selectedArt;
-    let res = await axios.delete(base_url);
-    handleClose();
-    setSnackBarMessage("Arte eliminado exitosamente");
-    setSnackBar(true);
-    history.goBack();
-  };
+      process.env.REACT_APP_BACKEND_URL + "/art/delete/" + selectedArt
+    let res = await axios.delete(base_url)
+    handleClose()
+    setSnackBarMessage("Arte eliminado exitosamente")
+    setSnackBar(true)
+    history.goBack()
+  }
 
   const setVisibleArt = async (art, id, event) => {
-    setLoading(true);
-    art.visible = !art.visible;
+    setLoading(true)
+    art.visible = !art.visible
 
     const base_url =
-      process.env.REACT_APP_BACKEND_URL + "/art/disable/" + art.artId;
+      process.env.REACT_APP_BACKEND_URL + "/art/disable/" + art.artId
     const response = await axios.put(base_url, {
       art: art,
       disabledReason: disabledReason,
       adminToken: localStorage.getItem("adminTokenV"),
-    });
-    setSnackBarMessage("Arte modificado exitosamente");
-    setSnackBar(true);
-    setLoading(false);
-    setDisabledReason("");
-    setHiddenArt(undefined);
-    handleClose();
-    readArt();
-  };
+    })
+    setSnackBarMessage("Arte modificado exitosamente")
+    setSnackBar(true)
+    setLoading(false)
+    setDisabledReason("")
+    setHiddenArt(undefined)
+    handleClose()
+    readArt()
+  }
 
   const rankArt = async (art, id, event) => {
-    setLoading(true);
-    const URI = process.env.REACT_APP_BACKEND_URL + "/art/rank/" + id;
-    art.points = parseInt(points);
+    setLoading(true)
+    const URI = process.env.REACT_APP_BACKEND_URL + "/art/rank/" + id
+    art.points = parseInt(points)
     const certificate = {
       code: code,
       serial: serial,
       sequence: sequence,
-    };
-    art.certificate = certificate;
+    }
+    art.certificate = certificate
     const response = await axios.put(
       URI,
       art,
       { adminToken: localStorage.getItem("adminTokenV") },
       { withCredentials: true }
-    );
-    setSnackBarMessage("Puntuación agregada exitosamente");
+    )
+    setSnackBarMessage("Puntuación agregada exitosamente")
     setInterval(() => {
-      setLoading(false);
-    }, 3000);
-    setSnackBar(true);
-    setSelectedArt(undefined);
-    readArt();
-  };
+      setLoading(false)
+    }, 3000)
+    setSnackBar(true)
+    setSelectedArt(undefined)
+    readArt()
+  }
 
   const readArt = async () => {
-    setLoading(true);
+    setLoading(true)
     if (props.fullArt) {
       // const search = () => {
-      let index;
+      let index
       const s = tiles.find((art, i) => {
         if (art.artId === fullArt) {
-          index = i;
+          index = i
         }
-      });
-      index = Number(index) / itemsPerPage;
-      const newPage = Math.floor(index + 1);
-      setPageNumber(newPage);
+      })
+      index = Number(index) / itemsPerPage
+      const newPage = Math.floor(index + 1)
+      setPageNumber(newPage)
     } else {
-      const URI = process.env.REACT_APP_BACKEND_URL + "/art/read-by-id";
+      const URI = process.env.REACT_APP_BACKEND_URL + "/art/read-by-id"
       await axios.post(URI, { _id: fullArt }).then((response) => {
-        setTiles([response.data.arts]);
-        setPageNumber(1);
-      });
+        setTiles([response.data.arts])
+        setPageNumber(1)
+      })
     }
-    setReady(true);
-    setLoading(false);
-    setTimeout(accurateLocation, 1000);
-  };
+    setReady(true)
+    setLoading(false)
+    setTimeout(accurateLocation, 1000)
+  }
 
   useEffect(() => {
-    readArt();
-  }, []);
+    readArt()
+  }, [])
 
   const accurateLocation = () => {
     document.getElementById(fullArt)?.scrollIntoView({
       behavior: "smooth",
       block: "center",
-    });
-  };
+    })
+  }
 
   const updateArtData = async (e, tile) => {
-    setLoading(true);
+    setLoading(true)
     if (artDataState === "") {
       const base_url =
-        process.env.REACT_APP_BACKEND_URL + "/art/update/" + selectedArt;
+        process.env.REACT_APP_BACKEND_URL + "/art/update/" + selectedArt
       const data = {
         title: tile.title,
         description: tile.description,
@@ -507,81 +507,81 @@ export default function FullscreenPhoto(props) {
         // artId: tile.artId,
         artType: tile.artType,
         artLocation: tile.artLocation,
-      };
+      }
       await axios
         .put(base_url, data)
         .then((response) => {
           if (response.data.data.success == true) {
-            setSnackBarMessage(response.data.data.success);
-            setSnackBar(true);
-            setSelectedArt(undefined);
+            setSnackBarMessage(response.data.data.success)
+            setSnackBar(true)
+            setSelectedArt(undefined)
           } else {
-            setSnackBarMessage(response.data.data.error_message);
-            setSnackBar(true);
-            setSelectedArt(undefined);
+            setSnackBarMessage(response.data.data.error_message)
+            setSnackBar(true)
+            setSelectedArt(undefined)
           }
         })
         .catch((error) => {
-          setSelectedArt(undefined);
-        });
+          setSelectedArt(undefined)
+        })
     }
-    setArtDataState(tile.artId);
-    setLoading(false);
-  };
+    setArtDataState(tile.artId)
+    setLoading(false)
+  }
 
   const getTerms = () => {
     const base_url =
-      process.env.REACT_APP_BACKEND_URL + "/termsAndConditions/read";
+      process.env.REACT_APP_BACKEND_URL + "/termsAndConditions/read"
     axios
       .get(base_url)
       .then((response) => {
-        setValue(response.data.terms.termsAndConditions);
+        setValue(response.data.terms.termsAndConditions)
       })
       .catch((error) => {
-        console.log(error);
-      });
-  };
+        console.log(error)
+      })
+  }
 
   const handleExclusive = async (e, tile) => {
-    let tempTiles = tiles;
-    let result = await exclusiveEdit(tempTiles, tile, e);
-    setTiles(result);
-  };
+    let tempTiles = tiles
+    let result = await exclusiveEdit(tempTiles, tile, e)
+    setTiles(result)
+  }
 
   function exclusiveEdit(tempTiles, tile, e) {
     return tempTiles.map((item) => {
       if (item.artId === tile.artId) {
-        item.exclusive = e.target.value;
+        item.exclusive = e.target.value
         if (e.target.value === "standard") {
-          item.comission = 10;
+          item.comission = 10
         }
       }
-      return item;
-    });
+      return item
+    })
   }
 
   const handleComission = async (e, tile) => {
-    let tempTiles = tiles;
-    let result = await comissionEdit(tempTiles, tile, e);
-    setTiles(result);
-  };
+    let tempTiles = tiles
+    let result = await comissionEdit(tempTiles, tile, e)
+    setTiles(result)
+  }
 
   function comissionEdit(tempTiles, tile, e) {
     return tempTiles.map((item) => {
       if (item.artId === tile.artId) {
-        item.comission = e.target.value;
+        item.comission = e.target.value
       }
-      return item;
-    });
+      return item
+    })
   }
 
   const handleSubmit = async (e, Id) => {
-    e.preventDefault();
-    const formData = new FormData();
-    const termsAgree = true;
-    formData.append("termsAgree", termsAgree);
+    e.preventDefault()
+    const formData = new FormData()
+    const termsAgree = true
+    formData.append("termsAgree", termsAgree)
     const base_url =
-      process.env.REACT_APP_BACKEND_URL + "/prixer/update-terms/" + Id;
+      process.env.REACT_APP_BACKEND_URL + "/prixer/update-terms/" + Id
     const response = await axios
       .put(
         base_url,
@@ -591,30 +591,30 @@ export default function FullscreenPhoto(props) {
         }
       )
       .then((response) => {
-        setTermsAgreeVar(true);
-      });
-  };
+        setTermsAgreeVar(true)
+      })
+  }
 
   const TermsAgreeModal = () => {
-    const GetId = JSON.parse(localStorage.getItem("token")).username;
-    const base_url = process.env.REACT_APP_BACKEND_URL + "/prixer/get/" + GetId;
+    const GetId = JSON.parse(localStorage.getItem("token")).username
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/prixer/get/" + GetId
     axios.get(base_url).then((response) => {
-      setTermsAgreeVar(response.data.termsAgree);
-      getTerms();
-    });
-  };
+      setTermsAgreeVar(response.data.termsAgree)
+      getTerms()
+    })
+  }
 
   useEffect(() => {
     {
-      JSON.parse(localStorage.getItem("token")) && TermsAgreeModal();
+      JSON.parse(localStorage.getItem("token")) && TermsAgreeModal()
     }
-  }, []);
+  }, [])
 
   const addingToCart = (e, tile) => {
-    e.preventDefault();
-    setSelectedArt(tile);
-    props.setIsOpenAssociateProduct(true);
-  };
+    e.preventDefault()
+    setSelectedArt(tile)
+    props.setIsOpenAssociateProduct(true)
+  }
 
   return !ready ? (
     <div className={classes.loading}>
@@ -625,12 +625,18 @@ export default function FullscreenPhoto(props) {
       <div>
         <AppBar />
       </div>
-      <Container component="main" className={classes.paper}>
+      <Container
+        component="main"
+        className={classes.paper}
+      >
         <div style={{ marginTop: 55 }}>
           {tiles ? (
             tilesv2.map((tile) =>
               artDataState !== tile.artId ? (
-                <div id={tile.artId} key={tile.artId}>
+                <div
+                  id={tile.artId}
+                  key={tile.artId}
+                >
                   {tile.visible === true ? (
                     <>
                       <Card style={{ marginTop: 35 }}>
@@ -751,11 +757,16 @@ export default function FullscreenPhoto(props) {
                                           selectedArt !== undefined &&
                                           tile.artId === selectedArt?.artId
                                         ) {
-                                          setSelectedArt(undefined);
-                                          setOpenSettings(false);
+                                          setSelectedArt(undefined)
+                                          setOpenSettings(false)
                                         } else {
-                                          setSelectedArt(tile);
-                                          setOpenSettings(true);
+                                          setSelectedArt(tile)
+                                          setOpenSettings(true)
+                                          setCode(tile?.certificate?.code)
+                                          setSequence(
+                                            tile?.certificate?.sequence
+                                          )
+                                          setSerial(tile?.certificate?.serial)
                                         }
                                       }}
                                     >
@@ -849,7 +860,10 @@ export default function FullscreenPhoto(props) {
                                 alignItems: "center",
                               }}
                             >
-                              <Typography variant="body2" color="textSecondary">
+                              <Typography
+                                variant="body2"
+                                color="textSecondary"
+                              >
                                 Activo:
                               </Typography>
                               <IOSSwitch
@@ -857,13 +871,13 @@ export default function FullscreenPhoto(props) {
                                 size="normal"
                                 checked={tile.visible}
                                 onChange={(e) => {
-                                  setHiddenArt(tile.artId);
+                                  setHiddenArt(tile.artId)
                                   if (e.target.checked === false) {
-                                    handleClickVisible();
-                                    setVisible(e.target.checked);
+                                    handleClickVisible()
+                                    setVisible(e.target.checked)
                                   } else {
-                                    setVisibleArt(tile, tile.artId, e);
-                                    setVisible(e.target.checked);
+                                    setVisibleArt(tile, tile.artId, e)
+                                    setVisible(e.target.checked)
                                   }
                                 }}
                               />
@@ -887,7 +901,10 @@ export default function FullscreenPhoto(props) {
                                 alignItems="center"
                                 flexDirection="row"
                               >
-                                <Grid item xs={2}>
+                                <Grid
+                                  item
+                                  xs={2}
+                                >
                                   <TextField
                                     type="number"
                                     variant="outlined"
@@ -895,17 +912,21 @@ export default function FullscreenPhoto(props) {
                                     inputProps={propsRank}
                                     defaultValue={tile.points}
                                     onChange={(e) => {
-                                      setPoints(e.target.value);
+                                      setPoints(e.target.value)
                                     }}
                                   />
                                 </Grid>
-                                <Grid item xs={6} style={{ display: "flex" }}>
+                                <Grid
+                                  item
+                                  xs={6}
+                                  style={{ display: "flex" }}
+                                >
                                   <TextField
                                     style={{ marginRight: 8 }}
                                     variant="outlined"
                                     label="Código"
                                     onChange={(e) => {
-                                      setCode(e.target.value);
+                                      setCode(e.target.value)
                                     }}
                                     value={code}
                                   />
@@ -916,7 +937,7 @@ export default function FullscreenPhoto(props) {
                                     label="Arte"
                                     value={serial}
                                     onChange={(e) => {
-                                      setSerial(e.target.value);
+                                      setSerial(Number(e.target.value))
                                     }}
                                   />
                                   <TextField
@@ -925,7 +946,7 @@ export default function FullscreenPhoto(props) {
                                     label="Seguimiento"
                                     value={sequence}
                                     onChange={(e) => {
-                                      setSequence(e.target.value);
+                                      setSequence(Number(e.target.value))
                                     }}
                                   />
                                 </Grid>
@@ -945,7 +966,7 @@ export default function FullscreenPhoto(props) {
                                       marginTop: 8,
                                     }}
                                     onClick={(e) => {
-                                      rankArt(tile, tile.artId, e);
+                                      rankArt(tile, tile.artId, e)
                                     }}
                                   >
                                     Guardar
@@ -965,7 +986,7 @@ export default function FullscreenPhoto(props) {
                                 size="small"
                                 color="primary"
                                 onClick={(e) => {
-                                  addingToCart(e, tile);
+                                  addingToCart(e, tile)
                                 }}
                               >
                                 <AddShoppingCartIcon /> Comprar
@@ -977,7 +998,7 @@ export default function FullscreenPhoto(props) {
                                   window.open(
                                     utils.generateWaMessage(tile),
                                     "_blank"
-                                  );
+                                  )
                                 }}
                               >
                                 <ShareIcon /> Compartir
@@ -989,8 +1010,8 @@ export default function FullscreenPhoto(props) {
                                     size="small"
                                     color="primary"
                                     onClick={(e) => {
-                                      handleArtEdit(e, tile);
-                                      setSelectedArt(tile.artId);
+                                      handleArtEdit(e, tile)
+                                      setSelectedArt(tile.artId)
                                     }}
                                   >
                                     Editar
@@ -1004,8 +1025,8 @@ export default function FullscreenPhoto(props) {
                                     color="primary"
                                     size="small"
                                     onClick={(e) => {
-                                      handleClickOpen(e);
-                                      setSelectedArt(tile.artId);
+                                      handleClickOpen(e)
+                                      setSelectedArt(tile.artId)
                                     }}
                                   >
                                     Eliminar
@@ -1049,20 +1070,23 @@ export default function FullscreenPhoto(props) {
                             label="¿Por qué quieres ocultar este arte?"
                             variant="outlined"
                             onChange={(e) => {
-                              setDisabledReason(e.target.value);
+                              setDisabledReason(e.target.value)
                               // handleArtTitleEdit(e, tile);
                             }}
                           />
                         </Grid>
                         <DialogActions>
-                          <Button onClick={handleCloseVisible} color="primary">
+                          <Button
+                            onClick={handleCloseVisible}
+                            color="primary"
+                          >
                             Cancelar
                           </Button>
                           <Button
                             onClick={(e) => {
-                              setVisibleArt(tile, selectedArt, e);
-                              setHiddenArt(undefined);
-                              handleCloseVisible();
+                              setVisibleArt(tile, selectedArt, e)
+                              setHiddenArt(undefined)
+                              handleCloseVisible()
                             }}
                             background="primary"
                             style={{
@@ -1094,13 +1118,16 @@ export default function FullscreenPhoto(props) {
                           </DialogContentText>
                         </DialogContent>
                         <DialogActions>
-                          <Button onClick={handleClose} color="primary">
+                          <Button
+                            onClick={handleClose}
+                            color="primary"
+                          >
                             Cancelar
                           </Button>
                           <Button
                             onClick={() => {
-                              deleteArt(selectedArt);
-                              setSelectedArt(undefined);
+                              deleteArt(selectedArt)
+                              setSelectedArt(undefined)
                             }}
                             background="primary"
                             style={{
@@ -1266,7 +1293,7 @@ export default function FullscreenPhoto(props) {
                               window.open(
                                 utils.generateWaMessage(tile),
                                 "_blank"
-                              );
+                              )
                             }}
                           >
                             <WhatsAppIcon /> Escríbenos
@@ -1277,12 +1304,12 @@ export default function FullscreenPhoto(props) {
                               size="normal"
                               onChange={(e) => {
                                 if (e.target.checked === false) {
-                                  handleClickVisible();
-                                  setVisible(e.target.checked);
-                                  setHiddenArt(tile.artId);
+                                  handleClickVisible()
+                                  setVisible(e.target.checked)
+                                  setHiddenArt(tile.artId)
                                 } else {
-                                  setVisible(e.target.checked);
-                                  setVisibleArt(tile, tile.artId, e);
+                                  setVisible(e.target.checked)
+                                  setVisibleArt(tile, tile.artId, e)
                                 }
                               }}
                             ></IOSSwitch>
@@ -1294,8 +1321,8 @@ export default function FullscreenPhoto(props) {
                                 color="primary"
                                 size="small"
                                 onClick={(e) => {
-                                  handleClickOpen(e);
-                                  setSelectedArt(tile.artId);
+                                  handleClickOpen(e)
+                                  setSelectedArt(tile.artId)
                                 }}
                               >
                                 Eliminar
@@ -1322,13 +1349,16 @@ export default function FullscreenPhoto(props) {
                               </DialogContentText>
                             </DialogContent>
                             <DialogActions>
-                              <Button onClick={handleClose} color="primary">
+                              <Button
+                                onClick={handleClose}
+                                color="primary"
+                              >
                                 Cancelar
                               </Button>
                               <Button
                                 onClick={() => {
-                                  deleteArt(selectedArt);
-                                  setSelectedArt(undefined);
+                                  deleteArt(selectedArt)
+                                  setSelectedArt(undefined)
                                 }}
                                 background="primary"
                                 style={{
@@ -1371,10 +1401,25 @@ export default function FullscreenPhoto(props) {
                     id={tile.artId}
                   />
                   <CardContent>
-                    <Grid item xs={12} container>
-                      <Grid item xs container direction="column">
-                        <Grid item xs>
-                          <Grid item xs>
+                    <Grid
+                      item
+                      xs={12}
+                      container
+                    >
+                      <Grid
+                        item
+                        xs
+                        container
+                        direction="column"
+                      >
+                        <Grid
+                          item
+                          xs
+                        >
+                          <Grid
+                            item
+                            xs
+                          >
                             <TextField
                               fullWidth
                               required
@@ -1384,7 +1429,7 @@ export default function FullscreenPhoto(props) {
                               value={tile.title}
                               onChange={(e) => {
                                 // setTitle(e.target.value);
-                                handleArtTitleEdit(e, tile);
+                                handleArtTitleEdit(e, tile)
                               }}
                             />
                           </Grid>
@@ -1422,7 +1467,11 @@ export default function FullscreenPhoto(props) {
                                       style={{ paddingTop: 15 }}
                                       justify="space-between"
                                     >
-                                      <Grid item xs={5} sm={5}>
+                                      <Grid
+                                        item
+                                        xs={5}
+                                        sm={5}
+                                      >
                                         <TextField
                                           variant="outlined"
                                           fullWidth
@@ -1433,12 +1482,12 @@ export default function FullscreenPhoto(props) {
                                           autoComplete="originalPhotoWidth"
                                           value={tile.originalPhotoWidth}
                                           onChange={(e) => {
-                                            handleOriginalPhotoWidth(e, tile);
+                                            handleOriginalPhotoWidth(e, tile)
                                             if (e.target.value < 2000) {
                                               setSnackBarMessage(
                                                 "La foto original debe tener un ancho mayor a 2.000 px."
-                                              );
-                                              setSnackBar(true);
+                                              )
+                                              setSnackBar(true)
                                             }
                                           }}
                                         />
@@ -1447,7 +1496,11 @@ export default function FullscreenPhoto(props) {
                                         {" "}
                                         x{" "}
                                       </Typography>
-                                      <Grid item xs={5} sm={5}>
+                                      <Grid
+                                        item
+                                        xs={5}
+                                        sm={5}
+                                      >
                                         <TextField
                                           variant="outlined"
                                           fullWidth
@@ -1458,12 +1511,12 @@ export default function FullscreenPhoto(props) {
                                           autoComplete="originalPhotoHeight"
                                           value={tile.originalPhotoHeight}
                                           onChange={(e) => {
-                                            handleOriginalPhotoHeight(e, tile);
+                                            handleOriginalPhotoHeight(e, tile)
                                             if (e.target.value < 2000) {
                                               setSnackBarMessage(
                                                 "La foto original debe tener un alto mayor a 2.000 px."
-                                              );
-                                              setSnackBar(true);
+                                              )
+                                              setSnackBar(true)
                                             }
                                           }}
                                         />
@@ -1487,7 +1540,11 @@ export default function FullscreenPhoto(props) {
                                   style={{ paddingTop: 15 }}
                                   justify="space-between"
                                 >
-                                  <Grid item xs={5} sm={5}>
+                                  <Grid
+                                    item
+                                    xs={5}
+                                    sm={5}
+                                  >
                                     <TextField
                                       variant="outlined"
                                       fullWidth
@@ -1498,12 +1555,12 @@ export default function FullscreenPhoto(props) {
                                       autoComplete="originalPhotoPpi"
                                       value={tile.originalPhotoPpi}
                                       onChange={(e) => {
-                                        handleOriginalPhotoPpi(e, tile);
+                                        handleOriginalPhotoPpi(e, tile)
                                         if (e.target.value < 100) {
                                           setSnackBarMessage(
                                             "La foto original debe ser mayor a 100 ppi."
-                                          );
-                                          setSnackBar(true);
+                                          )
+                                          setSnackBar(true)
                                         }
                                       }}
                                     />
@@ -1529,7 +1586,7 @@ export default function FullscreenPhoto(props) {
                                         id="originalPhotoIso"
                                         value={tile.originalPhotoIso}
                                         onChange={(e) => {
-                                          handleOriginalPhotoIso(e, tile);
+                                          handleOriginalPhotoIso(e, tile)
                                         }}
                                         label="originalPhotoIso"
                                       >
@@ -1537,7 +1594,10 @@ export default function FullscreenPhoto(props) {
                                           <em></em>
                                         </MenuItem>
                                         {photoIsos.map((n) => (
-                                          <MenuItem key={n} value={n}>
+                                          <MenuItem
+                                            key={n}
+                                            value={n}
+                                          >
                                             {n}
                                           </MenuItem>
                                         ))}
@@ -1585,7 +1645,11 @@ export default function FullscreenPhoto(props) {
                                   </Typography>
                                 </Grid>
                               </Grid>
-                              <Grid item container xs={12}></Grid>
+                              <Grid
+                                item
+                                container
+                                xs={12}
+                              ></Grid>
                             </React.Fragment>
                           )}
                           {/* <Grid item container xs={12} style={{marginBottom: 15}}>
@@ -1637,7 +1701,7 @@ export default function FullscreenPhoto(props) {
                               label="Descripción del arte"
                               value={tile.description}
                               onChange={(e) => {
-                                handleArtDescriptionEdit(e, tile);
+                                handleArtDescriptionEdit(e, tile)
                               }}
                             />
                           </Grid>
@@ -1658,13 +1722,13 @@ export default function FullscreenPhoto(props) {
                                   <Chip
                                     style={{ marginRight: 5 }}
                                     onDelete={() => {
-                                      const newTiles = [...tiles];
+                                      const newTiles = [...tiles]
                                       newTiles.find(
                                         (item) => item.artId === tile.artId
                                       ).tags = tile.tags.filter(
                                         (tag) => tag !== option
-                                      );
-                                      setTiles(newTiles);
+                                      )
+                                      setTiles(newTiles)
                                     }}
                                     variant="outlined"
                                     label={option}
@@ -1678,31 +1742,34 @@ export default function FullscreenPhoto(props) {
                                   label="Etiquetas"
                                   onKeyDown={(e) => {
                                     if (e.key === "Enter" && e.target.value) {
-                                      const newTiles = [...tiles];
+                                      const newTiles = [...tiles]
                                       newTiles
                                         .find(
                                           (item) => item.artId === tile.artId
                                         )
-                                        .tags.push(e.target.value);
-                                      setTiles(newTiles);
+                                        .tags.push(e.target.value)
+                                      setTiles(newTiles)
                                     } else if (
                                       e.key === " " &&
                                       e.target.value
                                     ) {
-                                      const newTiles = [...tiles];
+                                      const newTiles = [...tiles]
                                       newTiles
                                         .find(
                                           (item) => item.artId === tile.artId
                                         )
-                                        .tags.push(e.target.value);
-                                      setTiles(newTiles);
+                                        .tags.push(e.target.value)
+                                      setTiles(newTiles)
                                     }
                                   }}
                                 />
                               )}
                             />
                           </Grid>
-                          <Grid item xs={12}>
+                          <Grid
+                            item
+                            xs={12}
+                          >
                             <TextField
                               variant="outlined"
                               fullWidth
@@ -1723,13 +1790,21 @@ export default function FullscreenPhoto(props) {
                                 justifyContent: "center",
                               }}
                             >
-                              <Grid item xs={12} sm={12} md={6}>
+                              <Grid
+                                item
+                                xs={12}
+                                sm={12}
+                                md={6}
+                              >
                                 <FormControl
                                   variant="outlined"
                                   className={classes.form}
                                   fullWidth
                                 >
-                                  <InputLabel required id="artTypeLabel">
+                                  <InputLabel
+                                    required
+                                    id="artTypeLabel"
+                                  >
                                     Exclusividad
                                   </InputLabel>
                                   <Select
@@ -1749,7 +1824,12 @@ export default function FullscreenPhoto(props) {
                                   </Select>
                                 </FormControl>
                               </Grid>
-                              <Grid item xs={12} sm={12} md={6}>
+                              <Grid
+                                item
+                                xs={12}
+                                sm={12}
+                                md={6}
+                              >
                                 <TextField
                                   variant="outlined"
                                   fullWidth
@@ -1787,7 +1867,7 @@ export default function FullscreenPhoto(props) {
                           color="primary"
                           onClick={(e) => {
                             // updateArtData(e, tile);
-                            handleArtEdit(e, tile);
+                            handleArtEdit(e, tile)
                           }}
                         >
                           Guardar
@@ -1834,7 +1914,7 @@ export default function FullscreenPhoto(props) {
             <Button
               style={{ minWidth: 30, marginRight: 5 }}
               onClick={() => {
-                setPageNumber(1);
+                setPageNumber(1)
               }}
             >
               {1}
@@ -1856,7 +1936,7 @@ export default function FullscreenPhoto(props) {
             <Button
               style={{ minWidth: 30, marginRight: 5 }}
               onClick={() => {
-                setPageNumber(pageNumber - 2);
+                setPageNumber(pageNumber - 2)
               }}
             >
               {pageNumber - 2}
@@ -1866,7 +1946,7 @@ export default function FullscreenPhoto(props) {
             <Button
               style={{ minWidth: 30, marginRight: 5 }}
               onClick={() => {
-                setPageNumber(pageNumber - 1);
+                setPageNumber(pageNumber - 1)
               }}
             >
               {pageNumber - 1}
@@ -1889,7 +1969,7 @@ export default function FullscreenPhoto(props) {
             <Button
               style={{ minWidth: 30, marginRight: 5 }}
               onClick={() => {
-                setPageNumber(pageNumber + 1);
+                setPageNumber(pageNumber + 1)
               }}
             >
               {pageNumber + 1}
@@ -1900,7 +1980,7 @@ export default function FullscreenPhoto(props) {
             <Button
               style={{ minWidth: 30, marginRight: 5 }}
               onClick={() => {
-                setPageNumber(pageNumber + 2);
+                setPageNumber(pageNumber + 2)
               }}
             >
               {pageNumber + 2}
@@ -1922,7 +2002,7 @@ export default function FullscreenPhoto(props) {
             <Button
               style={{ minWidth: 30, marginRight: 5 }}
               onClick={() => {
-                setPageNumber(noOfPages);
+                setPageNumber(noOfPages)
               }}
             >
               {noOfPages}
@@ -1969,7 +2049,7 @@ export default function FullscreenPhoto(props) {
                   handleSubmit(
                     e,
                     JSON.parse(localStorage.getItem("token")).username
-                  );
+                  )
                 }}
                 type="submit"
                 variant="contained"
@@ -2055,7 +2135,7 @@ export default function FullscreenPhoto(props) {
                           </div>
                         )}
                       </div>
-                    );
+                    )
                   })
                 ) : (
                   <strong>
@@ -2071,8 +2151,8 @@ export default function FullscreenPhoto(props) {
             <Button
               onClick={() => {
                 !props.selectedProductToAssociate?.previous &&
-                  props.setSelectedProductToAssociate(undefined);
-                props.setIsOpenAssociateProduct(false);
+                  props.setSelectedProductToAssociate(undefined)
+                props.setIsOpenAssociateProduct(false)
               }}
               color="primary"
             >
@@ -2087,10 +2167,10 @@ export default function FullscreenPhoto(props) {
                       index: props.selectedProductToAssociate.index,
                       item: selectedArt,
                       type: "art",
-                    });
-                    props.setSelectedProductToAssociate(undefined);
-                    setSelectedArt(undefined);
-                    props.setIsOpenAssociateProduct(false);
+                    })
+                    props.setSelectedProductToAssociate(undefined)
+                    setSelectedArt(undefined)
+                    props.setIsOpenAssociateProduct(false)
                   }}
                   color="primary"
                 >
@@ -2105,10 +2185,10 @@ export default function FullscreenPhoto(props) {
                   props.addItemToBuyState({
                     type: "art",
                     item: selectedArt,
-                  });
+                  })
 
-                  setSelectedArt(undefined);
-                  history.push({ pathname: "/productos" });
+                  setSelectedArt(undefined)
+                  history.push({ pathname: "/productos" })
                 }}
                 color="primary"
               >
@@ -2143,7 +2223,11 @@ export default function FullscreenPhoto(props) {
             </div>
           ) : (
             <div style={{ margin: "90px 10px 40px 10px" }}>
-              <Typography variant={"h6"} align={"Center"} justify={"center"}>
+              <Typography
+                variant={"h6"}
+                align={"Center"}
+                justify={"center"}
+              >
                 Actualmente no tienes ningun producto dentro del carrito de
                 compra.
               </Typography>
@@ -2158,7 +2242,7 @@ export default function FullscreenPhoto(props) {
           >
             <Button
               onClick={() => {
-                setOpenShoppingCart(false);
+                setOpenShoppingCart(false)
               }}
               color="primary"
             >
@@ -2167,7 +2251,7 @@ export default function FullscreenPhoto(props) {
             {props.buyState?.length > 0 && (
               <Button
                 onClick={() => {
-                  history.push({ pathname: "/shopping" });
+                  history.push({ pathname: "/shopping" })
                 }}
                 color="primary"
               >
@@ -2178,5 +2262,5 @@ export default function FullscreenPhoto(props) {
         </Dialog>
       </Container>
     </>
-  );
+  )
 }

@@ -1,26 +1,26 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-import Grid from "@material-ui/core/Grid";
-import { useTheme } from "@material-ui/core/styles";
-import { makeStyles } from "@material-ui/core/styles";
-import { Typography } from "@material-ui/core";
-import IconButton from "@material-ui/core/IconButton";
-import CloseIcon from "@material-ui/icons/Close";
-import Stepper from "@material-ui/core/Stepper";
-import Step from "@material-ui/core/Step";
-import StepButton from "@material-ui/core/StepButton";
-import ConsumerData from "./consumerData";
-import ShoppingCart from "./shoppingCart";
-import Checkout from "./checkout";
-import { nanoid } from "nanoid";
+import React, { useEffect, useState } from "react"
+import axios from "axios"
+import Grid from "@material-ui/core/Grid"
+import { useTheme } from "@material-ui/core/styles"
+import { makeStyles } from "@material-ui/core/styles"
+import { Typography } from "@material-ui/core"
+import IconButton from "@material-ui/core/IconButton"
+import CloseIcon from "@material-ui/icons/Close"
+import Stepper from "@material-ui/core/Stepper"
+import Step from "@material-ui/core/Step"
+import StepButton from "@material-ui/core/StepButton"
+import ConsumerData from "./consumerData"
+import ShoppingCart from "./shoppingCart"
+import Checkout from "./checkout"
+import { nanoid } from "nanoid"
 import {
   UnitPrice,
   getPVP,
   getPVM,
   getTotalUnitsPVM,
   getTotalUnitsPVP,
-} from "../../../shoppingCart/pricesFunctions";
-const drawerWidth = 240;
+} from "../../../shoppingCart/pricesFunctions"
+const drawerWidth = 240
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -223,53 +223,53 @@ const useStyles = makeStyles((theme) => ({
       width: "25ch",
     },
   },
-}));
+}))
 export default function CreateOrder(props) {
-  const classes = useStyles();
-  const theme = useTheme();
+  const classes = useStyles()
+  const theme = useTheme()
 
   // const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
   // const isMobile = useMediaQuery(theme.breakpoints.down("md"));
-  const [activeStep, setActiveStep] = React.useState(0);
-  const [basicData, setBasicData] = useState();
-  const [shippingData, setShippingData] = useState();
-  const [billingData, setBillingData] = useState();
-  const [openCreateOrder, setOpenCreateOrder] = useState(false);
-  const [loadingOrder, setLoadingOrder] = useState(false);
-  const [orderPaymentMethod, setOrderPaymentMethod] = useState(undefined);
-  const [observations, setObservations] = useState();
-  const [selectedPrixer, setSelectedPrixer] = useState();
-  const [shippingMethod, setShippingMethod] = useState();
-  const [selectedConsumer, setSelectedConsumer] = useState();
-  const [consumerType, setConsumerType] = useState("Particular");
-  const steps = [`Datos del comprador`, `Productos`, `Orden de compra`];
+  const [activeStep, setActiveStep] = React.useState(0)
+  const [basicData, setBasicData] = useState()
+  const [shippingData, setShippingData] = useState()
+  const [billingData, setBillingData] = useState()
+  const [openCreateOrder, setOpenCreateOrder] = useState(false)
+  const [loadingOrder, setLoadingOrder] = useState(false)
+  const [orderPaymentMethod, setOrderPaymentMethod] = useState(undefined)
+  const [observations, setObservations] = useState()
+  const [selectedPrixer, setSelectedPrixer] = useState()
+  const [shippingMethod, setShippingMethod] = useState()
+  const [selectedConsumer, setSelectedConsumer] = useState()
+  const [consumerType, setConsumerType] = useState("Particular")
+  const steps = [`Datos del comprador`, `Productos`, `Orden de compra`]
 
   const handleStep = (step) => () => {
-    setActiveStep(step);
-  };
-  let shippingCost = Number(shippingMethod?.price);
+    setActiveStep(step)
+  }
+  let shippingCost = Number(shippingMethod?.price)
 
   const getIvaCost = (state) => {
-    let iva = getTotalPrice(state) * 0.16;
+    let iva = getTotalPrice(state) * 0.16
     if (typeof selectedPrixer?.username === "string") {
-      return 0;
+      return 0
     } else {
-      return iva;
+      return iva
     }
-  };
+  }
 
   const getTotal = (x) => {
-    let n = [];
-    n.push(getTotalPrice(props.buyState));
-    n.push(getIvaCost(props.buyState));
+    let n = []
+    n.push(getTotalPrice(props.buyState))
+    n.push(getIvaCost(props.buyState))
     {
-      shippingData?.shippingMethod && n.push(shippingCost);
+      shippingData?.shippingMethod && n.push(shippingCost)
     }
     let total = n.reduce(function (a, b) {
-      return a + b;
-    });
-    return total;
-  };
+      return a + b
+    })
+    return total
+  }
 
   const getTotalPrice = (state) => {
     if (selectedPrixer) {
@@ -279,17 +279,17 @@ export default function CreateOrder(props) {
         1,
         props.discountList,
         selectedPrixer.username
-      );
+      )
     } else {
-      return getTotalUnitsPVP(state, false, 1, props.discountList);
+      return getTotalUnitsPVP(state, false, 1, props.discountList)
     }
-  };
+  }
 
   const createOrder = async () => {
-    setLoadingOrder(true);
-    props.setLoading(true);
+    setLoadingOrder(true)
+    props.setLoading(true)
 
-    let orderLines = [];
+    let orderLines = []
 
     props.buyState.map((s) => {
       s.product &&
@@ -298,8 +298,8 @@ export default function CreateOrder(props) {
           product: s.product,
           art: s.art,
           quantity: s.quantity,
-        });
-    });
+        })
+    })
     const consumerData = {
       _id: selectedConsumer?._id || nanoid(6),
       active: true,
@@ -317,16 +317,16 @@ export default function CreateOrder(props) {
       billingAddress: billingData?.address || basicData?.address,
       shippingAddress: shippingData?.address || basicData?.address,
       // prixerId: selectedPrixer?.prixerId,
-    };
+    }
     if (selectedPrixer) {
-      consumerData.prixerId = selectedPrixer.prixerId;
+      consumerData.prixerId = selectedPrixer.prixerId
     }
     await axios.post(
       process.env.REACT_APP_BACKEND_URL + "/consumer/create",
       consumerData
-    );
+    )
 
-    const base_url = process.env.REACT_APP_BACKEND_URL + "/order/create";
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/order/create"
     let input = {
       adminToken: localStorage.getItem("adminTokenV"),
       orderId: nanoid(8),
@@ -354,42 +354,74 @@ export default function CreateOrder(props) {
       orderType: "Particular",
       status: "Por producir",
       payStatus: "Pendiente",
-    };
+    }
 
-    const base_url3 = process.env.REACT_APP_BACKEND_URL + "/order/sendEmail";
+    const base_url3 = process.env.REACT_APP_BACKEND_URL + "/order/sendEmail"
+
     await axios.post(base_url, input).then(async (response) => {
-      if (basicData.email && basicData.email.length > 8) {
-        await axios.post(base_url3, input).then(async (response) => {
-          props.setErrorMessage(response.data.info);
-          props.setSnackBarError(true);
-          if (response.data.success === false) {
-            await axios.post(base_url3, input).then((res) => {
-              props.setErrorMessage(res.data.info);
-              props.setSnackBarError(true);
-            });
-          } else return;
-        });
+      if (response.data.res.success) {
+        for (const item of props.buyState) {
+          if (item.product.autoCertified === true) {
+            let art = item.art
+            let last = 0
+            const matches = props.buyState.filter(
+              (a) => a.art.artId === art.artId
+            )
+            const sequences = matches.map(
+              (item) => item.art.certificate.sequence
+            )
+            last = Math.max(...sequences)
+            
+            const URI =
+              process.env.REACT_APP_BACKEND_URL + "/art/rank/" + art.artId
+            art.points = parseInt(art.points)
+            const certificate = {
+              code: art.certificate.code,
+              serial: item.art.certificate.serial,
+              sequence: last,
+            }
+            art.certificate = certificate
+            await axios.put(
+              URI,
+              art,
+              { headers: { adminToken: localStorage.getItem("adminTokenV") } },
+              { withCredentials: true }
+            )
+          }
+        }
+        if (basicData?.email && basicData?.email.length > 8) {
+          await axios.post(base_url3, input).then(async (response) => {
+            props.setErrorMessage(response.data.info)
+            props.setSnackBarError(true)
+            if (response.data.success === false) {
+              await axios.post(base_url3, input).then((res) => {
+                props.setErrorMessage(res.data.info)
+                props.setSnackBarError(true)
+              })
+            } else return
+          })
+        }
       }
-    });
-    setOpenCreateOrder(false);
-    setBasicData();
-    setShippingData();
-    setBillingData();
-    setConsumerType("Particular");
-    localStorage.removeItem("buyState");
-    props.setBuyState([]);
-    props.readOrders();
-    props.setLoading(false);
-    setLoadingOrder(false);
-    props.handleClose();
-  };
+    })
+    setOpenCreateOrder(false)
+    setBasicData()
+    setShippingData()
+    setBillingData()
+    setConsumerType("Particular")
+    localStorage.removeItem("buyState")
+    props.setBuyState([])
+    props.readOrders()
+    props.setLoading(false)
+    setLoadingOrder(false)
+    props.handleClose()
+  }
 
   function handleKeyDown(event) {
     if (event.key === "Escape") {
-      props.handleClose();
-    } else return;
+      props.handleClose()
+    } else return
   }
-  document.addEventListener("keydown", handleKeyDown);
+  document.addEventListener("keydown", handleKeyDown)
 
   return (
     <Grid
@@ -407,7 +439,10 @@ export default function CreateOrder(props) {
           alignItems: "center",
         }}
       >
-        <Typography variant={"h5"} color={"primary"}>
+        <Typography
+          variant={"h5"}
+          color={"primary"}
+        >
           Creación de orden
         </Typography>
 
@@ -415,13 +450,20 @@ export default function CreateOrder(props) {
           <CloseIcon />
         </IconButton>
       </Grid>
-      <Stepper activeStep={activeStep} nonLinear style={{ width: "100%" }}>
+      <Stepper
+        activeStep={activeStep}
+        nonLinear
+        style={{ width: "100%" }}
+      >
         {steps.map((label, index) => {
           return (
-            <Step key={label} {...props}>
+            <Step
+              key={label}
+              {...props}
+            >
               <StepButton onClick={handleStep(index)}>{label}</StepButton>
             </Step>
-          );
+          )
         })}
       </Stepper>
       <div
@@ -485,6 +527,7 @@ export default function CreateOrder(props) {
             dollarValue={props.dollarValue}
             setObservations={setObservations}
             buyState={props.buyState}
+            setBuyState={props.setBuyState}
             createOrder={createOrder}
             orderPaymentMethod={orderPaymentMethod}
             setOrderPaymentMethod={setOrderPaymentMethod}
@@ -495,5 +538,5 @@ export default function CreateOrder(props) {
         )}
       </div>
     </Grid>
-  );
+  )
 }

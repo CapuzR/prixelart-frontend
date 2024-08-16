@@ -436,6 +436,10 @@ export default function OrderDetails(props) {
 
   console.log(props.modalContent)
 
+  function formatNumber(x, l) {
+    return x.toString().padStart(l, "0")
+  }
+
   return (
     <Grid
       container
@@ -612,6 +616,30 @@ export default function OrderDetails(props) {
                           }
                           {consumer?.consumerType === "Prixer" && "No aplicado"}
                         </div>
+                        {item.product?.autoCertified && (
+                          <div
+                            style={{
+                              marginTop: 10,
+                              display: "flex",
+                              justifyContent: "space-between",
+                            }}
+                          >
+                            {"Certificado: " +
+                              props.modalContent.requests[0].art.certificate
+                                .code +
+                              formatNumber(
+                                props.modalContent.requests[0].art.certificate
+                                  .serial,
+                                2
+                              ) +
+                              formatNumber(
+                                props.modalContent.requests[0].art.certificate
+                                  .sequence,
+                                3
+                              )}
+                            <div />
+                          </div>
+                        )}
                         <div
                           style={{
                             marginTop: 10,

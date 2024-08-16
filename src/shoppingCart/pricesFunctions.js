@@ -44,6 +44,7 @@ const UnitPrice = (
   if (currency) {
     final = final * dollarValue
   }
+  console.log(final)
   return final?.toLocaleString("de-DE", {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
@@ -959,6 +960,7 @@ const getTotalUnitsPVP = (state, currency, dollarValue, discountList) => {
   let total = prices?.reduce(function (a, b) {
     return a + b
   })
+  console.log(total)
   if (currency) {
     return total * dollarValue
   } else return total
@@ -1026,6 +1028,8 @@ const getTotalUnitsPVM = (
   let total = prices?.reduce(function (a, b) {
     return a + b
   })
+  console.log(total)
+
   if (currency) {
     return total * dollarValue
   } else return total

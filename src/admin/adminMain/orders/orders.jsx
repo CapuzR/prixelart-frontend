@@ -1,33 +1,33 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-import Grid from "@material-ui/core/Grid";
-import Paper from "@material-ui/core/Paper";
-import clsx from "clsx";
-import { useTheme } from "@material-ui/core/styles";
-import { makeStyles } from "@material-ui/core/styles";
-import Fab from "@material-ui/core/Fab";
-import AddIcon from "@material-ui/icons/Add";
-import GetAppIcon from "@material-ui/icons/GetApp";
-import BackspaceIcon from "@material-ui/icons/Backspace";
+import React, { useEffect, useState } from "react"
+import axios from "axios"
+import Grid from "@material-ui/core/Grid"
+import Paper from "@material-ui/core/Paper"
+import clsx from "clsx"
+import { useTheme } from "@material-ui/core/styles"
+import { makeStyles } from "@material-ui/core/styles"
+import Fab from "@material-ui/core/Fab"
+import AddIcon from "@material-ui/icons/Add"
+import GetAppIcon from "@material-ui/icons/GetApp"
+import BackspaceIcon from "@material-ui/icons/Backspace"
 
-import Title from "../Title";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
-import Modal from "@material-ui/core/Modal";
-import RefreshIcon from "@material-ui/icons/Refresh";
-import { Backdrop } from "@material-ui/core";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import Tooltip from "@material-ui/core/Tooltip";
-import Snackbar from "@material-ui/core/Snackbar";
-import ReadOrders from "./readOrders";
-import OrderDetails from "./orderDetails";
-import CreateOrder from "./createOrder";
-import { nanoid } from "nanoid";
-import { getComission } from "../../../shoppingCart/pricesFunctions";
-import moment from "moment";
-import "moment/locale/es";
-const excelJS = require("exceljs");
+import Title from "../Title"
+import useMediaQuery from "@material-ui/core/useMediaQuery"
+import Modal from "@material-ui/core/Modal"
+import RefreshIcon from "@material-ui/icons/Refresh"
+import { Backdrop } from "@material-ui/core"
+import CircularProgress from "@material-ui/core/CircularProgress"
+import Tooltip from "@material-ui/core/Tooltip"
+import Snackbar from "@material-ui/core/Snackbar"
+import ReadOrders from "./readOrders"
+import OrderDetails from "./orderDetails"
+import CreateOrder from "./createOrder"
+import { nanoid } from "nanoid"
+import { getComission } from "../../../shoppingCart/pricesFunctions"
+import moment from "moment"
+import "moment/locale/es"
+const excelJS = require("exceljs")
 
-const drawerWidth = 240;
+const drawerWidth = 240
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -230,36 +230,36 @@ const useStyles = makeStyles((theme) => ({
       width: "25ch",
     },
   },
-}));
+}))
 
 export default function Orders(props) {
-  const classes = useStyles();
+  const classes = useStyles()
   // const history = useHistory();
   // const location = useLocation();
-  const theme = useTheme();
-  const moment = require("moment-timezone");
+  const theme = useTheme()
+  const moment = require("moment-timezone")
 
-  const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
-  const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
-  const isIphone = useMediaQuery(theme.breakpoints.down("xs"));
-  const [isShowDetails, setIsShowDetails] = useState(false);
-  const [showVoucher, setShowVoucher] = useState(false);
-  const [rows, setRows] = useState();
-  const [modalContent, setModalContent] = useState();
-  const [loading, setLoading] = useState(false);
-  const [openCreateOrder, setOpenCreateOrder] = useState(false);
-  const [dollarValue, setDollarValue] = useState(1);
-  const [account, setAccount] = useState();
-  const [errorMessage, setErrorMessage] = useState();
-  const [snackBarError, setSnackBarError] = useState(false);
-  const [discountList, setDiscountList] = useState([]);
-  const [surchargeList, setSurchargeList] = useState([]);
-  const [prixers, setPrixers] = useState([]);
-  const [orgs, setOrgs] = useState([]);
-  const [orders, setOrders] = useState([]);
-  const [movements, setMovements] = useState([]);
-  const [consumers, setConsumers] = useState([]);
+  const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight)
+  const isDesktop = useMediaQuery(theme.breakpoints.up("md"))
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"))
+  const isIphone = useMediaQuery(theme.breakpoints.down("xs"))
+  const [isShowDetails, setIsShowDetails] = useState(false)
+  const [showVoucher, setShowVoucher] = useState(false)
+  const [rows, setRows] = useState()
+  const [modalContent, setModalContent] = useState()
+  const [loading, setLoading] = useState(false)
+  const [openCreateOrder, setOpenCreateOrder] = useState(false)
+  const [dollarValue, setDollarValue] = useState(1)
+  const [account, setAccount] = useState()
+  const [errorMessage, setErrorMessage] = useState()
+  const [snackBarError, setSnackBarError] = useState(false)
+  const [discountList, setDiscountList] = useState([])
+  const [surchargeList, setSurchargeList] = useState([])
+  const [prixers, setPrixers] = useState([])
+  const [orgs, setOrgs] = useState([])
+  const [orders, setOrders] = useState([])
+  const [movements, setMovements] = useState([])
+  const [consumers, setConsumers] = useState([])
   const [filters, setFilters] = useState({
     creationDate: undefined,
     shippingDate: undefined,
@@ -267,82 +267,81 @@ export default function Orders(props) {
     payStatus: undefined,
     status: undefined,
     seller: undefined,
-  });
-  const [client, setClients] = useState();
+  })
+  const [client, setClients] = useState()
 
   const getDiscounts = async () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + "/discount/read-allv2";
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/discount/read-allv2"
     await axios
       .post(base_url, { adminToken: localStorage.getItem("adminTokenV") })
       .then((response) => {
-        setDiscountList(response.data.discounts);
+        setDiscountList(response.data.discounts)
       })
       .catch((error) => {
-        console.log(error);
-      });
-  };
+        console.log(error)
+      })
+  }
 
   const getSurcharges = async () => {
     const base_url =
-      process.env.REACT_APP_BACKEND_URL + "/surcharge/read-active";
+      process.env.REACT_APP_BACKEND_URL + "/surcharge/read-active"
     await axios
       .get(base_url)
       .then((response) => {
-        setSurchargeList(response.data.surcharges);
+        setSurchargeList(response.data.surcharges)
       })
       .catch((error) => {
-        console.log(error);
-      });
-  };
+        console.log(error)
+      })
+  }
 
   const getPrixers = async () => {
-    const base_url =
-      process.env.REACT_APP_BACKEND_URL + "/prixer/read-all-full";
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/prixer/read-all-full"
     await axios
       .get(base_url)
       .then((response) => {
-        setPrixers(response.data.prixers);
+        setPrixers(response.data.prixers)
       })
       .catch((error) => {
-        console.log(error);
-      });
-  };
+        console.log(error)
+      })
+  }
 
   const getORGs = async () => {
     const base_url =
-      process.env.REACT_APP_BACKEND_URL + "/organization/read-all-full";
+      process.env.REACT_APP_BACKEND_URL + "/organization/read-all-full"
     await axios
       .get(base_url)
       .then((response) => {
-        setOrgs(response.data.organizations);
+        setOrgs(response.data.organizations)
       })
       .catch((error) => {
-        console.log(error);
-      });
-  };
+        console.log(error)
+      })
+  }
 
   const findPrixer = async (prx) => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + "/prixer/read";
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/prixer/read"
     return await axios
       .post(base_url, { username: prx })
       .then((response) => {
-        return response.data;
+        return response.data
       })
       .catch((error) => {
-        console.log(error);
-      });
-  };
+        console.log(error)
+      })
+  }
 
   const handleFilters = (filter, value) => {
-    let f = filters;
-    f[filter] = value;
-    setFilters(f);
-    filterOrders(f);
-  };
+    let f = filters
+    f[filter] = value
+    setFilters(f)
+    filterOrders(f)
+  }
 
   const readOrders = async () => {
-    setLoading(true);
-    const base_url = process.env.REACT_APP_BACKEND_URL + "/order/read-all";
+    setLoading(true)
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/order/read-all"
     await axios
       .post(
         base_url,
@@ -350,19 +349,19 @@ export default function Orders(props) {
         { withCredentials: true }
       )
       .then((response) => {
-        setRows(response.data.orders);
-        setOrders(response.data.orders);
-        getClients(response.data.orders);
+        setRows(response.data.orders)
+        setOrders(response.data.orders)
+        getClients(response.data.orders)
       })
       .catch((error) => {
-        console.log(error);
-      });
-    setLoading(false);
-  };
+        console.log(error)
+      })
+    setLoading(false)
+  }
 
   const readMovements = async () => {
     const base_url2 =
-      process.env.REACT_APP_BACKEND_URL + "/movement/readAllMovements";
+      process.env.REACT_APP_BACKEND_URL + "/movement/readAllMovements"
     axios
       .post(
         base_url2,
@@ -370,15 +369,15 @@ export default function Orders(props) {
         { withCredentials: true }
       )
       .then((response) => {
-        setMovements(response.data.movements);
+        setMovements(response.data.movements)
       })
       .catch((error) => {
-        console.log(error);
-      });
-  };
+        console.log(error)
+      })
+  }
 
   const readConsumers = async () => {
-    const base_url2 = process.env.REACT_APP_BACKEND_URL + "/consumer/read-all";
+    const base_url2 = process.env.REACT_APP_BACKEND_URL + "/consumer/read-all"
     axios
       .post(
         base_url2,
@@ -386,34 +385,32 @@ export default function Orders(props) {
         { withCredentials: true }
       )
       .then((response) => {
-        setConsumers(response.data);
+        setConsumers(response.data)
       })
       .catch((response) => {
-        setErrorMessage(response.data.message);
-        setSnackBarError(true);
-      });
-  };
+        setErrorMessage(response.data.message)
+        setSnackBarError(true)
+      })
+  }
 
   const updateOrders = () => {
     orders.map((order) => {
       const findMov = movements?.find((mov) =>
         mov?.description?.includes(order.orderId)
-      );
+      )
       if (findMov) {
-        const Datev2 = moment(findMov?.createdOn)
-          .tz("America/Caracas")
-          .format();
-        order.date = Datev2;
+        const Datev2 = moment(findMov?.createdOn).tz("America/Caracas").format()
+        order.date = Datev2
       }
-    });
-    setOrders(orders);
-  };
+    })
+    setOrders(orders)
+  }
 
   const downloadOrders = async () => {
-    const workbook = new excelJS.Workbook();
-    let date = new Date();
-    date = moment(date).format("DD/MM/YYYY").replace(/\//g, "-");
-    const worksheet = workbook.addWorksheet(`Pedidos`);
+    const workbook = new excelJS.Workbook()
+    let date = new Date()
+    date = moment(date).format("DD/MM/YYYY").replace(/\//g, "-")
+    const worksheet = workbook.addWorksheet(`Pedidos`)
     worksheet.columns = [
       { header: "status", key: "status", width: 16 },
       { header: "ID", key: "ID", width: 10 },
@@ -435,24 +432,24 @@ export default function Orders(props) {
       { header: "Fecha de entrega", key: "shippingDate", width: 11 },
       { header: "Costo unitario", key: "price", width: 8 },
       { header: "Fecha concretada", key: "completionDate", width: 11 },
-    ];
+    ]
     worksheet.getRow(1).eachCell((cell) => {
-      cell.font = { bold: true };
+      cell.font = { bold: true }
       cell.border = {
         top: { style: "thin" },
         left: { style: "thin" },
         bottom: { style: "thin" },
         right: { style: "thin" },
-      };
+      }
       cell.alignment = {
         vertical: "middle",
         horizontal: "center",
         wrapText: true,
-      };
-    });
+      }
+    })
 
     function eliminarEtiquetasHTML(observations) {
-      return observations?.replace(/<[^>]+>/g, "");
+      return observations?.replace(/<[^>]+>/g, "")
     }
 
     const searchConsumerType = (basicData) => {
@@ -464,16 +461,16 @@ export default function Orders(props) {
           (cons) =>
             cons.firstname === (basicData.firstname || basicData.name) &&
             cons.lastname === basicData.lastname
-        );
+        )
         if (match) {
-          return match.consumerType;
+          return match.consumerType
         } else {
-          return undefined;
+          return undefined
         }
       } else {
-        return undefined;
+        return undefined
       }
-    };
+    }
 
     orders.map((order, i) => {
       const v2 = {
@@ -502,35 +499,35 @@ export default function Orders(props) {
         completionDate:
           order.completionDate &&
           new Date(order?.completionDate).toLocaleDateString(),
-      };
+      }
 
-      let shippingData = " ";
+      let shippingData = " "
       if (order.shippingData?.shippingMethod !== undefined) {
         shippingData = shippingData.concat(
           order.shippingData?.shippingMethod?.name
-        );
+        )
       }
-      let shippingDate;
+      let shippingDate
       if (order.shippingData?.shippingDate !== undefined) {
         shippingDate = new Date(
           order.shippingData?.shippingDate
-        ).toLocaleDateString();
+        ).toLocaleDateString()
       }
-      let prixer = "";
-      let art = "";
-      let product = "";
-      let attributes = "";
-      let quantity = "";
-      let price = "";
+      let prixer = ""
+      let art = ""
+      let product = ""
+      let attributes = ""
+      let quantity = ""
+      let price = ""
       order.requests.map((item) => {
-        prixer = item.art.prixerUsername;
+        prixer = item.art.prixerUsername
 
-        art = item.art.title;
+        art = item.art.title
 
-        product = item.product.name;
+        product = item.product.name
 
         if (typeof item.product.selection === "string") {
-          attributes = item.product.selection;
+          attributes = item.product.selection
         } else if (
           item.product.selection &&
           typeof item.product.selection === "object" &&
@@ -540,48 +537,47 @@ export default function Orders(props) {
           attributes =
             item.product.selection?.attributes[0]?.value +
             ", " +
-            item.product.selection?.attributes[1]?.value;
+            item.product.selection?.attributes[1]?.value
         } else if (
           item.product.selection &&
           typeof item.product.selection === "object" &&
           item.product.selection?.attributes
         ) {
-          attributes = item.product.selection?.attributes[0]?.value;
+          attributes = item.product.selection?.attributes[0]?.value
         }
 
-        quantity = item.quantity;
+        quantity = item.quantity
 
         if (
           item.product.finalPrice !== undefined &&
           typeof item.product.finalPrice === "string"
         ) {
-          price = ("$", Number(item.product.finalPrice.replace(/[,]/gi, ".")));
+          price = ("$", Number(item.product.finalPrice.replace(/[,]/gi, ".")))
         } else if (item.product.finalPrice !== undefined) {
-          price = ("$", item.product.finalPrice);
+          price = ("$", item.product.finalPrice)
         } else if (
           item.product.publicEquation !== undefined &&
           item.product.publicEquation !== ""
         ) {
           price =
-            ("$", Number(item.product.publicEquation.replace(/[,]/gi, ".")));
+            ("$", Number(item.product.publicEquation.replace(/[,]/gi, ".")))
         } else if (
           item.product.prixerEquation !== undefined &&
           item.product.prixerEquation !== ""
         ) {
-          price = ("$", item.product.prixerEquation);
+          price = ("$", item.product.prixerEquation)
         } else
           price =
-            ("$",
-            Number(item.product?.publicPrice?.from.replace(/[,]/gi, ".")));
+            ("$", Number(item.product?.publicPrice?.from.replace(/[,]/gi, ".")))
 
-        v2.prixer = prixer;
-        v2.art = art;
-        v2.product = product;
-        v2.attributes = attributes;
-        v2.quantity = quantity;
-        v2.price = price;
-        v2.shippingData = shippingData;
-        v2.shippingDate = shippingDate;
+        v2.prixer = prixer
+        v2.art = art
+        v2.product = product
+        v2.attributes = attributes
+        v2.quantity = quantity
+        v2.price = price
+        v2.shippingData = shippingData
+        v2.shippingDate = shippingDate
 
         worksheet.addRow(v2).eachCell({ includeEmpty: true }, (cell) => {
           cell.border = {
@@ -589,61 +585,61 @@ export default function Orders(props) {
             left: { style: "thin" },
             bottom: { style: "thin" },
             right: { style: "thin" },
-          };
+          }
           cell.alignment = {
             vertical: "middle",
             horizontal: "left",
             wrapText: true,
-          };
-        });
-      });
-    });
+          }
+        })
+      })
+    })
 
     workbook.xlsx.writeBuffer().then((buffer) => {
       const blob = new Blob([buffer], {
         type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-      });
+      })
 
-      const link = document.createElement("a");
-      link.href = URL.createObjectURL(blob);
-      link.download = `Pedidos ${date}.xlsx`;
-      link.click();
-    });
-  };
+      const link = document.createElement("a")
+      link.href = URL.createObjectURL(blob)
+      link.download = `Pedidos ${date}.xlsx`
+      link.click()
+    })
+  }
 
   const findOrder = (ID) => {
     let ordersv2 = orders.filter((row) =>
       row.orderId.toLowerCase().includes(ID.toLowerCase())
-    );
-    setRows(ordersv2);
-  };
+    )
+    setRows(ordersv2)
+  }
 
   const filterOrders = (filters) => {
-    let ordersv2 = orders;
-    setLoading(true);
+    let ordersv2 = orders
+    setLoading(true)
     if (filters.creationDate !== undefined) {
       if (filters.creationDate === "recent") {
         let ordersv3 = ordersv2.sort(function (a, b) {
           if (a.createdOn.toLowerCase() < b.createdOn.toLowerCase()) {
-            return 1;
+            return 1
           }
           if (a.createdOn.toLowerCase() > b.createdOn.toLowerCase()) {
-            return -1;
+            return -1
           }
-          return 0;
-        });
-        ordersv2 = ordersv3;
+          return 0
+        })
+        ordersv2 = ordersv3
       } else if (filters.creationDate === "previous") {
         let ordersv3 = ordersv2.sort(function (a, b) {
           if (a.createdOn.toLowerCase() > b.createdOn.toLowerCase()) {
-            return 1;
+            return 1
           }
           if (a.createdOn.toLowerCase() < b.createdOn.toLowerCase()) {
-            return -1;
+            return -1
           }
-          return 0;
-        });
-        ordersv2 = ordersv3;
+          return 0
+        })
+        ordersv2 = ordersv3
       }
     }
     if (filters.shippingDate !== undefined) {
@@ -651,52 +647,52 @@ export default function Orders(props) {
         let toDeliver = ordersv2.filter(
           (row) =>
             row.shippingData && row.shippingData?.shippingDate !== undefined
-        );
+        )
         ordersv2 = toDeliver.sort(function (a, b) {
           if (
             a.shippingData?.shippingDate !== undefined &&
             b.shippingData?.shippingDate !== undefined &&
             a.shippingData?.shippingDate > b.shippingData?.shippingDate
           ) {
-            return 1;
+            return 1
           }
           if (
             a.shippingData?.shippingDate !== undefined &&
             b.shippingData?.shippingDate !== undefined &&
             a.shippingData?.shippingDate < b.shippingData?.shippingDate
           ) {
-            return -1;
+            return -1
           }
           if (a.shippingData?.shippingDate === undefined) {
-            return -1;
+            return -1
           }
-          return 0;
-        });
+          return 0
+        })
       } else if (filters.shippingDate === "later") {
         let toDeliver = ordersv2.filter(
           (row) =>
             row.shippingData && row.shippingData?.shippingDate !== undefined
-        );
+        )
         ordersv2 = toDeliver.sort(function (a, b) {
           if (
             a.shippingData?.shippingDate !== undefined &&
             b.shippingData?.shippingDate !== undefined &&
             a.shippingData?.shippingDate < b.shippingData?.shippingDate
           ) {
-            return 1;
+            return 1
           }
           if (
             a.shippingData?.shippingDate !== undefined &&
             b.shippingData?.shippingDate !== undefined &&
             a.shippingData?.shippingDate > b.shippingData?.shippingDate
           ) {
-            return -1;
+            return -1
           }
           if (a.shippingData?.shippingDate === undefined) {
-            return -1;
+            return -1
           }
-          return 0;
-        });
+          return 0
+        })
       }
     }
     if (filters.client !== undefined) {
@@ -706,29 +702,27 @@ export default function Orders(props) {
             " " +
             row.basicData?.lastname ===
           filters.client
-      );
+      )
     }
     if (filters.payStatus !== undefined) {
       if (filters.payStatus === "Pendiente") {
         ordersv2 = ordersv2.filter(
           (row) => row.payStatus === undefined || row.payStatus === "Pendiente"
-        );
+        )
       } else
-        ordersv2 = ordersv2.filter(
-          (row) => row.payStatus === filters.payStatus
-        );
+        ordersv2 = ordersv2.filter((row) => row.payStatus === filters.payStatus)
     }
     if (filters.status !== undefined) {
-      ordersv2 = ordersv2.filter((row) => row.status === filters.status);
+      ordersv2 = ordersv2.filter((row) => row.status === filters.status)
     }
     if (filters.seller !== undefined) {
       ordersv2 = ordersv2.filter(
         (row) => row?.createdBy?.username === filters.seller
-      );
+      )
     }
-    setRows(ordersv2);
-    setLoading(false);
-  };
+    setRows(ordersv2)
+    setLoading(false)
+  }
 
   // const deleteOrder = async (id) => {
   //   const URI = process.env.REACT_APP_BACKEND_URL + "/order/delete/" + id;
@@ -741,39 +735,39 @@ export default function Orders(props) {
   // };
 
   const handleClose = () => {
-    setIsShowDetails(false);
-    setOpenCreateOrder(false);
-    setModalContent(undefined);
-    setShowVoucher(false);
-  };
+    setIsShowDetails(false)
+    setOpenCreateOrder(false)
+    setModalContent(undefined)
+    setShowVoucher(false)
+  }
 
   const handleCloseVoucher = () => {
-    setShowVoucher(!showVoucher);
-  };
+    setShowVoucher(!showVoucher)
+  }
 
   const handleChangeStatus = async (order, status) => {
     const URI =
-      process.env.REACT_APP_BACKEND_URL + "/order/update/" + order.orderId;
+      process.env.REACT_APP_BACKEND_URL + "/order/update/" + order.orderId
     const body = {
       adminToken: localStorage.getItem("adminTokenV"),
       status: status,
-    };
+    }
     await axios.put(URI, body, { withCredentials: true }).then((res) => {
       if (res.data.message) {
-        setErrorMessage(res.data.message);
-        setSnackBarError(true);
+        setErrorMessage(res.data.message)
+        setSnackBarError(true)
       }
-    });
+    })
     const updated = orders.map((x) => {
       if (x.orderId === order.orderId) {
-        x.status = status;
-        return x;
-      } else return x;
-    });
-    setOrders(updated);
+        x.status = status
+        return x
+      } else return x
+    })
+    setOrders(updated)
     if (filters.status !== undefined) {
-      const updatedv2 = rows.filter((x) => x.orderId !== order.orderId);
-      setRows(updatedv2);
+      const updatedv2 = rows.filter((x) => x.orderId !== order.orderId)
+      setRows(updatedv2)
     }
 
     if (
@@ -782,27 +776,27 @@ export default function Orders(props) {
         order.payStatus === "Obsequio") &&
       status === "Concretado"
     ) {
-      payComission(order);
+      payComission(order)
     }
-  };
+  }
 
   const payComission = async (order) => {
     for (let item of order.requests) {
-      let { unitPrice, amount } = 0;
-      let destinatary = undefined;
+      let { unitPrice, amount } = 0
+      let destinatary = undefined
       let discount = discountList.find(
         (dis) => dis._id === item.product.discount
-      );
+      )
       let surcharge = surchargeList.find(
         (sur) =>
           sur.appliedUsers.includes(item.art.prixerUsername) ||
           sur.appliedUsers.includes(item.art.owner)
-      );
+      )
       let consumersFiltered = consumers.filter(
         (con) => con.consumerType === "Prixer"
-      );
-      const ORGS = orgs.find((o) => o.username === item.art.owner);
-      const prx = await findPrixer(item.art.prixerUsername);
+      )
+      const ORGS = orgs.find((o) => o.username === item.art.owner)
+      const prx = await findPrixer(item.art.prixerUsername)
       const prixer = await consumersFiltered.find(
         (con) =>
           con.firstname
@@ -811,68 +805,66 @@ export default function Orders(props) {
           con.lastname
             ?.toLowerCase()
             .includes(props?.basicData?.lastname?.toLowerCase())
-      );
+      )
       if (ORGS !== undefined) {
-
-        destinatary = ORGS.account;
-        let profit = item.product.finalPrice;
+        destinatary = ORGS.account
+        let profit = item.product.finalPrice
 
         let p = ORGS?.agreement?.appliedProducts?.find(
           (p) => p._id === item.product._id
-        );
+        )
         let co =
           p?.variants?.length > 0
             ? Number(p?.variants[0]?.cporg)
-            : Number(p?.cporg);
+            : Number(p?.cporg)
         if (
           order.consumerData &&
           order.consumerData.consumerType === "DAs" &&
           ORGS.agreement.considerations["da"] > 0
         ) {
-          co = co - (co / 100) * ORGS.agreement.considerations["da"];
+          co = co - (co / 100) * ORGS.agreement.considerations["da"]
         } else if (
           order.consumerData &&
           order.consumerData.consumerType === "Corporativo" &&
           ORGS.agreement.considerations["corporativo"] > 0
         ) {
-          co = co - (co / 100) * ORGS.agreement.considerations["corporativo"];
+          co = co - (co / 100) * ORGS.agreement.considerations["corporativo"]
         } else if (
           order.consumerData &&
           order.consumerData.consumerType === "Prixer" &&
           ORGS.agreement.considerations["prixer"] > 0
         ) {
-          co = co - (co / 100) * ORGS.agreement.considerations["prixer"];
+          co = co - (co / 100) * ORGS.agreement.considerations["prixer"]
         } else if (
           order.consumerData &&
           order.consumerData.consumerType === "Artista" &&
           ORGS.agreement.considerations["artista"] > 0
         ) {
-          co = co - (co / 100) * ORGS.agreement.considerations["artista"];
+          co = co - (co / 100) * ORGS.agreement.considerations["artista"]
         }
 
-        let prev = (profit / 100) * (co || ORGS.agreement.comission);
-        let total;
+        let prev = (profit / 100) * (co || ORGS.agreement.comission)
+        let total
 
         if (surcharge !== undefined) {
           if (surcharge.type === "Porcentaje") {
-            total = prev - (prev / 100) * surcharge.value;
-
+            total = prev - (prev / 100) * surcharge.value
           } else if (surcharge.type === "Monto") {
-            total = prev - surcharge.value;
+            total = prev - surcharge.value
           }
         } else {
-          total = prev;
+          total = prev
         }
-        amount = total * item.quantity;
+        amount = total * item.quantity
 
-        console.log("La comisión es de $", amount);
+        console.log("La comisión es de $", amount)
       } else {
-        destinatary = prx.account;
+        destinatary = prx.account
         // Obtener el precio base
         if (item.product.modifyPrice) {
-          unitPrice = item.product.finalPrice;
+          unitPrice = item.product.finalPrice
         } else if (item.product.finalPrice) {
-          unitPrice = item.product.finalPrice;
+          unitPrice = item.product.finalPrice
         } else if (prixer !== undefined) {
           item.product.prixerEquation
             ? (unitPrice = Number(
@@ -880,7 +872,7 @@ export default function Orders(props) {
               ))
             : (unitPrice = Number(
                 item.product?.prixerPrice?.from?.replace(/[,]/gi, ".")
-              ));
+              ))
         } else {
           item.product.publicEquation
             ? (unitPrice = Number(
@@ -888,7 +880,7 @@ export default function Orders(props) {
               ))
             : (unitPrice = Number(
                 item.product.publicPrice.from?.replace(/[,]/gi, ".")
-              ));
+              ))
         }
 
         // Restar 10% automático y calcular precio base con %comisión
@@ -897,10 +889,10 @@ export default function Orders(props) {
           prx.firstName === order.basicData.name.trim() &&
           prx.lastName === order.basicData.lastname.trim()
         ) {
-          return;
+          return
         } else if (item.product.finalPrice === undefined) {
           unitPrice =
-            (unitPrice - unitPrice / 10) / (1 - item.art.comission / 100);
+            (unitPrice - unitPrice / 10) / (1 - item.art.comission / 100)
         }
 
         // De existir descuentos y no ser Prixer se aplica el descuento
@@ -910,33 +902,33 @@ export default function Orders(props) {
             discount?.type === "Porcentaje" &&
             prixer === undefined
           ) {
-            let op = Number(unitPrice - (unitPrice / 100) * discount.value);
-            unitPrice = op;
+            let op = Number(unitPrice - (unitPrice / 100) * discount.value)
+            unitPrice = op
           } else if (
             typeof item.product.discount === "string" &&
             discount?.type === "Monto" &&
             prixer === undefined
           ) {
-            let op = Number(unitPrice - discount.value);
-            unitPrice = op;
+            let op = Number(unitPrice - discount.value)
+            unitPrice = op
           }
         }
 
         // Calcular comisión
-        amount = (unitPrice / 100) * (item.art.comission || 10);
+        amount = (unitPrice / 100) * (item.art.comission || 10)
         // Aplcar recargo
         if (surcharge) {
-          let total;
+          let total
           if (surcharge.type === "Porcentaje") {
-            total = amount - (amount / 100) * surcharge.value;
-            amount = total;
+            total = amount - (amount / 100) * surcharge.value
+            amount = total
           } else if (surcharge.type === "Monto") {
-            total = amount - surcharge.value;
-            amount = total;
+            total = amount - surcharge.value
+            amount = total
           }
         }
-console.log(amount, "amount after surcharge")
-        amount = amount * item.quantity;
+        console.log(amount, "amount after surcharge")
+        amount = amount * item.quantity
       }
       if (
         item.art?.prixerUsername &&
@@ -944,7 +936,7 @@ console.log(amount, "amount after surcharge")
         item.art?.prixerUsername !== undefined &&
         destinatary !== undefined
       ) {
-        const url = process.env.REACT_APP_BACKEND_URL + "/movement/create";
+        const url = process.env.REACT_APP_BACKEND_URL + "/movement/create"
         const data = {
           _id: nanoid(),
           createdOn: new Date(),
@@ -955,46 +947,46 @@ console.log(amount, "amount after surcharge")
           type: "Depósito",
           value: amount,
           adminToken: localStorage.getItem("adminTokenV"),
-        };
+        }
         await axios.post(url, data).then(async (res) => {
           if (res.data.success === false) {
-            setSnackBarError(true);
-            setErrorMessage(res.data.message);
+            setSnackBarError(true)
+            setErrorMessage(res.data.message)
           }
-        });
+        })
       } else if (destinatary === undefined) {
-        setSnackBarError(true);
+        setSnackBarError(true)
         setErrorMessage(
           "La cartera no ha sido encontrada, verifique que el propietario y/o owner tenga una cartera válida e inténtelo de nuevo."
-        );
+        )
       }
     }
-  };
+  }
 
   const handleChangePayStatus = async (order, payStatus) => {
     const URI =
       process.env.REACT_APP_BACKEND_URL +
       "/order/updatePayStatus/" +
-      order.orderId;
+      order.orderId
     const body = {
       adminToken: localStorage.getItem("adminTokenV"),
       payStatus: payStatus,
-    };
+    }
 
     await axios.put(URI, body, { withCredentials: true }).then((res) => {
       if (res.data.message) {
-        setErrorMessage(res.data.message);
-        setSnackBarError(true);
+        setErrorMessage(res.data.message)
+        setSnackBarError(true)
       }
-    });
+    })
 
     const updated = orders.map((x) => {
       if (x.orderId === order.orderId) {
-        x.payStatus = payStatus;
-        return x;
-      } else return x;
-    });
-    setOrders(updated);
+        x.payStatus = payStatus
+        return x
+      } else return x
+    })
+    setOrders(updated)
 
     // const updatedv2 = rows.filter((x) => x.orderId !== order.orderId);
     // setRows(updatedv2);
@@ -1005,9 +997,9 @@ console.log(amount, "amount after surcharge")
         payStatus === "Obsequio") &&
       order.status === "Concretado"
     ) {
-      payComission(order);
+      payComission(order)
     }
-  };
+  }
 
   const removeFilters = () => {
     setFilters({
@@ -1018,73 +1010,73 @@ console.log(amount, "amount after surcharge")
       payStatus: undefined,
       status: undefined,
       seller: undefined,
-    });
-    setRows(orders);
-  };
+    })
+    setRows(orders)
+  }
 
   const getClients = (data) => {
-    let c = [];
+    let c = []
     data?.map((order) => {
       let fullname =
         (order.basicData?.firstname || order.basicData?.name) +
         " " +
-        order.basicData?.lastname;
+        order.basicData?.lastname
 
       if (c.includes(fullname)) {
-        return;
+        return
       } else {
-        c.push(fullname);
+        c.push(fullname)
       }
-    });
-    c.sort();
-    setClients(c);
-  };
+    })
+    c.sort()
+    setClients(c)
+  }
 
   useEffect(() => {
-    readOrders();
-    readMovements();
-    readConsumers();
-    updateOrders();
-    getDiscounts();
-    getSurcharges();
+    readOrders()
+    readMovements()
+    readConsumers()
+    updateOrders()
+    getDiscounts()
+    getSurcharges()
     // getPrixers();
-    getORGs();
-  }, []);
+    getORGs()
+  }, [])
 
   const readDollarValue = async () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + "/dollarValue/read";
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/dollarValue/read"
     await axios.get(base_url).then((response) => {
-      setDollarValue(response.data.dollarValue);
-    });
-  };
+      setDollarValue(response.data.dollarValue)
+    })
+  }
 
   useEffect(() => {
-    readDollarValue();
-  }, []);
+    readDollarValue()
+  }, [])
 
   const closeAd = () => {
-    setSnackBarError(false);
-  };
+    setSnackBarError(false)
+  }
 
   const updateItemFromOrders = (order, index, status) => {
-    let orderv2 = orders;
-    let rowsv2 = rows;
+    let orderv2 = orders
+    let rowsv2 = rows
 
     orderv2.map((o) => {
       if (o.orderId === order) {
-        o.requests[index].product.status = status;
+        o.requests[index].product.status = status
       }
-    });
+    })
 
     rowsv2.map((o) => {
       if (o.orderId === order) {
-        o.requests[index].product.status = status;
+        o.requests[index].product.status = status
       }
-    });
+    })
 
-    setRows(rowsv2);
-    setOrders(orderv2);
-  };
+    setRows(rowsv2)
+    setOrders(orderv2)
+  }
 
   return (
     <>
@@ -1100,7 +1092,12 @@ console.log(amount, "amount after surcharge")
         spacing={2}
         style={{ marginLeft: isDesktop ? "12px" : "" }}
       >
-        <Grid item xs={12} md={12} lg={12}>
+        <Grid
+          item
+          xs={12}
+          md={12}
+          lg={12}
+        >
           <Paper className={fixedHeightPaper}>
             <div
               style={{
@@ -1134,7 +1131,7 @@ console.log(amount, "amount after surcharge")
                       color="primary"
                       size="small"
                       onClick={() => {
-                        setOpenCreateOrder(true);
+                        setOpenCreateOrder(true)
                       }}
                       style={{ marginRight: 10 }}
                     >
@@ -1150,7 +1147,7 @@ console.log(amount, "amount after surcharge")
                     color="primary"
                     size="small"
                     onClick={() => {
-                      removeFilters();
+                      removeFilters()
                     }}
                     style={{ marginRight: 10 }}
                   >
@@ -1165,7 +1162,7 @@ console.log(amount, "amount after surcharge")
                     color="primary"
                     size="small"
                     onClick={() => {
-                      readOrders();
+                      readOrders()
                     }}
                     style={{ marginRight: 10 }}
                   >
@@ -1199,7 +1196,10 @@ console.log(amount, "amount after surcharge")
         </Grid>
       </Grid>
 
-      <Modal open={isShowDetails} onClose={handleClose}>
+      <Modal
+        open={isShowDetails}
+        onClose={handleClose}
+      >
         <OrderDetails
           discountList={discountList}
           permissions={props.permissions}
@@ -1242,5 +1242,5 @@ console.log(amount, "amount after surcharge")
         onClose={closeAd}
       />
     </>
-  );
+  )
 }

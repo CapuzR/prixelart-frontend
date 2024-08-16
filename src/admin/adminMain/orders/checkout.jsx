@@ -1,44 +1,45 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-import Grid from "@material-ui/core/Grid";
-import { useTheme } from "@material-ui/core/styles";
-import { makeStyles } from "@material-ui/core/styles";
-import Typography from "@material-ui/core/Typography";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
-import Button from "@material-ui/core/Button";
-import MenuItem from "@material-ui/core/MenuItem";
-import Select from "@material-ui/core/Select";
-import FormControl from "@material-ui/core/FormControl";
-import InputLabel from "@material-ui/core/InputLabel";
-import TextField from "@material-ui/core/TextField";
-import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemText from "@material-ui/core/ListItemText";
-import Collapse from "@material-ui/core/Collapse";
-import Divider from "@material-ui/core/Divider";
-import Switch from "@material-ui/core/Switch";
-import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css";
+import React, { useEffect, useState } from "react"
+import axios from "axios"
+import Grid from "@material-ui/core/Grid"
+import { useTheme } from "@material-ui/core/styles"
+import { makeStyles } from "@material-ui/core/styles"
+import Typography from "@material-ui/core/Typography"
+import useMediaQuery from "@material-ui/core/useMediaQuery"
+import Button from "@material-ui/core/Button"
+import MenuItem from "@material-ui/core/MenuItem"
+import Select from "@material-ui/core/Select"
+import FormControl from "@material-ui/core/FormControl"
+import InputLabel from "@material-ui/core/InputLabel"
+import TextField from "@material-ui/core/TextField"
+import List from "@material-ui/core/List"
+import ListItem from "@material-ui/core/ListItem"
+import ListItemText from "@material-ui/core/ListItemText"
+import Collapse from "@material-ui/core/Collapse"
+import Divider from "@material-ui/core/Divider"
+import Switch from "@material-ui/core/Switch"
+import Checkbox from "@material-ui/core/Checkbox"
+import FormControlLabel from "@material-ui/core/FormControlLabel"
+
+import ReactQuill from "react-quill"
+import "react-quill/dist/quill.snow.css"
 import {
   UnitPrice,
   getPVP,
   getPVM,
   getTotalUnitsPVM,
   getTotalUnitsPVP,
-} from "../../../shoppingCart/pricesFunctions";
-const drawerWidth = 240;
+} from "../../../shoppingCart/pricesFunctions"
+const drawerWidth = 240
 
 const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
   },
   formControl: {
-    // margin: theme.spacing(1),
     minWidth: 120,
   },
   form: {
     height: "auto",
-    // padding: "15px",
   },
   gridInput: {
     display: "flex",
@@ -229,102 +230,114 @@ const useStyles = makeStyles((theme) => ({
       width: "25ch",
     },
   },
-}));
+}))
 export default function Checkout(props) {
-  const classes = useStyles();
-  const theme = useTheme();
+  const classes = useStyles()
+  const theme = useTheme()
 
-  const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const isDesktop = useMediaQuery(theme.breakpoints.up("md"))
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"))
 
-  const [currency, setCurrency] = useState(false);
-  const [paymentMethods, setPaymentMethods] = useState(undefined);
-  const [prixers, setPrixers] = useState([]);
-  const [content, setContent] = useState("");
-  const [discountList, setDiscountList] = useState([]);
-
+  const [currency, setCurrency] = useState(false)
+  const [paymentMethods, setPaymentMethods] = useState(undefined)
+  const [prixers, setPrixers] = useState([])
+  // const [content, setContent] = useState("")
+  const [discountList, setDiscountList] = useState([])
+  // const [buyState, setBuyState] = useState(
+  //   localStorage.getItem("buyState")
+  //     ? JSON.parse(localStorage.getItem("buyState"))
+  //     : []
+  // )
   const handleEditorChange = (value) => {
-    props.setObservations(value);
-  };
+    props.setObservations(value)
+  }
 
-  let shippingCost = Number(props.shippingData?.shippingMethod?.price);
+  let shippingCost = Number(props.shippingData?.shippingMethod?.price)
+
+  const setCertified = (i, data, p) => {
+    const kart = [...props.buyState]
+    const item = {
+      ...kart[i],
+      art: { ...kart[i].art, certificate: { ...kart[i].art.certificate } },
+    }
+    item.art.certificate[p] = data
+    kart[i] = item
+    props.setBuyState(kart)
+  }
 
   const getDiscounts = async () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + "/discount/read-allv2";
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/discount/read-allv2"
     await axios
       .post(base_url)
       .then((response) => {
-        setDiscountList(response.data.discounts);
+        setDiscountList(response.data.discounts)
       })
       .catch((error) => {
-        console.log(error);
-      });
-  };
+        console.log(error)
+      })
+  }
 
   useEffect(() => {
-    const base_url =
-      process.env.REACT_APP_BACKEND_URL + "/prixer/read-all-full";
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/prixer/read-all-full"
 
     axios.get(base_url).then((response) => {
-      let prev = response.data.prixers;
+      let prev = response.data.prixers
       prev.map((prix) => {
         if (prix !== null) {
-          return prix;
+          return prix
         }
-      });
-      setPrixers(prev);
-    });
-    getDiscounts();
-  }, []);
+      })
+      setPrixers(prev)
+    })
+    getDiscounts()
+  }, [])
 
   useEffect(() => {
     const base_url =
-      process.env.REACT_APP_BACKEND_URL + "/payment-method/read-all-v2";
+      process.env.REACT_APP_BACKEND_URL + "/payment-method/read-all-v2"
     axios
       .get(base_url)
       .then((response) => {
-        let prev = response.data;
+        let prev = response.data
         if (props.selectedPrixer) {
-          prev.unshift({ name: "Balance Prixer" });
+          prev.unshift({ name: "Balance Prixer" })
         }
-        setPaymentMethods(prev);
+        setPaymentMethods(prev)
       })
       .catch((error) => {
-        console.log(error);
-      });
-  }, [props.selectedPrixer]);
+        console.log(error)
+      })
+  }, [props.selectedPrixer])
 
   const getTotal = (x) => {
-    let n = [];
+    let n = []
     n.push(
-      Number(
-        getTotalPrice(props.buyState).replace(/[.]/gi, "").replace(/[,]/gi, ".")
-      )
-    );
-    n.push(getIvaCost(props.buyState));
+      Number(getTotalPrice(props.buyState)?.replace(/[.]/gi, "")?.replace(/[,]/gi, "."))
+    )
+    n.push(getIvaCost(props.buyState))
     {
-      props.shippingData?.shippingMethod && n.push(shippingCost);
+      props.shippingData?.shippingMethod && n.push(shippingCost)
     }
     let total = n.reduce(function (a, b) {
-      return a + b;
-    });
+      return a + b
+    })
     return total.toLocaleString("de-DE", {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
-    });
-  };
+    })
+  }
 
   const getIvaCost = (state) => {
     if (typeof props.selectedPrixer?.username === "string") {
-      return 0;
+      return 0
     } else {
       return (
         Number(
-          getTotalPrice(state).replace(/[.]/gi, "").replace(/[,]/gi, ".")
+          getTotalPrice(state)?.replace(/[.]/gi, "")?.replace(/[,]/gi, ".")
         ) * 0.16
-      );
+      )
     }
-  };
+  }
 
   const getTotalPrice = (state) => {
     if (props.selectedPrixer) {
@@ -334,26 +347,26 @@ export default function Checkout(props) {
         props.dollarValue,
         discountList,
         props.selectedPrixer.username
-      ).toLocaleString("de-DE", {
+      )?.toLocaleString("de-DE", {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
-      });
+      })
     } else {
       return getTotalUnitsPVP(
         state,
         currency,
         props.dollarValue,
         discountList
-      ).toLocaleString("de-DE", {
+      )?.toLocaleString("de-DE", {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
-      });
+      })
     }
-  };
+  }
 
   const changeCurrency = () => {
-    setCurrency(!currency);
-  };
+    setCurrency(!currency)
+  }
 
   const PriceSelect = (item) => {
     if (typeof props.selectedPrixer?.username === "string") {
@@ -368,7 +381,7 @@ export default function Checkout(props) {
       ).toLocaleString("de-DE", {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
-      });
+      })
     } else {
       return (
         getPVP(item, currency, props.dollarValue, discountList) *
@@ -377,18 +390,35 @@ export default function Checkout(props) {
       ).toLocaleString("de-DE", {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
-      });
+      })
     }
-  };
+  }
 
   const getTotalCombinedItems = (state) => {
-    const totalNotCompleted = state.filter(
-      (item) => !item.art || !item.product
-    );
+    const totalNotCompleted = state.filter((item) => !item.art || !item.product)
     return {
       totalNotCompleted,
-    };
-  };
+    }
+  }
+
+  const handleShowCertified = async (index, value) => {
+    const newState = [...props.buyState]
+    let last = 0
+    const matches = newState.filter(
+      (item) => item.art.artId === newState[index].art.artId
+    )
+    const sequences = matches.map((item) => item.art.certificate.sequence)
+    last = Math.max(...sequences)
+
+    newState[index].product.autoCertified = value
+    if (value) {
+      newState[index].art.certificate.sequence = last + 1
+    } else {
+      newState[index].art.certificate.sequence = 0
+    }
+    props.setBuyState(newState)
+    localStorage.setItem("buyState", JSON.stringify(newState))
+  }
 
   useEffect(() => {
     if (props.basicData && props.basicData.name && props.basicData.lastname) {
@@ -400,13 +430,13 @@ export default function Checkout(props) {
           prixer?.lastName?.toLowerCase() ===
             props.basicData.lastname.toLowerCase().trim()
         ) {
-          props.setSelectedPrixer(prixer);
-        } else return;
-      });
+          props.setSelectedPrixer(prixer)
+        } else return
+      })
     }
-  }, [prixers]);
+  }, [prixers])
 
-  let today = new Date();
+  let today = new Date()
   const months = [
     "Enero",
     "Febrero",
@@ -420,7 +450,7 @@ export default function Checkout(props) {
     "Octubre",
     "Noviembre",
     "Diciembre",
-  ];
+  ]
   const monthsOrder = [
     "01",
     "02",
@@ -434,7 +464,7 @@ export default function Checkout(props) {
     "10",
     "11",
     "12",
-  ];
+  ]
   const days = [
     "domingo",
     "lunes",
@@ -443,32 +473,32 @@ export default function Checkout(props) {
     "jueves",
     "viernes",
     "sábado",
-  ];
+  ]
   let ProdTimes = props.buyState?.map((item) => {
     if (item.product && item.art && item.product.productionTime !== undefined) {
-      return item.product.productionTime;
+      return item.product.productionTime
     }
-  });
+  })
 
   let orderedProdT = ProdTimes.sort(function (a, b) {
     if (a.toLowerCase() > b.toLowerCase()) {
-      return 1;
+      return 1
     }
     if (a.toLowerCase() < b.toLowerCase()) {
-      return -1;
+      return -1
     }
-    return 0;
-  });
+    return 0
+  })
 
   let readyDate = new Date(
     today.setDate(today.getDate() + Number(orderedProdT[0]))
-  );
+  )
   const stringReadyDate =
     readyDate.getFullYear() +
     "-" +
     monthsOrder[readyDate.getMonth()] +
     "-" +
-    readyDate.getDate();
+    readyDate.getDate()
 
   useEffect(() => {
     if (
@@ -479,9 +509,9 @@ export default function Checkout(props) {
       props?.setShippingData({
         ...props?.shippingData,
         shippingDate: stringReadyDate,
-      });
+      })
     }
-  }, []);
+  }, [])
 
   return (
     <Grid
@@ -511,12 +541,16 @@ export default function Checkout(props) {
           color="primary"
           value={currency}
           onChange={(e) => {
-            changeCurrency(e);
+            changeCurrency(e)
           }}
           style={{ marginRight: "-5px" }}
         />
       </Grid>
-      <Grid item lg={4} md={4}>
+      <Grid
+        item
+        lg={4}
+        md={4}
+      >
         {props.basicData && (
           <Typography>
             Pedido a nombre de{" "}
@@ -545,10 +579,18 @@ export default function Checkout(props) {
           />
         </FormControl>
       </Grid>
-      <Grid item md={8} lg={8} style={{ paddingLeft: 40 }}>
+      <Grid
+        item
+        md={8}
+        lg={8}
+        style={{ paddingLeft: 40 }}
+      >
         <div style={{ fontWeight: "bold" }}>Items:</div>
         <div>
-          <List component="div" disablePadding>
+          <List
+            component="div"
+            disablePadding
+          >
             {props.buyState.length > 0 ? (
               props.buyState?.map((item, index) => (
                 <>
@@ -557,8 +599,15 @@ export default function Checkout(props) {
                       <ListItem>
                         <ListItemText primary={`#${index + 1}`} />
                       </ListItem>
-                      <Collapse in={true} timeout="auto" unmountOnExit>
-                        <List component="div" disablePadding>
+                      <Collapse
+                        in={true}
+                        timeout="auto"
+                        unmountOnExit
+                      >
+                        <List
+                          component="div"
+                          disablePadding
+                        >
                           <ListItem>
                             <ListItemText
                               inset
@@ -568,7 +617,11 @@ export default function Checkout(props) {
                               }}
                               primary={
                                 <Grid container>
-                                  <Grid item xs={12} md={8}>
+                                  <Grid
+                                    item
+                                    xs={12}
+                                    md={8}
+                                  >
                                     <Grid style={{ display: "flex" }}>
                                       <Typography
                                         style={{
@@ -585,8 +638,8 @@ export default function Checkout(props) {
                                     {item.product?.selection &&
                                     typeof item.product.selection === "string"
                                       ? item.product?.selection
-                                      : item.product.selection.name}
-                                    {item.product.selection.name ===
+                                      : item.product.selection?.name}
+                                    {item.product.selection?.name ===
                                       "Personalizado" &&
                                       item.product.selection?.attributes[0]
                                         ?.value &&
@@ -616,6 +669,100 @@ export default function Checkout(props) {
                                         {item.art.prixerUsername}
                                       </Typography>
                                     </Grid>
+                                    <Grid
+                                      style={{
+                                        display: "flex",
+                                        flexDirection: "column",
+                                      }}
+                                    >
+                                      {item.product?.autoCertified && (
+                                        <Grid
+                                          item
+                                          xs={6}
+                                          style={{
+                                            display: "flex",
+                                            marginTop: 8,
+                                            maxWidth: "100%",
+                                            // borderRadius: 10,
+                                          }}
+                                        >
+                                          <TextField
+                                            style={{
+                                              marginRight: 8,
+                                              maxWidth: "5rem",
+                                            }}
+                                            variant="outlined"
+                                            label="Código"
+                                            onChange={(e) => {
+                                              setCertified(
+                                                index,
+                                                e.target.value,
+                                                "code"
+                                              )
+                                            }}
+                                            value={item.art?.certificate?.code}
+                                          />
+                                          <TextField
+                                            style={{
+                                              marginRight: 8,
+                                              maxWidth: "5rem",
+                                            }}
+                                            type="number"
+                                            variant="outlined"
+                                            label="Arte"
+                                            value={
+                                              item.art?.certificate?.serial
+                                            }
+                                            onChange={(e) => {
+                                              setCertified(
+                                                index,
+                                                e.target.value,
+                                                "serial"
+                                              )
+                                            }}
+                                          />
+                                          <TextField
+                                            style={{
+                                              maxWidth: "9rem",
+                                            }}
+                                            type="number"
+                                            variant="outlined"
+                                            label="Seguimiento"
+                                            value={
+                                              item.art?.certificate?.sequence
+                                            }
+                                            onChange={(e) => {
+                                              setCertified(
+                                                index,
+                                                e.target.value,
+                                                "sequence"
+                                              )
+                                            }}
+                                          />
+                                        </Grid>
+                                      )}
+                                      <FormControlLabel
+                                        style={{ color: "#282c34" }}
+                                        control={
+                                          <Checkbox
+                                            checked={
+                                              item.product.autoCertified
+                                                ? item.product.autoCertified
+                                                : false
+                                            }
+                                            onChange={() => {
+                                              handleShowCertified(
+                                                index,
+                                                Boolean(
+                                                  !item.product.autoCertified
+                                                )
+                                              )
+                                            }}
+                                          />
+                                        }
+                                        label="Certificado"
+                                      />
+                                    </Grid>
                                   </Grid>
                                   <Grid
                                     item
@@ -636,22 +783,6 @@ export default function Checkout(props) {
                                       }}
                                     >
                                       Precio:
-                                      {/* {(
-                                        Number(
-                                          item.product.finalPrice ||
-                                            item.product.publicEquation.replace(
-                                              /[,]/gi,
-                                              "."
-                                            ) ||
-                                            item.product.publicPrice.from.replace(
-                                              /[,]/gi,
-                                              "."
-                                            )
-                                        ) * item.quantity
-                                      ).toLocaleString("de-DE", {
-                                        minimumFractionDigits: 2,
-                                        maximumFractionDigits: 2,
-                                      })} */}
                                       {(
                                         Number(
                                           UnitPrice(
@@ -661,7 +792,7 @@ export default function Checkout(props) {
                                             props.dollarValue,
                                             discountList,
                                             props?.selectedPrixer?.username
-                                          ).replace(/[,]/gi, ".")
+                                          )?.replace(/[,]/gi, ".")
                                         ) * item.quantity
                                       ).toLocaleString("de-DE", {
                                         minimumFractionDigits: 2,
@@ -683,19 +814,16 @@ export default function Checkout(props) {
             ) : (
               <Typography>No has seleccionado nada aún.</Typography>
             )}
-            {getTotalCombinedItems(props.buyState).totalNotCompleted?.length >=
-              1 && (
+            {getTotalCombinedItems(props.buyState).totalNotCompleted?.length >= 1 && (
               <Typography
                 style={{
                   fontSize: "11px",
                   // color: "primary",
                 }}
               >
-                {getTotalCombinedItems(props.buyState).totalNotCompleted
-                  ?.length > 1
+                {getTotalCombinedItems(props.buyState).totalNotCompleted?.length > 1
                   ? `Faltan ${
-                      getTotalCombinedItems(props.buyState).totalNotCompleted
-                        .length
+                      getTotalCombinedItems(props.buyState).totalNotCompleted.length
                     } productos por definir.`
                   : `Falta 1 producto por definir.`}
               </Typography>
@@ -706,7 +834,14 @@ export default function Checkout(props) {
                 justifyContent: "space-between",
               }}
             >
-              <Grid item lg={8} md={8} sm={6} xs={6} style={{ paddingLeft: 0 }}>
+              <Grid
+                item
+                lg={8}
+                md={8}
+                sm={6}
+                xs={6}
+                style={{ paddingLeft: 0 }}
+              >
                 <FormControl
                   disabled={props.buyState.length == 0}
                   className={classes.formControl}
@@ -834,5 +969,5 @@ export default function Checkout(props) {
         </Button>
       </Grid>
     </Grid>
-  );
+  )
 }

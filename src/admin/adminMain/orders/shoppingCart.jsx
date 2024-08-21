@@ -419,7 +419,7 @@ export default function ShoppingCart(props) {
   }
 
   const changeArt = async (art, product, index) => {
-    let prod = product
+    const prod = props.buyState[index]?.product
     let selectedOrg = checkOrgs(art)
     let newPrice = await UnitPriceSug(
       prod,

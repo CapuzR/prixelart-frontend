@@ -220,6 +220,18 @@ const getComission = (
   org,
   consumerType
 ) => {
+  // parameters:
+  // producto
+  // arte
+  // moneda
+  // valor de la moneda
+  // listado de descuentos
+  // cantidad del item
+  // es el cliente Prixer?
+  // listado de recargos
+  // el propietario es una organización?
+  // tipo de cliente
+
   let { unit, total } = 0
   if (org !== undefined) {
     unit = UnitPriceForOrg(item, art, prixer, org, consumerType)
@@ -279,6 +291,79 @@ const getComission = (
     return total
   } else {
     return 0
+  }
+}
+
+const getComissionv2 = (
+  product,
+  art,
+  currency,
+  dollarValue,
+  consumerType,
+  prixer,
+  org,
+  surchargeList
+) => {
+  let total = 0
+  let unit = product.finalPrice
+
+  if (org !== undefined) {
+    const applied = org?.agreement.appliedProducts.find(
+      (el) => el.id === product._id
+    )
+    const varApplied = applied?.variants.find(
+      (v) => v.name === product.selection
+    )
+
+    let percentage =
+      product.selection !== undefined && typeof product.selection === "string"
+        ? varApplied?.cporg
+        : applied?.cporg || 10
+    total = (unit / 100) * percentage
+
+    if (consumerType && consumerType !== "Particular") {
+      let consumer = consumerType.toLowerCase()
+      for (const p in org.agreement.considerations) {
+        const prop = p.toLowerCase()
+        if (consumer?.includes(prop)) {
+          let c = (percentage / 100) * org.agreement.considerations[p]
+          total = percentage - c
+        }
+      }
+    }
+  } else {
+    total = Number((unit / 100) * art.comission)
+  }
+
+  let surcharge
+  if (surchargeList && surchargeList?.length > 0) {
+    surchargeList.map((sur) => {
+      if (
+        sur.appliedUsers.includes(art.prixerUsername) ||
+        sur.appliedUsers.includes(art.owner)
+      ) {
+        if (sur.type === "Porcentaje") {
+          surcharge = total - (total / 100) * sur.value
+          total = surcharge
+        } else if (sur.type === "Monto") {
+          total = total - sur.value
+        }
+      }
+    })
+  }
+  console.log(total, "comisión calculada")
+
+  if (
+    prixer !== undefined &&
+    prixer !== art.prixerUsername &&
+    prixer !== art.owner
+  ) {
+    console.log("fucked up")
+    return 0
+  } else {
+    if (currency) {
+      return total * dollarValue
+    } else return total
   }
 }
 
@@ -732,7 +817,8 @@ const getPVPtext = (product, currency, dollarValue, discountList) => {
         maximumFractionDigits: 2,
       })
     )
-  } else if (product?.attributes &&
+  } else if (
+    product?.attributes &&
     product.attributes.length > 0 &&
     product.publicPrice.to !== product.publicPrice.from &&
     typeof product.publicPrice.to === "string" &&
@@ -779,9 +865,7 @@ const getPVMtext = (product, currency, dollarValue, discountList) => {
       })
     )
   }
-  if (product?.prixerEquation !== undefined &&
-    product?.prixerEquation !== "" 
-  ) {
+  if (product?.prixerEquation !== undefined && product?.prixerEquation !== "") {
     return (
       "PVM: $" +
       product?.prixerEquation.toLocaleString("de-DE", {
@@ -942,7 +1026,7 @@ const getTotalUnitsPVP = (state, currency, dollarValue, discountList) => {
       }
     } else if (item.product && item.art) {
       const base = Number(
-        item.product?.publicEquation
+        item.product?.publicEquation !== undefined
           ? item.product?.publicEquation?.replace(/[,]/gi, ".")
           : item.product?.publicPrice?.from.replace(/[,]/gi, ".")
       )
@@ -1040,6 +1124,7 @@ export {
   UnitPriceSug,
   UnitPriceForOrg,
   getComission,
+  getComissionv2,
   getPVPtext,
   getPVMtext,
   getPVP,

@@ -61,6 +61,14 @@ const UnitPriceSug = (
   org,
   consumerType
 ) => {
+  console.log(product, " producto")
+  console.log(art, " art")
+  console.log(currency, " currency")
+  console.log(dollarValue, " dollarValue")
+  console.log(discountList, " discountList")
+  console.log(prixer, " prixer(?)")
+  console.log(org, " org")
+  console.log(consumerType, " consumerType")
   let { price, base } = 0
   let dis = discountList?.filter((dis) => dis._id === product.discount)[0]
   if (org !== undefined) {
@@ -78,7 +86,10 @@ const UnitPriceSug = (
           )
     } else if (typeof product.selection === "string") {
       base = product.publicEquation
-        ? Number(product.publicEquation - product.publicEquation / 10)
+        ? Number(
+            product.publicEquation?.replace(/[,]/gi, ".") -
+              product.publicEquation?.replace(/[,]/gi, ".") / 10
+          )
         : Number(
             product.publicPrice.from?.replace(/[,]/gi, ".") -
               product.publicPrice.from?.replace(/[,]/gi, ".") / 10
@@ -95,8 +106,14 @@ const UnitPriceSug = (
           )
     } else {
       base = product.publicEquation
-        ? Number(product.publicEquation - product.publicEquation / 10)
-        : Number(product.publicPrice.from - product.publicPrice.from / 10)
+        ? Number(
+            product.publicEquation?.replace(/[,]/gi, ".") -
+              product.publicEquation?.replace(/[,]/gi, ".") / 10
+          )
+        : Number(
+            product.publicPrice.from?.replace(/[,]/gi, ".") -
+              product.publicPrice.from?.replace(/[,]/gi, ".") / 10
+          )
     }
     // refinar esta función
     if (

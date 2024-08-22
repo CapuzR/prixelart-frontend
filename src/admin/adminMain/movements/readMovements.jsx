@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useHistory, useLocation } from "react-router-dom";
-// import Link from '@material-ui/core/Link';
-// import { makeStyles } from '@material-ui/core/styles';
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
@@ -15,7 +13,7 @@ import clsx from "clsx";
 import FormControl from "@material-ui/core/FormControl";
 import Snackbar from "@material-ui/core/Snackbar";
 import { Backdrop, Button } from "@material-ui/core";
-import CircularProgress from "@material-ui/core/CircularProgress";
+import CircularProgress from "@material-ui/core/CircularProgress"
 import axios from "axios";
 import InputLabel from "@material-ui/core/InputLabel";
 import Select from "@material-ui/core/Select";
@@ -23,17 +21,9 @@ import MenuItem from "@material-ui/core/MenuItem";
 import Typography from "@material-ui/core/Typography";
 import MovOrder from "./movementForOrder";
 import Modal from "@material-ui/core/Modal";
-import Menu from "@material-ui/core/Menu";
-import ClickAwayListener from "@material-ui/core/ClickAwayListener";
-import Grow from "@material-ui/core/Grow";
-import Popper from "@material-ui/core/Popper";
 import Box from "@material-ui/core/Box";
 import Fab from "@material-ui/core/Fab";
 import DeleteIcon from "@material-ui/icons/Delete";
-
-// import CircularProgress from '@material-ui/core/CircularProgress';
-// import Backdrop from '@material-ui/core/Backdrop';
-// import Button from '@material-ui/core/Button';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -93,7 +83,6 @@ export default function ReadMovements(props) {
   };
 
   const readMovements = () => {
-    setLoading(true);
     const base_url =
       process.env.REACT_APP_BACKEND_URL + "/movement/readAllMovements";
     axios
@@ -115,11 +104,9 @@ export default function ReadMovements(props) {
         setRows(sortedMov);
         setMovements(sortedMov);
         getPrixersNames(response.data.movements);
-        setLoading(false);
       })
       .catch((error) => {
         console.log(error);
-        setLoading(false);
         setSnackBarError(true);
         setErrorMessage(error);
       });
@@ -245,7 +232,7 @@ export default function ReadMovements(props) {
       <Backdrop
         className={classes.backdrop}
         open={loading}
-        transitionDuration={1000}
+        transitionDuration={500}
       >
         <CircularProgress />
       </Backdrop>
@@ -484,36 +471,6 @@ export default function ReadMovements(props) {
           </Paper>
         </Grid>
       </Grid>
-      <Snackbar
-        onClose={handleClose}
-        open={snackBarError}
-        autoHideDuration={5000}
-        message={errorMessage}
-        className={classes.snackbar}
-      />
-      {/* <Menu
-        id="simple-menu"
-        anchorEl={anchorEl}
-        keepMounted
-        open={Boolean(anchorEl)}
-        onClose={handleClose}
-      >
-        <Popper
-          open={openOrderDetails}
-          anchorEl={anchorRef.current}
-          role={undefined}
-          transition
-          disablePortal
-        >
-          {({ TransitionProps, placement }) => (
-            <Grow
-              {...TransitionProps}
-              style={{
-                transformOrigin: "center",
-              }}
-            >
-              <ClickAwayListener onClickAway={handleClose}> */}
-
       <Modal open={openOrderDetails} onClose={handleClose}>
         <MovOrder
           orderId={orderId}
@@ -522,11 +479,12 @@ export default function ReadMovements(props) {
           handleClose={handleClose}
         />
       </Modal>
-      {/* </ClickAwayListener>
-            </Grow>
-          )} */}
-      {/* </Popper>
-      </Menu> */}
-    </React.Fragment>
+      <Snackbar
+        onClose={handleClose}
+        open={snackBarError}
+        autoHideDuration={5000}
+        message={errorMessage}
+        className={classes.snackbar}
+      />    </React.Fragment>
   );
 }

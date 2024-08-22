@@ -21,6 +21,7 @@ import Snackbar from "@material-ui/core/Snackbar"
 import ReadOrders from "./readOrders"
 import OrderDetails from "./orderDetails"
 import CreateOrder from "./createOrder"
+// import PayComission from "./payComission"
 import { nanoid } from "nanoid"
 import { getComission } from "../../../shoppingCart/pricesFunctions"
 import moment from "moment"
@@ -34,12 +35,10 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
   },
   formControl: {
-    // margin: theme.spacing(1),
     minWidth: 120,
   },
   form: {
     height: "auto",
-    // padding: "15px",
   },
   gridInput: {
     display: "flex",
@@ -952,6 +951,20 @@ export default function Orders(props) {
           if (res.data.success === false) {
             setSnackBarError(true)
             setErrorMessage(res.data.message)
+          } else {
+            const data2 = {
+              orderId: order.orderId,
+              comissions: data,
+              adminToken: localStorage.getItem("adminTokenV"),
+            }
+            const url2 =
+              process.env.REACT_APP_BACKEND_URL + "/order/addComissions"
+            await axios.put(url2, data2).then(async (res) => {
+              if (res.data.success === false) {
+                setSnackBarError(true)
+                setErrorMessage(res.data.message)
+              }
+            })
           }
         })
       } else if (destinatary === undefined) {
@@ -960,6 +973,7 @@ export default function Orders(props) {
           "La cartera no ha sido encontrada, verifique que el propietario y/o owner tenga una cartera válida e inténtelo de nuevo."
         )
       }
+      
     }
   }
 
@@ -1210,7 +1224,7 @@ export default function Orders(props) {
           handleClose={handleClose}
           handleCloseVoucher={handleCloseVoucher}
           updateItemFromOrders={updateItemFromOrders}
-        ></OrderDetails>
+        />
       </Modal>
 
       <Modal open={openCreateOrder}>
@@ -1232,8 +1246,28 @@ export default function Orders(props) {
           orgs={orgs}
           setErrorMessage={setErrorMessage}
           setSnackBarError={setSnackBarError}
-        ></CreateOrder>
+        />
       </Modal>
+      {/* <Modal open={openPayComission}>
+        <PayComission
+          setLoading={setLoading}
+          readOrders={readOrders}
+          buyState={props.buyState}
+          setBuyState={props.setBuyState}
+          discountList={discountList}
+          surchargeList={surchargeList}
+          handleClose={handleClose}
+          dollarValue={dollarValue}
+          orgs={orgs}
+          consumers={consumers}
+          prixers={prixers}
+          setErrorMessage={setErrorMessage}
+          setSnackBarError={setSnackBarError}
+          permissions={props.permissions}
+          modalContent={modalContent}
+          setModalContent={setModalContent}
+        />
+      </Modal> */}
       <Snackbar
         open={snackBarError}
         autoHideDuration={10000}

@@ -1224,6 +1224,9 @@ export default function Orders(props) {
           handleClose={handleClose}
           handleCloseVoucher={handleCloseVoucher}
           updateItemFromOrders={updateItemFromOrders}
+          setErrorMessage={setErrorMessage}
+          setSnackBarError={setSnackBarError}
+
         />
       </Modal>
 

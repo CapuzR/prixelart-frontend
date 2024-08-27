@@ -11,6 +11,7 @@ import OutlinedInput from "@material-ui/core/OutlinedInput"
 import Stepper from "@material-ui/core/Stepper"
 import Step from "@material-ui/core/Step"
 import StepButton from "@material-ui/core/StepButton"
+import Button from "@material-ui/core/Button"
 
 import IconButton from "@material-ui/core/IconButton"
 import CloseIcon from "@material-ui/icons/Close"
@@ -233,6 +234,9 @@ export default function OrderDetails(props) {
   const moment = require("moment-timezone")
   const [consumer, setConsumer] = useState(undefined)
   const [activeStep, setActiveStep] = useState(0)
+  const [paymentVoucher, setPaymentVoucher] = useState()
+  const [previewVoucher, setPreviewVoucher] = useState()
+
   const steps = [`Detalles`, `Comprobante de pago`, `Comisiones`]
 
   const handleStep = (step) => () => {
@@ -437,10 +441,32 @@ export default function OrderDetails(props) {
     }
   }
 
-  console.log(props.modalContent)
+  const onImageChange = async (e) => {
+    // Debería poder cargar varios comprobantes de pago(?)
+    if (e.target.files && e.target.files[0]) {
+      setPaymentVoucher(e.target.files[0])
+      setPreviewVoucher(URL.createObjectURL(e.target.files[0]))
+    }
+  }
 
   function formatNumber(x, l) {
     return x.toString().padStart(l, "0")
+  }
+
+  const uploadVoucher = async (e) => {
+    const formData = new FormData()
+    formData.append("paymentVoucher", paymentVoucher)
+    let ID = props.modalContent.orderId
+    const base_url2 =
+      process.env.REACT_APP_BACKEND_URL + "/order/addVoucher/" + ID
+    const uv = await axios.put(base_url2, formData, {
+      "Content-Type": "multipart/form-data",
+    })
+    // if (uv?.response) {
+    props.setErrorMessage("Comprobante de pago agregado")
+    props.setSnackBarError(true)
+    setPaymentVoucher(undefined)
+    // }
   }
 
   return (
@@ -1037,6 +1063,8 @@ export default function OrderDetails(props) {
                   <Paper
                     elevation={3}
                     style={{
+                      width: "fit-content",
+                      height: "fit-content",
                       maxWidth: 600,
                       maxHeight: 400,
                       borderRadius: 10,
@@ -1045,7 +1073,7 @@ export default function OrderDetails(props) {
                   >
                     <Img
                       src={props.modalContent?.paymentVoucher}
-                      alt="comprobante de pago"
+                      alt="Comprobante de pago"
                       style={{
                         maxWidth: 600,
                         maxHeight: 400,
@@ -1053,18 +1081,78 @@ export default function OrderDetails(props) {
                       }}
                     />
                   </Paper>
+                ) : activeStep === 1 && props.permissions.detailPay ? (
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                    }}
+                  >
+                    {previewVoucher && (
+                      <Img
+                        alt="Comprobante de pago"
+                        src={previewVoucher}
+                        style={{
+                          width: 200,
+                          borderRadius: 10,
+                          marginBottom: 10,
+                        }}
+                      />
+                    )}
+                    <input
+                      type="file"
+                      id="inputfile"
+                      accept="image/jpeg, image/jpg, image/webp, image/png"
+                      onChange={onImageChange}
+                      style={{ display: "none" }}
+                    />
+                    <div>
+                      <label htmlFor="inputfile">
+                        <Button
+                          size="small"
+                          variant="contained"
+                          component="span"
+                          style={{ textTransform: "capitalize" }}
+                        >
+                          Cargar comprobante
+                        </Button>
+                      </label>
+                      {paymentVoucher && (
+                        <Button
+                          size="small"
+                          variant="contained"
+                          component="span"
+                          color="primary"
+                          style={{
+                            textTransform: "capitalize",
+                            marginLeft: 10,
+                          }}
+                          onClick={uploadVoucher}
+                        >
+                          Guardar
+                        </Button>
+                      )}
+                    </div>
+                  </div>
                 ) : (
-                  activeStep === 1 && (
-                    <Typography
-                      color="secondary"
-                      variant="h6"
-                      style={{ paddingTop: 16, paddingBottom: 16 }}
-                    >
-                      No se ha cargado aún un comprobante de pago.
-                    </Typography>
-                  )
+                  <Typography
+                    color="secondary"
+                    variant="h6"
+                    style={{ paddingTop: 16, paddingBottom: 16 }}
+                  >
+                    No tienes autorización para esta área.
+                  </Typography>
                 )}
-                {activeStep === 2 && <>working on</>}
+                {activeStep === 2 && (
+                  <Typography
+                    color="secondary"
+                    variant="h6"
+                    style={{ paddingTop: 16, paddingBottom: 16 }}
+                  >
+                    Working on.
+                  </Typography>
+                )}
               </div>
             </>
           ) : (

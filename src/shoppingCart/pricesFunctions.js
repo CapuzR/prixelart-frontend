@@ -1005,13 +1005,20 @@ const getPVM = (item, currency, dollarValue, discountList, prixer) => {
 const getTotalUnitsPVP = (state, currency, dollarValue, discountList) => {
   let prices = [0]
   state.map((item) => {
+
+    let pubEq =
+      product.publicEquation === "number"
+        ? product.publicEquation
+        : Number(product.publicEquation?.replace(/[,]/gi, "."))
+    let pubFr =
+      typeof product.publicPrice.from === "number"
+        ? product.publicPrice.from
+        : Number(product.publicPrice.from?.replace(/[,]/gi, "."))
+
     if (item.product && item.art && typeof item.product.discount === "string") {
       let dis = discountList?.find(({ _id }) => _id === item.product.discount)
       if (dis?.type === "Porcentaje") {
-        const base = Number(
-          item.product?.publicEquation?.replace(/[,]/gi, ".") ||
-            item.product?.publicPrice?.from?.replace(/[,]/gi, ".")
-        )
+        const base = pubEq || pubFr
         let prev = base - base / 10
         prev = prev / (1 - item.art.comission / 100)
 
@@ -1021,10 +1028,7 @@ const getTotalUnitsPVP = (state, currency, dollarValue, discountList) => {
         }
         prices.push(Number(final) * (item.quantity || 1))
       } else if (dis?.type === "Monto") {
-        const base = Number(
-          item.product?.publicEquation?.replace(/[,]/gi, ".") ||
-            item.product?.publicPrice?.from?.replace(/[,]/gi, ".")
-        )
+        const base = pubEq || pubFr
         let prev = base - base / 10
         prev = prev / (1 - item.art.comission / 100)
 
@@ -1035,11 +1039,7 @@ const getTotalUnitsPVP = (state, currency, dollarValue, discountList) => {
         prices.push(final * (item.quantity || 1))
       }
     } else if (item.product && item.art) {
-      const base = Number(
-        item.product?.publicEquation !== undefined
-          ? item.product?.publicEquation?.replace(/[,]/gi, ".")
-          : item.product?.publicPrice?.from.replace(/[,]/gi, ".")
-      )
+      const base = pubEq ? pubEq : pubFr
       let final = base - base / 10
       final = final / (1 - item.art.comission / 100)
       if (
@@ -1068,6 +1068,14 @@ const getTotalUnitsPVM = (
 ) => {
   let prices = []
   state.map((item) => {
+    let prxEq =
+    typeof product.prixerEquation === "number"
+      ? product.prixerEquation
+      : Number(product.prixerEquation?.replace(/[,]/gi, "."))
+  let prxFr =
+    typeof product.prixerPrice.from === "number"
+      ? product.prixerPrice.from
+      : Number(product.prixerPrice.from?.replace(/[,]/gi, "."))
     // if (item.product && item.art && typeof item.product.discount === "string") {
     //   let dis = discountList?.filter(
     //     (dis) => dis._id === item.product.discount
@@ -1098,16 +1106,10 @@ const getTotalUnitsPVM = (
     //   }
     // } else
     if (item.product && item.art) {
-      const base = Number(
-        item.product?.prixerEquation
-          ? item.product?.prixerEquation?.replace(/[,]/gi, ".")
-          : item.product?.prixerPrice?.from?.replace(/[,]/gi, ".")
-      )
+      const base = prxEq ? prxEq : prxFr
       let final = (base - base / 10) / (1 - item.art.comission / 100)
       if (
         item.product.finalPrice !== undefined
-        // &&
-        // item.product.modifyPrice === true
       ) {
         final = item.product.finalPrice
       } else if (

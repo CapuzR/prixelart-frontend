@@ -236,7 +236,7 @@ export default function OrderDetails(props) {
   const [activeStep, setActiveStep] = useState(0)
   const [paymentVoucher, setPaymentVoucher] = useState()
   const [previewVoucher, setPreviewVoucher] = useState()
-
+  const [owners, setOwners] = useState([])
   const steps = [`Detalles`, `Comprobante de pago`, `Comisiones`]
 
   const handleStep = (step) => () => {
@@ -469,6 +469,28 @@ export default function OrderDetails(props) {
     // }
   }
 
+  const findOwner = async (account) => {
+    const url = process.env.REACT_APP_BACKEND_URL + "/user/getByAccount"
+    const user = await axios.post(url, { account: account })
+    const data = user.data.username
+    if (typeof data === "string") return data
+  }
+
+  useEffect(() => {
+    let prix = []
+    if (
+      props.modalContent?.comissions &&
+      props.modalContent?.comissions.length > 0
+    ) {
+      props.modalContent?.comissions.map(async (com, i) => {
+        const ownerPromises = props.modalContent.comissions.map(com => findOwner(com.destinatary));
+        const resolvedOwners = await Promise.all(ownerPromises);
+        setOwners(resolvedOwners.filter(owner => owner !== null));
+      })
+    }
+  }, [])
+  console.log(props.modalContent)
+console.log(owners)
   return (
     <Grid
       container
@@ -1026,7 +1048,11 @@ export default function OrderDetails(props) {
                             elevation={3}
                           >
                             <Img
-                              style={{ width: 200, borderRadius: 10 }}
+                              style={{
+                                width: 200,
+                                borderRadius: 10,
+                                lineHeight: 0,
+                              }}
                               src={props.modalContent?.paymentVoucher}
                               alt="voucher"
                               onClick={() => {
@@ -1058,8 +1084,16 @@ export default function OrderDetails(props) {
                     </Grid>
                   </div>
                 )}
-                {activeStep === 1 &&
-                props.modalContent?.paymentVoucher !== undefined ? (
+                {activeStep === 1 && !props.permissions.detailPay ? (
+                  <Typography
+                    color="secondary"
+                    variant="h6"
+                    style={{ paddingTop: 16, paddingBottom: 16 }}
+                  >
+                    No tienes autorización para esta área.
+                  </Typography>
+                ) : activeStep === 1 &&
+                  props.modalContent?.paymentVoucher !== undefined ? (
                   <Paper
                     elevation={3}
                     style={{
@@ -1081,61 +1115,64 @@ export default function OrderDetails(props) {
                       }}
                     />
                   </Paper>
-                ) : activeStep === 1 && props.permissions.detailPay ? (
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "center",
-                    }}
-                  >
-                    {previewVoucher && (
-                      <Img
-                        alt="Comprobante de pago"
-                        src={previewVoucher}
-                        style={{
-                          width: 200,
-                          borderRadius: 10,
-                          marginBottom: 10,
-                        }}
-                      />
-                    )}
-                    <input
-                      type="file"
-                      id="inputfile"
-                      accept="image/jpeg, image/jpg, image/webp, image/png"
-                      onChange={onImageChange}
-                      style={{ display: "none" }}
-                    />
-                    <div>
-                      <label htmlFor="inputfile">
-                        <Button
-                          size="small"
-                          variant="contained"
-                          component="span"
-                          style={{ textTransform: "capitalize" }}
-                        >
-                          Cargar comprobante
-                        </Button>
-                      </label>
-                      {paymentVoucher && (
-                        <Button
-                          size="small"
-                          variant="contained"
-                          component="span"
-                          color="primary"
-                          style={{
-                            textTransform: "capitalize",
-                            marginLeft: 10,
-                          }}
-                          onClick={uploadVoucher}
-                        >
-                          Guardar
-                        </Button>
-                      )}
-                    </div>
-                  </div>
                 ) : (
+                  activeStep === 1 && (
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                      }}
+                    >
+                      {previewVoucher && (
+                        <Img
+                          alt="Comprobante de pago"
+                          src={previewVoucher}
+                          style={{
+                            width: 200,
+                            borderRadius: 10,
+                            marginBottom: 10,
+                          }}
+                        />
+                      )}
+                      <input
+                        type="file"
+                        id="inputfile"
+                        accept="image/jpeg, image/jpg, image/webp, image/png"
+                        onChange={onImageChange}
+                        style={{ display: "none" }}
+                      />
+                      <div>
+                        <label htmlFor="inputfile">
+                          <Button
+                            size="small"
+                            variant="contained"
+                            component="span"
+                            style={{ textTransform: "capitalize" }}
+                          >
+                            Cargar comprobante
+                          </Button>
+                        </label>
+                        {paymentVoucher && (
+                          <Button
+                            size="small"
+                            variant="contained"
+                            component="span"
+                            color="primary"
+                            style={{
+                              textTransform: "capitalize",
+                              marginLeft: 10,
+                            }}
+                            onClick={uploadVoucher}
+                          >
+                            Guardar
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  )
+                )}
+                {activeStep === 2 && !props.permissions.detailPay ? (
                   <Typography
                     color="secondary"
                     variant="h6"
@@ -1143,15 +1180,50 @@ export default function OrderDetails(props) {
                   >
                     No tienes autorización para esta área.
                   </Typography>
-                )}
-                {activeStep === 2 && (
-                  <Typography
-                    color="secondary"
-                    variant="h6"
-                    style={{ paddingTop: 16, paddingBottom: 16 }}
-                  >
-                    Working on.
-                  </Typography>
+                ) : activeStep === 2 &&
+                  props.modalContent?.comissions &&
+                  props.modalContent?.comissions.length > 0 ? (
+                  props.modalContent?.comissions.map((com, i) => (
+                    <div
+                      style={{
+                        width: "100%",
+                        backgroundColor: i + (1 % 2) === 0 ? "white" : "#eee",
+                        padding: "15px 30px",
+                        borderRadius: 10,
+                      }}
+                    >
+                      <Typography
+                        color="secondary"
+                        variant="h6"
+                      >
+                        Propietario: {owners[i]}
+                      </Typography>
+
+                      <Typography
+                        color="secondary"
+                        variant="h6"
+                        style={{
+                          color:
+                            com.type === "Depósito" && com.value > 0
+                              ? "green"
+                              : "red",
+                        }}
+                      >
+                        {com.type === "Depósito" && "+"}
+                        {"$" + com.value}
+                      </Typography>
+                    </div>
+                  ))
+                ) : (
+                  activeStep === 2 && (
+                    <Typography
+                      color="secondary"
+                      variant="h6"
+                      style={{ paddingTop: 16, paddingBottom: 16 }}
+                    >
+                      No hay comisiones registradas aún.
+                    </Typography>
+                  )
                 )}
               </div>
             </>

@@ -74,46 +74,32 @@ const UnitPriceSug = (
   if (org !== undefined) {
     price = UnitPriceForOrg(product, art, prixer, org, consumerType)
   } else {
+    let prxEq =
+      typeof product.prixerEquation === "number"
+        ? product.prixerEquation
+        : Number(product.prixerEquation?.replace(/[,]/gi, "."))
+    let prxFr =
+      typeof product.prixerPrice.from === "number"
+        ? product.prixerPrice.from
+        : Number(product.prixerPrice.from?.replace(/[,]/gi, "."))
+
+    let pubEq =
+      product.publicEquation === "number"
+        ? product.publicEquation
+        : Number(product.publicEquation?.replace(/[,]/gi, "."))
+    let pubFr =
+      typeof product.publicPrice.from === "number"
+        ? product.publicPrice.from
+        : Number(product.publicPrice.from?.replace(/[,]/gi, "."))
+
     if (typeof product.selection === "string" && prixer !== undefined) {
-      base = product.prixerEquation
-        ? Number(
-            product.prixerEquation?.replace(/[,]/gi, ".") -
-              product.prixerEquation?.replace(/[,]/gi, ".") / 10
-          )
-        : Number(
-            product.prixerPrice.from?.replace(/[,]/gi, ".") -
-              product.prixerPrice.from?.replace(/[,]/gi, ".") / 10
-          )
+      base = pubEq ? prxEq - prxEq / 10 : prxFr - prxFr / 10
     } else if (typeof product.selection === "string") {
-      base = product.publicEquation
-        ? Number(
-            product.publicEquation?.replace(/[,]/gi, ".") -
-              product.publicEquation?.replace(/[,]/gi, ".") / 10
-          )
-        : Number(
-            product.publicPrice.from?.replace(/[,]/gi, ".") -
-              product.publicPrice.from?.replace(/[,]/gi, ".") / 10
-          )
+      base = pubEq ? pubEq - pubEq / 10 : pubFr - pubFr / 10
     } else if (prixer !== undefined) {
-      base = product.prixerEquation
-        ? Number(
-            product?.prixerEquation?.replace(/[,]/gi, ".") -
-              product?.prixerEquation?.replace(/[,]/gi, ".") / 10
-          )
-        : Number(
-            product?.prixerPrice?.from?.replace(/[,]/gi, ".") -
-              product?.prixerPrice?.from?.replace(/[,]/gi, ".") / 10
-          )
+      base = prxEq ? prxEq - prxEq / 10 : prxFr - prxFr / 10
     } else {
-      base = product.publicEquation
-        ? Number(
-            product.publicEquation?.replace(/[,]/gi, ".") -
-              product.publicEquation?.replace(/[,]/gi, ".") / 10
-          )
-        : Number(
-            product.publicPrice.from?.replace(/[,]/gi, ".") -
-              product.publicPrice.from?.replace(/[,]/gi, ".") / 10
-          )
+      base = pubEq ? pubEq - pubEq / 10 : pubFr - pubFr / 10
     }
     // refinar esta función
     if (

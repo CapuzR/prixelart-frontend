@@ -945,6 +945,7 @@ export default function Orders(props) {
           description: `Comisión de la orden #${order.orderId}`,
           type: "Depósito",
           value: amount,
+          item: item,
           adminToken: localStorage.getItem("adminTokenV"),
         }
         await axios.post(url, data).then(async (res) => {

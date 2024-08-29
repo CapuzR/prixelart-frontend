@@ -241,13 +241,8 @@ export default function Checkout(props) {
   const [currency, setCurrency] = useState(false)
   const [paymentMethods, setPaymentMethods] = useState(undefined)
   const [prixers, setPrixers] = useState([])
-  // const [content, setContent] = useState("")
   const [discountList, setDiscountList] = useState([])
-  // const [buyState, setBuyState] = useState(
-  //   localStorage.getItem("buyState")
-  //     ? JSON.parse(localStorage.getItem("buyState"))
-  //     : []
-  // )
+
   const handleEditorChange = (value) => {
     props.setObservations(value)
   }
@@ -311,9 +306,7 @@ export default function Checkout(props) {
 
   const getTotal = (x) => {
     let n = []
-    n.push(
-      Number(getTotalPrice(props.buyState)?.replace(/[.]/gi, "")?.replace(/[,]/gi, "."))
-    )
+    n.push(getTotalPrice(props.buyState))
     n.push(getIvaCost(props.buyState))
     {
       props.shippingData?.shippingMethod && n.push(shippingCost)
@@ -331,11 +324,7 @@ export default function Checkout(props) {
     if (typeof props.selectedPrixer?.username === "string") {
       return 0
     } else {
-      return (
-        Number(
-          getTotalPrice(state)?.replace(/[.]/gi, "")?.replace(/[,]/gi, ".")
-        ) * 0.16
-      )
+      return getTotalPrice(state) * 0.16
     }
   }
 
@@ -385,7 +374,6 @@ export default function Checkout(props) {
     } else {
       return (
         getPVP(item, currency, props.dollarValue, discountList) *
-        // .replace(/[,]/gi, ".")
         item.quantity
       ).toLocaleString("de-DE", {
         minimumFractionDigits: 2,
@@ -437,20 +425,6 @@ export default function Checkout(props) {
   }, [prixers])
 
   let today = new Date()
-  const months = [
-    "Enero",
-    "Febrero",
-    "Marzo",
-    "Abril",
-    "Mayo",
-    "Junio",
-    "Julio",
-    "Agosto",
-    "Septiembre",
-    "Octubre",
-    "Noviembre",
-    "Diciembre",
-  ]
   const monthsOrder = [
     "01",
     "02",
@@ -465,15 +439,7 @@ export default function Checkout(props) {
     "11",
     "12",
   ]
-  const days = [
-    "domingo",
-    "lunes",
-    "martes",
-    "miércoles",
-    "jueves",
-    "viernes",
-    "sábado",
-  ]
+
   let ProdTimes = props.buyState?.map((item) => {
     if (item.product && item.art && item.product.productionTime !== undefined) {
       return item.product.productionTime
@@ -792,7 +758,7 @@ export default function Checkout(props) {
                                             props.dollarValue,
                                             discountList,
                                             props?.selectedPrixer?.username
-                                          )?.replace(/[,]/gi, ".")
+                                          )
                                         ) * item.quantity
                                       ).toLocaleString("de-DE", {
                                         minimumFractionDigits: 2,
@@ -814,16 +780,19 @@ export default function Checkout(props) {
             ) : (
               <Typography>No has seleccionado nada aún.</Typography>
             )}
-            {getTotalCombinedItems(props.buyState).totalNotCompleted?.length >= 1 && (
+            {getTotalCombinedItems(props.buyState).totalNotCompleted?.length >=
+              1 && (
               <Typography
                 style={{
                   fontSize: "11px",
                   // color: "primary",
                 }}
               >
-                {getTotalCombinedItems(props.buyState).totalNotCompleted?.length > 1
+                {getTotalCombinedItems(props.buyState).totalNotCompleted
+                  ?.length > 1
                   ? `Faltan ${
-                      getTotalCombinedItems(props.buyState).totalNotCompleted.length
+                      getTotalCombinedItems(props.buyState).totalNotCompleted
+                        .length
                     } productos por definir.`
                   : `Falta 1 producto por definir.`}
               </Typography>

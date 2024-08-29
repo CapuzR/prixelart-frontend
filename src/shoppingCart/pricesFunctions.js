@@ -61,76 +61,83 @@ const UnitPriceSug = (
   org,
   consumerType
 ) => {
-  console.log(product, " producto")
-  console.log(art, " art")
-  console.log(currency, " currency")
-  console.log(dollarValue, " dollarValue")
-  console.log(discountList, " discountList")
-  console.log(prixer, " prixer(?)")
-  console.log(org, " org")
-  console.log(consumerType, " consumerType")
+  // console.log(product, " producto")
+  // console.log(art, " art")
+  // console.log(currency, " currency")
+  // console.log(dollarValue, " dollarValue")
+  // console.log(discountList, " discountList")
+  // console.log(prixer, " prixer(?)")
+  // console.log(org, " org")
+  // console.log(consumerType, " consumerType")
   let { price, base } = 0
   let dis = discountList?.filter((dis) => dis._id === product.discount)[0]
-  if (org !== undefined) {
-    price = UnitPriceForOrg(product, art, prixer, org, consumerType)
+  if (product.publicEquation === 0) {
+    let price = 0
+    return price.toLocaleString("de-DE", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })
   } else {
-    let prxEq =
-      typeof product.prixerEquation === "number"
-        ? product.prixerEquation
-        : Number(product.prixerEquation?.replace(/[,]/gi, "."))
-    let prxFr =
-      typeof product.prixerPrice.from === "number"
-        ? product.prixerPrice.from
-        : Number(product.prixerPrice.from?.replace(/[,]/gi, "."))
-
-    let pubEq =
-      product.publicEquation === "number"
-        ? product.publicEquation
-        : Number(product.publicEquation?.replace(/[,]/gi, "."))
-    let pubFr =
-      typeof product.publicPrice.from === "number"
-        ? product.publicPrice.from
-        : Number(product.publicPrice.from?.replace(/[,]/gi, "."))
-
-    if (typeof product.selection === "string" && prixer !== undefined) {
-      base = pubEq ? prxEq - prxEq / 10 : prxFr - prxFr / 10
-    } else if (typeof product.selection === "string") {
-      base = pubEq ? pubEq - pubEq / 10 : pubFr - pubFr / 10
-    } else if (prixer !== undefined) {
-      base = prxEq ? prxEq - prxEq / 10 : prxFr - prxFr / 10
+    if (org !== undefined) {
+      price = UnitPriceForOrg(product, art, prixer, org, consumerType)
     } else {
-      base = pubEq ? pubEq - pubEq / 10 : pubFr - pubFr / 10
-    }
-    // refinar esta función
-    if (
-      prixer !== undefined &&
-      prixer !== art.prixerUsername &&
-      prixer !== art.owner
-    ) {
-      price = base / (1 - art.comission / 100)
-    } else if (prixer === art.prixerUsername || prixer === art.owner) {
-      price = base
-    }
+      let prxEq =
+        typeof product.prixerEquation === "number"
+          ? product.prixerEquation
+          : Number(product.prixerEquation?.replace(/[,]/gi, "."))
+      let prxFr =
+        typeof product.prixerPrice.from === "number"
+          ? product.prixerPrice.from
+          : Number(product.prixerPrice.from?.replace(/[,]/gi, "."))
+      let pubEq =
+        product.publicEquation === "number"
+          ? product.publicEquation
+          : Number(product.publicEquation?.replace(/[,]/gi, "."))
+      let pubFr =
+        typeof product.publicPrice.from === "number"
+          ? product.publicPrice.from
+          : Number(product.publicPrice.from?.replace(/[,]/gi, "."))
 
-    if (prixer === undefined && typeof product.discount === "string") {
-      if (dis?.type === "Porcentaje") {
-        price = Number(price - (price / 100) * dis?.value)
-      } else if (dis?.type === "Monto") {
-        price = Number(price - dis?.value)
+      if (typeof product.selection === "string" && prixer !== undefined) {
+        base = pubEq ? prxEq - prxEq / 10 : prxFr - prxFr / 10
+      } else if (typeof product.selection === "string") {
+        base = pubEq ? pubEq - pubEq / 10 : pubFr - pubFr / 10
+      } else if (prixer !== undefined) {
+        base = prxEq ? prxEq - prxEq / 10 : prxFr - prxFr / 10
+      } else {
+        base = pubEq ? pubEq - pubEq / 10 : pubFr - pubFr / 10
       }
-    } else if (prixer === undefined) {
-      price = base / (1 - art.comission / 100)
-      console.log(price, "precio normal")
+      // refinar esta función
+      if (
+        prixer !== undefined &&
+        prixer !== art.prixerUsername &&
+        prixer !== art.owner
+      ) {
+        price = base / (1 - art.comission / 100)
+      } else if (prixer === art.prixerUsername || prixer === art.owner) {
+        price = base
+      }
+
+      if (prixer === undefined && typeof product.discount === "string") {
+        if (dis?.type === "Porcentaje") {
+          price = Number(price - (price / 100) * dis?.value)
+        } else if (dis?.type === "Monto") {
+          price = Number(price - dis?.value)
+        }
+      } else if (prixer === undefined) {
+        price = base / (1 - art.comission / 100)
+        console.log(price, "precio normal")
+      }
     }
+    // Incluir recargo si es a PrixelartPrefit
+    if (currency) {
+      price = price * (dollarValue || 1)
+    }
+    return price.toLocaleString("de-DE", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })
   }
-  // Incluir recargo si es a PrixelartPrefit
-  if (currency) {
-    price = price * (dollarValue || 1)
-  }
-  return price.toLocaleString("de-DE", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  })
 }
 
 const UnitPriceForOrg = (product, art, prixer, org, consumerType) => {

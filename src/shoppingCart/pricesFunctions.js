@@ -90,7 +90,7 @@ const UnitPriceSug = (
           ? product.prixerPrice.from
           : Number(product.prixerPrice.from?.replace(/[,]/gi, "."))
       let pubEq =
-        product.publicEquation === "number"
+        typeof product.publicEquation === "number"
           ? product.publicEquation
           : Number(product.publicEquation?.replace(/[,]/gi, "."))
       let pubFr =
@@ -951,32 +951,33 @@ const getPVP = (item, currency, dollarValue, discountList) => {
   let { base, prev, final } = 0
   let dis = discountList?.filter((dis) => dis._id === item.product?.discount)[0]
   let pubEq =
-  typeof item.product.publicEquation === "number"
-    ? item.product.publicEquation
-    : Number(item.product.publicEquation?.replace(/[,]/gi, "."))
-    console.log(pubEq)
-let pubFr =
-  typeof item.product.publicPrice.from === "number"
-    ? item.product.publicPrice.from
-    : Number(item.product.publicPrice.from?.replace(/[,]/gi, "."))
+    typeof item.product.publicEquation === "number"
+      ? item.product.publicEquation
+      : Number(item.product.publicEquation?.replace(/[,]/gi, "."))
+  console.log(pubEq)
+  let pubFr =
+    typeof item.product.publicPrice.from === "number"
+      ? item.product.publicPrice.from
+      : Number(item.product.publicPrice.from?.replace(/[,]/gi, "."))
 
   base = pubEq || pubFr
 
   prev = base - base / 10
 
-  if (base !== 0 ) {
-  prev =
-    prev /
-    (1 - (item.art?.comission !== undefined ? item.art.comission : 10) / 100)
-  final = prev
+  if (base !== 0) {
+    prev =
+      prev /
+      (1 - (item.art?.comission !== undefined ? item.art.comission : 10) / 100)
+    final = prev
 
-  if (typeof item.product?.discount === "string") {
-    if (dis?.type === "Porcentaje") {
-      final = prev - (base / 100) * dis.value
-    } else if (dis?.type === "Monto") {
-      final = prev - dis.value
+    if (typeof item.product?.discount === "string") {
+      if (dis?.type === "Porcentaje") {
+        final = prev - (base / 100) * dis.value
+      } else if (dis?.type === "Monto") {
+        final = prev - dis.value
+      }
     }
-  }}
+  }
   if (currency) {
     return Number(final * dollarValue)
   } else return final
@@ -986,13 +987,13 @@ const getPVM = (item, currency, dollarValue, discountList, prixer) => {
   let { base, prev, final } = 0
   let dis = discountList?.filter((dis) => dis._id === item.product.discount)[0]
   let prxEq =
-  typeof item.product.prixerEquation === "number"
-    ? item.product.prixerEquation
-    : Number(item.product.prixerEquation?.replace(/[,]/gi, "."))
-let prxFr =
-  typeof item.product.prixerPrice.from === "number"
-    ? item.product.prixerPrice.from
-    : Number(item.product.prixerPrice.from?.replace(/[,]/gi, "."))
+    typeof item.product.prixerEquation === "number"
+      ? item.product.prixerEquation
+      : Number(item.product.prixerEquation?.replace(/[,]/gi, "."))
+  let prxFr =
+    typeof item.product.prixerPrice.from === "number"
+      ? item.product.prixerPrice.from
+      : Number(item.product.prixerPrice.from?.replace(/[,]/gi, "."))
 
   base = prxEq || prxFr
   prev = base - base / 10
@@ -1017,9 +1018,8 @@ let prxFr =
 const getTotalUnitsPVP = (state, currency, dollarValue, discountList) => {
   let prices = [0]
   state.map((item) => {
-
     let pubEq =
-    item.product.publicEquation === "number"
+      typeof item.product.publicEquation === "number"
         ? item.product.publicEquation
         : Number(item.product.publicEquation?.replace(/[,]/gi, "."))
     let pubFr =
@@ -1082,13 +1082,13 @@ const getTotalUnitsPVM = (
   let prices = []
   state.map((item) => {
     let prxEq =
-    typeof item.product.prixerEquation === "number"
-      ? item.product.prixerEquation
-      : Number(item.product.prixerEquation?.replace(/[,]/gi, "."))
-  let prxFr =
-    typeof item.product.prixerPrice.from === "number"
-      ? item.product.prixerPrice.from
-      : Number(item.product.prixerPrice.from?.replace(/[,]/gi, "."))
+      typeof item.product.prixerEquation === "number"
+        ? item.product.prixerEquation
+        : Number(item.product.prixerEquation?.replace(/[,]/gi, "."))
+    let prxFr =
+      typeof item.product.prixerPrice.from === "number"
+        ? item.product.prixerPrice.from
+        : Number(item.product.prixerPrice.from?.replace(/[,]/gi, "."))
     // if (item.product && item.art && typeof item.product.discount === "string") {
     //   let dis = discountList?.filter(
     //     (dis) => dis._id === item.product.discount
@@ -1121,9 +1121,7 @@ const getTotalUnitsPVM = (
     if (item.product && item.art) {
       const base = prxEq ? prxEq : prxFr
       let final = (base - base / 10) / (1 - item.art.comission / 100)
-      if (
-        item.product.finalPrice !== undefined
-      ) {
+      if (item.product.finalPrice !== undefined) {
         final = item.product.finalPrice
       } else if (
         item.art.prixerUsername !== prixer &&

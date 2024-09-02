@@ -1,3 +1,5 @@
+import axios from "axios";
+
 const UnitPrice = (
   product,
   art,
@@ -206,7 +208,7 @@ const getVariantPrice = (product, art) => {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   })
-}
+} 
 
 const getComission = (
   item,
@@ -283,6 +285,10 @@ const getComission = (
 }
 
 const getPVPtext = (product, currency, dollarValue, discountList) => {
+
+  //4 variables condicionales: 1. Public Equation, 2. Public Price Range, 3. Discount, 4. Currency.
+  //Public Equation y Public Price Range son excluyentes, si uno existe el otro no ?
+
   if (
     product?.discount !== undefined &&
     typeof product?.discount === "string" &&
@@ -1035,6 +1041,20 @@ const getTotalUnitsPVM = (
   } else return total
 }
 
+const getPrice = async (item) => {
+  const base_url = process.env.REACT_APP_BACKEND_URL + "/product_v2/getPrice";
+  console.log("PRE Mega test response");
+  await axios
+    .post(base_url, item)
+    .then((response) => {
+      console.log("Mega test response", response);
+      // setDiscountList(response.data.discounts);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+};
+
 export {
   UnitPrice,
   UnitPriceSug,
@@ -1046,4 +1066,5 @@ export {
   getPVM,
   getTotalUnitsPVP,
   getTotalUnitsPVM,
+  getPrice
 }

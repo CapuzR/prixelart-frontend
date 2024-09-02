@@ -34,7 +34,9 @@ import Paper from "@material-ui/core/Paper";
 import AddShoppingCartIcon from "@material-ui/icons/ShoppingCart";
 import { useHistory } from "react-router-dom";
 import Switch from "@material-ui/core/Switch";
-import { getPVPtext, getPVMtext } from "../shoppingCart/pricesFunctions.js";
+import ProductOrdering from "./productOrdering.jsx";
+import CurrencySwitch from "../sharedComponents/currencySwitch/currencySwitch.jsx";
+import ProductCard from "./productCard.jsx";
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -166,7 +168,6 @@ export default function ProductGrid(props) {
   const [tiles, setTiles] = useState([]);
   const [discountList, setDiscountList] = useState([]);
   const [imagesVariants, setImagesVariants] = useState([]);
-  // const [imagesProducts, setImagesProducts] = useState();
   const [width, setWidth] = useState([]);
   const [height, setHeight] = useState([]);
 
@@ -181,6 +182,7 @@ export default function ProductGrid(props) {
     setShowFullDescription(updatedShowFullDescription);
   };
 
+  //Probablemente vaya a desaparecer porque el cálculo del precio debería ocurrir en el back.
   const getDiscounts = async () => {
     const base_url = process.env.REACT_APP_BACKEND_URL + "/discount/read-allv2";
     await axios
@@ -193,613 +195,126 @@ export default function ProductGrid(props) {
       });
   };
 
-  const handleChange = (event) => {
+  //Esto debería ser parte del orderingProduct? 
+  //Probablemente vaya a desaparecer porque el cálculo del precio debería ocurrir en el back.
+  //Por qué? Porque debería consultar productos de n en n y no traer todos para ordenar en el front, imo. 
+  //Si es así, el ordering nunca puede ocurrir en el front.
+  const handleOrder = (event) => {
     setOrder(event.target.value);
   };
 
+  
+  //Probablemente vaya a desaparecer porque el cálculo del precio debería ocurrir en el back.
   useEffect(() => {
     getDiscounts();
   }, []);
 
+  //Probablemente la mayoría vaya a desaparecer porque el cálculo del precio debería ocurrir en el back.
+  //Por qué? Porque debería consultar productos de n en n y no traer todos para ordenar en el front, imo. 
+  //Si es así, el ordering nunca puede ocurrir en el front.
   useEffect(() => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + "/product/read-all";
+    ///Esto debería ser reemplazado por una función que llame a get products y que ya incluya el 
+    //precio correcto. Que también se incluya paginación acá.
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/product_v2/read-all";
     axios.get(base_url).then(async (response) => {
       let productsAttTemp1 = response.data.products;
-
-      await productsAttTemp1.map(async (p, iProd, pArr) => {
-        p.variants.map((variant) => {
-          imagesVariants.push(variant.variantImage);
-        });
-        productsAttTemp1 = await getEquation(p, iProd, pArr);
-      });
-
-      if (order === "") {
-        setTiles(getAttributes(productsAttTemp1));
-      } else if (order === "A-Z") {
-        let products = productsAttTemp1.sort(function (a, b) {
-          if (a.name.toLowerCase() > b.name.toLowerCase()) {
-            return 1;
-          }
-          if (a.name.toLowerCase() < b.name.toLowerCase()) {
-            return -1;
-          }
-          return 0;
-        });
-        setTiles(getAttributes(products));
-      } else if (order === "Z-A") {
-        let products = productsAttTemp1.sort(function (a, b) {
-          if (a.name.toLowerCase() < b.name.toLowerCase()) {
-            return 1;
-          }
-          if (a.name.toLowerCase() > b.name.toLowerCase()) {
-            return -1;
-          }
-          return 0;
-        });
-        setTiles(getAttributes(products));
-      } else if (order === "Price") {
-        let products = productsAttTemp1.sort(function (a, b) {
-          let aPrice = a.publicPrice.from;
-          let bPrice = b.publicPrice.from;
-          return aPrice - bPrice;
-        });
-        setTiles(getAttributes(products));
-      }
+      console.log("productsAttTemp1", productsAttTemp1);
+      setTiles(productsAttTemp1);
+      // if (order === "") {
+      //   //DEBO REEMPLAZAR ESTE GETATTRIBUTES PARA QUE TENGA UN MODELO MAS SENCILLO!!!!
+      //   const t = getAttributes(productsAttTemp1);
+      //   console.log("tttttttttttt", t);
+      //   setTiles(t);
+      // } else if (order === "A-Z") {
+      //   let products = productsAttTemp1.sort(function (a, b) {
+      //     if (a.name.toLowerCase() > b.name.toLowerCase()) {
+      //       return 1;
+      //     }
+      //     if (a.name.toLowerCase() < b.name.toLowerCase()) {
+      //       return -1;
+      //     }
+      //     return 0;
+      //   });
+      //   setTiles(getAttributes(products));
+      // } else if (order === "Z-A") {
+      //   let products = productsAttTemp1.sort(function (a, b) {
+      //     if (a.name.toLowerCase() < b.name.toLowerCase()) {
+      //       return 1;
+      //     }
+      //     if (a.name.toLowerCase() > b.name.toLowerCase()) {
+      //       return -1;
+      //     }
+      //     return 0;
+      //   });
+      //   setTiles(getAttributes(products));
+      // } else if (order === "Price") {
+      //   let products = productsAttTemp1.sort(function (a, b) {
+      //     let aPrice = a.publicPrice.from;
+      //     let bPrice = b.publicPrice.from;
+      //     return aPrice - bPrice;
+      //   });
+      //   const t = getAttributes(products);
+      //   console.log("tttttttttttt", t);
+      //   setTiles(t);
+      // }
     });
   }, [order]);
 
+  //Probablemente va en ProductCard
   const addingToCart = (e, tile) => {
     e.preventDefault();
     props.setSelectedProduct(tile);
     props.setIsOpenAssociateArt(true);
   };
 
+  //Esto deberia ir en currencySwitch y currency debería ser un CONTEXT.
   const changeCurrency = () => {
     setCurrency(!currency);
   };
 
-  const priceSelect = (item) => {
-    if (
-      JSON.parse(localStorage.getItem("token")) &&
-      JSON.parse(localStorage.getItem("token"))?.username
-    ) {
-      return getPVMtext(item, currency, props.dollarValue, discountList);
-    } else {
-      return getPVPtext(item, currency, props.dollarValue, discountList);
-    }
-  };
-
-  const RenderHTML = ({ htmlString }) => {
-    return <div dangerouslySetInnerHTML={{ __html: htmlString }} />;
-  };
-
   return (
     <>
-      <div style={{ display: "flex", justifyContent: "end" }}>
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            alignItems: "center",
-            marginRight: 40,
-          }}
-        >
-          <Switch
-            classes={{
-              root: classes.base,
-              switchBase: classes.switchBase,
-              thumb: currency ? classes.thumbTrue : classes.thumb,
-              track: classes.track,
-              checked: classes.checked,
-            }}
-            color="primary"
-            value={currency}
-            onChange={(e) => {
-              changeCurrency(e);
-            }}
-            style={{ marginRight: "-5px" }}
-          />
-        </div>
-
-        <FormControl className={classes.formControl}>
-          <InputLabel style={{ marginLeft: 10 }} id="demo-simple-select-label">
-            Ordenar
-          </InputLabel>
-          <Select
-            variant="outlined"
-            labelId="demo-simple-select-label"
-            id="demo-simple-select"
-            value={order}
-            onChange={handleChange}
-          >
-            <MenuItem value={"A-Z"}>A-Z</MenuItem>
-            <MenuItem value={"Z-A"}>Z-A</MenuItem>
-            <MenuItem value={"Price"}>Menor precio</MenuItem>
-          </Select>
-        </FormControl>
+      {/* Control Bar */}
+      <div style={{ 
+        display: "flex", 
+        justifyContent: "end",
+        display: "flex",
+        flexDirection: "row",
+        alignItems: "center",
+        marginRight: 40,
+      }}>
+        {/* Currency component */}
+          <CurrencySwitch classes={classes} currency={currency} changeCurrency={changeCurrency} />
+        {/* Order component */}
+          <ProductOrdering order={order} handleOrder={handleOrder} classes={classes} />
       </div>
+      
+      {/* Grid component */}
       <ResponsiveMasonry
         columnsCountBreakPoints={{ 350: 1, 750: 2, 900: 3, 1080: 3 }}
       >
         <Masonry style={{ columnGap: "30px" }}>
           {tiles ? (
             tiles.map((tile, iProd, productsArr) => (
-              <Card
-                className={classes.root}
-                id={tile.name}
-                style={{
-                  transition:
-                    tile.name === props.pointedProduct &&
-                    "box-shadow 0.3s ease-in-out",
-                  boxShadow:
-                    tile.name === props.pointedProduct &&
-                    " 0 0 10px 3px #d33f49",
-                }}
-              >
-                <CardMedia style={{ width: "110%" }}>
-                  <Carousel
-                    autoPlay={false}
-                    stopAutoPlayOnHover={true}
-                    animation="slide"
-                    duration={500}
-                    fullHeightHover={true}
-                    IndicatorIcon={<MaximizeIcon />}
-                    NextIcon={<ArrowForwardIosIcon />}
-                    PrevIcon={<ArrowBackIosIcon />}
-                    activeIndicatorIconButtonProps={{
-                      style: {
-                        color: "#d33f49",
-                      },
-                    }}
-                    navButtonsProps={{
-                      style: {
-                        backgroundColor: "rgba(0, 0, 0, 0)",
-                        color: "#d33f49",
-                        width: "98%",
-                        height: "100vh",
-                        marginTop: "-50vh",
-                        borderRadius: "0",
-                        marginLeft: "1px",
-                      },
-                    }}
-                    indicatorContainerProps={{
-                      style: {
-                        position: "absolute",
-                        marginTop: "-17px",
-                      },
-                    }}
-                  >
-                    {typeof tile.selection[0] === "string" &&
-                    typeof tile.variants[0]?.variantImage === "object" &&
-                    tile.variants.find(
-                      ({ name }) => name === tile.selection[0]
-                    ) ? (
-                      tile.variants
-                        .find(({ name }) => name === tile.selection[0])
-                        .variantImage.map((img, key_id) =>
-                          img.type === "images" ? (
-                            <img
-                              key={key_id}
-                              src={img.url}
-                              className={classes.img}
-                              alt="variant"
-                              style={{ borderRadius: 30 }}
-                            />
-                          ) : (
-                            img.type === "video" &&
-                            img.url !== null && (
-                              <span
-                                key={"video"}
-                                style={{ width: "100%", borderRadius: 30 }}
-                                dangerouslySetInnerHTML={{
-                                  __html: img.url,
-                                }}
-                              />
-                            )
-                          )
-                        )
-                    ) : tile.sources.images &&
-                      tile.sources.images[0] !== undefined ? (
-                      tile.sources.images?.map((img, i) =>
-                        img.url !== null && img.type === "images" ? (
-                          <img
-                            key={i}
-                            src={img.url?.replace(/[,]/gi, "") || tile.thumbUrl}
-                            className={classes.img}
-                            alt="product.png"
-                            style={{ borderRadius: 30 }}
-                          />
-                        ) : (
-                          img.type === "video" &&
-                          img.url !== null && (
-                            <span
-                              key={"video"}
-                              style={{ width: "100%", borderRadius: 30 }}
-                              dangerouslySetInnerHTML={{
-                                __html: img.url,
-                              }}
-                            />
-                          )
-                        )
-                      )
-                    ) : (
-                      <img
-                        src={tile.thumbUrl}
-                        className={classes.img}
-                        alt="*"
-                        style={{ borderRadius: 30 }}
-                      />
-                    )}
-                  </Carousel>
-                </CardMedia>
+              // Product Card Component
+              <ProductCard
+                tile={tile}
+                width={width}
+                setTiles={setTiles}
+                iProd={iProd}
+                productsArr={productsArr}
+                classes={classes}
+                addingToCart={addingToCart}
+                toggleDescription={toggleDescription}
+                showFullDescription={showFullDescription}
+                height={height}
+                setProductAtts={setProductAtts}
+                setSecondProductAtts={setSecondProductAtts}
+                utils={utils}
+                currency={currency}
+                discountList={discountList}
+              />
 
-                <CardContent
-                  data-color-mode="light"
-                  style={{ alignContent: "space-between" }}
-                >
-                  <Typography
-                    gutterBottom
-                    style={{ padding: 0, marginBotom: 12, width: 10 }}
-                    variant="h5"
-                    component="h2"
-                  >
-                    {tile.name}
-                  </Typography>
-                  <Typography
-                    gutterBottom
-                    style={{ fontSize: 15, padding: 0, marginBottom: 15 }}
-                    variant="h5"
-                    component="h2"
-                  >
-                    {priceSelect(tile)}
-                  </Typography>
-                  <MDEditor.Markdown
-                    source={
-                      showFullDescription[iProd]
-                        ? tile.description
-                        : tile.description.split("\r\n")[0].length > 130
-                        ? `${tile.description
-                            .split("\r\n")[0]
-                            .slice(0, 130)}...`
-                        : `${tile.description.split("\r\n")[0]}`
-                    }
-                    style={{ whiteSpace: "pre-wrap" }}
-                  />
-                  {/* <div class="ql-editor" style={{ height: "auto" }}>
-                    <RenderHTML
-                      htmlString={
-                        //   showFullDescription[i]
-                        tile.description // : `${tile.description.slice(0, 450)}...`
-                      }
-                    />
-                  </div> */}
-                  {tile.description.length > 130 && (
-                    <Button
-                      style={{
-                        color: "dimgray",
-                        // backgroundColor: "gainsboro",
-                      }}
-                      onClick={() => toggleDescription(iProd)}
-                    >
-                      {showFullDescription[iProd] ? "Ver menos" : "Ver más"}
-                    </Button>
-                  )}
-
-                  {tile.productionTime && (
-                    <div
-                      style={{
-                        fontFamily:
-                          "apple-system, Segoe UI, Helvetica, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji",
-                        fontSize: 16,
-                        lineHeight: 1.5,
-                        wordWrap: "break-word",
-                        // color: "gray",
-                      }}
-                    >
-                      Tiempo de producción estimado: {tile.productionTime}{" "}
-                      {tile.productionTime == 1 ? "día." : "días."}
-                    </div>
-                  )}
-                </CardContent>
-                {/* </CardActionArea> */}
-                {/* {tile.hasSpecialVar && (
-                  <>
-                    <CardActions style={{ width: "25%" }}>
-                      <Grid item xs={12} md={12}>
-                        <FormControl
-                          variant="outlined"
-                          className={classes.form}
-                        >
-                          <TextField
-                            variant="outlined"
-                            display="inline"
-                            id="width"
-                            label="Ancho"
-                            name="width"
-                            autoComplete="width"
-                            value={width[iProd]}
-                            onChange={async (e) => {
-                              if (!e.target.value) {
-                                let w = width;
-                                w[iProd] = e.target.value;
-                                setWidth([...w]);
-                                let l = await getEquation(
-                                  tile,
-                                  iProd,
-                                  tiles,
-                                  width,
-                                  height
-                                );
-                                setTiles([...l]);
-                              } else {
-                                if (
-                                  /^\d+$/.test(e.target.value) &&
-                                  e.target.value[0] !== "0"
-                                ) {
-                                  if (e.target.value && e.target.value != 0) {
-                                    let w = width;
-                                    w[iProd] = e.target.value;
-                                    setWidth([...w]);
-                                    let l = await getEquation(
-                                      tile,
-                                      iProd,
-                                      tiles,
-                                      width,
-                                      height
-                                    );
-                                    setTiles([...l]);
-                                  } else {
-                                    let w = width;
-                                    w[iProd] = e.target.value;
-                                    setWidth([...w]);
-                                    let l = await getEquation(
-                                      tile,
-                                      iProd,
-                                      tiles,
-                                      width,
-                                      height
-                                    );
-                                    setTiles([...l]);
-                                  }
-                                }
-                              }
-                            }}
-                          />
-                        </FormControl>
-                      </Grid>
-                    </CardActions>
-                    <CardActions style={{ width: "25%" }}>
-                      <Grid item xs={12} md={12}>
-                        <FormControl
-                          variant="outlined"
-                          className={classes.form}
-                        >
-                          <TextField
-                            variant="outlined"
-                            display="inline"
-                            id="height"
-                            label="Alto"
-                            name="height"
-                            autoComplete="height"
-                            value={height[iProd]}
-                            onChange={async (e) => {
-                              if (!e.target.value) {
-                                let h = height;
-                                h[iProd] = e.target.value;
-                                setHeight([...h]);
-                                let l = await getEquation(
-                                  tile,
-                                  iProd,
-                                  tiles,
-                                  width,
-                                  height
-                                );
-                                setTiles([...l]);
-                              } else {
-                                if (
-                                  /^\d+$/.test(e.target.value) &&
-                                  e.target.value[0] !== "0"
-                                ) {
-                                  if (e.target.value && e.target.value != 0) {
-                                    let h = height;
-                                    h[iProd] = e.target.value;
-                                    setHeight([...h]);
-                                    let l = await getEquation(
-                                      tile,
-                                      iProd,
-                                      tiles,
-                                      width,
-                                      height
-                                    );
-                                    setTiles([...l]);
-                                  } else {
-                                    let h = height;
-                                    h[iProd] = e.target.value;
-                                    setHeight([...h]);
-                                    let l = await getEquation(
-                                      tile,
-                                      iProd,
-                                      tiles,
-                                      width,
-                                      height
-                                    );
-                                    setTiles([...l]);
-                                  }
-                                }
-                              }
-                            }}
-                          />
-                        </FormControl>
-                      </Grid>
-                       </Grid> 
-                    </CardActions>
-                  </>
-                )} */}
-
-                {tile.attributes &&
-                  tile.attributes.map((att, iAtt, attributesArr) =>
-                    iAtt === 0 ? (
-                      <CardActions key={iAtt} style={{ width: "50%" }}>
-                        <Grid item xs={12} sm={12} md={12}>
-                          <FormControl
-                            variant="outlined"
-                            className={classes.form}
-                            xs={12}
-                            sm={12}
-                            md={12}
-                          >
-                            <InputLabel required id="att.name">
-                              {att.name}
-                            </InputLabel>
-                            <Select
-                              value={tile.selection && tile.selection[0]}
-                              onChange={async (e) => {
-                                const pAtts = await setProductAtts(
-                                  e.target.value,
-                                  attributesArr,
-                                  iProd,
-                                  iAtt,
-                                  productsArr,
-                                  width,
-                                  height
-                                );
-                                if (pAtts) {
-                                  setTiles(
-                                    pAtts.pAtt
-                                      ? [...pAtts.pAtt]
-                                      : [...pAtts.att]
-                                  );
-                                }
-                              }}
-                              label={att.selection}
-                            >
-                              <MenuItem value={undefined}>
-                                <em></em>
-                              </MenuItem>
-                              {att.value &&
-                                att.value.map((n, i) => (
-                                  <MenuItem key={n} value={n}>
-                                    {n}
-                                  </MenuItem>
-                                ))}
-                            </Select>
-                          </FormControl>
-                        </Grid>
-                      </CardActions>
-                    ) : (
-                      tile.selection[0] !== undefined && (
-                        <CardActions key={1} style={{ width: "50%" }}>
-                          <Grid item xs={12} sm={12} md={12}>
-                            <FormControl
-                              variant="outlined"
-                              className={classes.form}
-                              xs={12}
-                              sm={12}
-                              md={12}
-                            >
-                              <InputLabel required id="att.name">
-                                {att.name}
-                              </InputLabel>
-                              <Select
-                                value={tile.selection[1] && tile.selection[1]}
-                                onChange={async (e) => {
-                                  const pAtts = await setSecondProductAtts(
-                                    e.target.value,
-                                    attributesArr,
-                                    iProd,
-                                    iAtt,
-                                    productsArr,
-                                    width,
-                                    height
-                                  );
-                                  if (pAtts) {
-                                    setTiles(
-                                      pAtts.pAtt
-                                        ? [...pAtts.pAtt]
-                                        : [...pAtts.att]
-                                    );
-                                  }
-                                }}
-                                label={att.selection}
-                              >
-                                <MenuItem value={undefined}>
-                                  <em></em>
-                                </MenuItem>
-                                {tile.variants.map(
-                                  (variant) =>
-                                    (variant.attributes[0].value ===
-                                      tile.selection ||
-                                      variant.attributes[0].value ===
-                                        tile.selection[0]) && (
-                                      <MenuItem
-                                        key={variant._id}
-                                        value={variant.attributes[1]?.value}
-                                      >
-                                        {variant.attributes[1]?.value}
-                                      </MenuItem>
-                                    )
-                                )}
-                              </Select>
-                            </FormControl>
-                          </Grid>
-                        </CardActions>
-                      )
-                    )
-                  )}
-
-                <CardActions>
-                  {tile.variants &&
-                    tile.variants.map((v) => {
-                      if (v.attributes) {
-                        const test = v.attributes.reduce((r, a) => {
-                          return a.name in tile.attributes === true;
-                        }, true);
-                      }
-                    })}
-                </CardActions>
-                <Grid
-                  item
-                  xs={12}
-                  sm={12}
-                  md={12}
-                  lg={12}
-                  xl={12}
-                  style={{ display: "flex", justifyContent: "space-between" }}
-                >
-                  <Button
-                    disabled={
-                      (tile.attributes[0] !== undefined &&
-                        tile.selection[0] === undefined) ||
-                      (tile.attributes.length === 2 &&
-                        typeof tile.selection === "string")
-                        ? true
-                        : false
-                    }
-                    size="small"
-                    color="primary"
-                    onClick={(e) => {
-                      addingToCart(e, tile);
-                    }}
-                  >
-                    <AddShoppingCartIcon />
-                    Agregar
-                  </Button>
-                  <CardActions>
-                    <Button
-                      size="small"
-                      color="primary"
-                      onClick={(e) => {
-                        window.open(
-                          utils.generateWaProductMessage(tile),
-                          "_blank"
-                        );
-                      }}
-                    >
-                      Información <WhatsAppIcon />
-                    </Button>
-                  </CardActions>
-                </Grid>
-              </Card>
             ))
           ) : (
             <h1>Pronto encontrarás los productos ideales para ti.</h1>

@@ -5,7 +5,8 @@ export const setProductAtts = async (
   iAtt,
   productsArr,
   width,
-  height
+  height,
+  selectedVariant
 ) => {
   let att = productsArr;
 
@@ -13,7 +14,7 @@ export const setProductAtts = async (
     att[iProd].selection = attValue;
     att[iProd].attributes = attributesArr;
 
-    const pAtt = await getEquation(att[iProd], iProd, att, width, height);
+    const pAtt = await getEquation(att[iProd], iProd, att, width, height, selectedVariant);
     return { pAtt: pAtt, att: att };
   }
 };
@@ -106,7 +107,8 @@ export const getEquation = async (
   iProd,
   productArr,
   width,
-  height
+  height,
+  selectedVariant
 ) => {
   if (product.selection?.length === 2) {
     const filteredVars = await product.variants.filter((v, i) => {
@@ -207,5 +209,6 @@ export const getEquation = async (
     productArr[iProd].publicEquation = "";
     productArr[iProd].prixerEquation = "";
   }
+  productArr[iProd].selectedVariant = selectedVariant;
   return productArr;
 };

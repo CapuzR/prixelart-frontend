@@ -29,6 +29,7 @@ import {
   getTotalUnitsPVM,
   getTotalUnitsPVP,
 } from "../../../shoppingCart/pricesFunctions"
+import CurrencySwitch from "../../../sharedComponents/currencySwitch/currencySwitch"
 const drawerWidth = 240
 
 const useStyles = makeStyles((theme) => ({
@@ -530,21 +531,7 @@ export default function Checkout(props) {
         xl={12}
         style={{ display: "flex", justifyContent: "end" }}
       >
-        <Switch
-          classes={{
-            root: classes.base,
-            switchBase: classes.switchBase,
-            thumb: currency ? classes.thumbTrue : classes.thumb,
-            track: classes.track,
-            checked: classes.checked,
-          }}
-          color="primary"
-          value={currency}
-          onChange={(e) => {
-            changeCurrency(e)
-          }}
-          style={{ marginRight: "-5px" }}
-        />
+        <CurrencySwitch currency={currency} changeCurrency={changeCurrency} />
       </Grid>
       <Grid
         item

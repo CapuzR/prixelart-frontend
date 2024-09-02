@@ -19,7 +19,6 @@ import OrderForm from "./orderForm";
 import CartReview from "./cartReview";
 import { nanoid } from "nanoid";
 import validations from "./validations";
-import Switch from "@material-ui/core/Switch";
 import { Alert } from "@material-ui/lab";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 
@@ -29,6 +28,7 @@ import {
   getTotalUnitsPVP,
   getTotalUnitsPVM,
 } from "./pricesFunctions";
+import CurrencySwitch from "../sharedComponents/currencySwitch/currencySwitch";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -548,21 +548,7 @@ export default function ShoppingPage(props) {
                 justifyContent: isMobile ? "start" : "end",
               }}
             >
-              <Switch
-                classes={{
-                  root: classes.base,
-                  switchBase: classes.switchBase,
-                  thumb: currency ? classes.thumbTrue : classes.thumb,
-                  track: classes.track,
-                  checked: classes.checked,
-                }}
-                color="primary"
-                value={currency}
-                onChange={(e) => {
-                  changeCurrency(e);
-                }}
-                style={{ marginRight: "-5px" }}
-              />
+              <CurrencySwitch currency={currency} changeCurrency={changeCurrency} classes={classes} />
             </Grid>
 
             <Grid

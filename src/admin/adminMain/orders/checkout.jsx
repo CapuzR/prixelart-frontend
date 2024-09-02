@@ -324,7 +324,7 @@ export default function Checkout(props) {
     if (typeof props.selectedPrixer?.username === "string") {
       return 0
     } else {
-      return getTotalPrice(state) * 0.16
+      return Number(getTotalPrice(state).replace(/[,]/gi, ".")) * 0.16
     }
   }
 
@@ -758,7 +758,7 @@ export default function Checkout(props) {
                                             props.dollarValue,
                                             discountList,
                                             props?.selectedPrixer?.username
-                                          )
+                                          ).replace(/[,]/gi, ".")
                                         ) * item.quantity
                                       ).toLocaleString("de-DE", {
                                         minimumFractionDigits: 2,

@@ -306,11 +306,12 @@ export default function Checkout(props) {
 
   const getTotal = (x) => {
     let n = []
-    n.push(getTotalPrice(props.buyState))
+    n.push(Number(getTotalPrice(props.buyState).replace(/[,]/gi, ".")))
     n.push(getIvaCost(props.buyState))
     {
       props.shippingData?.shippingMethod && n.push(shippingCost)
     }
+    console.log(n)
     let total = n.reduce(function (a, b) {
       return a + b
     })

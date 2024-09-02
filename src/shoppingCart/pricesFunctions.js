@@ -950,14 +950,21 @@ const getPVMtext = (product, currency, dollarValue, discountList) => {
 const getPVP = (item, currency, dollarValue, discountList) => {
   let { base, prev, final } = 0
   let dis = discountList?.filter((dis) => dis._id === item.product?.discount)[0]
+  let pubEq =
+  typeof item.product.publicEquation === "number"
+    ? item.product.publicEquation
+    : Number(item.product.publicEquation?.replace(/[,]/gi, "."))
+    console.log(pubEq)
+let pubFr =
+  typeof item.product.publicPrice.from === "number"
+    ? item.product.publicPrice.from
+    : Number(item.product.publicPrice.from?.replace(/[,]/gi, "."))
 
-  base = Number(
-    item.product?.publicEquation?.replace(/[,]/gi, ".") ||
-      item.product?.publicPrice?.from?.replace(/[,]/gi, ".")
-  )
+  base = pubEq || pubFr
 
   prev = base - base / 10
 
+  if (base !== 0 ) {
   prev =
     prev /
     (1 - (item.art?.comission !== undefined ? item.art.comission : 10) / 100)
@@ -969,7 +976,7 @@ const getPVP = (item, currency, dollarValue, discountList) => {
     } else if (dis?.type === "Monto") {
       final = prev - dis.value
     }
-  }
+  }}
   if (currency) {
     return Number(final * dollarValue)
   } else return final
@@ -978,11 +985,16 @@ const getPVP = (item, currency, dollarValue, discountList) => {
 const getPVM = (item, currency, dollarValue, discountList, prixer) => {
   let { base, prev, final } = 0
   let dis = discountList?.filter((dis) => dis._id === item.product.discount)[0]
+  let prxEq =
+  typeof item.product.prixerEquation === "number"
+    ? item.product.prixerEquation
+    : Number(item.product.prixerEquation?.replace(/[,]/gi, "."))
+let prxFr =
+  typeof item.product.prixerPrice.from === "number"
+    ? item.product.prixerPrice.from
+    : Number(item.product.prixerPrice.from?.replace(/[,]/gi, "."))
 
-  base = Number(
-    item.product?.prixerEquation?.replace(/[,]/gi, ".") ||
-      item.product?.prixerPrice?.from?.replace(/[,]/gi, ".")
-  )
+  base = prxEq || prxFr
   prev = base - base / 10
   if (item.art.prixerUsername !== prixer && item.art.owner !== prixer) {
     prev =
@@ -1007,13 +1019,13 @@ const getTotalUnitsPVP = (state, currency, dollarValue, discountList) => {
   state.map((item) => {
 
     let pubEq =
-      product.publicEquation === "number"
-        ? product.publicEquation
-        : Number(product.publicEquation?.replace(/[,]/gi, "."))
+    item.product.publicEquation === "number"
+        ? item.product.publicEquation
+        : Number(item.product.publicEquation?.replace(/[,]/gi, "."))
     let pubFr =
-      typeof product.publicPrice.from === "number"
-        ? product.publicPrice.from
-        : Number(product.publicPrice.from?.replace(/[,]/gi, "."))
+      typeof item.product.publicPrice.from === "number"
+        ? item.product.publicPrice.from
+        : Number(item.product.publicPrice.from?.replace(/[,]/gi, "."))
 
     if (item.product && item.art && typeof item.product.discount === "string") {
       let dis = discountList?.find(({ _id }) => _id === item.product.discount)
@@ -1059,6 +1071,7 @@ const getTotalUnitsPVP = (state, currency, dollarValue, discountList) => {
     return total * dollarValue
   } else return total
 }
+
 const getTotalUnitsPVM = (
   state,
   currency,
@@ -1069,13 +1082,13 @@ const getTotalUnitsPVM = (
   let prices = []
   state.map((item) => {
     let prxEq =
-    typeof product.prixerEquation === "number"
-      ? product.prixerEquation
-      : Number(product.prixerEquation?.replace(/[,]/gi, "."))
+    typeof item.product.prixerEquation === "number"
+      ? item.product.prixerEquation
+      : Number(item.product.prixerEquation?.replace(/[,]/gi, "."))
   let prxFr =
-    typeof product.prixerPrice.from === "number"
-      ? product.prixerPrice.from
-      : Number(product.prixerPrice.from?.replace(/[,]/gi, "."))
+    typeof item.product.prixerPrice.from === "number"
+      ? item.product.prixerPrice.from
+      : Number(item.product.prixerPrice.from?.replace(/[,]/gi, "."))
     // if (item.product && item.art && typeof item.product.discount === "string") {
     //   let dis = discountList?.filter(
     //     (dis) => dis._id === item.product.discount

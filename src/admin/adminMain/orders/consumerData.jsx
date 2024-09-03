@@ -619,7 +619,7 @@ export default function ConsumerData(props) {
               variant="outlined"
               id="standard-name"
               fullWidth
-              label="Dirección de envio"
+              label="Dirección"
               className={classes.textField}
               multiline
               minRows={3}

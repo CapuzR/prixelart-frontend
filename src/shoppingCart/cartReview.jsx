@@ -106,13 +106,11 @@ export default function CartReview(props) {
   const handleDownloadImage = () => {
     html2canvas(mockupRef.current).then((canvas) => {
       const link = document.createElement("a")
-      link.href = canvas.toDataURL("image/jpeg", 1.0) // La calidad de la imagen se establece en 1.0 (máxima calidad)
+      link.href = canvas.toDataURL("image/jpeg", 1.0)
       link.download = "imagen.jpg"
       link.click()
     })
   }
-
-  console.log(props.buyState)
 
   const allowMockup = (buy, index) => {
     if (buy.product?.mockUp !== undefined) {
@@ -189,7 +187,7 @@ export default function CartReview(props) {
               Imagen referencial
             </Typography>
           </div>
-          {/* <Button onClick={handleDownloadImage}>JPG</Button> */}
+          <Button onClick={handleDownloadImage}>JPG</Button>
         </div>
       )
     } else if (buy.art && buy.product) {
@@ -601,10 +599,12 @@ export default function CartReview(props) {
                 <div
                   style={{
                     display: "flex",
-                    flexDirection: "row",
-                    justifyContent: "end",
+                    flexDirection: !isMobile ? "row" : "column",
+                    justifyContent: !isMobile ? "end" : "center",
                     marginBottom: "-30px",
                     width: "100%",
+                    alignItems: !!isMobile && "end",
+                    marginBottom: isMobile && "-70px",
                   }}
                 >
                   <Tooltip
@@ -624,8 +624,8 @@ export default function CartReview(props) {
                     style={{
                       height: 40,
                       width: 40,
-                      marginLeft: "-5px",
-                      marginRight: "-5px",
+                      marginLeft: !isMobile && "-5px",
+                      marginRight: !isMobile && "-5px",
                     }}
                   >
                     <IconButton

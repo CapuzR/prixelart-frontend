@@ -289,9 +289,9 @@ export default function OrderForm(props) {
                                     primary={
                                       <Grid container>
                                         <Grid item xs={12} md={8}>
-                                          {item.product.name +
-                                            " X " +
-                                            item.art.title.substring(0, 27)}
+                                          Producto: {item.product.name}
+                                          <br/>
+                                          Arte: {item.art.title}
                                         </Grid>
                                         <Grid
                                           item
@@ -384,7 +384,7 @@ export default function OrderForm(props) {
                               ))}
                           </Select>
                         </FormControl>
-                        {props.orderPaymentMethod && (
+                        {/* {props.orderPaymentMethod && (
                           <>
                             <div
                               style={{
@@ -425,7 +425,7 @@ export default function OrderForm(props) {
                               </div>
                             </div>
                           </>
-                        )}
+                        )} */}
                       </Grid>
                       <Grid
                         item

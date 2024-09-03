@@ -187,7 +187,7 @@ export default function CartReview(props) {
               Imagen referencial
             </Typography>
           </div>
-          <Button onClick={handleDownloadImage}>JPG</Button>
+          {/* <Button onClick={handleDownloadImage}>JPG</Button> */}
         </div>
       )
     } else if (buy.art && buy.product) {

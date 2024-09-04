@@ -490,7 +490,7 @@ export default function OrderDetails(props) {
     }
   }, [])
   console.log(props.modalContent)
-console.log(owners)
+
   return (
     <Grid
       container
@@ -1187,7 +1187,7 @@ console.log(owners)
                     <div
                       style={{
                         width: "100%",
-                        backgroundColor: i + (1 % 2) === 0 ? "white" : "#eee",
+                        backgroundColor: i % 2 === 0 ?  "#eee" : "white",
                         padding: "15px 30px",
                         borderRadius: 10,
                       }}

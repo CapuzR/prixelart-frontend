@@ -949,26 +949,26 @@ export default function Orders(props) {
           item: item,
           adminToken: localStorage.getItem("adminTokenV"),
         }
-        await axios.post(url, data).then(async (res) => {
-          if (res.data.success === false) {
-            setSnackBarError(true)
-            setErrorMessage(res.data.message)
-          } else {
-            const data2 = {
-              orderId: order.orderId,
-              comissions: data,
-              adminToken: localStorage.getItem("adminTokenV"),
-            }
-            const url2 =
-              process.env.REACT_APP_BACKEND_URL + "/order/addComissions"
-            await axios.put(url2, data2).then(async (res) => {
-              if (res.data.success === false) {
-                setSnackBarError(true)
-                setErrorMessage(res.data.message)
-              }
-            })
-          }
-        })
+        // await axios.post(url, data).then(async (res) => {
+        //   if (res.data.success === false) {
+        //     setSnackBarError(true)
+        //     setErrorMessage(res.data.message)
+        //   } else {
+        //     const data2 = {
+        //       orderId: order.orderId,
+        //       comissions: data,
+        //       adminToken: localStorage.getItem("adminTokenV"),
+        //     }
+        //     const url2 =
+        //       process.env.REACT_APP_BACKEND_URL + "/order/addComissions"
+        //     await axios.put(url2, data2).then(async (res) => {
+        //       if (res.data.success === false) {
+        //         setSnackBarError(true)
+        //         setErrorMessage(res.data.message)
+        //       }
+        //     })
+        //   }
+        // })
       } else if (destinatary === undefined) {
         setSnackBarError(true)
         setErrorMessage(

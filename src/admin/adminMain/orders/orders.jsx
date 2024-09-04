@@ -805,6 +805,7 @@ export default function Orders(props) {
             ?.toLowerCase()
             .includes(props?.basicData?.lastname?.toLowerCase())
       )
+
       if (ORGS !== undefined) {
         destinatary = ORGS.account
         let profit = item.product.finalPrice
@@ -929,10 +930,10 @@ export default function Orders(props) {
         console.log(amount, "amount after surcharge")
         amount = amount * item.quantity
       }
+
       if (
         item.art?.prixerUsername &&
         item.art?.prixerUsername !== "Personalizado" &&
-        item.art?.prixerUsername !== undefined &&
         destinatary !== undefined
       ) {
         const url = process.env.REACT_APP_BACKEND_URL + "/movement/create"

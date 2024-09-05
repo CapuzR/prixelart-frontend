@@ -60,6 +60,8 @@ export default function CartReview(props) {
   const isIphone = useMediaQuery(theme.breakpoints.down("xs"))
   const [discountList, setDiscountList] = useState([])
   const mockupRef = useRef()
+  const [base64Image, setBase64Image] = useState(null)
+  const [imageUrl, setImageUrl] = useState(null)
   const getDiscounts = async () => {
     const base_url = process.env.REACT_APP_BACKEND_URL + "/discount/read-allv2"
     await axios
@@ -104,18 +106,56 @@ export default function CartReview(props) {
   }
 
   const handleDownloadImage = () => {
-    html2canvas(mockupRef.current).then((canvas) => {
+    // const images = mockupRef.current.querySelectorAll("img")
+    // const promises = Array.from(images).map(
+    //   (img) =>
+    //     new Promise((resolve) => {
+    //       if (img.complete) {
+    //         resolve()
+    //       } else {
+    //         img.onload = resolve
+    //         img.onerror = resolve
+    //       }
+    //     })
+    // )
+
+    // Promise.all(promises).then(() => {
+    //   mockupRef.current.style.transform = "scale(1)"
+    html2canvas(mockupRef.current, {
+      width: 210,
+      height: 210,
+      useCORS: true,
+    }).then((canvas) => {
       const link = document.createElement("a")
       link.href = canvas.toDataURL("image/jpeg", 1.0)
-      link.download = "imagen.jpg"
+      link.download = "Prix.jpg"
       link.click()
     })
+    // })
+  }
+
+  const convertImageToBase64 = async (imageUrl) => {
+    try {
+      const response = await fetch(imageUrl)
+      const blob = await response.blob()
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader()
+        reader.onloadend = () => resolve(reader.result)
+        reader.onerror = reject
+        reader.readAsDataURL(blob)
+      })
+    } catch (error) {
+      console.error("Error converting image to Base64:", error)
+      return null
+    }
   }
 
   const allowMockup = (buy, index) => {
     if (buy.product?.mockUp !== undefined) {
+      // setImageUrl(buy.product.mockUp.mockupImg)
+
       return (
-        <div>
+        <div style={{ marginRight: 16 }}>
           <div
             ref={mockupRef}
             style={{
@@ -153,6 +193,7 @@ export default function CartReview(props) {
             />
             <div
               style={{
+                // backgroundImage: `url(${base64Image})`,
                 backgroundImage: "url(" + buy.product.mockUp.mockupImg + ")",
                 width: 210,
                 height: 210,
@@ -187,7 +228,12 @@ export default function CartReview(props) {
               Imagen referencial
             </Typography>
           </div>
-          {/* <Button onClick={handleDownloadImage}>JPG</Button> */}
+          {/* <Button
+            primary
+            onClick={handleDownloadImage}
+          >
+            JPG
+          </Button> */}
         </div>
       )
     } else if (buy.art && buy.product) {
@@ -553,7 +599,7 @@ export default function CartReview(props) {
         >
           {isMobile ? "Carrito" : "Carrito de compras"}
         </h1>
-        {isMobile && (
+        {/* {isMobile && (
           <Button
             style={{
               marginBottom: isMobile ? 40 : 20,
@@ -568,7 +614,7 @@ export default function CartReview(props) {
           >
             Comprar
           </Button>
-        )}
+        )} */}
       </Grid>
       {props.buyState.map((buy, index) => {
         return (
@@ -604,7 +650,7 @@ export default function CartReview(props) {
                     marginBottom: "-30px",
                     width: "100%",
                     alignItems: !!isMobile && "end",
-                    marginBottom: isMobile && "-70px",
+                    marginBottom: isMobile ? -70 : -32,
                   }}
                 >
                   <Tooltip
@@ -637,21 +683,23 @@ export default function CartReview(props) {
                     </IconButton>
                   </Tooltip>
                 </div>
-                <Grid
-                  item
-                  style={{
-                    display: "flex",
-                    height:
-                      buy.product?.mockUp !== undefined && isIphone
-                        ? 210
-                        : isIphone
-                        ? 160
-                        : 220,
-                    marginBottom: buy.product?.mockUp !== undefined && 20,
-                  }}
-                >
-                  {allowMockup(buy, index)}
-                </Grid>
+                {buy.product && buy.art && (
+                  <Grid
+                    item
+                    style={{
+                      display: "flex",
+                      height:
+                        buy.product?.mockUp !== undefined && isIphone
+                          ? 210
+                          : isIphone
+                          ? 160
+                          : 220,
+                      marginBottom: buy.product?.mockUp !== undefined && 20,
+                    }}
+                  >
+                    {allowMockup(buy, index)}
+                  </Grid>
+                )}
 
                 <Grid
                   item
@@ -669,7 +717,7 @@ export default function CartReview(props) {
                   }}
                 >
                   <div>
-                    {buy.product && buy.art && (
+                    {/* {buy.product && buy.art && (
                       <div
                         style={{
                           display: "flex",
@@ -684,14 +732,14 @@ export default function CartReview(props) {
                           {buy.product.name + " - " + buy.art.title}
                         </Typography>
                       </div>
-                    )}
+                    )} */}
                     {buy.product ? (
                       <div style={{ display: "flex", flexDirection: "column" }}>
                         <Typography
                           variant="p"
                           color="secondary"
                           style={{
-                            fontSize: "12px",
+                            fontSize: 16,
                             padding: 0,
                             margin: 0,
                           }}
@@ -720,7 +768,14 @@ export default function CartReview(props) {
                       </div>
                     ) : (
                       <Button
-                        style={{ fontSize: 14 }}
+                        style={{
+                          marginTop: 20,
+                          fontSize: 14,
+                          backgroundColor: "gainsboro",
+                          padding: "6px 12px",
+                          textTransform: "none",
+                        }}
+                        color="secondary"
                         size="small"
                         onClick={() => {
                           props.setSelectedArtToAssociate({
@@ -742,7 +797,7 @@ export default function CartReview(props) {
                           variant="p"
                           color="secondary"
                           style={{
-                            fontSize: "12px",
+                            fontSize: 16,
                             padding: 0,
                             margin: 0,
                           }}
@@ -763,7 +818,14 @@ export default function CartReview(props) {
                       </div>
                     ) : (
                       <Button
-                        style={{ fontSize: 14 }}
+                        style={{
+                          marginTop: 20,
+                          fontSize: 14,
+                          backgroundColor: "gainsboro",
+                          padding: "6px 12px",
+                          textTransform: "none",
+                        }}
+                        color="secondary"
                         size="small"
                         onClick={() => {
                           props.setSelectedArtToAssociate({
@@ -795,7 +857,7 @@ export default function CartReview(props) {
                             variant="p"
                             color="secondary"
                             style={{
-                              fontSize: "12px",
+                              fontSize: 12,
                               padding: 0,
                               margin: 0,
                             }}
@@ -809,6 +871,9 @@ export default function CartReview(props) {
                         <Typography
                           variant="p"
                           color="secondary"
+                          style={{
+                            fontSize: 16,
+                          }}
                         >
                           <strong>Precio Unitario:</strong>
                           {props.currency ? " Bs" : " $"}

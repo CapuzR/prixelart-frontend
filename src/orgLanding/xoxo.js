@@ -1,88 +1,88 @@
-import franelaPasanteBack1 from "./assets/TshirtsAssets/FRANELA-Detras_Pasante_Subpagado_Negro.jpg";
-import franelaPasanteFront1 from "./assets/TshirtsAssets/FRANELA-Frente_Pasante-Subpagado_Negro.jpg";
-import franelaPasanteFront2 from "./assets/TshirtsAssets/FRANELA-Frente_Pasante-Subpagado_Azul.jpg";
-import franelaPasanteBack2 from "./assets/TshirtsAssets/FRANELA-Detras_Pasante_Subpagado_Azul.jpg";
-import franelaPasanteFront3 from "./assets/TshirtsAssets/FRANELA-Frente_Pasante-Subpagado_Verde.jpg";
-import franelaPasanteBack3 from "./assets/TshirtsAssets/FRANELA-Detras_Pasante_Subpagado_Verde.jpg";
-import franelaIndependizarFront1 from "./assets/TshirtsAssets/FRANELA-Frente_Independizar_Negro.jpg";
-import franelaIndependizarFront2 from "./assets/TshirtsAssets/FRANELA-Frente_Independizar_Azul.jpg";
-import franelaIndependizarFront3 from "./assets/TshirtsAssets/FRANELA-Frente_Independizar_Verde.jpg";
-import franelaIndependizarBack1 from "./assets/TshirtsAssets/FRANELA-Detras_Independizar_Negro.jpg";
-import franelaIndependizarBack2 from "./assets/TshirtsAssets/FRANELA-Detras_Independizar_Azul.jpg";
-import franelaIndependizarBack3 from "./assets/TshirtsAssets/FRANELA-Detras_Independizar_Verde.jpg";
-import franelaSobreviviFront1 from "./assets/TshirtsAssets/FRANELA-Frente_Sobrevivi_Negro.jpg";
-import franelaSobreviviFront2 from "./assets/TshirtsAssets/FRANELA-Frente_Sobrevivi_Azul.jpg";
-import franelaSobreviviFront3 from "./assets/TshirtsAssets/FRANELA-Frente_Sobrevivi_Verde.jpg";
-import franelaSobreviviBack1 from "./assets/TshirtsAssets/FRANELA-Detras_Sobrevivi_Negro.jpg";
-import franelaSobreviviBack2 from "./assets/TshirtsAssets/FRANELA-Detras_Sobrevivi_Azul.jpg";
-import franelaSobreviviBack3 from "./assets/TshirtsAssets/FRANELA-Detras_Sobrevivi_Verde.jpg";
+import franelaPasanteBack1 from "./assets/TshirtsAssets/FRANELA-Detras_Pasante_Subpagado_Negro.jpg"
+import franelaPasanteFront1 from "./assets/TshirtsAssets/FRANELA-Frente_Pasante-Subpagado_Negro.jpg"
+import franelaPasanteFront2 from "./assets/TshirtsAssets/FRANELA-Frente_Pasante-Subpagado_Azul.jpg"
+import franelaPasanteBack2 from "./assets/TshirtsAssets/FRANELA-Detras_Pasante_Subpagado_Azul.jpg"
+import franelaPasanteFront3 from "./assets/TshirtsAssets/FRANELA-Frente_Pasante-Subpagado_Verde.jpg"
+import franelaPasanteBack3 from "./assets/TshirtsAssets/FRANELA-Detras_Pasante_Subpagado_Verde.jpg"
+import franelaIndependizarFront1 from "./assets/TshirtsAssets/FRANELA-Frente_Independizar_Negro.jpg"
+import franelaIndependizarFront2 from "./assets/TshirtsAssets/FRANELA-Frente_Independizar_Azul.jpg"
+import franelaIndependizarFront3 from "./assets/TshirtsAssets/FRANELA-Frente_Independizar_Verde.jpg"
+import franelaIndependizarBack1 from "./assets/TshirtsAssets/FRANELA-Detras_Independizar_Negro.jpg"
+import franelaIndependizarBack2 from "./assets/TshirtsAssets/FRANELA-Detras_Independizar_Azul.jpg"
+import franelaIndependizarBack3 from "./assets/TshirtsAssets/FRANELA-Detras_Independizar_Verde.jpg"
+import franelaSobreviviFront1 from "./assets/TshirtsAssets/FRANELA-Frente_Sobrevivi_Negro.jpg"
+import franelaSobreviviFront2 from "./assets/TshirtsAssets/FRANELA-Frente_Sobrevivi_Azul.jpg"
+import franelaSobreviviFront3 from "./assets/TshirtsAssets/FRANELA-Frente_Sobrevivi_Verde.jpg"
+import franelaSobreviviBack1 from "./assets/TshirtsAssets/FRANELA-Detras_Sobrevivi_Negro.jpg"
+import franelaSobreviviBack2 from "./assets/TshirtsAssets/FRANELA-Detras_Sobrevivi_Azul.jpg"
+import franelaSobreviviBack3 from "./assets/TshirtsAssets/FRANELA-Detras_Sobrevivi_Verde.jpg"
 
-import peltreCafecito1 from "./assets/PeltreAssets/PELTRE-2_Cafecito_Negro.jpg";
-import peltreCafecito2 from "./assets/PeltreAssets/PELTRE-2_Cafecito_Azul.jpg";
-import peltreCafecito3 from "./assets/PeltreAssets/PELTRE-2_Cafecito_Verde.jpg";
-import peltreCafecito4 from "./assets/PeltreAssets/PELTRE-1_Cafecito-1_Negro.jpg";
-import peltreCafecito5 from "./assets/PeltreAssets/PELTRE-1_Cafecito_Azul.jpg";
-import peltreCafecito6 from "./assets/PeltreAssets/PELTRE-1_Cafecito_Verde.jpg";
-import peltreIndependizar1 from "./assets/PeltreAssets/PELTRE-2_Independizar_Negro.jpg";
-import peltreIndependizar2 from "./assets/PeltreAssets/PELTRE-2_Indepejdizar_Azul.jpg";
-import peltreIndependizar3 from "./assets/PeltreAssets/PELTRE-2_Independizar_Verde.jpg";
-import peltreIndependizar4 from "./assets/PeltreAssets/PELTRE-1_Independizar_Negro.jpg";
-import peltreIndependizar5 from "./assets/PeltreAssets/PELTRE-1_Indepejdizar_Azul.jpg";
-import peltreIndependizar6 from "./assets/PeltreAssets/PELTRE-1_Independizar_Verde.jpg";
+import peltreCafecito1 from "./assets/PeltreAssets/PELTRE-2_Cafecito_Negro.jpg"
+import peltreCafecito2 from "./assets/PeltreAssets/PELTRE-2_Cafecito_Azul.jpg"
+import peltreCafecito3 from "./assets/PeltreAssets/PELTRE-2_Cafecito_Verde.jpg"
+import peltreCafecito4 from "./assets/PeltreAssets/PELTRE-1_Cafecito-1_Negro.jpg"
+import peltreCafecito5 from "./assets/PeltreAssets/PELTRE-1_Cafecito_Azul.jpg"
+import peltreCafecito6 from "./assets/PeltreAssets/PELTRE-1_Cafecito_Verde.jpg"
+import peltreIndependizar1 from "./assets/PeltreAssets/PELTRE-2_Independizar_Negro.jpg"
+import peltreIndependizar2 from "./assets/PeltreAssets/PELTRE-2_Indepejdizar_Azul.jpg"
+import peltreIndependizar3 from "./assets/PeltreAssets/PELTRE-2_Independizar_Verde.jpg"
+import peltreIndependizar4 from "./assets/PeltreAssets/PELTRE-1_Independizar_Negro.jpg"
+import peltreIndependizar5 from "./assets/PeltreAssets/PELTRE-1_Indepejdizar_Azul.jpg"
+import peltreIndependizar6 from "./assets/PeltreAssets/PELTRE-1_Independizar_Verde.jpg"
 
-import peltrePasante1 from "./assets/PeltreAssets/PELTRE-2_Pasante-Subpagado_Negro.jpg";
-import peltrePasante2 from "./assets/PeltreAssets/PELTRE-2_Pasante_Subpagado_Azul.jpg";
-import peltrePasante3 from "./assets/PeltreAssets/PELTRE-2_Pasante-Subpagado_Verde.jpg";
-import peltrePasante4 from "./assets/PeltreAssets/PELTRE-1_Pasante-Subpagado_Negro.jpg";
-import peltrePasante5 from "./assets/PeltreAssets/PELTRE-1_Pasante_Subpagado_Azul.jpg";
-import peltrePasante6 from "./assets/PeltreAssets/PELTRE-1_Pasante-Subpagado_Verde.jpg";
+import peltrePasante1 from "./assets/PeltreAssets/PELTRE-2_Pasante-Subpagado_Negro.jpg"
+import peltrePasante2 from "./assets/PeltreAssets/PELTRE-2_Pasante_Subpagado_Azul.jpg"
+import peltrePasante3 from "./assets/PeltreAssets/PELTRE-2_Pasante-Subpagado_Verde.jpg"
+import peltrePasante4 from "./assets/PeltreAssets/PELTRE-1_Pasante-Subpagado_Negro.jpg"
+import peltrePasante5 from "./assets/PeltreAssets/PELTRE-1_Pasante_Subpagado_Azul.jpg"
+import peltrePasante6 from "./assets/PeltreAssets/PELTRE-1_Pasante-Subpagado_Verde.jpg"
 
-import peltrePasante21 from "./assets/PeltreAssets/PELTRE-2_Cafe-Pasante_Negro.jpg";
-import peltrePasante22 from "./assets/PeltreAssets/PELTRE-2_Pasante_Azul.jpg";
-import peltrePasante23 from "./assets/PeltreAssets/PELTRE-2_Cafe-Pasante_Verde.png";
-import peltrePasante24 from "./assets/PeltreAssets/PELTRE-1_Cafe-Pasante_Negro.jpg";
-import peltrePasante25 from "./assets/PeltreAssets/PELTRE-1_Pasante_Azul.jpg";
-import peltrePasante26 from "./assets/PeltreAssets/PELTRE-1_Cafe-Pasante_Verde.jpg";
+import peltrePasante21 from "./assets/PeltreAssets/PELTRE-2_Cafe-Pasante_Negro.jpg"
+import peltrePasante22 from "./assets/PeltreAssets/PELTRE-2_Pasante_Azul.jpg"
+import peltrePasante23 from "./assets/PeltreAssets/PELTRE-2_Cafe-Pasante_Verde.png"
+import peltrePasante24 from "./assets/PeltreAssets/PELTRE-1_Cafe-Pasante_Negro.jpg"
+import peltrePasante25 from "./assets/PeltreAssets/PELTRE-1_Pasante_Azul.jpg"
+import peltrePasante26 from "./assets/PeltreAssets/PELTRE-1_Cafe-Pasante_Verde.jpg"
 
-import peltrePasante31 from "./assets/PeltreAssets/PELTRE-2_Cafe-Pasante-2_Negro.jpg";
-import peltrePasante32 from "./assets/PeltreAssets/PELTRE-2_Pasante-2_Azul.jpg";
-import peltrePasante33 from "./assets/PeltreAssets/PELTRE-2_Cafe-Pasante-2_Verde.jpg";
-import peltrePasante34 from "./assets/PeltreAssets/PELTRE-1_Cafe-Pasante-2_Negro.jpg";
-import peltrePasante35 from "./assets/PeltreAssets/PELTRE-1_Pasante-2_Azul.jpg";
-import peltrePasante36 from "./assets/PeltreAssets/PELTRE-1_Cafe-Pasante-2_Verde.jpg";
+import peltrePasante31 from "./assets/PeltreAssets/PELTRE-2_Cafe-Pasante-2_Negro.jpg"
+import peltrePasante32 from "./assets/PeltreAssets/PELTRE-2_Pasante-2_Azul.jpg"
+import peltrePasante33 from "./assets/PeltreAssets/PELTRE-2_Cafe-Pasante-2_Verde.jpg"
+import peltrePasante34 from "./assets/PeltreAssets/PELTRE-1_Cafe-Pasante-2_Negro.jpg"
+import peltrePasante35 from "./assets/PeltreAssets/PELTRE-1_Pasante-2_Azul.jpg"
+import peltrePasante36 from "./assets/PeltreAssets/PELTRE-1_Cafe-Pasante-2_Verde.jpg"
 
-import peltreSobrevivi1 from "./assets/PeltreAssets/PELTRE-2_Sobrevivi_Negro.jpg";
-import peltreSobrevivi2 from "./assets/PeltreAssets/PELTRE-2_Sobrevivi-1_Azul.jpg";
-import peltreSobrevivi3 from "./assets/PeltreAssets/PELTRE-2_Sobrevivi_Verde.jpg";
-import peltreSobrevivi4 from "./assets/PeltreAssets/PELTRE-1_Sobrevivi_Negro.jpg";
-import peltreSobrevivi5 from "./assets/PeltreAssets/PELTRE-1_Sobrevivi-2_Azul.jpg";
-import peltreSobrevivi6 from "./assets/PeltreAssets/PELTRE-1_Sobrevivi_Verde.jpg";
+import peltreSobrevivi1 from "./assets/PeltreAssets/PELTRE-2_Sobrevivi_Negro.jpg"
+import peltreSobrevivi2 from "./assets/PeltreAssets/PELTRE-2_Sobrevivi-1_Azul.jpg"
+import peltreSobrevivi3 from "./assets/PeltreAssets/PELTRE-2_Sobrevivi_Verde.jpg"
+import peltreSobrevivi4 from "./assets/PeltreAssets/PELTRE-1_Sobrevivi_Negro.jpg"
+import peltreSobrevivi5 from "./assets/PeltreAssets/PELTRE-1_Sobrevivi-2_Azul.jpg"
+import peltreSobrevivi6 from "./assets/PeltreAssets/PELTRE-1_Sobrevivi_Verde.jpg"
 
-import thermoCafecito1 from "./assets/ThermoAssets/TERMO-Cafecito_Negro.jpg";
-import thermoCafecito2 from "./assets/ThermoAssets/TERMO-Cafecito_Azul.jpg";
-import thermoCafecito3 from "./assets/ThermoAssets/TERMO-Cafecito_Verde.jpg";
-import thermoIndependizar1 from "./assets/ThermoAssets/TERMO-Independizar_Negro.jpg";
-import thermoIndependizar2 from "./assets/ThermoAssets/TERMO-Independizar_Azul.jpg";
-import thermoIndependizar3 from "./assets/ThermoAssets/TERMO-Independizar_Verde.jpg";
-import thermoPasante1 from "./assets/ThermoAssets/TERMO-Cafe-Pasante_Negro.jpg";
-import thermoPasante2 from "./assets/ThermoAssets/TERMO-Cafe-Pasante_Azul.jpg";
-import thermoPasante3 from "./assets/ThermoAssets/TERMO-Cafe-Pasante_Verde.jpg";
+import thermoCafecito1 from "./assets/ThermoAssets/TERMO-Cafecito_Negro.jpg"
+import thermoCafecito2 from "./assets/ThermoAssets/TERMO-Cafecito_Azul.jpg"
+import thermoCafecito3 from "./assets/ThermoAssets/TERMO-Cafecito_Verde.jpg"
+import thermoIndependizar1 from "./assets/ThermoAssets/TERMO-Independizar_Negro.jpg"
+import thermoIndependizar2 from "./assets/ThermoAssets/TERMO-Independizar_Azul.jpg"
+import thermoIndependizar3 from "./assets/ThermoAssets/TERMO-Independizar_Verde.jpg"
+import thermoPasante1 from "./assets/ThermoAssets/TERMO-Cafe-Pasante_Negro.jpg"
+import thermoPasante2 from "./assets/ThermoAssets/TERMO-Cafe-Pasante_Azul.jpg"
+import thermoPasante3 from "./assets/ThermoAssets/TERMO-Cafe-Pasante_Verde.jpg"
 
-import bagCartoon1 from "./assets/BagAssets/TOTE-Logo-Cartoon_Negro.jpg";
-import bagCartoon2 from "./assets/BagAssets/TOTE-Logo-Cartoon_Azul.jpg";
-import bagCartoon3 from "./assets/BagAssets/TOTE-Logo-Cartoon_Verde.jpg";
-import bagIndependizar1 from "./assets/BagAssets/TOTE-Independizar_Negro-MockUp.jpg";
-import bagIndependizar2 from "./assets/BagAssets/TOTE-Independizar_Azul-MockUp.jpg";
-import bagIndependizar3 from "./assets/BagAssets/TOTE-Independizar_Verde-MockUp.jpg";
-import bagPasante1 from "./assets/BagAssets/TOTE-Pasante-Subpagado_Negro.jpg";
-import bagPasante2 from "./assets/BagAssets/TOTE-Pasante-Subpagado_Azul.jpg";
-import bagPasante3 from "./assets/BagAssets/TOTE-Pasante-Subpagado_Verde.jpg";
-import bagPasanteSubpagado1 from "./assets/BagAssets/TOTE-Cafe-Pasante_Negro.jpg";
-import bagPasanteSubpagado2 from "./assets/BagAssets/TOTE-Cafe-Pasante_Azul.jpg";
-import bagPasanteSubpagado3 from "./assets/BagAssets/TOTE-Cafe-Pasante_Verde.jpg";
-import bagSobrevivi1 from "./assets/BagAssets/TOTE-Sobrevivi-Pasante_Negro.jpg";
-import bagSobrevivi2 from "./assets/BagAssets/TOTE-Sobrevivi-Pasante_Azul.jpg";
-import bagSobrevivi3 from "./assets/BagAssets/TOTE-Sobrevivi-Pasante_Verde.jpg";
+import bagCartoon1 from "./assets/BagAssets/TOTE-Logo-Cartoon_Negro.jpg"
+import bagCartoon2 from "./assets/BagAssets/TOTE-Logo-Cartoon_Azul.jpg"
+import bagCartoon3 from "./assets/BagAssets/TOTE-Logo-Cartoon_Verde.jpg"
+import bagIndependizar1 from "./assets/BagAssets/TOTE-Independizar_Negro-MockUp.jpg"
+import bagIndependizar2 from "./assets/BagAssets/TOTE-Independizar_Azul-MockUp.jpg"
+import bagIndependizar3 from "./assets/BagAssets/TOTE-Independizar_Verde-MockUp.jpg"
+import bagPasante1 from "./assets/BagAssets/TOTE-Pasante-Subpagado_Negro.jpg"
+import bagPasante2 from "./assets/BagAssets/TOTE-Pasante-Subpagado_Azul.jpg"
+import bagPasante3 from "./assets/BagAssets/TOTE-Pasante-Subpagado_Verde.jpg"
+import bagPasanteSubpagado1 from "./assets/BagAssets/TOTE-Cafe-Pasante_Negro.jpg"
+import bagPasanteSubpagado2 from "./assets/BagAssets/TOTE-Cafe-Pasante_Azul.jpg"
+import bagPasanteSubpagado3 from "./assets/BagAssets/TOTE-Cafe-Pasante_Verde.jpg"
+import bagSobrevivi1 from "./assets/BagAssets/TOTE-Sobrevivi-Pasante_Negro.jpg"
+import bagSobrevivi2 from "./assets/BagAssets/TOTE-Sobrevivi-Pasante_Azul.jpg"
+import bagSobrevivi3 from "./assets/BagAssets/TOTE-Sobrevivi-Pasante_Verde.jpg"
 
 const getProducts = () => {
   let fullProducts = [
@@ -555,6 +555,7 @@ const getProducts = () => {
         name: "Tote Bag",
         description:
           "Salva al planeta con este tote bag del Chigüire, ideal para llevar lo que sea. Hasta las penas y los traumas.",
+        offer: "¡Pocas unidades disponibles!",
         specs:
           "ESPECIFICACIÓN TÉCNICA\nMaterial: gabardina Toscana.\nColor: beige clara.\n\nImpresión: tinta de sublimación.\nTamaño: 38x44cm apróx.\nEmpaque: bolsa plástica.\n\nTiempo de producción estimado: 3 días.",
         finalPrice: 15,
@@ -587,6 +588,7 @@ const getProducts = () => {
         _id: "6657f83b7a000200122b54de",
         item: "CBtb02",
         name: "Tote Bag",
+        offer: "¡Pocas unidades disponibles!",
         description:
           "Demuéstrale al mundo que tú llevas tus cargas con dignidad y estilo. Lúcete con tu tote bag.",
         specs:
@@ -621,6 +623,7 @@ const getProducts = () => {
         _id: "6657f83b7a000200122b54de",
         item: "CBtb03",
         name: "Tote Bag",
+        offer: "¡Pocas unidades disponibles!",
         description:
           "Fun fact: el pasante usa un tote bag como este cuando lo mandamos a hacernos las compras.",
         specs:
@@ -655,6 +658,7 @@ const getProducts = () => {
         _id: "6657f83b7a000200122b54de",
         item: "CBtb04",
         name: "Tote Bag",
+        offer: "¡Pocas unidades disponibles!",
         description:
           "¿Todavía usando bolsas de plástico para la compra? Compra tu tote bag y haz que Greta Thumberg sonría de nuevo.",
         specs:
@@ -689,6 +693,7 @@ const getProducts = () => {
         _id: "6657f83b7a000200122b54de",
         item: "CBtb05",
         name: "Tote Bag",
+        offer: "¡Pocas unidades disponibles!",
         title: "Sobreviví",
         description:
           "Si algo nos enseñaron estos años es que se podrá estar muerto por dentro, pero siempre con estilo.",
@@ -705,8 +710,8 @@ const getProducts = () => {
       },
       quantity: 1,
     },
-  ];
-  return fullProducts;
-};
+  ]
+  return fullProducts
+}
 
-export { getProducts };
+export { getProducts }

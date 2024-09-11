@@ -1,29 +1,31 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import clsx from "clsx";
+import React, { useState, useEffect } from "react"
+import axios from "axios"
+import clsx from "clsx"
 
-import { useHistory } from "react-router-dom";
+import { useHistory } from "react-router-dom"
 
-import { makeStyles, useTheme } from "@material-ui/core/styles";
-import AppBar from "@material-ui/core/AppBar";
-import Toolbar from "@material-ui/core/Toolbar";
-import IconButton from "@material-ui/core/IconButton";
-import MenuItem from "@material-ui/core/MenuItem";
-import Menu from "@material-ui/core/Menu";
-import Tabs from "@material-ui/core/Tabs";
-import Tab from "@material-ui/core/Tab";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
+import { makeStyles, useTheme } from "@material-ui/core/styles"
+import AppBar from "@material-ui/core/AppBar"
+import Toolbar from "@material-ui/core/Toolbar"
+import IconButton from "@material-ui/core/IconButton"
+import MenuItem from "@material-ui/core/MenuItem"
+import Menu from "@material-ui/core/Menu"
+import Tabs from "@material-ui/core/Tabs"
+import Tab from "@material-ui/core/Tab"
+import useMediaQuery from "@material-ui/core/useMediaQuery"
 // import utils from "../../utils/utils";
-import Drawer from "@material-ui/core/Drawer";
-import Divider from "@material-ui/core/Divider";
-import MenuIcon from "@material-ui/icons/Menu";
-import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
-import ChevronRightIcon from "@material-ui/icons/ChevronRight";
-import ArrowBackIcon from "@material-ui/icons/ArrowBack";
-import logo from "./Logotipo_Prixelart_H#2.png";
-import CB from "../../orgLanding/assets/isotipo.svg";
+import Drawer from "@material-ui/core/Drawer"
+import Divider from "@material-ui/core/Divider"
+import MenuIcon from "@material-ui/icons/Menu"
+import ChevronLeftIcon from "@material-ui/icons/ChevronLeft"
+import ChevronRightIcon from "@material-ui/icons/ChevronRight"
+import ArrowBackIcon from "@material-ui/icons/ArrowBack"
+import logo from "./Logotipo_Prixelart_H#2.png"
+import CB from "../../orgLanding/assets/isotipo.svg"
+import ShoppingCartOutlinedIcon from "@material-ui/icons/ShoppingCartOutlined";
+import Badge from "@material-ui/core/Badge";
 
-const drawerWidth = 240;
+const drawerWidth = 240
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -125,57 +127,57 @@ const useStyles = makeStyles((theme) => ({
       boxShadow: "0 0 0 0 rgba(255, 255, 255, 0)",
     },
   },
-}));
+}))
 
 export default function MenuAppBar(props) {
-  const theme = useTheme();
-  const classes = useStyles();
-  const [anchorEl, setAnchorEl] = useState(null);
-  const history = useHistory();
-  const open = Boolean(anchorEl);
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
-  const [open2, setOpen] = useState(false);
-  const [avatar, setAvatar] = useState("");
+  const theme = useTheme()
+  const classes = useStyles()
+  const [anchorEl, setAnchorEl] = useState(null)
+  const history = useHistory()
+  const open = Boolean(anchorEl)
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"))
+  const [open2, setOpen] = useState(false)
+  const [avatar, setAvatar] = useState("")
 
   const handleMenu = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
+    setAnchorEl(event.currentTarget)
+  }
 
   const handleClose = () => {
-    setAnchorEl(null);
-  };
+    setAnchorEl(null)
+  }
 
   const handleMain = () => {
-    history.push({ pathname: "/" });
-    setAnchorEl(null);
-  };
+    history.push({ pathname: "/" })
+    setAnchorEl(null)
+  }
 
   const handleBack = () => {
-    history.goBack();
-    setAnchorEl(null);
-  };
+    history.goBack()
+    setAnchorEl(null)
+  }
 
   const handlePasswordChange = () => {
-    history.push({ pathname: "/cambio-contraseña" });
-    setAnchorEl(null);
-  };
+    history.push({ pathname: "/cambio-contraseña" })
+    setAnchorEl(null)
+  }
 
   const handleCTLogin = () => {
-    history.push({ pathname: "/iniciar" });
-    setAnchorEl(null);
-  };
+    history.push({ pathname: "/iniciar" })
+    setAnchorEl(null)
+  }
 
   const handleOrg = () => {
     // e.preventDefault();
-    history.push({ pathname: "/organizaciones" });
-  };
+    history.push({ pathname: "/organizaciones" })
+  }
 
   const handleMyAccount = () => {
     history.push({
       pathname: "/prixer=" + JSON.parse(localStorage.getItem("token")).username,
-    });
-    setAnchorEl(null);
-  };
+    })
+    setAnchorEl(null)
+  }
 
   const handleMyStats = () => {
     history.push({
@@ -183,72 +185,75 @@ export default function MenuAppBar(props) {
         "/prixer=" +
         JSON.parse(localStorage.getItem("token")).username +
         "/stats",
-    });
-    setAnchorEl(null);
-  };
+    })
+    setAnchorEl(null)
+  }
 
   const handleLogout = () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + "/logout";
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/logout"
     axios.post(base_url).then((response) => {
-      localStorage.removeItem("token");
-      localStorage.removeItem("tokenExpire");
-      history.push({ pathname: "/iniciar" });
-      setAnchorEl(null);
-    });
-  };
+      localStorage.removeItem("token")
+      localStorage.removeItem("tokenExpire")
+      history.push({ pathname: "/iniciar" })
+      setAnchorEl(null)
+    })
+  }
 
   const handleGallery = (e) => {
-    e.preventDefault();
-    history.push({ pathname: "/galeria" });
-  };
+    e.preventDefault()
+    history.push({ pathname: "/galeria" })
+  }
 
   const handlePrixers = (e) => {
-    e.preventDefault();
-    history.push({ pathname: "/prixers" });
-  };
+    e.preventDefault()
+    history.push({ pathname: "/prixers" })
+  }
 
   const handleProductCatalog = (e) => {
-    e.preventDefault();
-    history.push({ pathname: "/productos" });
-  };
+    e.preventDefault()
+    history.push({ pathname: "/productos" })
+  }
 
   const handleServices = (e) => {
-    e.preventDefault();
-    history.push({ pathname: "/servicios" });
-  };
+    e.preventDefault()
+    history.push({ pathname: "/servicios" })
+  }
 
   const handleTestimonials = (e) => {
-    e.preventDefault();
-    history.push({ pathname: "/testimonios" });
-  };
+    e.preventDefault()
+    history.push({ pathname: "/testimonios" })
+  }
 
   const handleCB = (e) => {
-    e.preventDefault();
-    history.push({ pathname: "/chiguirebipolar" });
+    e.preventDefault()
+    history.push({ pathname: "/chiguirebipolar" })
+  }
+
+  const openShoppingCart = () => {
+    history.push({ pathname: "/shopping" });
   };
 
   const handleDrawerOpen = () => {
-    setOpen(true);
-  };
+    setOpen(true)
+  }
 
   const handleDrawerClose = () => {
-    setOpen(false);
-  };
+    setOpen(false)
+  }
 
   useEffect(() => {
-    getPrixerAvatar();
-  }, []);
+    getPrixerAvatar()
+  }, [])
 
   const getPrixerAvatar = async () => {
     if (JSON.parse(localStorage.getItem("token"))) {
-      const user = JSON.parse(localStorage.getItem("token")).username;
-      const base_url =
-        process.env.REACT_APP_BACKEND_URL + "/prixer/get/" + user;
+      const user = JSON.parse(localStorage.getItem("token")).username
+      const base_url = process.env.REACT_APP_BACKEND_URL + "/prixer/get/" + user
       await axios.get(base_url).then((response) => {
-        setAvatar(response.data.avatar);
-      });
+        setAvatar(response.data.avatar)
+      })
     }
-  };
+  }
 
   return (
     <div className={classes.root}>
@@ -277,8 +282,15 @@ export default function MenuAppBar(props) {
                 <MenuIcon />
               </IconButton>
               <div style={{ display: "flex" }}>
-                <IconButton className={classes.a} onClick={handleMain}>
-                  <img src={logo} alt="Prixelart logo" style={{ width: 100 }} />
+                <IconButton
+                  className={classes.a}
+                  onClick={handleMain}
+                >
+                  <img
+                    src={logo}
+                    alt="Prixelart logo"
+                    style={{ width: 100 }}
+                  />
                 </IconButton>
                 <div
                   style={{
@@ -287,7 +299,10 @@ export default function MenuAppBar(props) {
                     alignItems: "center",
                   }}
                 >
-                  <IconButton onClick={handleCB} size="medium">
+                  <IconButton
+                    onClick={handleCB}
+                    size="medium"
+                  >
                     <img
                       className={classes.brillante}
                       src={CB}
@@ -297,13 +312,18 @@ export default function MenuAppBar(props) {
                 </div>
               </div>
               <IconButton
-                aria-label="account of current user"
-                aria-controls="menu-appbar"
-                aria-haspopup="true"
-                onClick={handleBack}
+                onClick={openShoppingCart}
                 color="inherit"
               >
-                <ArrowBackIcon edge="end" />
+                <Badge
+                  overlap="rectangular"
+                  badgeContent={
+                    JSON.parse(localStorage.getItem("buyState"))?.length
+                  }
+                  color="white"
+                >
+                  <ShoppingCartOutlinedIcon />
+                </Badge>
               </IconButton>
             </Toolbar>
           </AppBar>
@@ -349,7 +369,10 @@ export default function MenuAppBar(props) {
                 />
               </div>
             )}
-            <Tabs display="flex" orientation="vertical">
+            <Tabs
+              display="flex"
+              orientation="vertical"
+            >
               <Tab
                 className={classes.button}
                 onClick={handleGallery}
@@ -384,7 +407,10 @@ export default function MenuAppBar(props) {
 
               {JSON.parse(localStorage.getItem("token")) &&
               JSON.parse(localStorage.getItem("token")).username ? (
-                <Tabs display="flex" orientation="vertical">
+                <Tabs
+                  display="flex"
+                  orientation="vertical"
+                >
                   <Tab
                     className={classes.button}
                     onClick={handleMyAccount}
@@ -418,14 +444,14 @@ export default function MenuAppBar(props) {
               <Tab
                 className={classes.button}
                 onClick={(e) => {
-                  window.open("https://linktr.ee/prixelart", "_blank");
+                  window.open("https://linktr.ee/prixelart", "_blank")
                 }}
                 label="Contáctanos"
               />
               <Tab
                 className={classes.button}
                 onClick={(e) => {
-                  window.open("http://blog.prixelart.com/", "_blank");
+                  window.open("http://blog.prixelart.com/", "_blank")
                 }}
                 label="Blog"
               />
@@ -433,10 +459,20 @@ export default function MenuAppBar(props) {
           </Drawer>
         </>
       ) : (
-        <AppBar position="fixed" color="secondary">
+        <AppBar
+          position="fixed"
+          color="secondary"
+        >
           <Toolbar style={{ display: "flex", justifyContent: "space-between" }}>
-            <IconButton className={classes.a} onClick={handleMain}>
-              <img src={logo} alt="Prixelart logo" style={{ width: 100 }} />
+            <IconButton
+              className={classes.a}
+              onClick={handleMain}
+            >
+              <img
+                src={logo}
+                alt="Prixelart logo"
+                style={{ width: 100 }}
+              />
             </IconButton>
 
             <Tabs>
@@ -473,7 +509,10 @@ export default function MenuAppBar(props) {
                   paddingRight: 20,
                 }}
               >
-                <IconButton onClick={handleCB} size="medium">
+                <IconButton
+                  onClick={handleCB}
+                  size="medium"
+                >
                   <img
                     className={classes.brillante}
                     src={CB}
@@ -485,13 +524,18 @@ export default function MenuAppBar(props) {
 
             <div>
               <IconButton
-                aria-label="account of current user"
-                aria-controls="menu-appbar"
-                aria-haspopup="true"
-                onClick={handleBack}
+                onClick={openShoppingCart}
                 color="inherit"
               >
-                <ArrowBackIcon edge="end" />
+                <Badge
+                  overlap="rectangular"
+                  badgeContent={
+                    JSON.parse(localStorage.getItem("buyState"))?.length
+                  }
+                  color="white"
+                >
+                  <ShoppingCartOutlinedIcon />
+                </Badge>
               </IconButton>
               <IconButton
                 aria-label="account of current user"
@@ -544,14 +588,14 @@ export default function MenuAppBar(props) {
                   <MenuItem onClick={handleOrg}>Organizaciones</MenuItem>
                   <MenuItem
                     onClick={(e) => {
-                      window.open("https://linktr.ee/prixelart", "_blank");
+                      window.open("https://linktr.ee/prixelart", "_blank")
                     }}
                   >
                     Contáctanos
                   </MenuItem>
                   <MenuItem
                     onClick={(e) => {
-                      window.open("http://blog.prixelart.com/", "_blank");
+                      window.open("http://blog.prixelart.com/", "_blank")
                     }}
                   >
                     Blog
@@ -578,14 +622,14 @@ export default function MenuAppBar(props) {
 
                   <MenuItem
                     onClick={(e) => {
-                      window.open("https://linktr.ee/prixelart", "_blank");
+                      window.open("https://linktr.ee/prixelart", "_blank")
                     }}
                   >
                     Contáctanos
                   </MenuItem>
                   <MenuItem
                     onClick={(e) => {
-                      window.open("http://blog.prixelart.com/", "_blank");
+                      window.open("http://blog.prixelart.com/", "_blank")
                     }}
                   >
                     Blog
@@ -598,5 +642,5 @@ export default function MenuAppBar(props) {
         </AppBar>
       )}
     </div>
-  );
+  )
 }

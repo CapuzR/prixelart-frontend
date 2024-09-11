@@ -2,9 +2,7 @@ import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Fab from "@material-ui/core/Fab";
 import AddPhotoAlternateIcon from "@material-ui/icons/AddPhotoAlternate";
-import ShoppingCartOutlinedIcon from "@material-ui/icons/ShoppingCartOutlined";
 import LocalActivityIcon from "@material-ui/icons/LocalActivity";
-import Badge from "@material-ui/core/Badge";
 import Tooltip from "@material-ui/core/Tooltip";
 import NotificationsIcon from "@material-ui/icons/Notifications";
 import { useHistory } from "react-router-dom";
@@ -60,9 +58,7 @@ export default function FloatingAddButton(props) {
     props.setOpenServiceFormDialog(true);
   };
 
-  const openShoppingCart = () => {
-    history.push({ pathname: "/shopping" });
-  };
+
 
   return (
     <div className={classes.root}>
@@ -98,20 +94,7 @@ export default function FloatingAddButton(props) {
             </Tooltip>
           </>
         )}
-      <Fab
-        color="primary"
-        aria-label="add"
-        onClick={openShoppingCart}
-        style={{ right: 10 }}
-      >
-        <Badge
-          overlap="rectangular"
-          badgeContent={JSON.parse(localStorage.getItem("buyState"))?.length}
-          color="white"
-        >
-          <ShoppingCartOutlinedIcon />
-        </Badge>
-      </Fab>
+
     </div>
   );
 }

@@ -1,34 +1,34 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-import AppBar from "../sharedComponents/appBar/appBar";
-import Button from "@material-ui/core/Button";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
-import Grid from "@material-ui/core/Grid";
-import Paper from "@material-ui/core/Paper";
-import Container from "@material-ui/core/Container";
-import CssBaseline from "@material-ui/core/CssBaseline";
-import Stepper from "@material-ui/core/Stepper";
-import Step from "@material-ui/core/Step";
-import StepLabel from "@material-ui/core/StepLabel";
-import { useHistory } from "react-router-dom";
-import { Typography } from "@material-ui/core";
-import { Backdrop } from "@material-ui/core";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import ConsumerForm from "./consumerForm";
-import OrderForm from "./orderForm";
-import CartReview from "./cartReview";
-import { nanoid } from "nanoid";
-import validations from "./validations";
-import Switch from "@material-ui/core/Switch";
-import { Alert } from "@material-ui/lab";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
+import React, { useEffect, useState } from "react"
+import axios from "axios"
+import AppBar from "../sharedComponents/appBar/appBar"
+import Button from "@material-ui/core/Button"
+import { makeStyles, useTheme } from "@material-ui/core/styles"
+import Grid from "@material-ui/core/Grid"
+import Paper from "@material-ui/core/Paper"
+import Container from "@material-ui/core/Container"
+import CssBaseline from "@material-ui/core/CssBaseline"
+import Stepper from "@material-ui/core/Stepper"
+import Step from "@material-ui/core/Step"
+import StepLabel from "@material-ui/core/StepLabel"
+import { useHistory } from "react-router-dom"
+import { Typography } from "@material-ui/core"
+import { Backdrop } from "@material-ui/core"
+import CircularProgress from "@material-ui/core/CircularProgress"
+import ConsumerForm from "./consumerForm"
+import OrderForm from "./orderForm"
+import CartReview from "./cartReview"
+import { nanoid } from "nanoid"
+import validations from "./validations"
+import Switch from "@material-ui/core/Switch"
+import { Alert } from "@material-ui/lab"
+import useMediaQuery from "@material-ui/core/useMediaQuery"
 
 import {
   getPVP,
   getPVM,
   getTotalUnitsPVP,
   getTotalUnitsPVM,
-} from "./pricesFunctions";
+} from "./pricesFunctions"
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -130,67 +130,67 @@ const useStyles = makeStyles((theme) => ({
     transform: "translateX(35px) !important",
     padding: "1px",
   },
-}));
+}))
 
 export default function ShoppingPage(props) {
-  const prixerUsername = "all";
-  const classes = useStyles();
-  const history = useHistory();
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const prixerUsername = "all"
+  const classes = useStyles()
+  const history = useHistory()
+  const theme = useTheme()
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
 
-  const [orderPaymentMethod, setOrderPaymentMethod] = useState(undefined);
-  const [observations, setObservations] = useState();
-  const [activeStep, setActiveStep] = useState(0);
-  const [loading, setLoading] = useState(false);
-  const steps = [`Tus datos`, `Orden de compra`];
-  const [dollarValue, setDollarValue] = useState(1);
-  const [currency, setCurrency] = useState(false);
-  const [paymentVoucher, setPaymentVoucher] = useState();
-  const [discountList, setDiscountList] = useState([]);
-  const [seller, setSeller] = useState();
-  const [expanded, setExpanded] = useState(false);
-  const [orgs, setOrgs] = useState([]);
+  const [orderPaymentMethod, setOrderPaymentMethod] = useState(undefined)
+  const [observations, setObservations] = useState()
+  const [activeStep, setActiveStep] = useState(0)
+  const [loading, setLoading] = useState(false)
+  const steps = [`Tus datos`, `Orden de compra`]
+  const [dollarValue, setDollarValue] = useState(1)
+  const [currency, setCurrency] = useState(false)
+  const [paymentVoucher, setPaymentVoucher] = useState()
+  const [discountList, setDiscountList] = useState([])
+  const [seller, setSeller] = useState()
+  const [expanded, setExpanded] = useState(false)
+  const [orgs, setOrgs] = useState([])
 
   const getDiscounts = async () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + "/discount/read-allv2";
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/discount/read-allv2"
     await axios
       .post(base_url)
       .then((response) => {
-        setDiscountList(response.data.discounts);
+        setDiscountList(response.data.discounts)
       })
       .catch((error) => {
-        console.log(error);
-      });
-  };
+        console.log(error)
+      })
+  }
 
-    const getORGs = async () => {
+  const getORGs = async () => {
     const base_url =
-      process.env.REACT_APP_BACKEND_URL + "/organization/read-all-full";
+      process.env.REACT_APP_BACKEND_URL + "/organization/read-all-full"
     await axios
       .get(base_url)
       .then((response) => {
-        setOrgs(response.data.organizations);
+        setOrgs(response.data.organizations)
       })
       .catch((error) => {
-        console.log(error);
-      });
-  };
+        console.log(error)
+      })
+  }
 
   useEffect(() => {
-    getDiscounts();
-    getORGs();
-  }, []);
+    getDiscounts()
+    getORGs()
+  }, [])
 
   const handleBack = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep - 1);
-  };
+    setActiveStep((prevActiveStep) => prevActiveStep - 1)
+  }
 
   const handleNext = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep + 1);
-  };
+    setActiveStep((prevActiveStep) => prevActiveStep + 1)
+  }
 
-  let shippingCost = Number(props.valuesConsumerForm?.shippingMethod?.price);
+  let shippingCost = Number(props.valuesConsumerForm?.shippingMethod?.price)
 
   const getTotalPrice = (state) => {
     if (
@@ -202,53 +202,53 @@ export default function ShoppingPage(props) {
         currency,
         dollarValue,
         discountList,
-        prixer
-      );
+        JSON.parse(localStorage?.getItem("token"))?.username
+      )
     } else {
-      return getTotalUnitsPVP(state, currency, dollarValue, discountList);
+      return getTotalUnitsPVP(state, currency, dollarValue, discountList)
     }
-  };
+  }
 
   const getIvaCost = (state) => {
     if (
       typeof JSON.parse(localStorage?.getItem("token"))?.username === "string"
     ) {
-      return 0;
+      return 0
     } else {
-      return getTotalPrice(state) * 0.16;
+      return getTotalPrice(state) * 0.16
     }
-  };
+  }
 
   const getTotal = (x) => {
-    let n = [];
-    n.push(getTotalPrice(props.buyState));
-    n.push(getIvaCost(props.buyState));
+    let n = []
+    n.push(getTotalPrice(props.buyState))
+    n.push(getIvaCost(props.buyState))
 
     if (props.valuesConsumerForm.shippingMethod) {
       if (props.currency) {
-        let prev = shippingCost * props.dollarValue;
+        let prev = shippingCost * props.dollarValue
         {
-          n.push(prev);
+          n.push(prev)
         }
       } else {
-        n.push(shippingCost);
+        n.push(shippingCost)
       }
     }
     let total = n.reduce(function (a, b) {
-      return a + b;
-    });
-    return total;
-  };
+      return a + b
+    })
+    return total
+  }
 
   const createOrder = async () => {
     if (orderPaymentMethod) {
-      setLoading(true);
-      props.setOpen(true);
+      setLoading(true)
+      props.setOpen(true)
 
-      let orderLines = [];
-      let taxv2 = getIvaCost(props.buyState);
-      let subtotalv2 = getTotalPrice(props.buyState);
-      let totalv2 = getTotal(props.buyState);
+      let orderLines = []
+      let taxv2 = getIvaCost(props.buyState)
+      let subtotalv2 = getTotalPrice(props.buyState)
+      let totalv2 = getTotal(props.buyState)
 
       props.buyState.map((s) => {
         s.product &&
@@ -257,14 +257,14 @@ export default function ShoppingPage(props) {
             product: s.product,
             art: s.art,
             quantity: s.quantity,
-          });
-      });
+          })
+      })
 
       orderLines.map((item) => {
         if (typeof item.product.discount === "string") {
           let dis = discountList?.find(
             ({ _id }) => _id === item.product.discount
-          );
+          )
           if (
             ((JSON.parse(localStorage.getItem("token")) &&
               JSON.parse(localStorage.getItem("token")).username) ||
@@ -280,8 +280,8 @@ export default function ShoppingPage(props) {
                   100) *
                   dis.value) *
                 (item.quantity || 1)
-            );
-            item.product.discount = dis.name + " %" + dis.value;
+            )
+            item.product.discount = dis.name + " %" + dis.value
           } else if (
             ((JSON.parse(localStorage.getItem("token")) &&
               JSON.parse(localStorage.getItem("token")).username) ||
@@ -294,8 +294,8 @@ export default function ShoppingPage(props) {
                 item.product?.prixerPrice?.from?.replace(/[,]/gi, ".")) -
                 dis.value) *
                 (item.quantity || 1)
-            );
-            item.product.discount = dis.name + " $" + dis.value;
+            )
+            item.product.discount = dis.name + " $" + dis.value
           } else if (dis?.type === "Porcentaje") {
             item.product.finalPrice = Number(
               ((item.product.publicEquation ||
@@ -305,16 +305,16 @@ export default function ShoppingPage(props) {
                   100) *
                   dis.value) *
                 (item.quantity || 1)
-            );
-            item.product.discount = dis.name + " %" + dis.value;
+            )
+            item.product.discount = dis.name + " %" + dis.value
           } else if (dis?.type === "Monto") {
             item.product.finalPrice = Number(
               ((item.product.publicEquation ||
                 item.product.publicPrice.from?.replace(/[,]/gi, ".")) -
                 dis.value) *
                 (item.quantity || 1)
-            );
-            item.product.discount = dis.name + " $" + dis.value;
+            )
+            item.product.discount = dis.name + " $" + dis.value
           }
         } else if (
           (JSON.parse(localStorage.getItem("token")) &&
@@ -323,12 +323,12 @@ export default function ShoppingPage(props) {
             JSON.parse(localStorage.getItem("adminToken")).username)
         ) {
           item.product.finalPrice =
-            item.product.prixerEquation || item.product.prixerPrice.from;
+            item.product.prixerEquation || item.product.prixerPrice.from
         } else {
           item.product.finalPrice =
-            item.product.publicEquation || item.product.publicPrice.from;
+            item.product.publicEquation || item.product.publicPrice.from
         }
-      });
+      })
 
       const consumerData = {
         active: true,
@@ -350,7 +350,7 @@ export default function ShoppingPage(props) {
         shippingAddress:
           props.valuesConsumerForm?.shippingAddress ||
           props.valuesConsumerForm?.address,
-      };
+      }
       const input = {
         orderId: nanoid(8),
         requests: orderLines,
@@ -395,33 +395,33 @@ export default function ShoppingPage(props) {
           consumerId: consumerData._id,
           consumerType: consumerData.consumerType,
         },
-      };
+      }
       if (
         JSON.parse(localStorage.getItem("token")) &&
         JSON.parse(localStorage.getItem("token")).username
       ) {
         orderLines.map((item) => {
-          item.product.publicEquation = undefined;
-          item.product.publicPrice = undefined;
-        });
-        consumerData.consumerType = "Prixer";
+          item.product.publicEquation = undefined
+          item.product.publicPrice = undefined
+        })
+        consumerData.consumerType = "Prixer"
         consumerData.prixerId = JSON.parse(
           localStorage.getItem("token")
-        ).prixerId;
+        ).prixerId
         input.billingData.destinatary = JSON.parse(
           localStorage.getItem("token")
-        ).account;
+        ).account
       } else {
         orderLines.map((item) => {
-          item.product.prixerEquation = undefined;
-          item.product.prixerPrice = undefined;
-        });
+          item.product.prixerEquation = undefined
+          item.product.prixerPrice = undefined
+        })
       }
 
       let data = {
         consumerData,
         input,
-      };
+      }
       if (orderPaymentMethod.name === "Balance Prixer") {
         const movement = {
           _id: nanoid(),
@@ -432,11 +432,11 @@ export default function ShoppingPage(props) {
           description: `Pago de la orden #${input.orderId}`,
           type: "Retiro",
           value: getTotal(props.buyState),
-        };
-        data.movement = movement;
+        }
+        data.movement = movement
       }
 
-      const base_url = process.env.REACT_APP_BACKEND_URL + "/order/createv2";
+      const base_url = process.env.REACT_APP_BACKEND_URL + "/order/createv2"
       const create = await axios
         .post(base_url, data, {
           "Content-Type": "multipart/form-data",
@@ -444,74 +444,81 @@ export default function ShoppingPage(props) {
         .then(async (response) => {
           if (response.status === 200) {
             if (paymentVoucher !== undefined) {
-              const formData = new FormData();
-              formData.append("paymentVoucher", paymentVoucher);
-              let ID = input.orderId;
+              const formData = new FormData()
+              formData.append("paymentVoucher", paymentVoucher)
+              let ID = input.orderId
               const base_url2 =
-                process.env.REACT_APP_BACKEND_URL + "/order/addVoucher/" + ID;
+                process.env.REACT_APP_BACKEND_URL + "/order/addVoucher/" + ID
               await axios.put(base_url2, formData, {
                 "Content-Type": "multipart/form-data",
-              });
+              })
             }
 
-            props.setMessage(response.data.info);
+            props.setMessage(response.data.info)
             props.setMessage(
               "¡Gracias por tu compra! Por favor revisa tu correo"
-            );
+            )
 
             const base_url3 =
-              process.env.REACT_APP_BACKEND_URL + "/order/sendEmail";
+              process.env.REACT_APP_BACKEND_URL + "/order/sendEmail"
             await axios.post(base_url3, input).then(async (response) => {
               if (response.data.success === false) {
-                await axios.post(base_url3, input);
-              } else return;
-            });
+                await axios.post(base_url3, input)
+              } else return
+            })
           }
         })
         .catch((error) => {
-          console.log(error.response);
-        });
-      history.push({ pathname: "/" });
-      props.setValuesConsumerForm(undefined);
-      localStorage.removeItem("buyState");
-      props.setBuyState([]);
-      setLoading(false);
+          console.log(error.response)
+        })
+      history.push({ pathname: "/" })
+      props.setValuesConsumerForm(undefined)
+      localStorage.removeItem("buyState")
+      props.setBuyState([])
+      setLoading(false)
     } else {
-      props.setOpen(true);
-      props.setMessage("Por favor selecciona una forma de pago.");
+      props.setOpen(true)
+      props.setMessage("Por favor selecciona una forma de pago.")
     }
-  };
+  }
 
   const readDollarValue = async () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + "/dollarValue/read";
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/dollarValue/read"
     await axios.get(base_url).then((response) => {
-      setDollarValue(response.data.dollarValue);
-    });
-  };
+      setDollarValue(response.data.dollarValue)
+    })
+  }
 
   useEffect(() => {
-    readDollarValue();
-  }, []);
+    readDollarValue()
+  }, [])
 
   const changeCurrency = () => {
-    setCurrency(!currency);
-  };
+    setCurrency(!currency)
+  }
 
   const handleBuy = () => {
     document.getElementById("next")?.scrollIntoView({
       behavior: "smooth",
       block: "start",
-    });
-  };
+    })
+  }
 
   return (
     <>
-      <Backdrop className={classes.backdrop} open={loading}>
+      <Backdrop
+        className={classes.backdrop}
+        open={loading}
+      >
         <CircularProgress />
       </Backdrop>
       <AppBar prixerUsername={prixerUsername} />
 
-      <Container component="main" maxWidth="s" className={classes.paper}>
+      <Container
+        component="main"
+        maxWidth="s"
+        className={classes.paper}
+      >
         <CssBaseline />
         {props.buyState.length > 0 ? (
           <Grid
@@ -543,9 +550,10 @@ export default function ShoppingPage(props) {
                 display: "flex",
                 flexDirection: "row",
                 alignItems: "center",
-                marginRight: 40,
+                marginRight: !isMobile && 40,
                 marginTop: isMobile && 40,
-                justifyContent: isMobile ? "start" : "end",
+                marginBottom: isMobile && 36,
+                justifyContent: "end",
               }}
             >
               <Switch
@@ -559,7 +567,7 @@ export default function ShoppingPage(props) {
                 color="primary"
                 value={currency}
                 onChange={(e) => {
-                  changeCurrency(e);
+                  changeCurrency(e)
                 }}
                 style={{ marginRight: "-5px" }}
               />
@@ -591,24 +599,32 @@ export default function ShoppingPage(props) {
               />
             </Grid>
 
-            <Grid item xs={12} sm={12} md={6} lg={5} xl={5}>
+            <Grid
+              item
+              xs={12}
+              sm={12}
+              md={6}
+              lg={5}
+              xl={5}
+            >
               <Paper
                 style={{
                   padding: "10px 10px 0px 10px",
-                  // marginTop: "150px",
-                  // height: "500px",
-                  // display: "flex",
                   width: "100%",
+                  marginTop: !isMobile && 12
                 }}
                 elevation={3}
               >
                 <Stepper activeStep={activeStep}>
                   {steps.map((label, index) => {
                     return (
-                      <Step key={label} {...props}>
+                      <Step
+                        key={label}
+                        {...props}
+                      >
                         <StepLabel>{label}</StepLabel>
                       </Step>
-                    );
+                    )
                   })}
                 </Stepper>
                 <div
@@ -702,7 +718,11 @@ export default function ShoppingPage(props) {
           <div
             style={{ marginTop: 100, display: "flex", flexDirection: "column" }}
           >
-            <Typography variant={"h5"} align={"center"} color="secondary">
+            <Typography
+              variant={"h5"}
+              align={"center"}
+              color="secondary"
+            >
               Actualmente no tienes ningun producto dentro del carrito de
               compra.
             </Typography>
@@ -718,14 +738,9 @@ export default function ShoppingPage(props) {
                 variant="contained"
                 color="primary"
                 onClick={() => {
-                  // props.setSelectedArtToAssociate({
-                  //   index,
-                  //   item: buy.art,
-                  //   previous: true,
-                  // });
                   history.push({
                     pathname: "/productos",
-                  });
+                  })
                 }}
               >
                 Elegir Producto
@@ -735,5 +750,5 @@ export default function ShoppingPage(props) {
         )}
       </Container>
     </>
-  );
+  )
 }

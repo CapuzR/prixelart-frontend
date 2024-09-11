@@ -1,34 +1,34 @@
-import React, { useState, useEffect } from "react";
-import AppBar from "@material-ui/core/AppBar";
-import Toolbar from "@material-ui/core/Toolbar";
-import IconButton from "@material-ui/core/IconButton";
-import Tabs from "@material-ui/core/Tabs";
-import Tab from "@material-ui/core/Tab";
-import { makeStyles, withStyles } from "@material-ui/core/styles";
-import CB_isologo from "./assets/CB_isologo_black.svg";
-import { getProducts } from "./xoxo";
-import Badge from "@material-ui/core/Badge";
-import ShoppingCartOutlined from "@material-ui/icons/ShoppingCartOutlined";
-import Snackbar from "@material-ui/core/Snackbar";
-import Grid from "@material-ui/core/Grid";
-import Slider from "react-slick";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
-import { Typography } from "@material-ui/core";
-import Button from "@material-ui/core/Button";
-import MenuItem from "@material-ui/core/MenuItem";
-import FormControl from "@material-ui/core/FormControl";
-import Select from "@material-ui/core/Select";
-import Radio from "@material-ui/core/Radio";
-import { useHistory } from "react-router-dom";
-import isotipo from "./assets/isotipo.svg";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
-import { useTheme } from "@material-ui/core/styles";
-import Menu from "@material-ui/core/Menu";
-import MenuIcon from "@material-ui/icons/Menu";
-import MDEditor from "@uiw/react-md-editor";
-import ReactGA from "react-ga";
-ReactGA.initialize("G-0RWP9B33D8");
+import React, { useState, useEffect } from "react"
+import AppBar from "@material-ui/core/AppBar"
+import Toolbar from "@material-ui/core/Toolbar"
+import IconButton from "@material-ui/core/IconButton"
+import Tabs from "@material-ui/core/Tabs"
+import Tab from "@material-ui/core/Tab"
+import { makeStyles, withStyles } from "@material-ui/core/styles"
+import CB_isologo from "./assets/CB_isologo_black.svg"
+import { getProducts } from "./xoxo"
+import Badge from "@material-ui/core/Badge"
+import ShoppingCartOutlined from "@material-ui/icons/ShoppingCartOutlined"
+import Snackbar from "@material-ui/core/Snackbar"
+import Grid from "@material-ui/core/Grid"
+import Slider from "react-slick"
+import "slick-carousel/slick/slick.css"
+import "slick-carousel/slick/slick-theme.css"
+import { Typography } from "@material-ui/core"
+import Button from "@material-ui/core/Button"
+import MenuItem from "@material-ui/core/MenuItem"
+import FormControl from "@material-ui/core/FormControl"
+import Select from "@material-ui/core/Select"
+import Radio from "@material-ui/core/Radio"
+import { useHistory } from "react-router-dom"
+import isotipo from "./assets/isotipo.svg"
+import useMediaQuery from "@material-ui/core/useMediaQuery"
+import { useTheme } from "@material-ui/core/styles"
+import Menu from "@material-ui/core/Menu"
+import MenuIcon from "@material-ui/icons/Menu"
+import MDEditor from "@uiw/react-md-editor"
+import ReactGA from "react-ga"
+ReactGA.initialize("G-0RWP9B33D8")
 
 const useStyles = makeStyles((theme) => ({
   typography: { fontFamily: "Lastik" },
@@ -53,113 +53,111 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
     padding: "unset",
   },
-}));
+}))
 
 export default function ProductDetail(props) {
-  const classes = useStyles();
-  const history = useHistory();
-  const theme = useTheme();
+  const classes = useStyles()
+  const history = useHistory()
+  const theme = useTheme()
 
-  const isMobile = useMediaQuery(theme.breakpoints.down("xs"));
-  const isTab = useMediaQuery(theme.breakpoints.down("sm"));
-  const [anchorEl, setAnchorEl] = useState(null);
-  const openMenu = Boolean(anchorEl);
+  const isMobile = useMediaQuery(theme.breakpoints.down("xs"))
+  const isTab = useMediaQuery(theme.breakpoints.down("sm"))
+  const [anchorEl, setAnchorEl] = useState(null)
+  const openMenu = Boolean(anchorEl)
 
-  const [open, setOpen] = useState(false);
-  const [message, setMessage] = useState("");
-  const [selectedColor, setSelectedColor] = useState(undefined);
-  const [selectedSize, setSelectedSize] = useState(undefined);
-  const [selectedShape, setSelectedShape] = useState(undefined);
-  const [selectedItem, setSelectedItem] = useState(undefined);
+  const [open, setOpen] = useState(false)
+  const [message, setMessage] = useState("")
+  const [selectedColor, setSelectedColor] = useState(undefined)
+  const [selectedSize, setSelectedSize] = useState(undefined)
+  const [selectedShape, setSelectedShape] = useState(undefined)
+  const [selectedItem, setSelectedItem] = useState(undefined)
   const [buyState, setBuyState] = useState(
     localStorage.getItem("CBbuyState")
       ? JSON.parse(localStorage.getItem("CBbuyState"))
       : []
-  );
+  )
   const [cartLength, setCartLength] = useState(
     localStorage.getItem("CBbuyState")
       ? JSON.parse(localStorage.getItem("CBbuyState")).length
       : 0
-  );
-  const url = window.location.pathname;
-  const id = url.substring(url.lastIndexOf("=") + 1);
+  )
+  const url = window.location.pathname
+  const id = url.substring(url.lastIndexOf("=") + 1)
 
   const handleMenu = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
+    setAnchorEl(event.currentTarget)
+  }
 
   const handleClose = () => {
-    setAnchorEl(null);
-  };
+    setAnchorEl(null)
+  }
 
   const handleSize = (event) => {
-    setSelectedSize(event.target.value);
-  };
+    setSelectedSize(event.target.value)
+  }
 
   const handleColor = (event) => {
-    setSelectedColor(event.target.value);
-  };
+    setSelectedColor(event.target.value)
+  }
 
   const handleShape = (event) => {
-    setSelectedShape(event.target.value);
-  };
+    setSelectedShape(event.target.value)
+  }
 
   useEffect(() => {
-    const products = getProducts();
+    const products = getProducts()
 
-    const x = products.find((item) => item.product.item === id);
-    setSelectedItem(x);
-  }, []);
+    const x = products.find((item) => item.product.item === id)
+    setSelectedItem(x)
+  }, [])
 
   const addItemToBuyState = (input) => {
     ReactGA.event({
       category: "Carrito CB",
       action: "agregar_al_carrito",
       label: input.product.item,
-    });
+    })
     if (selectedColor === undefined) {
-      setOpen(true);
-      setMessage("Por favor selecciona un color.");
+      setOpen(true)
+      setMessage("Por favor selecciona un color.")
     } else if (
       Object.keys(input.product.attributes).length > 1 &&
       selectedSize === undefined
     ) {
-      setOpen(true);
-      setMessage("Por favor selecciona una talla.");
+      setOpen(true)
+      setMessage("Por favor selecciona una talla.")
     } else if (
       Object.keys(input.product.attributes).length > 1 &&
       selectedShape === undefined
     ) {
-      setOpen(true);
-      setMessage("Por favor selecciona un corte.");
+      setOpen(true)
+      setMessage("Por favor selecciona un corte.")
     } else {
-      const newState = [...buyState];
+      const newState = [...buyState]
 
-      let prod = input.product;
-      let art = input.art;
+      let prod = input.product
+      let art = input.art
 
       let selection =
         Object.keys(input.product.attributes).length > 1
           ? selectedSize + " " + selectedColor + " " + selectedShape
-          : selectedColor;
-      prod.selection = selection;
-      art.squareThumbUrl = art.images.find(
-        (a) => a.color === selectedColor
-      ).img;
+          : selectedColor
+      prod.selection = selection
+      art.squareThumbUrl = art.images.find((a) => a.color === selectedColor).img
 
       const prevItem = newState.find(
         (item) =>
           item.product.item === input.product.item &&
           item.product.selection === selection
-      );
+      )
 
       if (!prevItem) {
         newState.push({
           art: art,
           product: prod,
           quantity: 1,
-        });
-        setCartLength((prevCartLength) => prevCartLength + 1);
+        })
+        setCartLength((prevCartLength) => prevCartLength + 1)
       } else {
         setBuyState((prev) =>
           prev.map((item) => {
@@ -167,38 +165,38 @@ export default function ProductDetail(props) {
               item.product.item === input.product.item &&
               item.product.selection === selection
             ) {
-              return { ...item, quantity: item.quantity++ };
+              return { ...item, quantity: item.quantity++ }
             }
-            return item;
+            return item
           })
-        );
+        )
       }
 
-      setBuyState(newState);
-      localStorage.setItem("CBbuyState", JSON.stringify(newState));
-      setOpen(true);
-      setMessage("Producto agregado al carrito correctamente.");
+      setBuyState(newState)
+      localStorage.setItem("CBbuyState", JSON.stringify(newState))
+      setOpen(true)
+      setMessage("Producto agregado al carrito correctamente.")
     }
-  };
+  }
 
   const StyledBadge = withStyles((theme) => ({
     badge: {
       backgroundColor: "#FF9934",
       color: "black",
     },
-  }))(Badge);
+  }))(Badge)
 
   const settings = {
     customPaging: function (i) {
-      let image;
+      let image
 
       if (selectedColor) {
         const matchingImages = selectedItem?.art.images.filter(
           (image) => image.color === selectedColor
-        );
-        image = matchingImages?.length > 0 ? matchingImages[i]?.img : null;
+        )
+        image = matchingImages?.length > 0 ? matchingImages[i]?.img : null
       } else {
-        image = selectedItem?.art.images[i]?.img;
+        image = selectedItem?.art.images[i]?.img
       }
 
       return (
@@ -220,7 +218,7 @@ export default function ProductDetail(props) {
             />
           </a>
         </li>
-      );
+      )
     },
     dots: true,
     // dotsClass: classes.dotsContainer,
@@ -232,36 +230,36 @@ export default function ProductDetail(props) {
     autoplaySpeed: 4000,
     infinite: true,
     pauseOnHover: true,
-  };
+  }
 
   const handleMain = () => {
-    history.push({ pathname: "/chiguirebipolar" });
-  };
+    history.push({ pathname: "/chiguirebipolar" })
+  }
 
   const scrollToSection = (selector) => {
-    const section = document.querySelector(selector);
+    const section = document.querySelector(selector)
     if (section) {
-      section.scrollIntoView({ behavior: "smooth" });
+      section.scrollIntoView({ behavior: "smooth" })
     }
-  };
+  }
 
   const handleToProduct = () => {
-    handleMain();
+    handleMain()
     setTimeout(() => {
-      scrollToSection("#productos");
-    }, 500);
-  };
+      scrollToSection("#productos")
+    }, 500)
+  }
 
   const handleCart = () => {
-    history.push({ pathname: "/chiguirebipolar/carrito" });
-  };
+    history.push({ pathname: "/chiguirebipolar/carrito" })
+  }
 
   const handleToPrixelart = () => {
-    handleMain();
+    handleMain()
     setTimeout(() => {
-      scrollToSection("#prixelart");
-    }, 1200);
-  };
+      scrollToSection("#prixelart")
+    }, 1200)
+  }
 
   return (
     <>
@@ -290,7 +288,10 @@ export default function ProductDetail(props) {
 
           {isTab ? (
             <>
-              <IconButton onClick={handleMenu} size="medium">
+              <IconButton
+                onClick={handleMenu}
+                size="medium"
+              >
                 <StyledBadge badgeContent={cartLength}>
                   <MenuIcon />
                 </StyledBadge>
@@ -397,7 +398,10 @@ export default function ProductDetail(props) {
             height: 420,
           }}
         >
-          <Slider dotsClass={classes.dotsContainer} {...settings}>
+          <Slider
+            dotsClass={classes.dotsContainer}
+            {...settings}
+          >
             {selectedColor
               ? selectedItem?.art.images.map(
                   (art, i) =>
@@ -475,7 +479,10 @@ export default function ProductDetail(props) {
             </Typography>
           )}
           {!isTab && (
-            <Typography className={classes.typography} style={{ fontSize: 20 }}>
+            <Typography
+              className={classes.typography}
+              style={{ fontSize: 20 }}
+            >
               {selectedItem?.product.description}
             </Typography>
           )}
@@ -519,7 +526,10 @@ export default function ProductDetail(props) {
                   onChange={handleSize}
                 >
                   {selectedItem?.product.attributes?.talla.map((t) => (
-                    <MenuItem value={t} style={{ justifyContent: "center" }}>
+                    <MenuItem
+                      value={t}
+                      style={{ justifyContent: "center" }}
+                    >
                       {t}
                     </MenuItem>
                   ))}
@@ -552,7 +562,10 @@ export default function ProductDetail(props) {
                   onChange={handleShape}
                 >
                   {selectedItem?.product.attributes?.corte.map((t) => (
-                    <MenuItem value={t} style={{ justifyContent: "center" }}>
+                    <MenuItem
+                      value={t}
+                      style={{ justifyContent: "center" }}
+                    >
                       {t}
                     </MenuItem>
                   ))}
@@ -614,17 +627,26 @@ export default function ProductDetail(props) {
               borderRadius: 10,
               fontSize: 18,
               marginTop: 20,
-              marginBottom: 40,
+              marginBottom: 20,
             }}
             onClick={() => addItemToBuyState(selectedItem)}
           >
             Comprar ahora
           </Button>
+          {selectedItem?.product?.offer !== undefined && (
+            <Typography
+              className={classes.typography}
+              style={{ fontSize: isTab ? 13 : 18, fontWeight: "bold" }}
+              color="primary"
+            >
+              {selectedItem?.product.offer}
+            </Typography>
+          )}
           {selectedItem?.product?.specs && (
             <div
               data-color-mode="light"
               style={{
-                marginTop: 50,
+                marginTop: 25,
                 marginBottom: 30,
                 display: "flex",
               }}
@@ -645,5 +667,5 @@ export default function ProductDetail(props) {
         onClose={() => setOpen(false)}
       />
     </>
-  );
+  )
 }

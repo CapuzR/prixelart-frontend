@@ -361,33 +361,33 @@ export default function CreateOrder(props) {
     await axios.post(base_url, input).then(async (response) => {
       if (response.data.res.success) {
         for (const item of props.buyState) {
-          if (item.product.autoCertified === true) {
-            let art = item.art
-            let last = 0
-            const matches = props.buyState.filter(
-              (a) => a.art.artId === art.artId
-            )
-            const sequences = matches.map(
-              (item) => item.art.certificate.sequence
-            )
-            last = Math.max(...sequences)
+          // if (item.product.autoCertified === true) {
+          //   let art = item.art
+          //   let last = 0
+          //   const matches = props.buyState.filter(
+          //     (a) => a.art.artId === art.artId
+          //   )
+          //   const sequences = matches.map(
+          //     (item) => item.art.certificate.sequence
+          //   )
+          //   last = Math.max(...sequences)
             
-            const URI =
-              process.env.REACT_APP_BACKEND_URL + "/art/rank/" + art.artId
-            art.points = parseInt(art.points)
-            const certificate = {
-              code: art.certificate.code,
-              serial: item.art.certificate.serial,
-              sequence: last,
-            }
-            art.certificate = certificate
-            await axios.put(
-              URI,
-              art,
-              { headers: { adminToken: localStorage.getItem("adminTokenV") } },
-              { withCredentials: true }
-            )
-          }
+          //   const URI =
+          //     process.env.REACT_APP_BACKEND_URL + "/art/rank/" + art.artId
+          //   art.points = parseInt(art.points)
+          //   const certificate = {
+          //     code: art.certificate.code,
+          //     serial: item.art.certificate.serial,
+          //     sequence: last,
+          //   }
+          //   art.certificate = certificate
+          //   await axios.put(
+          //     URI,
+          //     art,
+          //     { headers: { adminToken: localStorage.getItem("adminTokenV") } },
+          //     { withCredentials: true }
+          //   )
+          // }
         }
         if (basicData?.email && basicData?.email.length > 8) {
           await axios.post(base_url3, input).then(async (response) => {

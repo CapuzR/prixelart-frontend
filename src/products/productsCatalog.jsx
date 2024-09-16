@@ -1,41 +1,40 @@
-import axios from "axios";
-import React, { useEffect } from "react";
-import AppBar from "../sharedComponents/appBar/appBar";
-import FloatingAddButton from "../sharedComponents/floatingAddButton/floatingAddButton";
-import ProductsGrid from "./productsGrid";
-import Container from "@material-ui/core/Container";
-import CssBaseline from "@material-ui/core/CssBaseline";
-import Grid from "@material-ui/core/Grid";
-import { makeStyles } from "@material-ui/core/styles";
-import { useState } from "react";
-import ArtUploader from "../sharedComponents/artUploader/artUploader";
+import axios from "axios"
+import React, { useEffect } from "react"
+import AppBar from "../sharedComponents/appBar/appBar"
+import FloatingAddButton from "../sharedComponents/floatingAddButton/floatingAddButton"
+import ProductsGrid from "./productsGrid"
+import Container from "@material-ui/core/Container"
+import CssBaseline from "@material-ui/core/CssBaseline"
+import Grid from "@material-ui/core/Grid"
+import { makeStyles } from "@material-ui/core/styles"
+import { useState } from "react"
+import ArtUploader from "../sharedComponents/artUploader/artUploader"
 
-import Dialog from "@material-ui/core/Dialog";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogContentText from "@material-ui/core/DialogContentText";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import DialogActions from "@material-ui/core/DialogActions";
-import Button from "@material-ui/core/Button";
-import Img from "react-cool-img";
-import Typography from "@material-ui/core/Typography";
-import Paper from "@material-ui/core/Paper";
-import Carousel from "react-material-ui-carousel";
-import MaximizeIcon from "@material-ui/icons/Maximize";
-import ArrowForwardIosIcon from "@material-ui/icons/ArrowForwardIos";
-import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
-import Slider from "react-slick";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
+import Dialog from "@material-ui/core/Dialog"
+import DialogContent from "@material-ui/core/DialogContent"
+import DialogContentText from "@material-ui/core/DialogContentText"
+import DialogTitle from "@material-ui/core/DialogTitle"
+import DialogActions from "@material-ui/core/DialogActions"
+import Button from "@material-ui/core/Button"
+import Img from "react-cool-img"
+import Typography from "@material-ui/core/Typography"
+import Paper from "@material-ui/core/Paper"
+import Slider from "react-slick"
+import "slick-carousel/slick/slick.css"
+import "slick-carousel/slick/slick-theme.css"
+import Tooltip from "@material-ui/core/Tooltip"
 
-import { useHistory } from "react-router-dom";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
-import { useTheme } from "@material-ui/core/styles";
-import CartReview from "../shoppingCart/cartReview";
-import CreateService from "../sharedComponents/createService/createService";
-import ReactGA from "react-ga";
+import { useHistory } from "react-router-dom"
+import useMediaQuery from "@material-ui/core/useMediaQuery"
+import { useTheme } from "@material-ui/core/styles"
+import CartReview from "../shoppingCart/cartReview"
+import CreateService from "../sharedComponents/createService/createService"
+import ReactGA from "react-ga"
+import { IconButton } from "@material-ui/core"
+import Search from "@material-ui/icons/Search"
 
-ReactGA.initialize("G-0RWP9B33D8");
-ReactGA.pageview("/productos");
+ReactGA.initialize("G-0RWP9B33D8")
+ReactGA.pageview("/productos")
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -44,6 +43,7 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "column",
     alignItems: "left",
     flexGrow: 1,
+    maxWidth: "100rem",
   },
   avatar: {
     margin: theme.spacing(1),
@@ -81,46 +81,57 @@ const useStyles = makeStyles((theme) => ({
       cursor: "pointer",
     },
   },
-}));
+}))
 
 export default function ProductsCatalog(props) {
-  const theme = useTheme();
+  const theme = useTheme()
 
-  const [openArtFormDialog, setOpenArtFormDialog] = useState(false);
-  const [openShoppingCart, setOpenShoppingCart] = useState(false);
-  const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
-  const isDeskTop = useMediaQuery(theme.breakpoints.up("sm"));
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  const isTab = useMediaQuery(theme.breakpoints.down("md"));
+  const [openArtFormDialog, setOpenArtFormDialog] = useState(false)
+  const [openShoppingCart, setOpenShoppingCart] = useState(false)
+  const isDesktop = useMediaQuery(theme.breakpoints.up("md"))
+  const isDeskTop = useMediaQuery(theme.breakpoints.up("sm"))
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
+  const isTab = useMediaQuery(theme.breakpoints.down("md"))
 
-  const [bestSellers, setBestSellers] = useState();
-  const [selectedProduct, setSelectedProduct] = useState(undefined);
-  const prixerUsername = "all";
-  const classes = useStyles();
-  const history = useHistory();
-  const [openServiceFormDialog, setOpenServiceFormDialog] = useState(false);
-  const [createdService, setCreatedService] = useState(false);
+  const [bestSellers, setBestSellers] = useState()
+  const [selectedProduct, setSelectedProduct] = useState(undefined)
+  const prixerUsername = "all"
+  const classes = useStyles()
+  const history = useHistory()
+  const [openServiceFormDialog, setOpenServiceFormDialog] = useState(false)
+  const [createdService, setCreatedService] = useState(false)
 
   const getBestSellers = async () => {
-    const url = process.env.REACT_APP_BACKEND_URL + "/getBestSellers";
+    const url = process.env.REACT_APP_BACKEND_URL + "/getBestSellers"
     try {
-      const bestS = await axios.get(url);
-      setBestSellers(bestS.data.products);
+      const bestS = await axios.get(url)
+      setBestSellers(bestS.data.products)
     } catch (error) {
-      console.log(error);
+      console.log(error)
     }
-  };
+  }
 
   const handleProduct = async (product) => {
-    props.setPointedProduct(product.name);
+    props.setPointedProduct(product.name)
     document.getElementById(product.name)?.scrollIntoView({
       behavior: "smooth",
       block: "start",
-    });
-  };
+    })
+  }
   useEffect(() => {
-    getBestSellers();
-  }, []);
+    getBestSellers()
+  }, [])
+
+  const viewDetails = (product) => {
+    history.push({
+      pathname: "/producto=" + product._id,
+    })
+    ReactGA.event({
+      category: "Productos",
+      action: "Ver_mas",
+      label: product.name,
+    })
+  }
 
   const settings = {
     slidesToShow: (isMobile && 2) || (isTab && 3) || (isDesktop && 4),
@@ -130,13 +141,16 @@ export default function ProductsCatalog(props) {
     speed: 500,
     infinite: true,
     dots: true,
-  };
+  }
 
   return (
     <>
       <AppBar prixerUsername={prixerUsername} />
 
-      <Container component="main" className={classes.paper}>
+      <Container
+        component="main"
+        className={classes.paper}
+      >
         <CssBaseline />
         <Grid style={{ marginTop: 90 }}>
           <Typography
@@ -176,7 +190,11 @@ export default function ProductsCatalog(props) {
                 }}
                 fontWeight="bold"
               >
-                <strong>¡Productos más vendidos! </strong>
+                {isMobile ? (
+                  <strong>¡Más vendidos!</strong>
+                ) : (
+                  <strong>¡Productos más vendidos! </strong>
+                )}
               </Typography>
             </div>
             <Slider {...settings}>
@@ -209,34 +227,61 @@ export default function ProductsCatalog(props) {
                         width: isMobile ? 120 : 170,
                         marginRight: 10,
                         backgroundSize: "cover",
-                        borderRadius: 40,
+                        borderRadius: 20,
                         backgroundPosition: "back",
-                      }}
-                    />
-                    <Typography
-                      variant="subtitle1"
-                      style={{
-                        color: "#404e5c",
-                        fontWeight: "bold",
-                        fontSize: isMobile && "1rem",
-                        alignSelf: "center",
+                        display: "flex",
+                        justifyItems: "end",
+                        alignItems: "end"
                       }}
                     >
-                      {product.name}
-                    </Typography>
-                    <Button
-                      style={{
-                        backgroundColor: "#d33f49",
-                        color: "white",
-                        borderRadius: 40,
-                        width: 120,
-                        textTransform: "none",
-                      }}
-                      size="small"
-                      onClick={() => handleProduct(product)}
-                    >
-                      Ver detalles
-                    </Button>
+                      {isMobile && (
+                        <Tooltip title="Ver detalle">
+                          <IconButton
+                            size="small"
+                            onClick={(e) => {
+                              viewDetails(e, product)
+                            }}
+                            style={{
+                              padding: "1px",
+                              backgroundColor: "#d33f49",
+                              color: "#FFF",
+                              margin: 6
+                            }}
+                          >
+                            <Search />
+                          </IconButton>
+                        </Tooltip>
+                      )}
+                    </div>
+
+                    {!isMobile && (
+                      <>
+                        <Typography
+                          variant="subtitle1"
+                          style={{
+                            color: "#404e5c",
+                            fontWeight: "bold",
+                            fontSize: isMobile && "1rem",
+                            alignSelf: "center",
+                          }}
+                        >
+                          {product.name}
+                        </Typography>
+                        <Button
+                          style={{
+                            backgroundColor: "#d33f49",
+                            color: "white",
+                            borderRadius: 40,
+                            width: 120,
+                            textTransform: "none",
+                          }}
+                          size="small"
+                          onClick={() => handleProduct(product)}
+                        >
+                          Ver detalles
+                        </Button>
+                      </>
+                    )}
                   </div>
                 </div>
               ))}
@@ -315,7 +360,7 @@ export default function ProductsCatalog(props) {
                               props.setSelectedArtToAssociate({
                                 index,
                                 item: buy.art,
-                              });
+                              })
                             }}
                           >
                             <Img
@@ -341,7 +386,7 @@ export default function ProductsCatalog(props) {
                           </div>
                         )}
                       </div>
-                    );
+                    )
                   })
                 ) : (
                   <strong>
@@ -357,8 +402,8 @@ export default function ProductsCatalog(props) {
             <Button
               onClick={() => {
                 props.selectedArtToAssociate?.previous &&
-                  props.setSelectedArtToAssociate(undefined);
-                props.setIsOpenAssociateArt(false);
+                  props.setSelectedArtToAssociate(undefined)
+                props.setIsOpenAssociateArt(false)
               }}
               color="primary"
             >
@@ -373,13 +418,13 @@ export default function ProductsCatalog(props) {
                       index: props.selectedArtToAssociate.index,
                       item: selectedProduct,
                       type: "product",
-                    });
-                    setSelectedProduct(undefined);
-                    props.setSelectedArtToAssociate(undefined);
-                    props.setIsOpenAssociateArt(false);
+                    })
+                    setSelectedProduct(undefined)
+                    props.setSelectedArtToAssociate(undefined)
+                    props.setIsOpenAssociateArt(false)
                     localStorage.getItem("adminToken")
                       ? history.push({ pathname: "/admin/order/read" })
-                      : history.push({ pathname: "/" });
+                      : history.push({ pathname: "/" })
                   }}
                   color="primary"
                 >
@@ -392,9 +437,9 @@ export default function ProductsCatalog(props) {
                   props.addItemToBuyState({
                     type: "product",
                     item: selectedProduct,
-                  });
-                  setSelectedProduct(undefined);
-                  history.push({ pathname: "/galeria" });
+                  })
+                  setSelectedProduct(undefined)
+                  history.push({ pathname: "/galeria" })
                 }}
                 color="primary"
               >
@@ -430,7 +475,11 @@ export default function ProductsCatalog(props) {
             </div>
           ) : (
             <div style={{ margin: "90px 10px 40px 10px" }}>
-              <Typography variant={"h6"} align={"Center"} justify={"center"}>
+              <Typography
+                variant={"h6"}
+                align={"Center"}
+                justify={"center"}
+              >
                 Actualmente no tienes ningun producto dentro del carrito de
                 compra.
               </Typography>
@@ -445,7 +494,7 @@ export default function ProductsCatalog(props) {
           >
             <Button
               onClick={() => {
-                setOpenShoppingCart(false);
+                setOpenShoppingCart(false)
               }}
               color="primary"
             >
@@ -454,7 +503,7 @@ export default function ProductsCatalog(props) {
             {props.buyState?.length > 0 && (
               <Button
                 onClick={() => {
-                  history.push({ pathname: "/shopping" });
+                  history.push({ pathname: "/shopping" })
                 }}
                 color="primary"
               >
@@ -465,5 +514,5 @@ export default function ProductsCatalog(props) {
         </Dialog>
       </Container>
     </>
-  );
+  )
 }

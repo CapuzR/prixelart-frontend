@@ -71,7 +71,7 @@ export default function FloatingAddButton(props) {
                 aria-label="add"
                 onClick={openServiceDialog}
                 style={{
-                  bottom: 160,
+                  bottom: 80,
 
                   right: 10,
                 }}
@@ -85,7 +85,7 @@ export default function FloatingAddButton(props) {
                 aria-label="add"
                 onClick={openArtDialog}
                 style={{
-                  bottom: 90,
+                  bottom: 10,
                   right: 10,
                 }}
               >

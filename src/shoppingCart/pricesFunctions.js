@@ -954,7 +954,6 @@ const getPVP = (item, currency, dollarValue, discountList) => {
     typeof item.product.publicEquation === "number"
       ? item.product.publicEquation
       : Number(item.product.publicEquation?.replace(/[,]/gi, "."))
-  console.log(pubEq)
   let pubFr =
     typeof item.product.publicPrice.from === "number"
       ? item.product.publicPrice.from
@@ -997,7 +996,11 @@ const getPVM = (item, currency, dollarValue, discountList, prixer) => {
 
   base = prxEq || prxFr
   prev = base - base / 10
-  if (item.art.prixerUsername !== prixer && item.art.owner !== prixer) {
+  if (
+    item.art !== undefined &&
+    item.art.prixerUsername !== prixer &&
+    item.art.owner !== prixer
+  ) {
     prev =
       prev /
       (1 - (item.art?.comission !== undefined ? item.art.comission : 10) / 100)

@@ -206,7 +206,7 @@ export default function CreateVariant(props) {
         variants.attributes = attributes;
         variants.attributes?.map((obj, i) => {
           if (obj.name) {
-            formData.append(`attributesName${i}`, obj.name);
+            formData.append(`attributesName${i}`, obj.name.trim());
           }
           if (obj.value) {
             formData.append(`attributesValue${i}`, obj.value);

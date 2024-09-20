@@ -378,12 +378,31 @@ const getComissionv2 = (
 }
 
 const getPVPtext = (product, currency, dollarValue, discountList) => {
+  let dollar =
+    typeof dollarValue === "string"
+      ? Number(dollarValue.replace(/[,]/gi, "."))
+      : dollarValue
+  let pubEq =
+    typeof product?.publicEquation === "string"
+      ? Number(product?.publicEquation.replace(/[,]/gi, "."))
+      : product?.publicEquation
+
+  let pubFr =
+    typeof product.publicPrice.from === "number"
+      ? product.publicPrice.from
+      : Number(product.publicPrice.from?.replace(/[,]/gi, "."))
+
+  let pubTo =
+    product.publicPrice.to !== null && product.publicPrice.to !== undefined
+      ? typeof product.publicPrice?.to === "number"
+        ? product.publicPrice.to
+        : Number(product.publicPrice.to.replace(/[,]/gi, "."))
+      : pubFr
   if (
     product?.discount !== undefined &&
     typeof product?.discount === "string" &&
     product.publicEquation !== undefined &&
     product?.publicEquation !== "" &&
-    typeof product.publicEquation === "string" &&
     currency
   ) {
     let dis = discountList?.filter((dis) => dis._id === product?.discount)[0]
@@ -391,13 +410,10 @@ const getPVPtext = (product, currency, dollarValue, discountList) => {
       <>
         <del>
           PVP: Bs
-          {Number(product.publicEquation * dollarValue).toLocaleString(
-            "de-DE",
-            {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            }
-          )}
+          {Number(pubEq * dollar).toLocaleString("de-DE", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })}
         </del>
         <div
           style={{
@@ -412,7 +428,7 @@ const getPVPtext = (product, currency, dollarValue, discountList) => {
         >
           Descuento de {dis?.type === "Porcentaje" && "%" + dis?.value}
           {dis?.type === "Monto" &&
-            Number(dis?.value * dollarValue).toLocaleString("de-DE", {
+            Number(dis?.value * dollar).toLocaleString("de-DE", {
               minimumFractionDigits: 2,
             })}
         </div>
@@ -420,9 +436,7 @@ const getPVPtext = (product, currency, dollarValue, discountList) => {
           <div>
             PVP: Bs
             {Number(
-              (product.publicEquation -
-                (product.publicEquation / 100) * dis?.value) *
-                dollarValue
+              (pubEq - (pubEq / 100) * dis?.value) * dollar
             ).toLocaleString("de-DE", {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
@@ -432,9 +446,7 @@ const getPVPtext = (product, currency, dollarValue, discountList) => {
         {dis?.type === "Monto" && (
           <div>
             PVP: Bs
-            {Number(
-              (product.publicEquation - dis?.value) * dollarValue
-            ).toLocaleString("de-DE", {
+            {Number((pubEq - dis?.value) * dollar).toLocaleString("de-DE", {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
             })}
@@ -445,16 +457,14 @@ const getPVPtext = (product, currency, dollarValue, discountList) => {
   } else if (
     product?.discount !== undefined &&
     typeof product?.discount === "string" &&
-    product.publicEquation !== undefined &&
-    product?.publicEquation !== "" &&
-    typeof product.publicEquation === "string"
+    product.publicEquation !== undefined
   ) {
     let dis = discountList?.filter((dis) => dis._id === product?.discount)[0]
     return (
       <>
         <del>
           PVP: $
-          {product.publicEquation.toLocaleString("de-DE", {
+          {pubEq.toLocaleString("de-DE", {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2,
           })}
@@ -476,25 +486,22 @@ const getPVPtext = (product, currency, dollarValue, discountList) => {
         {dis?.type === "Porcentaje" && (
           <div>
             PVP: $
-            {Number(
-              product.publicEquation -
-                (product.publicEquation / 100) * dis?.value
-            ).toLocaleString("de-DE", {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            })}
-          </div>
-        )}
-        {dis?.type === "Monto" && (
-          <div>
-            PVP: $
-            {Number(product.publicEquation - dis?.value).toLocaleString(
+            {Number(pubEq - (pubEq / 100) * dis?.value).toLocaleString(
               "de-DE",
               {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
               }
             )}
+          </div>
+        )}
+        {dis?.type === "Monto" && (
+          <div>
+            PVP: $
+            {Number(pubEq - dis?.value).toLocaleString("de-DE", {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })}
           </div>
         )}
       </>
@@ -511,21 +518,15 @@ const getPVPtext = (product, currency, dollarValue, discountList) => {
       <>
         <del>
           PVP: Bs
-          {Number(product.publicPrice.from * dollarValue).toLocaleString(
-            "de-DE",
-            {
+          {Number(pubFr * dollar).toLocaleString("de-DE", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          }) +
+            " - " +
+            Number(pubTo * dollar).toLocaleString("de-DE", {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
-            }
-          ) +
-            " - " +
-            Number(product.publicPrice?.to * dollarValue).toLocaleString(
-              "de-DE",
-              {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              }
-            )}
+            })}
         </del>
 
         <div
@@ -541,7 +542,7 @@ const getPVPtext = (product, currency, dollarValue, discountList) => {
         >
           Descuento de {dis?.type === "Porcentaje" && "%" + dis?.value}
           {dis?.type === "Monto" &&
-            Number(dis?.value * dollarValue).toLocaleString("de-DE", {
+            Number(dis?.value * dollar).toLocaleString("de-DE", {
               minimumFractionDigits: 2,
             })}
         </div>
@@ -550,18 +551,14 @@ const getPVPtext = (product, currency, dollarValue, discountList) => {
           <div>
             PVP: Bs
             {Number(
-              (product.publicPrice.from -
-                (product.publicPrice.from / 100) * dis?.value) *
-                dollarValue
+              (pubFr - (pubFr / 100) * dis?.value) * dollar
             ).toLocaleString("de-DE", {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
             }) +
               " - " +
               Number(
-                (product.publicPrice.to -
-                  (product.publicPrice.to / 100) * dis?.value) *
-                  dollarValue
+                (pubTo - (pubTo / 100) * dis?.value) * dollar
               ).toLocaleString("de-DE", {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
@@ -571,16 +568,12 @@ const getPVPtext = (product, currency, dollarValue, discountList) => {
         {dis?.type === "Monto" && (
           <div>
             PVP: $
-            {Number(
-              (product.publicPrice.from - dis?.value) * dollarValue
-            ).toLocaleString("de-DE", {
+            {Number((pubFr - dis?.value) * dollar).toLocaleString("de-DE", {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
             }) +
               " - " +
-              Number(
-                (product.publicPrice?.to - dis?.value) * dollarValue
-              ).toLocaleString("de-DE", {
+              Number((pubTo - dis?.value) * dollar).toLocaleString("de-DE", {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
               })}
@@ -591,20 +584,19 @@ const getPVPtext = (product, currency, dollarValue, discountList) => {
   } else if (
     product?.discount !== undefined &&
     typeof product?.discount === "string" &&
-    typeof product.publicPrice.to === "string" &&
-    product.publicPrice.to.length > 0
+    typeof product.publicPrice.to !== undefined
   ) {
     let dis = discountList?.filter((dis) => dis._id === product?.discount)[0]
     return (
       <>
         <del>
           PVP: $
-          {Number(product.publicPrice.from).toLocaleString("de-DE", {
+          {Number(pubFr).toLocaleString("de-DE", {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2,
           }) +
             " - " +
-            Number(product.publicPrice?.to).toLocaleString("de-DE", {
+            Number(pubTo).toLocaleString("de-DE", {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
             })}
@@ -628,27 +620,7 @@ const getPVPtext = (product, currency, dollarValue, discountList) => {
         {dis?.type === "Porcentaje" && (
           <div>
             PVP: $
-            {Number(
-              product.publicPrice.from -
-                (product.publicPrice.from / 100) * dis?.value
-            ).toLocaleString("de-DE", {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            }) +
-              " - " +
-              Number(
-                product.publicPrice?.to -
-                  (product.publicPrice?.to / 100) * dis?.value
-              ).toLocaleString("de-DE", {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              })}
-          </div>
-        )}
-        {dis?.type === "Monto" && (
-          <div>
-            PVP: $
-            {Number(product.publicPrice.from - dis?.value).toLocaleString(
+            {Number(pubFr - (pubFr / 100) * dis?.value).toLocaleString(
               "de-DE",
               {
                 minimumFractionDigits: 2,
@@ -656,13 +628,27 @@ const getPVPtext = (product, currency, dollarValue, discountList) => {
               }
             ) +
               " - " +
-              Number(product.publicPrice?.to - dis?.value).toLocaleString(
+              Number(pubTo - (pubTo / 100) * dis?.value).toLocaleString(
                 "de-DE",
                 {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
                 }
               )}
+          </div>
+        )}
+        {dis?.type === "Monto" && (
+          <div>
+            PVP: $
+            {Number(pubFr - dis?.value).toLocaleString("de-DE", {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            }) +
+              " - " +
+              Number(pubTo - dis?.value).toLocaleString("de-DE", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}
           </div>
         )}
       </>
@@ -677,13 +663,10 @@ const getPVPtext = (product, currency, dollarValue, discountList) => {
       <>
         <del>
           PVP: Bs
-          {Number(product.publicPrice.from * dollarValue).toLocaleString(
-            "de-DE",
-            {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            }
-          )}
+          {Number(pubFr * dollar).toLocaleString("de-DE", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })}
         </del>
 
         <div
@@ -699,7 +682,7 @@ const getPVPtext = (product, currency, dollarValue, discountList) => {
         >
           Descuento de {dis?.type === "Porcentaje" && "%" + dis?.value}
           {dis?.type === "Monto" &&
-            Number(dis?.value * dollarValue).toLocaleString("de-DE", {
+            Number(dis?.value * dollar).toLocaleString("de-DE", {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
             })}
@@ -709,9 +692,7 @@ const getPVPtext = (product, currency, dollarValue, discountList) => {
           <div>
             PVP: Bs
             {Number(
-              (product.publicPrice.from -
-                (product.publicPrice.from / 100) * dis?.value) *
-                dollarValue
+              (pubFr - (pubFr / 100) * dis?.value) * dollar
             ).toLocaleString("de-DE", {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
@@ -721,9 +702,7 @@ const getPVPtext = (product, currency, dollarValue, discountList) => {
         {dis?.type === "Monto" && (
           <div>
             PVP: $
-            {Number(
-              (product.publicPrice.from - dis?.value) * dollarValue
-            ).toLocaleString("de-DE", {
+            {Number((pubFr - dis?.value) * dollar).toLocaleString("de-DE", {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
             })}
@@ -740,7 +719,7 @@ const getPVPtext = (product, currency, dollarValue, discountList) => {
       <>
         <del>
           PVP: $
-          {Number(product.publicPrice.from).toLocaleString("de-DE", {
+          {Number(pubFr).toLocaleString("de-DE", {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2,
           })}
@@ -764,19 +743,7 @@ const getPVPtext = (product, currency, dollarValue, discountList) => {
         {dis?.type === "Porcentaje" && (
           <div>
             PVP: $
-            {Number(
-              product.publicPrice.from -
-                (product.publicPrice.from / 100) * dis?.value
-            ).toLocaleString("de-DE", {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            })}
-          </div>
-        )}
-        {dis?.type === "Monto" && (
-          <div>
-            PVP: $
-            {Number(product.publicPrice.from - dis?.value).toLocaleString(
+            {Number(pubFr - (pubFr / 100) * dis?.value).toLocaleString(
               "de-DE",
               {
                 minimumFractionDigits: 2,
@@ -785,24 +752,32 @@ const getPVPtext = (product, currency, dollarValue, discountList) => {
             )}
           </div>
         )}
+        {dis?.type === "Monto" && (
+          <div>
+            PVP: $
+            {Number(pubFr - dis?.value).toLocaleString("de-DE", {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })}
+          </div>
+        )}
       </>
     )
   } else if (product?.publicEquation !== "" && currency) {
     return (
       "PVP: Bs" +
-      Number(product.publicEquation * dollarValue).toLocaleString("de-DE", {
+      Number(pubEq * dollar).toLocaleString("de-DE", {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       })
     )
   } else if (
     product?.publicEquation !== undefined &&
-    product?.publicEquation !== "" &&
-    typeof product.publicEquation === "string"
+    product?.publicEquation !== ""
   ) {
     return (
       "PVP: $" +
-      Number(product.publicEquation).toLocaleString("de-DE", {
+      pubEq.toLocaleString("de-DE", {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       })
@@ -811,18 +786,16 @@ const getPVPtext = (product, currency, dollarValue, discountList) => {
     product?.attributes &&
     product?.attributes.length > 0 &&
     product.publicPrice.to !== product.publicPrice.from &&
-    typeof product.publicPrice.to === "string" &&
-    product.publicPrice.to.length > 0 &&
     currency
   ) {
     return (
       "PVP: Bs" +
-      Number(product.publicPrice.from * dollarValue).toLocaleString("de-DE", {
+      Number(pubFr * dollar).toLocaleString("de-DE", {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       }) +
       " - " +
-      Number(product.publicPrice?.to * dollarValue).toLocaleString("de-DE", {
+      Number(pubTo * dollar).toLocaleString("de-DE", {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       })
@@ -830,18 +803,16 @@ const getPVPtext = (product, currency, dollarValue, discountList) => {
   } else if (
     product?.attributes &&
     product.attributes.length > 0 &&
-    product.publicPrice.to !== product.publicPrice.from &&
-    typeof product.publicPrice.to === "string" &&
-    product.publicPrice.to.length > 0
+    product.publicPrice.to !== product.publicPrice.from
   ) {
     return (
       "PVP: $" +
-      Number(product.publicPrice.from).toLocaleString("de-DE", {
+      Number(pubFr).toLocaleString("de-DE", {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       }) +
       " - " +
-      Number(product.publicPrice?.to)?.toLocaleString("de-DE", {
+      Number(pubTo)?.toLocaleString("de-DE", {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       })
@@ -849,7 +820,7 @@ const getPVPtext = (product, currency, dollarValue, discountList) => {
   } else if (currency) {
     return (
       "PVP: Bs" +
-      Number(product.publicPrice.from * dollarValue).toLocaleString("de-DE", {
+      Number(pubFr * dollar).toLocaleString("de-DE", {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       })
@@ -857,7 +828,7 @@ const getPVPtext = (product, currency, dollarValue, discountList) => {
   } else {
     return (
       "PVP: $" +
-      Number(product.publicPrice?.from).toLocaleString("de-DE", {
+      Number(pubFr).toLocaleString("de-DE", {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       })
@@ -866,10 +837,30 @@ const getPVPtext = (product, currency, dollarValue, discountList) => {
 }
 
 const getPVMtext = (product, currency, dollarValue, discountList) => {
-  if (product.prixerEquation !== "" && currency) {
+  let dollar =
+    typeof dollarValue === "string"
+      ? Number(dollarValue.replace(/[,]/gi, "."))
+      : dollarValue
+  let prxEq =
+    typeof product?.prixerEquation === "string"
+      ? Number(product?.prixerEquation.replace(/[,]/gi, "."))
+      : product?.prixerEquation
+
+  let prxFr =
+    typeof product.prixerPrice.from === "number"
+      ? product.prixerPrice.from
+      : Number(product.prixerPrice.from?.replace(/[,]/gi, "."))
+
+  let prxTo =
+    product.prixerPrice.to !== null && product.prixerPrice.to !== undefined
+      ? typeof product.prixerPrice.to === "number"
+        ? product.prixerPrice.to
+        : Number(product.prixerPrice.to.replace(/[,]/gi, "."))
+      : prxFr
+  if (prxEq !== "" && currency) {
     return (
       "PVM: Bs" +
-      (product.prixerEquation * dollarValue).toLocaleString("de-DE", {
+      (prxEq * dollar).toLocaleString("de-DE", {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       })
@@ -878,7 +869,7 @@ const getPVMtext = (product, currency, dollarValue, discountList) => {
   if (product?.prixerEquation !== undefined && product?.prixerEquation !== "") {
     return (
       "PVM: $" +
-      product?.prixerEquation.toLocaleString("de-DE", {
+      prxEq.toLocaleString("de-DE", {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       })
@@ -886,39 +877,32 @@ const getPVMtext = (product, currency, dollarValue, discountList) => {
   } else if (
     product.attributes.length > 0 &&
     product.prixerPrice.to !== product.prixerPrice.from &&
-    typeof product.prixerPrice.to === "string" &&
-    product.prixerPrice.to.length > 0 &&
     currency
   ) {
     return (
       "PVM: Bs" +
-      (Number(product.prixerPrice?.from) * dollarValue).toLocaleString(
-        "de-DE",
-        {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        }
-      ) +
+      (Number(prxFr) * dollar).toLocaleString("de-DE", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }) +
       " - " +
-      Number(product.prixerPrice?.to * dollarValue).toLocaleString("de-DE", {
+      Number(product.prixerPrice?.to * dollar).toLocaleString("de-DE", {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       })
     )
   } else if (
     product.attributes.length > 0 &&
-    product.prixerPrice.to !== product.prixerPrice.from &&
-    typeof product.prixerPrice.to === "string" &&
-    product.prixerPrice.to.length > 0
+    product.prixerPrice.to !== product.prixerPrice.from
   ) {
     return (
       "PVM: $" +
-      Number(product.prixerPrice.from).toLocaleString("de-DE", {
+      Number(prxFr).toLocaleString("de-DE", {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       }) +
       " - " +
-      Number(product.prixerPrice?.to).toLocaleString("de-DE", {
+      Number(prxTo).toLocaleString("de-DE", {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       })
@@ -927,19 +911,16 @@ const getPVMtext = (product, currency, dollarValue, discountList) => {
     {
       return (
         "PVM: Bs" +
-        Number(product?.prixerPrice?.from * dollarValue).toLocaleString(
-          "de-DE",
-          {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          }
-        )
+        Number(prxFr * dollar).toLocaleString("de-DE", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })
       )
     }
   } else {
     return (
       "PVM: $" +
-      Number(product?.prixerPrice?.from).toLocaleString("de-DE", {
+      Number(prxFr).toLocaleString("de-DE", {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       })

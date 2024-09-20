@@ -7,16 +7,16 @@ export const setProductAtts = async (
   width,
   height
 ) => {
-  let att = productsArr;
+  let att = productsArr
 
   if (att && att.length > 0 && att[iProd]) {
-    att[iProd].selection = attValue;
-    att[iProd].attributes = attributesArr;
+    att[iProd].selection = attValue
+    att[iProd].attributes = attributesArr
 
-    const pAtt = await getEquation(att[iProd], iProd, att, width, height);
-    return { pAtt: pAtt, att: att };
+    const pAtt = await getEquation(att[iProd], iProd, att, width, height)
+    return { pAtt: pAtt, att: att }
   }
-};
+}
 
 export const setSecondProductAtts = async (
   attValue,
@@ -27,39 +27,39 @@ export const setSecondProductAtts = async (
   width,
   height
 ) => {
-  let att = productsArr;
-  let prevSelection;
+  let att = productsArr
+  let prevSelection
 
   if (typeof att[iProd].selection === "string") {
-    prevSelection = [att[iProd].selection];
+    prevSelection = [att[iProd].selection]
   } else {
-    prevSelection = att[iProd].selection;
+    prevSelection = att[iProd].selection
   }
   if (prevSelection[1] !== undefined) {
-    prevSelection.splice(1, 1);
+    prevSelection.splice(1, 1)
   }
-  prevSelection.push(attValue);
-  att[iProd].selection = prevSelection;
-  att[iProd].attributes = attributesArr;
+  prevSelection.push(attValue)
+  att[iProd].selection = prevSelection
+  att[iProd].attributes = attributesArr
 
-  const pAtt = await getEquation(att[iProd], iProd, att, width, height);
-  return { pAtt: pAtt, att: att };
-};
+  const pAtt = await getEquation(att[iProd], iProd, att, width, height)
+  return { pAtt: pAtt, att: att }
+}
 
 export const getAttributes = (products) => {
-  let lol = products;
+  let lol = products
   lol = products.map((p, i) => {
-    let att = [];
+    let att = []
     p.variants.map((v) => {
       if (v.active) {
         if (att.length == 0) {
-          att = [...new Set(v.attributes.flatMap((a) => a))];
+          att = [...new Set(v.attributes.flatMap((a) => a))]
         } else {
-          att.push(...new Set(v.attributes.flatMap((a) => a)));
+          att.push(...new Set(v.attributes.flatMap((a) => a)))
         }
       }
-    });
-    const result = [...new Set(att.flatMap(({ name }) => name))];
+    })
+    const result = [...new Set(att.flatMap(({ name }) => name))]
     const res1 = [
       ...new Set(
         result.map((a) => {
@@ -69,37 +69,41 @@ export const getAttributes = (products) => {
               ...new Set(
                 att.map((v) => {
                   if (v.name == a && v.value) {
-                    return v.value;
+                    return v.value
                   }
                 })
               ),
             ].filter((a) => a),
-          };
+          }
         })
       ),
-    ];
-    p.attributes = res1;
-    p.selection = [];
-    p.selection.length = p.attributes.length;
+    ]
+    p.attributes = res1
+    p.selection = []
+    p.selection.length = p.attributes.length
 
-    return p;
-  });
-  return lol;
-};
+    return p
+  })
+  return lol
+}
 
 export const structureEquation = (equation, i, width, height) => {
-  let eq = "";
-  equation.split(/[\s{}}]+/).map((n, j, arr) => {
+  let eq = ""
+  let x = equation.toLocaleString("de-DE", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })
+  x.split(/[\s{}}]+/).map((n, j, arr) => {
     if (n == "width") {
-      eq = eq.concat(width[i] || 0);
+      eq = eq.concat(width[i] || 0)
     } else if (n == "height") {
-      eq = eq.concat(height[i] || 0);
+      eq = eq.concat(height[i] || 0)
     } else {
-      eq = eq.concat(n);
+      eq = eq.concat(n)
     }
-  });
-  return eq;
-};
+  })
+  return eq
+}
 
 export const getEquation = async (
   product,
@@ -114,46 +118,43 @@ export const getEquation = async (
         return (
           v.attributes[0].value === product.selection[0] &&
           v.attributes[1].value === product.selection[1]
-        );
+        )
       }
-    });
+    })
     if (filteredVars.length != 0) {
       if (
         filteredVars[0].publicPrice.equation &&
         filteredVars[0].prixerPrice?.equation
       ) {
-        productArr[iProd].needsEquation = true;
+        productArr[iProd].needsEquation = true
 
-        productArr[iProd].publicEquation = eval(
+        productArr[iProd].publicEquation =
           structureEquation(
             filteredVars[0].publicPrice.equation,
-
             iProd,
             width,
             height
           ) || 0
-        );
-        productArr[iProd].prixerEquation = eval(
+
+        productArr[iProd].prixerEquation =
           structureEquation(
             filteredVars[0].prixerPrice.equation,
             iProd,
             width,
             height
           ) || 0
-        );
       } else if (filteredVars[0].publicPrice.equation) {
-        productArr[iProd].needsEquation = true;
-        productArr[iProd].publicEquation = eval(
+        productArr[iProd].needsEquation = true
+        productArr[iProd].publicEquation =
           structureEquation(
             filteredVars[0].publicPrice.equation,
             iProd,
             width,
             height
           ) || 0
-        );
       }
     } else {
-      productArr[iProd].needsEquation = false;
+      productArr[iProd].needsEquation = false
     }
   } else if (
     typeof product.selection === "string" &&
@@ -161,18 +162,18 @@ export const getEquation = async (
   ) {
     const filteredVars = await product.variants.filter((v, i) => {
       if (v.attributes && v.attributes.length === 1) {
-        return v.attributes.every((a) => product.selection.includes(a.value));
+        return v.attributes.every((a) => product.selection.includes(a.value))
       } else {
-        return;
+        return
       }
-    });
+    })
 
     if (filteredVars.length != 0) {
       if (
         filteredVars[0].publicPrice.equation &&
         filteredVars[0].prixerPrice?.equation
       ) {
-        productArr[iProd].needsEquation = true;
+        productArr[iProd].needsEquation = true
         productArr[iProd].publicEquation =
           structureEquation(
             filteredVars[0].publicPrice.equation,
@@ -180,32 +181,31 @@ export const getEquation = async (
             iProd,
             width,
             height
-          ) || 0;
+          ) || 0
         productArr[iProd].prixerEquation =
           structureEquation(
             filteredVars[0].prixerPrice.equation,
             iProd,
             width,
             height
-          ) || 0;
+          ) || 0
       } else if (filteredVars[0].publicPrice.equation) {
-        productArr[iProd].needsEquation = true;
-        productArr[iProd].publicEquation = eval(
+        productArr[iProd].needsEquation = true
+        productArr[iProd].publicEquation =
           structureEquation(
             filteredVars[0].publicPrice.equation,
             iProd,
             width,
             height
           ) || 0
-        );
       }
     } else {
-      productArr[iProd].needsEquation = false;
+      productArr[iProd].needsEquation = false
     }
   } else {
-    productArr[iProd].needsEquation = false;
-    productArr[iProd].publicEquation = "";
-    productArr[iProd].prixerEquation = "";
+    productArr[iProd].needsEquation = false
+    productArr[iProd].publicEquation = ""
+    productArr[iProd].prixerEquation = ""
   }
-  return productArr;
-};
+  return productArr
+}

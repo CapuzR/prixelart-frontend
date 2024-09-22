@@ -535,6 +535,7 @@ function App() {
             searchResult={searchResult}
             setFullArt={setFullArt}
             fullArt={fullArt}
+            dollarValue={dollarValue}
           />
         </Route>
         <Route path="/galeria">

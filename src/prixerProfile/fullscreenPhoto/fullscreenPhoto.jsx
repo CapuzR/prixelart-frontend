@@ -461,7 +461,6 @@ export default function FullscreenPhoto(props) {
   const readArt = async () => {
     setLoading(true)
     if (props.fullArt) {
-      // const search = () => {
       let index
       const s = tiles.find((art, i) => {
         if (art.artId === fullArt) {
@@ -851,6 +850,24 @@ export default function FullscreenPhoto(props) {
                                 Máximo para impresión: {maxPrintValues(tile)}
                               </Typography>
                             )}
+                          <Typography
+                            variant="body2"
+                            color="textSecondary"
+                            component="p"
+                            style={{
+                              whiteSpace: "pre-line",
+                              fontSize: "1.1em",
+                              marginBottom: 10,
+                              textAlign: "center"
+                            }}
+                          >
+                            Creado el{" "}
+                            { new Date(tile?.createdOn).toLocaleDateString("es-ES", {
+                              year: "numeric",
+                              month: "long",
+                              day: "numeric",
+                            })}
+                          </Typography>
                         </CardContent>
                         <CardActions>
                           {props.permissions?.artBan && (

@@ -212,57 +212,43 @@ export default function ProductGrid(props) {
   }, [])
 
   useEffect(() => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + "/product/read-all"
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/product/read-all-v2"
     axios.get(base_url).then(async (response) => {
       let productsAttTemp1 = response.data.products
-
-      await productsAttTemp1.map(async (p, iProd, pArr) => {
-        p.variants.map((variant) => {
-          imagesVariants.push(variant.variantImage)
-        })
-        productsAttTemp1 = await getEquation(p, iProd, pArr)
-      })
-      // optimizar para no hacer la petición cada vez que se cambia el orden
-      let cats = []
-      productsAttTemp1.forEach((product) => {
-        if (!cats.includes(product.category)) {
-          cats.push(product.category)
-        }
-      })
-      setCategories(cats)
-      console.log(categories)
-      if (order === "") {
-        setTiles(getAttributes(productsAttTemp1))
-      } else if (order === "A-Z") {
-        let products = productsAttTemp1.sort(function (a, b) {
-          if (a.name.toLowerCase() > b.name.toLowerCase()) {
-            return 1
-          }
-          if (a.name.toLowerCase() < b.name.toLowerCase()) {
-            return -1
-          }
-          return 0
-        })
-        setTiles(getAttributes(products))
-      } else if (order === "Z-A") {
-        let products = productsAttTemp1.sort(function (a, b) {
-          if (a.name.toLowerCase() < b.name.toLowerCase()) {
-            return 1
-          }
-          if (a.name.toLowerCase() > b.name.toLowerCase()) {
-            return -1
-          }
-          return 0
-        })
-        setTiles(getAttributes(products))
-      } else if (order === "Price") {
-        let products = productsAttTemp1.sort(function (a, b) {
-          let aPrice = a.publicPrice.from
-          let bPrice = b.publicPrice.from
-          return aPrice - bPrice
-        })
-        setTiles(getAttributes(products))
-      }
+      console.log("productsAttTemp1", productsAttTemp1);
+      setTiles(productsAttTemp1);
+      // if (order === "") {
+      //   setTiles(getAttributes(productsAttTemp1))
+      // } else if (order === "A-Z") {
+      //   let products = productsAttTemp1.sort(function (a, b) {
+      //     if (a.name.toLowerCase() > b.name.toLowerCase()) {
+      //       return 1
+      //     }
+      //     if (a.name.toLowerCase() < b.name.toLowerCase()) {
+      //       return -1
+      //     }
+      //     return 0
+      //   })
+      //   setTiles(getAttributes(products))
+      // } else if (order === "Z-A") {
+      //   let products = productsAttTemp1.sort(function (a, b) {
+      //     if (a.name.toLowerCase() < b.name.toLowerCase()) {
+      //       return 1
+      //     }
+      //     if (a.name.toLowerCase() > b.name.toLowerCase()) {
+      //       return -1
+      //     }
+      //     return 0
+      //   })
+      //   setTiles(getAttributes(products))
+      // } else if (order === "Price") {
+      //   let products = productsAttTemp1.sort(function (a, b) {
+      //     let aPrice = a.publicPrice.from
+      //     let bPrice = b.publicPrice.from
+      //     return aPrice - bPrice
+      //   })
+      //   setTiles(getAttributes(products))
+      // }
     })
   }, [order])
 
@@ -288,14 +274,8 @@ export default function ProductGrid(props) {
   }
 
   const priceSelect = (item) => {
-    if (
-      JSON.parse(localStorage.getItem("token")) &&
-      JSON.parse(localStorage.getItem("token"))?.username
-    ) {
-      return getPVMtext(item, currency, props.dollarValue, discountList)
-    } else {
-      return getPVPtext(item, currency, props.dollarValue, discountList)
-    }
+    console.log("item", item);
+    return currency ? "Bs. " + item.from * props.dollarValue + ",00 - " + item.to * props.dollarValue + ",00" : "$ " + item.from + ",00 - " + item.to + ",00"
   }
 
   const RenderHTML = ({ htmlString }) => {
@@ -427,36 +407,9 @@ export default function ProductGrid(props) {
                       },
                     }}
                   >
-                    {typeof tile.selection[0] === "string" &&
-                    typeof tile.variants[0]?.variantImage === "object" &&
-                    tile.variants.find(
-                      ({ name }) => name === tile.selection[0]
-                    ) ? (
-                      tile.variants
-                        .find(({ name }) => name === tile.selection[0])
-                        .variantImage.map((img, key_id) =>
-                          img.type === "images" ? (
-                            <img
-                              key={key_id}
-                              src={img.url}
-                              className={classes.img}
-                              alt="variant"
-                              style={{ borderRadius: 30 }}
-                            />
-                          ) : (
-                            img.type === "video" &&
-                            img.url !== null && (
-                              <span
-                                key={"video"}
-                                style={{ width: "100%", borderRadius: 30 }}
-                                dangerouslySetInnerHTML={{
-                                  __html: img.url,
-                                }}
-                              />
-                            )
-                          )
-                        )
-                    ) : tile.sources.images &&
+                    {
+                      tile.sources &&
+                      tile.sources.images && 
                       tile.sources.images[0] !== undefined ? (
                       tile.sources.images?.map((img, i) =>
                         img.url !== null && img.type === "images" ? (
@@ -528,7 +481,7 @@ export default function ProductGrid(props) {
                       variant="h5"
                       component="h2"
                     >
-                      {priceSelect(tile)}
+                      {priceSelect(tile.priceRange)}
                     </Typography>
                   </Grid>
                   <Grid

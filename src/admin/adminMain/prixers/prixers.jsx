@@ -1,32 +1,33 @@
-import { React, useState, useEffect } from "react";
-import axios from "axios";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import Paper from "@material-ui/core/Paper";
-import Grid from "@material-ui/core/Grid";
-import Box from "@material-ui/core/Box";
-import Switch from "@material-ui/core/Switch";
-import Typography from "@material-ui/core/Typography";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
-import Snackbar from "@material-ui/core/Snackbar";
-import Backdrop from "@material-ui/core/Backdrop";
-import Card from "@material-ui/core/Card";
-import CardContent from "@material-ui/core/CardContent";
-import CardMedia from "@material-ui/core/CardMedia";
-import Button from "@material-ui/core/Button";
-import Modal from "@material-ui/core/Modal";
-import IconButton from "@material-ui/core/IconButton";
-import CloseIcon from "@material-ui/icons/Close";
-import DehazeIcon from "@material-ui/icons/Dehaze";
+import { React, useState, useEffect } from "react"
+import axios from "axios"
+import { makeStyles, useTheme } from "@material-ui/core/styles"
+import CircularProgress from "@material-ui/core/CircularProgress"
+import Paper from "@material-ui/core/Paper"
+import Grid from "@material-ui/core/Grid"
+import Box from "@material-ui/core/Box"
+import Switch from "@material-ui/core/Switch"
+import Typography from "@material-ui/core/Typography"
+import useMediaQuery from "@material-ui/core/useMediaQuery"
+import Snackbar from "@material-ui/core/Snackbar"
+import Backdrop from "@material-ui/core/Backdrop"
+import Card from "@material-ui/core/Card"
+import CardContent from "@material-ui/core/CardContent"
+import CardMedia from "@material-ui/core/CardMedia"
+import Button from "@material-ui/core/Button"
+import Modal from "@material-ui/core/Modal"
+import IconButton from "@material-ui/core/IconButton"
+import CloseIcon from "@material-ui/icons/Close"
+import DehazeIcon from "@material-ui/icons/Dehaze"
 
-import Tabs from "@material-ui/core/Tabs";
-import Tab from "@material-ui/core/Tab";
-import MoreVertIcon from "@material-ui/icons/MoreVert";
-import CreateWallet from "./createWallet";
-import CreateMovement from "./createMovement";
-import MovementRecord from "./movementRecord";
-import PrixerInfo from "./prixerInfo";
-import OrgCommission from "./orgCommission";
+import Tabs from "@material-ui/core/Tabs"
+import Tab from "@material-ui/core/Tab"
+import MoreVertIcon from "@material-ui/icons/MoreVert"
+import CreateWallet from "./createWallet"
+import CreateMovement from "./createMovement"
+import MovementRecord from "./movementRecord"
+import PrixerInfo from "./prixerInfo"
+import OrgCommission from "./orgCommission"
+import RemovePrixer from "./destroyPrixer"
 
 const useStyles = makeStyles((theme) => ({
   loading: {
@@ -52,6 +53,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     justifyContent: "center",
     flexDirection: "column",
+    height: "100%",
   },
   paper: {
     padding: theme.spacing(2),
@@ -128,143 +130,147 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
     backgroundColor: theme.palette.background.paper,
   },
-}));
+}))
 
 export default function Prixers(props) {
-  const classes = useStyles();
-  const theme = useTheme();
-  const [value, setValue] = useState(0);
+  const classes = useStyles()
+  const theme = useTheme()
+  const [value, setValue] = useState(0)
 
-  const [loading, setLoading] = useState(false);
-  const [tiles, setTiles] = useState([]);
-  const [consumers, setConsumers] = useState([]);
-  const [org, setOrg] = useState([]);
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const [loading, setLoading] = useState(false)
+  const [tiles, setTiles] = useState([])
+  const [consumers, setConsumers] = useState([])
+  const [org, setOrg] = useState([])
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
   const [state, setState] = useState({
     checkedA: true,
-  });
-  const [openNewBalance, setOpenNewBalance] = useState(false);
-  const [openNewMovement, setOpenNewMovement] = useState(false);
-  const [openList, setOpenList] = useState(false);
-  const [selectedPrixer, setSelectedPrixer] = useState(undefined);
-  const [selectedConsumer, setSelectedConsumer] = useState(undefined);
-  const [balance, setBalance] = useState(0);
-  const [type, setType] = useState();
-  const [date, setDate] = useState(new Date());
-  const [accounts, setAccounts] = useState();
-  const [message, setMessage] = useState();
-  const [open, setOpen] = useState(false);
-  const [anchorEl, setAnchorEl] = useState(null);
-  const [openInfo, setOpenInfo] = useState(false);
-  const [openComission, setOpenComission] = useState(false);
-
+  })
+  const [openNewBalance, setOpenNewBalance] = useState(false)
+  const [openNewMovement, setOpenNewMovement] = useState(false)
+  const [openList, setOpenList] = useState(false)
+  const [selectedPrixer, setSelectedPrixer] = useState(undefined)
+  const [selectedConsumer, setSelectedConsumer] = useState(undefined)
+  const [balance, setBalance] = useState(0)
+  const [type, setType] = useState()
+  const [date, setDate] = useState(new Date())
+  const [accounts, setAccounts] = useState()
+  const [message, setMessage] = useState()
+  const [open, setOpen] = useState(false)
+  const [anchorEl, setAnchorEl] = useState(null)
+  const [openInfo, setOpenInfo] = useState(false)
+  const [openComission, setOpenComission] = useState(false)
+  const [openDestroy, setOpenDestroy] = useState(false)
   const handleSection = (event, newValue) => {
-    setValue(newValue);
-  };
+    setValue(newValue)
+  }
 
   const readPrixers = async () => {
     try {
       const base_url =
-        process.env.REACT_APP_BACKEND_URL + "/prixer/read-all-full";
+        process.env.REACT_APP_BACKEND_URL + "/prixer/read-all-full"
 
-      const response = await axios.get(base_url);
-      let prev = response.data.prixers;
+      const response = await axios.get(base_url)
+      let prev = response.data.prixers
       prev.map((prix) => {
         if (prix !== null) {
-          return prix;
+          return prix
         }
-      });
-      setTiles(prev);
+      })
+      setTiles(prev)
     } catch (error) {
-      console.log(error);
+      console.log(error)
     }
-  };
+  }
 
   const readConsumers = async () => {
     try {
       const base_url =
-        process.env.REACT_APP_BACKEND_URL + "/consumer/read-prixers";
+        process.env.REACT_APP_BACKEND_URL + "/consumer/read-prixers"
 
       const response = await axios.post(base_url, {
         adminToken: localStorage.getItem("adminTokenV"),
-      });
-      setConsumers(response.data);
+      })
+      setConsumers(response.data)
     } catch (error) {
-      console.log(error);
+      console.log(error)
     }
-  };
+  }
 
   const readOrg = async () => {
     try {
       const base_url =
-        process.env.REACT_APP_BACKEND_URL + "/organization/read-all-full";
+        process.env.REACT_APP_BACKEND_URL + "/organization/read-all-full"
 
-      const response = await axios.get(base_url);
-      setOrg(response.data.organizations);
+      const response = await axios.get(base_url)
+      setOrg(response.data.organizations)
     } catch (error) {
-      console.log(error);
+      console.log(error)
     }
-  };
+  }
 
   const getBalance = async () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + "/account/readAll";
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/account/readAll"
     await axios
       .post(base_url, {
         adminToken: localStorage.getItem("adminTokenV"),
       })
       .then((res) => {
-        setAccounts(res.data.accounts);
-      });
-  };
+        setAccounts(res.data.accounts)
+      })
+  }
 
+  const routine = async () => {
+    setLoading(true)
+    readPrixers()
+    readOrg()
+    readConsumers()
+    getBalance()
+    setLoading(false)
+  }
   useEffect(() => {
-    setLoading(true);
-    readPrixers();
-    readOrg();
-    readConsumers();
-    getBalance();
-    setLoading(false);
-  }, []);
+   routine()
+  }, [])
 
   const handleChange = (event) => {
-    setState({ ...state, [event.target.name]: event.target.checked });
-  };
+    setState({ ...state, [event.target.name]: event.target.checked })
+  }
 
   const ChangeVisibility = async (e, prixer) => {
-    e.preventDefault();
-    setLoading(true);
-    setState({ ...state, [e.target.name]: e.target.checked });
+    e.preventDefault()
+    setLoading(true)
+    setState({ ...state, [e.target.name]: e.target.checked })
 
     const base_url =
       process.env.REACT_APP_BACKEND_URL +
       "/prixer/update-home/" +
-      prixer.prixerId;
+      prixer.prixerId
     const body = {
       status:
         e.target.value === "false" || e.target.value === "" ? true : false,
       adminToken: localStorage.getItem("adminTokenV"),
       account: prixer?.account,
-    };
-    await axios.put(base_url, body);
-    await readPrixers();
-    setLoading(false);
-  };
+    }
+    await axios.put(base_url, body)
+    await readPrixers()
+    setLoading(false)
+  }
 
   const handleClose = () => {
-    setOpenNewBalance(false);
-    setOpenNewMovement(false);
-    setOpenComission(false);
-    setOpenList(false);
-    setBalance(0);
-    setOpenInfo(false);
-    setSelectedPrixer();
-    setSelectedConsumer();
-    setDate();
-    setAnchorEl(null);
-  };
+    setOpenNewBalance(false)
+    setOpenNewMovement(false)
+    setOpenComission(false)
+    setOpenList(false)
+    setBalance(0)
+    setOpenInfo(false)
+    setSelectedPrixer()
+    setSelectedConsumer()
+    setDate()
+    setAnchorEl(null)
+    setOpenDestroy(false)
+  }
 
   function TabPanel(props) {
-    const { children, value, index } = props;
+    const { children, value, index } = props
     return (
       <div
         role="tabpanel"
@@ -278,36 +284,36 @@ export default function Prixers(props) {
           </Box>
         )}
       </div>
-    );
+    )
   }
 
   const TurnIntoOrg = async (event, user) => {
-    const url = process.env.REACT_APP_BACKEND_URL + "/turn-to-association";
-    const data = { username: user };
-    const call = await axios.post(url, data);
+    const url = process.env.REACT_APP_BACKEND_URL + "/turn-to-association"
+    const data = { username: user }
+    const call = await axios.post(url, data)
     if (call.data.success) {
-      setOpen(true);
-      setMessage("Rol modificado a Organización.");
-      let prev = tiles.filter((tile) => tile.username !== user);
-      setTiles(prev);
+      setOpen(true)
+      setMessage("Rol modificado a Organización.")
+      let prev = tiles.filter((tile) => tile.username !== user)
+      setTiles(prev)
     }
-  };
+  }
 
   const TurnIntoPrixer = async (event, user) => {
-    const url = process.env.REACT_APP_BACKEND_URL + "/turn-to-prixer";
-    const data = { username: user };
-    const call = await axios.post(url, data);
+    const url = process.env.REACT_APP_BACKEND_URL + "/turn-to-prixer"
+    const data = { username: user }
+    const call = await axios.post(url, data)
     if (call.data.success) {
-      setOpen(true);
-      setMessage("Rol modificado a Prixer.");
-      let prev = org.filter((o) => o.username !== user);
+      setOpen(true)
+      setMessage("Rol modificado a Prixer.")
+      let prev = org.filter((o) => o.username !== user)
       if (prev[0] === null) {
-        setOrg([]);
+        setOrg([])
       } else {
-        setOrg(prev);
+        setOrg(prev)
       }
     }
-  };
+  }
 
   // const addrole = async () => {
   //   const url = process.env.REACT_APP_BACKEND_URL + "/prixers/addRole";
@@ -325,7 +331,7 @@ export default function Prixers(props) {
   // document.addEventListener("keydown", handleKeyDown);
 
   function TabPanel(props) {
-    const { children, value, index, ...other } = props;
+    const { children, value, index, ...other } = props
 
     return (
       <div
@@ -341,12 +347,15 @@ export default function Prixers(props) {
           </Box>
         )}
       </div>
-    );
+    )
   }
 
   return (
     <div>
-      <Backdrop className={classes.backdrop} open={loading}>
+      <Backdrop
+        className={classes.backdrop}
+        open={loading}
+      >
         <CircularProgress />
       </Backdrop>
       <Paper className={classes.paper}>
@@ -360,7 +369,10 @@ export default function Prixers(props) {
           <Tab label="Prixers" />
           <Tab label="Organizaciones" />
         </Tabs>
-        <TabPanel value={value} index={0}>
+        <TabPanel
+          value={value}
+          index={0}
+        >
           <Grid
             container
             spacing={2}
@@ -373,8 +385,16 @@ export default function Prixers(props) {
             {tiles?.length > 0 ? (
               tiles.map((tile) =>
                 tile === selectedPrixer ? (
-                  <Grid item xs={6} sm={6} md={3}>
-                    <Card key={tile?.prixerId} className={classes.card}>
+                  <Grid
+                    item
+                    xs={6}
+                    sm={6}
+                    md={3}
+                  >
+                    <Card
+                      key={tile?.prixerId}
+                      className={classes.card}
+                    >
                       <div
                         style={{
                           width: "100%",
@@ -387,7 +407,7 @@ export default function Prixers(props) {
                           aria-controls="simple-menu"
                           aria-haspopup="true"
                           onClick={(e) => {
-                            setSelectedPrixer(undefined);
+                            setSelectedPrixer(undefined)
                           }}
                         >
                           <CloseIcon />
@@ -395,7 +415,11 @@ export default function Prixers(props) {
                       </div>
 
                       <CardContent className={classes.cardContent}>
-                        <Typography gutterBottom variant="h5" component="h2">
+                        <Typography
+                          gutterBottom
+                          variant="h5"
+                          component="h2"
+                        >
                           {tile?.firstName} {tile?.lastName}
                         </Typography>
                         {props.permissions?.readConsumers && (
@@ -405,12 +429,12 @@ export default function Prixers(props) {
                               textTransform: "none",
                             }}
                             onClick={() => {
-                              setOpenInfo(true);
+                              setOpenInfo(true)
                               consumers.map((cons) => {
                                 if (cons.prixerId === tile.prixerId) {
-                                  setSelectedConsumer(cons);
+                                  setSelectedConsumer(cons)
                                 }
-                              });
+                              })
                             }}
                           >
                             Ver información
@@ -445,36 +469,75 @@ export default function Prixers(props) {
                           <Box
                             style={{
                               display: "flex",
+                              flexDirection: "column",
+                              height: "100%",
                               justifyContent: "space-between",
                             }}
                           >
-                            <Typography
-                              color="secondary"
-                              style={{ display: "flex", alignItems: "center" }}
-                            >
-                              Visible
-                            </Typography>
-                            <Switch
-                              checked={tile?.status}
-                              color="primary"
-                              onChange={(event) =>
-                                // handleChange(event, tile?.state) ||
-                                ChangeVisibility(event, tile)
-                              }
-                              name="checkedA"
-                              value={tile?.status}
-                              inputProps={{
-                                "aria-label": "secondary checkbox",
+                            <Box
+                              style={{
+                                display: "flex",
+                                justifyContent: "space-between",
                               }}
-                            />
+                            >
+                              <Typography
+                                color="secondary"
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                }}
+                              >
+                                Visible
+                              </Typography>
+                              <Switch
+                                checked={tile?.status}
+                                color="primary"
+                                onChange={(event) =>
+                                  // handleChange(event, tile?.state) ||
+                                  ChangeVisibility(event, tile)
+                                }
+                                name="checkedA"
+                                value={tile?.status}
+                                inputProps={{
+                                  "aria-label": "secondary checkbox",
+                                }}
+                              />
+                            </Box>
+                            <Box
+                              style={{
+                                display: "flex",
+                                justifyContent: "center",
+                              }}
+                            >
+                              <Button
+                                onClick={(e) => {
+                                  setSelectedPrixer(tile)
+                                  setOpenDestroy(true)
+                                }}
+                                style={{
+                                  backgroundColor: "rgb(229, 231, 233)",
+                                  textTransform: "none",
+                                }}
+                              >
+                                Eliminar Prixer
+                              </Button>
+                            </Box>
                           </Box>
                         )}
                       </CardContent>
                     </Card>
                   </Grid>
                 ) : (
-                  <Grid item xs={6} sm={6} md={3}>
-                    <Card key={tile?._id} className={classes.card}>
+                  <Grid
+                    item
+                    xs={6}
+                    sm={6}
+                    md={3}
+                  >
+                    <Card
+                      key={tile?._id}
+                      className={classes.card}
+                    >
                       <div
                         style={{
                           width: "100%",
@@ -487,7 +550,7 @@ export default function Prixers(props) {
                           aria-controls="simple-menu"
                           aria-haspopup="true"
                           onClick={(e) => {
-                            setSelectedPrixer(tile);
+                            setSelectedPrixer(tile)
                           }}
                         >
                           <MoreVertIcon />
@@ -505,7 +568,11 @@ export default function Prixers(props) {
                         }}
                       />
                       <CardContent className={classes.cardContent}>
-                        <Typography gutterBottom variant="h5" component="h2">
+                        <Typography
+                          gutterBottom
+                          variant="h5"
+                          component="h2"
+                        >
                           {tile?.firstName} {tile?.lastName}
                         </Typography>
                         <Typography
@@ -537,7 +604,10 @@ export default function Prixers(props) {
                             paddingBottom: "5px",
                           }}
                         >
-                          <Typography variant="h6" align="center">
+                          <Typography
+                            variant="h6"
+                            align="center"
+                          >
                             Balance $
                             {accounts &&
                               accounts
@@ -555,9 +625,9 @@ export default function Prixers(props) {
                           >
                             <Button
                               onClick={(e) => {
-                                setSelectedPrixer(tile);
-                                setType("Depósito");
-                                setOpenNewMovement(true);
+                                setSelectedPrixer(tile)
+                                setType("Depósito")
+                                setOpenNewMovement(true)
                               }}
                               style={{
                                 width: "40%",
@@ -569,9 +639,9 @@ export default function Prixers(props) {
                             </Button>
                             <Button
                               onClick={(e) => {
-                                setSelectedPrixer(tile);
-                                setType("Retiro");
-                                setOpenNewMovement(true);
+                                setSelectedPrixer(tile)
+                                setType("Retiro")
+                                setOpenNewMovement(true)
                               }}
                               style={{
                                 width: "40%",
@@ -593,8 +663,8 @@ export default function Prixers(props) {
                             <Button
                               style={{ textTransform: "none" }}
                               onClick={() => {
-                                setSelectedPrixer(tile);
-                                setOpenList(true);
+                                setSelectedPrixer(tile)
+                                setOpenList(true)
                               }}
                             >
                               <DehazeIcon />
@@ -613,8 +683,8 @@ export default function Prixers(props) {
                               fontWeight: "bold",
                             }}
                             onClick={(e) => {
-                              setSelectedPrixer(tile);
-                              setOpenNewBalance(true);
+                              setSelectedPrixer(tile)
+                              setOpenNewBalance(true)
                             }}
                           >
                             Crear Cartera
@@ -642,7 +712,10 @@ export default function Prixers(props) {
           </Grid>
         </TabPanel>
 
-        <TabPanel value={value} index={1}>
+        <TabPanel
+          value={value}
+          index={1}
+        >
           <Grid
             container
             spacing={2}
@@ -655,8 +728,16 @@ export default function Prixers(props) {
             {org && org.length > 0 ? (
               org.map((tile) =>
                 tile === selectedPrixer ? (
-                  <Grid item xs={6} sm={6} md={3}>
-                    <Card key={tile?._id} className={classes.card}>
+                  <Grid
+                    item
+                    xs={6}
+                    sm={6}
+                    md={3}
+                  >
+                    <Card
+                      key={tile?._id}
+                      className={classes.card}
+                    >
                       <div
                         style={{
                           width: "100%",
@@ -669,7 +750,7 @@ export default function Prixers(props) {
                           aria-controls="simple-menu"
                           aria-haspopup="true"
                           onClick={(e) => {
-                            setSelectedPrixer(undefined);
+                            setSelectedPrixer(undefined)
                           }}
                         >
                           <CloseIcon />
@@ -677,7 +758,11 @@ export default function Prixers(props) {
                       </div>
 
                       <CardContent className={classes.cardContent}>
-                        <Typography gutterBottom variant="h5" component="h2">
+                        <Typography
+                          gutterBottom
+                          variant="h5"
+                          component="h2"
+                        >
                           {tile?.firstName} {tile?.lastName}
                         </Typography>
                         {props.permissions?.readConsumers && (
@@ -687,12 +772,12 @@ export default function Prixers(props) {
                               textTransform: "none",
                             }}
                             onClick={() => {
-                              setOpenInfo(true);
+                              setOpenInfo(true)
                               consumers?.map((cons) => {
                                 if (cons.prixerId === tile.prixerId) {
-                                  setSelectedConsumer(cons);
+                                  setSelectedConsumer(cons)
                                 }
-                              });
+                              })
                             }}
                           >
                             Ver información
@@ -757,7 +842,7 @@ export default function Prixers(props) {
                             textTransform: "none",
                           }}
                           onClick={() => {
-                            setOpenComission(true);
+                            setOpenComission(true)
                           }}
                         >
                           Definir comisión
@@ -766,8 +851,16 @@ export default function Prixers(props) {
                     </Card>
                   </Grid>
                 ) : (
-                  <Grid item xs={6} sm={6} md={3}>
-                    <Card key={tile?._id} className={classes.card}>
+                  <Grid
+                    item
+                    xs={6}
+                    sm={6}
+                    md={3}
+                  >
+                    <Card
+                      key={tile?._id}
+                      className={classes.card}
+                    >
                       <div
                         style={{
                           width: "100%",
@@ -780,7 +873,7 @@ export default function Prixers(props) {
                           aria-controls="simple-menu"
                           aria-haspopup="true"
                           onClick={(e) => {
-                            setSelectedPrixer(tile);
+                            setSelectedPrixer(tile)
                           }}
                         >
                           <MoreVertIcon />
@@ -795,7 +888,11 @@ export default function Prixers(props) {
                         title={tile?.title}
                       />
                       <CardContent className={classes.cardContent}>
-                        <Typography gutterBottom variant="h5" component="h2">
+                        <Typography
+                          gutterBottom
+                          variant="h5"
+                          component="h2"
+                        >
                           {tile?.firstName} {tile?.lastName}
                         </Typography>
                         <Typography
@@ -827,7 +924,10 @@ export default function Prixers(props) {
                             paddingBottom: "5px",
                           }}
                         >
-                          <Typography variant="h6" align="center">
+                          <Typography
+                            variant="h6"
+                            align="center"
+                          >
                             Balance $
                             {accounts &&
                               accounts
@@ -845,9 +945,9 @@ export default function Prixers(props) {
                           >
                             <Button
                               onClick={(e) => {
-                                setSelectedPrixer(tile);
-                                setType("Depósito");
-                                setOpenNewMovement(true);
+                                setSelectedPrixer(tile)
+                                setType("Depósito")
+                                setOpenNewMovement(true)
                               }}
                               style={{
                                 width: "40%",
@@ -858,9 +958,9 @@ export default function Prixers(props) {
                             </Button>
                             <Button
                               onClick={(e) => {
-                                setSelectedPrixer(tile);
-                                setType("Retiro");
-                                setOpenNewMovement(true);
+                                setSelectedPrixer(tile)
+                                setType("Retiro")
+                                setOpenNewMovement(true)
                               }}
                               style={{
                                 width: "40%",
@@ -881,8 +981,8 @@ export default function Prixers(props) {
                           >
                             <Button
                               onClick={() => {
-                                setSelectedPrixer(tile);
-                                setOpenList(true);
+                                setSelectedPrixer(tile)
+                                setOpenList(true)
                               }}
                             >
                               <DehazeIcon />
@@ -901,8 +1001,8 @@ export default function Prixers(props) {
                               fontWeight: "bold",
                             }}
                             onClick={(e) => {
-                              setSelectedPrixer(tile);
-                              setOpenNewBalance(true);
+                              setSelectedPrixer(tile)
+                              setOpenNewBalance(true)
                             }}
                           >
                             Crear Cartera
@@ -932,7 +1032,10 @@ export default function Prixers(props) {
         </TabPanel>
       </Paper>
 
-      <Modal open={openNewBalance} onClose={handleClose}>
+      <Modal
+        open={openNewBalance}
+        onClose={handleClose}
+      >
         <CreateWallet
           selectedPrixer={selectedPrixer}
           balance={balance}
@@ -947,7 +1050,10 @@ export default function Prixers(props) {
         />
       </Modal>
 
-      <Modal open={openNewMovement} onClose={handleClose}>
+      <Modal
+        open={openNewMovement}
+        onClose={handleClose}
+      >
         <CreateMovement
           selectedPrixer={selectedPrixer}
           handleClose={handleClose}
@@ -964,14 +1070,20 @@ export default function Prixers(props) {
         />
       </Modal>
 
-      <Modal open={openList} onClose={handleClose}>
+      <Modal
+        open={openList}
+        onClose={handleClose}
+      >
         <MovementRecord
           selectedPrixer={selectedPrixer}
           handleClose={handleClose}
         />
       </Modal>
 
-      <Modal open={openInfo} onClose={handleClose}>
+      <Modal
+        open={openInfo}
+        onClose={handleClose}
+      >
         <PrixerInfo
           selectedPrixer={selectedPrixer}
           selectedConsumer={selectedConsumer}
@@ -979,7 +1091,10 @@ export default function Prixers(props) {
         />
       </Modal>
 
-      <Modal open={openComission} onClose={handleClose}>
+      <Modal
+        open={openComission}
+        onClose={handleClose}
+      >
         <OrgCommission
           selectedPrixer={selectedPrixer}
           handleClose={handleClose}
@@ -990,6 +1105,20 @@ export default function Prixers(props) {
         />
       </Modal>
 
+      <Modal
+        open={openDestroy}
+        onClose={handleClose}
+      >
+        <RemovePrixer
+          selectedPrixer={selectedPrixer}
+          selectedConsumer={selectedConsumer}
+          routine={routine}
+          setOpen={setOpen}
+          setMessage={setMessage}
+          handleClose={handleClose}
+        />
+      </Modal>
+      
       <Snackbar
         open={open}
         autoHideDuration={3000}
@@ -998,5 +1127,5 @@ export default function Prixers(props) {
         onClose={() => setOpen(false)}
       />
     </div>
-  );
+  )
 }

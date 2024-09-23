@@ -541,7 +541,6 @@ export default function CreateProduct() {
                             <Checkbox
                               variant="outlined"
                               required
-                              fullWidth
                               id="isSpecialVarVisible"
                               label="Visible"
                               name="isSpecialVarVisible"

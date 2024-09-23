@@ -173,13 +173,15 @@ export default function ProductGrid(props) {
   const [imagesVariants, setImagesVariants] = useState([])
   // const [imagesProducts, setImagesProducts] = useState();
   const [width, setWidth] = useState([])
-  const [height, setHeight] = useState([])
+  const [maxLength, setMaxLength] = useState(0)
 
   const [order, setOrder] = useState("")
   const [filter, setFilter] = useState("")
   const history = useHistory()
   const [currency, setCurrency] = useState(false)
   const [showFullDescription, setShowFullDescription] = useState([])
+  const [currentPage, setCurrentPage] = useState(1);  // Track current page
+  const [productsPerPage] = useState(10);
 
   const toggleDescription = (index) => {
     const updatedShowFullDescription = [...showFullDescription]
@@ -187,90 +189,41 @@ export default function ProductGrid(props) {
     setShowFullDescription(updatedShowFullDescription)
   }
 
-  const getDiscounts = async () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + "/discount/read-allv2"
-    await axios
-      .post(base_url)
-      .then((response) => {
-        setDiscountList(response.data.discounts)
-      })
-      .catch((error) => {
-        console.log(error)
-      })
-  }
-
   const handleChange = (event) => {
     setOrder(event.target.value)
-  }
-
-  const handleChangeFilter = (event) => {
-    setFilter(event.target.value)
-  }
+  };
 
   useEffect(() => {
-    getDiscounts()
-  }, [])
-
-  useEffect(() => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + "/product/read-all"
-    axios.get(base_url).then(async (response) => {
-      let productsAttTemp1 = response.data.products
-
-      await productsAttTemp1.map(async (p, iProd, pArr) => {
-        p.variants.map((variant) => {
-          imagesVariants.push(variant.variantImage)
-        })
-        productsAttTemp1 = await getEquation(p, iProd, pArr)
-      })
-      // optimizar para no hacer la petición cada vez que se cambia el orden
-      let cats = []
-      productsAttTemp1.forEach((product) => {
-        if (!cats.includes(product.category)) {
-          cats.push(product.category)
-        }
-      })
-      setCategories(cats)
-      console.log(categories)
-      if (order === "") {
-        setTiles(getAttributes(productsAttTemp1))
-      } else if (order === "A-Z") {
-        let products = productsAttTemp1.sort(function (a, b) {
-          if (a.name.toLowerCase() > b.name.toLowerCase()) {
-            return 1
-          }
-          if (a.name.toLowerCase() < b.name.toLowerCase()) {
-            return -1
-          }
-          return 0
-        })
-        setTiles(getAttributes(products))
-      } else if (order === "Z-A") {
-        let products = productsAttTemp1.sort(function (a, b) {
-          if (a.name.toLowerCase() < b.name.toLowerCase()) {
-            return 1
-          }
-          if (a.name.toLowerCase() > b.name.toLowerCase()) {
-            return -1
-          }
-          return 0
-        })
-        setTiles(getAttributes(products))
-      } else if (order === "Price") {
-        let products = productsAttTemp1.sort(function (a, b) {
-          let aPrice = a.publicPrice.from
-          let bPrice = b.publicPrice.from
-          return aPrice - bPrice
-        })
-        setTiles(getAttributes(products))
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/product/read-all-v2";
+    console.log("currentPage", (currentPage-1) * productsPerPage);
+    console.log("productsPerPage", productsPerPage);
+    axios.get(base_url, {
+      params: {
+        orderType: order === "A-Z" || order === "lowerPrice" ? "asc" : order === "" ? "" : "desc",
+        sortBy: order === "lowerPrice" || order === "maxPrice" ? "priceRange" : order === "" ? "" : "name",
+        initialPoint: (currentPage - 1) * productsPerPage,
+        productsPerPage: productsPerPage
       }
-    })
-  }, [order])
+    }).then(async (response) => {
+      let productsAttTemp1 = response.data.products;
+      let maxLength = response.data.maxLength;
+      console.log("response.data", response.data)
+      console.log("productsAttTemp1",productsAttTemp1);
+      setMaxLength(maxLength);
+      setTiles(productsAttTemp1);
+    });
+  }, [order, currentPage]);
 
-  const addingToCart = (e, tile) => {
-    e.preventDefault()
-    props.setSelectedProduct(tile)
-    props.setIsOpenAssociateArt(true)
-  }
+  const handleNextPage = () => {
+    setCurrentPage((prevPage) => prevPage + 1);
+  };
+  
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage((prevPage) => prevPage - 1);
+    }
+  };
+  
 
   const viewDetails = (product) => {
     history.push({
@@ -288,19 +241,10 @@ export default function ProductGrid(props) {
   }
 
   const priceSelect = (item) => {
-    if (
-      JSON.parse(localStorage.getItem("token")) &&
-      JSON.parse(localStorage.getItem("token"))?.username
-    ) {
-      return getPVMtext(item, currency, props.dollarValue, discountList)
-    } else {
-      return getPVPtext(item, currency, props.dollarValue, discountList)
-    }
-  }
-
-  const RenderHTML = ({ htmlString }) => {
-    return <div dangerouslySetInnerHTML={{ __html: htmlString }} />
-  }
+    return currency ? 
+      "Bs. " + item.from * props.dollarValue + " - " + item.to * props.dollarValue :
+      "$ " + item.from + " - " + item.to;
+  };
 
   return (
     <>
@@ -313,6 +257,37 @@ export default function ProductGrid(props) {
           marginTop: "2rem",
         }}
       >
+        <div style={{ display: "flex", justifyContent: "center", marginRight: "10px", padding: "0px" }}>
+          <Button
+            onClick={handlePreviousPage}
+            disabled={currentPage === 1}
+            size="small"
+            style={{ minWidth: "auto", padding: "2px", marginRight: "0.2rem", transform: "scale(0.75)" }}
+          >
+            &lt;
+          </Button>
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <Typography
+              variant="h6"
+              style={{
+                margin: "0 0.2rem",
+                color: "#d33f49",
+                textAlign: "center",
+                transform: "scale(0.75)",
+              }}
+            >
+              {currentPage}
+            </Typography>
+          </div>
+          <Button
+            onClick={handleNextPage}
+            disabled={currentPage === Math.ceil(maxLength / productsPerPage)}
+            size="small"
+            style={{ minWidth: "auto", padding: "2px", marginLeft: "0.2rem", transform: "scale(0.75)" }}
+          >
+            &gt;
+          </Button>
+        </div>
         <FormControl className={classes.formControl}>
           <InputLabel
             style={{ marginLeft: 10 }}
@@ -329,28 +304,10 @@ export default function ProductGrid(props) {
           >
             <MenuItem value={"A-Z"}>A-Z</MenuItem>
             <MenuItem value={"Z-A"}>Z-A</MenuItem>
-            <MenuItem value={"Price"}>Menor precio</MenuItem>
+            <MenuItem value={"lowerPrice"}>Menor precio</MenuItem>
+            <MenuItem value={"maxPrice"}>Mayor precio</MenuItem>
           </Select>
         </FormControl>
-        {/* <FormControl className={classes.formControl}>
-          <InputLabel
-            style={{ marginLeft: 10 }}
-            id="demo-simple-select-label"
-          >
-            Filtrar
-          </InputLabel>
-          <Select
-            variant="outlined"
-            labelId="demo-simple-select-label"
-            id="demo-simple-select"
-            value={filter}
-            onChange={handleChangeFilter}
-          >
-            {categories.map((c) => (
-              <MenuItem value={c}>{c}</MenuItem>
-            ))}
-          </Select>
-        </FormControl> */}
         <div
           style={{
             display: "flex",
@@ -377,11 +334,9 @@ export default function ProductGrid(props) {
         </div>
       </div>
       <ResponsiveMasonry columnsCountBreakPoints={{ 350: 1, 750: 2, 1800: 3 }}>
-        <Masonry
-          style={{ columnGap: "1.8rem", width: "80 %", margin: "0 auto" }}
-        >
-          {tiles ? (
-            tiles.map((tile, iProd, productsArr) => (
+        <Masonry style={{ columnGap: "1.8rem", width: "80%", margin: "0 auto" }}>
+          {tiles && tiles.length > 0 ? (
+            tiles.map((tile, iProd) => (
               <Card
                 className={classes.root}
                 id={tile.name}
@@ -427,36 +382,9 @@ export default function ProductGrid(props) {
                       },
                     }}
                   >
-                    {typeof tile.selection[0] === "string" &&
-                    typeof tile.variants[0]?.variantImage === "object" &&
-                    tile.variants.find(
-                      ({ name }) => name === tile.selection[0]
-                    ) ? (
-                      tile.variants
-                        .find(({ name }) => name === tile.selection[0])
-                        .variantImage.map((img, key_id) =>
-                          img.type === "images" ? (
-                            <img
-                              key={key_id}
-                              src={img.url}
-                              className={classes.img}
-                              alt="variant"
-                              style={{ borderRadius: 30 }}
-                            />
-                          ) : (
-                            img.type === "video" &&
-                            img.url !== null && (
-                              <span
-                                key={"video"}
-                                style={{ width: "100%", borderRadius: 30 }}
-                                dangerouslySetInnerHTML={{
-                                  __html: img.url,
-                                }}
-                              />
-                            )
-                          )
-                        )
-                    ) : tile.sources.images &&
+                    {
+                      tile.sources &&
+                      tile.sources.images && 
                       tile.sources.images[0] !== undefined ? (
                       tile.sources.images?.map((img, i) =>
                         img.url !== null && img.type === "images" ? (
@@ -528,7 +456,7 @@ export default function ProductGrid(props) {
                       variant="h5"
                       component="h2"
                     >
-                      {priceSelect(tile)}
+                      {priceSelect(tile.priceRange)}
                     </Typography>
                   </Grid>
                   <Grid
@@ -541,14 +469,6 @@ export default function ProductGrid(props) {
                     style={{ display: "flex", justifyContent: "space-between" }}
                   >
                     <Button
-                      // disabled={
-                      //   (tile.attributes[0] !== undefined &&
-                      //     tile.selection[0] === undefined) ||
-                      //   (tile.attributes.length === 2 &&
-                      //     typeof tile.selection === "string")
-                      //     ? true
-                      //     : false
-                      // }
                       size="small"
                       style={{
                         backgroundColor: "#d33f49",
@@ -558,11 +478,9 @@ export default function ProductGrid(props) {
                       }}
                       color="white"
                       onClick={(e) => {
-                        // addingToCart(e, tile)
                         viewDetails(tile)
                       }}
                     >
-                      {/* <AddShoppingCartIcon /> */}
                       Detalles
                     </Button>
                     <CardActions>
@@ -581,251 +499,6 @@ export default function ProductGrid(props) {
                     </CardActions>
                   </Grid>
                 </CardContent>
-                {/* </CardActionArea> */}
-                {/* {tile.hasSpecialVar && (
-                  <>
-                    <CardActions style={{ width: "25%" }}>
-                      <Grid item xs={12} md={12}>
-                        <FormControl
-                          variant="outlined"
-                          className={classes.form}
-                        >
-                          <TextField
-                            variant="outlined"
-                            display="inline"
-                            id="width"
-                            label="Ancho"
-                            name="width"
-                            autoComplete="width"
-                            value={width[iProd]}
-                            onChange={async (e) => {
-                              if (!e.target.value) {
-                                let w = width;
-                                w[iProd] = e.target.value;
-                                setWidth([...w]);
-                                let l = await getEquation(
-                                  tile,
-                                  iProd,
-                                  tiles,
-                                  width,
-                                  height
-                                );
-                                setTiles([...l]);
-                              } else {
-                                if (
-                                  /^\d+$/.test(e.target.value) &&
-                                  e.target.value[0] !== "0"
-                                ) {
-                                  if (e.target.value && e.target.value != 0) {
-                                    let w = width;
-                                    w[iProd] = e.target.value;
-                                    setWidth([...w]);
-                                    let l = await getEquation(
-                                      tile,
-                                      iProd,
-                                      tiles,
-                                      width,
-                                      height
-                                    );
-                                    setTiles([...l]);
-                                  } else {
-                                    let w = width;
-                                    w[iProd] = e.target.value;
-                                    setWidth([...w]);
-                                    let l = await getEquation(
-                                      tile,
-                                      iProd,
-                                      tiles,
-                                      width,
-                                      height
-                                    );
-                                    setTiles([...l]);
-                                  }
-                                }
-                              }
-                            }}
-                          />
-                        </FormControl>
-                      </Grid>
-                    </CardActions>
-                    <CardActions style={{ width: "25%" }}>
-                      <Grid item xs={12} md={12}>
-                        <FormControl
-                          variant="outlined"
-                          className={classes.form}
-                        >
-                          <TextField
-                            variant="outlined"
-                            display="inline"
-                            id="height"
-                            label="Alto"
-                            name="height"
-                            autoComplete="height"
-                            value={height[iProd]}
-                            onChange={async (e) => {
-                              if (!e.target.value) {
-                                let h = height;
-                                h[iProd] = e.target.value;
-                                setHeight([...h]);
-                                let l = await getEquation(
-                                  tile,
-                                  iProd,
-                                  tiles,
-                                  width,
-                                  height
-                                );
-                                setTiles([...l]);
-                              } else {
-                                if (
-                                  /^\d+$/.test(e.target.value) &&
-                                  e.target.value[0] !== "0"
-                                ) {
-                                  if (e.target.value && e.target.value != 0) {
-                                    let h = height;
-                                    h[iProd] = e.target.value;
-                                    setHeight([...h]);
-                                    let l = await getEquation(
-                                      tile,
-                                      iProd,
-                                      tiles,
-                                      width,
-                                      height
-                                    );
-                                    setTiles([...l]);
-                                  } else {
-                                    let h = height;
-                                    h[iProd] = e.target.value;
-                                    setHeight([...h]);
-                                    let l = await getEquation(
-                                      tile,
-                                      iProd,
-                                      tiles,
-                                      width,
-                                      height
-                                    );
-                                    setTiles([...l]);
-                                  }
-                                }
-                              }
-                            }}
-                          />
-                        </FormControl>
-                      </Grid>
-                       </Grid> 
-                    </CardActions>
-                  </>
-                )} */}
-
-                {/* {tile.attributes &&
-                  tile.attributes.map((att, iAtt, attributesArr) =>
-                    iAtt === 0 ? (
-                      <CardActions key={iAtt} style={{ width: "50%" }}>
-                        <Grid item xs={12} sm={12} md={12}>
-                          <FormControl
-                            variant="outlined"
-                            className={classes.form}
-                            xs={12}
-                            sm={12}
-                            md={12}
-                          >
-                            <InputLabel required id="att.name">
-                              {att.name}
-                            </InputLabel>
-                            <Select
-                              value={tile.selection && tile.selection[0]}
-                              onChange={async (e) => {
-                                const pAtts = await setProductAtts(
-                                  e.target.value,
-                                  attributesArr,
-                                  iProd,
-                                  iAtt,
-                                  productsArr,
-                                  width,
-                                  height
-                                );
-                                if (pAtts) {
-                                  setTiles(
-                                    pAtts.pAtt
-                                      ? [...pAtts.pAtt]
-                                      : [...pAtts.att]
-                                  );
-                                }
-                              }}
-                              label={att.selection}
-                            >
-                              <MenuItem value={undefined}>
-                                <em></em>
-                              </MenuItem>
-                              {att.value &&
-                                att.value.map((n, i) => (
-                                  <MenuItem key={n} value={n}>
-                                    {n}
-                                  </MenuItem>
-                                ))}
-                            </Select>
-                          </FormControl>
-                        </Grid>
-                      </CardActions>
-                    ) : (
-                      tile.selection[0] !== undefined && (
-                        <CardActions key={1} style={{ width: "50%" }}>
-                          <Grid item xs={12} sm={12} md={12}>
-                            <FormControl
-                              variant="outlined"
-                              className={classes.form}
-                              xs={12}
-                              sm={12}
-                              md={12}
-                            >
-                              <InputLabel required id="att.name">
-                                {att.name}
-                              </InputLabel>
-                              <Select
-                                value={tile.selection[1] && tile.selection[1]}
-                                onChange={async (e) => {
-                                  const pAtts = await setSecondProductAtts(
-                                    e.target.value,
-                                    attributesArr,
-                                    iProd,
-                                    iAtt,
-                                    productsArr,
-                                    width,
-                                    height
-                                  );
-                                  if (pAtts) {
-                                    setTiles(
-                                      pAtts.pAtt
-                                        ? [...pAtts.pAtt]
-                                        : [...pAtts.att]
-                                    );
-                                  }
-                                }}
-                                label={att.selection}
-                              >
-                                <MenuItem value={undefined}>
-                                  <em></em>
-                                </MenuItem>
-                                {tile.variants.map(
-                                  (variant) =>
-                                    (variant.attributes[0].value ===
-                                      tile.selection ||
-                                      variant.attributes[0].value ===
-                                        tile.selection[0]) && (
-                                      <MenuItem
-                                        key={variant._id}
-                                        value={variant.attributes[1]?.value}
-                                      >
-                                        {variant.attributes[1]?.value}
-                                      </MenuItem>
-                                    )
-                                )}
-                              </Select>
-                            </FormControl>
-                          </Grid>
-                        </CardActions>
-                      )
-                    )
-                  )} */}
               </Card>
             ))
           ) : (
@@ -833,6 +506,24 @@ export default function ProductGrid(props) {
           )}
         </Masonry>
       </ResponsiveMasonry>
+      <div style={{ display: "flex", justifyContent: "center", marginTop: "2rem", marginBottom: "50px" }}>
+        <Button
+          onClick={handlePreviousPage}
+          disabled={currentPage === 1}
+        >
+          &lt;
+        </Button>
+        <Typography variant="h6" style={{ margin: "0 1rem", color: "#d33f49" }}>
+          {currentPage}
+        </Typography>
+            <Button 
+            onClick={handleNextPage}
+            disabled={currentPage === Math.ceil(maxLength / productsPerPage)}
+            >
+              &gt;
+            </Button>
+      </div>
     </>
+    
   )
 }

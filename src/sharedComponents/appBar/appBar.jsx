@@ -19,11 +19,11 @@ import Divider from "@material-ui/core/Divider"
 import MenuIcon from "@material-ui/icons/Menu"
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft"
 import ChevronRightIcon from "@material-ui/icons/ChevronRight"
-import ArrowBackIcon from "@material-ui/icons/ArrowBack"
-import logo from "./Logotipo_Prixelart_H#2.png"
-import CB from "../../orgLanding/assets/isotipo.svg"
 import ShoppingCartOutlinedIcon from "@material-ui/icons/ShoppingCartOutlined";
 import Badge from "@material-ui/core/Badge";
+
+import logo from "./Logotipo_Prixelart_H#2.png"
+import CB from "../../orgLanding/assets/isotipo.svg"
 
 const drawerWidth = 240
 

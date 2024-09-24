@@ -347,6 +347,14 @@ export default function Orders(props) {
         { adminToken: localStorage.getItem("adminTokenV") },
         { withCredentials: true }
       )
+      // axios.get(base_url, {
+      //   params: {
+      //     orderType: order === "A-Z" || order === "lowerPrice" ? "asc" : order === "" ? "" : "desc",
+      //     sortBy: order === "lowerPrice" || order === "maxPrice" ? "priceRange" : order === "" ? "" : "name",
+      //     initialPoint: (currentPage - 1) * productsPerPage,
+      //     productsPerPage: productsPerPage
+      //   }
+      // }).then(async (response) => {
       .then((response) => {
         setRows(response.data.orders)
         setOrders(response.data.orders)
@@ -358,22 +366,22 @@ export default function Orders(props) {
     setLoading(false)
   }
 
-  const readMovements = async () => {
-    const base_url2 =
-      process.env.REACT_APP_BACKEND_URL + "/movement/readAllMovements"
-    axios
-      .post(
-        base_url2,
-        { adminToken: localStorage.getItem("adminTokenV") },
-        { withCredentials: true }
-      )
-      .then((response) => {
-        setMovements(response.data.movements)
-      })
-      .catch((error) => {
-        console.log(error)
-      })
-  }
+  // const readMovements = async () => {
+  //   const base_url2 =
+  //     process.env.REACT_APP_BACKEND_URL + "/movement/readAllMovements"
+  //   axios
+  //     .post(
+  //       base_url2,
+  //       { adminToken: localStorage.getItem("adminTokenV") },
+  //       { withCredentials: true }
+  //     )
+  //     .then((response) => {
+  //       setMovements(response.data.movements)
+  //     })
+  //     .catch((error) => {
+  //       console.log(error)
+  //     })
+  // }
 
   const readConsumers = async () => {
     const base_url2 = process.env.REACT_APP_BACKEND_URL + "/consumer/read-all"
@@ -392,18 +400,18 @@ export default function Orders(props) {
       })
   }
 
-  const updateOrders = () => {
-    orders.map((order) => {
-      const findMov = movements?.find((mov) =>
-        mov?.description?.includes(order.orderId)
-      )
-      if (findMov) {
-        const Datev2 = moment(findMov?.createdOn).tz("America/Caracas").format()
-        order.date = Datev2
-      }
-    })
-    setOrders(orders)
-  }
+  // const updateOrders = () => {
+  //   orders.map((order) => {
+  //     const findMov = movements?.find((mov) =>
+  //       mov?.description?.includes(order.orderId)
+  //     )
+  //     if (findMov) {
+  //       const Datev2 = moment(findMov?.createdOn).tz("America/Caracas").format()
+  //       order.date = Datev2
+  //     }
+  //   })
+  //   setOrders(orders)
+  // }
 
   const downloadOrders = async () => {
     const workbook = new excelJS.Workbook()
@@ -1051,14 +1059,16 @@ export default function Orders(props) {
   }
 
   useEffect(() => {
-    readOrders()
-    readMovements()
+    // readOrders()
+    // readMovements()
     readConsumers()
-    updateOrders()
+    // updateOrders()
     getDiscounts()
     getSurcharges()
     // getPrixers();
     getORGs()
+    readDollarValue()
+
   }, [])
 
   const readDollarValue = async () => {
@@ -1067,10 +1077,6 @@ export default function Orders(props) {
       setDollarValue(response.data.dollarValue)
     })
   }
-
-  useEffect(() => {
-    readDollarValue()
-  }, [])
 
   const closeAd = () => {
     setSnackBarError(false)

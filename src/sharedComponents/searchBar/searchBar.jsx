@@ -92,7 +92,7 @@ export default function CustomizedInputBase(props) {
   return (
     <div
       style={{
-        width: isDesktop ? "50%" : "100%",
+        width: isDesktop && window.location.search.includes("?producto=") ? "100%" : isDesktop ? "50%" : "100%",
         margin: "auto",
         maxWidth: 616,
       }}

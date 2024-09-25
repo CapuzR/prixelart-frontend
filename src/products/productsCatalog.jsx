@@ -100,7 +100,7 @@ export default function ProductsCatalog(props) {
   const history = useHistory()
   const [openServiceFormDialog, setOpenServiceFormDialog] = useState(false)
   const [createdService, setCreatedService] = useState(false)
-
+  
   const getBestSellers = async () => {
     const url = process.env.REACT_APP_BACKEND_URL + "/getBestSellers"
     try {
@@ -124,7 +124,8 @@ export default function ProductsCatalog(props) {
 
   const viewDetails = (product) => {
     history.push({
-      pathname: "/producto=" + product._id,
+      pathname: "/",
+      search: "?producto=" + product._id,
     })
     ReactGA.event({
       category: "Productos",

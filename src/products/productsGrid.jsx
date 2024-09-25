@@ -36,6 +36,9 @@ import { useHistory } from "react-router-dom"
 import Switch from "@material-ui/core/Switch"
 import { getPVPtext, getPVMtext } from "../shoppingCart/pricesFunctions.js"
 import ReactGA from "react-ga"
+import world from "../images/world.svg"
+import worldBlack from "../images/world-black.svg"
+import vzla from "../images/vzla.svg"
 
 ReactGA.initialize("G-0RWP9B33D8")
 
@@ -131,6 +134,26 @@ const useStyles = makeStyles((theme) => ({
       justifyContent: "center",
     },
   },
+  thumbZ: {
+    color: "#d33f49",
+    width: "30px",
+    height: "30px",
+    margin: "2px",
+    backgroundImage: `url(${world})`,
+    backgroundSize: "20px 20px",
+    backgroundRepeat: "no-repeat",
+    backgroundPosition: "center",
+  },
+  thumbTrueZ: {
+    color: "#d33f49",
+    width: "30px",
+    height: "30px",
+    margin: "2px",
+    backgroundImage: `url(${vzla})`,
+    backgroundSize: "20px 20px",
+    backgroundRepeat: "no-repeat",
+    backgroundPosition: "center",
+  },
   track: {
     borderRadius: "20px",
     backgroundColor: "silver",
@@ -150,6 +173,29 @@ const useStyles = makeStyles((theme) => ({
       right: "7px",
     },
   },
+  trackZ: {
+    borderRadius: "20px",
+    backgroundColor: "silver !important",
+    opacity: "1 !important",
+    position: "relative",
+    "&:after, &:before": {
+      position: "absolute",
+      top: "8px",
+      width: "20px",
+      height: "20px",
+      content: "''",
+      backgroundSize: "contain",
+      backgroundRepeat: "no-repeat",
+    },
+    "&:after": {
+      left: "8px",
+      backgroundImage: `url(${vzla})`,
+    },
+    "&:before": {
+      right: "7px",
+      backgroundImage: `url(${worldBlack})`,
+    },
+  },  
   checked: {
     color: "#d33f49 !important",
     transform: "translateX(35px) !important",
@@ -182,6 +228,11 @@ export default function ProductGrid(props) {
   const [showFullDescription, setShowFullDescription] = useState([])
   const [currentPage, setCurrentPage] = useState(1);  // Track current page
   const [productsPerPage] = useState(10);
+  const [zone, setZone] = useState(
+    localStorage.getItem("zone")
+      ? JSON.parse(localStorage.getItem("zone"))
+      : "base"
+  )
 
   const toggleDescription = (index) => {
     const updatedShowFullDescription = [...showFullDescription]
@@ -195,8 +246,6 @@ export default function ProductGrid(props) {
 
   useEffect(() => {
     const base_url = process.env.REACT_APP_BACKEND_URL + "/product/read-all-v2";
-    console.log("currentPage", (currentPage-1) * productsPerPage);
-    console.log("productsPerPage", productsPerPage);
     axios.get(base_url, {
       params: {
         orderType: order === "A-Z" || order === "lowerPrice" ? "asc" : order === "" ? "" : "desc",
@@ -207,8 +256,6 @@ export default function ProductGrid(props) {
     }).then(async (response) => {
       let productsAttTemp1 = response.data.products;
       let maxLength = response.data.maxLength;
-      console.log("response.data", response.data)
-      console.log("productsAttTemp1",productsAttTemp1);
       setMaxLength(maxLength);
       setTiles(productsAttTemp1);
     });
@@ -227,7 +274,8 @@ export default function ProductGrid(props) {
 
   const viewDetails = (product) => {
     history.push({
-      pathname: "/producto=" + product._id,
+      pathname: "/",
+      search: "?producto=" + product.id
     })
     ReactGA.event({
       category: "Productos",
@@ -238,6 +286,10 @@ export default function ProductGrid(props) {
 
   const changeCurrency = () => {
     setCurrency(!currency)
+  }
+
+  const changeZone = () => {
+    setZone(!zone)
   }
 
   const priceSelect = (item) => {
@@ -332,6 +384,30 @@ export default function ProductGrid(props) {
             style={{ marginRight: "-5px" }}
           />
         </div>
+        {/* <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+            marginLeft: 10,
+          }}
+        >
+          <Switch
+            classes={{
+              root: classes.base,
+              switchBase: classes.switchBase,
+              thumb: zone ? classes.thumbTrueZ : classes.thumbZ,
+              track: classes.trackZ,
+              checked: classes.checked,
+            }}
+            color="primary"
+            value={zone}
+            onChange={(e) => {
+              changeZone(e)
+            }}
+            style={{ marginRight: "-5px" }}
+          />
+        </div> */}
       </div>
       <ResponsiveMasonry columnsCountBreakPoints={{ 350: 1, 750: 2, 1800: 3 }}>
         <Masonry style={{ columnGap: "1.8rem", width: "80%", margin: "0 auto" }}>

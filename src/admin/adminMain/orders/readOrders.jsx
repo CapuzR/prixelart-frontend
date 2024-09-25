@@ -15,6 +15,8 @@ import SearchIcon from "@material-ui/icons/Search"
 import InputAdornment from "@material-ui/core/InputAdornment"
 import moment from "moment"
 import "moment/locale/es"
+import { Backdrop } from "@material-ui/core"
+import CircularProgress from "@material-ui/core/CircularProgress"
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -138,9 +140,12 @@ export default function ReadOrders(props) {
   const itemsPerPage = 20
   const noOfPages = Math.ceil(totalOrders / itemsPerPage)
   const [pageNumber, setPageNumber] = useState(1)
-  const itemsToSkip = (pageNumber - 1) * itemsPerPage
-  const rowsv2 = props.rows?.slice(itemsToSkip, itemsPerPage + itemsToSkip)
+  // const itemsToSkip = (pageNumber - 1) * itemsPerPage
+  const [rows, setRows] = useState([])
+  const [total, setTotal] = useState(1)
+  // const rowsv2 = props.rows?.slice(itemsToSkip, itemsPerPage + itemsToSkip)
   // const [filters, setFilters] = useState(props.filters);
+  const [loading, setLoading] = useState(false)
 
   const handleID = (event) => {
     props.findOrder(event.target.value)
@@ -187,8 +192,61 @@ export default function ReadOrders(props) {
     props.readOrders()
   }
 
+  const readOrders = async () => {
+    setLoading(true)
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/order/read-allv2"
+    await axios
+      .post(
+        base_url,
+        {
+          adminToken: localStorage.getItem("adminTokenV"),
+          initialPoint: (pageNumber - 1) * itemsPerPage,
+          itemsPerPage: itemsPerPage,
+        },
+        { withCredentials: true }
+      )
+      // axios.get(base_url, {
+      //   params: {
+      //     orderType: order === "A-Z" || order === "lowerPrice" ? "asc" : order === "" ? "" : "desc",
+      //     sortBy: order === "lowerPrice" || order === "maxPrice" ? "priceRange" : order === "" ? "" : "name",
+      //     initialPoint: (currentPage - 1) * productsPerPage,
+      //     productsPerPage: productsPerPage
+      //   }
+      // }).then(async (response) => {
+      .then((response) => {
+        setRows(response.data.orders)
+        setTotal(response.data.length)
+        // setOrders(response.data.orders)
+        // getClients(response.data.orders)
+      })
+      .catch((error) => {
+        console.log(error)
+      })
+    setLoading(false)
+  }
+  useEffect(() => {
+    readOrders()
+  }, [pageNumber])
+
+  const handleNextPage = () => {
+    setPageNumber((pageNumber) => pageNumber + 1);
+  };
+
+  const handlePreviousPage = () => {
+    if (pageNumber > 1) {
+      setPageNumber((pageNumber) => pageNumber - 1);
+    }
+  };
+
   return (
     <>
+      <Backdrop
+        className={classes.backdrop}
+        open={loading}
+        transitionDuration={500}
+      >
+        <CircularProgress />
+      </Backdrop>
       <Table style={{ overflowX: "scroll" }}>
         <TableHead>
           <TableRow>
@@ -446,8 +504,8 @@ export default function ReadOrders(props) {
           </TableRow>
         </TableHead>
         <TableBody>
-          {rowsv2?.length > 0 &&
-            rowsv2.map((row, index) => (
+          {rows?.length > 0 &&
+            rows.map((row, index) => (
               <>
                 <TableRow key={index}>
                   <TableCell align="center">{row.orderId}</TableCell>
@@ -709,7 +767,7 @@ export default function ReadOrders(props) {
             ))}
         </TableBody>
       </Table>
-      {rowsv2?.length < 1 && (
+      {rows?.length < 1 && (
         <div
           style={{
             display: "flex",
@@ -740,7 +798,7 @@ export default function ReadOrders(props) {
           </Button>
         </div>
       )}
-      {rowsv2?.length > 0 && (
+      {rows?.length > 0 && (
         <Box
           style={{
             display: "flex",
@@ -749,104 +807,35 @@ export default function ReadOrders(props) {
             marginBottom: 4,
           }}
         >
-          {pageNumber - 3 > 0 && (
-            <Button
-              style={{ minWidth: 30, marginRight: 5 }}
-              onClick={() => {
-                setPageNumber(1)
-              }}
-            >
-              {1}
-            </Button>
-          )}
-          {pageNumber - 3 > 0 && (
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                marginRight: 5,
-              }}
-            >
-              ...
-            </div>
-          )}
-          {pageNumber - 2 > 0 && (
-            <Button
-              style={{ minWidth: 30, marginRight: 5 }}
-              onClick={() => {
-                setPageNumber(pageNumber - 2)
-              }}
-            >
-              {pageNumber - 2}
-            </Button>
-          )}
-          {pageNumber - 1 > 0 && (
-            <Button
-              style={{ minWidth: 30, marginRight: 5 }}
-              onClick={() => {
-                setPageNumber(pageNumber - 1)
-              }}
-            >
-              {pageNumber - 1}
-            </Button>
-          )}
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              width: 80,
-              marginRight: 5,
-              backgroundColor: "rgb(238, 238, 238)",
-              borderRadius: 4,
-            }}
+           <Button
+            onClick={handlePreviousPage}
+            disabled={pageNumber === 1}
+            size="small"
+            style={{ minWidth: "auto", padding: "2px", marginRight: "0.2rem", transform: "scale(0.75)" }}
           >
-            Página {pageNumber}
-          </div>
-          {pageNumber + 1 <= noOfPages && (
-            <Button
-              style={{ minWidth: 30, marginRight: 5 }}
-              onClick={() => {
-                setPageNumber(pageNumber + 1)
-              }}
-            >
-              {pageNumber + 1}
-            </Button>
-          )}
-
-          {pageNumber + 2 <= noOfPages && (
-            <Button
-              style={{ minWidth: 30, marginRight: 5 }}
-              onClick={() => {
-                setPageNumber(pageNumber + 2)
-              }}
-            >
-              {pageNumber + 2}
-            </Button>
-          )}
-          {pageNumber + 3 <= noOfPages && (
-            <div
+            &lt;
+          </Button>
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <Typography
+              variant="h6"
               style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                marginRight: 5,
+                margin: "0 0.2rem",
+                color: "#d33f49",
+                textAlign: "center",
+                transform: "scale(0.75)",
               }}
             >
-              ...
-            </div>
-          )}
-          {pageNumber + 3 <= noOfPages && (
-            <Button
-              style={{ minWidth: 30, marginRight: 5 }}
-              onClick={() => {
-                setPageNumber(noOfPages)
-              }}
-            >
-              {noOfPages}
-            </Button>
-          )}
+              {pageNumber}
+            </Typography>
+          </div>
+          <Button
+            onClick={handleNextPage}
+            disabled={pageNumber === Math.ceil(total / itemsPerPage)}
+            size="small"
+            style={{ minWidth: "auto", padding: "2px", marginLeft: "0.2rem", transform: "scale(0.75)" }}
+          >
+            &gt;
+          </Button>
         </Box>
       )}
     </>

@@ -520,24 +520,6 @@ function App() {
             permissions={permissions}
           />
         </Route>
-        <Route path="/producto=:id">
-          <PrixPoduct
-            addItemToBuyState={addItemToBuyState}
-            isOpenAssociateProduct={isOpenAssociateProduct}
-            setIsOpenAssociateProduct={setIsOpenAssociateProduct}
-            setSelectedProductToAssociate={setSelectedProductToAssociate}
-            selectedProductToAssociate={selectedProductToAssociate}
-            selectedArtToAssociate={selectedArtToAssociate}
-            setSelectedArtToAssociate={setSelectedArtToAssociate}
-            setIsOpenAssociateArt={setIsOpenAssociateArt}
-            isOpenAssociateArt={isOpenAssociateArt}
-            setSearchResult={setSearchResult}
-            searchResult={searchResult}
-            setFullArt={setFullArt}
-            fullArt={fullArt}
-            dollarValue={dollarValue}
-          />
-        </Route>
         <Route path="/galeria">
           <Gallery
             buyState={buyState}
@@ -731,35 +713,65 @@ function App() {
           <ChiguireHome />
         </Route>
 
-        <Route path="/">
-          <Home
-            deleteItemInBuyState={deleteItemInBuyState}
-            component={Home}
-            buyState={buyState}
-            addItemToBuyState={addItemToBuyState}
-            isOpenAssociateProduct={isOpenAssociateProduct}
-            setIsOpenAssociateProduct={setIsOpenAssociateProduct}
-            setSelectedProductToAssociate={setSelectedProductToAssociate}
-            selectedProductToAssociate={selectedProductToAssociate}
-            AssociateProduct={AssociateProduct}
-            setBuyState={setBuyState}
-            deleteProductInItem={deleteProductInItem}
-            setSelectedArtToAssociate={setSelectedArtToAssociate}
-            changeQuantity={changeQuantity}
-            valuesConsumerForm={valuesConsumerForm}
-            setValuesConsumerForm={setValuesConsumerForm}
-            setOpen={setOpen}
-            setMessage={setMessage}
-            setPrixer={setPrixer}
-            setFullArt={setFullArt}
-            setSearchResult={setSearchResult}
-            dollarValue={dollarValue}
-            setPointedProduct={setPointedProduct}
-            pointedProduct={pointedProduct}
-            permissions={permissions}
-          />
-        </Route>
+        <Route
+          path="/"
+          render={(props) => {
+            const params = new URLSearchParams(props.location.search)
+            const prod = params.get("producto")
 
+            if (prod) {
+              return (
+                <PrixPoduct
+                  addItemToBuyState={addItemToBuyState}
+                  isOpenAssociateProduct={isOpenAssociateProduct}
+                  setIsOpenAssociateProduct={setIsOpenAssociateProduct}
+                  setSelectedProductToAssociate={setSelectedProductToAssociate}
+                  selectedProductToAssociate={selectedProductToAssociate}
+                  selectedArtToAssociate={selectedArtToAssociate}
+                  setSelectedArtToAssociate={setSelectedArtToAssociate}
+                  setIsOpenAssociateArt={setIsOpenAssociateArt}
+                  isOpenAssociateArt={isOpenAssociateArt}
+                  setSearchResult={setSearchResult}
+                  searchResult={searchResult}
+                  setFullArt={setFullArt}
+                  fullArt={fullArt}
+                  dollarValue={dollarValue}
+                  buyState={buyState}
+                  setBuyState={setBuyState}
+                />
+              )
+            } else {
+              return (
+                <Home
+                  deleteItemInBuyState={deleteItemInBuyState}
+                  component={Home}
+                  buyState={buyState}
+                  addItemToBuyState={addItemToBuyState}
+                  isOpenAssociateProduct={isOpenAssociateProduct}
+                  setIsOpenAssociateProduct={setIsOpenAssociateProduct}
+                  setSelectedProductToAssociate={setSelectedProductToAssociate}
+                  selectedProductToAssociate={selectedProductToAssociate}
+                  AssociateProduct={AssociateProduct}
+                  setBuyState={setBuyState}
+                  deleteProductInItem={deleteProductInItem}
+                  setSelectedArtToAssociate={setSelectedArtToAssociate}
+                  changeQuantity={changeQuantity}
+                  valuesConsumerForm={valuesConsumerForm}
+                  setValuesConsumerForm={setValuesConsumerForm}
+                  setOpen={setOpen}
+                  setMessage={setMessage}
+                  setPrixer={setPrixer}
+                  setFullArt={setFullArt}
+                  setSearchResult={setSearchResult}
+                  dollarValue={dollarValue}
+                  setPointedProduct={setPointedProduct}
+                  pointedProduct={pointedProduct}
+                  permissions={permissions}
+                />
+              )
+            }
+          }}
+        />
         <Route component={Home} />
       </Switch>
 

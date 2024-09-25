@@ -1,33 +1,33 @@
 //[]      17. Búsqueda de Prixers.
 
-import React, { useState, useEffect } from "react";
-import { makeStyles, withStyles } from "@material-ui/core/styles";
-import { useTheme } from "@material-ui/core/styles";
-import axios from "axios";
-import { useHistory } from "react-router-dom";
-import TextField from "@material-ui/core/TextField";
-import Button from "@material-ui/core/Button";
-import Backdrop from "@material-ui/core/Backdrop";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import Img from "react-cool-img";
-import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
-import Dialog from "@material-ui/core/Dialog";
-import DialogActions from "@material-ui/core/DialogActions";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogContentText from "@material-ui/core/DialogContentText";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import Switch from "@material-ui/core/Switch";
-import Typography from "@material-ui/core/Typography";
-import utils from "../../utils/utils";
-import SearchBar from "../../sharedComponents/searchBar/searchBar.jsx";
-import IconButton from "@material-ui/core/IconButton";
-import Tooltip from "@material-ui/core/Tooltip";
-import CardActionArea from "@material-ui/core/CardActionArea";
-import Box from "@material-ui/core/Box";
-import AddShoppingCartIcon from "@material-ui/icons/AddShoppingCart";
-import FullscreenPhoto from "../fullscreenPhoto/fullscreenPhoto";
-import Star from "@material-ui/icons/StarRate";
-import StarOutline from "@material-ui/icons/StarOutline";
+import React, { useState, useEffect } from "react"
+import { makeStyles, withStyles } from "@material-ui/core/styles"
+import { useTheme } from "@material-ui/core/styles"
+import axios from "axios"
+import { useHistory } from "react-router-dom"
+import TextField from "@material-ui/core/TextField"
+import Button from "@material-ui/core/Button"
+import Backdrop from "@material-ui/core/Backdrop"
+import CircularProgress from "@material-ui/core/CircularProgress"
+import Img from "react-cool-img"
+import Masonry, { ResponsiveMasonry } from "react-responsive-masonry"
+import Dialog from "@material-ui/core/Dialog"
+import DialogActions from "@material-ui/core/DialogActions"
+import DialogContent from "@material-ui/core/DialogContent"
+import DialogContentText from "@material-ui/core/DialogContentText"
+import DialogTitle from "@material-ui/core/DialogTitle"
+import Switch from "@material-ui/core/Switch"
+import Typography from "@material-ui/core/Typography"
+import utils from "../../utils/utils"
+import SearchBar from "../../sharedComponents/searchBar/searchBar.jsx"
+import IconButton from "@material-ui/core/IconButton"
+import Tooltip from "@material-ui/core/Tooltip"
+import CardActionArea from "@material-ui/core/CardActionArea"
+import Box from "@material-ui/core/Box"
+import AddShoppingCartIcon from "@material-ui/icons/AddShoppingCart"
+import FullscreenPhoto from "../fullscreenPhoto/fullscreenPhoto"
+import Star from "@material-ui/icons/StarRate"
+import StarOutline from "@material-ui/icons/StarOutline"
 
 const IOSSwitch = withStyles((theme) => ({
   root: {
@@ -81,8 +81,8 @@ const IOSSwitch = withStyles((theme) => ({
       }}
       {...props}
     />
-  );
-});
+  )
+})
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -117,204 +117,222 @@ const useStyles = makeStyles((theme) => ({
     zIndex: theme.zIndex.drawer + 1,
     color: theme.palette.primary.main,
   },
-}));
+}))
 
 export default function Grid(props) {
-  const classes = useStyles();
-  const [tiles, setTiles] = useState([]);
-  const history = useHistory();
-  const [onAdmin, setOnAdmin] = useState(false);
-  let globalParams = new URLSearchParams(window.location.search);
-
+  const classes = useStyles()
+  const [tiles, setTiles] = useState([])
+  const history = useHistory()
+  const [onAdmin, setOnAdmin] = useState(false)
+  let globalParams = new URLSearchParams(window.location.search)
   const [searchValue, setSearchValue] = useState(
     globalParams.get("name") || null
-  );
+  )
   const [categoryValue, setCategoryValue] = useState(
     globalParams.get("category") || null
-  );
-  const [backdrop, setBackdrop] = useState(true);
-  const theme = useTheme();
-  const [snackBar, setSnackBar] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [snackBarMessage, setSnackBarMessage] = useState(false);
-  const [selectedArt, setSelectedArt] = useState(undefined);
-  const [open, setOpen] = useState(false);
-  const [openV, setOpenV] = useState(false);
-  const [openFullArt, setOpenFullArt] = useState(false);
-  const [disabledReason, setDisabledReason] = useState("");
-  const [visible, setVisible] = useState(true);
-  const totalOrders = tiles?.length;
-  const itemsPerPage = 30;
-  const noOfPages = Math.ceil(totalOrders / itemsPerPage);
-  const [pageNumber, setPageNumber] = useState(1);
-  const itemsToSkip = (pageNumber - 1) * itemsPerPage;
-  const tilesv2 = tiles?.slice(itemsToSkip, itemsPerPage + itemsToSkip);
+  )
+  const [backdrop, setBackdrop] = useState(true)
+  const theme = useTheme()
+  const [snackBar, setSnackBar] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [snackBarMessage, setSnackBarMessage] = useState(false)
+  const [selectedArt, setSelectedArt] = useState(undefined)
+  const [open, setOpen] = useState(false)
+  const [openV, setOpenV] = useState(false)
+  const [openFullArt, setOpenFullArt] = useState(false)
+  const [disabledReason, setDisabledReason] = useState("")
+  const [visible, setVisible] = useState(true)
+  const totalOrders = tiles?.length
+  const itemsPerPage = 30
+  const noOfPages = Math.ceil(totalOrders / itemsPerPage)
+  const [pageNumber, setPageNumber] = useState(1)
+  const itemsToSkip = (pageNumber - 1) * itemsPerPage
+  const tilesv2 = tiles?.slice(itemsToSkip, itemsPerPage + itemsToSkip)
 
   const handleClickVisible = () => {
-    setOpenV(true);
-  };
+    setOpenV(true)
+  }
 
   const handleClose = () => {
-    setOpen(false);
-    setSelectedArt(undefined);
-  };
+    setOpen(false)
+    setSelectedArt(undefined)
+  }
   const handleCloseVisible = () => {
-    setOpenV(false);
-    setSelectedArt(undefined);
-  };
+    setOpenV(false)
+    setSelectedArt(undefined)
+  }
 
   const setVisibleArt = async (art, id, event) => {
-    setLoading(true);
+    setLoading(true)
     const base_url =
-      process.env.REACT_APP_BACKEND_URL + "/art/disable/" + art.artId;
-    art.visible = !art.visible;
+      process.env.REACT_APP_BACKEND_URL + "/art/disable/" + art.artId
+    art.visible = !art.visible
     const response = await axios.put(
       base_url,
       art,
       { adminToken: localStorage.getItem("adminTokenV") },
       { withCredentials: true }
-    );
-    setSnackBarMessage("Arte modificado exitosamente");
-    setSnackBar(true);
-    setLoading(false);
-    handleClose();
-    setDisabledReason("");
-    setSelectedArt(undefined);
-  };
+    )
+    setSnackBarMessage("Arte modificado exitosamente")
+    setSnackBar(true)
+    setLoading(false)
+    handleClose()
+    setDisabledReason("")
+    setSelectedArt(undefined)
+  }
 
   useEffect(() => {
     if (window.location.pathname.includes("/admin/preferences/read")) {
-      setOnAdmin(true);
+      setOnAdmin(true)
     }
-  }, []);
+  }, [])
 
   useEffect(() => {
     if (props.prixerUsername || globalParams.get("prixer")) {
       if (searchValue && categoryValue) {
         const base_url =
           process.env.REACT_APP_BACKEND_URL +
-          "/art/read-by-username-query-and-category";
+          "/art/read-by-username-query-and-category"
         const params = {
           text: searchValue,
           category: categoryValue,
-        };
+        }
         axios.get(base_url, { params }).then((response) => {
-          setTiles(utils.shuffle(response.data.arts));
-          props.setSearchResult(response.data.arts);
-          setBackdrop(false);
-        });
+          setTiles(utils.shuffle(response.data.arts))
+          props.setSearchResult(response.data.arts)
+          setBackdrop(false)
+        })
       } else if (searchValue) {
         const base_url =
-          process.env.REACT_APP_BACKEND_URL + "/art/read-by-username-and-query";
+          process.env.REACT_APP_BACKEND_URL + "/art/read-by-username-and-query"
         const params = {
           text: searchValue,
           username: props.prixerUsername || globalParams.get("prixer"),
-        };
+        }
         axios.get(base_url, { params }).then((response) => {
-          setTiles(utils.shuffle(response.data.arts));
-          props.setSearchResult(response.data.arts);
+          setTiles(utils.shuffle(response.data.arts))
+          props.setSearchResult(response.data.arts)
           // response.data.arts.map((bool) =>
           //   visibles.push({
           //     id: bool.artId,
           //     visible: bool.visible,
           //   })
           // );
-          setBackdrop(false);
-        });
+          setBackdrop(false)
+        })
       } else if (categoryValue) {
         const base_url =
           process.env.REACT_APP_BACKEND_URL +
-          "/art/read-by-username-and-category";
+          "/art/read-by-username-and-category"
         const params = {
           category: categoryValue,
           username: props.prixerUsername || globalParams.get("prixer"),
-        };
+        }
         axios.get(base_url, { params }).then((response) => {
-          setTiles(utils.shuffle(response.data.arts));
-          props.setSearchResult(response.data.arts);
-          setBackdrop(false);
-        });
+          setTiles(utils.shuffle(response.data.arts))
+          props.setSearchResult(response.data.arts)
+          setBackdrop(false)
+        })
       } else {
         const base_url =
-          process.env.REACT_APP_BACKEND_URL + "/art/read-by-prixer";
+          process.env.REACT_APP_BACKEND_URL + "/art/read-by-prixer"
         const body = {
           username: props.prixerUsername,
-        };
+        }
         axios.post(base_url, body).then((response) => {
-          setTiles(utils.shuffle(response.data.arts));
-          props.setSearchResult(response.data.arts);
-          setBackdrop(false);
-        });
+          setTiles(utils.shuffle(response.data.arts))
+          props.setSearchResult(response.data.arts)
+          setBackdrop(false)
+        })
       }
     } else if (searchValue && categoryValue) {
       const base_url =
-        process.env.REACT_APP_BACKEND_URL + "/art/read-by-query-and-category";
+        process.env.REACT_APP_BACKEND_URL + "/art/read-by-query-and-category"
       const params = {
         text: searchValue,
         category: categoryValue,
-      };
+      }
       axios.get(base_url, { params }).then((response) => {
-        setTiles(utils.shuffle(response.data.arts));
-        props.setSearchResult(response.data.arts);
-        setBackdrop(false);
-      });
+        setTiles(utils.shuffle(response.data.arts))
+        props.setSearchResult(response.data.arts)
+        setBackdrop(false)
+      })
     } else if (searchValue) {
-      const base_url = process.env.REACT_APP_BACKEND_URL + "/art/read-by-query";
+      const base_url = process.env.REACT_APP_BACKEND_URL + "/art/read-by-query"
       const params = {
         text: searchValue,
-      };
+      }
       axios.get(base_url, { params }).then((response) => {
-        setTiles(response.data.arts);
-        props.setSearchResult(response.data.arts);
-        setBackdrop(false);
-      });
+        setTiles(response.data.arts)
+        props.setSearchResult(response.data.arts)
+        setBackdrop(false)
+      })
     } else if (categoryValue) {
       const base_url =
-        process.env.REACT_APP_BACKEND_URL + "/art/read-by-category";
+        process.env.REACT_APP_BACKEND_URL + "/art/read-by-category"
       const params = {
         category: categoryValue,
-      };
+      }
       axios.get(base_url, { params }).then((response) => {
-        setTiles(utils.shuffle(response.data.arts));
-        props.setSearchResult(response.data.arts);
-        setBackdrop(false);
-      });
+        setTiles(utils.shuffle(response.data.arts))
+        props.setSearchResult(response.data.arts)
+        setBackdrop(false)
+      })
     } else if (props.inHome) {
-      const base_url = process.env.REACT_APP_BACKEND_URL + "/art/get-latest";
+      const base_url = process.env.REACT_APP_BACKEND_URL + "/art/get-latest"
       axios.get(base_url).then((response) => {
-        setTiles(response.data.arts);
-        props.setSearchResult(response.data.arts);
-        setBackdrop(false);
-      });
+        setTiles(response.data.arts)
+        props.setSearchResult(response.data.arts)
+        setBackdrop(false)
+      })
     } else {
-      const base_url = process.env.REACT_APP_BACKEND_URL + "/art/read-all";
+      const base_url = process.env.REACT_APP_BACKEND_URL + "/art/read-all-v2"
       axios.get(base_url).then((response) => {
-        setTiles(response.data.arts);
-        props.setSearchResult(response.data.arts);
-        setBackdrop(false);
-      });
+        setTiles(response.data.arts)
+        props.setSearchResult(response.data.arts)
+        setBackdrop(false)
+      })
     }
-  }, [searchValue, categoryValue]);
+  }, [searchValue, categoryValue])
 
   const handleFullImage = async (e, tile) => {
     if (onAdmin) {
-      props.addMostSellerToBestSeller(tile.title);
+      props.addMostSellerToBestSeller(tile.title)
     } else {
-      props.setFullArt(tile);
-      props.setSearchResult(tiles);
-      let art = e.target.id;
+      props.setFullArt(tile)
+      props.setSearchResult(tiles)
+      let art = e.target.id
       history.push({
         pathname: "/art=" + art,
-      });
-      setOpenFullArt(true);
+      })
+      setOpenFullArt(true)
     }
-  };
+  }
 
   const searchPhotos = (e, queryValue, categories) => {
-    setSearchValue(queryValue);
-    setCategoryValue(categories);
-    e.preventDefault();
-    if (onAdmin) {
+    setSearchValue(queryValue)
+    setCategoryValue(categories)
+    e.preventDefault()
+    if (window.location.search.includes("producto=")) {
+      if (queryValue !== null && categories !== null) {
+        history.push({
+          pathname:
+            window.location.pathname +
+            "/s?category=" +
+            categories +
+            "&name=" +
+            queryValue,
+        })
+      } else if ((categories?.length > 0 && queryValue === null) || "") {
+        history.push({
+          pathname: window.location.pathname + "/s?category=" + categories,
+        })
+      } else if (queryValue) {
+        history.push({
+          pathname: window.location.pathname + "/s?name=" + queryValue,
+        })
+      }
+    } else if (onAdmin) {
       if (queryValue !== null && categories !== null) {
         history.push({
           pathname:
@@ -322,19 +340,19 @@ export default function Grid(props) {
             categories +
             "&name=" +
             queryValue,
-        });
+        })
       } else if ((categories?.length > 0 && queryValue === null) || "") {
         history.push({
           pathname: "/admin/preferences/read/s?category=" + categories,
-        });
+        })
       } else if (queryValue) {
         history.push({
           pathname: "/admin/preferences/read/s?name=" + queryValue,
-        });
+        })
       } else {
         history.push({
           pathname: "/admin/preferences/read/",
-        });
+        })
       }
     } else if (props.prixerUsername || globalParams.get("prixer")) {
       //
@@ -347,7 +365,7 @@ export default function Grid(props) {
             categories +
             "&name=" +
             queryValue,
-        });
+        })
       } else if ((categories.length > 0 && queryValue === null) || "") {
         history.push({
           pathname:
@@ -355,7 +373,7 @@ export default function Grid(props) {
             (props.prixerUsername || globalParams.get("prixer")) +
             "&category=" +
             categories,
-        });
+        })
       } else if (queryValue) {
         history.push({
           pathname:
@@ -363,49 +381,56 @@ export default function Grid(props) {
             (props.prixerUsername || globalParams.get("prixer")) +
             "&name=" +
             queryValue,
-        });
+        })
       } else {
         history.push({
           pathname:
             "/galeria/s?prixer=" + props.prixerUsername + "&name=" + queryValue,
-        });
+        })
       }
     } else {
       if (queryValue !== null && categories !== null) {
         history.push({
           pathname: "/galeria/s?category=" + categories + "&name=" + queryValue,
-        });
+        })
       } else if ((categories?.length > 0 && queryValue === null) || "") {
         history.push({
           pathname: "/galeria/s?category=" + categories,
-        });
+        })
       } else if (queryValue) {
         history.push({
           pathname: "/galeria/s?name=" + queryValue,
-        });
+        })
       } else {
         history.push({
           pathname: "/galeria/",
-        });
+        })
       }
     }
-  };
+  }
 
   const addingToCart = (e, tile) => {
-    e.preventDefault();
-    props.setSelectedArt(tile);
-    props.setIsOpenAssociateProduct(true);
-  };
+    e.preventDefault()
+    if (window.location.search.includes("producto=")) {
+      props.setSelectedArt(tile)
+    } else {
+      props.setSelectedArt(tile)
+      props.setIsOpenAssociateProduct(true)
+    }
+  }
 
   const msnry = new Masonry(".grid", {
     columnWidth: 200,
     itemSelector: ".grid-item",
-  });
+  })
 
   return (
     <>
       <div className={classes.root}>
-        <Backdrop className={classes.backdrop} open={backdrop}>
+        <Backdrop
+          className={classes.backdrop}
+          open={backdrop}
+        >
           <CircularProgress color="inherit" />
         </Backdrop>
         <div
@@ -419,7 +444,12 @@ export default function Grid(props) {
         </div>
       </div>
       <ResponsiveMasonry
-        columnsCountBreakPoints={{ 350: 1, 750: 2, 900: 3, 1080: 4 }}
+        columnsCountBreakPoints={{
+          350: 1,
+          750: 2,
+          900: 3,
+          1080: window.location.search.includes("producto=") ? 3 : 4,
+        }}
       >
         <Masonry style={{ columnGap: "7px" }}>
           {tiles ? (
@@ -454,12 +484,18 @@ export default function Grid(props) {
 
                   <CardActionArea>
                     {!onAdmin && (
-                      <Tooltip title="Agregar al carrito">
+                      <Tooltip
+                        title={
+                          window.location.search.includes("producto=")
+                            ? "Asociar al producto"
+                            : "Agregar al carrito"
+                        }
+                      >
                         <IconButton
                           size="small"
                           color="primary"
                           onClick={(e) => {
-                            addingToCart(e, tile);
+                            addingToCart(e, tile)
                           }}
                           style={{ position: "absolute", padding: "8px" }}
                         >
@@ -494,7 +530,7 @@ export default function Grid(props) {
                     <Img
                       draggable={false}
                       onClick={(e) => {
-                        handleFullImage(e, tile);
+                        handleFullImage(e, tile)
                       }}
                       placeholder="/imgLoading.svg"
                       style={{
@@ -519,12 +555,12 @@ export default function Grid(props) {
                         checked={tile.visible}
                         onChange={(e) => {
                           if (e.target.checked === false) {
-                            handleClickVisible();
-                            setSelectedArt(tile.artId);
-                            setVisible(e.target.checked);
+                            handleClickVisible()
+                            setSelectedArt(tile.artId)
+                            setVisible(e.target.checked)
                           } else {
-                            setVisibleArt(tile, tile.artId, e);
-                            setVisible(e.target.checked);
+                            setVisibleArt(tile, tile.artId, e)
+                            setVisible(e.target.checked)
                           }
                         }}
                       />
@@ -567,19 +603,22 @@ export default function Grid(props) {
                         label="¿Por qué quieres ocultar este arte?"
                         variant="outlined"
                         onChange={(e) => {
-                          setDisabledReason(e.target.value);
+                          setDisabledReason(e.target.value)
                         }}
                       />
                     </div>
                     <DialogActions>
-                      <Button onClick={handleCloseVisible} color="primary">
+                      <Button
+                        onClick={handleCloseVisible}
+                        color="primary"
+                      >
                         Cancelar
                       </Button>
                       <Button
                         onClick={(e) => {
-                          setVisibleArt(tile, selectedArt, e);
-                          setSelectedArt(undefined);
-                          handleCloseVisible();
+                          setVisibleArt(tile, selectedArt, e)
+                          setSelectedArt(undefined)
+                          handleCloseVisible()
                         }}
                         background="primary"
                         style={{
@@ -597,7 +636,7 @@ export default function Grid(props) {
                   <div key={i}>
                     <Img
                       onClick={(e) => {
-                        handleFullImage(e, tile);
+                        handleFullImage(e, tile)
                       }}
                       placeholder="/imgLoading.svg"
                       style={{
@@ -624,11 +663,11 @@ export default function Grid(props) {
                         size="normal"
                         onChange={(e) => {
                           if (e.target.checked === false) {
-                            setVisible(e.target.checked);
-                            setSelectedArt(tile.artId);
+                            setVisible(e.target.checked)
+                            setSelectedArt(tile.artId)
                           } else {
-                            setVisible(e.target.checked);
-                            setVisibleArt(tile, tile.artId, e);
+                            setVisible(e.target.checked)
+                            setVisibleArt(tile, tile.artId, e)
                           }
                         }}
                       ></IOSSwitch>
@@ -665,7 +704,7 @@ export default function Grid(props) {
           <Button
             style={{ minWidth: 30, marginRight: 5 }}
             onClick={() => {
-              setPageNumber(1);
+              setPageNumber(1)
             }}
           >
             {1}
@@ -687,7 +726,7 @@ export default function Grid(props) {
           <Button
             style={{ minWidth: 30, marginRight: 5 }}
             onClick={() => {
-              setPageNumber(pageNumber - 2);
+              setPageNumber(pageNumber - 2)
             }}
           >
             {pageNumber - 2}
@@ -697,7 +736,7 @@ export default function Grid(props) {
           <Button
             style={{ minWidth: 30, marginRight: 5 }}
             onClick={() => {
-              setPageNumber(pageNumber - 1);
+              setPageNumber(pageNumber - 1)
             }}
           >
             {pageNumber - 1}
@@ -720,7 +759,7 @@ export default function Grid(props) {
           <Button
             style={{ minWidth: 30, marginRight: 5 }}
             onClick={() => {
-              setPageNumber(pageNumber + 1);
+              setPageNumber(pageNumber + 1)
             }}
           >
             {pageNumber + 1}
@@ -731,7 +770,7 @@ export default function Grid(props) {
           <Button
             style={{ minWidth: 30, marginRight: 5 }}
             onClick={() => {
-              setPageNumber(pageNumber + 2);
+              setPageNumber(pageNumber + 2)
             }}
           >
             {pageNumber + 2}
@@ -753,7 +792,7 @@ export default function Grid(props) {
           <Button
             style={{ minWidth: 30, marginRight: 5 }}
             onClick={() => {
-              setPageNumber(noOfPages);
+              setPageNumber(noOfPages)
             }}
           >
             {noOfPages}
@@ -761,5 +800,5 @@ export default function Grid(props) {
         )}
       </Box>
     </>
-  );
+  )
 }

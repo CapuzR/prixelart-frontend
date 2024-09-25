@@ -144,7 +144,8 @@ export default function PrixProduct(props) {
   const [loading, setLoading] = useState(false)
 
   const [prixerUsername, setPrixerUsername] = useState(null)
-  const isMobile = useMediaQuery(theme.breakpoints.down("xs"))
+  const isIphone = useMediaQuery(theme.breakpoints.down("xs"))
+
   const isTab = useMediaQuery(theme.breakpoints.down("sm"))
   const [anchorEl, setAnchorEl] = useState(null)
   const openMenu = Boolean(anchorEl)
@@ -158,17 +159,11 @@ export default function PrixProduct(props) {
   const [selectedArt, setSelectedArt] = useState(undefined)
   const [base64Image1, setBase64Image1] = useState(null)
 
-  const [buyState, setBuyState] = useState(
-    localStorage.getItem("CBbuyState")
-      ? JSON.parse(localStorage.getItem("CBbuyState"))
-      : []
-  )
   const [width, setWidth] = useState([])
   const [height, setHeight] = useState([])
   const [openMatch, setOpenMatch] = useState(false)
-  // const [cartLength, setCartLength] = useState()
-  const url = window.location.pathname
-  const id = url.substring(url.lastIndexOf("=") + 1)
+  let globalParams = new URLSearchParams(window.location.search)
+  const productId = globalParams.get("producto")
 
   const changeCurrency = () => {
     setCurrency(!currency)
@@ -178,7 +173,7 @@ export default function PrixProduct(props) {
     setLoading(true)
     const base_url = process.env.REACT_APP_BACKEND_URL + "/product/read"
     await axios
-      .post(base_url, { _id: id })
+      .post(base_url, { _id: productId })
       .then(async (response) => {
         let productsAttTemp1 = response.data.products
 
@@ -209,128 +204,56 @@ export default function PrixProduct(props) {
       })
   }
   useEffect(() => {
-    getProduct(), getDiscounts()
+    getProduct()
+    getDiscounts()
   }, [])
 
-  const fetchImages = async (product) => {
-    const url =
-      process.env.REACT_APP_BACKEND_URL + "/mockupImages/" + product._id
-    try {
-      const response = await axios.get(url)
-      const base64Image = response.data
-      if (response.data.size < 1250) {
-        props?.setOpen(true)
-        props?.setMessage("Error al cargar imagen")
-      } else {
-        setBase64Image1(base64Image)
-      }
-    } catch (error) {
-      props?.setOpen(true)
-      props?.setMessage("Error al cargar imagen")
-      console.error("Error fetching image:", error)
-    }
+  const addingToCart = (e, prod) => {
+    e.preventDefault()
+    setSelectedItem(prod)
+    setOpen(true)
+    setMessage(
+      "¡Producto seleccionado! Puedes seleccionar el arte de tu gusto o ir a la galería"
+    )
+    setOpenMatch(true)
   }
+
+  const addArt = (selectedArt) => {
+    setSelectedArt(selectedArt)
+    setOpen(true)
+    setMessage("¡Arte seleccionado! Puedes agregar el item al carrito")
+  }
+
   console.log(selectedArt)
 
-  // useEffect(() => {
-  //   allowMockup()
-  // }, [selectedArt])
-
-  const allowMockup = (tile) => {
-    if (tile?.mockUp !== undefined && selectedArt !== undefined) {
-      // fetchImages(tile)
-
-      return (
-        <div
-          style={{
-            width: 210,
-            height: 210,
-            position: "relative",
-          }}
-        >
-          <WarpImage
-            warpPercentage={tile.mockUp.warpPercentage}
-            warpOrientation={tile.mockUp.warpOrientation}
-            invertedWrap={tile.mockUp.invertedWrap}
-            randomArt={selectedArt}
-            topLeft={tile.mockUp.topLeft}
-            width={tile.mockUp.width}
-            height={tile.mockUp.height}
-            perspective={tile.mockUp.perspective}
-            rotate={tile.mockUp.rotate}
-            rotateX={tile.mockUp.rotateX}
-            rotateY={tile.mockUp.rotateY}
-            skewX={tile.mockUp.skewX}
-            skewY={tile.mockUp.skewY}
-            translateX={tile.mockUp.translateX}
-            translateY={tile.mockUp.translateY}
-            setOpen={props.setOpen}
-            setMessage={props.setMessage}
-          />
-          <div
-            style={{
-              backgroundImage: "url(" + tile.mockUp.mockupImg + ")",
-              width: 210,
-              height: 210,
-              backgroundSize: "cover",
-              borderRadius: 20,
-              position: "absolute",
-              top: "0",
-              left: "0",
-              zIndex: "2",
-            }}
-          />
-        </div>
+  const addItemToBuyState = () => {
+    if (selectedArt === undefined) {
+      const newState = [...props.buyState]
+      newState.push({
+        product: selectedItem,
+        quantity: 1,
+      })
+      props.setBuyState(newState)
+      localStorage.setItem("buyState", JSON.stringify(newState))
+      setOpen(true)
+      setMessage(
+        "Producto agregado! Puedes ir al carrito de compras o encontrar el arte de tu gusto en la galería"
       )
+      // setOpen(true)
+      // setMessage("Selecciona el arte que quieres para tu artículo")
     } else {
-      return (
-        <Slider {...settings}>
-          {tile &&
-            tile?.sources?.images?.map((art, i) => (
-              <div
-                key={i}
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  height: "25.5rem",
-                  width: "100%",
-                  marginRight: 10,
-                }}
-              >
-                <div
-                  style={{
-                    marginTop: 5,
-                    width: "95%",
-                    height: "25.5rem",
-                    backgroundImage: `url(${art.url})`,
-                    backgroundSize: "contain",
-                    backgroundRepeat: "no-repeat",
-                    backgroundPosition: "center",
-                  }}
-                />
-              </div>
-            ))}
-        </Slider>
-      )
+      const newState = [...props.buyState]
+      newState.push({
+        art: selectedArt,
+        product: selectedItem,
+        quantity: 1,
+      })
+
+      props.setBuyState(newState)
+      localStorage.setItem("buyState", JSON.stringify(newState))
+      setOpen(true)
+      setMessage("¡Item agregado! Puedes ir al carrito de compras")
     }
-  }
-
-  const addingToCart = (e, selectedItem) => {
-    e.preventDefault()
-    // props.setSelectedProduct(selectedItem);
-    props.setIsOpenAssociateArt(true);
-
-    props.addItemToBuyState({
-      type: "product",
-      item: selectedItem,
-    })
-    setSelectedItem(undefined)
-    history.push({ pathname: "/galeria" })
-    // props.addItemToBuyState({
-    //   type: "product",
-    //   item: selectedItem,
-    // })
-    // setOpenMatch(true)
   }
 
   const priceSelect = (item) => {
@@ -464,7 +387,6 @@ export default function PrixProduct(props) {
                   style={{
                     whiteSpace: "pre-wrap",
                     fontSize: isTab ? 13 : 16,
-                    marginBottom: 35,
                   }}
                 />
               </div>
@@ -476,6 +398,7 @@ export default function PrixProduct(props) {
               style={{
                 display: "flex",
                 flexDirection: "column",
+                justifyContent: "center",
                 width: "50%",
               }}
             >
@@ -485,6 +408,7 @@ export default function PrixProduct(props) {
                     width: 210,
                     height: 210,
                     position: "relative",
+                    margin: "0 auto",
                   }}
                 >
                   <WarpImage
@@ -520,6 +444,70 @@ export default function PrixProduct(props) {
                     }}
                   />
                 </div>
+              ) : tile?.mockUp === undefined && selectedArt !== undefined ? (
+                <Grid
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "space-around",
+                  }}
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      height: "fit-content",
+                      width: "40%",
+                    }}
+                  >
+                    <Img
+                      placeholder="/imgLoading.svg"
+                      style={{
+                        backgroundColor: "#eeeeee",
+                        height: "auto",
+                        borderRadius: "10px",
+                        // marginRight: "20px",
+                        // marginLeft: "20px",
+                      }}
+                      src={
+                        tile?.sources?.images[0]?.url || tile?.thumbUrl || ""
+                      }
+                      debounce={1000}
+                      // cache
+                      error="/imgError.svg"
+                      alt={tile && tile.name}
+                      id={tile.id}
+                    />
+                  </div>
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      width: "40%",
+                      justifyContent: "center",
+                      height: "100%",
+                    }}
+                  >
+                    <Img
+                      placeholder="/imgLoading.svg"
+                      style={{
+                        backgroundColor: "#eeeeee",
+                        height: "auto",
+                        width: "auto",
+                      }}
+                      src={
+                        selectedArt
+                          ? selectedArt.largeThumbUrl
+                          : selectedArt.squareThumbUrl || ""
+                      }
+                      debounce={1000}
+                      cache
+                      error="/imgError.svg"
+                      alt={selectedArt && selectedArt.title}
+                      id={selectedArt && selectedArt.artId}
+                    />
+                  </div>
+                </Grid>
               ) : (
                 <Slider {...settings}>
                   {tile &&
@@ -585,31 +573,74 @@ export default function PrixProduct(props) {
                         style={{
                           whiteSpace: "pre-wrap",
                           fontSize: isTab ? 13 : 16,
-                          marginBottom: 35,
                         }}
                       />
                     </div>
-                  )}
-
-                  {tile.attributes &&
-                    tile.attributes.map((att, iAtt, attributesArr) =>
-                      iAtt === 0 ? (
-                        <CardActions key={iAtt}>
-                          <Grid
-                            item
+                  )}{" "}
+                  <CardActions style={{ padding: "10px 0px" }}>
+                    {tile.attributes &&
+                      tile.attributes.map((att, iAtt, attributesArr) =>
+                        iAtt === 0 ? (
+                          <FormControl
+                            variant="outlined"
+                            style={{ width: "40%" }}
                             xs={12}
                             sm={12}
                             md={12}
                             lg={12}
                           >
+                            <InputLabel id={att.name}>{att.name}</InputLabel>
+                            <Select
+                              labelId={att.name}
+                              id={att.name}
+                              value={
+                                typeof selectedItem?.selection === "string"
+                                  ? selectedItem?.selection
+                                  : selectedItem?.selection[0]
+                              }
+                              onChange={async (e) => {
+                                const pAtts = await setProductAtts(
+                                  e.target.value,
+                                  attributesArr,
+                                  iProd,
+                                  iAtt,
+                                  productsArr,
+                                  width,
+                                  height
+                                )
+                                if (pAtts) {
+                                  setTiles(
+                                    pAtts.pAtt
+                                      ? [...pAtts.pAtt]
+                                      : [...pAtts.att]
+                                  )
+                                }
+                              }}
+                              label={att.name}
+                            >
+                              <MenuItem value={undefined}>
+                                <em></em>
+                              </MenuItem>
+                              {att.value &&
+                                att.value.map((n, i) => (
+                                  <MenuItem
+                                    key={n}
+                                    value={n}
+                                  >
+                                    {n}
+                                  </MenuItem>
+                                ))}
+                            </Select>
+                          </FormControl>
+                        ) : (
+                          selectedItem?.selection[0] !== undefined && (
                             <FormControl
                               variant="outlined"
-                              style={{ width: "100%" }}
                               className={classes.form}
                               xs={12}
                               sm={12}
                               md={12}
-                              lg={12}
+                              style={{ width: "40%" }}
                             >
                               <InputLabel
                                 required
@@ -619,11 +650,11 @@ export default function PrixProduct(props) {
                               </InputLabel>
                               <Select
                                 value={
-                                  selectedItem?.selection &&
-                                  selectedItem?.selection[0]
+                                  selectedItem.selection[1] &&
+                                  selectedItem.selection[1]
                                 }
                                 onChange={async (e) => {
-                                  const pAtts = await setProductAtts(
+                                  const pAtts = await setSecondProductAtts(
                                     e.target.value,
                                     attributesArr,
                                     iProd,
@@ -640,115 +671,56 @@ export default function PrixProduct(props) {
                                     )
                                   }
                                 }}
-                                label={att.selection}
+                                label={att.name}
                               >
                                 <MenuItem value={undefined}>
                                   <em></em>
                                 </MenuItem>
-                                {att.value &&
-                                  att.value.map((n, i) => (
-                                    <MenuItem
-                                      key={n}
-                                      value={n}
-                                    >
-                                      {n}
-                                    </MenuItem>
-                                  ))}
+                                {tile.variants.map(
+                                  (variant) =>
+                                    (variant.attributes[0].value ===
+                                      tile.selection ||
+                                      variant.attributes[0].value ===
+                                        tile.selection[0]) && (
+                                      <MenuItem
+                                        key={variant._id}
+                                        value={variant.attributes[1]?.value}
+                                      >
+                                        {variant.attributes[1]?.value}
+                                      </MenuItem>
+                                    )
+                                )}
                               </Select>
                             </FormControl>
-                          </Grid>
-                        </CardActions>
-                      ) : (
-                        selectedItem?.selection[0] !== undefined && (
-                          <CardActions
-                            key={1}
-                            // style={{ width: "50%" }}
-                          >
-                            <Grid
-                              item
-                              xs={12}
-                              sm={12}
-                              md={12}
-                            >
-                              <FormControl
-                                variant="outlined"
-                                className={classes.form}
-                                xs={12}
-                                sm={12}
-                                md={12}
-                              >
-                                <InputLabel
-                                  required
-                                  id="att.name"
-                                >
-                                  {att.name}
-                                </InputLabel>
-                                <Select
-                                  value={
-                                    selectedItem.selection[1] &&
-                                    selectedItem.selection[1]
-                                  }
-                                  onChange={async (e) => {
-                                    const pAtts = await setSecondProductAtts(
-                                      e.target.value,
-                                      attributesArr,
-                                      iProd,
-                                      iAtt,
-                                      productsArr,
-                                      width,
-                                      height
-                                    )
-                                    if (pAtts) {
-                                      setTiles(
-                                        pAtts.pAtt
-                                          ? [...pAtts.pAtt]
-                                          : [...pAtts.att]
-                                      )
-                                    }
-                                  }}
-                                  label={att.selection}
-                                >
-                                  <MenuItem value={undefined}>
-                                    <em></em>
-                                  </MenuItem>
-                                  {tile.variants.map(
-                                    (variant) =>
-                                      (variant.attributes[0].value ===
-                                        tile.selection ||
-                                        variant.attributes[0].value ===
-                                          tile.selection[0]) && (
-                                        <MenuItem
-                                          key={variant._id}
-                                          value={variant.attributes[1]?.value}
-                                        >
-                                          {variant.attributes[1]?.value}
-                                        </MenuItem>
-                                      )
-                                  )}
-                                </Select>
-                              </FormControl>
-                            </Grid>
-                          </CardActions>
+                          )
                         )
-                      )
-                    )}
-                  {/* <CardActions>
-                  {selectedItem.variants &&
-                    selectedItem.variants.map((v) => {
-                      if (v.attributes) {
-                        const test = v.attributes.reduce((r, a) => {
-                          return a.name in selectedItem.attributes === true;
-                        }, true);
-                      }
-                    })}
-                </CardActions> */}
+                      )}
+                  </CardActions>
                   <Typography
                     style={{ fontSize: 24, fontWeight: 600, color: "#404e5c" }}
                   >
                     {priceSelect(tile)}
                   </Typography>
-                  <Grid></Grid>
-
+                  <Button
+                    style={{
+                      textTransform: "none",
+                      width: "55%",
+                      size: "small",
+                      backgroundColor:
+                        selectedArt === undefined ? "#d33f4970" : "#d33f49",
+                      borderRadius: 10,
+                      fontSize: 18,
+                      marginTop: 20,
+                      marginBottom: 40,
+                      color: "white",
+                    }}
+                    onClick={
+                      (e) => addItemToBuyState()
+                      // addingToCart(e, tile)
+                    }
+                  >
+                    Agregar al carrito
+                  </Button>
                   {/* {selectedItem?.product?.specs && (
             <div
               data-color-mode="light"
@@ -794,7 +766,7 @@ export default function PrixProduct(props) {
                   Asocia el producto a un arte
                 </Typography>
                 <ArtsGrid
-                  setSelectedArt={setSelectedArt}
+                  setSelectedArt={addArt}
                   setFullArt={props.setFullArt}
                   fullArt={props.fullArt}
                   setSearchResult={props.setSearchResult}
@@ -835,45 +807,82 @@ export default function PrixProduct(props) {
                       style={{
                         whiteSpace: "pre-wrap",
                         fontSize: isTab ? 13 : 16,
-                        marginBottom: 35,
                       }}
                     />
                   </div>
                 )}
-
-                {tile.attributes &&
-                  tile.attributes.map((att, iAtt, attributesArr) =>
-                    iAtt === 0 ? (
-                      <CardActions key={iAtt}>
-                        <Grid
-                          item
+                <CardActions
+                  // key={iAtt}
+                  style={{ padding: "10px 0px" }}
+                >
+                  {tile.attributes &&
+                    tile.attributes.map((att, iAtt, attributesArr) =>
+                      iAtt === 0 ? (
+                        <FormControl
+                          variant="outlined"
+                          style={{ width: "50%" }}
+                          className={classes.form}
                           xs={12}
                           sm={12}
                           md={12}
                           lg={12}
                         >
+                          <InputLabel id="att.name">{att.name}</InputLabel>
+                          <Select
+                            value={
+                              selectedItem?.selection &&
+                              selectedItem?.selection[0]
+                            }
+                            onChange={async (e) => {
+                              const pAtts = await setProductAtts(
+                                e.target.value,
+                                attributesArr,
+                                iProd,
+                                iAtt,
+                                productsArr,
+                                width,
+                                height
+                              )
+                              if (pAtts) {
+                                setTiles(
+                                  pAtts.pAtt ? [...pAtts.pAtt] : [...pAtts.att]
+                                )
+                              }
+                            }}
+                            label={att.name}
+                          >
+                            <MenuItem value={undefined}>
+                              <em></em>
+                            </MenuItem>
+                            {att.value &&
+                              att.value.map((n, i) => (
+                                <MenuItem
+                                  key={n}
+                                  value={n}
+                                >
+                                  {n}
+                                </MenuItem>
+                              ))}
+                          </Select>
+                        </FormControl>
+                      ) : (
+                        selectedItem?.selection[0] !== undefined && (
                           <FormControl
+                            style={{ width: "50%" }}
                             variant="outlined"
-                            style={{ width: "100%" }}
                             className={classes.form}
                             xs={12}
                             sm={12}
                             md={12}
-                            lg={12}
                           >
-                            <InputLabel
-                              required
-                              id="att.name"
-                            >
-                              {att.name}
-                            </InputLabel>
+                            <InputLabel id="att.name">{att.name}</InputLabel>
                             <Select
                               value={
-                                selectedItem?.selection &&
-                                selectedItem?.selection[0]
+                                selectedItem.selection[1] &&
+                                selectedItem.selection[1]
                               }
                               onChange={async (e) => {
-                                const pAtts = await setProductAtts(
+                                const pAtts = await setSecondProductAtts(
                                   e.target.value,
                                   attributesArr,
                                   iProd,
@@ -890,108 +899,31 @@ export default function PrixProduct(props) {
                                   )
                                 }
                               }}
-                              label={att.selection}
+                              label={att.name}
                             >
                               <MenuItem value={undefined}>
                                 <em></em>
                               </MenuItem>
-                              {att.value &&
-                                att.value.map((n, i) => (
-                                  <MenuItem
-                                    key={n}
-                                    value={n}
-                                  >
-                                    {n}
-                                  </MenuItem>
-                                ))}
+                              {tile.variants.map(
+                                (variant) =>
+                                  (variant.attributes[0].value ===
+                                    tile.selection ||
+                                    variant.attributes[0].value ===
+                                      tile.selection[0]) && (
+                                    <MenuItem
+                                      key={variant._id}
+                                      value={variant.attributes[1]?.value}
+                                    >
+                                      {variant.attributes[1]?.value}
+                                    </MenuItem>
+                                  )
+                              )}
                             </Select>
                           </FormControl>
-                        </Grid>
-                      </CardActions>
-                    ) : (
-                      selectedItem?.selection[0] !== undefined && (
-                        <CardActions
-                          key={1}
-                          // style={{ width: "50%" }}
-                        >
-                          <Grid
-                            item
-                            xs={12}
-                            sm={12}
-                            md={12}
-                          >
-                            <FormControl
-                              variant="outlined"
-                              className={classes.form}
-                              xs={12}
-                              sm={12}
-                              md={12}
-                            >
-                              <InputLabel
-                                required
-                                id="att.name"
-                              >
-                                {att.name}
-                              </InputLabel>
-                              <Select
-                                value={
-                                  selectedItem.selection[1] &&
-                                  selectedItem.selection[1]
-                                }
-                                onChange={async (e) => {
-                                  const pAtts = await setSecondProductAtts(
-                                    e.target.value,
-                                    attributesArr,
-                                    iProd,
-                                    iAtt,
-                                    productsArr,
-                                    width,
-                                    height
-                                  )
-                                  if (pAtts) {
-                                    setTiles(
-                                      pAtts.pAtt
-                                        ? [...pAtts.pAtt]
-                                        : [...pAtts.att]
-                                    )
-                                  }
-                                }}
-                                label={att.selection}
-                              >
-                                <MenuItem value={undefined}>
-                                  <em></em>
-                                </MenuItem>
-                                {tile.variants.map(
-                                  (variant) =>
-                                    (variant.attributes[0].value ===
-                                      tile.selection ||
-                                      variant.attributes[0].value ===
-                                        tile.selection[0]) && (
-                                      <MenuItem
-                                        key={variant._id}
-                                        value={variant.attributes[1]?.value}
-                                      >
-                                        {variant.attributes[1]?.value}
-                                      </MenuItem>
-                                    )
-                                )}
-                              </Select>
-                            </FormControl>
-                          </Grid>
-                        </CardActions>
+                        )
                       )
-                    )
-                  )}
-                {/* <CardActions>
-                  {selectedItem.variants &&
-                    selectedItem.variants.map((v) => {
-                      if (v.attributes) {
-                        const test = v.attributes.reduce((r, a) => {
-                          return a.name in selectedItem.attributes === true;
-                        }, true);
-                      }
-                    })}
-                </CardActions> */}
+                    )}
+                </CardActions>
                 <Typography
                   style={{ fontSize: 24, fontWeight: 600, color: "#404e5c" }}
                 >
@@ -1020,7 +952,7 @@ export default function PrixProduct(props) {
                         )
                       }}
                     >
-                      <ShareIcon /> Compartir
+                      <ShareIcon style={{ marginRight: 10 }} /> Compartir
                     </Button>
                     <Button
                       style={{
@@ -1046,20 +978,20 @@ export default function PrixProduct(props) {
                 </Grid>
 
                 {/* {selectedItem?.product?.specs && (
-            <div
-              data-color-mode="light"
-              style={{
-                marginTop: 50,
-                marginBottom: 30,
-                display: "flex",
-              }}
-            >
-              <MDEditor.Markdown
-                source={selectedItem.product?.specs}
-                style={{ whiteSpace: "pre-wrap", fontSize: isTab ? 13 : 16 }}
-              />
-            </div>
-          )} */}
+                  <div
+                    data-color-mode="light"
+                    style={{
+                      marginTop: 50,
+                      marginBottom: 30,
+                      display: "flex",
+                    }}
+                  >
+                    <MDEditor.Markdown
+                      source={selectedItem.product?.specs}
+                      style={{ whiteSpace: "pre-wrap", fontSize: isTab ? 13 : 16 }}
+                    />
+                  </div>
+                )} */}
               </Grid>
             )}
           </Grid>

@@ -59,9 +59,16 @@ export default function CartReview(props) {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
   const isIphone = useMediaQuery(theme.breakpoints.down("xs"))
   const [discountList, setDiscountList] = useState([])
-  const mockupRef = useRef()
-  const [base64Image, setBase64Image] = useState(null)
+  const warpImageRef = useRef(null)
+  const mockupRef = useRef(null)
+  const [base64Image1, setBase64Image1] = useState(null)
+  const [base64Image2, setBase64Image2] = useState(null)
   const [imageUrl, setImageUrl] = useState(null)
+  const [buyState, setBuyState] = useState(
+    localStorage.getItem("buyState")
+      ? JSON.parse(localStorage.getItem("buyState"))
+      : []
+  )
   const getDiscounts = async () => {
     const base_url = process.env.REACT_APP_BACKEND_URL + "/discount/read-allv2"
     await axios
@@ -105,54 +112,57 @@ export default function CartReview(props) {
     }
   }
 
-  const handleDownloadImage = () => {
-    // const images = mockupRef.current.querySelectorAll("img")
-    // const promises = Array.from(images).map(
-    //   (img) =>
-    //     new Promise((resolve) => {
-    //       if (img.complete) {
-    //         resolve()
-    //       } else {
-    //         img.onload = resolve
-    //         img.onerror = resolve
-    //       }
-    //     })
-    // )
+  const handleDownloadImage = async () => {
+    // Obtener el canvas del componente WarpImage
+    const warpCanvas = warpImageRef.current.getCanvas()
+    if (!warpCanvas) {
+      console.error("WarpCanvas no está disponible");
+      return;
+    }
+    // Combinar el canvas con la otra imagen
+    const mockupDiv = mockupRef.current
+    const mockupImage = mockupDiv.querySelector("div") // Ajusta según la estructura
 
-    // Promise.all(promises).then(() => {
-    //   mockupRef.current.style.transform = "scale(1)"
-    html2canvas(mockupRef.current, {
-      width: 210,
-      height: 210,
-      useCORS: true,
-    }).then((canvas) => {
-      const link = document.createElement("a")
-      link.href = canvas.toDataURL("image/jpeg", 1.0)
-      link.download = "Prix.jpg"
-      link.click()
-    })
-    // })
+    const combinedCanvas = document.createElement("canvas")
+    const combinedContext = combinedCanvas.getContext("2d")
+
+    combinedCanvas.width = mockupDiv.offsetWidth
+    combinedCanvas.height = mockupDiv.offsetHeight
+
+    combinedContext.drawImage(mockupImage, 0, 0)
+    combinedContext.drawImage(warpCanvas, 0, 0)
+
+    const dataURL = combinedCanvas.toDataURL("image/png")
+
+    // Crear un enlace y descargar el archivo
+    const link = document.createElement("a")
+    link.href = dataURL
+    link.download = "prix.png"
+    link.click()
   }
 
-  const convertImageToBase64 = async (imageUrl) => {
+  const fetchImages = async (product) => {
+    const url =
+      process.env.REACT_APP_BACKEND_URL + "/mockupImages/" + product._id
     try {
-      const response = await fetch(imageUrl)
-      const blob = await response.blob()
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader()
-        reader.onloadend = () => resolve(reader.result)
-        reader.onerror = reject
-        reader.readAsDataURL(blob)
-      })
+      const response = await axios.get(url)
+      const base64Image = response.data
+      if (response.data.size < 1250) {
+        props?.setOpen(true)
+        props?.setMessage("Error al cargar imagen")
+      } else {
+        setBase64Image1(base64Image)
+      }
     } catch (error) {
-      console.error("Error converting image to Base64:", error)
-      return null
+      props?.setOpen(true)
+      props?.setMessage("Error al cargar imagen")
+      console.error("Error fetching image:", error)
     }
   }
 
   const allowMockup = (buy, index) => {
     if (buy.product?.mockUp !== undefined) {
-      // setImageUrl(buy.product.mockUp.mockupImg)
+      fetchImages(buy.product)
 
       return (
         <div style={{ marginRight: 16 }}>
@@ -173,6 +183,7 @@ export default function CartReview(props) {
             }}
           >
             <WarpImage
+              ref={warpImageRef}
               warpPercentage={buy.product.mockUp.warpPercentage}
               warpOrientation={buy.product.mockUp.warpOrientation}
               invertedWrap={buy.product.mockUp.invertedWrap}
@@ -193,8 +204,7 @@ export default function CartReview(props) {
             />
             <div
               style={{
-                // backgroundImage: `url(${base64Image})`,
-                backgroundImage: "url(" + buy.product.mockUp.mockupImg + ")",
+                backgroundImage: `url(${base64Image1})`,
                 width: 210,
                 height: 210,
                 backgroundSize: "cover",
@@ -571,15 +581,23 @@ export default function CartReview(props) {
     }
   }
 
+  const deleteItemInBuyState = (i) => {
+    const newState = [...buyState]
+    const filterState = newState.filter((buy, index) => index !== i)
+    setBuyState(filterState)
+    localStorage.setItem("buyState", JSON.stringify(filterState))
+    props.setOpen(true)
+    props.setMessage("Item eliminado correctamente")
+  }
+
   const copyItem = (i) => {
     let newState = JSON.parse(localStorage.getItem("buyState"))
     newState.push(newState[i])
-    props.setBuyState(newState)
+    setBuyState(newState)
     localStorage.setItem("buyState", JSON.stringify(newState))
     props.setMessage("Item duplicado correctamente.")
     props.setOpen(true)
   }
-
   return (
     <>
       <Grid
@@ -616,7 +634,7 @@ export default function CartReview(props) {
           </Button>
         )} */}
       </Grid>
-      {props.buyState.map((buy, index) => {
+      {buyState.map((buy, index) => {
         return (
           <Grid
             key={index}
@@ -676,8 +694,7 @@ export default function CartReview(props) {
                   >
                     <IconButton
                       size="small"
-                      onClick={() => props.deleteItemInBuyState({ id: index })}
-                      color="primary"
+                      onClick={() => deleteItemInBuyState(index)}
                     >
                       <DeleteIcon />
                     </IconButton>
@@ -897,7 +914,7 @@ export default function CartReview(props) {
                         </Typography>
                         <input
                           style={{
-                            width: 80,
+                            width: 65,
                             padding: "10px",
                             borderRadius: 4,
                           }}

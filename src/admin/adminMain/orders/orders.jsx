@@ -248,7 +248,6 @@ export default function Orders(props) {
   const [modalContent, setModalContent] = useState()
   const [loading, setLoading] = useState(false)
   const [openCreateOrder, setOpenCreateOrder] = useState(false)
-  const [dollarValue, setDollarValue] = useState(1)
   const [account, setAccount] = useState()
   const [errorMessage, setErrorMessage] = useState()
   const [snackBarError, setSnackBarError] = useState(false)
@@ -257,7 +256,6 @@ export default function Orders(props) {
   const [prixers, setPrixers] = useState([])
   const [orgs, setOrgs] = useState([])
   const [orders, setOrders] = useState([])
-  const [movements, setMovements] = useState([])
   const [consumers, setConsumers] = useState([])
   const [filters, setFilters] = useState({
     creationDate: undefined,
@@ -268,56 +266,6 @@ export default function Orders(props) {
     seller: undefined,
   })
   const [client, setClients] = useState()
-
-  const getDiscounts = async () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + "/discount/read-allv2"
-    await axios
-      .post(base_url, { adminToken: localStorage.getItem("adminTokenV") })
-      .then((response) => {
-        setDiscountList(response.data.discounts)
-      })
-      .catch((error) => {
-        console.log(error)
-      })
-  }
-
-  const getSurcharges = async () => {
-    const base_url =
-      process.env.REACT_APP_BACKEND_URL + "/surcharge/read-active"
-    await axios
-      .get(base_url)
-      .then((response) => {
-        setSurchargeList(response.data.surcharges)
-      })
-      .catch((error) => {
-        console.log(error)
-      })
-  }
-
-  const getPrixers = async () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + "/prixer/read-all-full"
-    await axios
-      .get(base_url)
-      .then((response) => {
-        setPrixers(response.data.prixers)
-      })
-      .catch((error) => {
-        console.log(error)
-      })
-  }
-
-  const getORGs = async () => {
-    const base_url =
-      process.env.REACT_APP_BACKEND_URL + "/organization/read-all-full"
-    await axios
-      .get(base_url)
-      .then((response) => {
-        setOrgs(response.data.organizations)
-      })
-      .catch((error) => {
-        console.log(error)
-      })
-  }
 
   const findPrixer = async (prx) => {
     const base_url = process.env.REACT_APP_BACKEND_URL + "/prixer/read"
@@ -365,53 +313,6 @@ export default function Orders(props) {
       })
     setLoading(false)
   }
-
-  // const readMovements = async () => {
-  //   const base_url2 =
-  //     process.env.REACT_APP_BACKEND_URL + "/movement/readAllMovements"
-  //   axios
-  //     .post(
-  //       base_url2,
-  //       { adminToken: localStorage.getItem("adminTokenV") },
-  //       { withCredentials: true }
-  //     )
-  //     .then((response) => {
-  //       setMovements(response.data.movements)
-  //     })
-  //     .catch((error) => {
-  //       console.log(error)
-  //     })
-  // }
-
-  const readConsumers = async () => {
-    const base_url2 = process.env.REACT_APP_BACKEND_URL + "/consumer/read-all"
-    axios
-      .post(
-        base_url2,
-        { adminToken: localStorage.getItem("adminTokenV") },
-        { withCredentials: true }
-      )
-      .then((response) => {
-        setConsumers(response.data)
-      })
-      .catch((response) => {
-        setErrorMessage(response.data.message)
-        setSnackBarError(true)
-      })
-  }
-
-  // const updateOrders = () => {
-  //   orders.map((order) => {
-  //     const findMov = movements?.find((mov) =>
-  //       mov?.description?.includes(order.orderId)
-  //     )
-  //     if (findMov) {
-  //       const Datev2 = moment(findMov?.createdOn).tz("America/Caracas").format()
-  //       order.date = Datev2
-  //     }
-  //   })
-  //   setOrders(orders)
-  // }
 
   const downloadOrders = async () => {
     const workbook = new excelJS.Workbook()
@@ -957,26 +858,24 @@ export default function Orders(props) {
           item: item,
           adminToken: localStorage.getItem("adminTokenV"),
         }
-        await axios.post(url, data)
-        .then(async (res) => {
+        await axios.post(url, data).then(async (res) => {
           if (res.data.success === false) {
             setSnackBarError(true)
             setErrorMessage(res.data.message)
-          } 
-        else {
-        //     const data2 = {
-        //       orderId: order.orderId,
-        //       comissions: data,
-        //       adminToken: localStorage.getItem("adminTokenV"),
-        //     }
-        //     const url2 =
-        //       process.env.REACT_APP_BACKEND_URL + "/order/addComissions"
-        //     await axios.put(url2, data2).then(async (res) => {
-        //       if (res.data.success === false) {
-                setSnackBarError(true)
-                setErrorMessage(res.data.message)
-              }
-            })
+          } else {
+            //     const data2 = {
+            //       orderId: order.orderId,
+            //       comissions: data,
+            //       adminToken: localStorage.getItem("adminTokenV"),
+            //     }
+            //     const url2 =
+            //       process.env.REACT_APP_BACKEND_URL + "/order/addComissions"
+            //     await axios.put(url2, data2).then(async (res) => {
+            //       if (res.data.success === false) {
+            setSnackBarError(true)
+            setErrorMessage(res.data.message)
+          }
+        })
         //   }
         // })
       } else if (destinatary === undefined) {
@@ -985,7 +884,6 @@ export default function Orders(props) {
           "La cartera no ha sido encontrada, verifique que el propietario y/o owner tenga una cartera válida e inténtelo de nuevo."
         )
       }
-      
     }
   }
 
@@ -1056,26 +954,6 @@ export default function Orders(props) {
     })
     c.sort()
     setClients(c)
-  }
-
-  useEffect(() => {
-    // readOrders()
-    // readMovements()
-    readConsumers()
-    // updateOrders()
-    getDiscounts()
-    getSurcharges()
-    // getPrixers();
-    getORGs()
-    readDollarValue()
-
-  }, [])
-
-  const readDollarValue = async () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + "/dollarValue/read"
-    await axios.get(base_url).then((response) => {
-      setDollarValue(response.data.dollarValue)
-    })
   }
 
   const closeAd = () => {
@@ -1236,7 +1114,6 @@ export default function Orders(props) {
           updateItemFromOrders={updateItemFromOrders}
           setErrorMessage={setErrorMessage}
           setSnackBarError={setSnackBarError}
-
         />
       </Modal>
 
@@ -1255,10 +1132,15 @@ export default function Orders(props) {
           addItemToBuyState={props.addItemToBuyState}
           changeQuantity={props.changeQuantity}
           handleClose={handleClose}
-          dollarValue={dollarValue}
+          dollarValue={props.dollarValue}
           orgs={orgs}
           setErrorMessage={setErrorMessage}
           setSnackBarError={setSnackBarError}
+          setDiscountList={setDiscountList}
+          setSurchargeList={setSurchargeList}
+          setPrixers={setPrixers}
+          setOrgs={setOrgs}
+          setConsumers={setConsumers}
         />
       </Modal>
       {/* <Modal open={openPayComission}>

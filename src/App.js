@@ -80,16 +80,16 @@ function App() {
   const [open, setOpen] = useState(false)
   const [message, setMessage] = useState("")
   const [searchResult, setSearchResult] = useState([])
-  const [admins, setAdmins] = useState()
   const [sellers, setSellers] = useState()
   const [pointedProduct, setPointedProduct] = useState()
   const [dollarValue, setDollarValue] = useState("1")
-  const [permissions, setPermissions] = useState()
   const [termsAgreeVar, setTermsAgreeVar] = useState(true)
   const [value, setValue] = useState()
   const [discountList, setDiscountList] = useState([])
   const [surchargeList, setSurchargeList] = useState([])
   const [orgs, setOrgs] = useState([])
+
+  const [permissions, setPermissions] = useState(JSON.parse(localStorage.getItem("adminToken"))?.permissions)
 
   document.addEventListener("contextmenu", (event) => {
     event.preventDefault()
@@ -106,46 +106,6 @@ function App() {
         setDollarValue(response.data.dollarValue)
       } else return
     })
-  }
-  const loadAdmins = async () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + "/admin/read-all"
-    try {
-      const rowState = await axios.post(
-        base_url,
-        { adminToken: localStorage.getItem("adminTokenV") },
-        { withCredentials: true }
-      )
-      setAdmins(rowState.data)
-
-      let sellersTeam = rowState?.data?.filter(
-        (admin) => admin.isSeller === true
-      )
-      let team = []
-      sellersTeam.map((admin) => {
-        team.push(admin.firstname + " " + admin.lastname)
-      })
-      setSellers(team)
-    } catch (e) {
-      console.log(e)
-    }
-  }
-
-  const checkP = async () => {
-    const base_url =
-      process.env.REACT_APP_BACKEND_URL + "/admin/CheckPermissions"
-    await axios
-      .post(base_url, { adminToken: localStorage.getItem("adminTokenV") })
-      .then((response) => {
-        if (response.data.auth === false) {
-          localStorage.removeItem("adminToken")
-          localStorage.removeItem("adminTokenV")
-        } else {
-          setPermissions(response.data.readedRole)
-        }
-      })
-      .catch((error) => {
-        console.log(error)
-      })
   }
 
   const getDiscounts = async () => {
@@ -174,14 +134,14 @@ function App() {
 
   useEffect(() => {
     readDollarValue()
-    checkP()
+    // checkP()
   }, [])
 
-  useEffect(() => {
-    if (localStorage.getItem("adminTokenV")) {
-      loadAdmins()
-    }
-  }, [])
+  // useEffect(() => {
+  //   if (localStorage.getItem("adminTokenV")) {
+  //     loadAdmins()
+  //   }
+  // }, [])
 
   useEffect(() => {
     if (localStorage.getItem("token")) {
@@ -198,7 +158,7 @@ function App() {
   }, [])
 
   useEffect(() => {
-    if (globalParams === ("/admin/order/read" || "/shopping")) {
+    if (globalParams === ("/shopping")) {
       getDiscounts()
       getSurcharges()
       getORGs()
@@ -379,8 +339,9 @@ function App() {
         {/* Admin Routes */}
         <Route path="/inicio-admin-prix">
           <AdminLogin
-            checkP={checkP}
-            loadAdmins={loadAdmins}
+          setPermissions={setPermissions}
+            // checkP={checkP}
+            // loadAdmins={loadAdmins}
           />
         </Route>
 
@@ -414,7 +375,7 @@ function App() {
             dollarValue={dollarValue}
             setDollarValue={setDollarValue}
             updateDollarValue={updateDollarValue}
-            admins={admins}
+            // admins={admins}
             sellers={sellers}
             permissions={permissions}
             setSearchResult={setSearchResult}

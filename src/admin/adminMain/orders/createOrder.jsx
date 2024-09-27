@@ -421,6 +421,51 @@ export default function CreateOrder(props) {
       props.handleClose()
     } else return
   }
+
+  const getDiscounts = async () => {
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/discount/read-allv2"
+    await axios
+      .post(base_url, { adminToken: localStorage.getItem("adminTokenV") })
+      .then((response) => {
+        props.setDiscountList(response.data.discounts)
+      })
+      .catch((error) => {
+        console.log(error)
+      })
+  }
+
+  const getSurcharges = async () => {
+    const base_url =
+      process.env.REACT_APP_BACKEND_URL + "/surcharge/read-active"
+    await axios
+      .get(base_url)
+      .then((response) => {
+        props.setSurchargeList(response.data.surcharges)
+      })
+      .catch((error) => {
+        console.log(error)
+      })
+  }
+
+  const getORGs = async () => {
+    const base_url =
+      process.env.REACT_APP_BACKEND_URL + "/organization/read-all-full"
+    await axios
+      .get(base_url)
+      .then((response) => {
+        props.setOrgs(response.data.organizations)
+      })
+      .catch((error) => {
+        console.log(error)
+      })
+  }
+
+  useEffect(() => {
+    getDiscounts()
+    getSurcharges()
+    getORGs()
+  }, [])
+
   document.addEventListener("keydown", handleKeyDown)
 
   return (

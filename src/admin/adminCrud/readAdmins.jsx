@@ -1,25 +1,25 @@
-import React from "react";
-import { useEffect, useState } from "react";
-import { makeStyles } from "@material-ui/core/styles";
+import React from "react"
+import { useEffect, useState } from "react"
+import { makeStyles } from "@material-ui/core/styles"
 
-import Table from "@material-ui/core/Table";
-import TableBody from "@material-ui/core/TableBody";
-import TableCell from "@material-ui/core/TableCell";
-import TableHead from "@material-ui/core/TableHead";
-import TableRow from "@material-ui/core/TableRow";
-import axios from "axios";
-import EditIcon from "@material-ui/icons/Edit";
-import DeleteIcon from "@material-ui/icons/Delete";
-import { Snackbar } from "@material-ui/core";
-import Tabs from "@material-ui/core/Tabs";
-import Tab from "@material-ui/core/Tab";
-import Typography from "@material-ui/core/Typography";
-import Box from "@material-ui/core/Box";
-import Grid from "@material-ui/core/Grid";
-import Fab from "@material-ui/core/Fab";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import UpdateAdmin from "./updateAdmin";
-import { useHistory } from "react-router-dom";
+import Table from "@material-ui/core/Table"
+import TableBody from "@material-ui/core/TableBody"
+import TableCell from "@material-ui/core/TableCell"
+import TableHead from "@material-ui/core/TableHead"
+import TableRow from "@material-ui/core/TableRow"
+import axios from "axios"
+import EditIcon from "@material-ui/icons/Edit"
+import DeleteIcon from "@material-ui/icons/Delete"
+import { Snackbar } from "@material-ui/core"
+import Tabs from "@material-ui/core/Tabs"
+import Tab from "@material-ui/core/Tab"
+import Typography from "@material-ui/core/Typography"
+import Box from "@material-ui/core/Box"
+import Grid from "@material-ui/core/Grid"
+import Fab from "@material-ui/core/Fab"
+import CircularProgress from "@material-ui/core/CircularProgress"
+import UpdateAdmin from "./updateAdmin"
+import { useHistory } from "react-router-dom"
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -27,46 +27,49 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.background.paper,
     "margin-left": "60px",
   },
-}));
+}))
 
 export default function ReadAdmins(props) {
-  const history = useHistory();
+  const history = useHistory()
   // const classes = useStyles();
 
-  const [rows, setRows] = useState();
-  const [roles, setRoles] = useState();
-  const [value, setValue] = useState(0);
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState();
-  const [snackbar, setSnackbar] = useState(false);
-  const [up, setUp] = useState();
+  const [rows, setRows] = useState()
+  const [roles, setRoles] = useState()
+  const [value, setValue] = useState(0)
+  const [loading, setLoading] = useState(false)
+  const [message, setMessage] = useState()
+  const [snackbar, setSnackbar] = useState(false)
+  const [up, setUp] = useState()
+  const globalParams = window.location.pathname
 
   const loadRoles = async () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + "/admin/read-roles";
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/admin/read-roles"
     try {
       const rolesState = await axios.post(
         base_url,
         { adminToken: localStorage.getItem("adminTokenV") },
         { withCredentials: true }
-      );
-      setRoles(rolesState.data);
+      )
+      setRoles(rolesState.data)
     } catch (e) {
-      console.log(e);
+      console.log(e)
     }
-  };
+  }
 
   useEffect(() => {
-    loadRoles();
-  }, []);
+    if (globalParams === "/admin/user/read") {
+      loadRoles()
+    }
+  }, [])
 
-  useEffect(() => {
-    setRows(props.admins);
-  }, [props.admins]);
+  // useEffect(() => {
+  //   setRows(props.admins);
+  // }, [props.admins]);
 
   const deleteMethod = async (username) => {
-    setLoading(true);
+    setLoading(true)
     const base_url =
-      process.env.REACT_APP_BACKEND_URL + "/admin/delete/" + username;
+      process.env.REACT_APP_BACKEND_URL + "/admin/delete/" + username
     axios
       .put(
         base_url,
@@ -74,16 +77,16 @@ export default function ReadAdmins(props) {
         { withCredentials: true }
       )
       .then((response) => {
-        setSnackbar(true);
-        setMessage("Administrador eliminado con éxito");
-      });
-    setLoading(false);
-  };
+        setSnackbar(true)
+        setMessage("Administrador eliminado con éxito")
+      })
+    setLoading(false)
+  }
 
   const deleteRole = async (id) => {
-    setLoading(true);
+    setLoading(true)
     const base_url =
-      process.env.REACT_APP_BACKEND_URL + "/adminRole/delete/" + id;
+      process.env.REACT_APP_BACKEND_URL + "/adminRole/delete/" + id
     axios
       .put(
         base_url,
@@ -91,33 +94,34 @@ export default function ReadAdmins(props) {
         { withCredentials: true }
       )
       .then((response) => {
-        setSnackbar(true);
-        setMessage("Rol de administrador eliminado con éxito");
-        loadRoles();
-      });
-    setLoading(false);
-  };
+        setSnackbar(true)
+        setMessage("Rol de administrador eliminado con éxito")
+        loadRoles()
+      })
+    setLoading(false)
+  }
 
   const closeAd = () => {
-    setSnackbar(false);
-  };
+    setSnackbar(false)
+  }
 
   const handleActive = (row) => {
-    history.push("/admin/user/update");
-    props.handleCallback2(row);
-  };
+    history.push("/admin/user/update")
+    props.handleCallback2(row)
+  }
 
   const handleActiveRole = (role) => {
-    props.handleCallback2(role);
-    history.push("/admin/user/updateRole");
-    props.setActiveCrud("updateRole");
-  };
+    props.handleCallback2(role)
+    history.push("/admin/user/updateRole")
+    props.setActiveCrud("updateRole")
+  }
 
   const handleChange = (event, newValue) => {
-    setValue(newValue);
-  };
+    setValue(newValue)
+  }
+
   function TabPanel(props) {
-    const { children, value, index } = props;
+    const { children, value, index } = props
     return (
       <div
         role="tabpanel"
@@ -131,8 +135,9 @@ export default function ReadAdmins(props) {
           </Box>
         )}
       </div>
-    );
+    )
   }
+
   return (
     <React.Fragment>
       {loading && (
@@ -142,7 +147,11 @@ export default function ReadAdmins(props) {
       )}
       {props.permissions?.modifyAdmins ? (
         <>
-          <Tabs value={value} onChange={handleChange} style={{ width: "70%" }}>
+          <Tabs
+            value={value}
+            onChange={handleChange}
+            style={{ width: "70%" }}
+          >
             <Tab
               indicator="red"
               backgroundColor="red"
@@ -150,7 +159,10 @@ export default function ReadAdmins(props) {
             />
             <Tab label="Roles" />
           </Tabs>
-          <TabPanel value={value} index={0}>
+          <TabPanel
+            value={value}
+            index={0}
+          >
             <Table size="small">
               <TableHead>
                 <TableRow>
@@ -163,8 +175,8 @@ export default function ReadAdmins(props) {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {rows &&
-                  rows.map((row) => (
+                {props.admins &&
+                  props.admins.map((row) => (
                     <TableRow key={row.username}>
                       <TableCell align="center">{row.firstname}</TableCell>
                       <TableCell align="center">{row.lastname}</TableCell>
@@ -185,7 +197,7 @@ export default function ReadAdmins(props) {
                               marginRight: 16,
                             }}
                             onClick={(e) => {
-                              handleActive(row, "update");
+                              handleActive(row, "update")
                             }}
                           >
                             <EditIcon />
@@ -197,8 +209,8 @@ export default function ReadAdmins(props) {
                               height: 35,
                             }}
                             onClick={(e) => {
-                              e.preventDefault();
-                              deleteMethod(row.username);
+                              e.preventDefault()
+                              deleteMethod(row.username)
                             }}
                           >
                             <DeleteIcon />
@@ -210,7 +222,10 @@ export default function ReadAdmins(props) {
               </TableBody>
             </Table>
           </TabPanel>
-          <TabPanel value={value} index={1}>
+          <TabPanel
+            value={value}
+            index={1}
+          >
             <Table size="small">
               <TableHead>
                 <TableRow>
@@ -228,13 +243,19 @@ export default function ReadAdmins(props) {
                         style={{ display: "flex", flexDirection: "row" }}
                       >
                         <Grid container>
-                          <Grid item xs={3}>
+                          <Grid
+                            item
+                            xs={3}
+                          >
                             {(role.detailOrder ||
                               role.detailPay ||
                               role.orderStatus ||
                               role.createOrder) && (
                               <ul style={{ paddingLeft: 20 }}>
-                                <Typography variant="p" color="secondary">
+                                <Typography
+                                  variant="p"
+                                  color="secondary"
+                                >
                                   Pedidos
                                 </Typography>
                                 {role.detailOrder && (
@@ -252,13 +273,20 @@ export default function ReadAdmins(props) {
                               </ul>
                             )}
                           </Grid>
-                          <Grid item xs={3} style={{ flexDirection: "row" }}>
+                          <Grid
+                            item
+                            xs={3}
+                            style={{ flexDirection: "row" }}
+                          >
                             {(role.createProduct ||
                               role.deleteProduct ||
                               role.createDiscount ||
                               role.deleteDiscount) && (
                               <ul style={{ paddingLeft: 20 }}>
-                                <Typography variant="p" color="secondary">
+                                <Typography
+                                  variant="p"
+                                  color="secondary"
+                                >
                                   Productos
                                 </Typography>
                                 {role.createProduct && (
@@ -278,7 +306,10 @@ export default function ReadAdmins(props) {
                             {(role.createPaymentMethod ||
                               role.deletePaymentMethod) && (
                               <ul style={{ paddingLeft: 20 }}>
-                                <Typography variant="p" color="secondary">
+                                <Typography
+                                  variant="p"
+                                  color="secondary"
+                                >
                                   Métodos de pago
                                 </Typography>
                                 {role.createPaymentMethod && (
@@ -292,7 +323,10 @@ export default function ReadAdmins(props) {
                             {(role.createShippingMethod ||
                               role.deleteShippingMethod) && (
                               <ul style={{ paddingLeft: 20 }}>
-                                <Typography variant="p" color="secondary">
+                                <Typography
+                                  variant="p"
+                                  color="secondary"
+                                >
                                   Métodos de envío
                                 </Typography>
                                 {role.createShippingMethod && (
@@ -304,12 +338,19 @@ export default function ReadAdmins(props) {
                               </ul>
                             )}
                           </Grid>
-                          <Grid item xs={3} style={{ flexDirection: "row" }}>
+                          <Grid
+                            item
+                            xs={3}
+                            style={{ flexDirection: "row" }}
+                          >
                             {(role.modifyBanners ||
                               role.modifyTermsAndCo ||
                               role.modifyDollar) && (
                               <ul style={{ paddingLeft: 20 }}>
-                                <Typography variant="p" color="secondary">
+                                <Typography
+                                  variant="p"
+                                  color="secondary"
+                                >
                                   Preferencias
                                 </Typography>
                                 {role.modifyBanners && (
@@ -332,7 +373,10 @@ export default function ReadAdmins(props) {
                             {(role.createTestimonial ||
                               role.deleteTestimonial) && (
                               <ul style={{ paddingLeft: 20 }}>
-                                <Typography variant="p" color="secondary">
+                                <Typography
+                                  variant="p"
+                                  color="secondary"
+                                >
                                   Testimonios
                                 </Typography>
                                 {role.createTestimonial && (
@@ -347,10 +391,17 @@ export default function ReadAdmins(props) {
                               </ul>
                             )}
                           </Grid>
-                          <Grid item xs={3} style={{ flexDirection: "row" }}>
+                          <Grid
+                            item
+                            xs={3}
+                            style={{ flexDirection: "row" }}
+                          >
                             {role.modifyAdmins && (
                               <ul style={{ paddingLeft: 20 }}>
-                                <Typography variant="p" color="secondary">
+                                <Typography
+                                  variant="p"
+                                  color="secondary"
+                                >
                                   Usuarios
                                 </Typography>
                                 {role.modifyAdmins && (
@@ -362,7 +413,10 @@ export default function ReadAdmins(props) {
                               role.setPrixerBalance ||
                               role.readMovements) && (
                               <ul style={{ paddingLeft: 20 }}>
-                                <Typography variant="p" color="secondary">
+                                <Typography
+                                  variant="p"
+                                  color="secondary"
+                                >
                                   Prixers
                                 </Typography>
                                 {role.prixerBan && <li>Banear a Prixers</li>}
@@ -379,7 +433,10 @@ export default function ReadAdmins(props) {
                               role.readConsumers ||
                               role.deleteConsumer) && (
                               <ul style={{ paddingLeft: 20 }}>
-                                <Typography variant="p" color="secondary">
+                                <Typography
+                                  variant="p"
+                                  color="secondary"
+                                >
                                   Clientes frecuentes
                                 </Typography>
                                 {role.createConsumer && (
@@ -407,7 +464,7 @@ export default function ReadAdmins(props) {
                                 marginRight: 16,
                               }}
                               onClick={(e) => {
-                                handleActiveRole(role);
+                                handleActiveRole(role)
                               }}
                             >
                               <EditIcon />
@@ -419,8 +476,8 @@ export default function ReadAdmins(props) {
                                 height: 35,
                               }}
                               onClick={(e) => {
-                                e.preventDefault();
-                                deleteRole(role._id);
+                                e.preventDefault()
+                                deleteRole(role._id)
                               }}
                             >
                               <DeleteIcon />
@@ -463,5 +520,5 @@ export default function ReadAdmins(props) {
       />
       {props.handleCallback(value)}
     </React.Fragment>
-  );
+  )
 }

@@ -122,8 +122,9 @@ export default function Login(props) {
               JSON.stringify(now.getTime() + 21600000)
             );
             history.push({ pathname: "/admin/order/read" });
-            props.checkP();
-            props.loadAdmins();
+            props.setPermissions(token.permissions)
+            // props.checkP();
+            // props.loadAdmins();
           }
         })
         .catch((error) => {

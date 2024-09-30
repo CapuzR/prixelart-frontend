@@ -60,7 +60,7 @@ export default function Prixers(props) {
 
   return (
     <>
-      <AppBar prixerUsername={prixerUsername} />
+      {/* <AppBar prixerUsername={prixerUsername} /> */}
 
       <Container component="main" maxWidth="s" className={classes.paper}>
         <CssBaseline />

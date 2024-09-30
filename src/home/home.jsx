@@ -80,6 +80,7 @@ const useStyles = makeStyles((theme) => ({
     overflowX: "none",
     flexGrow: 1,
     overflow: "visible",
+    marginTop: "-2.3vh",
   },
   paper2: {
     position: "absolute",
@@ -318,7 +319,7 @@ export default function Home(props) {
   }
   return (
     <React.Fragment>
-      <AppBar prixerUsername={prixerUsername} />
+      {/* <AppBar prixerUsername={prixerUsername} /> */}
       <Container
         component="main"
         maxWidth="s"

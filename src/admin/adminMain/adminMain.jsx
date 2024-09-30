@@ -130,10 +130,9 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
   },
   drawerPaper: {
-    height: "100vh",
-    position: "fixed",
+    position: "relative",
     whiteSpace: "nowrap",
-    width: drawerWidth,
+    width: 240,
     transition: theme.transitions.create("width", {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.enteringScreen,
@@ -141,14 +140,14 @@ const useStyles = makeStyles((theme) => ({
   },
   drawerPaperClose: {
     overflowX: "hidden",
-    transition: theme.transitions.create("width", {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
-    }),
-    width: theme.spacing(0),
+    width: theme.spacing(7),
     [theme.breakpoints.up("sm")]: {
       width: theme.spacing(9),
     },
+    transition: theme.transitions.create("width", {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen,
+    })
   },
   appBarSpacer: theme.mixins.toolbar,
   content: {

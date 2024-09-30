@@ -27,6 +27,9 @@ import ReactGA from "react-ga"
 import world from "../images/world.svg"
 import worldBlack from "../images/world-black.svg"
 import vzla from "../images/vzla.svg"
+import { priceSelect } from "./services"
+import { useGlobalContext  } from '../context/globalContext';
+import { ProductCarousel } from "../sharedComponents/productCarousel/productCarousel"
 
 ReactGA.initialize("G-0RWP9B33D8")
 
@@ -207,9 +210,10 @@ export default function ProductGrid(props) {
 
   const [order, setOrder] = useState("")
   const history = useHistory()
-  const [currency, setCurrency] = useState(false)
   const [currentPage, setCurrentPage] = useState(1);
   const [productsPerPage] = useState(10);
+  const { currency } = useGlobalContext();
+  console.log("dollarValue", props.dollarValue);
 
   const handleChange = (event) => {
     setOrder(event.target.value)
@@ -245,7 +249,8 @@ export default function ProductGrid(props) {
   const viewDetails = (product) => {
     history.push({
       pathname: "/",
-      search: "?producto=" + product.id
+      search: "?producto=" + product.id,
+      state: { product: product }
     })
     ReactGA.event({
       category: "Productos",
@@ -254,15 +259,9 @@ export default function ProductGrid(props) {
     })
   }
 
-  const changeCurrency = () => {
-    setCurrency(!currency)
-  }
-
-  const priceSelect = (item) => {
-    return currency ? 
-      "Bs. " + item.from * props.dollarValue + " - " + item.to * props.dollarValue :
-      "$ " + item.from + " - " + item.to;
-  };
+  // const changeCurrency = () => {
+  //   setCurrency(!currency)
+  // }
 
   return (
     <>
@@ -326,7 +325,7 @@ export default function ProductGrid(props) {
             <MenuItem value={"maxPrice"}>Mayor precio</MenuItem>
           </Select>
         </FormControl>
-        <div
+        {/* <div
           style={{
             display: "flex",
             flexDirection: "row",
@@ -349,7 +348,7 @@ export default function ProductGrid(props) {
             }}
             style={{ marginRight: "-5px" }}
           />
-        </div>
+        </div> */}
       </div>
       <ResponsiveMasonry columnsCountBreakPoints={{ 350: 1, 750: 2, 1800: 3 }}>
         <Masonry style={{ columnGap: "1.8rem", width: "80%", margin: "0 auto" }}>
@@ -367,10 +366,14 @@ export default function ProductGrid(props) {
                     " 0 0 10px 3px #d33f49",
                 }}
               >
-                <CardMedia style={{ width: "110%", maxWidth: "14.68rem" }}>
+                {/* <CardMedia style={{ width: "110%", maxWidth: "14.68rem" }}> */}
                   {/* TO DO: Mover carrousel de foto producto a su propio componente, para reusar
                   en prixProducts. */}
-                  <Carousel
+                <div style={{ width: "150px", height: "150px", padding: 0, }}>
+                  <ProductCarousel product={tile} selectedArt={undefined} selectedItem={tile} type="noImages" size="138px" />
+                </div>
+                  
+                  {/* <Carousel
                     autoPlay={false}
                     stopAutoPlayOnHover={true}
                     animation="slide"
@@ -437,8 +440,8 @@ export default function ProductGrid(props) {
                       />
                     )
                     }
-                  </Carousel>
-                </CardMedia>
+                  </Carousel> */}
+                {/* </CardMedia> */}
 
                 <CardContent
                   data-color-mode="light"
@@ -475,7 +478,7 @@ export default function ProductGrid(props) {
                       variant="h5"
                       component="h2"
                     >
-                      {priceSelect(tile.priceRange)}
+                      {priceSelect(tile.priceRange, currency, props.dollarValue)}
                     </Typography>
                   </Grid>
                   <Grid

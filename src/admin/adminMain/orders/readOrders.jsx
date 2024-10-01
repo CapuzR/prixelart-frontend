@@ -17,6 +17,9 @@ import moment from "moment"
 import "moment/locale/es"
 import { Backdrop } from "@material-ui/core"
 import CircularProgress from "@material-ui/core/CircularProgress"
+import ArrowBack from "@material-ui/icons/ArrowBackIos"
+import ArrowForward from "@material-ui/icons/ArrowForwardIos"
+import IconButton from "@material-ui/core/IconButton"
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -136,44 +139,94 @@ const useStyles = makeStyles((theme) => ({
 
 export default function ReadOrders(props) {
   const classes = useStyles()
-  const totalOrders = props.rows?.length
   const itemsPerPage = 20
-  const noOfPages = Math.ceil(totalOrders / itemsPerPage)
   const [pageNumber, setPageNumber] = useState(1)
-  // const itemsToSkip = (pageNumber - 1) * itemsPerPage
   const [rows, setRows] = useState([])
+  const [orders, setOrders] = useState([])
   const [total, setTotal] = useState(1)
-  // const rowsv2 = props.rows?.slice(itemsToSkip, itemsPerPage + itemsToSkip)
-  // const [filters, setFilters] = useState(props.filters);
+  const [sellers, setSellers] = useState([])
   const [loading, setLoading] = useState(false)
+  const [filters, setFilters] = useState({
+    creationDate: undefined,
+    shippingDate: undefined,
+    client: undefined,
+    payStatus: undefined,
+    status: undefined,
+    seller: undefined,
+  })
 
   const handleID = (event) => {
-    props.findOrder(event.target.value)
+    let query = event.target.value
+    if (query !== "") {
+      findOrder(event.target.value)
+    } else {
+      setRows(orders)
+    }
+  }
+
+  const handleFilters = (filter, value) => {
+    let f = filters
+    f[filter] = value
+    setFilters(f)
+    setPageNumber(1)
+    readOrders()
+  }
+
+  const removeFilters = async () => {
+    setFilters({
+      creationDate: undefined,
+      shippingDate: undefined,
+      client: undefined,
+      payStatus: undefined,
+      status: undefined,
+      seller: undefined,
+    })
+  }
+
+  useEffect(() => {
+    props.setActiveRemoveFilters(() => removeFilters)
+    props.setRefresh(() => readOrders)
+  }, [])
+
+  useEffect(() => {
+    readOrders();
+  }, [filters])
+
+  const findOrder = async (ID) => {
+    const url = process.env.REACT_APP_BACKEND_URL + "/order/readById/" + ID
+
+    await axios.get(url, { withCredentials: true }).then((res) => {
+      // if (res.data.success) {
+      props.setErrorMessage(res.data.message)
+      props.setSnackBarError(true)
+      setRows(res.data.orders)
+      // }
+    })
   }
 
   const handleCreationDate = (event) => {
-    props.handleFilters("creationDate", event.target.value)
+    handleFilters("creationDate", event.target.value)
     // setFilters({ ...filters, creationDate: event.target.value });
   }
 
   const handleShippingDate = (event) => {
-    props.handleFilters("shippingDate", event.target.value)
+    handleFilters("shippingDate", event.target.value)
   }
 
   const handleClient = (event) => {
-    props.handleFilters("client", event.target.value)
+    handleFilters("client", event.target.value)
   }
 
   const handlePayStatus = (event) => {
-    props.handleFilters("payStatus", event.target.value)
+    handleFilters("payStatus", event.target.value)
   }
 
   const handleStatus = (event) => {
-    props.handleFilters("status", event.target.value)
+    handleFilters("status", event.target.value)
   }
 
   const handleSeller = (event) => {
-    props.handleFilters("seller", event.target.value)
+    handleFilters("seller", event.target.value)
   }
 
   const handleChangeSeller = async (order, seller) => {
@@ -189,7 +242,7 @@ export default function ReadOrders(props) {
         props.setSnackBarError(true)
       }
     })
-    props.readOrders()
+    readOrders()
   }
 
   const readOrders = async () => {
@@ -199,44 +252,51 @@ export default function ReadOrders(props) {
       .post(
         base_url,
         {
-          adminToken: localStorage.getItem("adminTokenV"),
           initialPoint: (pageNumber - 1) * itemsPerPage,
           itemsPerPage: itemsPerPage,
+          filters: filters,
         },
         { withCredentials: true }
       )
-      // axios.get(base_url, {
-      //   params: {
-      //     orderType: order === "A-Z" || order === "lowerPrice" ? "asc" : order === "" ? "" : "desc",
-      //     sortBy: order === "lowerPrice" || order === "maxPrice" ? "priceRange" : order === "" ? "" : "name",
-      //     initialPoint: (currentPage - 1) * productsPerPage,
-      //     productsPerPage: productsPerPage
-      //   }
-      // }).then(async (response) => {
       .then((response) => {
         setRows(response.data.orders)
         setTotal(response.data.length)
-        // setOrders(response.data.orders)
-        // getClients(response.data.orders)
+        if (response.data.aboutFilters === false) {
+          setOrders(response.data.orders)
+        }
       })
       .catch((error) => {
         console.log(error)
       })
     setLoading(false)
   }
+
+  const getSellers = async () => {
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/admin/getSellers"
+    await axios
+      .get(base_url)
+      .then((response) => {
+        setSellers(response.data)
+      })
+      .catch((error) => {
+        console.log(error)
+      })
+  }
+
   useEffect(() => {
     readOrders()
+    getSellers()
   }, [pageNumber])
 
   const handleNextPage = () => {
-    setPageNumber((pageNumber) => pageNumber + 1);
-  };
+    setPageNumber((pageNumber) => pageNumber + 1)
+  }
 
   const handlePreviousPage = () => {
     if (pageNumber > 1) {
-      setPageNumber((pageNumber) => pageNumber - 1);
+      setPageNumber((pageNumber) => pageNumber - 1)
     }
-  };
+  }
 
   return (
     <>
@@ -271,7 +331,7 @@ export default function ReadOrders(props) {
                   <Select
                     labelId="demo-simple-select-label"
                     id="demo-simple-select"
-                    value={props.filters.creationDate}
+                    value={filters.creationDate}
                     onChange={handleCreationDate}
                   >
                     <MenuItem
@@ -298,7 +358,7 @@ export default function ReadOrders(props) {
                 >
                   <InputLabel>Fecha de entrega</InputLabel>
                   <Select
-                    value={props.filters.shippingDate}
+                    value={filters.shippingDate}
                     onChange={handleShippingDate}
                   >
                     <MenuItem
@@ -325,7 +385,7 @@ export default function ReadOrders(props) {
                 >
                   <InputLabel>Cliente</InputLabel>
                   <Select
-                    value={props.filters.client}
+                    value={filters.client}
                     onChange={handleClient}
                   >
                     <MenuItem
@@ -358,7 +418,7 @@ export default function ReadOrders(props) {
                 >
                   <InputLabel> Status de Pago</InputLabel>
                   <Select
-                    value={props.filters.payStatus}
+                    value={filters.payStatus}
                     onChange={handlePayStatus}
                   >
                     <MenuItem value={undefined}>
@@ -412,7 +472,7 @@ export default function ReadOrders(props) {
                 >
                   <InputLabel>Status</InputLabel>
                   <Select
-                    value={props.filters.status}
+                    value={filters.status}
                     onChange={handleStatus}
                   >
                     <MenuItem value={undefined}>
@@ -479,7 +539,7 @@ export default function ReadOrders(props) {
                 >
                   <InputLabel>Asesor</InputLabel>
                   <Select
-                    value={props.filters.seller}
+                    value={filters.seller}
                     onChange={handleSeller}
                   >
                     <MenuItem
@@ -488,8 +548,9 @@ export default function ReadOrders(props) {
                     >
                       <em>Todos</em>
                     </MenuItem>
-                    {props.sellers &&
-                      props.sellers?.map((seller, index) => (
+                    {sellers &&
+                      sellers?.length > 0 &&
+                      sellers?.map((seller, index) => (
                         <MenuItem
                           key={index}
                           value={seller}
@@ -734,25 +795,8 @@ export default function ReadOrders(props) {
                         handleChangeSeller(row, e.target.value)
                       }}
                     >
-                      <MenuItem
-                        key={0}
-                        value={
-                          JSON.parse(localStorage.getItem("adminToken"))
-                            .firstname +
-                          " " +
-                          JSON.parse(localStorage.getItem("adminToken"))
-                            .lastname
-                        }
-                      >
-                        {JSON.parse(localStorage.getItem("adminToken"))
-                          .firstname +
-                          " " +
-                          JSON.parse(localStorage.getItem("adminToken"))
-                            .lastname}
-                      </MenuItem>
-
-                      {props.sellers &&
-                        props.sellers.map((seller) => (
+                      {sellers &&
+                        sellers.map((seller) => (
                           <MenuItem
                             key={seller}
                             value={seller}
@@ -792,7 +836,7 @@ export default function ReadOrders(props) {
               width: 200,
             }}
             size="small"
-            onClick={() => props.removeFilters()}
+            onClick={() => removeFilters()}
           >
             Borrar filtros
           </Button>
@@ -803,39 +847,48 @@ export default function ReadOrders(props) {
           style={{
             display: "flex",
             alignSelf: "center",
-            paddingTop: 5,
-            marginBottom: 4,
+            margin: "1rem 0",
           }}
         >
-           <Button
+          <IconButton
             onClick={handlePreviousPage}
             disabled={pageNumber === 1}
-            size="small"
-            style={{ minWidth: "auto", padding: "2px", marginRight: "0.2rem", transform: "scale(0.75)" }}
+            style={{
+              minWidth: "auto",
+              padding: "2px",
+              marginRight: "0.2rem",
+              transform: "scale(0.75)",
+            }}
+            color="primary"
           >
-            &lt;
-          </Button>
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <Typography
-              variant="h6"
-              style={{
-                margin: "0 0.2rem",
-                color: "#d33f49",
-                textAlign: "center",
-                transform: "scale(0.75)",
-              }}
-            >
-              {pageNumber}
-            </Typography>
+            <ArrowBack />
+          </IconButton>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              width: 80,
+              marginRight: 5,
+              backgroundColor: "rgb(238, 238, 238)",
+              borderRadius: 4,
+            }}
+          >
+            Página {pageNumber}
           </div>
-          <Button
+          <IconButton
             onClick={handleNextPage}
             disabled={pageNumber === Math.ceil(total / itemsPerPage)}
-            size="small"
-            style={{ minWidth: "auto", padding: "2px", marginLeft: "0.2rem", transform: "scale(0.75)" }}
+            style={{
+              minWidth: "auto",
+              padding: "2px",
+              marginLeft: "0.2rem",
+              transform: "scale(0.75)",
+            }}
+            color="primary"
           >
-            &gt;
-          </Button>
+            <ArrowForward />
+          </IconButton>
         </Box>
       )}
     </>

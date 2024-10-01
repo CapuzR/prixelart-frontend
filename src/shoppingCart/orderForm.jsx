@@ -554,9 +554,9 @@ export default function OrderForm(props) {
                             {sellers &&
                               sellers.map((m) => (
                                 <MenuItem
-                                  value={m.firstname + " " + m.lastname}
+                                  value={m}
                                 >
-                                  {m.firstname + " " + m.lastname}
+                                  {m}
                                 </MenuItem>
                               ))}
                           </Select>

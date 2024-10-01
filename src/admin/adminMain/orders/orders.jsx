@@ -248,7 +248,6 @@ export default function Orders(props) {
   const [modalContent, setModalContent] = useState()
   const [loading, setLoading] = useState(false)
   const [openCreateOrder, setOpenCreateOrder] = useState(false)
-  const [account, setAccount] = useState()
   const [errorMessage, setErrorMessage] = useState()
   const [snackBarError, setSnackBarError] = useState(false)
   const [discountList, setDiscountList] = useState([])
@@ -266,6 +265,8 @@ export default function Orders(props) {
     seller: undefined,
   })
   const [client, setClients] = useState()
+  const [activeRemoveFilters, setActiveRemoveFilters] = useState(null)
+  const [refresh, setRefresh] = useState(null)
 
   const findPrixer = async (prx) => {
     const base_url = process.env.REACT_APP_BACKEND_URL + "/prixer/read"
@@ -279,42 +280,24 @@ export default function Orders(props) {
       })
   }
 
-  const handleFilters = (filter, value) => {
-    let f = filters
-    f[filter] = value
-    setFilters(f)
-    filterOrders(f)
-  }
-
   const readOrders = async () => {
     setLoading(true)
     const base_url = process.env.REACT_APP_BACKEND_URL + "/order/read-all"
-    await axios
-      .post(
-        base_url,
-        { adminToken: localStorage.getItem("adminTokenV") },
-        { withCredentials: true }
-      )
-      // axios.get(base_url, {
-      //   params: {
-      //     orderType: order === "A-Z" || order === "lowerPrice" ? "asc" : order === "" ? "" : "desc",
-      //     sortBy: order === "lowerPrice" || order === "maxPrice" ? "priceRange" : order === "" ? "" : "name",
-      //     initialPoint: (currentPage - 1) * productsPerPage,
-      //     productsPerPage: productsPerPage
-      //   }
-      // }).then(async (response) => {
-      .then((response) => {
-        setRows(response.data.orders)
-        setOrders(response.data.orders)
-        getClients(response.data.orders)
-      })
-      .catch((error) => {
-        console.log(error)
-      })
-    setLoading(false)
+    try {
+      const response = await axios.post(base_url, { withCredentials: true })
+      // setRows(response.data.orders)
+      // console.log(response.data.orders)
+      return response.data.orders
+    } catch (error) {
+      console.log(error)
+      return []
+    } finally {
+      setLoading(false)
+    }
   }
 
   const downloadOrders = async () => {
+    const orders = await readOrders()
     const workbook = new excelJS.Workbook()
     let date = new Date()
     date = moment(date).format("DD/MM/YYYY").replace(/\//g, "-")
@@ -337,8 +320,8 @@ export default function Orders(props) {
       { header: "Validación del pago", key: "payStatus", width: 12 },
       { header: "Fecha de pago", key: "payDate", width: 11 },
       { header: "Método de entrega", key: "shippingData", width: 14 },
-      { header: "Fecha de entrega", key: "shippingDate", width: 11 },
       { header: "Costo unitario", key: "price", width: 8 },
+      { header: "Fecha de entrega", key: "shippingDate", width: 11 },
       { header: "Fecha concretada", key: "completionDate", width: 11 },
     ]
     worksheet.getRow(1).eachCell((cell) => {
@@ -513,123 +496,6 @@ export default function Orders(props) {
       link.download = `Pedidos ${date}.xlsx`
       link.click()
     })
-  }
-
-  const findOrder = (ID) => {
-    let ordersv2 = orders.filter((row) =>
-      row.orderId.toLowerCase().includes(ID.toLowerCase())
-    )
-    setRows(ordersv2)
-  }
-
-  const filterOrders = (filters) => {
-    let ordersv2 = orders
-    setLoading(true)
-    if (filters.creationDate !== undefined) {
-      if (filters.creationDate === "recent") {
-        let ordersv3 = ordersv2.sort(function (a, b) {
-          if (a.createdOn.toLowerCase() < b.createdOn.toLowerCase()) {
-            return 1
-          }
-          if (a.createdOn.toLowerCase() > b.createdOn.toLowerCase()) {
-            return -1
-          }
-          return 0
-        })
-        ordersv2 = ordersv3
-      } else if (filters.creationDate === "previous") {
-        let ordersv3 = ordersv2.sort(function (a, b) {
-          if (a.createdOn.toLowerCase() > b.createdOn.toLowerCase()) {
-            return 1
-          }
-          if (a.createdOn.toLowerCase() < b.createdOn.toLowerCase()) {
-            return -1
-          }
-          return 0
-        })
-        ordersv2 = ordersv3
-      }
-    }
-    if (filters.shippingDate !== undefined) {
-      if (filters.shippingDate === "recent") {
-        let toDeliver = ordersv2.filter(
-          (row) =>
-            row.shippingData && row.shippingData?.shippingDate !== undefined
-        )
-        ordersv2 = toDeliver.sort(function (a, b) {
-          if (
-            a.shippingData?.shippingDate !== undefined &&
-            b.shippingData?.shippingDate !== undefined &&
-            a.shippingData?.shippingDate > b.shippingData?.shippingDate
-          ) {
-            return 1
-          }
-          if (
-            a.shippingData?.shippingDate !== undefined &&
-            b.shippingData?.shippingDate !== undefined &&
-            a.shippingData?.shippingDate < b.shippingData?.shippingDate
-          ) {
-            return -1
-          }
-          if (a.shippingData?.shippingDate === undefined) {
-            return -1
-          }
-          return 0
-        })
-      } else if (filters.shippingDate === "later") {
-        let toDeliver = ordersv2.filter(
-          (row) =>
-            row.shippingData && row.shippingData?.shippingDate !== undefined
-        )
-        ordersv2 = toDeliver.sort(function (a, b) {
-          if (
-            a.shippingData?.shippingDate !== undefined &&
-            b.shippingData?.shippingDate !== undefined &&
-            a.shippingData?.shippingDate < b.shippingData?.shippingDate
-          ) {
-            return 1
-          }
-          if (
-            a.shippingData?.shippingDate !== undefined &&
-            b.shippingData?.shippingDate !== undefined &&
-            a.shippingData?.shippingDate > b.shippingData?.shippingDate
-          ) {
-            return -1
-          }
-          if (a.shippingData?.shippingDate === undefined) {
-            return -1
-          }
-          return 0
-        })
-      }
-    }
-    if (filters.client !== undefined) {
-      ordersv2 = ordersv2.filter(
-        (row) =>
-          (row.basicData?.firstname || row.basicData?.name) +
-            " " +
-            row.basicData?.lastname ===
-          filters.client
-      )
-    }
-    if (filters.payStatus !== undefined) {
-      if (filters.payStatus === "Pendiente") {
-        ordersv2 = ordersv2.filter(
-          (row) => row.payStatus === undefined || row.payStatus === "Pendiente"
-        )
-      } else
-        ordersv2 = ordersv2.filter((row) => row.payStatus === filters.payStatus)
-    }
-    if (filters.status !== undefined) {
-      ordersv2 = ordersv2.filter((row) => row.status === filters.status)
-    }
-    if (filters.seller !== undefined) {
-      ordersv2 = ordersv2.filter(
-        (row) => row?.createdBy?.username === filters.seller
-      )
-    }
-    setRows(ordersv2)
-    setLoading(false)
   }
 
   // const deleteOrder = async (id) => {
@@ -925,35 +791,18 @@ export default function Orders(props) {
     }
   }
 
-  const removeFilters = () => {
-    setFilters({
-      ...filters,
-      creationDate: undefined,
-      shippingDate: undefined,
-      client: undefined,
-      payStatus: undefined,
-      status: undefined,
-      seller: undefined,
-    })
-    setRows(orders)
+  const handleRemoveFilters = () => {
+    if (activeRemoveFilters) {
+      activeRemoveFilters()
+    } else {
+      console.log("No hay función activa para eliminar filtros.")
+    }
   }
 
-  const getClients = (data) => {
-    let c = []
-    data?.map((order) => {
-      let fullname =
-        (order.basicData?.firstname || order.basicData?.name) +
-        " " +
-        order.basicData?.lastname
-
-      if (c.includes(fullname)) {
-        return
-      } else {
-        c.push(fullname)
-      }
-    })
-    c.sort()
-    setClients(c)
+  const getClients = async () => {
+    const URI = process.env.REACT_APP_BACKEND_URL + "/order/getClients"
+    const response = await axios.get(URI, { withCredentials: true })
+    setClients(response.data.clients)
   }
 
   const closeAd = () => {
@@ -979,6 +828,10 @@ export default function Orders(props) {
     setRows(rowsv2)
     setOrders(orderv2)
   }
+
+  useEffect(() => {
+    getClients()
+  }, [])
 
   return (
     <>
@@ -1048,9 +901,7 @@ export default function Orders(props) {
                   <Fab
                     color="primary"
                     size="small"
-                    onClick={() => {
-                      removeFilters()
-                    }}
+                    onClick={handleRemoveFilters}
                     style={{ marginRight: 10 }}
                   >
                     <BackspaceIcon />
@@ -1063,9 +914,7 @@ export default function Orders(props) {
                   <Fab
                     color="primary"
                     size="small"
-                    onClick={() => {
-                      readOrders()
-                    }}
+                    onClick={handleRemoveFilters}
                     style={{ marginRight: 10 }}
                   >
                     <RefreshIcon />
@@ -1076,8 +925,6 @@ export default function Orders(props) {
             <ReadOrders
               rows={rows}
               orders={orders}
-              filterOrders={filterOrders}
-              findOrder={findOrder}
               setModalContent={setModalContent}
               setIsShowDetails={setIsShowDetails}
               isShowDetails={isShowDetails}
@@ -1087,12 +934,11 @@ export default function Orders(props) {
               admins={props.admins}
               setErrorMessage={setErrorMessage}
               setSnackBarError={setSnackBarError}
-              readOrders={readOrders}
               sellers={props.sellers}
               clients={client}
-              filters={filters}
-              handleFilters={handleFilters}
-              removeFilters={removeFilters}
+              setActiveRemoveFilters={setActiveRemoveFilters}
+              activeRemoveFilters={activeRemoveFilters}
+              setRefresh={setRefresh}
             ></ReadOrders>
           </Paper>
         </Grid>

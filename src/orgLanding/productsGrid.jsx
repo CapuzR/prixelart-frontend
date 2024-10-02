@@ -297,6 +297,7 @@ export default function CBProducts() {
                           backgroundRepeat: "no-repeat",
                           backgroundPosition: "center",
                           borderRadius: 10,
+                          opacity: tile?.product.name === "Tote Bag" ? 0.5 : 1
                         }}
                       ></div>
                     </div>
@@ -329,7 +330,7 @@ export default function CBProducts() {
                     >
                       {tile?.product.description}
                     </Typography>
-                    {tile?.product?.offer !== undefined && (
+                    {/* {tile?.product?.offer !== undefined && (
                       <Typography
                         className={classes.typography}
                         style={{ fontSize: isTab ? 13 : 16, fontWeight: "bold" }}
@@ -337,33 +338,42 @@ export default function CBProducts() {
                       >
                         {tile?.product.offer}
                       </Typography>
-                    )}
+                    )} */}
                   </div>
                   <Typography
                     className={classes.typography}
+                    color="primary"
                     style={{
                       fontSize: isTab ? 16 : 20,
                       fontWeight: 600,
-                      color: "#00A650",
+                      color:
+                        tile?.product.name === "Tote Bag"
+                          ? "#d33f49"
+                          : "#00A650",
                     }}
-                  >{`$${tile?.product.finalPrice?.toLocaleString("de-DE", {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  })}`}</Typography>
+                  >
+                    {tile?.product.name !== "Tote Bag"
+                      ? `$${tile?.product.finalPrice?.toLocaleString("de-DE", {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}`
+                      : "Agotado"}
+                  </Typography>
                 </div>
-
-                <Button
-                  className={classes.typography}
-                  style={{
-                    textTransform: "none",
-                    width: "100%",
-                    backgroundColor: "#F4DF46",
-                    borderRadius: 10,
-                  }}
-                  onClick={() => viewDetails(tile)}
-                >
-                  Ver detalles
-                </Button>
+                {tile?.product.name !== "Tote Bag" && (
+                  <Button
+                    className={classes.typography}
+                    style={{
+                      textTransform: "none",
+                      width: "100%",
+                      backgroundColor: "#F4DF46",
+                      borderRadius: 10,
+                    }}
+                    onClick={() => viewDetails(tile)}
+                  >
+                    Ver detalles
+                  </Button>
+                )}
               </div>
             </Grid>
           ))}

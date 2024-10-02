@@ -77,16 +77,9 @@ export default function OrderFormCB(props) {
         console.log(error);
       });
   };
-  const getSellers = () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + "/admin/getSellers";
-    axios.get(base_url).then((response) => {
-      setSellers(response.data);
-    });
-  };
 
   useEffect(() => {
     getPaymentMethod();
-    getSellers();
   }, []);
 
   useEffect(() => {
@@ -426,54 +419,6 @@ export default function OrderFormCB(props) {
                       xs={12}
                       style={{ paddingLeft: 0, marginTop: 30 }}
                     >
-                      {/* <div
-                        style={{
-                          width: "100%",
-                          display: "flex",
-                          marginTop: 25,
-                          alignItems: "center",
-                        }}
-                      >
-                        <Tooltip
-                          // onClick={(e) => setOpenTooltip(!openTooltip)}
-                          // open={openTooltip}
-                          // onClose={(leaveDelay) => setOpenTooltip(false)}
-                          title={
-                            "¿Alguno de nuestros asesores te ayudó en el proceso de compra?"
-                          }
-                          style={{ marginLeft: 5, marginRight: 20 }}
-                        >
-                          <InfoIcon color="secondary" />
-                        </Tooltip>
-                        <FormControl
-                          variant="outlined"
-                          fullWidth
-                          // style={{  }}
-                          required
-                        >
-                          <InputLabel htmlFor="outlined-age-simple">
-                            Asesor
-                          </InputLabel>
-
-                          <Select
-                            input={<OutlinedInput />}
-                            value={props.createdBy}
-                            onChange={(event) =>
-                              props.setSeller(event.target.value)
-                            }
-                          >
-                            <MenuItem value={undefined}></MenuItem>
-                            {sellers &&
-                              sellers.map((m) => (
-                                <MenuItem
-                                  value={m.firstname + " " + m.lastname}
-                                >
-                                  {m.firstname + " " + m.lastname}
-                                </MenuItem>
-                              ))}
-                          </Select>
-                        </FormControl>
-                      </div> */}
                     </Grid>
                     <Grid
                       item

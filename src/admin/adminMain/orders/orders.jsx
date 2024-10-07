@@ -320,8 +320,8 @@ export default function Orders(props) {
       { header: "Validación del pago", key: "payStatus", width: 12 },
       { header: "Fecha de pago", key: "payDate", width: 11 },
       { header: "Método de entrega", key: "shippingData", width: 14 },
-      { header: "Costo unitario", key: "price", width: 8 },
       { header: "Fecha de entrega", key: "shippingDate", width: 11 },
+      { header: "Costo unitario", key: "price", width: 8 },
       { header: "Fecha concretada", key: "completionDate", width: 11 },
     ]
     worksheet.getRow(1).eachCell((cell) => {
@@ -372,7 +372,7 @@ export default function Orders(props) {
           (order.basicData?.firstname || order.basicData?.name) +
           " " +
           order.basicData?.lastname,
-        typeConsumer: searchConsumerType(order.basicData),
+        typeConsumer: consumerData?.consumerType || searchConsumerType(order.basicData),
         shippingDate: "",
         // Certificado
         prixer: "",

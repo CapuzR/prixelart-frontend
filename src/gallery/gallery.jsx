@@ -156,11 +156,7 @@ export default function Gallery(props) {
               opacity:
                 props.selectedProductToAssociate?.index === index ? "1" : "0.6",
             }}
-            src={
-              buy.product
-                ? buy.product.sources.images[0]?.url || buy.product.thumbUrl
-                : ""
-            }
+            src={ buy?.product?.sources?.images[0]?.url || buy?.product?.thumbUrl || "" }
             debounce={1000}
             cache
             error="/imgError.svg"
@@ -175,7 +171,7 @@ export default function Gallery(props) {
 
   return (
     <>
-      <AppBar prixerUsername={prixerUsername} />
+      {/* <AppBar prixerUsername={prixerUsername} /> */}
 
       <Container component="main" maxWidth="s" className={classes.paper}>
         <CssBaseline />

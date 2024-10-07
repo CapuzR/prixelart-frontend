@@ -16,7 +16,75 @@ export const setProductAtts = async (
     const pAtt = await getEquation(att[iProd], iProd, att, width, height)
     return { pAtt: pAtt, att: att }
   }
+};
+
+export const splitDescription = (description) => {
+  const technicalKeyword = "ESPECIFICACIÓN TÉCNICA";
+
+  if (!description || !description.includes(technicalKeyword)) {
+    return {
+      generalDescription: description || "",
+      technicalSpecification: "",
+    };
+  }
+
+  const [generalDescription, technicalSpecification] = description.split(technicalKeyword);
+
+  // Clean up leading/trailing ** in technicalSpecification, if present
+  const cleanedTechnicalSpecification = technicalSpecification
+    .trim()
+    .replace(/^\*\*/, '') // Remove leading **
+    .replace(/\*\*$/, ''); // Remove trailing **
+
+  const cleanedGeneralDescription = generalDescription
+  .trim()
+  .replace(/^\*\*/, '') // Remove leading **
+  .replace(/\*\*$/, ''); // Remove trailing **
+
+  return {
+    generalDescription: cleanedGeneralDescription.trim(),
+    technicalSpecification: cleanedTechnicalSpecification.trim(),
+  };
+};
+
+export const getSelectedVariant = (product, selection) => {
+  let selectedVariant = product.variants.find((variant) => {
+    
+    if (variant.attributes.length === 1) {
+      return variant.attributes[0].value === selection[0]
+    } else if (variant.attributes.length === 2) {
+      return (
+        variant.attributes[0].value === selection[0] &&
+        variant.attributes[1].value === selection[1]
+      )
+    }
+  })
+  return selectedVariant
+};
+
+export const toggleDecimalSeparator = (value) => {
+  if (typeof value === "number") {
+    value = value.toString();
+  }
+  if (value.includes(",")) {
+    return value.replace(/\./g, '').replace(/,/g, '.');
+  } else if (value.includes(".")) {
+    return value.replace(/\./g, ',');
+  } else {
+    return value;
+  }
 }
+
+export const priceSelect = (item, currency, dollar) => {
+  const dollarValue = +dollar;
+  const from = +toggleDecimalSeparator(item?.from);
+  const to = +toggleDecimalSeparator(item?.to);
+  const format = (num) => Math.round(num * 100) / 100;
+
+  return currency === "Bs"
+    ? `Bs. ${format(from * dollarValue)} - ${format(to * dollarValue)}`
+    : `$ ${toggleDecimalSeparator(from)} - ${toggleDecimalSeparator(to)}`;
+};
 
 export const setSecondProductAtts = async (
   attValue,
@@ -46,7 +114,45 @@ export const setSecondProductAtts = async (
   return { pAtt: pAtt, att: att }
 }
 
-export const getAttributes = (products) => {
+export const getProductAttributes = (p) => {
+  let att = []
+  p.variants.map((v) => {
+    if (v.active) {
+      if (att.length == 0) {
+        att = [...new Set(v.attributes.flatMap((a) => a))]
+      } else {
+        att.push(...new Set(v.attributes.flatMap((a) => a)))
+      }
+    }
+  })
+  const result = [...new Set(att.flatMap(({ name }) => name))]
+  const res1 = [
+    ...new Set(
+      result.map((a) => {
+        return {
+          name: a,
+          value: [
+            ...new Set(
+              att.map((v) => {
+                if (v.name == a && v.value) {
+                  return v.value
+                }
+              })
+            ),
+          ].filter((a) => a),
+        }
+      })
+    ),
+  ]
+  p.attributes = res1
+  console.log("p.attributes", p.attributes);
+  p.selection = []
+  p.selection.length = p.attributes.length
+
+  return p
+}
+
+export const getProductsAttributes = (products) => {
   let lol = products
   lol = products.map((p, i) => {
     let att = []

@@ -425,7 +425,7 @@ export default function SoloService(props) {
 
   return (
     <>
-      <AppBar />
+      {/* <AppBar /> */}
 
       <div className={classes.root}>
         <Backdrop className={classes.backdrop} open={backdrop}>

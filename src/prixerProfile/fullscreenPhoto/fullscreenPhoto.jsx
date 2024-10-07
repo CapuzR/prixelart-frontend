@@ -621,9 +621,9 @@ export default function FullscreenPhoto(props) {
     </div>
   ) : (
     <>
-      <div>
+      {/* <div>
         <AppBar />
-      </div>
+      </div> */}
       <Container
         component="main"
         className={classes.paper}

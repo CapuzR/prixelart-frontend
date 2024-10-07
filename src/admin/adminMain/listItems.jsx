@@ -40,132 +40,159 @@ export default function MainListItems(props) {
             // }}
           />
         </ListItem>
-        <ListItem button selected={props.active === "product"}>
+        <ListItem 
+          button 
+          selected={props.active === "product"}
+          onClick={(e) => {
+            handleClick("product");
+          }}
+        >
           <ListItemIcon>
             <LocalMallIcon />
           </ListItemIcon>
           <ListItemText
             primary="Productos"
-            onClick={(e) => {
-              handleClick("product");
-            }}
           />
         </ListItem>
         {props.permissions?.readConsumers && (
-          <ListItem button selected={props.active === "consumer"}>
+          <ListItem 
+            button 
+            selected={props.active === "consumer"}
+            onClick={(e) => {
+              handleClick("consumer");
+            }}
+          >
             <ListItemIcon>
               <PeopleIcon />
             </ListItemIcon>
             <ListItemText
               primary="Clientes"
-              onClick={(e) => {
-                handleClick("consumer");
-              }}
             />
           </ListItem>
         )}
         {props.permissions?.readMovements && (
-          <ListItem button selected={props.active === "movements"}>
+          <ListItem 
+            button 
+            selected={props.active === "movements"}
+            onClick={(e) => {
+              handleClick("movements");
+            }}
+          >
             <ListItemIcon>
               <AccountBalanceIcon />
             </ListItemIcon>
             <ListItemText
               primary="Movimientos"
-              onClick={(e) => {
-                handleClick("movements");
-              }}
               selected={props.active === "movements"}
             />
           </ListItem>
         )}
-        <ListItem button selected={props.active === "payment-method"}>
+        <ListItem 
+          button 
+          selected={props.active === "payment-method"}
+          onClick={(e) => {
+            handleClick("payment-method");
+          }}
+        >
           <ListItemIcon>
             <PaymentIcon />
           </ListItemIcon>
           <ListItemText
             primary="Métodos de pago"
-            onClick={(e) => {
-              handleClick("payment-method");
-            }}
             selected={props.active === "payment-method"}
           />
         </ListItem>
-        <ListItem button selected={props.active === "shipping-method"}>
+        <ListItem 
+          button 
+          selected={props.active === "shipping-method"}
+          onClick={(e) => {
+            handleClick("shipping-method");
+          }}
+        >
           <ListItemIcon>
             <LocalShippingIcon />
           </ListItemIcon>
           <ListItemText
             primary="Métodos de envío"
-            onClick={(e) => {
-              handleClick("shipping-method");
-            }}
             selected={props.active === "shipping-method"}
           />
         </ListItem>
-        <ListItem button selected={props.active === "order"}>
+        <ListItem 
+          button 
+          selected={props.active === "order"}
+          onClick={(e) => {
+            handleClick("order");
+          }}
+        >
           <ListItemIcon>
             <ReceiptIcon />
           </ListItemIcon>
           <ListItemText
             primary="Pedidos"
-            onClick={(e) => {
-              handleClick("order");
-            }}
           />
         </ListItem>
         <ListItem
           button
           // style={{ color: "gray" }}
+          onClick={(e) => {
+            handleClick("prixer");
+          }}
         >
           <ListItemIcon>
             <PaletteIcon />
           </ListItemIcon>
           <ListItemText
             primary="Prixers"
-            onClick={(e) => {
-              handleClick("prixer");
-            }}
           />
         </ListItem>
 
-        <ListItem button selected={props.active === "testimonials"}>
+        <ListItem 
+          button 
+          selected={props.active === "testimonials"}
+          onClick={(e) => {
+            handleClick("testimonials");
+          }}
+        >
           <ListItemIcon>
             <InsertEmoticon />
           </ListItemIcon>
           <ListItemText
             primary="Testimonios"
-            onClick={(e) => {
-              handleClick("testimonials");
-            }}
           />
         </ListItem>
       </div>
       <Divider />
       <div>
         {props.permissions?.modifyAdmins && (
-          <ListItem button selected={props.active === "user"}>
+          <ListItem 
+            button 
+            selected={props.active === "user"}
+            onClick={(e) => {
+              handleClick("user");
+            }}
+          >
             <ListItemIcon>
               <AssignmentIcon />
             </ListItemIcon>
             <ListItemText
               primary="Usuarios"
-              onClick={(e) => {
-                handleClick("user");
-              }}
             />
           </ListItem>
         )}
         {(props.permissions?.modifyBanners ||
           props.permissions?.modifyTermsAndCo) && (
-          <ListItem button selected={props.active === "preferences"}>
+          <ListItem 
+            button 
+            selected={props.active === "preferences"}
+            onClick={(e) => {
+              handleClick("preferences");
+            }}
+          >
             <ListItemIcon>
               <WebAssetIcon />
             </ListItemIcon>
             <ListItemText
               primary="Preferencias"
-              onClick={(e) => {
-                handleClick("preferences");
-              }}
             />
           </ListItem>
         )}

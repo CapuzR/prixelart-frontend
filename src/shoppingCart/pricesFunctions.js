@@ -930,6 +930,7 @@ const getPVMtext = (product, currency, dollarValue, discountList) => {
 
 const getPVP = (item, currency, dollarValue, discountList) => {
   let { base, prev, final } = 0
+  console.log("ITEM", item);
   let dis = discountList?.filter((dis) => dis._id === item.product?.discount)[0]
   let pubEq =
     typeof item.product.publicEquation === "number"

@@ -100,15 +100,19 @@ export default function CartReview(props) {
       JSON.parse(localStorage?.getItem("token")) &&
       JSON.parse(localStorage?.getItem("token"))?.username
     ) {
+      let modifiedItem = item;
+      modifiedItem.product.prixerPrice = item.product.priceRange;
       return getPVM(
-        item,
+        modifiedItem,
         props.currency,
         props.dollarValue,
         discountList,
         prixer
       )
     } else {
-      return getPVP(item, props.currency, props.dollarValue, discountList)
+      let modifiedItem = item;
+      modifiedItem.product.publicPrice = item.product.priceRange;
+      return getPVP(modifiedItem, props.currency, props.dollarValue, discountList)
     }
   }
 
@@ -608,6 +612,7 @@ export default function CartReview(props) {
           justifyContent: "space-between",
         }}
       >
+        {console.log("buyState", buyState)}
         <h1
           style={{
             marginBottom: isMobile ? 40 : 20,

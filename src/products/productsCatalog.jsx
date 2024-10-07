@@ -146,7 +146,7 @@ export default function ProductsCatalog(props) {
 
   return (
     <>
-      <AppBar prixerUsername={prixerUsername} />
+      {/* <AppBar prixerUsername={prixerUsername} /> */}
 
       <Container
         component="main"

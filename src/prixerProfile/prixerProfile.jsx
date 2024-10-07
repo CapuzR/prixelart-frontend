@@ -121,9 +121,9 @@ export default function PrixerProfile(props) {
   return (
     <Container component="main" maxWidth="xl" className={classes.paper}>
       <CssBaseline />
-      <Grid>
+      {/* <Grid>
         <AppBar prixerUsername={username} />
-      </Grid>
+      </Grid> */}
       <UserData prixerUsername={username} feed={feed} setFeed={setFeed} />
       {feed !== "Settings" && (
         <PrixerOptions

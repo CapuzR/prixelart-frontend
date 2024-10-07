@@ -80,7 +80,7 @@ const useStyles = makeStyles((theme) => ({
     overflowX: "none",
     flexGrow: 1,
     overflow: "visible",
-    marginTop: "-2.3vh",
+    // marginTop: "-2.3vh",
   },
   paper2: {
     position: "absolute",
@@ -336,7 +336,7 @@ export default function Home(props) {
               marginLeft: isDesktop ? "-24px" : "-16px",
               marginLeft: isDeskTop ? "-24px" : "-16px",
               height: "100vh",
-              marginTop: isDesktop ? "60px" : "55px",
+              // marginTop: isDesktop ? "60px" : "55px",
             }}
             elevation={0}
           >

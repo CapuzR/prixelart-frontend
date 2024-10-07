@@ -10,7 +10,7 @@ import FullscreenPhoto from "./prixerProfile/fullscreenPhoto/fullscreenPhoto"
 import Home from "./home/home"
 import { Switch, Route } from "react-router-dom"
 import Gallery from "./gallery/gallery"
-import Products from "./products/productsCatalog"
+import Products from "./products/catalog/catalog.jsx"
 import ShoppingPage from "./shoppingCart/shoppingPage"
 import expire from "./utils/expire"
 import { makeStyles } from "@material-ui/core/styles"
@@ -32,12 +32,10 @@ import { getComission } from "./shoppingCart/pricesFunctions"
 import ChiguireHome from "./orgLanding/chiguireHome"
 import ProductDetail from "./orgLanding/productDetail"
 import ShoppingCartCB from "./orgLanding/shoppingCartCB"
-import PrixPoduct from "./products/prixProduct"
-import ReactGA from "react-ga"
+import ProductDetails from "./products/details/details.jsx"
 import AdminRoutes from './admin/adminRoutes.js';
 
-ReactGA.initialize("G-0RWP9B33D8")
-ReactGA.pageview(window.location)
+
 
 const useStyles = makeStyles((theme) => ({
   paper2: {
@@ -580,7 +578,7 @@ function Routes() {
 
             if (prod) {
               return (
-                <PrixPoduct
+                <ProductDetails
                   addItemToBuyState={addItemToBuyState}
                   isOpenAssociateProduct={isOpenAssociateProduct}
                   setIsOpenAssociateProduct={setIsOpenAssociateProduct}

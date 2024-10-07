@@ -21,6 +21,8 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import InfoIcon from "@material-ui/icons/Info";
 import Tooltip from "@material-ui/core/Tooltip";
+import { format } from 'utils/utils.js';
+import { calculateTotalPrice } from './services';
 import {
   getPVP,
   getPVM,
@@ -63,8 +65,20 @@ export default function OrderForm(props) {
       });
   };
 
+  const updateBuyState = () => {
+    const totals = calculateTotalPrice(props.buyState);
+    props.setBuyState({...props.buyState, ...totals});
+  };
+
   useEffect(() => {
-    getDiscounts();
+    if (props.buyState.length > 0) {
+      updateBuyState();
+    }
+  }, [props.buyState]);
+
+
+  useEffect(() => {
+    // getDiscounts();
     getPaymentMethod();
     getSellers();
   }, []);
@@ -123,76 +137,36 @@ export default function OrderForm(props) {
     }
   };
 
-  const getTotalPrice = (state) => {
-        // const org = checkOrgs(item.art)
 
-    if (
-      JSON.parse(localStorage?.getItem("token")) &&
-      JSON.parse(localStorage?.getItem("token"))?.username
-    ) {
-      return getTotalUnitsPVM(
-        state,
-        props.currency,
-        props.dollarValue,
-        discountList,
-        prixer
-      ).toLocaleString("de-DE", {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      });
-    } else {
-      return getTotalUnitsPVP(
-        state,
-        props.currency,
-        props.dollarValue,
-        discountList
-      ).toLocaleString("de-DE", {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      });
-    }
-  };
-  const PriceSelect = (item) => {
-        const org = checkOrgs(item.art)
-    if (org !== undefined) {
-      return (UnitPriceForOrg(
-        item.product,
-        item.art,
-        prixer,
-         org,
-        "Particular"
-      )* (item.quantity || 1)).toLocaleString("de-DE", {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      })
-    }
-    else if (
-      JSON.parse(localStorage?.getItem("token")) &&
-      JSON.parse(localStorage?.getItem("token"))?.username
-    ) {
-      let modifiedItem = item;
-      modifiedItem.product.prixerPrice = item.product.priceRange;
-      return (
-        getPVM(item, props.currency, props.dollarValue, discountList, prixer) *
-        item.quantity
-      ).toLocaleString("de-DE", {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      });
-    } else {
-      let modifiedItem = item;
-      modifiedItem.product.publicPrice = item.product.priceRange;
-      return (
-        Number(
-          getPVP(item, props.currency, props.dollarValue, discountList)
-          // .replace(/[,]/gi, ".")
-        ) * item.quantity
-      ).toLocaleString("de-DE", {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      });
-    }
-  };
+  const getTotalPrice = (state) => {
+    // const org = checkOrgs(item.art)
+console.log("STATE", state);
+if (
+  JSON.parse(localStorage?.getItem("token")) &&
+  JSON.parse(localStorage?.getItem("token"))?.username
+) {
+  return getTotalUnitsPVM(
+    state,
+    props.currency,
+    props.dollarValue,
+    discountList,
+    prixer
+  ).toLocaleString("de-DE", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+} else {
+  return getTotalUnitsPVP(
+    state,
+    props.currency,
+    props.dollarValue,
+    discountList
+  ).toLocaleString("de-DE", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+}
+};
 
   const getTotalCombinedItems = (state) => {
     const totalNotCompleted = state.filter(
@@ -202,21 +176,6 @@ export default function OrderForm(props) {
       totalNotCompleted,
     };
   };
-
-  const getIvaCost = (state) => {
-    if (
-      typeof JSON.parse(localStorage?.getItem("token"))?.username === "string"
-    ) {
-      return 0;
-    } else {
-      return (
-        Number(
-          getTotalPrice(state).replace(/[.]/gi, "").replace(/[,]/gi, ".")
-        ) * 0.16
-      );
-    }
-  };
-
   const getTotal = (x) => {
     let n = [];
     n.push(
@@ -321,7 +280,7 @@ export default function OrderForm(props) {
                                             Monto:
                                             <br></br>
                                             {props.currency ? " Bs" : "$"}
-                                            {PriceSelect(item)}
+                                            {item.product.price * item.quantity}
                                           </div>
                                         </Grid>
                                       </Grid>
@@ -475,14 +434,11 @@ export default function OrderForm(props) {
                         )}
                         <strong>
                           {props.currency ? "Subtotal: Bs" : "Subtotal: $"}
-                          {getTotalPrice(props.buyState)}
+                          {props.buyState.subTotal}
                         </strong>
                         <strong>
                           {props.currency ? "IVA: Bs" : "IVA: $"}
-                          {getIvaCost(props.buyState).toLocaleString("de-DE", {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                          })}
+                          {props.buyState.IVA}
                         </strong>
                         {props.valuesConsumer.shippingMethod &&
                         props.currency ? (
@@ -505,7 +461,7 @@ export default function OrderForm(props) {
                         )}
                         <strong>
                           {props.currency ? "Total: Bs" : "Total: $"}
-                          {getTotal(props.buyState)}
+                          {props.buyState.total}
                         </strong>
                         <br />
                       </Grid>

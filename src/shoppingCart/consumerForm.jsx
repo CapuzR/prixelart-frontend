@@ -199,6 +199,7 @@ function ConsumerForm(props) {
   };
 
   useEffect(() => {
+    console.log("useEffect1");
     getShippingMethods();
     getConsumer();
     // }

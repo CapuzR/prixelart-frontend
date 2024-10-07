@@ -157,6 +157,18 @@ function shuffle(array) {
   return array;
 }
 
+export const format = (input) => {
+  let num = 0;
+  if (typeof input === 'string') {
+    num = Number(input.replace(',', '.'));
+  } else {
+    num = input;
+  }
+  if (typeof num !== 'number' || isNaN(num)) return '';
+  return num.toFixed(2).replace('.', ',');
+};
+
+
 const util = {
   generateArtMessage,
   generateWaMessage,
@@ -166,6 +178,19 @@ const util = {
   generateWaBuyMessage,
   generateServiceMessage,
   generateLikeServiceMessage,
+  format,
 };
 
 export default util;
+export const toggleDecimalSeparator = (value) => {
+  if (typeof value === "number") {
+    value = value.toString();
+  }
+  if (value?.includes(",")) {
+    return value.replace(/\./g, '').replace(/,/g, '.');
+  } else if (value?.includes(".")) {
+    return value.replace(/\./g, ',');
+  } else {
+    return value;
+  }
+};

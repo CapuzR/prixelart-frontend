@@ -67,9 +67,6 @@ const useStyles = makeStyles((theme) => ({
 export default function Gallery(props) {
   const [openArtFormDialog, setOpenArtFormDialog] = useState(false);
   const [openShoppingCart, setOpenShoppingCart] = useState(false);
-
-  const [prixerUsername, setPrixerUsername] = useState(null);
-  const [value, setValue] = useState("");
   const [selectedArt, setSelectedArt] = useState(undefined);
   const history = useHistory();
   const theme = useTheme();
@@ -205,7 +202,6 @@ export default function Gallery(props) {
         <Grid>
           <ArtsGrid
             prixerUsername={props.prixer}
-            setPrixer={setPrixerUsername}
             buyState={props.buyState}
             addItemToBuyState={props.addItemToBuyState}
             setIsOpenAssociateProduct={props.setIsOpenAssociateProduct}

@@ -32,10 +32,10 @@ import DeleteIcon from "@material-ui/icons/Delete"
 import utils from "../../utils/utils"
 import ReactQuill from "react-quill"
 import "react-quill/dist/quill.snow.css"
-import ServiceSearchBar from "../../sharedComponents/searchBar/serviceSearchBar"
-import FloatingAddButton from "../../sharedComponents/floatingAddButton/floatingAddButton"
-import ArtUploader from "../../sharedComponents/artUploader/artUploader"
-import CreateService from "../../sharedComponents/createService/createService"
+import ServiceSearchBar from "components/searchBar/serviceSearchBar"
+import FloatingAddButton from "components/floatingAddButton/floatingAddButton"
+import ArtUploader from "components/artUploader/artUploader"
+import CreateService from "components/createService/createService"
 
 const IOSSwitch = withStyles((theme) => ({
   root: {

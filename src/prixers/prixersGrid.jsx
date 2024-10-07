@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 import axios from "axios";
 
-import AppBar from "../sharedComponents/appBar/appBar";
 import Container from "@material-ui/core/Container";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Grid from "@material-ui/core/Grid";
@@ -10,7 +9,7 @@ import { useState } from "react";
 import Typography from "@material-ui/core/Typography";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { useTheme } from "@material-ui/core/styles";
-import PrixersGrid from "../sharedComponents/prixerGrid/prixerGrid";
+import PrixersGrid from "components/prixerGrid/prixerGrid";
 
 const useStyles = makeStyles((theme) => ({
   paper: {

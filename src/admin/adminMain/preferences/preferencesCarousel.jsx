@@ -22,7 +22,6 @@ import axios from "axios";
 import AppBar from "@material-ui/core/AppBar";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
-// import AspectRatioSelector from "../../../sharedComponents/artUploader/aspectRatioSelector";
 
 const useStyle = makeStyles((theme) => ({
   images: {

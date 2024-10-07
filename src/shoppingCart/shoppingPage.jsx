@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react"
 import axios from "axios"
-import AppBar from "../sharedComponents/appBar/appBar"
 import Button from "@material-ui/core/Button"
 import { makeStyles, useTheme } from "@material-ui/core/styles"
 import Grid from "@material-ui/core/Grid"

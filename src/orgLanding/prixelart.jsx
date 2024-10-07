@@ -7,7 +7,7 @@ import { useHistory } from "react-router-dom";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { useTheme } from "@material-ui/core/styles";
 
-import logo from "../sharedComponents/appBar/Logotipo_Prixelart_H#2.png";
+import logo from "components/appBar/Logotipo_Prixelart_H#2.png";
 import vector from "./assets/vector_azul.svg";
 import blueArrowRight from "./assets/blueArrowRight.svg";
 import blueArrowLeft from "./assets/blueArrowLeft.svg";

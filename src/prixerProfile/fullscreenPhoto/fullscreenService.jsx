@@ -32,7 +32,6 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import utils from "../../utils/utils";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
-import AppBar from "../../sharedComponents/appBar/appBar";
 
 const IOSSwitch = withStyles((theme) => ({
   root: {

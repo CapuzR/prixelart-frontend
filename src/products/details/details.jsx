@@ -20,7 +20,7 @@ import { getPriceWithSelectedVariant, formatPrice } from "../services"
 
 import MDEditor from "@uiw/react-md-editor";
 import ReactGA from "react-ga";
-import { ProductCarousel } from "../../sharedComponents/productCarousel/productCarousel";
+import { ProductCarousel } from "components/productCarousel/productCarousel";
 import { useConversionRate, useCurrency  } from '../../context/globalContext';
 import styles from './details.module.css';
 import { fetchProductDetails } from '../api';

@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
-import AppBar from "./sharedComponents/appBar/appBar";
+import AppBar from "components/appBar/appBar";
 import Routes from "./routes";
 import { GlobalProvider, useTheme  } from './context/globalContext';
 import './globalTheme.css';

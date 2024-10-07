@@ -22,7 +22,7 @@ import worldBlack from "images/world-black.svg"
 import vzla from "images/vzla.svg"
 import { formatPrice } from "../services"
 import { useCurrency, useConversionRate } from '../../context/globalContext';
-import { ProductCarousel } from "../../sharedComponents/productCarousel/productCarousel"
+import { ProductCarousel } from "components/productCarousel/productCarousel"
 import { fetchProducts } from '../api';
 import { processProductsResponse } from '../services';
 

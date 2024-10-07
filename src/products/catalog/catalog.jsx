@@ -1,7 +1,6 @@
 import axios from "axios"
 import React, { useEffect } from "react"
-import AppBar from "../../sharedComponents/appBar/appBar"
-import FloatingAddButton from "../../sharedComponents/floatingAddButton/floatingAddButton"
+import FloatingAddButton from "components/floatingAddButton/floatingAddButton"
 import ProductsGrid from "../components/grid"
 
 import Container from "@material-ui/core/Container"
@@ -26,11 +25,11 @@ import Slider from "react-slick"
 import "slick-carousel/slick/slick.css"
 import "slick-carousel/slick/slick-theme.css"
 import { useState } from "react"
-import ArtUploader from "../../sharedComponents/artUploader/artUploader"
+import ArtUploader from "components/artUploader/artUploader"
 import Img from "react-cool-img"
 import { useHistory } from "react-router-dom"
 import CartReview from "../../shoppingCart/cartReview"
-import CreateService from "../../sharedComponents/createService/createService"
+import CreateService from "components/createService/createService"
 import ReactGA from "react-ga"
 
 ReactGA.initialize("G-0RWP9B33D8")

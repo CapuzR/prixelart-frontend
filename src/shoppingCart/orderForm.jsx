@@ -170,6 +170,8 @@ export default function OrderForm(props) {
       JSON.parse(localStorage?.getItem("token")) &&
       JSON.parse(localStorage?.getItem("token"))?.username
     ) {
+      let modifiedItem = item;
+      modifiedItem.product.prixerPrice = item.product.priceRange;
       return (
         getPVM(item, props.currency, props.dollarValue, discountList, prixer) *
         item.quantity
@@ -178,6 +180,8 @@ export default function OrderForm(props) {
         maximumFractionDigits: 2,
       });
     } else {
+      let modifiedItem = item;
+      modifiedItem.product.publicPrice = item.product.priceRange;
       return (
         Number(
           getPVP(item, props.currency, props.dollarValue, discountList)

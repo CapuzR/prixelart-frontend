@@ -110,9 +110,9 @@ export default function PrixerProfile() {
   return (
     <Container component="main" maxWidth="xl" className={classes.paper}>
       <CssBaseline />
-      <Grid>
+      {/* <Grid>
         <AppBar prixerUsername={prixerUsername} />
-      </Grid>
+      </Grid> */}
       <Grid className={classes.paper2}>
         <Paper
           style={{

@@ -88,7 +88,7 @@ export default function OrgGrid(props) {
 
   return (
     <>
-      <AppBar prixerUsername={props.prixerUsername} />
+      {/* <AppBar prixerUsername={props.prixerUsername} /> */}
 
       <Container component="main" maxWidth="s" className={classes.paper}>
         <CssBaseline />

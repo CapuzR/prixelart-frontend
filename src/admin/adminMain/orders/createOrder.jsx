@@ -537,6 +537,8 @@ export default function CreateOrder(props) {
             orgs={props.orgs}
             setConsumerType={setConsumerType}
             consumerType={consumerType}
+            setConsumers={props.setConsumers}
+
           />
         )}
         {activeStep === 1 && (

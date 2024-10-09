@@ -133,7 +133,6 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 export default function ShoppingPage(props) {
-  const prixerUsername = "all"
   const classes = useStyles()
   const history = useHistory()
   const theme = useTheme()
@@ -512,7 +511,7 @@ export default function ShoppingPage(props) {
       >
         <CircularProgress />
       </Backdrop>
-      <AppBar prixerUsername={prixerUsername} />
+      {/* <AppBar prixerUsername={prixerUsername} /> */}
 
       <Container
         component="main"

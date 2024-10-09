@@ -1,0 +1,16 @@
+/* styles.css */
+.light {
+    --background-color: white;
+    --text-color: black;
+  }
+  
+  .dark {
+    --background-color: rgba(0,0,0,0.7);
+    --text-color: #666;
+  }
+  
+  body {
+    background-color: var(--background-color);
+    color: var(--text-color);
+  }
+  

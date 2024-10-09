@@ -79,9 +79,9 @@ export default function Home(props) {
     <React.Fragment>
       <Container component="main" maxWidth="s" className={classes.paper}>
         <CssBaseline />
-        <Grid>
+        {/* <Grid>
           <AppBar prixerUsername={prixerUsername} />
-        </Grid>
+        </Grid> */}
         <main>
           <Card
             className={classes.card}

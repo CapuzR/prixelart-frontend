@@ -318,6 +318,7 @@ export default function ConsumerData(props) {
       .post(base_url)
       .then((response) => {
         setConsumers(response.data);
+        props.setConsumer(response.data);
       })
       .catch((error) => {
         console.log(error);
@@ -336,6 +337,7 @@ export default function ConsumerData(props) {
         console.log(error);
       });
   };
+  
   useEffect(() => {
     setLoading(true);
     getShippingMethods();

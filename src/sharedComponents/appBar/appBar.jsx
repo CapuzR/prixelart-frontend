@@ -13,7 +13,6 @@ import Menu from "@material-ui/core/Menu"
 import Tabs from "@material-ui/core/Tabs"
 import Tab from "@material-ui/core/Tab"
 import useMediaQuery from "@material-ui/core/useMediaQuery"
-// import utils from "../../utils/utils";
 import Drawer from "@material-ui/core/Drawer"
 import Divider from "@material-ui/core/Divider"
 import MenuIcon from "@material-ui/icons/Menu"
@@ -25,6 +24,13 @@ import Badge from "@material-ui/core/Badge";
 import logo from "./Logotipo_Prixelart_H#2.png"
 import CB from "../../orgLanding/assets/isotipo.svg"
 
+import Brightness4Icon from '@material-ui/icons/Brightness4'; // Dark mode icon
+import Brightness7Icon from '@material-ui/icons/Brightness7'; // Light mode icon
+import AttachMoneyIcon from '@material-ui/icons/AttachMoney'; // USD icon
+import { useGlobalContext  } from '../../context/globalContext';
+import "./appBar.css"
+
+
 const drawerWidth = 240
 
 const useStyles = makeStyles((theme) => ({
@@ -32,6 +38,8 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
     zIndex: 10,
     width: "100%",
+    // height: "100px",
+    marginBottom: 10,
   },
   menuButton: {
     marginRight: theme.spacing(2),
@@ -129,7 +137,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-export default function MenuAppBar(props) {
+export default function MenuAppBar() {
   const theme = useTheme()
   const classes = useStyles()
   const [anchorEl, setAnchorEl] = useState(null)
@@ -138,6 +146,8 @@ export default function MenuAppBar(props) {
   const isMobile = useMediaQuery(theme.breakpoints.down("md"))
   const [open2, setOpen] = useState(false)
   const [avatar, setAvatar] = useState("")
+  const { currency, theme: currentTheme, toggleCurrency, toggleTheme } = useGlobalContext();
+
 
   const handleMenu = (event) => {
     setAnchorEl(event.currentTarget)
@@ -269,7 +279,6 @@ export default function MenuAppBar(props) {
             <Toolbar
               style={{
                 display: "flex",
-                // alignItems: "justify",
                 justifyContent: "space-between",
               }}
             >
@@ -464,179 +473,217 @@ export default function MenuAppBar(props) {
           color="secondary"
         >
           <Toolbar style={{ display: "flex", justifyContent: "space-between" }}>
-            <IconButton
-              className={classes.a}
-              onClick={handleMain}
-            >
-              <img
-                src={logo}
-                alt="Prixelart logo"
-                style={{ width: 100 }}
-              />
-            </IconButton>
+            <div style={{ width: "30%" }}>
+              <IconButton
+                className={classes.a}
+                onClick={handleMain}
+              >
+                <img
+                  src={logo}
+                  alt="Prixelart logo"
+                  style={{ width: 100 }}
+                />
+              </IconButton>
+            </div>
 
-            <Tabs>
-              <Tab
-                className={classes.button}
-                onClick={handleGallery}
-                label="Galería"
-              />
-              <Tab
-                className={classes.button}
-                onClick={handleProductCatalog}
-                label="Productos"
-              />
-              <Tab
-                className={classes.button}
-                onClick={handlePrixers}
-                label="Prixers"
-              />
-              <Tab
-                className={classes.button}
-                label="Servicios"
-                onClick={handleServices}
-              />
-              <Tab
-                className={classes.button}
-                label="Testimonios"
-                onClick={handleTestimonials}
-              />
+            <div style={{ width: "40%" }}>
+              <Tabs>
+                <Tab
+                  className={classes.button}
+                  onClick={handleGallery}
+                  label="Galería"
+                />
+                <Tab
+                  className={classes.button}
+                  onClick={handleProductCatalog}
+                  label="Productos"
+                />
+                <Tab
+                  className={classes.button}
+                  onClick={handlePrixers}
+                  label="Prixers"
+                />
+                <Tab
+                  className={classes.button}
+                  label="Servicios"
+                  onClick={handleServices}
+                />
+                <Tab
+                  className={classes.button}
+                  label="Testimonios"
+                  onClick={handleTestimonials}
+                />
+                <div
+                  style={{
+                    display: "flex",
+                    placeContent: "center",
+                    alignItems: "center",
+                    paddingRight: 20,
+                  }}
+                >
+                  <IconButton
+                    onClick={handleCB}
+                    size="medium"
+                  >
+                    <img
+                      className={classes.brillante}
+                      src={CB}
+                      style={{ marginLeft: 20, height: 45 }}
+                    />
+                  </IconButton>
+                </div>
+              </Tabs>
+            </div>
+            
+            
+            <div style={{ display: "flex", width: "30%" }}>
               <div
                 style={{
                   display: "flex",
-                  placeContent: "center",
+                  justifyContent: "center",
                   alignItems: "center",
-                  paddingRight: 20,
+                  width: "50%"
+                }}
+              >
+                {/* <IconButton
+                  onClick={toggleTheme}
+                  color="inherit"
+                  aria-label="Toggle theme"
+                >
+                  {currentTheme === 'light' ? <Brightness4Icon /> : <Brightness7Icon />}
+                </IconButton> */}
+
+                <IconButton
+                  onClick={toggleCurrency}
+                  color="inherit"
+                  aria-label="Toggle currency"
+                >
+                  {currency === 'USD' ? <AttachMoneyIcon /> : <p className="currency-icon">Bs</p> }
+                </IconButton>
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "flex-end",
+                  alignItems: "center",
+                  width: "50%"
                 }}
               >
                 <IconButton
-                  onClick={handleCB}
+                  onClick={openShoppingCart}
+                  color="inherit"
+                >
+                  <Badge
+                    overlap="rectangular"
+                    badgeContent={
+                      JSON.parse(localStorage.getItem("buyState"))?.length
+                    }
+                    color="white"
+                  >
+                    <ShoppingCartOutlinedIcon />
+                  </Badge>
+                </IconButton>
+                <IconButton
+                  aria-label="account of current user"
+                  aria-controls="menu-appbar"
+                  aria-haspopup="true"
+                  onClick={handleMenu}
+                  color="inherit"
                   size="medium"
                 >
-                  <img
-                    className={classes.brillante}
-                    src={CB}
-                    style={{ marginLeft: 20, height: 45 }}
-                  />
+                  {JSON.parse(localStorage.getItem("token")) ? (
+                    <img
+                      src={avatar}
+                      style={{
+                        height: 40,
+                        width: 40,
+                        borderRadius: "50%",
+                        objectFit: "cover",
+                      }}
+                    />
+                  ) : (
+                    <MenuIcon />
+                  )}
                 </IconButton>
-              </div>
-            </Tabs>
-
-            <div>
-              <IconButton
-                onClick={openShoppingCart}
-                color="inherit"
-              >
-                <Badge
-                  overlap="rectangular"
-                  badgeContent={
-                    JSON.parse(localStorage.getItem("buyState"))?.length
-                  }
-                  color="white"
-                >
-                  <ShoppingCartOutlinedIcon />
-                </Badge>
-              </IconButton>
-              <IconButton
-                aria-label="account of current user"
-                aria-controls="menu-appbar"
-                aria-haspopup="true"
-                onClick={handleMenu}
-                color="inherit"
-                size="medium"
-              >
-                {JSON.parse(localStorage.getItem("token")) ? (
-                  <img
-                    src={avatar}
-                    style={{
-                      height: 40,
-                      width: 40,
-                      borderRadius: "50%",
-                      objectFit: "cover",
+                {JSON.parse(localStorage.getItem("token")) &&
+                JSON.parse(localStorage.getItem("token")).username ? (
+                  <Menu
+                    id="menu-appbar"
+                    label="menu-appbar"
+                    anchorEl={anchorEl}
+                    anchorOrigin={{
+                      vertical: "top",
+                      horizontal: "right",
                     }}
-                  />
+                    keepMounted
+                    transformOrigin={{
+                      vertical: "top",
+                      horizontal: "right",
+                    }}
+                    open={open}
+                    onClose={handleClose}
+                  >
+                    <MenuItem onClick={handleMyAccount}>Mi Perfil</MenuItem>
+                    <MenuItem onClick={handleMyStats}>Mi Cuenta</MenuItem>
+
+                    <MenuItem onClick={handlePasswordChange}>
+                      Cambiar contraseña
+                    </MenuItem>
+                    <MenuItem onClick={handleLogout}>Cerrar Sesión</MenuItem>
+                    <Divider />
+                    <MenuItem onClick={handleOrg}>Organizaciones</MenuItem>
+                    <MenuItem
+                      onClick={(e) => {
+                        window.open("https://linktr.ee/prixelart", "_blank")
+                      }}
+                    >
+                      Contáctanos
+                    </MenuItem>
+                    <MenuItem
+                      onClick={(e) => {
+                        window.open("http://blog.prixelart.com/", "_blank")
+                      }}
+                    >
+                      Blog
+                    </MenuItem>
+                  </Menu>
                 ) : (
-                  <MenuIcon />
+                  <Menu
+                    id="menu-appbar"
+                    label="menu-appbar"
+                    anchorEl={anchorEl}
+                    anchorOrigin={{
+                      vertical: "top",
+                      horizontal: "right",
+                    }}
+                    keepMounted
+                    transformOrigin={{
+                      vertical: "top",
+                      horizontal: "right",
+                    }}
+                    open={open}
+                    onClose={handleClose}
+                  >
+                    <MenuItem onClick={handleOrg}>Organizaciones</MenuItem>
+
+                    <MenuItem
+                      onClick={(e) => {
+                        window.open("https://linktr.ee/prixelart", "_blank")
+                      }}
+                    >
+                      Contáctanos
+                    </MenuItem>
+                    <MenuItem
+                      onClick={(e) => {
+                        window.open("http://blog.prixelart.com/", "_blank")
+                      }}
+                    >
+                      Blog
+                    </MenuItem>
+                    <MenuItem onClick={handleCTLogin}>Iniciar Sesión</MenuItem>
+                  </Menu>
                 )}
-              </IconButton>
-              {JSON.parse(localStorage.getItem("token")) &&
-              JSON.parse(localStorage.getItem("token")).username ? (
-                <Menu
-                  id="menu-appbar"
-                  label="menu-appbar"
-                  anchorEl={anchorEl}
-                  anchorOrigin={{
-                    vertical: "top",
-                    horizontal: "right",
-                  }}
-                  keepMounted
-                  transformOrigin={{
-                    vertical: "top",
-                    horizontal: "right",
-                  }}
-                  open={open}
-                  onClose={handleClose}
-                >
-                  <MenuItem onClick={handleMyAccount}>Mi Perfil</MenuItem>
-                  <MenuItem onClick={handleMyStats}>Mi Cuenta</MenuItem>
-
-                  <MenuItem onClick={handlePasswordChange}>
-                    Cambiar contraseña
-                  </MenuItem>
-                  <MenuItem onClick={handleLogout}>Cerrar Sesión</MenuItem>
-                  <Divider />
-                  <MenuItem onClick={handleOrg}>Organizaciones</MenuItem>
-                  <MenuItem
-                    onClick={(e) => {
-                      window.open("https://linktr.ee/prixelart", "_blank")
-                    }}
-                  >
-                    Contáctanos
-                  </MenuItem>
-                  <MenuItem
-                    onClick={(e) => {
-                      window.open("http://blog.prixelart.com/", "_blank")
-                    }}
-                  >
-                    Blog
-                  </MenuItem>
-                </Menu>
-              ) : (
-                <Menu
-                  id="menu-appbar"
-                  label="menu-appbar"
-                  anchorEl={anchorEl}
-                  anchorOrigin={{
-                    vertical: "top",
-                    horizontal: "right",
-                  }}
-                  keepMounted
-                  transformOrigin={{
-                    vertical: "top",
-                    horizontal: "right",
-                  }}
-                  open={open}
-                  onClose={handleClose}
-                >
-                  <MenuItem onClick={handleOrg}>Organizaciones</MenuItem>
-
-                  <MenuItem
-                    onClick={(e) => {
-                      window.open("https://linktr.ee/prixelart", "_blank")
-                    }}
-                  >
-                    Contáctanos
-                  </MenuItem>
-                  <MenuItem
-                    onClick={(e) => {
-                      window.open("http://blog.prixelart.com/", "_blank")
-                    }}
-                  >
-                    Blog
-                  </MenuItem>
-                  <MenuItem onClick={handleCTLogin}>Iniciar Sesión</MenuItem>
-                </Menu>
-              )}
+              </div>
             </div>
           </Toolbar>
         </AppBar>

@@ -1,5 +1,3 @@
-//[]      17. Búsqueda de Prixers.
-
 import React, { useState, useEffect } from "react"
 import { makeStyles } from "@material-ui/core/styles"
 import Carousel from "react-material-ui-carousel"
@@ -21,27 +19,22 @@ import InputLabel from "@material-ui/core/InputLabel"
 import FormControl from "@material-ui/core/FormControl"
 import Select from "@material-ui/core/Select"
 import MenuItem from "@material-ui/core/MenuItem"
-import TextField from "@material-ui/core/TextField"
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry"
-import {
-  setProductAtts,
-  setSecondProductAtts,
-  getAttributes,
-  getEquation,
-} from "./services.js"
-import Paper from "@material-ui/core/Paper"
 
-import AddShoppingCartIcon from "@material-ui/icons/ShoppingCart"
 import { useHistory } from "react-router-dom"
 import Switch from "@material-ui/core/Switch"
-import { getPVPtext, getPVMtext } from "../shoppingCart/pricesFunctions.js"
 import ReactGA from "react-ga"
 import world from "../images/world.svg"
 import worldBlack from "../images/world-black.svg"
 import vzla from "../images/vzla.svg"
+import { priceSelect } from "./services"
+import { useGlobalContext  } from '../context/globalContext';
+import { ProductCarousel } from "../sharedComponents/productCarousel/productCarousel"
 
 ReactGA.initialize("G-0RWP9B33D8")
 
+{/* TO DO: Llevar CSS a su propio archivo? A mi me gusta más, debatir con War.
+  Tailwind y cualquier inline desordena el código imo. Hasta qué punto?*/}
 const useStyles = makeStyles((theme) => ({
   formControl: {
     margin: theme.spacing(1),
@@ -52,7 +45,6 @@ const useStyles = makeStyles((theme) => ({
   },
   root: {
     display: "flex",
-    // flexWrap: "wrap",
     flexDirection: "row",
     overflow: "hidden",
     alignContent: "space-between",
@@ -214,31 +206,14 @@ const useStyles = makeStyles((theme) => ({
 export default function ProductGrid(props) {
   const classes = useStyles()
   const [tiles, setTiles] = useState([])
-  const [categories, setCategories] = useState([])
-  const [discountList, setDiscountList] = useState([])
-  const [imagesVariants, setImagesVariants] = useState([])
-  // const [imagesProducts, setImagesProducts] = useState();
-  const [width, setWidth] = useState([])
   const [maxLength, setMaxLength] = useState(0)
 
   const [order, setOrder] = useState("")
-  const [filter, setFilter] = useState("")
   const history = useHistory()
-  const [currency, setCurrency] = useState(false)
-  const [showFullDescription, setShowFullDescription] = useState([])
-  const [currentPage, setCurrentPage] = useState(1);  // Track current page
+  const [currentPage, setCurrentPage] = useState(1);
   const [productsPerPage] = useState(10);
-  const [zone, setZone] = useState(
-    localStorage.getItem("zone")
-      ? JSON.parse(localStorage.getItem("zone"))
-      : "base"
-  )
-
-  const toggleDescription = (index) => {
-    const updatedShowFullDescription = [...showFullDescription]
-    updatedShowFullDescription[index] = !updatedShowFullDescription[index]
-    setShowFullDescription(updatedShowFullDescription)
-  }
+  const { currency } = useGlobalContext();
+  console.log("dollarValue", props.dollarValue);
 
   const handleChange = (event) => {
     setOrder(event.target.value)
@@ -259,7 +234,7 @@ export default function ProductGrid(props) {
       setMaxLength(maxLength);
       setTiles(productsAttTemp1);
     });
-  }, [order, currentPage]);
+  }, [order, currentPage, productsPerPage]);
 
   const handleNextPage = () => {
     setCurrentPage((prevPage) => prevPage + 1);
@@ -271,11 +246,11 @@ export default function ProductGrid(props) {
     }
   };
   
-
   const viewDetails = (product) => {
     history.push({
       pathname: "/",
-      search: "?producto=" + product.id
+      search: "?producto=" + product.id,
+      state: { product: product }
     })
     ReactGA.event({
       category: "Productos",
@@ -284,19 +259,9 @@ export default function ProductGrid(props) {
     })
   }
 
-  const changeCurrency = () => {
-    setCurrency(!currency)
-  }
-
-  const changeZone = () => {
-    setZone(!zone)
-  }
-
-  const priceSelect = (item) => {
-    return currency ? 
-      "Bs. " + item.from * props.dollarValue + " - " + item.to * props.dollarValue :
-      "$ " + item.from + " - " + item.to;
-  };
+  // const changeCurrency = () => {
+  //   setCurrency(!currency)
+  // }
 
   return (
     <>
@@ -360,7 +325,7 @@ export default function ProductGrid(props) {
             <MenuItem value={"maxPrice"}>Mayor precio</MenuItem>
           </Select>
         </FormControl>
-        <div
+        {/* <div
           style={{
             display: "flex",
             flexDirection: "row",
@@ -383,36 +348,12 @@ export default function ProductGrid(props) {
             }}
             style={{ marginRight: "-5px" }}
           />
-        </div>
-        {/* <div
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            alignItems: "center",
-            marginLeft: 10,
-          }}
-        >
-          <Switch
-            classes={{
-              root: classes.base,
-              switchBase: classes.switchBase,
-              thumb: zone ? classes.thumbTrueZ : classes.thumbZ,
-              track: classes.trackZ,
-              checked: classes.checked,
-            }}
-            color="primary"
-            value={zone}
-            onChange={(e) => {
-              changeZone(e)
-            }}
-            style={{ marginRight: "-5px" }}
-          />
         </div> */}
       </div>
       <ResponsiveMasonry columnsCountBreakPoints={{ 350: 1, 750: 2, 1800: 3 }}>
         <Masonry style={{ columnGap: "1.8rem", width: "80%", margin: "0 auto" }}>
           {tiles && tiles.length > 0 ? (
-            tiles.map((tile, iProd) => (
+            tiles.map((tile) => (
               <Card
                 className={classes.root}
                 id={tile.name}
@@ -425,8 +366,14 @@ export default function ProductGrid(props) {
                     " 0 0 10px 3px #d33f49",
                 }}
               >
-                <CardMedia style={{ width: "110%", maxWidth: "14.68rem" }}>
-                  <Carousel
+                {/* <CardMedia style={{ width: "110%", maxWidth: "14.68rem" }}> */}
+                  {/* TO DO: Mover carrousel de foto producto a su propio componente, para reusar
+                  en prixProducts. */}
+                <div style={{ width: "150px", height: "150px", padding: 0, }}>
+                  <ProductCarousel product={tile} selectedArt={undefined} selectedItem={tile} type="noImages" size="138px" />
+                </div>
+                  
+                  {/* <Carousel
                     autoPlay={false}
                     stopAutoPlayOnHover={true}
                     animation="slide"
@@ -458,10 +405,10 @@ export default function ProductGrid(props) {
                       },
                     }}
                   >
-                    {
-                      tile.sources &&
-                      tile.sources.images && 
-                      tile.sources.images[0] !== undefined ? (
+                  {
+                    tile.sources &&
+                    tile.sources.images && 
+                    tile.sources.images[0] !== undefined ? (
                       tile.sources.images?.map((img, i) =>
                         img.url !== null && img.type === "images" ? (
                           <img
@@ -491,9 +438,10 @@ export default function ProductGrid(props) {
                         alt="*"
                         style={{ borderRadius: 30 }}
                       />
-                    )}
-                  </Carousel>
-                </CardMedia>
+                    )
+                    }
+                  </Carousel> */}
+                {/* </CardMedia> */}
 
                 <CardContent
                   data-color-mode="light"
@@ -516,9 +464,7 @@ export default function ProductGrid(props) {
                     </Typography>
                     <MDEditor.Markdown
                       source={
-                        showFullDescription[iProd]
-                          ? tile.description
-                          : tile.description.split("\r\n")[0].length > 60
+                        tile.description.split("\r\n")[0].length > 60
                           ? `${tile.description
                               .split("\r\n")[0]
                               .slice(0, 60)}...`
@@ -532,7 +478,7 @@ export default function ProductGrid(props) {
                       variant="h5"
                       component="h2"
                     >
-                      {priceSelect(tile.priceRange)}
+                      {priceSelect(tile.priceRange, currency, props.dollarValue)}
                     </Typography>
                   </Grid>
                   <Grid
@@ -582,6 +528,8 @@ export default function ProductGrid(props) {
           )}
         </Masonry>
       </ResponsiveMasonry>
+      {/* TO DO: Mover Paginación a su propio componente para poder utilizar en todo el website:
+      galeria, productos, mini galería, órdenes, etc. */}
       <div style={{ display: "flex", justifyContent: "center", marginTop: "2rem", marginBottom: "50px" }}>
         <Button
           onClick={handlePreviousPage}

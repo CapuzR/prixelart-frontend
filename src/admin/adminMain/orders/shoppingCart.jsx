@@ -17,7 +17,7 @@ import TextField from "@material-ui/core/TextField"
 import InputAdornment from "@material-ui/core/InputAdornment"
 import Img from "react-cool-img"
 import Tooltip from "@material-ui/core/Tooltip"
-import { getAttributes, getEquation } from "../../../products/services"
+import { getProductsAttributes, getEquation } from "../../../products/services"
 import StarOutline from "@material-ui/icons/StarOutline"
 
 import x from "../../../apple-touch-icon-180x180.png"
@@ -256,7 +256,7 @@ export default function ShoppingCart(props) {
         productsAttTemp1 = await getEquation(p, iProd, pArr)
       })
       setProductList(
-        getAttributes(productsAttTemp1).sort(function (a, b) {
+        getProductsAttributes(productsAttTemp1).sort(function (a, b) {
           if (a.name.toLowerCase() > b.name.toLowerCase()) {
             return 1
           }

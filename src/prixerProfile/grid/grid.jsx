@@ -425,7 +425,7 @@ export default function Grid(props) {
   })
 
   return (
-    <>
+    <div style={{ height: "100%", width: "100%" }}>
       <div className={classes.root}>
         <Backdrop
           className={classes.backdrop}
@@ -443,6 +443,14 @@ export default function Grid(props) {
           />
         </div>
       </div>
+      <div style={{         
+        display: "flex",
+        flexDirection: "column",
+        paddingBottom: "20px",
+        overflow: "auto",
+        position: "relative",
+        height: "90%",
+         }}>
       <ResponsiveMasonry
         columnsCountBreakPoints={{
           350: 1,
@@ -682,6 +690,7 @@ export default function Grid(props) {
         </Masonry>
       </ResponsiveMasonry>
 
+      </div>
       {openFullArt && (
         <FullscreenPhoto
           art={props.fullArt}
@@ -799,6 +808,6 @@ export default function Grid(props) {
           </Button>
         )}
       </Box>
-    </>
+    </div>
   )
 }

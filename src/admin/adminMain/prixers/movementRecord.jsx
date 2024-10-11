@@ -93,8 +93,8 @@ export default function MovementRecord(props) {
             {movements.map((mov) => (
               <TableRow>
                 <TableCell align="center">
-                  {moment(mov?.date).format("DD/MM/YYYY") ||
-                    moment(mov.createdOn).format("DD/MM/YYYY")}
+                  {/* {moment(mov?.date).format("DD/MM/YYYY") || */}
+                  { moment(mov.createdOn).format("DD/MM/YYYY")}
                 </TableCell>
                 <TableCell>{mov.description}</TableCell>
                 <TableCell align="right">

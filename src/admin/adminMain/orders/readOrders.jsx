@@ -284,8 +284,11 @@ export default function ReadOrders(props) {
   }
 
   useEffect(() => {
-    readOrders()
     getSellers()
+  }, [])
+
+  useEffect(() => {
+    readOrders()
   }, [pageNumber])
 
   const handleNextPage = () => {

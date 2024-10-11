@@ -18,18 +18,17 @@ import Divider from "@material-ui/core/Divider"
 import MenuIcon from "@material-ui/icons/Menu"
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft"
 import ChevronRightIcon from "@material-ui/icons/ChevronRight"
-import ShoppingCartOutlinedIcon from "@material-ui/icons/ShoppingCartOutlined";
-import Badge from "@material-ui/core/Badge";
+import ShoppingCartOutlinedIcon from "@material-ui/icons/ShoppingCartOutlined"
+import Badge from "@material-ui/core/Badge"
 
 import logo from "./Logotipo_Prixelart_H#2.png"
 import CB from "../../orgLanding/assets/isotipo.svg"
 
-import Brightness4Icon from '@material-ui/icons/Brightness4'; // Dark mode icon
-import Brightness7Icon from '@material-ui/icons/Brightness7'; // Light mode icon
-import AttachMoneyIcon from '@material-ui/icons/AttachMoney'; // USD icon
-import { useGlobalContext  } from '../../context/globalContext';
+import Brightness4Icon from "@material-ui/icons/Brightness4" // Dark mode icon
+import Brightness7Icon from "@material-ui/icons/Brightness7" // Light mode icon
+import AttachMoneyIcon from "@material-ui/icons/AttachMoney" // USD icon
+import { useGlobalContext } from "../../context/globalContext"
 import "./appBar.css"
-
 
 const drawerWidth = 240
 
@@ -146,8 +145,12 @@ export default function MenuAppBar() {
   const isMobile = useMediaQuery(theme.breakpoints.down("md"))
   const [open2, setOpen] = useState(false)
   const [avatar, setAvatar] = useState("")
-  const { currency, theme: currentTheme, toggleCurrency, toggleTheme } = useGlobalContext();
-
+  const {
+    currency,
+    theme: currentTheme,
+    toggleCurrency,
+    toggleTheme,
+  } = useGlobalContext()
 
   const handleMenu = (event) => {
     setAnchorEl(event.currentTarget)
@@ -240,8 +243,8 @@ export default function MenuAppBar() {
   }
 
   const openShoppingCart = () => {
-    history.push({ pathname: "/shopping" });
-  };
+    history.push({ pathname: "/shopping" })
+  }
 
   const handleDrawerOpen = () => {
     setOpen(true)
@@ -473,76 +476,71 @@ export default function MenuAppBar() {
           color="secondary"
         >
           <Toolbar style={{ display: "flex", justifyContent: "space-between" }}>
-            <div style={{ width: "30%" }}>
-              <IconButton
-                className={classes.a}
-                onClick={handleMain}
-              >
-                <img
-                  src={logo}
-                  alt="Prixelart logo"
-                  style={{ width: 100 }}
-                />
-              </IconButton>
-            </div>
+            <IconButton
+              className={classes.a}
+              onClick={handleMain}
+            >
+              <img
+                src={logo}
+                alt="Prixelart logo"
+                style={{ width: 100 }}
+              />
+            </IconButton>
 
-            <div style={{ width: "40%" }}>
-              <Tabs>
-                <Tab
-                  className={classes.button}
-                  onClick={handleGallery}
-                  label="Galería"
-                />
-                <Tab
-                  className={classes.button}
-                  onClick={handleProductCatalog}
-                  label="Productos"
-                />
-                <Tab
-                  className={classes.button}
-                  onClick={handlePrixers}
-                  label="Prixers"
-                />
-                <Tab
-                  className={classes.button}
-                  label="Servicios"
-                  onClick={handleServices}
-                />
-                <Tab
-                  className={classes.button}
-                  label="Testimonios"
-                  onClick={handleTestimonials}
-                />
-                <div
-                  style={{
-                    display: "flex",
-                    placeContent: "center",
-                    alignItems: "center",
-                    paddingRight: 20,
-                  }}
+            <Tabs>
+              <Tab
+                className={classes.button}
+                onClick={handleGallery}
+                label="Galería"
+              />
+              <Tab
+                className={classes.button}
+                onClick={handleProductCatalog}
+                label="Productos"
+              />
+              <Tab
+                className={classes.button}
+                onClick={handlePrixers}
+                label="Prixers"
+              />
+              <Tab
+                className={classes.button}
+                label="Servicios"
+                onClick={handleServices}
+              />
+              <Tab
+                className={classes.button}
+                label="Testimonios"
+                onClick={handleTestimonials}
+              />
+              <div
+                style={{
+                  display: "flex",
+                  placeContent: "center",
+                  alignItems: "center",
+                  paddingRight: 20,
+                }}
+              >
+                <IconButton
+                  onClick={handleCB}
+                  size="medium"
                 >
-                  <IconButton
-                    onClick={handleCB}
-                    size="medium"
-                  >
-                    <img
-                      className={classes.brillante}
-                      src={CB}
-                      style={{ marginLeft: 20, height: 45 }}
-                    />
-                  </IconButton>
-                </div>
-              </Tabs>
-            </div>
-            
-            
-            <div style={{ display: "flex", width: "30%" }}>
+                  <img
+                    className={classes.brillante}
+                    src={CB}
+                    style={{ marginLeft: 20, height: 45 }}
+                  />
+                </IconButton>
+              </div>
+            </Tabs>
+
+            <div style={{ display: "flex" }}>
               <div
                 style={{
                   display: "flex",
                   justifyContent: "center",
                   alignItems: "center",
-                  width: "50%"
+                  // margin: "0 5vw",
                 }}
               >
                 {/* <IconButton
@@ -558,7 +556,11 @@ export default function MenuAppBar() {
                   color="inherit"
                   aria-label="Toggle currency"
                 >
-                  {currency === 'USD' ? <AttachMoneyIcon /> : <p className="currency-icon">Bs</p> }
+                  {currency === "USD" ? (
+                    <AttachMoneyIcon />
+                  ) : (
+                    <p className="currency-icon">Bs</p>
+                  )}
                 </IconButton>
               </div>
               <div
@@ -566,7 +568,6 @@ export default function MenuAppBar() {
                   display: "flex",
                   justifyContent: "flex-end",
                   alignItems: "center",
-                  width: "50%"
                 }}
               >
                 <IconButton

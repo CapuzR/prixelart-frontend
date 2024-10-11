@@ -122,6 +122,7 @@ const useStyles = makeStyles((theme) => ({
 export default function Grid(props) {
   const classes = useStyles()
   const [tiles, setTiles] = useState([])
+  const [total, setTotal] = useState(1)
   const history = useHistory()
   const [onAdmin, setOnAdmin] = useState(false)
   let globalParams = new URLSearchParams(window.location.search)
@@ -142,12 +143,10 @@ export default function Grid(props) {
   const [openFullArt, setOpenFullArt] = useState(false)
   const [disabledReason, setDisabledReason] = useState("")
   const [visible, setVisible] = useState(true)
-  const totalOrders = tiles?.length
   const itemsPerPage = 30
-  const noOfPages = Math.ceil(totalOrders / itemsPerPage)
   const [pageNumber, setPageNumber] = useState(1)
   const itemsToSkip = (pageNumber - 1) * itemsPerPage
-  const tilesv2 = tiles?.slice(itemsToSkip, itemsPerPage + itemsToSkip)
+  const noOfPages = Math.ceil(total / itemsPerPage)
 
   const handleClickVisible = () => {
     setOpenV(true)
@@ -286,14 +285,19 @@ export default function Grid(props) {
         setBackdrop(false)
       })
     } else {
-      const base_url = process.env.REACT_APP_BACKEND_URL + "/art/read-all-v2"
-      axios.get(base_url).then((response) => {
+      const base_url = process.env.REACT_APP_BACKEND_URL + "/art/read-for-gallery"
+      axios.post(base_url, {
+        initialPoint: (pageNumber - 1) * itemsPerPage,
+        itemsPerPage: itemsPerPage,
+        // filters: filters,
+      }).then((response) => {
         setTiles(response.data.arts)
+        setTotal(response.data.length)
         props.setSearchResult(response.data.arts)
         setBackdrop(false)
       })
     }
-  }, [searchValue, categoryValue])
+  }, [searchValue, categoryValue, pageNumber])
 
   const handleFullImage = async (e, tile) => {
     if (onAdmin) {
@@ -461,7 +465,7 @@ export default function Grid(props) {
       >
         <Masonry style={{ columnGap: "7px" }}>
           {tiles ? (
-            tilesv2.map((tile, i) =>
+            tiles.map((tile, i) =>
               tile.visible ? (
                 <div key={i}>
                   {JSON.parse(localStorage.getItem("adminToken")) &&

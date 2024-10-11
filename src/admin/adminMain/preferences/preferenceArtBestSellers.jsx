@@ -1,22 +1,22 @@
-import React from "react";
-import { useState, useEffect } from "react";
-import axios from "axios";
-import Backdrop from "@material-ui/core/Backdrop";
-import Paper from "@material-ui/core/Paper";
-import Grid from "@material-ui/core/Grid";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import Button from "@material-ui/core/Button";
-import { makeStyles } from "@material-ui/core/styles";
-import Snackbar from "@material-ui/core/Snackbar";
-import { Typography, Checkbox } from "@material-ui/core";
+import React from "react"
+import { useState, useEffect } from "react"
+import axios from "axios"
+import Backdrop from "@material-ui/core/Backdrop"
+import Paper from "@material-ui/core/Paper"
+import Grid from "@material-ui/core/Grid"
+import CircularProgress from "@material-ui/core/CircularProgress"
+import Button from "@material-ui/core/Button"
+import { makeStyles } from "@material-ui/core/styles"
+import Snackbar from "@material-ui/core/Snackbar"
+import { Typography, Checkbox } from "@material-ui/core"
 import {
   VictoryChart,
   VictoryBar,
   VictoryAxis,
   VictoryLabel,
   VictoryTheme,
-} from "victory";
-import ArtGrid from "../../../prixerProfile/grid/grid";
+} from "victory"
+import ArtGrid from "../../../prixerProfile/grid/grid"
 const useStyles = makeStyles((theme) => ({
   backdrop: {
     zIndex: theme.zIndex.drawer + 1,
@@ -48,100 +48,100 @@ const useStyles = makeStyles((theme) => ({
       width: "25ch",
     },
   },
-}));
+}))
 
 export default function ArtBestSellers(props) {
-  const classes = useStyles();
-  const [arts, setArts] = useState();
-  const [loading, setLoading] = useState(false);
-  const [bestSellers, setBestSellers] = useState();
-  const [mostSellers, setMostSellers] = useState();
-  const [errorMessage, setErrorMessage] = useState();
-  const [snackBarError, setSnackBarError] = useState(false);
+  const classes = useStyles()
+  const [arts, setArts] = useState()
+  const [loading, setLoading] = useState(false)
+  const [bestSellers, setBestSellers] = useState()
+  const [mostSellers, setMostSellers] = useState()
+  const [errorMessage, setErrorMessage] = useState()
+  const [snackBarError, setSnackBarError] = useState(false)
 
   const addMostSellerToBestSeller = (selectedMostSeller) => {
-    const artv1 = arts.find((art) => art.title === selectedMostSeller);
+    const artv1 = arts.find((art) => art.title === selectedMostSeller)
     if (bestSellers?.length === 0 || bestSellers === undefined) {
-      setBestSellers([artv1]);
+      setBestSellers([artv1])
     } else if (bestSellers?.some((art) => art.title === selectedMostSeller)) {
       const withoutArt = bestSellers.filter(
         (art) => art.title !== selectedMostSeller
-      );
-      setBestSellers(withoutArt);
-      setSnackBarError(true);
-      setErrorMessage("Arte eliminado del banner.");
+      )
+      setBestSellers(withoutArt)
+      setSnackBarError(true)
+      setErrorMessage("Arte eliminado del banner.")
     } else if (bestSellers.length === 9) {
-      setSnackBarError(true);
-      setErrorMessage("Has alcanzado el máximo de Artes a mostrar (9 artes).");
+      setSnackBarError(true)
+      setErrorMessage("Has alcanzado el máximo de Artes a mostrar (9 artes).")
     } else {
-      setBestSellers([...bestSellers, artv1]);
+      setBestSellers([...bestSellers, artv1])
     }
-  };
+  }
   const getAllArts = async () => {
     try {
-      const base_url = process.env.REACT_APP_BACKEND_URL + "/art/read-all";
+      const base_url = process.env.REACT_APP_BACKEND_URL + "/art/read-all-v2"
       axios.get(base_url).then((response) => {
-        setArts(response.data.arts);
-      });
+        setArts(response.data.arts)
+      })
     } catch (error) {
-      console.log(error);
+      console.log(error)
     }
-  };
+  }
 
   const getMostSellers = async () => {
-    const url = process.env.REACT_APP_BACKEND_URL + "/art/bestSellers";
+    const url = process.env.REACT_APP_BACKEND_URL + "/art/bestSellers"
     try {
-      const getArts = await axios.get(url);
-      setMostSellers(getArts.data.ref);
+      const getArts = await axios.get(url)
+      setMostSellers(getArts.data.ref)
     } catch (error) {
-      console.log(error);
+      console.log(error)
     }
-  };
+  }
 
   const getBestSellers = async () => {
-    const url = process.env.REACT_APP_BACKEND_URL + "/getArtBestSellers";
+    const url = process.env.REACT_APP_BACKEND_URL + "/getArtBestSellers"
     try {
-      const getArts = await axios.get(url);
-      setBestSellers(getArts.data.arts);
+      const getArts = await axios.get(url)
+      setBestSellers(getArts.data.arts)
     } catch (error) {
-      console.log(error);
+      console.log(error)
     }
-  };
+  }
 
   useEffect(() => {
-    setLoading(true);
-    getAllArts();
-    getMostSellers();
-    getBestSellers();
-    setLoading(false);
-  }, []);
+    setLoading(true)
+    getAllArts()
+    getMostSellers()
+    getBestSellers()
+    setLoading(false)
+  }, [])
 
   const closeAd = () => {
-    setSnackBarError(false);
-  };
+    setSnackBarError(false)
+  }
 
   const updateBestSellers = async () => {
     if (props.permissions.modifyArtBestSellers) {
-      let data = [];
+      let data = []
       bestSellers.map((prod) => {
-        data.push(prod._id);
-      });
+        data.push(prod._id)
+      })
       const base_url =
-        process.env.REACT_APP_BACKEND_URL + "/updateArtBestSellers";
+        process.env.REACT_APP_BACKEND_URL + "/updateArtBestSellers"
       await axios
         .put(base_url, {
           data: data,
           adminToken: localStorage.getItem("adminTokenV"),
         })
         .then((response) => {
-          setSnackBarError(true);
-          setErrorMessage(response.data.message);
-        });
+          setSnackBarError(true)
+          setErrorMessage(response.data.message)
+        })
     } else {
-      setSnackBarError(true);
-      setErrorMessage("No tienes permiso para realizar acciones en esta área.");
+      setSnackBarError(true)
+      setErrorMessage("No tienes permiso para realizar acciones en esta área.")
     }
-  };
+  }
 
   return (
     <div
@@ -152,7 +152,10 @@ export default function ArtBestSellers(props) {
         justifyContent: "center",
       }}
     >
-      <Backdrop className={classes.backdrop} open={loading}>
+      <Backdrop
+        className={classes.backdrop}
+        open={loading}
+      >
         <CircularProgress color="inherit" />
       </Backdrop>
 
@@ -172,7 +175,10 @@ export default function ArtBestSellers(props) {
             alignSelf: "center",
           }}
         >
-          <Typography variant="h6" style={{ color: "#404e5c", marginTop: 30 }}>
+          <Typography
+            variant="h6"
+            style={{ color: "#404e5c", marginTop: 30 }}
+          >
             Artes más vendidos en el último año
           </Typography>
           <VictoryChart
@@ -212,10 +218,10 @@ export default function ArtBestSellers(props) {
                         {
                           target: "data",
                           mutation: ({ datum }) => {
-                            addMostSellerToBestSeller(datum.name);
+                            addMostSellerToBestSeller(datum.name)
                           },
                         },
-                      ];
+                      ]
                     },
                   },
                 },
@@ -237,7 +243,10 @@ export default function ArtBestSellers(props) {
         }}
         elevation={3}
       >
-        <Typography variant="h6" style={{ color: "#404e5c" }}>
+        <Typography
+          variant="h6"
+          style={{ color: "#404e5c" }}
+        >
           Banner de la pantalla principal
         </Typography>
         <div style={{ display: "flex", flexDirection: "row" }}>
@@ -258,8 +267,8 @@ export default function ArtBestSellers(props) {
                     marginRight: 10,
                   }}
                   onClick={(e) => {
-                    e.preventDefault();
-                    addMostSellerToBestSeller(art.title);
+                    e.preventDefault()
+                    addMostSellerToBestSeller(art.title)
                   }}
                 />
                 <div
@@ -320,5 +329,5 @@ export default function ArtBestSellers(props) {
         onClose={closeAd}
       />
     </div>
-  );
+  )
 }

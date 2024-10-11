@@ -1,27 +1,27 @@
-import React from "react";
-import { useEffect, useState } from "react";
-import { useHistory } from "react-router-dom";
-import { makeStyles } from "@material-ui/core/styles";
-import Tabs from "@material-ui/core/Tabs";
-import Tab from "@material-ui/core/Tab";
-import Table from "@material-ui/core/Table";
-import TableBody from "@material-ui/core/TableBody";
-import TableCell from "@material-ui/core/TableCell";
-import TableHead from "@material-ui/core/TableHead";
-import TableRow from "@material-ui/core/TableRow";
-import axios from "axios";
-import Checkbox from "@material-ui/core/Checkbox";
-import EditIcon from "@material-ui/icons/Edit";
-import DeleteIcon from "@material-ui/icons/Delete";
-import Snackbar from "@material-ui/core/Snackbar";
-import Fab from "@material-ui/core/Fab";
-import Typography from "@material-ui/core/Typography";
-import Paper from "@material-ui/core/Paper";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import { Backdrop } from "@material-ui/core";
-import Box from "@material-ui/core/Box";
-import Modal from "@material-ui/core/Modal";
-import UpdateProductV2 from "./updateProductv2";
+import React from "react"
+import { useEffect, useState } from "react"
+import { useHistory } from "react-router-dom"
+import { makeStyles } from "@material-ui/core/styles"
+import Tabs from "@material-ui/core/Tabs"
+import Tab from "@material-ui/core/Tab"
+import Table from "@material-ui/core/Table"
+import TableBody from "@material-ui/core/TableBody"
+import TableCell from "@material-ui/core/TableCell"
+import TableHead from "@material-ui/core/TableHead"
+import TableRow from "@material-ui/core/TableRow"
+import axios from "axios"
+import Checkbox from "@material-ui/core/Checkbox"
+import EditIcon from "@material-ui/icons/Edit"
+import DeleteIcon from "@material-ui/icons/Delete"
+import Snackbar from "@material-ui/core/Snackbar"
+import Fab from "@material-ui/core/Fab"
+import Typography from "@material-ui/core/Typography"
+import Paper from "@material-ui/core/Paper"
+import CircularProgress from "@material-ui/core/CircularProgress"
+import { Backdrop } from "@material-ui/core"
+import Box from "@material-ui/core/Box"
+import Modal from "@material-ui/core/Modal"
+import UpdateProductV2 from "./updateProductv2"
 const useStyles = makeStyles((theme) => ({
   loading: {
     display: "flex",
@@ -35,32 +35,32 @@ const useStyles = makeStyles((theme) => ({
     zIndex: theme.zIndex.drawer + 1,
     color: theme.palette.primary.main,
   },
-}));
+}))
 
 export default function ReadProducts(props) {
-  const history = useHistory();
-  const classes = useStyles();
-  const [rows, setRows] = useState();
-  const [discountList, setDiscountList] = useState([]);
-  const [surchargeList, setSurchargeList] = useState([]);
-  const [value, setValue] = useState(0);
-  const [loading, setLoading] = useState(false);
-
-  const [openUpdateProduct, setUpdateProduct] = useState(false);
+  const history = useHistory()
+  const classes = useStyles()
+  const [rows, setRows] = useState()
+  const [discountList, setDiscountList] = useState([])
+  const [surchargeList, setSurchargeList] = useState([])
+  const [value, setValue] = useState(0)
+  const [loading, setLoading] = useState(false)
+  const [categories, setCategories] = useState([])
+  const [openUpdateProduct, setUpdateProduct] = useState(false)
 
   const handleChange = (event, newValue) => {
-    setValue(newValue);
-  };
+    setValue(newValue)
+  }
 
   const handleClose = (event, reason) => {
     if (reason === "clickaway") {
-      return;
+      return
     }
-    setUpdateProduct(false);
-  };
+    setUpdateProduct(false)
+  }
 
   function TabPanel(props) {
-    const { children, value, index } = props;
+    const { children, value, index } = props
     return (
       <div
         role="tabpanel"
@@ -74,13 +74,13 @@ export default function ReadProducts(props) {
           </Box>
         )}
       </div>
-    );
+    )
   }
 
   const getRows = async () => {
-    setLoading(true);
+    setLoading(true)
 
-    const base_url = process.env.REACT_APP_BACKEND_URL + "/product/read-allv1";
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/product/read-allv1"
     await axios
       .post(
         base_url,
@@ -88,17 +88,17 @@ export default function ReadProducts(props) {
         { withCredentials: true }
       )
       .then((response) => {
-        setRows(response.data.products);
-        props.getProducts(response.data.products);
-        setLoading(false);
+        setRows(response.data.products)
+        props.getProducts(response.data.products)
+        setLoading(false)
       })
       .catch((error) => {
-        console.log(error);
-      });
-  };
+        console.log(error)
+      })
+  }
 
   const getDiscounts = async () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + "/discount/read-allv1";
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/discount/read-allv1"
     await axios
       .post(
         base_url,
@@ -106,15 +106,15 @@ export default function ReadProducts(props) {
         { withCredentials: true }
       )
       .then((response) => {
-        setDiscountList(response.data.discounts);
+        setDiscountList(response.data.discounts)
       })
       .catch((error) => {
-        console.log(error);
-      });
-  };
+        console.log(error)
+      })
+  }
 
   const getSurcharges = async () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + "/surcharge/read-all";
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/surcharge/read-all"
     await axios
       .post(
         base_url,
@@ -122,42 +122,56 @@ export default function ReadProducts(props) {
         { withCredentials: true }
       )
       .then((response) => {
-        setSurchargeList(response.data.surcharges);
+        setSurchargeList(response.data.surcharges)
       })
       .catch((error) => {
-        console.log(error);
-      });
-  };
+        console.log(error)
+      })
+  }
+
+  const getCategories = async () => {
+    const base_url =
+      process.env.REACT_APP_BACKEND_URL + "/product/read-categories"
+    await axios
+      .get(base_url, { withCredentials: true })
+      .then((response) => {
+        setCategories(response.data.surcharges)
+      })
+      .catch((error) => {
+        console.log(error)
+      })
+  }
 
   useEffect(() => {
-    getRows();
-    getDiscounts();
-    getSurcharges();
-  }, []);
+    getRows()
+    getDiscounts()
+    getSurcharges()
+    getCategories()
+  }, [])
 
   const handleActive = (product, action) => {
-    props.setProduct(product);
-    localStorage.setItem("product", JSON.stringify(product));
+    props.setProduct(product)
+    localStorage.setItem("product", JSON.stringify(product))
     // setUpdateProduct(true);
-    history.push("/admin/product/" + action + "/" + product._id);
-  };
+    history.push("/admin/product/" + action + "/" + product._id)
+  }
 
   const handleActiveDiscount = (discount, action) => {
-    props.setDiscount(discount);
-    localStorage.setItem("discount", JSON.stringify(discount));
-    history.push("/admin/product/" + action + "/" + discount._id);
-    props.setActiveCrud("updateDiscount");
-  };
+    props.setDiscount(discount)
+    localStorage.setItem("discount", JSON.stringify(discount))
+    history.push("/admin/product/" + action + "/" + discount._id)
+    props.setActiveCrud("updateDiscount")
+  }
 
   const handleActiveSurcharge = (surcharge, action) => {
-    props.setSurcharge(surcharge);
-    localStorage.setItem("surcharge", JSON.stringify(surcharge));
-    history.push("/admin/product/" + action + "/" + surcharge._id);
-    props.setActiveCrud("updateSurcharge");
-  };
+    props.setSurcharge(surcharge)
+    localStorage.setItem("surcharge", JSON.stringify(surcharge))
+    history.push("/admin/product/" + action + "/" + surcharge._id)
+    props.setActiveCrud("updateSurcharge")
+  }
 
   const deleteProduct = async (id) => {
-    const URI = process.env.REACT_APP_BACKEND_URL + `/product/delete/${id}`;
+    const URI = process.env.REACT_APP_BACKEND_URL + `/product/delete/${id}`
     const res = await axios
       .put(
         URI,
@@ -166,15 +180,15 @@ export default function ReadProducts(props) {
       )
       .then(
         setTimeout(() => {
-          props.setDeleteOpen(true);
-          props.setDeleteMessage("Producto eliminado exitosamente.");
-          getRows();
+          props.setDeleteOpen(true)
+          props.setDeleteMessage("Producto eliminado exitosamente.")
+          getRows()
         }, 500)
-      );
-  };
+      )
+  }
 
   const deleteDiscount = async (id) => {
-    const URI = process.env.REACT_APP_BACKEND_URL + `/discount/delete/${id}`;
+    const URI = process.env.REACT_APP_BACKEND_URL + `/discount/delete/${id}`
     const res = await axios
       .put(
         URI,
@@ -183,15 +197,15 @@ export default function ReadProducts(props) {
       )
       .then(
         setTimeout(() => {
-          props.setDeleteOpen(true);
-          props.setDeleteMessage("Descuento eliminado exitosamente.");
-          getDiscounts();
+          props.setDeleteOpen(true)
+          props.setDeleteMessage("Descuento eliminado exitosamente.")
+          getDiscounts()
         }, 500)
-      );
-  };
+      )
+  }
 
   const deleteSurcharge = async (id) => {
-    const URI = process.env.REACT_APP_BACKEND_URL + `/surcharge/delete/${id}`;
+    const URI = process.env.REACT_APP_BACKEND_URL + `/surcharge/delete/${id}`
     const res = await axios
       .put(
         URI,
@@ -200,16 +214,19 @@ export default function ReadProducts(props) {
       )
       .then(
         setTimeout(() => {
-          props.setDeleteOpen(true);
-          props.setDeleteMessage("Recargo eliminado exitosamente.");
-          getSurcharges();
+          props.setDeleteOpen(true)
+          props.setDeleteMessage("Recargo eliminado exitosamente.")
+          getSurcharges()
         }, 500)
-      );
-  };
+      )
+  }
 
   return (
     <React.Fragment>
-      <Backdrop className={classes.backdrop} open={loading}>
+      <Backdrop
+        className={classes.backdrop}
+        open={loading}
+      >
         <CircularProgress />
       </Backdrop>
       <Tabs
@@ -220,10 +237,14 @@ export default function ReadProducts(props) {
         textColor="primary"
       >
         <Tab label="Productos" />
+        <Tab label="Categorías" />
         <Tab label="Descuentos" />
         <Tab label="Recargos" />
       </Tabs>
-      <TabPanel value={value} index={0}>
+      <TabPanel
+        value={value}
+        index={0}
+      >
         {rows && (
           <Table size="small">
             <TableHead>
@@ -250,7 +271,7 @@ export default function ReadProducts(props) {
                           style={{ width: 35, height: 35 }}
                           aria-label="edit"
                           onClick={(e) => {
-                            handleActive(row, "update");
+                            handleActive(row, "update")
                           }}
                         >
                           <EditIcon />
@@ -359,7 +380,7 @@ export default function ReadProducts(props) {
                       {row.discount &&
                         discountList.map((discount) => {
                           if (discount._id === row.discount)
-                            return discount.name;
+                            return discount.name
                         })}
                     </TableCell>
                     <TableCell align="center">
@@ -374,8 +395,8 @@ export default function ReadProducts(props) {
                           style={{ width: 35, height: 35 }}
                           aria-label="Delete"
                           onClick={(e) => {
-                            e.preventDefault();
-                            deleteProduct(row._id);
+                            e.preventDefault()
+                            deleteProduct(row._id)
                           }}
                         >
                           <DeleteIcon />
@@ -388,22 +409,24 @@ export default function ReadProducts(props) {
           </Table>
         )}
       </TabPanel>
-      <TabPanel value={value} index={1}>
-        {discountList ? (
+      <TabPanel
+        value={value}
+        index={1}
+      >
+        {categories ? (
           <Table size="small">
             <TableHead>
               <TableRow>
                 <TableCell align="center"></TableCell>
                 <TableCell align="center">Nombre</TableCell>
                 <TableCell align="center">Activo</TableCell>
-                <TableCell align="center">Tipo</TableCell>
-                <TableCell align="center">Valor</TableCell>
-                <TableCell align="center">Productos aplicados</TableCell>
+                <TableCell align="center">Ícono</TableCell>
+                <TableCell align="center">Imagen</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {discountList &&
-                discountList.map((dis) => (
+              {categories &&
+                categories.map((dis) => (
                   <TableRow key={dis._id}>
                     <TableCell align="center">
                       {props.permissions?.createDiscount && (
@@ -412,7 +435,7 @@ export default function ReadProducts(props) {
                           style={{ width: 35, height: 35 }}
                           aria-label="edit"
                           onClick={(e) => {
-                            handleActiveDiscount(dis, "updateDiscount");
+                            handleActiveDiscount(dis, "updateDiscount")
                           }}
                         >
                           <EditIcon />
@@ -449,8 +472,94 @@ export default function ReadProducts(props) {
                           style={{ width: 35, height: 35 }}
                           aria-label="Delete"
                           onClick={(e) => {
-                            e.preventDefault();
-                            deleteDiscount(dis._id);
+                            e.preventDefault()
+                            deleteDiscount(dis._id)
+                          }}
+                        >
+                          <DeleteIcon />
+                        </Fab>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                ))}
+            </TableBody>
+          </Table>
+        ) : (
+          <Typography
+            variant="h6"
+            color="secondary"
+            style={{ display: "flex", justifyContent: "center" }}
+          >
+            No tenemos categorías por ahora.
+          </Typography>
+        )}
+      </TabPanel>
+      <TabPanel
+        value={value}
+        index={2}
+      >
+        {discountList ? (
+          <Table size="small">
+            <TableHead>
+              <TableRow>
+                <TableCell align="center"></TableCell>
+                <TableCell align="center">Nombre</TableCell>
+                <TableCell align="center">Activo</TableCell>
+                <TableCell align="center">Tipo</TableCell>
+                <TableCell align="center">Valor</TableCell>
+                <TableCell align="center">Productos aplicados</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {discountList &&
+                discountList.map((dis) => (
+                  <TableRow key={dis._id}>
+                    <TableCell align="center">
+                      {props.permissions?.createDiscount && (
+                        <Fab
+                          color="default"
+                          style={{ width: 35, height: 35 }}
+                          aria-label="edit"
+                          onClick={(e) => {
+                            handleActiveDiscount(dis, "updateDiscount")
+                          }}
+                        >
+                          <EditIcon />
+                        </Fab>
+                      )}
+                    </TableCell>
+                    <TableCell align="center">{dis.name}</TableCell>
+                    <TableCell align="center">
+                      <Checkbox
+                        disabled
+                        checked={dis.active}
+                        color="primary"
+                        inputProps={{ "aria-label": "secondary checkbox" }}
+                      />
+                    </TableCell>
+                    <TableCell align="center">{dis.type}</TableCell>
+                    <TableCell align="center">
+                      {dis.type === "Porcentaje"
+                        ? "%" + dis.value
+                        : "$" + dis.value}
+                    </TableCell>
+                    <TableCell align="center">
+                      <ul>
+                        {dis.appliedProducts.map((el, i) => (
+                          <li key={i}>{el}</li>
+                        ))}
+                      </ul>
+                    </TableCell>
+
+                    <TableCell align="center">
+                      {props.permissions?.deleteDiscount && (
+                        <Fab
+                          color="default"
+                          style={{ width: 35, height: 35 }}
+                          aria-label="Delete"
+                          onClick={(e) => {
+                            e.preventDefault()
+                            deleteDiscount(dis._id)
                           }}
                         >
                           <DeleteIcon />
@@ -471,7 +580,10 @@ export default function ReadProducts(props) {
           </Typography>
         )}
       </TabPanel>
-      <TabPanel value={value} index={2}>
+      <TabPanel
+        value={value}
+        index={3}
+      >
         {surchargeList.length > 0 ? (
           <Table size="small">
             <TableHead>
@@ -496,7 +608,7 @@ export default function ReadProducts(props) {
                           style={{ width: 35, height: 35 }}
                           aria-label="edit"
                           onClick={(e) => {
-                            handleActiveSurcharge(sur, "updateSurcharge");
+                            handleActiveSurcharge(sur, "updateSurcharge")
                           }}
                         >
                           <EditIcon />
@@ -539,8 +651,8 @@ export default function ReadProducts(props) {
                           style={{ width: 35, height: 35 }}
                           aria-label="Delete"
                           onClick={(e) => {
-                            e.preventDefault();
-                            deleteSurcharge(sur._id);
+                            e.preventDefault()
+                            deleteSurcharge(sur._id)
                           }}
                         >
                           <DeleteIcon />
@@ -567,7 +679,10 @@ export default function ReadProducts(props) {
         message={props.deleteMessage}
         onClose={handleClose}
       />
-      <Modal open={openUpdateProduct} onClose={handleClose}>
+      <Modal
+        open={openUpdateProduct}
+        onClose={handleClose}
+      >
         <UpdateProductV2
           product={props.product}
           setProduct={props.setProduct}
@@ -577,5 +692,5 @@ export default function ReadProducts(props) {
       </Modal>
       {props.handleCallback(value)}
     </React.Fragment>
-  );
+  )
 }

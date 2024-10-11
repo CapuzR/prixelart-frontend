@@ -628,6 +628,7 @@ export default function OrderDetails(props) {
                             <div>{"Producto: " + item.product.name}</div>
                             <div>{"Id: " + item.product._id}</div>
                             {item.product.selection &&
+                            item.product.attributes &&
                             typeof item.product.selection === "object" ? (
                               item.product.attributes.map((a, i) => {
                                 return (

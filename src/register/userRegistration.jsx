@@ -32,7 +32,12 @@ import { useTheme } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import InfoIcon from "@material-ui/icons/Info";
 import Tooltip from "@material-ui/core/Tooltip";
-
+import Card from "@material-ui/core/Card";
+import CardActionArea from "@material-ui/core/CardActionArea";
+import CardContent from "@material-ui/core/CardContent";
+import CardMedia from "@material-ui/core/CardMedia";
+import PaletteIcon from "@material-ui/icons/Palette";
+import StoreIcon from "@material-ui/icons/Store";
 import clsx from "clsx";
 import jwt from "jwt-decode";
 
@@ -81,6 +86,11 @@ const useStyles = makeStyles((theme) => ({
       width: "25ch",
     },
   },
+  media: {
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+  },
 }));
 
 export default function SignUp() {
@@ -94,18 +104,9 @@ export default function SignUp() {
   const [showPassword, setShowPassword] = useState(false);
   const [openTooltip, setOpenTooltip] = useState(false);
   const [buttonState, setButtonState] = useState(true);
-  // const [isChecked, setIsChecked] = useState(false);
-  // const [termsAgree, setTermsAgree] = useState(false);
+  const [showAlt, setShowAlt] = useState(false);
+  const [role, setRole] = useState("Prixer");
   const theme = useTheme();
-  // const [value, setValue] = useState("");
-
-  // const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
-
-  // const styles = useStyles();
-  // const [modal, setModal] = useState(false);
-  // const openModal = () => {
-  //   setModal(!modal);
-  // };
 
   //Error states.
   const [usernameError, setUsernameError] = useState(false);
@@ -118,8 +119,7 @@ export default function SignUp() {
 
   const now = new Date();
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleSubmit = () => {
     if (!username || !email || !firstName || !lastName || !email || !password) {
       setErrorMessage("Por favor completa todos los campos requeridos.");
       setSnackBarError(true);
@@ -131,6 +131,7 @@ export default function SignUp() {
         password: password,
         firstName: firstName,
         lastName: lastName,
+        role: role,
       };
       setButtonState(true);
       axios
@@ -154,6 +155,7 @@ export default function SignUp() {
               "tokenExpire",
               JSON.stringify(now.getTime() + 21600000)
             );
+
             history.push({ pathname: "/registrar/prixer" });
           }
         })
@@ -239,6 +241,9 @@ export default function SignUp() {
     }
   };
 
+  const handleAlt = (e) => {
+    setShowAlt(!showAlt);
+  };
   //Password
   const handlePasswordChange = (e) => {
     if (validations.isAValidPassword(e.target.value)) {
@@ -263,6 +268,11 @@ export default function SignUp() {
     event.preventDefault();
   };
 
+  const handleTypeUser = (x) => {
+    setRole(x);
+    handleSubmit();
+  };
+
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
@@ -270,124 +280,201 @@ export default function SignUp() {
         <Avatar className={classes.avatar}>
           <LockOutlinedIcon />
         </Avatar>
-        <Typography component="h1" variant="h5">
+        <Typography component="h1" variant="h5" color="secondary">
           Registrar
         </Typography>
-        <form className={classes.form} onSubmit={handleSubmit} noValidate>
-          <Grid container spacing={2}>
-            <Grid item xs={12}>
-              <TextField
-                variant="outlined"
-                required
-                fullWidth
-                error={usernameError}
-                id="username"
-                label="Usuario"
-                name="username"
-                autoComplete="username"
-                value={username}
-                onChange={handleUsernameChange}
-                InputProps={{
-                  endAdornment: (
-                    <Tooltip
-                      title={"ej: pedroperez10  o  mariaperez"}
-                      onClick={(e) => setOpenTooltip(!openTooltip)}
-                      open={openTooltip}
-                      onClose={(leaveDelay) => setOpenTooltip(false)}
+        <div className={classes.form}>
+          {showAlt ? (
+            <>
+              <Grid container spacing={2} style={{ marginBottom: 50 }}>
+                <Grid item xs={6}>
+                  <Card>
+                    <CardActionArea
+                      className={classes.media}
+                      onClick={(e) => {
+                        handleTypeUser("Prixer");
+                      }}
                     >
-                      <InfoIcon color="secondary" />
-                    </Tooltip>
-                  ),
-                }}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                autoComplete="fname"
-                name="firstName"
-                variant="outlined"
-                required
+                      <CardMedia>
+                        <PaletteIcon
+                          color="primary"
+                          style={{ fontSize: 100, marginTop: 20 }}
+                        />
+                      </CardMedia>
+                      <CardContent>
+                        <Typography
+                          gutterBottom
+                          variant="h5"
+                          component="h2"
+                          color="secondary"
+                          style={{ marginTop: "-20px" }}
+                        >
+                          Prixer
+                        </Typography>
+                      </CardContent>
+                    </CardActionArea>
+                  </Card>
+                </Grid>
+                <Grid item xs={6}>
+                  <Card>
+                    <CardActionArea
+                      className={classes.media}
+                      onClick={(e) => {
+                        handleTypeUser("Organization");
+                      }}
+                    >
+                      <CardMedia>
+                        <StoreIcon
+                          color="primary"
+                          style={{ fontSize: 100, marginTop: 20 }}
+                        />
+                      </CardMedia>
+                      <CardContent>
+                        <Typography
+                          gutterBottom
+                          variant="h5"
+                          component="h2"
+                          color="secondary"
+                          style={{ marginTop: "-20px" }}
+                        >
+                          Organización
+                        </Typography>
+                      </CardContent>
+                    </CardActionArea>
+                  </Card>
+                </Grid>
+              </Grid>
+              {/* <Button
+                type="submit"
                 fullWidth
-                error={firstNameError}
-                id="firstName"
-                label="Nombre"
-                autoFocus
-                value={firstName}
-                onChange={handleFirstNameChange}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                variant="outlined"
-                required
-                fullWidth
-                error={lastNameError}
-                id="lastName"
-                label="Apellido"
-                name="lastName"
-                autoComplete="lname"
-                value={lastName}
-                onChange={handleLastNameChange}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                variant="outlined"
-                required
-                fullWidth
-                error={emailError}
-                id="email"
-                label="Correo electrónico"
-                name="email"
-                autoComplete="email"
-                value={email}
-                onChange={handleEmailChange}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <FormControl
-                className={clsx(classes.margin, classes.textField)}
-                variant="outlined"
-                xs={12}
-                fullWidth={true}
+                variant="contained"
+                color="primary"
+                className={classes.submit}
+                value={showAlt}
+                onClick={handleAlt}
               >
-                <InputLabel htmlFor="outlined-adornment-password">
-                  Contraseña
-                </InputLabel>
-                <OutlinedInput
-                  id="outlined-adornment-password"
-                  type={showPassword ? "text" : "password"}
-                  value={password}
-                  label="Contraseña"
-                  error={passwordError}
-                  onChange={handlePasswordChange}
-                  endAdornment={
-                    <InputAdornment position="end">
-                      <IconButton
-                        aria-label="toggle password visibility"
-                        onClick={handleClickShowPassword}
-                        onMouseDown={handleMouseDownPassword}
-                        edge="end"
-                      >
-                        {showPassword ? <Visibility /> : <VisibilityOff />}
-                      </IconButton>
-                    </InputAdornment>
-                  }
-                  labelWidth={100}
-                />
-              </FormControl>
-            </Grid>
-          </Grid>
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            color="primary"
-            className={classes.submit}
-            value="submit"
-          >
-            Registrarme
-          </Button>
+                Registrarme
+              </Button> */}
+            </>
+          ) : (
+            <>
+              <Grid container spacing={2}>
+                <Grid item xs={12}>
+                  <TextField
+                    variant="outlined"
+                    required
+                    fullWidth
+                    error={usernameError}
+                    id="username"
+                    label="Usuario"
+                    name="username"
+                    autoComplete="username"
+                    value={username}
+                    onChange={handleUsernameChange}
+                    InputProps={{
+                      endAdornment: (
+                        <Tooltip
+                          title={"ej: pedroperez10  o  mariaperez"}
+                          onClick={(e) => setOpenTooltip(!openTooltip)}
+                          open={openTooltip}
+                          onClose={(leaveDelay) => setOpenTooltip(false)}
+                        >
+                          <InfoIcon color="secondary" />
+                        </Tooltip>
+                      ),
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    autoComplete="fname"
+                    name="firstName"
+                    variant="outlined"
+                    required
+                    fullWidth
+                    error={firstNameError}
+                    id="firstName"
+                    label="Nombre"
+                    autoFocus
+                    value={firstName}
+                    onChange={handleFirstNameChange}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    variant="outlined"
+                    required
+                    fullWidth
+                    error={lastNameError}
+                    id="lastName"
+                    label="Apellido"
+                    name="lastName"
+                    autoComplete="lname"
+                    value={lastName}
+                    onChange={handleLastNameChange}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    variant="outlined"
+                    required
+                    fullWidth
+                    error={emailError}
+                    id="email"
+                    label="Correo electrónico"
+                    name="email"
+                    autoComplete="email"
+                    value={email}
+                    onChange={handleEmailChange}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <FormControl
+                    className={clsx(classes.margin, classes.textField)}
+                    variant="outlined"
+                    xs={12}
+                    fullWidth={true}
+                  >
+                    <InputLabel htmlFor="outlined-adornment-password">
+                      Contraseña
+                    </InputLabel>
+                    <OutlinedInput
+                      id="outlined-adornment-password"
+                      type={showPassword ? "text" : "password"}
+                      value={password}
+                      label="Contraseña"
+                      error={passwordError}
+                      onChange={handlePasswordChange}
+                      endAdornment={
+                        <InputAdornment position="end">
+                          <IconButton
+                            aria-label="toggle password visibility"
+                            onClick={handleClickShowPassword}
+                            onMouseDown={handleMouseDownPassword}
+                            edge="end"
+                          >
+                            {showPassword ? <Visibility /> : <VisibilityOff />}
+                          </IconButton>
+                        </InputAdornment>
+                      }
+                      labelWidth={100}
+                    />
+                  </FormControl>
+                </Grid>
+              </Grid>
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                color="primary"
+                className={classes.submit}
+                value={showAlt}
+                onClick={handleAlt}
+              >
+                Registrarme
+              </Button>
+            </>
+          )}
           <Grid container style={{ justifyContent: "center" }}>
             <Grid item>
               <Link
@@ -401,7 +488,7 @@ export default function SignUp() {
               </Link>
             </Grid>
           </Grid>
-        </form>
+        </div>
       </div>
       <Box mt={5}>
         <Copyright />

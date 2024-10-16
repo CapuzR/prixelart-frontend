@@ -186,116 +186,49 @@ export default function Grid(props) {
     }
   }, [])
 
-  useEffect(() => {
-    if (props.prixerUsername || globalParams.get("prixer")) {
-      if (searchValue && categoryValue) {
-        const base_url =
-          process.env.REACT_APP_BACKEND_URL +
-          "/art/read-by-username-query-and-category"
-        const params = {
-          text: searchValue,
-          category: categoryValue,
-        }
-        axios.get(base_url, { params }).then((response) => {
-          setTiles(utils.shuffle(response.data.arts))
-          props.setSearchResult(response.data.arts)
-          setBackdrop(false)
-        })
-      } else if (searchValue) {
-        const base_url =
-          process.env.REACT_APP_BACKEND_URL + "/art/read-by-username-and-query"
-        const params = {
-          text: searchValue,
-          username: props.prixerUsername || globalParams.get("prixer"),
-        }
-        axios.get(base_url, { params }).then((response) => {
-          setTiles(utils.shuffle(response.data.arts))
-          props.setSearchResult(response.data.arts)
-          // response.data.arts.map((bool) =>
-          //   visibles.push({
-          //     id: bool.artId,
-          //     visible: bool.visible,
-          //   })
-          // );
-          setBackdrop(false)
-        })
-      } else if (categoryValue) {
-        const base_url =
-          process.env.REACT_APP_BACKEND_URL +
-          "/art/read-by-username-and-category"
-        const params = {
-          category: categoryValue,
-          username: props.prixerUsername || globalParams.get("prixer"),
-        }
-        axios.get(base_url, { params }).then((response) => {
-          setTiles(utils.shuffle(response.data.arts))
-          props.setSearchResult(response.data.arts)
-          setBackdrop(false)
-        })
-      } else {
-        const base_url =
-          process.env.REACT_APP_BACKEND_URL + "/art/read-by-prixer"
-        const body = {
-          username: props.prixerUsername,
-        }
-        axios.post(base_url, body).then((response) => {
-          setTiles(utils.shuffle(response.data.arts))
-          props.setSearchResult(response.data.arts)
-          setBackdrop(false)
-        })
-      }
-    } else if (searchValue && categoryValue) {
-      const base_url =
-        process.env.REACT_APP_BACKEND_URL + "/art/read-by-query-and-category"
-      const params = {
-        text: searchValue,
-        category: categoryValue,
-      }
-      axios.get(base_url, { params }).then((response) => {
-        setTiles(utils.shuffle(response.data.arts))
-        props.setSearchResult(response.data.arts)
-        setBackdrop(false)
-      })
-    } else if (searchValue) {
-      const base_url = process.env.REACT_APP_BACKEND_URL + "/art/read-by-query"
-      const params = {
-        text: searchValue,
-      }
-      axios.get(base_url, { params }).then((response) => {
-        setTiles(response.data.arts)
-        props.setSearchResult(response.data.arts)
-        setBackdrop(false)
-      })
-    } else if (categoryValue) {
-      const base_url =
-        process.env.REACT_APP_BACKEND_URL + "/art/read-by-category"
-      const params = {
-        category: categoryValue,
-      }
-      axios.get(base_url, { params }).then((response) => {
-        setTiles(utils.shuffle(response.data.arts))
-        props.setSearchResult(response.data.arts)
-        setBackdrop(false)
-      })
-    } else if (props.inHome) {
+  const getLatest = () => {
+    try {
       const base_url = process.env.REACT_APP_BACKEND_URL + "/art/get-latest"
       axios.get(base_url).then((response) => {
         setTiles(response.data.arts)
         props.setSearchResult(response.data.arts)
         setBackdrop(false)
       })
+    } catch {
+      console.error("Error consultando artes")
+      setBackdrop(false)
+    }
+  }
+
+  const readGallery = async (filters) => {
+    try {
+      const base_url =
+        process.env.REACT_APP_BACKEND_URL + "/art/read-for-gallery"
+      const response = await axios.post(base_url, filters)
+      setTiles(response.data.arts)
+      setTotal(response.data.length)
+      props.setSearchResult(response.data.arts)
+      setBackdrop(false)
+    } catch {
+      console.error("Error consultando artes")
+      setBackdrop(false)
+    }
+  }
+
+  useEffect(() => {
+    let filters = {}
+    if (searchValue) filters.text = searchValue
+    if (categoryValue) filters.category = categoryValue
+    if (props.prixerUsername || globalParams.get("prixer")) {
+      filters.username = props.prixerUsername || globalParams.get("prixer")
+    }
+    filters.initialPoint = (pageNumber - 1) * itemsPerPage
+    filters.itemsPerPage = itemsPerPage
+
+    if (props.inHome) {
+      getLatest()
     } else {
-      const base_url = process.env.REACT_APP_BACKEND_URL + "/art/read-for-gallery"
-      axios.post(base_url, {
-        initialPoint: (pageNumber - 1) * itemsPerPage,
-        itemsPerPage: itemsPerPage,
-        // filters: filters,
-      }).then((response) => {
-        setTiles(response.data.arts)
-        setTotal(response.data.length)
-        props.setSearchResult(response.data.arts)
-        setBackdrop(false)
-      })
+      readGallery(filters)
     }
   }, [searchValue, categoryValue, pageNumber])
 
@@ -313,10 +246,9 @@ export default function Grid(props) {
     }
   }
 
-  const searchPhotos = (e, queryValue, categories) => {
+  const searchPhotos = (queryValue, categories) => {
     setSearchValue(queryValue)
     setCategoryValue(categories)
-    e.preventDefault()
     if (window.location.search.includes("producto=")) {
       if (queryValue !== null && categories !== null) {
         history.push({
@@ -447,253 +379,254 @@ export default function Grid(props) {
           />
         </div>
       </div>
-      <div style={{         
-        display: "flex",
-        flexDirection: "column",
-        paddingBottom: "20px",
-        overflow: "auto",
-        position: "relative",
-        height: "90%",
-         }}>
-      <ResponsiveMasonry
-        columnsCountBreakPoints={{
-          350: 1,
-          750: 2,
-          900: 3,
-          1080: window.location.search.includes("producto=") ? 3 : 4,
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          paddingBottom: "20px",
+          overflow: "auto",
+          position: "relative",
+          height: "90%",
         }}
       >
-        <Masonry style={{ columnGap: "7px" }}>
-          {tiles ? (
-            tiles.map((tile, i) =>
-              tile.visible ? (
-                <div key={i}>
-                  {JSON.parse(localStorage.getItem("adminToken")) &&
-                    tile.visible && (
-                      <Button
-                        size="small"
-                        color="primary"
-                        variant="contained"
-                        style={{
-                          position: "absolute",
-                          marginTop: "10px",
-                          marginLeft: "10px",
-                          color: "#fff",
-                        }}
-                        disabled
-                      >
-                        <Typography
-                          style={{
-                            opacity: 0.5,
-                            fontSize: "0.8rem",
-                            fontWeight: 100,
-                          }}
-                        >
-                          Puntos: {tile.points}
-                        </Typography>
-                      </Button>
-                    )}
-
-                  <CardActionArea>
-                    {!onAdmin && (
-                      <Tooltip
-                        title={
-                          window.location.search.includes("producto=")
-                            ? "Asociar al producto"
-                            : "Agregar al carrito"
-                        }
-                      >
-                        <IconButton
-                          size="small"
-                          color="primary"
-                          onClick={(e) => {
-                            addingToCart(e, tile)
-                          }}
-                          style={{ position: "absolute", padding: "8px" }}
-                        >
-                          <AddShoppingCartIcon />
-                        </IconButton>
-                      </Tooltip>
-                    )}
-                    {tile.exclusive === "exclusive" && (
-                      <Tooltip title="Arte exclusivo">
-                        <IconButton
-                          size="small"
-                          color="primary"
-                          style={{ position: "absolute", right: 0 }}
-                        >
-                          <Star
-                            style={{
-                              marginRight: "-2.2rem",
-                              marginTop: "0.05rem",
-                            }}
-                            color="primary"
-                            fontSize="large"
-                          />
-                          <StarOutline
-                            style={{
-                              color: "white",
-                            }}
-                            fontSize="large"
-                          />
-                        </IconButton>
-                      </Tooltip>
-                    )}
-                    <Img
-                      draggable={false}
-                      onClick={(e) => {
-                        handleFullImage(e, tile)
-                      }}
-                      placeholder="/imgLoading.svg"
-                      style={{
-                        backgroundColor: "#eeeeee",
-                        width: "100%",
-                        marginBottom: "7px",
-                        borderRadius: "4px",
-                      }}
-                      src={tile.largeThumbUrl || tile.squareThumbUrl}
-                      debounce={1000}
-                      cache
-                      error="/imgError.svg"
-                      alt={tile.title}
-                      id={tile.artId}
-                      key={tile.artId}
-                    />
-
-                    {props.permissions?.artBan && (
-                      <IOSSwitch
-                        color="primary"
-                        size="normal"
-                        checked={tile.visible}
-                        onChange={(e) => {
-                          if (e.target.checked === false) {
-                            handleClickVisible()
-                            setSelectedArt(tile.artId)
-                            setVisible(e.target.checked)
-                          } else {
-                            setVisibleArt(tile, tile.artId, e)
-                            setVisible(e.target.checked)
-                          }
-                        }}
-                      />
-                    )}
-                  </CardActionArea>
-                  <Dialog
-                    open={selectedArt === tile.artId}
-                    onClose={handleCloseVisible}
-                    aria-labelledby="alert-dialog-title"
-                    aria-describedby="alert-dialog-description"
-                  >
-                    <DialogTitle id="alert-dialog-title">
-                      {"¿Estás seguro de ocultar este arte?"}
-                    </DialogTitle>
-                    <DialogContent>
-                      <DialogContentText
-                        id="alert-dialog-description"
-                        style={{
-                          textAlign: "center",
-                        }}
-                      >
-                        Este arte ya no será visible en tu perfil y la página de
-                        inicio.
-                      </DialogContentText>
-                    </DialogContent>
-                    <div
-                      item
-                      xs={12}
-                      style={{
-                        display: "flex",
-                        justifyContent: "center",
-                      }}
-                    >
-                      <TextField
-                        style={{ width: "95%", marginBottom: "5px" }}
-                        fullWidth
-                        multiline
-                        required
-                        id="disabledReason"
-                        label="¿Por qué quieres ocultar este arte?"
-                        variant="outlined"
-                        onChange={(e) => {
-                          setDisabledReason(e.target.value)
-                        }}
-                      />
-                    </div>
-                    <DialogActions>
-                      <Button
-                        onClick={handleCloseVisible}
-                        color="primary"
-                      >
-                        Cancelar
-                      </Button>
-                      <Button
-                        onClick={(e) => {
-                          setVisibleArt(tile, selectedArt, e)
-                          setSelectedArt(undefined)
-                          handleCloseVisible()
-                        }}
-                        background="primary"
-                        style={{
-                          color: "white",
-                          backgroundColor: "#d33f49",
-                        }}
-                      >
-                        Aceptar
-                      </Button>
-                    </DialogActions>
-                  </Dialog>
-                </div>
-              ) : (
-                JSON.parse(localStorage.getItem("adminToken")) && (
+        <ResponsiveMasonry
+          columnsCountBreakPoints={{
+            350: 1,
+            750: 2,
+            900: 3,
+            1080: window.location.search.includes("producto=") ? 3 : 4,
+          }}
+        >
+          <Masonry style={{ columnGap: "7px" }}>
+            {tiles ? (
+              tiles.map((tile, i) =>
+                tile.visible ? (
                   <div key={i}>
-                    <Img
-                      onClick={(e) => {
-                        handleFullImage(e, tile)
-                      }}
-                      placeholder="/imgLoading.svg"
-                      style={{
-                        backgroundColor: "#eeeeee",
-                        width: "100%",
-                        marginBottom: "7px",
-                        borderRadius: "4px",
-                        // objectFit: "cover",
-                      }}
-                      src={tile.squareThumbUrl}
-                      debounce={1000}
-                      cache
-                      error="/imgError.svg"
-                      // srcSet={tile.smallThumbUrl + ' 600w, ' + tile.mediumThumbUrl + ' 850w, ' + tile.largeThumbUrl + ' 1300w'}
-                      // sizes="(min-width: 1600px) 850px, (min-width: 960px) 450px, (min-width: 640px) 400px, 200px"
-                      // sizes="(min-width: 1600px) 850px, (min-width: 960px) 450px, (min-width: 640px) 200px, (min-width: 375px) 80px"
-                      alt={tile.title}
-                      id={tile.artId}
-                      key={tile.artId}
-                    />
-                    {props.permissions?.banArt && (
-                      <IOSSwitch
-                        color="primary"
-                        size="normal"
-                        onChange={(e) => {
-                          if (e.target.checked === false) {
-                            setVisible(e.target.checked)
-                            setSelectedArt(tile.artId)
-                          } else {
-                            setVisible(e.target.checked)
-                            setVisibleArt(tile, tile.artId, e)
+                    {JSON.parse(localStorage.getItem("adminToken")) &&
+                      tile.visible && (
+                        <Button
+                          size="small"
+                          color="primary"
+                          variant="contained"
+                          style={{
+                            position: "absolute",
+                            marginTop: "10px",
+                            marginLeft: "10px",
+                            color: "#fff",
+                          }}
+                          disabled
+                        >
+                          <Typography
+                            style={{
+                              opacity: 0.5,
+                              fontSize: "0.8rem",
+                              fontWeight: 100,
+                            }}
+                          >
+                            Puntos: {tile.points}
+                          </Typography>
+                        </Button>
+                      )}
+
+                    <CardActionArea>
+                      {!onAdmin && (
+                        <Tooltip
+                          title={
+                            window.location.search.includes("producto=")
+                              ? "Asociar al producto"
+                              : "Agregar al carrito"
                           }
+                        >
+                          <IconButton
+                            size="small"
+                            color="primary"
+                            onClick={(e) => {
+                              addingToCart(e, tile)
+                            }}
+                            style={{ position: "absolute", padding: "8px" }}
+                          >
+                            <AddShoppingCartIcon />
+                          </IconButton>
+                        </Tooltip>
+                      )}
+                      {tile.exclusive === "exclusive" && (
+                        <Tooltip title="Arte exclusivo">
+                          <IconButton
+                            size="small"
+                            color="primary"
+                            style={{ position: "absolute", right: 0 }}
+                          >
+                            <Star
+                              style={{
+                                marginRight: "-2.2rem",
+                                marginTop: "0.05rem",
+                              }}
+                              color="primary"
+                              fontSize="large"
+                            />
+                            <StarOutline
+                              style={{
+                                color: "white",
+                              }}
+                              fontSize="large"
+                            />
+                          </IconButton>
+                        </Tooltip>
+                      )}
+                      <Img
+                        draggable={false}
+                        onClick={(e) => {
+                          handleFullImage(e, tile)
                         }}
-                      ></IOSSwitch>
-                    )}
+                        placeholder="/imgLoading.svg"
+                        style={{
+                          backgroundColor: "#eeeeee",
+                          width: "100%",
+                          marginBottom: "7px",
+                          borderRadius: "4px",
+                        }}
+                        src={tile.largeThumbUrl || tile.squareThumbUrl}
+                        debounce={1000}
+                        cache
+                        error="/imgError.svg"
+                        alt={tile.title}
+                        id={tile.artId}
+                        key={tile.artId}
+                      />
+
+                      {props.permissions?.artBan && (
+                        <IOSSwitch
+                          color="primary"
+                          size="normal"
+                          checked={tile.visible}
+                          onChange={(e) => {
+                            if (e.target.checked === false) {
+                              handleClickVisible()
+                              setSelectedArt(tile.artId)
+                              setVisible(e.target.checked)
+                            } else {
+                              setVisibleArt(tile, tile.artId, e)
+                              setVisible(e.target.checked)
+                            }
+                          }}
+                        />
+                      )}
+                    </CardActionArea>
+                    <Dialog
+                      open={selectedArt === tile.artId}
+                      onClose={handleCloseVisible}
+                      aria-labelledby="alert-dialog-title"
+                      aria-describedby="alert-dialog-description"
+                    >
+                      <DialogTitle id="alert-dialog-title">
+                        {"¿Estás seguro de ocultar este arte?"}
+                      </DialogTitle>
+                      <DialogContent>
+                        <DialogContentText
+                          id="alert-dialog-description"
+                          style={{
+                            textAlign: "center",
+                          }}
+                        >
+                          Este arte ya no será visible en tu perfil y la página
+                          de inicio.
+                        </DialogContentText>
+                      </DialogContent>
+                      <div
+                        item
+                        xs={12}
+                        style={{
+                          display: "flex",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <TextField
+                          style={{ width: "95%", marginBottom: "5px" }}
+                          fullWidth
+                          multiline
+                          required
+                          id="disabledReason"
+                          label="¿Por qué quieres ocultar este arte?"
+                          variant="outlined"
+                          onChange={(e) => {
+                            setDisabledReason(e.target.value)
+                          }}
+                        />
+                      </div>
+                      <DialogActions>
+                        <Button
+                          onClick={handleCloseVisible}
+                          color="primary"
+                        >
+                          Cancelar
+                        </Button>
+                        <Button
+                          onClick={(e) => {
+                            setVisibleArt(tile, selectedArt, e)
+                            setSelectedArt(undefined)
+                            handleCloseVisible()
+                          }}
+                          background="primary"
+                          style={{
+                            color: "white",
+                            backgroundColor: "#d33f49",
+                          }}
+                        >
+                          Aceptar
+                        </Button>
+                      </DialogActions>
+                    </Dialog>
                   </div>
+                ) : (
+                  JSON.parse(localStorage.getItem("adminToken")) && (
+                    <div key={i}>
+                      <Img
+                        onClick={(e) => {
+                          handleFullImage(e, tile)
+                        }}
+                        placeholder="/imgLoading.svg"
+                        style={{
+                          backgroundColor: "#eeeeee",
+                          width: "100%",
+                          marginBottom: "7px",
+                          borderRadius: "4px",
+                          // objectFit: "cover",
+                        }}
+                        src={tile.squareThumbUrl}
+                        debounce={1000}
+                        cache
+                        error="/imgError.svg"
+                        // srcSet={tile.smallThumbUrl + ' 600w, ' + tile.mediumThumbUrl + ' 850w, ' + tile.largeThumbUrl + ' 1300w'}
+                        // sizes="(min-width: 1600px) 850px, (min-width: 960px) 450px, (min-width: 640px) 400px, 200px"
+                        // sizes="(min-width: 1600px) 850px, (min-width: 960px) 450px, (min-width: 640px) 200px, (min-width: 375px) 80px"
+                        alt={tile.title}
+                        id={tile.artId}
+                        key={tile.artId}
+                      />
+                      {props.permissions?.banArt && (
+                        <IOSSwitch
+                          color="primary"
+                          size="normal"
+                          onChange={(e) => {
+                            if (e.target.checked === false) {
+                              setVisible(e.target.checked)
+                              setSelectedArt(tile.artId)
+                            } else {
+                              setVisible(e.target.checked)
+                              setVisibleArt(tile, tile.artId, e)
+                            }
+                          }}
+                        ></IOSSwitch>
+                      )}
+                    </div>
+                  )
                 )
               )
-            )
-          ) : (
-            <h1>Pronto encontrarás todo el arte que buscas.</h1>
-          )}
-        </Masonry>
-      </ResponsiveMasonry>
-
+            ) : (
+              <h1>Pronto encontrarás todo el arte que buscas.</h1>
+            )}
+          </Masonry>
+        </ResponsiveMasonry>
       </div>
       {openFullArt && (
         <FullscreenPhoto

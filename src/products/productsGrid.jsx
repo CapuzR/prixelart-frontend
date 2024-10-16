@@ -28,13 +28,15 @@ import world from "../images/world.svg"
 import worldBlack from "../images/world-black.svg"
 import vzla from "../images/vzla.svg"
 import { priceSelect } from "./services"
-import { useGlobalContext  } from '../context/globalContext';
+import { useGlobalContext } from "../context/globalContext"
 import { ProductCarousel } from "../sharedComponents/productCarousel/productCarousel"
 
 ReactGA.initialize("G-0RWP9B33D8")
 
-{/* TO DO: Llevar CSS a su propio archivo? A mi me gusta más, debatir con War.
-  Tailwind y cualquier inline desordena el código imo. Hasta qué punto?*/}
+{
+  /* TO DO: Llevar CSS a su propio archivo? A mi me gusta más, debatir con War.
+  Tailwind y cualquier inline desordena el código imo. Hasta qué punto?*/
+}
 const useStyles = makeStyles((theme) => ({
   formControl: {
     margin: theme.spacing(1),
@@ -187,7 +189,7 @@ const useStyles = makeStyles((theme) => ({
       right: "7px",
       backgroundImage: `url(${worldBlack})`,
     },
-  },  
+  },
   checked: {
     color: "#d33f49 !important",
     transform: "translateX(35px) !important",
@@ -210,47 +212,98 @@ export default function ProductGrid(props) {
 
   const [order, setOrder] = useState("")
   const history = useHistory()
-  const [currentPage, setCurrentPage] = useState(1);
-  const [productsPerPage] = useState(10);
-  const { currency } = useGlobalContext();
-  console.log("dollarValue", props.dollarValue);
-
+  const [currentPage, setCurrentPage] = useState(1)
+  const [productsPerPage] = useState(10)
+  const { currency } = useGlobalContext()
+  const [zone, setZone] = useState(
+    localStorage.getItem("zone")
+      ? JSON.parse(localStorage.getItem("zone"))
+      : "base"
+  )
   const handleChange = (event) => {
     setOrder(event.target.value)
-  };
+  }
+  const getNationalProducts = () => {
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/product/read-all-v2"
+    axios
+      .get(base_url, {
+        params: {
+          orderType:
+            order === "A-Z" || order === "lowerPrice"
+              ? "asc"
+              : order === ""
+              ? ""
+              : "desc",
+          sortBy:
+            order === "lowerPrice" || order === "maxPrice"
+              ? "priceRange"
+              : order === ""
+              ? ""
+              : "name",
+          initialPoint: (currentPage - 1) * productsPerPage,
+          productsPerPage: productsPerPage,
+        },
+      })
+      .then(async (response) => {
+        let productsAttTemp1 = response.data.products
+        let maxLength = response.data.maxLength
+        setMaxLength(maxLength)
+        setTiles(productsAttTemp1)
+      })
+  }
+  
+  const getInternational = () => {
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/product/read-international"
+    axios
+      .get(base_url, {
+        params: {
+          orderType:
+            order === "A-Z" || order === "lowerPrice"
+              ? "asc"
+              : order === ""
+              ? ""
+              : "desc",
+          sortBy:
+            order === "lowerPrice" || order === "maxPrice"
+              ? "priceRange"
+              : order === ""
+              ? ""
+              : "name",
+          initialPoint: (currentPage - 1) * productsPerPage,
+          productsPerPage: productsPerPage,
+        },
+      })
+      .then(async (response) => {
+        let productsAttTemp1 = response.data.products
+        let maxLength = response.data.maxLength
+        setMaxLength(maxLength)
+        setTiles(productsAttTemp1)
+      })
+  }
 
   useEffect(() => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + "/product/read-all-v2";
-    axios.get(base_url, {
-      params: {
-        orderType: order === "A-Z" || order === "lowerPrice" ? "asc" : order === "" ? "" : "desc",
-        sortBy: order === "lowerPrice" || order === "maxPrice" ? "priceRange" : order === "" ? "" : "name",
-        initialPoint: (currentPage - 1) * productsPerPage,
-        productsPerPage: productsPerPage
-      }
-    }).then(async (response) => {
-      let productsAttTemp1 = response.data.products;
-      let maxLength = response.data.maxLength;
-      setMaxLength(maxLength);
-      setTiles(productsAttTemp1);
-    });
-  }, [order, currentPage, productsPerPage]);
-
+    if (zone) {
+      getNationalProducts()
+    } else {
+      getInternational()
+    }
+  }, [order, currentPage, productsPerPage, zone])
+  console.log(zone)
   const handleNextPage = () => {
-    setCurrentPage((prevPage) => prevPage + 1);
-  };
-  
+    setCurrentPage((prevPage) => prevPage + 1)
+  }
+
   const handlePreviousPage = () => {
     if (currentPage > 1) {
-      setCurrentPage((prevPage) => prevPage - 1);
+      setCurrentPage((prevPage) => prevPage - 1)
     }
-  };
-  
+  }
+
   const viewDetails = (product) => {
     history.push({
       pathname: "/",
       search: "?producto=" + product.id,
-      state: { product: product }
+      state: { product: product },
     })
     ReactGA.event({
       category: "Productos",
@@ -259,9 +312,9 @@ export default function ProductGrid(props) {
     })
   }
 
-  // const changeCurrency = () => {
-  //   setCurrency(!currency)
-  // }
+  const changeZone = () => {
+    setZone(!zone)
+  }
 
   return (
     <>
@@ -274,12 +327,24 @@ export default function ProductGrid(props) {
           marginTop: "2rem",
         }}
       >
-        <div style={{ display: "flex", justifyContent: "center", marginRight: "10px", padding: "0px" }}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            marginRight: "10px",
+            padding: "0px",
+          }}
+        >
           <Button
             onClick={handlePreviousPage}
             disabled={currentPage === 1}
             size="small"
-            style={{ minWidth: "auto", padding: "2px", marginRight: "0.2rem", transform: "scale(0.75)" }}
+            style={{
+              minWidth: "auto",
+              padding: "2px",
+              marginRight: "0.2rem",
+              transform: "scale(0.75)",
+            }}
           >
             &lt;
           </Button>
@@ -300,7 +365,12 @@ export default function ProductGrid(props) {
             onClick={handleNextPage}
             disabled={currentPage === Math.ceil(maxLength / productsPerPage)}
             size="small"
-            style={{ minWidth: "auto", padding: "2px", marginLeft: "0.2rem", transform: "scale(0.75)" }}
+            style={{
+              minWidth: "auto",
+              padding: "2px",
+              marginLeft: "0.2rem",
+              transform: "scale(0.75)",
+            }}
           >
             &gt;
           </Button>
@@ -325,7 +395,7 @@ export default function ProductGrid(props) {
             <MenuItem value={"maxPrice"}>Mayor precio</MenuItem>
           </Select>
         </FormControl>
-        {/* <div
+        <div
           style={{
             display: "flex",
             flexDirection: "row",
@@ -343,15 +413,41 @@ export default function ProductGrid(props) {
             }}
             color="primary"
             value={currency}
+            // onChange={(e) => {
+            //   changeCurrency(e)
+            // }}
+            style={{ marginRight: "-5px" }}
+          />
+        </div>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+            marginLeft: 10,
+          }}
+        >
+          <Switch
+            classes={{
+              root: classes.base,
+              switchBase: classes.switchBase,
+              thumb: zone ? classes.thumbTrueZ : classes.thumbZ,
+              track: classes.trackZ,
+              checked: classes.checked,
+            }}
+            color="primary"
+            value={zone}
             onChange={(e) => {
-              changeCurrency(e)
+              changeZone(e)
             }}
             style={{ marginRight: "-5px" }}
           />
-        </div> */}
+        </div>
       </div>
       <ResponsiveMasonry columnsCountBreakPoints={{ 350: 1, 750: 2, 1800: 3 }}>
-        <Masonry style={{ columnGap: "1.8rem", width: "80%", margin: "0 auto" }}>
+        <Masonry
+          style={{ columnGap: "1.8rem", width: "80%", margin: "0 auto" }}
+        >
           {tiles && tiles.length > 0 ? (
             tiles.map((tile) => (
               <Card
@@ -366,83 +462,20 @@ export default function ProductGrid(props) {
                     " 0 0 10px 3px #d33f49",
                 }}
               >
-                {/* <CardMedia style={{ width: "110%", maxWidth: "14.68rem" }}> */}
+                {/* <CardMedia style={{ width: "110%", maxWidth: "14.68rem" }}>
                   {/* TO DO: Mover carrousel de foto producto a su propio componente, para reusar
                   en prixProducts. */}
-                <div style={{ width: "150px", height: "150px", padding: 0, }}>
-                  <ProductCarousel product={tile} selectedArt={undefined} selectedItem={tile} type="noImages" size="138px" />
+                {/* <div style={{ width: "150px", height: "150px", padding: 0 }}>
+                </CardMedia> */}
+                <div style={{ width: "150px", height: "150px", padding: 0 }}>
+                  <ProductCarousel
+                    product={tile}
+                    selectedArt={undefined}
+                    selectedItem={tile}
+                    type="noImages"
+                    size="138px"
+                  />
                 </div>
-                  
-                  {/* <Carousel
-                    autoPlay={false}
-                    stopAutoPlayOnHover={true}
-                    animation="slide"
-                    duration={500}
-                    fullHeightHover={true}
-                    IndicatorIcon={<MaximizeIcon />}
-                    NextIcon={<ArrowForwardIosIcon />}
-                    PrevIcon={<ArrowBackIosIcon />}
-                    activeIndicatorIconButtonProps={{
-                      style: {
-                        color: "#d33f49",
-                      },
-                    }}
-                    navButtonsProps={{
-                      style: {
-                        backgroundColor: "rgba(0, 0, 0, 0)",
-                        color: "#d33f49",
-                        width: "98%",
-                        height: "100vh",
-                        marginTop: "-50vh",
-                        borderRadius: "0",
-                        marginLeft: "1px",
-                      },
-                    }}
-                    indicatorContainerProps={{
-                      style: {
-                        position: "absolute",
-                        marginTop: "-17px",
-                      },
-                    }}
-                  >
-                  {
-                    tile.sources &&
-                    tile.sources.images && 
-                    tile.sources.images[0] !== undefined ? (
-                      tile.sources.images?.map((img, i) =>
-                        img.url !== null && img.type === "images" ? (
-                          <img
-                            key={i}
-                            src={img.url?.replace(/[,]/gi, "") || tile.thumbUrl}
-                            className={classes.img}
-                            alt="product.png"
-                            style={{ borderRadius: 30 }}
-                          />
-                        ) : (
-                          img.type === "video" &&
-                          img.url !== null && (
-                            <span
-                              key={"video"}
-                              style={{ width: "100%", borderRadius: 30 }}
-                              dangerouslySetInnerHTML={{
-                                __html: img.url,
-                              }}
-                            />
-                          )
-                        )
-                      )
-                    ) : (
-                      <img
-                        src={tile.thumbUrl}
-                        className={classes.img}
-                        alt="*"
-                        style={{ borderRadius: 30 }}
-                      />
-                    )
-                    }
-                  </Carousel> */}
-                {/* </CardMedia> */}
-
                 <CardContent
                   data-color-mode="light"
                   style={{
@@ -478,7 +511,11 @@ export default function ProductGrid(props) {
                       variant="h5"
                       component="h2"
                     >
-                      {priceSelect(tile.priceRange, currency, props.dollarValue)}
+                      {priceSelect(
+                        tile.priceRange,
+                        currency,
+                        props.dollarValue
+                      )}
                     </Typography>
                   </Grid>
                   <Grid
@@ -530,24 +567,33 @@ export default function ProductGrid(props) {
       </ResponsiveMasonry>
       {/* TO DO: Mover Paginación a su propio componente para poder utilizar en todo el website:
       galeria, productos, mini galería, órdenes, etc. */}
-      <div style={{ display: "flex", justifyContent: "center", marginTop: "2rem", marginBottom: "50px" }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          marginTop: "2rem",
+          marginBottom: "50px",
+        }}
+      >
         <Button
           onClick={handlePreviousPage}
           disabled={currentPage === 1}
         >
           &lt;
         </Button>
-        <Typography variant="h6" style={{ margin: "0 1rem", color: "#d33f49" }}>
+        <Typography
+          variant="h6"
+          style={{ margin: "0 1rem", color: "#d33f49" }}
+        >
           {currentPage}
         </Typography>
-            <Button 
-            onClick={handleNextPage}
-            disabled={currentPage === Math.ceil(maxLength / productsPerPage)}
-            >
-              &gt;
-            </Button>
+        <Button
+          onClick={handleNextPage}
+          disabled={currentPage === Math.ceil(maxLength / productsPerPage)}
+        >
+          &gt;
+        </Button>
       </div>
     </>
-    
   )
 }

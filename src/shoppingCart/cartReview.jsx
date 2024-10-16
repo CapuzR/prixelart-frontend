@@ -242,12 +242,12 @@ export default function CartReview(props) {
               Imagen referencial
             </Typography>
           </div>
-          {/* <Button
+          <Button
             primary
             onClick={handleDownloadImage}
           >
             JPG
-          </Button> */}
+          </Button>
         </div>
       )
     } else if (buy.art && buy.product) {

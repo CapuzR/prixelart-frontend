@@ -82,6 +82,12 @@ export default function CustomizedInputBase(props) {
     params.get("category") ? true : false
   );
 
+  const settingQuery = (txt) => {
+    setQueryValue(txt);
+    props.searchPhotos(txt, categories)
+
+  }
+
   useEffect(() => {
     if (!localStorage.getItem("filterCategory")) {
       setCategories([]);
@@ -104,7 +110,7 @@ export default function CustomizedInputBase(props) {
             className={classes.iconButton}
             aria-label="search"
             onClick={(e) => {
-              props.searchPhotos(e, queryValue, categories);
+              props.searchPhotos(queryValue, categories);
               localStorage.setItem(
                 "filterCategory",
                 JSON.stringify(categories)
@@ -119,7 +125,7 @@ export default function CustomizedInputBase(props) {
             inputProps={{ "aria-label": "Busca tu arte favorito" }}
             value={queryValue}
             onChange={(e) => {
-              setQueryValue(e.target.value);
+              settingQuery(e.target.value);
             }}
           />
           <Tooltip title={"Aplicar filtro"}>
@@ -141,7 +147,7 @@ export default function CustomizedInputBase(props) {
             value={categories}
             onChange={(e) => {
               setCategories(e.target.value);
-              props.searchPhotos(e, queryValue, e.target.value);
+              props.searchPhotos(queryValue, e.target.value);
             }}
             input={<Input />}
             MenuProps={MenuProps}

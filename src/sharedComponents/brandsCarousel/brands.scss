@@ -1,0 +1,88 @@
+$carousel-width: 100vw;
+$carousel-transition-time: 0.5s;
+$transition-time: 0.5s;
+$image-margin: 10px;
+$center-height: 100px;
+$side-height: 60px;
+$extreme-height: 45px;
+
+@mixin transition($property, $duration) {
+    transition: $property $duration ease;
+}
+
+.carousel-container {
+    align-items: center;
+    background-image: url('/images/brands/background.jpg');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    display: flex;
+    flex-direction: column;
+    height: 140px;
+    justify-content: center;
+    margin-left: -24px;
+    overflow: hidden;
+    padding: 20px;
+    position: relative;
+    width: $carousel-width;
+
+    @media (max-width: 760px) {
+        margin-left: -17px;
+    }
+
+
+    .slick {
+        &-arrow {
+            display: none;
+
+            &::before {
+                opacity: 0;
+            }
+        }
+
+        &-track {
+            align-items: center;
+        }
+
+        &-slider {
+            width: 75%;
+
+            @media (max-width: 760px) {
+                width: 100%;
+            }
+        }
+
+        &-slide {
+            height: 100% !important;
+            padding: 0;
+        }
+    }
+
+    .carousel-track {
+        display: flex;
+        transition: transform $transition-time ease-in-out;
+        width: $carousel-width;
+        justify-content: center;
+
+    }
+
+    .carousel-image {
+        margin: 0 $image-margin;
+        transition: transform $transition-time ease-in-out, height $transition-time ease-in-out;
+
+        &.center {
+            height: $center-height;
+            z-index: 3;
+        }
+
+        &.side {
+            height: $side-height;
+            z-index: 2;
+        }
+
+        &.extreme {
+            height: $extreme-height;
+            z-index: 1;
+        }
+    }
+}

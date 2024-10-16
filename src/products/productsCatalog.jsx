@@ -100,6 +100,11 @@ export default function ProductsCatalog(props) {
   const history = useHistory()
   const [openServiceFormDialog, setOpenServiceFormDialog] = useState(false)
   const [createdService, setCreatedService] = useState(false)
+  const [zone, setZone] = useState(
+    localStorage.getItem("zone")
+      ? JSON.parse(localStorage.getItem("zone"))
+      : "base"
+  )
   
   const getBestSellers = async () => {
     const url = process.env.REACT_APP_BACKEND_URL + "/getBestSellers"

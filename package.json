@@ -39,6 +39,7 @@
     "react-world-flags": "^1.6.0",
     "recharts": "^2.8.0",
     "redux": "^5.0.1",
+    "sass": "^1.79.5",
     "slick-carousel": "^1.8.1",
     "three": "^0.158.0",
     "update-browserslist-db": "^1.0.11",

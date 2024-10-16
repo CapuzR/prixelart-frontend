@@ -37,11 +37,7 @@ import Slider from "react-slick"
 import "slick-carousel/slick/slick.css"
 import "slick-carousel/slick/slick-theme.css"
 import backG from "../images/Rectangle108.png"
-// import brand1 from "../images/brands/Adidas_logo.png";
-// import brand2 from "../images/brands/BBVA_2019.svg.png";
-// import brand3 from "../images/brands/Ford-Motor-Company-Logo.png";
-// import brand4 from "../images/brands/Wikimedia-logo.png";
-// import brand5 from "../images/brands/lg.png";
+import BrandsCarousel from "../sharedComponents/brandsCarousel/brandsCarousel"
 
 ReactGA.initialize("G-0RWP9B33D8")
 ReactGA.pageview("/")
@@ -552,12 +548,12 @@ export default function Home(props) {
                       position: "relative",
                       width: "100%",
                       height:
-                        (isDesktop && 280) ||
+                        (isDesktop && 290) ||
                         (isMobile && 190) ||
-                        (isTab && 220),
+                        (isTab && 235),
                       marginLeft: isMobile && 10,
                       padding: isMobile ? 0 : "0px 30px 0px 30px",
-                      marginTop: "-30px",
+                      marginTop: "-10px",
                     }}
                   >
                     <Slider {...settings}>
@@ -944,6 +940,7 @@ export default function Home(props) {
               </Paper>
             )}
           </Grid>
+          <BrandsCarousel />
           {/* {brands && (
             <Grid
               style={{

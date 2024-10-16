@@ -2,15 +2,17 @@ import React, { useEffect } from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import AppBar from "components/appBar/appBar";
 import Routes from "./routes";
-import { GlobalProvider, useTheme  } from './context/globalContext';
+import { GlobalProvider, useTheme  } from 'context/GlobalContext';
 import './globalTheme.css';
-import ReactGA from "react-ga"
+import ReactGA from "react-ga";
+import Utility from "Utility";
 
 function ThemedApp() {
   const { theme } = useTheme();
 
   return (
     <div className={`${theme} app`}>
+      <Utility />
       <div className="app-bar">
         <AppBar />
       </div>

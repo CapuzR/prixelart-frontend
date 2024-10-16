@@ -1,11 +1,9 @@
-/* prixProduct.module.css */
+@import 'src/theme.scss';
 
-  .prix-product-container {
+.prix-product-container {
     display: flex;
     flex-direction: column;
-    position: relative;
     justify-content: center;
-    height: 100%;
     width: 100%;
   }
   
@@ -26,70 +24,39 @@
   .product-title {
     display: flex;
     align-items: center;
-    font-size: 2.6vw;
-    font-weight: 600;
-    color: #404e5c;
+    font-size: $font-size-extra-large;
+    font-weight: $font-weight-bold;
+    color: $text-color;
     width: auto;
   }
-
+  
   .price-selected {
-    font-size: 2.1rem; 
-    margin-top: 1rem; 
-    justify-content: right;
+    font-size: $font-size-medium;
+    margin-top: 1rem;
+    justify-content: flex-end;
     align-items: center;
-    display: flex; 
+    display: flex;
     margin: 0 !important;
     width: 40%;
   }
   
-  .first-row-buttons-container {
+  .buttons-container {
     position: relative;
     width: 20%;
     display: flex;
     justify-content: flex-end;
     align-content: center;
-  }
-  
-  .button-wrapper {
-    width: 50%;
-    text-align: right;
-    display: flex;
-    justify-content: flex-end;
+    gap: $spacing-md;
+
+    @include respond-below($breakpoint-md) {
+      gap: $spacing-sm;
+    }
   }
 
-  .share-button {
-    text-transform: none !important;
-    border-radius: 10px !important;
-    font-size: 18px !important;
-    margin-top: 20px !important;
-    margin-bottom: 20px !important;
-    color: #d33f49 !important;
-  }
-  
-  .share-icon {
-    margin-right: 10px !important;
-  }
-  
-  .add-button-enabled {
-    text-transform: none !important;
-    background-color: #d33f49 !important;
-    border-radius: 10px !important;
-    font-size: 18px !important;
-    margin-top: 20px !important;
-    margin-bottom: 20px !important;
-    color: white !important;
-  }
-  
-  .add-button-disabled {
-    text-transform: none !important;
-    background-color: #d33f4970 !important;
-    border-radius: 10px !important;
-    font-size: 18px !important;
-    margin-top: 20px !important;
-    margin-bottom: 20px !important;
-    color: white !important;
-  }
-  
+  .hidden {
+    display: none !important;
+  }  
+
   .main-content {
     display: flex;
     flex-direction: row;
@@ -97,7 +64,8 @@
     align-content: center;
   }
   
-  .left-side {
+  .left-side, 
+  .right-side {
     width: 45%;
     height: 76vh;
     display: flex;
@@ -106,64 +74,46 @@
   }
   
   .carousel-wrapper {
-    padding: 16px;
-    margin: 8px 8px 8px 0;
-    background-color: #fff;
-    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
+    padding: $spacing-md;
+    margin: $spacing-sm 0;
+    background-color: $background-color;
+    box-shadow: $box-shadow-medium;
+    border-radius: $border-radius-md;
     text-align: center;
     overflow: hidden;
     min-height: 500px;
     width: 100%;
-  }
-
-  /* Prueba */
-
-  .carousel-wrapper {
-    height: 500px;  /* Or 100vh for full viewport height */
     display: flex;
     flex-direction: column;
     justify-content: center;
     position: relative;
-    overflow: hidden;
   }
-  
-  /* Prueba */
   
   .accordion-title {
     font-size: 1.2rem;
-    font-weight: 600;
+    font-weight: $font-weight-bold;
   }
   
   .accordion-details {
-    max-height: "100px";
-    overflow-y: "auto";
+    max-height: 100px;
+    overflow-y: auto;
   }
   
   .markdown-content {
-    color: #000;
-    font-size: 0.9rem;
-    line-height: 1.6;
+    color: $text-color;
+    font-size: $font-size-small;
+    line-height: $line-height-base;
     background-color: transparent;
     white-space: pre-wrap;
   }
-
+  
   .info-accordion-wrapper {
-    display: flex; 
-    flex-direction: column; 
+    display: flex;
+    flex-direction: column;
     width: 100%;
   }
   
-  .right-side {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-around;
-    width: 45%;
-    height: 76vh;
-    overflow: hidden;
-  }
-  
-  .right-side-top {
+  .select {
     display: flex;
     width: 100%;
     flex-direction: column;
@@ -171,11 +121,10 @@
   }
   
   .attributes-container {
-    padding: 16px;
-    /* margin: 8px; */
-    background-color: #fff;
-    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
+    padding: $spacing-md;
+    background-color: $background-color;
+    box-shadow: $box-shadow-medium;
+    border-radius: $border-radius-md;
     text-align: center;
     overflow: hidden;
     display: flex;
@@ -203,11 +152,11 @@
   }
   
   .art-selection-container {
-    padding: 16px;
-    margin: 8px;
-    background-color: #fff;
-    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
+    padding: $spacing-md;
+    margin: $spacing-sm;
+    background-color: $background-color;
+    box-shadow: $box-shadow-medium;
+    border-radius: $border-radius-md;
     text-align: center;
     overflow: hidden;
   }
@@ -229,18 +178,13 @@
   
   .custom-paging-image {
     object-fit: cover;
-  }
-  
-  @media (max-width: 600px) {
-    /* Adjust the breakpoint as per your 'isTab' condition */
-    .custom-paging-image {
+    
+    @include respond-below($breakpoint-sm) {
       width: 45px;
       height: 45px;
     }
-  }
   
-  @media (min-width: 601px) {
-    .custom-paging-image {
+    @include respond-above($breakpoint-sm) {
       width: 70px;
       height: 70px;
     }
@@ -254,15 +198,14 @@
   }
   
   .mock-up-overlay {
-    /* 'background-image' will be set inline due to dynamic content */
     width: 210px;
     height: 210px;
     background-size: cover;
-    border-radius: 20px;
+    border-radius: $border-radius-lg;
     position: absolute;
     top: 0;
     left: 0;
-    z-index: 2;
+    z-index: $z-index-modal;
   }
   
   .art-comparison-grid {
@@ -278,10 +221,11 @@
     width: 40%;
   }
   
-  .product-image {
+  .product-image, 
+  .art-image {
     background-color: #eeeeee;
     height: auto;
-    border-radius: 10px;
+    border-radius: $border-radius-button;
   }
   
   .art-image-wrapper {
@@ -292,8 +236,9 @@
     height: 100%;
   }
   
-  .art-image {
-    background-color: #eeeeee;
-    height: auto;
-    width: auto;
+  .stepper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: $spacing-md 0;
   }

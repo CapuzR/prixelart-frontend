@@ -38,8 +38,6 @@ export const formatPrice = (item, currency, conversionRate) => {
   if (from === to) {
     return currency === "Bs" ? `${formattedFrom}` : `${formattedFrom}`;
   }
-  console.log("from", from)
-  console.log("to", to)
   const formattedTo = currency === "Bs" ? format(to * conversionRate) : format(to);
 
   return currency === "Bs"
@@ -63,22 +61,13 @@ export const getPriceWithSelectedVariant = async (item, currency, conversionRate
   return formatPrice(item, currency, conversionRate);
 };
 
-export const prepareProductData = (productData, gridProductState) => {
-  const attributes = productData.attributes;
-  const variants = productData.variants;
-  const initialSelection = attributes.reduce((acc, attr) => { acc[attr.name] = ""; return acc; }, {});
+export const prepareProductData = ({ variants, attributes, product }) => {
+  const initialSelection = attributes?.reduce((acc, attr) => { acc[attr.name] = ""; return acc; }, {});
 
-  // if (gridProductState && gridProductState.product) {
-  //   return {
-  //     product: { ...gridProductState.product, attributes, selection: initialSelection, variants },
-  //     selectedItem: { ...gridProductState.product, attributes }
-  //   };
-  // } else {
     return {
-      product: { ...productData.product, selection: initialSelection, attributes, variants },
-      selectedItem: { ...productData.product, attributes, variants }
+      product: { ...product, selection: initialSelection, attributes, variants },
+      selectedItem: { ...product, attributes, variants }
     };
-  // }
 };
 
 export const processProductsResponse = (response) => {

@@ -8,7 +8,7 @@ import PrixerRegistration from "./register/prixerRegistration"
 import PrixerProfile from "./prixerProfile/prixerProfile"
 import FullscreenPhoto from "./prixerProfile/fullscreenPhoto/fullscreenPhoto"
 import Home from "./home/home"
-import { Switch, Route } from "react-router-dom"
+import { Switch, Route, Redirect } from "react-router-dom"
 import Gallery from "./gallery/gallery"
 import Products from "./products/catalog/catalog.jsx"
 import ShoppingPage from "./shoppingCart/shoppingPage"
@@ -32,7 +32,7 @@ import { getComission } from "./shoppingCart/pricesFunctions"
 import ChiguireHome from "./orgLanding/chiguireHome"
 import ProductDetail from "./orgLanding/productDetail"
 import ShoppingCartCB from "./orgLanding/shoppingCartCB"
-import ProductDetails from "./products/details/details.jsx"
+import ProductDetails from "./products/details/Details"
 import AdminRoutes from './admin/adminRoutes.js';
 
 
@@ -575,6 +575,14 @@ function Routes() {
           render={(props) => {
             const params = new URLSearchParams(props.location.search)
             const prod = params.get("producto")
+            const art = params.get("art")
+            const attributes = {};
+            params.forEach((value, key) => {
+              if (key !== "producto" && key !== "arte") {
+                attributes[key] = value;
+              }
+            });
+
 
             if (prod) {
               return (
@@ -595,35 +603,38 @@ function Routes() {
                   dollarValue={dollarValue}
                   buyState={buyState}
                   setBuyState={setBuyState}
+                  art={art}
+                  attributes={attributes}
                 />
               )
-            } else {
+            } 
+            else {
               return (
                 <Home
-                  deleteItemInBuyState={deleteItemInBuyState}
-                  component={Home}
-                  buyState={buyState}
-                  addItemToBuyState={addItemToBuyState}
-                  isOpenAssociateProduct={isOpenAssociateProduct}
-                  setIsOpenAssociateProduct={setIsOpenAssociateProduct}
-                  setSelectedProductToAssociate={setSelectedProductToAssociate}
-                  selectedProductToAssociate={selectedProductToAssociate}
-                  AssociateProduct={AssociateProduct}
-                  setBuyState={setBuyState}
-                  deleteProductInItem={deleteProductInItem}
-                  setSelectedArtToAssociate={setSelectedArtToAssociate}
-                  changeQuantity={changeQuantity}
-                  valuesConsumerForm={valuesConsumerForm}
-                  setValuesConsumerForm={setValuesConsumerForm}
-                  setOpen={setOpen}
-                  setMessage={setMessage}
-                  setPrixer={setPrixer}
-                  setFullArt={setFullArt}
-                  setSearchResult={setSearchResult}
-                  dollarValue={dollarValue}
-                  setPointedProduct={setPointedProduct}
-                  pointedProduct={pointedProduct}
-                  permissions={permissions}
+                    deleteItemInBuyState={deleteItemInBuyState}
+                    component={Home}
+                    buyState={buyState}
+                    addItemToBuyState={addItemToBuyState}
+                    isOpenAssociateProduct={isOpenAssociateProduct}
+                    setIsOpenAssociateProduct={setIsOpenAssociateProduct}
+                    setSelectedProductToAssociate={setSelectedProductToAssociate}
+                    selectedProductToAssociate={selectedProductToAssociate}
+                    AssociateProduct={AssociateProduct}
+                    setBuyState={setBuyState}
+                    deleteProductInItem={deleteProductInItem}
+                    setSelectedArtToAssociate={setSelectedArtToAssociate}
+                    changeQuantity={changeQuantity}
+                    valuesConsumerForm={valuesConsumerForm}
+                    setValuesConsumerForm={setValuesConsumerForm}
+                    setOpen={setOpen}
+                    setMessage={setMessage}
+                    setPrixer={setPrixer}
+                    setFullArt={setFullArt}
+                    setSearchResult={setSearchResult}
+                    dollarValue={dollarValue}
+                    setPointedProduct={setPointedProduct}
+                    pointedProduct={pointedProduct}
+                    permissions={permissions}
                 />
               )
             }

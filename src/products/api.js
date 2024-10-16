@@ -40,6 +40,6 @@ export const fetchProductDetails = async (productId) => {
     return response.data;
   } catch (error) {
     console.error("Error fetching product details:", error);
-    throw error;  // Handle error at the component level
+    throw error;
   }
 };

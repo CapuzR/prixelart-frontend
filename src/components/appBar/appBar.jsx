@@ -25,7 +25,7 @@ import logo from "./Logotipo_Prixelart_H#2.png"
 import CB from "../../orgLanding/assets/isotipo.svg"
 
 import AttachMoneyIcon from '@material-ui/icons/AttachMoney'; // USD icon
-import { useCurrency, useConversionRate } from '../../context/globalContext';
+import { useCurrency, useConversionRate } from 'context/GlobalContext';
 import "./appBar.css"
 
 

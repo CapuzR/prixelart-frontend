@@ -1,0 +1,77 @@
+@import 'src/theme.scss';
+
+.stepperContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: $spacing-lg;
+
+  .step {
+    display: flex;
+    align-items: center;
+    position: relative;
+    text-align: center;
+    flex-grow: 1;
+    justify-content: center;
+
+    .circle {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background-color: $border-color;
+      color: $text-light-color;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: $font-weight-bold;
+      font-size: $font-size-small;
+      transition: background-color 0.3s ease-in-out;
+    }
+
+    .label {
+      margin-top: $spacing-xs;
+      font-size: $font-size-small;
+      font-family: $font-family-sans;
+    }
+
+    .line {
+      width: 100%;
+      height: 2px;
+      background-color: $border-color;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transition: background-color 0.3s ease-in-out;
+      z-index: -1;
+    }
+
+    &.completed .circle {
+      background-color: $success-color;
+    }
+
+    &.active .circle {
+      background-color: $primary-color;
+    }
+
+    &.completed .line {
+      background-color: $success-color;
+    }
+
+    &.active .line {
+      background-color: $primary-color;
+    }
+  }
+  
+  .step.completed:not(:last-child)::after {
+    background-color: $success-color;
+  }
+
+  .step.active:not(:last-child)::after {
+    background-color: $primary-color;
+  }
+
+  .step:last-child::after {
+    display: none;
+  }
+}

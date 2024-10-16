@@ -1,0 +1,63 @@
+@import "theme.scss";
+
+.snackbar {
+  position: fixed;
+  bottom: $spacing-lg;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: $secondary-color;
+  color: $text-light-color;
+  padding: $spacing-sm $spacing-md;
+  border-radius: $border-radius-md;
+  box-shadow: $box-shadow-medium;
+  z-index: $z-index-modal;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 200px;
+  max-width: 600px;
+  width: auto;
+}
+
+.snackbar-content {
+  font-size: $font-size-base;
+  font-family: $font-family-sans;
+  text-align: center;
+}
+
+.snackbar-close {
+  background: none;
+  border: none;
+  color: $text-light-color;
+  cursor: pointer;
+  font-size: $font-size-large;
+  margin-left: $spacing-sm;
+  padding: 0;
+  transition: color $transition-normal;
+
+  &:hover {
+    color: $hover-text-color;
+  }
+}
+
+.snackbar-enter {
+  opacity: 0;
+  transform: translateX(-50%) translateY(100%);
+}
+
+.snackbar-enter-active {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+  transition: opacity $transition-normal, transform $transition-normal;
+}
+
+.snackbar-exit {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.snackbar-exit-active {
+  opacity: 0;
+  transform: translateX(-50%) translateY(100%);
+  transition: opacity $transition-normal, transform $transition-normal;
+}

@@ -13,7 +13,7 @@ const generateWaMessage = (tile = "") => {
   return url;
 };
 
-const generateWaProductMessage = (tile = "") => {
+export const generateWaProductMessage = (tile = "") => {
   const waNumber = "584126377748";
   const welcomeMessage =
     "Holaa, cuéntame más. Quiero asesoría y conocer sus productos.";
@@ -168,6 +168,18 @@ export const format = (input) => {
   return num.toFixed(2).replace('.', ',');
 };
 
+export const toggleDecimalSeparator = (value) => {
+  if (typeof value === "number") {
+    value = value.toString();
+  }
+  if (value?.includes(",")) {
+    return value.replace(/\./g, '').replace(/,/g, '.');
+  } else if (value?.includes(".")) {
+    return value.replace(/\./g, ',');
+  } else {
+    return value;
+  }
+};
 
 const util = {
   generateArtMessage,
@@ -182,15 +194,3 @@ const util = {
 };
 
 export default util;
-export const toggleDecimalSeparator = (value) => {
-  if (typeof value === "number") {
-    value = value.toString();
-  }
-  if (value?.includes(",")) {
-    return value.replace(/\./g, '').replace(/,/g, '.');
-  } else if (value?.includes(".")) {
-    return value.replace(/\./g, ',');
-  } else {
-    return value;
-  }
-};

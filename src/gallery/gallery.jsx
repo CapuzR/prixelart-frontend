@@ -1,15 +1,15 @@
 import React, { useEffect } from "react";
 import axios from "axios";
 
-import AppBar from "../sharedComponents/appBar/appBar";
-import FloatingAddButton from "../sharedComponents/floatingAddButton/floatingAddButton";
+import AppBar from "components/appBar/appBar";
+import FloatingAddButton from "components/floatingAddButton/floatingAddButton";
 import ArtsGrid from "../prixerProfile/grid/grid";
 import Container from "@material-ui/core/Container";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Grid from "@material-ui/core/Grid";
 import { makeStyles } from "@material-ui/core/styles";
 import { useState } from "react";
-import ArtUploader from "../sharedComponents/artUploader/artUploader";
+import ArtUploader from "components/artUploader/artUploader";
 import Typography from "@material-ui/core/Typography";
 import Modal from "@material-ui/core/Modal";
 import Button from "@material-ui/core/Button";
@@ -25,7 +25,7 @@ import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { useTheme } from "@material-ui/core/styles";
 import CartReview from "../shoppingCart/cartReview";
 import WarpImage from "../admin/productCrud/warpImage";
-import CreateService from "../sharedComponents/createService/createService";
+import CreateService from "components/createService/createService";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -67,9 +67,6 @@ const useStyles = makeStyles((theme) => ({
 export default function Gallery(props) {
   const [openArtFormDialog, setOpenArtFormDialog] = useState(false);
   const [openShoppingCart, setOpenShoppingCart] = useState(false);
-
-  const [prixerUsername, setPrixerUsername] = useState(null);
-  const [value, setValue] = useState("");
   const [selectedArt, setSelectedArt] = useState(undefined);
   const history = useHistory();
   const theme = useTheme();
@@ -205,7 +202,6 @@ export default function Gallery(props) {
         <Grid>
           <ArtsGrid
             prixerUsername={props.prixer}
-            setPrixer={setPrixerUsername}
             buyState={props.buyState}
             addItemToBuyState={props.addItemToBuyState}
             setIsOpenAssociateProduct={props.setIsOpenAssociateProduct}

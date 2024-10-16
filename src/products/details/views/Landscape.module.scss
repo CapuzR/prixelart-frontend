@@ -1,0 +1,29 @@
+@import '../Details.module.scss';
+
+.prix-product-container {
+  flex-direction: row;
+
+  .left-side {
+    width: 45%;
+  }
+
+  .right-side {
+    display: flex;
+    width: 45%;
+  }
+
+  .buttons-container {
+    position: relative;
+    width: auto;
+    background-color: transparent;
+    justify-content: flex-end;
+  }
+}
+
+.carousel-wrapper {
+  min-height: 500px;
+}
+
+.stepper {
+  justify-content: flex-end;
+}

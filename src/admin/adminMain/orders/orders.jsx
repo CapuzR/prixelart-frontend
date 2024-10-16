@@ -631,8 +631,6 @@ export default function Orders(props) {
           total = prev
         }
         amount = total * item.quantity
-
-        console.log("La comisión es de $", amount)
       } else {
         destinatary = prx.account
         // Obtener el precio base

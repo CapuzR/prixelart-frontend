@@ -6,7 +6,7 @@ import axios from "axios";
 import { useHistory } from "react-router-dom";
 
 import validations from "../shoppingCart/validations";
-import Copyright from "../sharedComponents/Copyright/copyright";
+import Copyright from "components/Copyright/copyright";
 
 //material-ui
 import Avatar from "@material-ui/core/Avatar";

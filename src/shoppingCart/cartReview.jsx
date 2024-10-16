@@ -12,8 +12,6 @@ import AddIcon from "@material-ui/icons/Add"
 import DeleteIcon from "@material-ui/icons/Delete"
 import FilterNoneIcon from "@material-ui/icons/FilterNone"
 
-import Star from "@material-ui/icons/Stars"
-import StarOutline from "@material-ui/icons/StarOutline"
 import Info from "@material-ui/icons/Info"
 import Img from "react-cool-img"
 import useMediaQuery from "@material-ui/core/useMediaQuery"
@@ -21,14 +19,7 @@ import { useHistory } from "react-router-dom"
 import IconButton from "@material-ui/core/IconButton"
 import { Typography } from "@material-ui/core"
 import WarpImage from "../admin/productCrud/warpImage"
-import {
-  getPVM,
-  getPVP,
-  getComission,
-  UnitPriceSug,
-  UnitPriceForOrg,
-} from "./pricesFunctions"
-import html2canvas from "html2canvas"
+import { toggleDecimalSeparator } from "utils/utils"
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -84,85 +75,6 @@ export default function CartReview(props) {
   useEffect(() => {
     getDiscounts()
   }, [])
-
-  const checkOrgs = (art) => {
-    const org = props.orgs?.find((el) => el.username === art?.prixerUsername)
-    return org
-  }
-
-  const PriceSelect = (item) => {
-    const org = checkOrgs(item.art)
-    const prixer = JSON.parse(localStorage?.getItem("token"))?.username
-    // Falta hacer funcionar los precios de ORG para Particulares
-    if (org !== undefined) {
-      return UnitPriceForOrg(item.product, item.art, prixer, org, "Particular")
-    } else if (
-      JSON.parse(localStorage?.getItem("token")) &&
-      JSON.parse(localStorage?.getItem("token"))?.username
-    ) {
-      let modifiedItem = item;
-      modifiedItem.product.prixerPrice = item.product.priceRange;
-      return getPVM(
-        modifiedItem,
-        props.currency,
-        props.dollarValue,
-        discountList,
-        prixer
-      )
-    } else {
-      let modifiedItem = item;
-      modifiedItem.product.publicPrice = item.product.priceRange;
-      return getPVP(modifiedItem, props.currency, props.dollarValue, discountList)
-    }
-  }
-
-  const handleDownloadImage = async () => {
-    // Obtener el canvas del componente WarpImage
-    const warpCanvas = warpImageRef.current.getCanvas()
-    if (!warpCanvas) {
-      console.error("WarpCanvas no está disponible");
-      return;
-    }
-    // Combinar el canvas con la otra imagen
-    const mockupDiv = mockupRef.current
-    const mockupImage = mockupDiv.querySelector("div") // Ajusta según la estructura
-
-    const combinedCanvas = document.createElement("canvas")
-    const combinedContext = combinedCanvas.getContext("2d")
-
-    combinedCanvas.width = mockupDiv.offsetWidth
-    combinedCanvas.height = mockupDiv.offsetHeight
-
-    combinedContext.drawImage(mockupImage, 0, 0)
-    combinedContext.drawImage(warpCanvas, 0, 0)
-
-    const dataURL = combinedCanvas.toDataURL("image/png")
-
-    // Crear un enlace y descargar el archivo
-    const link = document.createElement("a")
-    link.href = dataURL
-    link.download = "prix.png"
-    link.click()
-  }
-
-  const fetchImages = async (product) => {
-    const url =
-      process.env.REACT_APP_BACKEND_URL + "/mockupImages/" + product._id
-    try {
-      const response = await axios.get(url)
-      const base64Image = response.data
-      if (response.data.size < 1250) {
-        props?.setOpen(true)
-        props?.setMessage("Error al cargar imagen")
-      } else {
-        setBase64Image1(base64Image)
-      }
-    } catch (error) {
-      props?.setOpen(true)
-      props?.setMessage("Error al cargar imagen")
-      console.error("Error fetching image:", error)
-    }
-  }
 
   const allowMockup = (buy, index) => {
     if (buy.product?.mockUp !== undefined) {
@@ -604,6 +516,7 @@ export default function CartReview(props) {
   }
   return (
     <>
+    { console.log("buyState", buyState) }
       <Grid
         item
         style={{
@@ -612,7 +525,6 @@ export default function CartReview(props) {
           justifyContent: "space-between",
         }}
       >
-        {console.log("buyState", buyState)}
         <h1
           style={{
             marginBottom: isMobile ? 40 : 20,
@@ -899,10 +811,8 @@ export default function CartReview(props) {
                         >
                           <strong>Precio Unitario:</strong>
                           {props.currency ? " Bs" : " $"}
-                          {PriceSelect(buy).toLocaleString("de-DE", {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                          })}
+                          {console.log(Number(buy.quantity))}
+                          {Number(toggleDecimalSeparator(buy.product.price)) * Number(buy.quantity)}
                         </Typography>
                       </div>
                       <div

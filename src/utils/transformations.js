@@ -35,12 +35,10 @@
 //     this.center = {};
 //     this.icenter = {};
 //     setTimeout(this.process1, 0, this, 0);
-//     console.log("si?");
 //     console.log(Math.round(img.height * sx / img.width));
 //     console.log(img.height);
 //     console.log(this.img.width);
 //     console.log(this.canvas);
-//     console.log("no?");
 //     // console.log(blob.width);
 //     // setThumbnailUrl(blob.src);
 // }

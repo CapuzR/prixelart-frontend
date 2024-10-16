@@ -368,7 +368,6 @@ const getComissionv2 = (
     prixer !== art.prixerUsername &&
     prixer !== art.owner
   ) {
-    console.log("fucked up")
     return 0
   } else {
     if (currency) {
@@ -930,7 +929,6 @@ const getPVMtext = (product, currency, dollarValue, discountList) => {
 
 const getPVP = (item, currency, dollarValue, discountList) => {
   let { base, prev, final } = 0
-  console.log("ITEM", item);
   let dis = discountList?.filter((dis) => dis._id === item.product?.discount)[0]
   let pubEq =
     typeof item.product.publicEquation === "number"
@@ -1006,7 +1004,7 @@ const getTotalUnitsPVP = (state, currency, dollarValue, discountList) => {
     let pubEq =
       typeof item.product.publicEquation === "number"
         ? item.product.publicEquation
-        : Number(item.product.publicEquation?.replace(/[,]/gi, "."))
+        : Number(item.product.publicEquation)
     let pubFr =
       typeof item.product.publicPrice.from === "number"
         ? item.product.publicPrice.from

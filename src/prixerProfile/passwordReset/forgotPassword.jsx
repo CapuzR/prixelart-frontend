@@ -5,7 +5,7 @@ import { useState } from "react";
 import axios from "axios";
 import { useHistory } from "react-router-dom";
 
-import Copyright from "../../sharedComponents/Copyright/copyright";
+import Copyright from "components/Copyright/copyright";
 
 //material-ui
 import Avatar from "@material-ui/core/Avatar";

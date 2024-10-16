@@ -5,6 +5,25 @@
   text-align: center;
 }
 
+.app {
+  display: flex;
+  flex-direction: column;
+  width: 100vw;
+  height: 100vh;
+}
+
+.app-bar {
+  display: flex;
+  min-width: 100%;
+  min-height: 64px;
+}
+
+.routes {
+  flex: 1;
+  display: flex;
+  height: auto;
+}
+
 .App-logo {
   height: 40vmin;
   pointer-events: none;

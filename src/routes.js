@@ -8,9 +8,9 @@ import PrixerRegistration from "./register/prixerRegistration"
 import PrixerProfile from "./prixerProfile/prixerProfile"
 import FullscreenPhoto from "./prixerProfile/fullscreenPhoto/fullscreenPhoto"
 import Home from "./home/home"
-import { Switch, Route } from "react-router-dom"
+import { Switch, Route, Redirect } from "react-router-dom"
 import Gallery from "./gallery/gallery"
-import Products from "./products/productsCatalog"
+import Products from "./products/catalog/catalog.jsx"
 import ShoppingPage from "./shoppingCart/shoppingPage"
 import expire from "./utils/expire"
 import { makeStyles } from "@material-ui/core/styles"
@@ -27,17 +27,15 @@ import PrixersService from "./prixerServices/prixerService"
 import SoloService from "./prixerProfile/fullscreenPhoto/fullscreenService"
 import TestimonialsGrid from "./testimonials/testimonialsGrid"
 import Map from "./map/index"
-import OrgGrid from "./sharedComponents/prixerGrid/orgGrid"
+import OrgGrid from "components/prixerGrid/orgGrid"
 import { getComission } from "./shoppingCart/pricesFunctions"
 import ChiguireHome from "./orgLanding/chiguireHome"
 import ProductDetail from "./orgLanding/productDetail"
-import ShoppingCartCB from "./orgLanding/shoppingCartCB"
-import PrixPoduct from "./products/prixProduct"
-import ReactGA from "react-ga"
+import shoppingCartCb from "./orgLanding/shoppingCartCb"
+import ProductDetails from "./products/details/Details"
 import AdminRoutes from './admin/adminRoutes.js';
 
-ReactGA.initialize("G-0RWP9B33D8")
-ReactGA.pageview(window.location)
+
 
 const useStyles = makeStyles((theme) => ({
   paper2: {
@@ -563,7 +561,7 @@ function Routes() {
           />
         </Route>
         <Route path="/ChiguireBipolar/carrito">
-          <ShoppingCartCB />
+          <shoppingCartCb />
         </Route>
         <Route path="/ChiguireBipolar/item=:id">
           <ProductDetail />
@@ -577,10 +575,18 @@ function Routes() {
           render={(props) => {
             const params = new URLSearchParams(props.location.search)
             const prod = params.get("producto")
+            const art = params.get("art")
+            const attributes = {};
+            params.forEach((value, key) => {
+              if (key !== "producto" && key !== "arte") {
+                attributes[key] = value;
+              }
+            });
+
 
             if (prod) {
               return (
-                <PrixPoduct
+                <ProductDetails
                   addItemToBuyState={addItemToBuyState}
                   isOpenAssociateProduct={isOpenAssociateProduct}
                   setIsOpenAssociateProduct={setIsOpenAssociateProduct}
@@ -597,35 +603,38 @@ function Routes() {
                   dollarValue={dollarValue}
                   buyState={buyState}
                   setBuyState={setBuyState}
+                  art={art}
+                  attributes={attributes}
                 />
               )
-            } else {
+            } 
+            else {
               return (
                 <Home
-                  deleteItemInBuyState={deleteItemInBuyState}
-                  component={Home}
-                  buyState={buyState}
-                  addItemToBuyState={addItemToBuyState}
-                  isOpenAssociateProduct={isOpenAssociateProduct}
-                  setIsOpenAssociateProduct={setIsOpenAssociateProduct}
-                  setSelectedProductToAssociate={setSelectedProductToAssociate}
-                  selectedProductToAssociate={selectedProductToAssociate}
-                  AssociateProduct={AssociateProduct}
-                  setBuyState={setBuyState}
-                  deleteProductInItem={deleteProductInItem}
-                  setSelectedArtToAssociate={setSelectedArtToAssociate}
-                  changeQuantity={changeQuantity}
-                  valuesConsumerForm={valuesConsumerForm}
-                  setValuesConsumerForm={setValuesConsumerForm}
-                  setOpen={setOpen}
-                  setMessage={setMessage}
-                  setPrixer={setPrixer}
-                  setFullArt={setFullArt}
-                  setSearchResult={setSearchResult}
-                  dollarValue={dollarValue}
-                  setPointedProduct={setPointedProduct}
-                  pointedProduct={pointedProduct}
-                  permissions={permissions}
+                    deleteItemInBuyState={deleteItemInBuyState}
+                    component={Home}
+                    buyState={buyState}
+                    addItemToBuyState={addItemToBuyState}
+                    isOpenAssociateProduct={isOpenAssociateProduct}
+                    setIsOpenAssociateProduct={setIsOpenAssociateProduct}
+                    setSelectedProductToAssociate={setSelectedProductToAssociate}
+                    selectedProductToAssociate={selectedProductToAssociate}
+                    AssociateProduct={AssociateProduct}
+                    setBuyState={setBuyState}
+                    deleteProductInItem={deleteProductInItem}
+                    setSelectedArtToAssociate={setSelectedArtToAssociate}
+                    changeQuantity={changeQuantity}
+                    valuesConsumerForm={valuesConsumerForm}
+                    setValuesConsumerForm={setValuesConsumerForm}
+                    setOpen={setOpen}
+                    setMessage={setMessage}
+                    setPrixer={setPrixer}
+                    setFullArt={setFullArt}
+                    setSearchResult={setSearchResult}
+                    dollarValue={dollarValue}
+                    setPointedProduct={setPointedProduct}
+                    pointedProduct={pointedProduct}
+                    permissions={permissions}
                 />
               )
             }

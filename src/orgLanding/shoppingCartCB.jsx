@@ -22,7 +22,7 @@ import Stepper from "@material-ui/core/Stepper";
 import Step from "@material-ui/core/Step";
 import StepLabel from "@material-ui/core/StepLabel";
 import StepIcon from "@material-ui/core/StepIcon";
-import OrderFormCB from "./cartComponents/orderFormCB";
+import orderFormCb from "./cartComponents/orderFormCb";
 import { Backdrop } from "@material-ui/core";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { nanoid } from "nanoid";
@@ -130,7 +130,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function ShoppingCartCB() {
+export default function shoppingCartCb() {
   const classes = useStyles();
   const history = useHistory();
   const theme = useTheme();
@@ -442,7 +442,7 @@ export default function ShoppingCartCB() {
       case 1:
         return (
           <div>
-            <OrderFormCB
+            <orderFormCb
               buyState={buyState}
               setBuyState={setBuyState}
               open={open}

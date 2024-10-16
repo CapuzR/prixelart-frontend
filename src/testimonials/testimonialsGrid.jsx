@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 import axios from "axios";
 
-import AppBar from "../sharedComponents/appBar/appBar";
 import Container from "@material-ui/core/Container";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Grid from "@material-ui/core/Grid";

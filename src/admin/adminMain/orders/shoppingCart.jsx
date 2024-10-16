@@ -17,7 +17,7 @@ import TextField from "@material-ui/core/TextField"
 import InputAdornment from "@material-ui/core/InputAdornment"
 import Img from "react-cool-img"
 import Tooltip from "@material-ui/core/Tooltip"
-import { getProductsAttributes, getEquation } from "../../../products/services"
+import oS  from './orderServices'
 import StarOutline from "@material-ui/icons/StarOutline"
 
 import x from "../../../apple-touch-icon-180x180.png"
@@ -253,10 +253,10 @@ export default function ShoppingCart(props) {
     await axios.get(base_url).then(async (response) => {
       let productsAttTemp1 = response.data.products
       await productsAttTemp1.map(async (p, iProd, pArr) => {
-        productsAttTemp1 = await getEquation(p, iProd, pArr)
+        productsAttTemp1 = await oS.getEquation(p, iProd, pArr)
       })
       setProductList(
-        getProductsAttributes(productsAttTemp1).sort(function (a, b) {
+        oS.getProductsAttributes(productsAttTemp1).sort(function (a, b) {
           if (a.name.toLowerCase() > b.name.toLowerCase()) {
             return 1
           }

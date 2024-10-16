@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function OrderFormCB(props) {
+export default function orderFormCb(props) {
   const classes = useStyles();
   const theme = useTheme();
   const [paymentMethods, setPaymentMethods] = useState([]);

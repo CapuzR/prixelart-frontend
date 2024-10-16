@@ -1,0 +1,244 @@
+@import 'src/theme.scss';
+
+.prix-product-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 100%;
+  }
+  
+  .first-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 2vw 2vw 0 2vw;
+  }
+  
+  .first-row-title-container {
+    position: relative;
+    width: 48%;
+    align-content: center;
+    justify-content: space-between;
+    display: flex;
+  }
+  
+  .product-title {
+    display: flex;
+    align-items: center;
+    font-size: $font-size-extra-large;
+    font-weight: $font-weight-bold;
+    color: $text-color;
+    width: auto;
+  }
+  
+  .price-selected {
+    font-size: $font-size-medium;
+    margin-top: 1rem;
+    justify-content: flex-end;
+    align-items: center;
+    display: flex;
+    margin: 0 !important;
+    width: 40%;
+  }
+  
+  .buttons-container {
+    position: relative;
+    width: 20%;
+    display: flex;
+    justify-content: flex-end;
+    align-content: center;
+    gap: $spacing-md;
+
+    @include respond-below($breakpoint-md) {
+      gap: $spacing-sm;
+    }
+  }
+
+  .hidden {
+    display: none !important;
+  }  
+
+  .main-content {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-content: center;
+  }
+  
+  .left-side, 
+  .right-side {
+    width: 45%;
+    height: 76vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+  }
+  
+  .carousel-wrapper {
+    padding: $spacing-md;
+    margin: $spacing-sm 0;
+    background-color: $background-color;
+    box-shadow: $box-shadow-medium;
+    border-radius: $border-radius-md;
+    text-align: center;
+    overflow: hidden;
+    min-height: 500px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+  }
+  
+  .accordion-title {
+    font-size: 1.2rem;
+    font-weight: $font-weight-bold;
+  }
+  
+  .accordion-details {
+    max-height: 100px;
+    overflow-y: auto;
+  }
+  
+  .markdown-content {
+    color: $text-color;
+    font-size: $font-size-small;
+    line-height: $line-height-base;
+    background-color: transparent;
+    white-space: pre-wrap;
+  }
+  
+  .info-accordion-wrapper {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .select {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    justify-content: space-around;
+  }
+  
+  .attributes-container {
+    padding: $spacing-md;
+    background-color: $background-color;
+    box-shadow: $box-shadow-medium;
+    border-radius: $border-radius-md;
+    text-align: center;
+    overflow: hidden;
+    display: flex;
+    width: 100%;
+  }
+  
+  .attributes-container.flex-start {
+    justify-content: flex-start;
+  }
+  
+  .attributes-container.space-between {
+    justify-content: space-between;
+  }
+  
+  .attribute-wrapper {
+    width: 45%;
+  }
+  
+  .right-side-bottom {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    justify-content: space-around;
+    height: 80%;
+  }
+  
+  .art-selection-container {
+    padding: $spacing-md;
+    margin: $spacing-sm;
+    background-color: $background-color;
+    box-shadow: $box-shadow-medium;
+    border-radius: $border-radius-md;
+    text-align: center;
+    overflow: hidden;
+  }
+  
+  .art-grid-wrapper {
+    height: 100%;
+  }
+  
+  .custom-paging-list-item {
+    list-style: none;
+    margin-left: -12px;
+    margin-right: 30px;
+  }
+  
+  .custom-paging-link {
+    display: block;
+    text-decoration: none;
+  }
+  
+  .custom-paging-image {
+    object-fit: cover;
+    
+    @include respond-below($breakpoint-sm) {
+      width: 45px;
+      height: 45px;
+    }
+  
+    @include respond-above($breakpoint-sm) {
+      width: 70px;
+      height: 70px;
+    }
+  }
+  
+  .warp-image-container {
+    width: 210px;
+    height: 210px;
+    position: relative;
+    margin: 0 auto;
+  }
+  
+  .mock-up-overlay {
+    width: 210px;
+    height: 210px;
+    background-size: cover;
+    border-radius: $border-radius-lg;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: $z-index-modal;
+  }
+  
+  .art-comparison-grid {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+  }
+  
+  .product-image-wrapper {
+    display: flex;
+    flex-direction: column;
+    height: fit-content;
+    width: 40%;
+  }
+  
+  .product-image, 
+  .art-image {
+    background-color: #eeeeee;
+    height: auto;
+    border-radius: $border-radius-button;
+  }
+  
+  .art-image-wrapper {
+    display: flex;
+    flex-direction: column;
+    width: 40%;
+    justify-content: center;
+    height: 100%;
+  }
+  
+  .stepper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: $spacing-md 0;
+  }

@@ -16,7 +16,6 @@ import posada from "../../images/brands/posada.png"
 const images = [chiguire, cocacola, iskia, modusistema, posada]
 
 const BrandsCarousel = () => {
-  //   const [currentIndex, setCurrentIndex] = useState(0)
   const [nextIndex, setNextIndex] = useState(0)
   const theme = useTheme()
   const isDesktop = useMediaQuery(theme.breakpoints.up("lg"))
@@ -27,14 +26,6 @@ const BrandsCarousel = () => {
     setNextIndex(next)
   }
 
-  //   useEffect(() => {
-  //     const interval = setInterval(() => {
-  //       setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length)
-  //     }, 5000)
-
-  //     return () => clearInterval(interval)
-  //   }, [])
-
   const settings = {
     autoplay: true,
     autoplaySpeed: 4000,
@@ -42,7 +33,7 @@ const BrandsCarousel = () => {
     infinite: true,
     pauseOnHover: true,
     slidesToScroll: 1,
-    slidesToShow: 1,
+    slidesToShow: isMobile ? 1 : 3,
     speed: 1000,
   }
 
@@ -57,20 +48,19 @@ const BrandsCarousel = () => {
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
-              height: "100% !important"
+              height: "100% !important",
             }}
           >
             <div
               className={`${nextIndex + 1 === i ? "brand-next" : "brand"}`}
               style={{
                 backgroundImage: `url(${art})`,
-                height:
-                  (isMobile ? 80 : nextIndex + 1 === i ? 100 : 60),
+                height: isMobile ? 80 : nextIndex + 1 === i ? 100 : 60,
                 width: "100%",
                 backgroundSize: "contain",
                 backgroundRepeat: "no-repeat",
                 backgroundPosition: "center",
-                marginTop: (nextIndex + 1 !== i && 20),
+                marginTop: nextIndex + 1 !== i && 20,
                 transition: "height 0.5s ease, margin-top 0.5s ease",
               }}
             />

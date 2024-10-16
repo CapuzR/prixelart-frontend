@@ -135,7 +135,7 @@ export default function ReadProducts(props) {
     await axios
       .get(base_url, { withCredentials: true })
       .then((response) => {
-        setCategories(response.data.surcharges)
+        setCategories(response.data.categories)
       })
       .catch((error) => {
         console.log(error)
@@ -170,6 +170,13 @@ export default function ReadProducts(props) {
     props.setActiveCrud("updateSurcharge")
   }
 
+  const handleActiveCategory = (category, action) => {
+    props.setCategory(category)
+    localStorage.setItem("category", JSON.stringify(category))
+    history.push("/admin/product/" + action + "/" + category._id)
+    props.setActiveCrud("updateCategory")
+
+  }
   const deleteProduct = async (id) => {
     const URI = process.env.REACT_APP_BACKEND_URL + `/product/delete/${id}`
     const res = await axios
@@ -200,6 +207,24 @@ export default function ReadProducts(props) {
           props.setDeleteOpen(true)
           props.setDeleteMessage("Descuento eliminado exitosamente.")
           getDiscounts()
+        }, 500)
+      )
+  }
+
+  const deleteCategory = async (id) => {
+    const URI =
+      process.env.REACT_APP_BACKEND_URL + `/product/delete-category/${id}`
+    const res = await axios
+      .delete(
+        URI,
+        { adminToken: localStorage.getItem("adminTokenV") },
+        { withCredentials: true }
+      )
+      .then(
+        setTimeout(() => {
+          props.setDeleteOpen(true)
+          props.setDeleteMessage("Categoría eliminado exitosamente.")
+          getCategories()
         }, 500)
       )
   }
@@ -413,75 +438,62 @@ export default function ReadProducts(props) {
         value={value}
         index={1}
       >
-        {categories ? (
+        {categories.length > 0 ? (
           <Table size="small">
             <TableHead>
               <TableRow>
                 <TableCell align="center"></TableCell>
-                <TableCell align="center">Nombre</TableCell>
                 <TableCell align="center">Activo</TableCell>
+                <TableCell align="center">Nombre</TableCell>
                 <TableCell align="center">Ícono</TableCell>
                 <TableCell align="center">Imagen</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {categories &&
-                categories.map((dis) => (
-                  <TableRow key={dis._id}>
-                    <TableCell align="center">
-                      {props.permissions?.createDiscount && (
-                        <Fab
-                          color="default"
-                          style={{ width: 35, height: 35 }}
-                          aria-label="edit"
-                          onClick={(e) => {
-                            handleActiveDiscount(dis, "updateDiscount")
-                          }}
-                        >
-                          <EditIcon />
-                        </Fab>
-                      )}
-                    </TableCell>
-                    <TableCell align="center">{dis.name}</TableCell>
-                    <TableCell align="center">
-                      <Checkbox
-                        disabled
-                        checked={dis.active}
-                        color="primary"
-                        inputProps={{ "aria-label": "secondary checkbox" }}
-                      />
-                    </TableCell>
-                    <TableCell align="center">{dis.type}</TableCell>
-                    <TableCell align="center">
-                      {dis.type === "Porcentaje"
-                        ? "%" + dis.value
-                        : "$" + dis.value}
-                    </TableCell>
-                    <TableCell align="center">
-                      <ul>
-                        {dis.appliedProducts.map((el, i) => (
-                          <li key={i}>{el}</li>
-                        ))}
-                      </ul>
-                    </TableCell>
-
-                    <TableCell align="center">
-                      {props.permissions?.deleteDiscount && (
-                        <Fab
-                          color="default"
-                          style={{ width: 35, height: 35 }}
-                          aria-label="Delete"
-                          onClick={(e) => {
-                            e.preventDefault()
-                            deleteDiscount(dis._id)
-                          }}
-                        >
-                          <DeleteIcon />
-                        </Fab>
-                      )}
-                    </TableCell>
-                  </TableRow>
-                ))}
+              {categories.map((cat) => (
+                <TableRow key={cat._id}>
+                  <TableCell align="center">
+                    {props.permissions?.createDiscount && (
+                      <Fab
+                        color="default"
+                        style={{ width: 35, height: 35 }}
+                        aria-label="edit"
+                        onClick={(e) => {
+                          handleActiveCategory(cat, "updateCategory")
+                        }}
+                      >
+                        <EditIcon />
+                      </Fab>
+                    )}
+                  </TableCell>
+                  <TableCell align="center">
+                    <Checkbox
+                      disabled
+                      checked={cat.active}
+                      color="primary"
+                      inputProps={{ "aria-label": "secondary checkbox" }}
+                    />
+                  </TableCell>
+                  <TableCell align="center">{cat.name}</TableCell>
+                  <TableCell align="center"></TableCell>
+                  <TableCell align="center"></TableCell>
+                  <TableCell align="center">
+                    {props.permissions?.deleteDiscount && (
+                      <Fab
+                        color="default"
+                        style={{ width: 35, height: 35 }}
+                        aria-label="Delete"
+                        onClick={(e) => {
+                          e.preventDefault()
+                          deleteCategory(cat._id)
+                        }}
+                      >
+                        <DeleteIcon />
+                      </Fab>
+                    )}
+                  </TableCell>
+                </TableRow>
+              ))}
             </TableBody>
           </Table>
         ) : (

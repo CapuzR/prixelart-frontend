@@ -320,8 +320,8 @@ export default function Orders(props) {
       { header: "Validación del pago", key: "payStatus", width: 12 },
       { header: "Fecha de pago", key: "payDate", width: 11 },
       { header: "Método de entrega", key: "shippingData", width: 14 },
-      { header: "Fecha de entrega", key: "shippingDate", width: 11 },
       { header: "Costo unitario", key: "price", width: 8 },
+      { header: "Fecha de entrega", key: "shippingDate", width: 11 },
       { header: "Fecha concretada", key: "completionDate", width: 11 },
     ]
     worksheet.getRow(1).eachCell((cell) => {

@@ -8,7 +8,7 @@ import { useConversionRate, useCurrency, useLoading, useSnackBar } from 'context
 import { getPriceWithSelectedVariant, formatPrice, splitDescription, prepareProductData } from "../services";
 
 import { fetchProductDetails } from '../api';
-import { fetchArtDetails } from 'gallery/api';
+import { fetchArtDetails } from 'art/api';
 
 import Portrait from "./views/Portrait";
 import Landscape from "./views/Landscape";
@@ -181,6 +181,7 @@ const Details: React.FC<Props> = (props) => {
     history.push({ pathname: location.pathname, search: queryString });
     showSnackBar("¡Arte seleccionado! Puedes agregar el item al carrito");
   };
+  
 //TO DO: CART. Esto no debería ir acá. Todo debería estar en el Cart, que QUIZÁS debería ser un Context.
   const addItemToBuyState = () => { 
     if (selectedArt === undefined) {

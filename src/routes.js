@@ -9,7 +9,7 @@ import PrixerProfile from "./prixerProfile/prixerProfile"
 import FullscreenPhoto from "./prixerProfile/fullscreenPhoto/fullscreenPhoto"
 import Home from "./home/home"
 import { Switch, Route } from "react-router-dom"
-import Gallery from "./gallery/gallery"
+import Catalog from "art/catalog/views/Catalog"
 import Products from "./products/catalog/Catalog.jsx"
 import ShoppingPage from "./cart/shoppingPage"
 import expire from "./utils/expire"
@@ -378,7 +378,7 @@ function Routes() {
           />
         </Route>
         <Route path="/galeria">
-          <Gallery
+          <Catalog
             buyState={buyState}
             addItemToBuyState={addItemToBuyState}
             isOpenAssociateProduct={isOpenAssociateProduct}

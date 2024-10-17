@@ -22,7 +22,7 @@ export default interface Product {
     cost?: string;
     attributes?: any[]; // Replace `any` with a more specific type if attributes have a defined structure
     active: boolean;
-    variants?: any[]; // Replace `any` with a more specific type if variants have a defined structure
+    variants?: []; // Replace `any` with a more specific type if variants have a defined structure
     hasSpecialVar: boolean;
     autoCertified?: boolean;
     discount?: string;

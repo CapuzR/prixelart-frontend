@@ -1,4 +1,4 @@
-import { Art } from '../gallery/interface';
+import { Art } from '../art/interface';
 import Product from '../products/model';
 
 //TODO: Art y Product deberían ser opcionales??

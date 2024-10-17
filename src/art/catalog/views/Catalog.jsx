@@ -3,7 +3,7 @@ import axios from "axios";
 
 import AppBar from "components/appBar/appBar";
 import FloatingAddButton from "components/floatingAddButton/floatingAddButton";
-import ArtsGrid from "../prixerProfile/grid/grid";
+import ArtsGrid from "prixerProfile/grid/grid";
 import Container from "@material-ui/core/Container";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Grid from "@material-ui/core/Grid";
@@ -23,8 +23,8 @@ import Img from "react-cool-img";
 import { useHistory } from "react-router-dom";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { useTheme } from "@material-ui/core/styles";
-import CartReview from "../cart/cartReview";
-import WarpImage from "../admin/productCrud/warpImage";
+import CartReview from "cart/cartReview";
+import WarpImage from "admin/productCrud/warpImage";
 import CreateService from "components/createService/createService";
 
 const useStyles = makeStyles((theme) => ({
@@ -64,7 +64,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Gallery(props) {
+export default function Catalog(props) {
   const [openArtFormDialog, setOpenArtFormDialog] = useState(false);
   const [openShoppingCart, setOpenShoppingCart] = useState(false);
   const [selectedArt, setSelectedArt] = useState(undefined);

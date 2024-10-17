@@ -23,7 +23,7 @@ import OrderDetails from "./orderDetails"
 import CreateOrder from "./createOrder"
 // import PayComission from "./payComission"
 import { nanoid } from "nanoid"
-import { getComission } from "../../../shoppingCart/pricesFunctions"
+import { getComission } from "../../../cart/pricesFunctions"
 import moment from "moment"
 import "moment/locale/es"
 const excelJS = require("exceljs")

@@ -24,7 +24,7 @@ export const ProductCarousel = ({ product, selectedArt, selectedItem, type, size
     const theme = useTheme();
     const classes = useStyles();
     const isTab = useMediaQuery(theme.breakpoints.down("sm"));
-
+    
     const settings = {
         customPaging: function (i) {
             let image = selectedItem?.sources?.images[i]?.url;

@@ -23,7 +23,7 @@ import Img from "react-cool-img";
 import { useHistory } from "react-router-dom";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { useTheme } from "@material-ui/core/styles";
-import CartReview from "../shoppingCart/cartReview";
+import CartReview from "../cart/cartReview";
 import WarpImage from "../admin/productCrud/warpImage";
 import CreateService from "components/createService/createService";
 

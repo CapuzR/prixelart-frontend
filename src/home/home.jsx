@@ -31,7 +31,7 @@ import ArrowForwardIosIcon from "@material-ui/icons/ArrowForwardIos"
 
 import CreateService from "components/createService/createService"
 import ArtUploader from "components/artUploader/artUploader"
-import CartReview from "../shoppingCart/cartReview"
+import CartReview from "../cart/cartReview"
 import ReactGA from "react-ga"
 import Slider from "react-slick"
 import "slick-carousel/slick/slick.css"

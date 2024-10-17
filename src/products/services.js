@@ -1,5 +1,5 @@
 import { format, toggleDecimalSeparator } from '../utils/utils';
-import { getVariantPrice } from './api'; // Importing the API function
+import { fetchVariantPrice } from './api'; // Importing the API function
 
 export const splitDescription = (description) => {
   const technicalKeyword = "ESPECIFICACIÓN TÉCNICA";
@@ -61,12 +61,12 @@ export const getPriceWithSelectedVariant = async (item, currency, conversionRate
   return formatPrice(item, currency, conversionRate);
 };
 
-export const prepareProductData = ({ variants, attributes, product }) => {
-  const initialSelection = attributes?.reduce((acc, attr) => { acc[attr.name] = ""; return acc; }, {});
+export const prepareProductData = (product) => {
+  const initialSelection = product.attributes?.reduce((acc, attr) => { acc[attr.name] = ""; return acc; }, {});
 
     return {
-      product: { ...product, selection: initialSelection, attributes, variants },
-      selectedItem: { ...product, attributes, variants }
+      product: { ...product, selection: initialSelection },
+      selectedItem: product
     };
 };
 
@@ -86,7 +86,7 @@ const getSelectedVariantArtPrice = async (variants, selectedAtt, selectedArt) =>
     return null;
   }
   
-  const variantPrice = await getVariantPrice(selectedVariant._id, selectedArt?.artId);
+  const variantPrice = await fetchVariantPrice(selectedVariant._id, selectedArt?.artId);
 
   return variantPrice;
 };

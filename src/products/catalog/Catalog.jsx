@@ -1,7 +1,7 @@
 import axios from "axios"
 import React, { useEffect } from "react"
 import FloatingAddButton from "components/floatingAddButton/floatingAddButton"
-import ProductsGrid from "../components/grid"
+import ProductsGrid from "../components/Grid"
 
 import Container from "@material-ui/core/Container"
 import CssBaseline from "@material-ui/core/CssBaseline"
@@ -21,6 +21,8 @@ import useMediaQuery from "@material-ui/core/useMediaQuery"
 import { IconButton } from "@material-ui/core"
 import { useTheme } from "@material-ui/core/styles"
 
+import { fetchBestSellers } from '../api';
+
 import Slider from "react-slick"
 import "slick-carousel/slick/slick.css"
 import "slick-carousel/slick/slick-theme.css"
@@ -28,7 +30,7 @@ import { useState } from "react"
 import ArtUploader from "components/artUploader/artUploader"
 import Img from "react-cool-img"
 import { useHistory } from "react-router-dom"
-import CartReview from "../../shoppingCart/cartReview"
+import CartReview from "../../cart/cartReview"
 import CreateService from "components/createService/createService"
 import ReactGA from "react-ga"
 
@@ -105,16 +107,6 @@ export default function ProductsCatalog(props) {
       : "base"
   )
   
-  const getBestSellers = async () => {
-    const url = process.env.REACT_APP_BACKEND_URL + "/getBestSellers"
-    try {
-      const bestS = await axios.get(url)
-      setBestSellers(bestS.data.products)
-    } catch (error) {
-      console.log(error)
-    }
-  }
-
   const handleProduct = async (product) => {
     props.setPointedProduct(product.name)
     document.getElementById(product.name)?.scrollIntoView({
@@ -122,9 +114,15 @@ export default function ProductsCatalog(props) {
       block: "start",
     })
   }
+
   useEffect(() => {
-    getBestSellers()
-  }, [])
+    const getBestSellers = async () => {
+      const bestSellers = await fetchBestSellers();
+      setBestSellers(bestSellers);
+    };
+  
+    getBestSellers();
+  }, []);
 
   const viewDetails = (product) => {
     history.push({
@@ -150,8 +148,6 @@ export default function ProductsCatalog(props) {
 
   return (
     <>
-      {/* <AppBar prixerUsername={prixerUsername} /> */}
-
       <Container
         component="main"
         className={classes.paper}

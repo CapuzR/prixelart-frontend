@@ -20,7 +20,7 @@ import FormControl from "@material-ui/core/FormControl";
 import Snackbar from "@material-ui/core/Snackbar";
 import { Backdrop } from "@material-ui/core";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import validations from "../../../shoppingCart/validations";
+import validations from "../../../cart/validations";
 import axios from "axios";
 // import CircularProgress from '@material-ui/core/CircularProgress';
 // import Backdrop from '@material-ui/core/Backdrop';

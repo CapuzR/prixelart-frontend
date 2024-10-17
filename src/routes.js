@@ -8,10 +8,10 @@ import PrixerRegistration from "./register/prixerRegistration"
 import PrixerProfile from "./prixerProfile/prixerProfile"
 import FullscreenPhoto from "./prixerProfile/fullscreenPhoto/fullscreenPhoto"
 import Home from "./home/home"
-import { Switch, Route, Redirect } from "react-router-dom"
+import { Switch, Route } from "react-router-dom"
 import Gallery from "./gallery/gallery"
-import Products from "./products/catalog/catalog.jsx"
-import ShoppingPage from "./shoppingCart/shoppingPage"
+import Products from "./products/catalog/Catalog.jsx"
+import ShoppingPage from "./cart/shoppingPage"
 import expire from "./utils/expire"
 import { makeStyles } from "@material-ui/core/styles"
 import Prixers from "./prixers/prixersGrid"
@@ -28,10 +28,10 @@ import SoloService from "./prixerProfile/fullscreenPhoto/fullscreenService"
 import TestimonialsGrid from "./testimonials/testimonialsGrid"
 import Map from "./map/index"
 import OrgGrid from "components/prixerGrid/orgGrid"
-import { getComission } from "./shoppingCart/pricesFunctions"
+import { getComission } from "./cart/pricesFunctions"
 import ChiguireHome from "./orgLanding/chiguireHome"
 import ProductDetail from "./orgLanding/productDetail"
-import shoppingCartCb from "./orgLanding/shoppingCartCb"
+import ShoppingCartCb from "./orgLanding/ShoppingCartCb"
 import ProductDetails from "./products/details/Details"
 import AdminRoutes from './admin/adminRoutes.js';
 
@@ -561,7 +561,7 @@ function Routes() {
           />
         </Route>
         <Route path="/ChiguireBipolar/carrito">
-          <shoppingCartCb />
+          <ShoppingCartCb />
         </Route>
         <Route path="/ChiguireBipolar/item=:id">
           <ProductDetail />

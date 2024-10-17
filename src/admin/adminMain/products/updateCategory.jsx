@@ -188,7 +188,7 @@ export default function UpdateCategory(props) {
           <CircularProgress />
         </Backdrop>
       }
-      <Title>Crear Categoría</Title>
+      <Title>Actualizar Categoría</Title>
       <form
         style={{
           height: "auto",
@@ -378,7 +378,7 @@ export default function UpdateCategory(props) {
           disabled={buttonState}
           style={{ marginTop: 20 }}
         >
-          Crear
+          Actualizar
         </Button>
       </form>
 

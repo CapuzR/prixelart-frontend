@@ -8,19 +8,19 @@ import { useConversionRate, useCurrency, useLoading, useSnackBar } from 'context
 import { getPriceWithSelectedVariant, formatPrice, splitDescription, prepareProductData } from "../services";
 
 import { fetchProductDetails } from '../api';
-import { fetchArtDetails } from 'gallery/api';
+import { fetchArtDetails } from 'art/api';
 
 import Portrait from "./views/Portrait";
 import Landscape from "./views/Landscape";
 
 import Product from '../interfaces';
+import { CartItem } from '../apiInterfaces';
 import { queryCreator, getUrlParams } from "./services";
-import { ConfigurationServicePlaceholders } from "aws-sdk/lib/config_service_placeholders";
 
 ReactGA.initialize("G-0RWP9B33D8");
 
 interface Props {
-  buyState: any[];
+  buyState: CartItem[];
   setBuyState: (state: any[]) => void;
   setFullArt: (art: any) => void;
   fullArt: any;
@@ -46,8 +46,6 @@ const Details: React.FC<Props> = (props) => {
   const [expanded, setExpanded] = useState<string | false>(false);
   const searchParams = new URLSearchParams(window.location.search);
   
-
-  // Detect screen resize for dynamic layout changes
   useEffect(() => {
     const handleResize = () => {
       setIsPortrait(window.innerWidth < 768);
@@ -97,6 +95,7 @@ const Details: React.FC<Props> = (props) => {
   };
 
   useEffect(() => {
+    console.log("buyState", props.buyState);
     const fetchProduct = async () => {
       setLoading(true);
       try {
@@ -145,6 +144,8 @@ const Details: React.FC<Props> = (props) => {
       setSelectedItem((prevSelectedProduct) => ({
         ...prevSelectedProduct,
         price: updatedPrice,
+        //Esto está acá solo por el carrito, hay que volárselo..
+        //Considerar qué pasa si el user metió todo en el carrito y de repente inicia sesión como Prixer.
         publicEquation: {
           from: updatedPrice,
           to: updatedPrice
@@ -180,6 +181,7 @@ const Details: React.FC<Props> = (props) => {
     history.push({ pathname: location.pathname, search: queryString });
     showSnackBar("¡Arte seleccionado! Puedes agregar el item al carrito");
   };
+  
 //TO DO: CART. Esto no debería ir acá. Todo debería estar en el Cart, que QUIZÁS debería ser un Context.
   const addItemToBuyState = () => { 
     if (selectedArt === undefined) {
@@ -209,7 +211,6 @@ const Details: React.FC<Props> = (props) => {
 
   return (
     <>
-      {/* Render Portrait or Landscape depending on screen size */}
       {
       isPortrait ? (
         <Portrait

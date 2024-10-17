@@ -21,7 +21,7 @@ import MDEditor from "@uiw/react-md-editor";
 import Dialog from "@material-ui/core/Dialog";
 import Typography from "@material-ui/core/Typography";
 import { useHistory } from "react-router-dom";
-import CartReview from "../shoppingCart/cartReview";
+import CartReview from "../cart/cartReview";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { useTheme } from "@material-ui/core/styles";
 import DialogActions from "@material-ui/core/DialogActions";

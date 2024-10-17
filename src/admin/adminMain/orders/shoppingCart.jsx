@@ -25,7 +25,7 @@ import {
   UnitPrice,
   UnitPriceSug,
   getComission,
-} from "../../../shoppingCart/pricesFunctions"
+} from "../../../cart/pricesFunctions"
 import { update } from "immutable"
 const drawerWidth = 240
 

@@ -28,8 +28,6 @@ import { processProductsResponse } from '../services';
 
 ReactGA.initialize("G-0RWP9B33D8")
 
-//  TO DO: Llevar CSS a su propio archivo? A mi me gusta más, debatir con War.
-//   Tailwind y cualquier inline desordena el código imo. Hasta qué punto
 const useStyles = makeStyles((theme) => ({
   formControl: {
     margin: theme.spacing(1),

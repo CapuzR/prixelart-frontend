@@ -20,7 +20,7 @@ import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import FormControl from "@material-ui/core/FormControl";
 import clsx from "clsx";
-import validations from "../../shoppingCart/validations";
+import validations from "../../cart/validations";
 import HighlightOffOutlinedIcon from "@material-ui/icons/HighlightOffOutlined";
 import Checkbox from "@material-ui/core/Checkbox";
 import Backdrop from "@material-ui/core/Backdrop";

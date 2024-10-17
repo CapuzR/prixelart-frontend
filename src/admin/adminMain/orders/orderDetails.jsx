@@ -20,7 +20,7 @@ import ArrowBackIcon from "@material-ui/icons/ArrowBack"
 import WarpImage from "../../productCrud/warpImage"
 
 import x from "../../../apple-touch-icon-180x180.png"
-import { getPVP, getPVM } from "../../../shoppingCart/pricesFunctions"
+import { getPVP, getPVM } from "../../../cart/pricesFunctions"
 import moment from "moment"
 import "moment/locale/es"
 

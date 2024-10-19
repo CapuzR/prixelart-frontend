@@ -3,7 +3,7 @@ import axios from "axios";
 
 import AppBar from "components/appBar/appBar";
 import FloatingAddButton from "components/floatingAddButton/floatingAddButton";
-import ArtsGrid from "prixerProfile/grid/grid";
+import ArtsGrid from "art/components/grid";
 import Container from "@material-ui/core/Container";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Grid from "@material-ui/core/Grid";
@@ -168,14 +168,12 @@ export default function Catalog(props) {
 
   return (
     <>
-      {/* <AppBar prixerUsername={prixerUsername} /> */}
-
       <Container component="main" maxWidth="s" className={classes.paper}>
         <CssBaseline />
 
         <Grid
           style={{
-            marginTop: 90,
+            marginTop: 20,
             justifyContent: "center",
             alignItems: "center",
             display: "flex",

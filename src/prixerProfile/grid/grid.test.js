@@ -1,6 +1,6 @@
 import React from 'react';
 import renderer from 'react-test-renderer';
-import Grid from "./grid";
+import Grid from "../../art/components/grid";
 
 it('Login renders correctly', () => {
   const tree = renderer

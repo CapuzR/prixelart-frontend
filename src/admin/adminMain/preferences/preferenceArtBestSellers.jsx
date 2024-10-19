@@ -16,7 +16,7 @@ import {
   VictoryLabel,
   VictoryTheme,
 } from "victory"
-import ArtGrid from "../../../prixerProfile/grid/grid"
+import ArtGrid from "../../../art/components/grid"
 const useStyles = makeStyles((theme) => ({
   backdrop: {
     zIndex: theme.zIndex.drawer + 1,

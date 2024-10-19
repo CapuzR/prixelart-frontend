@@ -7,7 +7,7 @@ import FloatingAddButton from "components/floatingAddButton/floatingAddButton";
 import CreateService from "components/createService/createService";
 import UserData from "./userData/userData";
 import PrixerOptions from "./prixerOptions/prixerOptions";
-import ArtsGrid from "./grid/grid";
+import ArtsGrid from "../art/components/grid";
 import Container from "@material-ui/core/Container";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Grid from "@material-ui/core/Grid";

@@ -25,9 +25,12 @@ import Tooltip from "@material-ui/core/Tooltip"
 import CardActionArea from "@material-ui/core/CardActionArea"
 import Box from "@material-ui/core/Box"
 import AddShoppingCartIcon from "@material-ui/icons/AddShoppingCart"
-import FullscreenPhoto from "../fullscreenPhoto/fullscreenPhoto"
+import FullscreenPhoto from "../../prixerProfile/fullscreenPhoto/fullscreenPhoto"
 import Star from "@material-ui/icons/StarRate"
 import StarOutline from "@material-ui/icons/StarOutline"
+
+import { readGallery, setVisibleArt } from "../api"
+import { searchPhotos } from "../services"
 
 const IOSSwitch = withStyles((theme) => ({
   root: {
@@ -124,7 +127,6 @@ export default function Grid(props) {
   const [tiles, setTiles] = useState([])
   const [total, setTotal] = useState(1)
   const history = useHistory()
-  const [onAdmin, setOnAdmin] = useState(false)
   let globalParams = new URLSearchParams(window.location.search)
   const [searchValue, setSearchValue] = useState(
     globalParams.get("name") || null
@@ -161,17 +163,9 @@ export default function Grid(props) {
     setSelectedArt(undefined)
   }
 
-  const setVisibleArt = async (art, id, event) => {
+  const makeVisible = async (art) => {
     setLoading(true)
-    const base_url =
-      process.env.REACT_APP_BACKEND_URL + "/art/disable/" + art.artId
-    art.visible = !art.visible
-    const response = await axios.put(
-      base_url,
-      art,
-      { adminToken: localStorage.getItem("adminTokenV") },
-      { withCredentials: true }
-    )
+    const response = await setVisibleArt(art.artId, art.visible)
     setSnackBarMessage("Arte modificado exitosamente")
     setSnackBar(true)
     setLoading(false)
@@ -181,178 +175,42 @@ export default function Grid(props) {
   }
 
   useEffect(() => {
-    if (window.location.pathname.includes("/admin/preferences/read")) {
-      setOnAdmin(true)
-    }
-  }, [])
+    const fetchData = async () => {
+      try {
+        let filters = {}
+        if (searchValue) filters.text = searchValue
+        if (categoryValue) filters.category = categoryValue
+        if (props.prixerUsername || globalParams.get("prixer")) {
+          filters.username = props.prixerUsername || globalParams.get("prixer")
+        }
+        filters.initialPoint = (pageNumber - 1) * itemsPerPage
+        filters.itemsPerPage = itemsPerPage
 
-  const getLatest = () => {
-    try {
-      const base_url = process.env.REACT_APP_BACKEND_URL + "/art/get-latest"
-      axios.get(base_url).then((response) => {
-        setTiles(response.data.arts)
-        props.setSearchResult(response.data.arts)
+        const response = await readGallery(filters)
+        setTiles(response.arts)
+        setTotal(response.length)
+        props.setSearchResult(response?.data?.arts)
+      } catch (error) {
+        console.error("Error fetching products:", error)
+      } finally {
         setBackdrop(false)
-      })
-    } catch {
-      console.error("Error consultando artes")
-      setBackdrop(false)
+      }
     }
-  }
+    fetchData()
+  }, [searchValue, categoryValue, pageNumber, props, globalParams])
 
-  const readGallery = async (filters) => {
-    try {
-      const base_url =
-        process.env.REACT_APP_BACKEND_URL + "/art/read-for-gallery"
-      const response = await axios.post(base_url, filters)
-      setTiles(response.data.arts)
-      setTotal(response.data.length)
-      props.setSearchResult(response.data.arts)
-      setBackdrop(false)
-    } catch {
-      console.error("Error consultando artes")
-      setBackdrop(false)
-    }
-  }
-
-  useEffect(() => {
-    let filters = {}
-    if (searchValue) filters.text = searchValue
-    if (categoryValue) filters.category = categoryValue
-    if (props.prixerUsername || globalParams.get("prixer")) {
-      filters.username = props.prixerUsername || globalParams.get("prixer")
-    }
-    filters.initialPoint = (pageNumber - 1) * itemsPerPage
-    filters.itemsPerPage = itemsPerPage
-
-    if (props.inHome) {
-      getLatest()
-    } else {
-      readGallery(filters)
-    }
-  }, [searchValue, categoryValue, pageNumber])
-
-  const handleFullImage = async (e, tile) => {
-    if (onAdmin) {
-      props.addMostSellerToBestSeller(tile.title)
-    } else {
-      props.setFullArt(tile)
-      props.setSearchResult(tiles)
-      let art = e.target.id
-      history.push({
-        pathname: "/art=" + art,
-      })
-      setOpenFullArt(true)
-    }
-  }
-
-  const searchPhotos = (queryValue, categories) => {
+  const handleSearch = (queryValue, categories) => {
     setSearchValue(queryValue)
     setCategoryValue(categories)
-    if (window.location.search.includes("producto=")) {
-      if (queryValue !== null && categories !== null) {
-        history.push({
-          pathname:
-            window.location.pathname +
-            "/s?category=" +
-            categories +
-            "&name=" +
-            queryValue,
-        })
-      } else if ((categories?.length > 0 && queryValue === null) || "") {
-        history.push({
-          pathname: window.location.pathname + "/s?category=" + categories,
-        })
-      } else if (queryValue) {
-        history.push({
-          pathname: window.location.pathname + "/s?name=" + queryValue,
-        })
-      }
-    } else if (onAdmin) {
-      if (queryValue !== null && categories !== null) {
-        history.push({
-          pathname:
-            "/admin/preferences/read/s?category=" +
-            categories +
-            "&name=" +
-            queryValue,
-        })
-      } else if ((categories?.length > 0 && queryValue === null) || "") {
-        history.push({
-          pathname: "/admin/preferences/read/s?category=" + categories,
-        })
-      } else if (queryValue) {
-        history.push({
-          pathname: "/admin/preferences/read/s?name=" + queryValue,
-        })
-      } else {
-        history.push({
-          pathname: "/admin/preferences/read/",
-        })
-      }
-    } else if (props.prixerUsername || globalParams.get("prixer")) {
-      //
-      if (queryValue !== null && categories !== null) {
-        history.push({
-          pathname:
-            "/galeria/s?prixer=" +
-            (props.prixerUsername || globalParams.get("prixer")) +
-            "&category=" +
-            categories +
-            "&name=" +
-            queryValue,
-        })
-      } else if ((categories.length > 0 && queryValue === null) || "") {
-        history.push({
-          pathname:
-            "/galeria/s?prixer=" +
-            (props.prixerUsername || globalParams.get("prixer")) +
-            "&category=" +
-            categories,
-        })
-      } else if (queryValue) {
-        history.push({
-          pathname:
-            "/galeria/s?prixer=" +
-            (props.prixerUsername || globalParams.get("prixer")) +
-            "&name=" +
-            queryValue,
-        })
-      } else {
-        history.push({
-          pathname:
-            "/galeria/s?prixer=" + props.prixerUsername + "&name=" + queryValue,
-        })
-      }
-    } else {
-      if (queryValue !== null && categories !== null) {
-        history.push({
-          pathname: "/galeria/s?category=" + categories + "&name=" + queryValue,
-        })
-      } else if ((categories?.length > 0 && queryValue === null) || "") {
-        history.push({
-          pathname: "/galeria/s?category=" + categories,
-        })
-      } else if (queryValue) {
-        history.push({
-          pathname: "/galeria/s?name=" + queryValue,
-        })
-      } else {
-        history.push({
-          pathname: "/galeria/",
-        })
-      }
-    }
+    searchPhotos(queryValue, categories, history, props, globalParams)
   }
 
-  const addingToCart = (e, tile) => {
-    e.preventDefault()
-    if (window.location.search.includes("producto=")) {
-      props.setSelectedArt(tile)
-    } else {
-      props.setSelectedArt(tile)
-      props.setIsOpenAssociateProduct(true)
-    }
+  const handleFullImageClick = (e, tile) => {
+    handleFullImage(e, tile, props, history, setOpenFullArt)
+  }
+
+  const handleAddingToCart = (e, tile) => {
+    addingToCart(e, tile, props)
   }
 
   const msnry = new Masonry(".grid", {
@@ -373,7 +231,7 @@ export default function Grid(props) {
           style={{ width: "100%", display: "flex", justifyContent: "center" }}
         >
           <SearchBar
-            searchPhotos={searchPhotos}
+            searchPhotos={handleSearch}
             searchValue={3}
             setSearchValue={setSearchValue}
           />
@@ -404,32 +262,19 @@ export default function Grid(props) {
                   <div key={i}>
                     {JSON.parse(localStorage.getItem("adminToken")) &&
                       tile.visible && (
-                        <Button
-                          size="small"
-                          color="primary"
-                          variant="contained"
-                          style={{
-                            position: "absolute",
-                            marginTop: "10px",
-                            marginLeft: "10px",
-                            color: "#fff",
-                          }}
-                          disabled
-                        >
                           <Typography
                             style={{
                               opacity: 0.5,
                               fontSize: "0.8rem",
                               fontWeight: 100,
+                              backgroundColor: "#fff",
                             }}
                           >
                             Puntos: {tile.points}
                           </Typography>
-                        </Button>
                       )}
 
                     <CardActionArea>
-                      {!onAdmin && (
                         <Tooltip
                           title={
                             window.location.search.includes("producto=")
@@ -441,14 +286,13 @@ export default function Grid(props) {
                             size="small"
                             color="primary"
                             onClick={(e) => {
-                              addingToCart(e, tile)
+                              handleAddingToCart(e, tile)
                             }}
                             style={{ position: "absolute", padding: "8px" }}
                           >
                             <AddShoppingCartIcon />
                           </IconButton>
                         </Tooltip>
-                      )}
                       {tile.exclusive === "exclusive" && (
                         <Tooltip title="Arte exclusivo">
                           <IconButton
@@ -476,7 +320,7 @@ export default function Grid(props) {
                       <Img
                         draggable={false}
                         onClick={(e) => {
-                          handleFullImage(e, tile)
+                          handleFullImageClick(e, tile)
                         }}
                         placeholder="/imgLoading.svg"
                         style={{
@@ -505,13 +349,14 @@ export default function Grid(props) {
                               setSelectedArt(tile.artId)
                               setVisible(e.target.checked)
                             } else {
-                              setVisibleArt(tile, tile.artId, e)
+                              setVisibleArt(tile)
                               setVisible(e.target.checked)
                             }
                           }}
                         />
                       )}
                     </CardActionArea>
+                    
                     <Dialog
                       open={selectedArt === tile.artId}
                       onClose={handleCloseVisible}
@@ -582,7 +427,7 @@ export default function Grid(props) {
                     <div key={i}>
                       <Img
                         onClick={(e) => {
-                          handleFullImage(e, tile)
+                          handleFullImageClick(e, tile)
                         }}
                         placeholder="/imgLoading.svg"
                         style={{

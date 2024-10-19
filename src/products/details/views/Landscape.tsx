@@ -15,7 +15,7 @@ import {
 } from "@material-ui/core";
 import { Share as ShareIcon, ExpandMore as ExpandMoreIcon } from "@material-ui/icons";
 
-import ArtsGrid from "prixerProfile/grid/grid";
+import ArtsGrid from "art/components/grid";
 import { ProductCarousel } from "components/productCarousel/productCarousel";
 import Button from "components/Button/Button";
 

@@ -31,7 +31,6 @@ const BrandsCarousel = () => {
     autoplaySpeed: 4000,
     beforeChange: (current, next) => handleNext(current, next),
     infinite: true,
-    pauseOnHover: true,
     slidesToScroll: 1,
     slidesToShow: isMobile ? 1 : 3,
     speed: 1000,

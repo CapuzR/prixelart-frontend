@@ -5,7 +5,7 @@ import Button from 'components/Button/Button';
 import { EditAttributes, Share as ShareIcon } from '@material-ui/icons';
 import { generateWaProductMessage } from 'utils/utils';
 import { ProductCarousel } from 'components/productCarousel/productCarousel';
-import ArtsGrid from 'prixerProfile/grid/grid';
+import ArtsGrid from 'art/components/grid';
 import FlowStepper from 'components/FlowStepper/FlowStepper';
 import { formatPriceForDisplay } from 'utils/formats';
 import { updateAttributes } from "../services";

@@ -37,7 +37,6 @@ const useStyles = makeStyles((theme) => ({
     zIndex: 10,
     minWidth: "100%",
     minHeight: "100%",
-    marginBottom: 10,
   },
   menuButton: {
     marginRight: theme.spacing(2),

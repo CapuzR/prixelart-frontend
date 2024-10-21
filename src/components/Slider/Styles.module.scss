@@ -1,0 +1,277 @@
+@import 'theme.scss';
+
+.custom-slider {
+  position: relative;
+  overflow: hidden;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  .slider-container {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    margin-bottom: 0;
+    // padding: 20px 0;
+  }
+
+  .slider-slide {
+    flex: 0 0 100%;
+    width: 100%;
+    height: 100%;
+
+    img {
+      width: 100%;
+      height: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      max-width: 100%;
+    }
+  }
+
+  .slider-wrapper {
+    display: flex;
+    min-height: 100%;
+    transition: transform $transition-normal;
+    border-radius: $border-radius-lg;
+  }
+  
+  .indicator {
+    background-color: $secondary-color;
+    border-radius: 50%;
+  }
+
+  // Fit to width
+  &.below-indicator-type-dots-fit-to-width,
+  &.below-indicator-type-thumbnails-fit-to-width,
+  &.over-indicator-type-dots-fit-to-width,
+  &.over-indicator-type-thumbnails-fit-to-width {
+    .slider-container {
+      width: 100%;
+      height: auto;
+    }
+  }
+
+  // Fit to height
+  &.below-indicator-type-dots-fit-to-height,
+  &.below-indicator-type-thumbnails-fit-to-height,
+  &.over-indicator-type-dots-fit-to-height,
+  &.over-indicator-type-thumbnails-fit-to-height {
+    .slider-container {
+      width: auto;
+      height: 100%;
+    }
+  }
+
+  // Fit to square (both width and height)
+  &.below-indicator-type-dots-fit-to-square,
+  &.below-indicator-type-thumbnails-fit-to-square,
+  &.over-indicator-type-dots-fit-to-square,
+  &.over-indicator-type-thumbnails-fit-to-square {
+    .slider-container {
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  // Indicator-specific styles (below)
+  &.below-indicator-type-dots,
+  &.below-indicator-type-thumbnails {
+    .slider-container {
+      padding-bottom: 40px; // Space for dots or thumbnails
+    }
+  }
+
+  // Dots positioned below
+  &.below-indicator-type-dots {
+    .dots-below-container {
+      margin-top: $spacing-md;
+      display: flex;
+      justify-content: center;
+      height: 40px;
+    }
+    .dots-below {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+    }
+  }
+
+  // Thumbnails positioned below
+  &.below-indicator-type-thumbnails {
+    .slider-container {
+      padding-bottom: 100px; // Space for thumbnails
+    }
+    .thumbnails-below {
+      display: flex;
+      justify-content: center;
+      margin-top: $spacing-md;
+    }
+  }
+
+  // Indicators positioned over the slider
+  &.over-indicator-type-dots,
+  &.over-indicator-type-thumbnails {
+    .slider-container {
+      padding-bottom: 0;
+    }
+    .dots-below, .thumbnails-below {
+      position: absolute;
+      bottom: $spacing-md;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 2;
+    }
+  }
+}
+
+// Arrow styles (left and right)
+.slider-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  z-index: 3;
+  padding: 0;
+  transition: background-color 0.2s ease;
+  height: 73%;
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.2);  // Hover background effect
+  }
+  
+  &.slider-arrow-left {
+    left: 0px;
+    svg {
+      transform: rotate(360deg);
+    }
+  }
+
+  &.slider-arrow-right {
+    right: 0px;
+  }
+
+  svg {
+    width: 3em;
+    height: 3em;
+    stroke: rgba(255, 255, 255, 0.7);
+    transition: stroke 0.2s ease;
+
+    &:hover {
+      stroke: $secondary-color;
+    }
+  }
+}
+
+.slider-dots {
+  display: flex;
+  justify-content: center;
+  overflow-x: auto;
+  white-space: nowrap;
+  position: absolute;
+  bottom: $spacing-md;
+  left: 50%;
+  transform: translateX(-50%);
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  .slider-dot {
+    width: $spacing-lg;
+    height: $spacing-xs;
+    margin: 0 $spacing-xs;
+    border-radius: 0;
+    background-color: $border-color;
+    border: none;
+    cursor: pointer;
+
+    $colors: (
+      primary: $primary-color,
+      secondary: $secondary-color,
+      tertiary: $tertiary-color,
+      white: white
+    );
+
+    @each $name, $color in $colors {
+      &.active-#{$name} {
+        background-color: $color;
+      }
+
+      &.inactive-#{$name} {
+        background-color: $color;
+        opacity: 0.5;
+      }
+    }
+
+    // &.active {
+    //   background-color: $primary-color;
+    // }
+  }
+}
+
+
+
+// Thumbnail styles
+.slider-thumbnail {
+  width: 80px;
+  height: 80px;
+  margin: 0 $spacing-xs;
+  object-fit: cover;
+  cursor: pointer;
+  border-radius: $border-radius-sm;
+  border: 2px solid transparent;
+
+  &.active {
+    border-color: $primary-color;
+  }
+}
+
+.spacing-sm {
+  gap: 10px;
+}
+
+.spacing-md {
+  gap: 20px;
+}
+
+.spacing-lg {
+  gap: 30px;
+}
+
+.spacing-xl {
+  gap: 10vw;
+}
+
+.rounded-corner {
+  border-radius: 40px;
+  border-color: red;
+  border-style: solid;
+}
+
+.below-indicator {
+  margin-top: $spacing-md;
+  display: flex;
+  justify-content: center;
+  height: 40px;
+}
+
+.over-indicator {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+}
+
+@media (min-width: $breakpoint-md) {
+  .slider-thumbnail {
+    width: 100px;
+    height: 100px;
+  }
+}

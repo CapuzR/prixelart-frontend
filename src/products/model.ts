@@ -1,4 +1,5 @@
-export default interface Product {
+export interface Product {
+    _id: string;
     name: string;
     description: string;
     category: string;
@@ -30,3 +31,11 @@ export default interface Product {
     mockUp?: Record<string, any>; // Adjust to the mockUp object structure
   }
 
+  export type ProductBase = Pick<Product, 
+  'name' | 
+  'description' | 
+  'attributes' | 
+  'variants' | 
+  'publicPrice' | 
+  'considerations'
+>;

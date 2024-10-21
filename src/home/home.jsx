@@ -33,11 +33,14 @@ import CreateService from "components/createService/createService"
 import ArtUploader from "components/artUploader/artUploader"
 import CartReview from "../cart/cartReview"
 import ReactGA from "react-ga"
-import Slider from "react-slick"
+// import Slider from "react-slick"
 import "slick-carousel/slick/slick.css"
 import "slick-carousel/slick/slick-theme.css"
 import backG from "../images/Rectangle108.png"
 import BrandsCarousel from "../sharedComponents/brandsCarousel/brandsCarousel"
+import { Slider } from "components/Slider"
+import { Image } from "components/Image"
+import { ProductElement1 } from "components/ProductElement1"
 
 ReactGA.initialize("G-0RWP9B33D8")
 ReactGA.pageview("/")
@@ -73,9 +76,12 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "column",
     alignItems: "left",
-    overflowX: "none",
+    // overflowX: "none",
     flexGrow: 1,
-    overflow: "visible",
+    // overflow: "visible",
+    padding: 0,
+    maxWidth: "100%",
+    width: "100%"
     // marginTop: "-2.3vh",
   },
   paper2: {
@@ -127,8 +133,8 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: "95%",
   },
   CarouselContent: {
-    width: "100vw",
-    heigh: "92vh",
+    width: "100%",
+    heigh: "100%",
   },
   modal: {
     display: "flex",
@@ -313,135 +319,62 @@ export default function Home(props) {
     infinite: true,
     pauseOnHover: true,
   }
-  return (
-    <React.Fragment>
-      {/* <AppBar prixerUsername={prixerUsername} /> */}
-      <Container
-        component="main"
-        maxWidth="s"
-        className={classes.paper}
-      >
-        <CssBaseline />
 
-        <main>
-          <Card
-            style={{
-              display: "flex",
-              position: "relative",
-              width: "100vw",
-              marginLeft: isDesktop ? "-24px" : "-16px",
-              marginLeft: isDeskTop ? "-24px" : "-16px",
-              height: "100vh",
-              // marginTop: isDesktop ? "60px" : "55px",
-            }}
-            elevation={0}
-          >
-            <div className={classes.CarouselContent}>
-              <Carousel
-                animation="slide"
-                duration={500}
-                swipe={true}
-                stopAutoPlayOnHover={true}
-                fullHeightHover={false}
-                style={{ marginTop: isDesktop ? "0" : "0" }}
-                IndicatorIcon={<MaximizeIcon />}
-                NextIcon={<ArrowForwardIosIcon style={{ fontSize: "3rem" }} />}
-                PrevIcon={<ArrowBackIosIcon style={{ fontSize: "3rem" }} />}
-                navButtonsProps={{
-                  style: {
-                    backgroundColor: "rgba(0, 0, 0, 0.1)",
-                    width: "98%",
-                    height: "100vh",
-                    marginTop: "-50vh",
-                    marginLeft: "1px",
-                  },
-                }}
-                indicatorContainerProps={{
-                  style: {
-                    marginTop: isDesktop ? "-70px" : "-100px",
-                    position: "absolute",
-                  },
-                }}
-              >
-                {isDesktop
-                  ? imagesDesktop.images.map((img, key_id) =>
-                      img.images?.type !== undefined &&
-                      img.images?.type === "desktop" ? (
-                        <div
-                          className={classes.heroContent}
-                          key={key_id}
-                          style={{
-                            backgroundImage: "url(" + img.images.url + ")",
-                            backgroundSize: "cover",
-                            backgroundPosition: "top",
-                            marginTop: "-24px",
-                          }}
-                        ></div>
-                      ) : (
-                        <div
-                          className={classes.heroContent}
-                          key={key_id}
-                          style={{
-                            backgroundImage: "url(" + img.carouselImages + ")",
-                            backgroundSize: "cover",
-                            backgroundPosition: "top",
-                            marginTop: "-24px",
-                          }}
-                        ></div>
-                      )
-                    )
-                  : imagesMobile.images.map((img, key_id) =>
-                      img.images?.type !== undefined &&
-                      img.images?.type === "mobile" ? (
-                        <div
-                          className={classes.heroContent}
-                          key={key_id}
-                          style={{
-                            backgroundImage: "url(" + img.images.url + ")",
-                            backgroundSize: "cover",
-                            backgroundPosition: "left",
-                            marginTop: "-24px",
-                          }}
-                        ></div>
-                      ) : (
-                        <div
-                          className={classes.heroContent}
-                          key={key_id}
-                          style={{
-                            backgroundImage: "url(" + img.url + ")",
-                            backgroundSize: "cover",
-                            backgroundPosition: "top",
-                            marginTop: "-24px",
-                          }}
-                        ></div>
-                      )
-                    )}
-              </Carousel>
-            </div>
+  const desktopImages = imagesDesktop?.images.filter((img) => img?.images?.type === "desktop");
+  const mobileImages = imagesMobile?.images.filter((img) => !img.images || img?.images?.type === "mobile");
+
+  return (
+    <>
+      <div style={{ flex: 1, position: "relative", width: "100%" }}>
+        <div style={{ display:"flex", flexDirection:"column", gap: "20px", width: "100%"  }}>
+          <div style={{ display:"flex", flexDirection:"column", height: `calc(100vh - 64px)`, width: "100%"  }}>
+            {/* First Row - Slider */}
+            <div style={{ flex: 1, position: "relative", overflow: "auto", scrollbarGutter: "stable", width:"100vw" }}>
+                {isDesktop ? (
+                  <Slider 
+                  images={desktopImages}
+                  useIndicators= { {type: 'dots', position: 'over', color: { active: 'primary', inactive: 'white' }} }
+                  >
+                    {desktopImages
+                      .map((img, i) => (
+                        <Image src={img.images.url} roundedCorner={false}  />
+                      ))}
+                  </Slider>
+                ) : (
+                  <Slider 
+                  images={mobileImages}
+                  useIndicators= { {type: 'dots', position: 'over', color: { active: 'primary', inactive: 'white' }} }
+                  childConfig={ { qtyPerSlide: 1, spacing: "sm" } }
+                  roundedCorner={false}
+                  >
+                    {mobileImages
+                      .map((img, i) => (
+                        <Image key={i} src={img.images.url} alt={props?.product?.name} />
+                      ))}
+                  </Slider>
+                )}
+              </div>            
+            {/* Second Row - Text */}
             <div
               style={{
                 display: "flex",
                 flexWrap: "wrap",
-                justifyContent: "space-around",
+                justifyContent: "center",
+                alignItems: "center",
                 color: "#404e5c",
                 backgroundColor: "#fff",
                 width: "100%",
-                minHeight: 50,
-                bottom: 0,
-                position: "absolute",
-                margin: 0,
                 padding: "1rem",
+                textAlign: "center",
+                minHeight: "50px",
               }}
             >
-              <div style={{ left: 10, alignItems: "center", width: "400px" }}>
+              <div style={{ maxWidth: "400px", paddingLeft: 10 }}>
                 <Typography
                   component="h1"
                   variant="h1"
-                  align="left"
                   style={{
                     fontSize: "1.7em",
-                    paddingLeft: 10,
-                    textAlign: "center",
                     marginBottom: 0,
                   }}
                   gutterBottom
@@ -450,7 +383,7 @@ export default function Home(props) {
                 </Typography>
               </div>
             </div>
-          </Card>
+          </div>
           <Grid container>
             <Grid
               item
@@ -548,86 +481,30 @@ export default function Home(props) {
                       position: "relative",
                       width: "100%",
                       height:
-                        (isDesktop && 290) ||
+                        (isDesktop && 390) ||
                         (isMobile && 190) ||
                         (isTab && 235),
                       marginLeft: isMobile && 10,
-                      padding: isMobile ? 0 : "0px 30px 0px 30px",
+                      padding: isMobile ? 0 : "10px 30px 10px 30px",
                       marginTop: "-10px",
                     }}
                   >
-                    <Slider {...settings}>
-                      {bestSellers?.map((product) => (
-                        <div
-                          key={product._id}
-                          style={{
-                            borderRadius: 40,
-                            display: "flex",
-                            flexDirection: "column",
-                            height: isMobile ? 150 : 250,
-                            width: "80%",
-                          }}
-                        >
-                          <div
-                            style={{
-                              display: "flex",
-                              flexDirection: "column",
-                              alignItems: "center",
-                              justifyItems: "center",
-                            }}
-                          >
-                            <div
-                              style={{
-                                backgroundImage:
-                                  product?.sources?.images.length > 0
-                                    ? "url(" +
-                                      product.sources.images[0]?.url +
-                                      ")"
-                                    : "url(" + product.thumbUrl + ")",
-                                height:
-                                  (isDesktop && 170) ||
-                                  (isMobile && 120) ||
-                                  (isTab && 130),
-                                width:
-                                  (isDesktop && 170) ||
-                                  (isMobile && 120) ||
-                                  (isTab && 130),
-                                backgroundSize: "cover",
-                                borderRadius:
-                                  (isDesktop && 40) || (isTab && 25),
-                                backgroundPosition: "back",
-                                marginBottom: isMobile && 5,
-                              }}
-                            />
-                            {!isMobile && (
-                              <Typography
-                                variant="subtitle1"
-                                style={{
-                                  color: "#404e5c",
-                                  fontWeight: "bold",
-                                  fontSize: isMobile && "1rem",
-                                  alignSelf: "center",
-                                }}
-                              >
-                                {product.name}
-                              </Typography>
-                            )}
-                            <Button
-                              style={{
-                                backgroundColor: "#d33f49",
-                                color: "white",
-                                borderRadius: 40,
-                                width: 100,
-                                height: 20,
-                                textTransform: "none",
-                              }}
-                              onClick={() => handleProduct(product)}
-                            >
-                              Ver detalles
-                            </Button>
-                          </div>
-                        </div>
-                      ))}
+                    <Slider
+                      images={bestSellers?.map((product) => ({
+                        url: product?.sources?.images.length > 0 ? product.sources.images[0]?.url : product.thumbUrl,
+                      }))}
+                      useIndicators= { {type: 'dots', position: 'below', color: { active: 'primary', inactive: 'secondary' }} }
+                      childConfig={ { qtyPerSlide: isDesktop ? 5 : isMobile ? 3 : 5, spacing: "sm" } }
+                    >
+                        {bestSellers?.map((product) => (
+                          <ProductElement1
+                            src={product?.sources?.images.length > 0 ? product.sources.images[0]?.url : product.thumbUrl}
+                            productName={product.name}
+                            buttonLabel="Ver detalles"
+                            onButtonClick={() => handleProduct(product)}
+                            roundedCorner={true}
+                          />
+                        ))}
                     </Slider>
                   </div>
                 )}
@@ -744,12 +621,26 @@ export default function Home(props) {
                     position: "relative",
                     width: isMobile ? "88%" : "100%",
                     height:
-                      (isDesktop && 240) || (isMobile && 190) || (isTab && 220),
+                      (isDesktop && 580) || (isMobile && 190) || (isTab && 220),
                     marginLeft: isMobile && 20,
                     padding: isMobile ? 0 : "0px 30px 0px 30px",
                   }}
                 >
-                  <Slider {...settings2}>
+                <Slider
+                  images={bestSellers?.map((product) => ({
+                    url: product?.sources?.images.length > 0 ? product.sources.images[0]?.url : product.thumbUrl,
+                  }))}
+                  useIndicators= { {type: 'dots', position: 'below', color: { active: 'primary', inactive: 'secondary' }} }
+                  childConfig={ { qtyPerSlide: isDesktop ? 5 : isMobile ? 3 : 5, spacing: "sm" } }
+                >
+                    {mostSelledArts?.map((art) => (
+                      <Image
+                        src={art?.largeThumbUrl ? art?.largeThumbUrl : art?.thumbUrl}
+                        roundedCorner={true}
+                      />
+                    ))}
+                </Slider>
+                  {/* <Slider {...settings2}>
                     {mostSelledArts?.map((art) => (
                       <div
                         key={art._id}
@@ -780,7 +671,7 @@ export default function Home(props) {
                         />
                       </div>
                     ))}
-                  </Slider>
+                  </Slider> */}
                 </Grid>
               </Paper>
             )}
@@ -901,7 +792,7 @@ export default function Home(props) {
                     marginTop: "-5px",
                   }}
                 >
-                  <Slider {...settings2}>
+                  {/* <Slider {...settings2}>
                     {latestArts?.map((art) => (
                       <div
                         key={art._id}
@@ -935,49 +826,13 @@ export default function Home(props) {
                         />
                       </div>
                     ))}
-                  </Slider>
+                  </Slider> */}
                 </Grid>
               </Paper>
             )}
           </Grid>
           <BrandsCarousel />
-          {/* {brands && (
-            <Grid
-              style={{
-                backgroundColor: "#d33f49",
-                display: "flex",
-                flexDirection: "column",
-                width: "100vw",
-                marginLeft: "-24px",
-                padding: isMobile ? 0 : "0px 30px 0px 30px",
-              }}
-            >
-              <Slider {...settings3}>
-                {brands?.map((art) => (
-                  <div
-                    key={art._id}
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      height: 200,
-                    }}
-                  >
-                    <div
-                      style={{
-                        backgroundImage: `url(${encodeURI(art)})`,
-                        height: 100,
-                        width: 100,
-                        backgroundSize: "contain",
-                        backgroundRepeat: "no-repeat",
-                        backgroundPosition: "center",
-                      }}
-                    />
-                  </div>
-                ))}
-              </Slider>
-            </Grid>
-          )} */}
-        </main>
+        </div>
 
         <footer className={classes.footer}>
           <Typography
@@ -1010,7 +865,7 @@ export default function Home(props) {
           </Typography>
           <Copyright />
         </footer>
-      </Container>
+      </div>
 
       {openArtFormDialog && (
         <ArtUploader
@@ -1242,6 +1097,6 @@ export default function Home(props) {
           )}
         </DialogActions>
       </Dialog>
-    </React.Fragment>
+    </>
   )
 }

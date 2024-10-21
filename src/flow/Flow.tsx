@@ -5,16 +5,17 @@ import ReactGA from "react-ga";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { useConversionRate, useCurrency, useLoading, useSnackBar } from 'context/GlobalContext';
-import { getPriceWithSelectedVariant, formatPrice, prepareProductData } from "../services";
-import { splitDescription } from "../utils";
+import { getPriceWithSelectedVariant, prepareProductData, formatPrice } from "products/services";
+  import { splitDescription } from "products/utils";
 
-import { fetchProductDetails } from '../api';
+import { fetchProductDetails } from 'products/api';
+import { fetchArtDetails } from 'art/api';
 
 import Portrait from "./views/Portrait";
 import Landscape from "./views/Landscape";
 
-import { CartItem, Product } from '../interfaces';
-import { getUrlParams } from "./services";
+import { CartItem, Product } from './interfaces';
+import { queryCreator, getUrlParams } from "./utils";
 
 ReactGA.initialize("G-0RWP9B33D8");
 
@@ -27,7 +28,7 @@ interface Props {
   searchResult: any;
 }
 
-const Details: React.FC<Props> = (props) => {
+const Flow: React.FC<Props> = (props) => {
   const { setLoading } = useLoading();
   const { currency } = useCurrency();
   const { conversionRate } = useConversionRate();
@@ -35,17 +36,19 @@ const Details: React.FC<Props> = (props) => {
   
   const history = useHistory();
   const productId = new URLSearchParams(window.location.search).get("producto");
+  const artId = new URLSearchParams(window.location.search).get("arte");
+  const selectedAttributes = getUrlParams(["producto", "arte", "step"]);
 
   const [product, setProduct] = useState<Product | null>(null);
   const [selectedItem, setSelectedItem] = useState<any>(undefined);
+  const [selectedArt, setSelectedArt] = useState<any>(undefined);
   const [isPortrait, setIsPortrait] = useState(window.innerWidth < 768);
-  const [windowHeight, setWindowHeight] = useState(window.innerHeight);
-  const [expanded, setExpanded] = useState<string | false>("panel1");
+  const [expanded, setExpanded] = useState<string | false>(false);
+  const searchParams = new URLSearchParams(window.location.search);
   
   useEffect(() => {
     const handleResize = () => {
       setIsPortrait(window.innerWidth < 768);
-      setWindowHeight(window.innerHeight)
     };
     
     window.addEventListener('resize', handleResize);
@@ -92,12 +95,15 @@ const Details: React.FC<Props> = (props) => {
   };
 
   useEffect(() => {
+    console.log("buyState", props.buyState);
     const fetchProduct = async () => {
       setLoading(true);
       try {
         const productData = await fetchProductDetails(productId);
         const { product, selectedItem } = prepareProductData(productData);
-        setProduct({...product, productId: productId});
+        selectedAttributes ? 
+          setProduct({...product, productId: productId, selection: selectedAttributes.reduce((acc, param) => ({ ...acc, [param.name]: param.value }), {})}) :
+          setProduct({...product, productId: productId});
         setSelectedItem({...selectedItem, price: product?.price});
       } catch (error) {
         console.error("Error fetching product attributes:", error);
@@ -106,13 +112,25 @@ const Details: React.FC<Props> = (props) => {
       }
     };
 
+    const fetchArt = async () => {
+      try {
+        if (artId) {
+          const art = await fetchArtDetails(artId);
+          setSelectedArt(art);
+        }
+      } catch (error) {
+        console.error("Error fetching selected art:", error);
+      };
+    };
+
     fetchProduct();
-  }, [productId]);
+    artId && fetchArt();
+  }, [productId, artId]);
   
   useEffect(() => {
     const fetchAndSetPrice = async () => {
       const updatedPrice = product?.selection && Object.keys(product?.selection).every((s) => s !== "")
-        ? await getPriceWithSelectedVariant(product?.priceRange, currency, conversionRate, product?.selection, product?.variants)
+        ? await getPriceWithSelectedVariant(product?.priceRange, currency, conversionRate, product?.selection, product?.variants, selectedArt)
         : formatPrice(product?.priceRange, currency, conversionRate);
         
         const numericPrice = typeof updatedPrice === 'string'
@@ -141,10 +159,32 @@ const Details: React.FC<Props> = (props) => {
   
     fetchAndSetPrice();
   
-  }, [product?.selection, currency, conversionRate]);
+  }, [product?.selection, selectedArt, currency, conversionRate]);
 
+  const addArt = (selectedArt) => {
+    setSelectedArt(selectedArt);
+
+    const selectionAsObject: { [key: string]: string } = Array.isArray(product?.selection)
+        ? product?.selection.reduce((acc, item, index) => {
+            acc[`selection-${index}`] = String(item);
+            return acc;
+          }, {} as { [key: string]: string })
+        : (product?.selection || {});
+
+    const queryString = queryCreator(
+      product?.productId,
+      selectedArt?.artId,
+      selectionAsObject,
+      '3'
+    );
+  
+    history.push({ pathname: location.pathname, search: queryString });
+    showSnackBar("¡Arte seleccionado! Puedes agregar el item al carrito");
+  };
+  
 //TO DO: CART. Esto no debería ir acá. Todo debería estar en el Cart, que QUIZÁS debería ser un Context.
   const addItemToBuyState = () => { 
+    if (selectedArt === undefined) {
       const newState = [...props.buyState];
       newState.push({
         product: selectedItem,
@@ -153,21 +193,35 @@ const Details: React.FC<Props> = (props) => {
       props.setBuyState(newState);
       localStorage.setItem("buyState", JSON.stringify(newState));
       showSnackBar("¡Producto agregado!");
+    } else {
+      const newState = [...props.buyState];
+      newState.push({
+        art: selectedArt,
+        product: selectedItem,
+        quantity: 1,
+      });
+      props.setBuyState(newState);
+      localStorage.setItem("buyState", JSON.stringify(newState));
+      showSnackBar("¡Producto agregado!");
+    }
     history.push({
       pathname: "/shopping",
     })
   };
 
   return (
-    <div style={{ maxHeight: `${windowHeight - 64}px`, overflowY: 'auto' }}>
+    <>
       {
       isPortrait ? (
         <Portrait
           product={product}
+          selectedArt={selectedArt}
+          setSelectedArt={setSelectedArt}
           addItemToBuyState={addItemToBuyState}
           getFilteredOptions={getFilteredOptions}
           handleChange={handleChange}
           handleSelection={handleSelection}
+          addArt={addArt}
           selectedItem={selectedItem}
           expanded={expanded}
           generalDescription={generalDescription}
@@ -176,14 +230,18 @@ const Details: React.FC<Props> = (props) => {
           setFullArt={props.setFullArt}
           searchResult={props.searchResult}
           setSearchResult={props.setSearchResult}
+          searchParams={searchParams}
         />
       ) : (
         <Landscape
           product={product}
+          selectedArt={selectedArt}
+          setSelectedArt={setSelectedArt}
           addItemToBuyState={addItemToBuyState}
           getFilteredOptions={getFilteredOptions}
           handleChange={handleChange}
           handleSelection={handleSelection}
+          addArt={addArt}
           selectedItem={selectedItem}
           expanded={expanded}
           generalDescription={generalDescription}
@@ -192,10 +250,11 @@ const Details: React.FC<Props> = (props) => {
           setFullArt={props.setFullArt}
           searchResult={props.searchResult}
           setSearchResult={props.setSearchResult}
+          searchParams={searchParams}
         />
       )}
-    </div>
+    </>
   );
 };
 
-export default Details;
+export default Flow;

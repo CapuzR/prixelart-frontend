@@ -1,34 +1,6 @@
 import { format, toggleDecimalSeparator } from '../utils/utils';
 import { fetchVariantPrice } from './api'; // Importing the API function
 
-export const splitDescription = (description) => {
-  const technicalKeyword = "ESPECIFICACIÓN TÉCNICA";
-
-  if (!description || !description.includes(technicalKeyword)) {
-    return {
-      generalDescription: description || "",
-      technicalSpecification: "",
-    };
-  }
-
-  const [generalDescription, technicalSpecification] = description.split(technicalKeyword);
-
-  // Clean up leading/trailing ** in technicalSpecification, if present
-  const cleanedTechnicalSpecification = technicalSpecification
-    .trim()
-    .replace(/^\*\*/, '') // Remove leading **
-    .replace(/\*\*$/, ''); // Remove trailing **
-
-  const cleanedGeneralDescription = generalDescription
-  .trim()
-  .replace(/^\*\*/, '') // Remove leading **
-  .replace(/\*\*$/, ''); // Remove trailing **
-
-  return {
-    generalDescription: cleanedGeneralDescription.trim(),
-    technicalSpecification: cleanedTechnicalSpecification.trim(),
-  };
-};
 
 export const formatPrice = (item, currency, conversionRate) => {
   const from = +toggleDecimalSeparator(item?.from);

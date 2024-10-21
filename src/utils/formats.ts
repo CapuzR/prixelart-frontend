@@ -1,4 +1,7 @@
-    const parsePriceFromInput = (input: string): number => {
+    const parsePriceFromInput = (input: string | number): number => {
+        if (typeof input === 'number') {
+            return input; // If already a number, no need to parse
+        }
         // Replace commas with dots and remove thousand separators (dot in comma-decimal locales)
         return parseFloat(input.replace(/\./g, '').replace(',', '.'));
     };

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Product } from './apiInterfaces';
+import { Product } from './interfaces';
 
 const base_url = process.env.REACT_APP_BACKEND_URL;
 

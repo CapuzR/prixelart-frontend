@@ -1,3 +1,8 @@
+html, body, #root {
+  height: 100%;  /* Ensure the entire page takes up full height of viewport */
+  margin: 0;  /* Remove any default margins */
+}
+
 :root {
   overflow-x: hidden;
 }
@@ -9,7 +14,7 @@
   display: flex;
   flex-direction: column;
   width: 100vw;
-  height: 100vh;
+  height: 100%;
 }
 
 .app-bar {

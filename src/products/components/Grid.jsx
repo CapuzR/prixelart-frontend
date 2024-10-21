@@ -22,9 +22,11 @@ import worldBlack from "images/world-black.svg"
 import vzla from "images/vzla.svg"
 import { formatPrice } from "../services"
 import { useCurrency, useConversionRate } from 'context/GlobalContext';
-import { ProductCarousel } from "components/productCarousel/productCarousel"
 import { fetchProducts } from '../api';
 import { processProductsResponse } from '../services';
+
+import { Slider } from "components/Slider";
+import { Image } from "components/Image";
 
 ReactGA.initialize("G-0RWP9B33D8")
 
@@ -38,7 +40,6 @@ const useStyles = makeStyles((theme) => ({
   },
   root: {
     display: "flex",
-    flexDirection: "row",
     overflow: "hidden",
     alignContent: "space-between",
     padding: 10,
@@ -337,7 +338,7 @@ export default function ProductGrid(props) {
           />
         </div> */}
       </div>
-      <ResponsiveMasonry columnsCountBreakPoints={{ 350: 1, 750: 2, 1800: 3 }}>
+      <ResponsiveMasonry columnsCountBreakPoints={{ 0: 1, 768: 2 }}>
         <Masonry style={{ columnGap: "1.8rem", width: "80%", margin: "0 auto" }}>
           {tiles && tiles.length > 0 ? (
             tiles.map((tile) => (
@@ -356,8 +357,13 @@ export default function ProductGrid(props) {
                 {/* <CardMedia style={{ width: "110%", maxWidth: "14.68rem" }}> */}
                   {/* TO DO: Mover carrousel de foto producto a su propio componente, para reusar
                   en prixProducts. */}
-                <div style={{ width: "150px", height: "150px", padding: 0, }}>
-                  <ProductCarousel product={tile} selectedArt={undefined} selectedItem={tile} type="noImages" size="138px" />
+
+                <div style={{ width: "50%", padding: 0, }}>
+                  <Slider images={tile?.sources?.images} size="100%">
+                    {tile?.sources?.images?.map((image, i) => (
+                      <Image key={i} src={image.url} alt={tile?.product?.name} />
+                    ))}
+                  </Slider>
                 </div>
                   
                   {/* <Carousel

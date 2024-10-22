@@ -31,6 +31,8 @@ import StarOutline from "@material-ui/icons/StarOutline"
 
 import { readGallery, setVisibleArt } from "../api"
 import { searchPhotos } from "../services"
+import ArtThumbnail from "./artThumbnail"
+import PaginationBar from "../../components/Pagination/PaginationBar"
 
 const IOSSwitch = withStyles((theme) => ({
   root: {
@@ -144,7 +146,7 @@ export default function Grid(props) {
   const [openV, setOpenV] = useState(false)
   const [openFullArt, setOpenFullArt] = useState(false)
   const [disabledReason, setDisabledReason] = useState("")
-  const [visible, setVisible] = useState(true)
+  // const [visible, setVisible] = useState(true)
   const itemsPerPage = 30
   const [pageNumber, setPageNumber] = useState(1)
   const itemsToSkip = (pageNumber - 1) * itemsPerPage
@@ -242,9 +244,8 @@ export default function Grid(props) {
           display: "flex",
           flexDirection: "column",
           paddingBottom: "20px",
-          overflow: "auto",
           position: "relative",
-          height: "90%",
+          height: "95%",
         }}
       >
         <ResponsiveMasonry
@@ -257,215 +258,61 @@ export default function Grid(props) {
         >
           <Masonry style={{ columnGap: "7px" }}>
             {tiles ? (
-              tiles.map((tile, i) =>
-                tile.visible ? (
-                  <div key={i}>
-                    {JSON.parse(localStorage.getItem("adminToken")) &&
-                      tile.visible && (
-                          <Typography
-                            style={{
-                              opacity: 0.5,
-                              fontSize: "0.8rem",
-                              fontWeight: 100,
-                              backgroundColor: "#fff",
-                            }}
-                          >
-                            Puntos: {tile.points}
-                          </Typography>
-                      )}
-
-                    <CardActionArea>
-                        <Tooltip
-                          title={
-                            window.location.search.includes("producto=")
-                              ? "Asociar al producto"
-                              : "Agregar al carrito"
-                          }
-                        >
-                          <IconButton
-                            size="small"
-                            color="primary"
-                            onClick={(e) => {
-                              handleAddingToCart(e, tile)
-                            }}
-                            style={{ position: "absolute", padding: "8px" }}
-                          >
-                            <AddShoppingCartIcon />
-                          </IconButton>
-                        </Tooltip>
-                      {tile.exclusive === "exclusive" && (
-                        <Tooltip title="Arte exclusivo">
-                          <IconButton
-                            size="small"
-                            color="primary"
-                            style={{ position: "absolute", right: 0 }}
-                          >
-                            <Star
-                              style={{
-                                marginRight: "-2.2rem",
-                                marginTop: "0.05rem",
-                              }}
-                              color="primary"
-                              fontSize="large"
-                            />
-                            <StarOutline
-                              style={{
-                                color: "white",
-                              }}
-                              fontSize="large"
-                            />
-                          </IconButton>
-                        </Tooltip>
-                      )}
-                      <Img
-                        draggable={false}
-                        onClick={(e) => {
-                          handleFullImageClick(e, tile)
-                        }}
-                        placeholder="/imgLoading.svg"
-                        style={{
-                          backgroundColor: "#eeeeee",
-                          width: "100%",
-                          marginBottom: "7px",
-                          borderRadius: "4px",
-                        }}
-                        src={tile.largeThumbUrl || tile.squareThumbUrl}
-                        debounce={1000}
-                        cache
-                        error="/imgError.svg"
-                        alt={tile.title}
-                        id={tile.artId}
-                        key={tile.artId}
-                      />
-
-                      {props.permissions?.artBan && (
-                        <IOSSwitch
-                          color="primary"
-                          size="normal"
-                          checked={tile.visible}
-                          onChange={(e) => {
-                            if (e.target.checked === false) {
-                              handleClickVisible()
-                              setSelectedArt(tile.artId)
-                              setVisible(e.target.checked)
-                            } else {
-                              setVisibleArt(tile)
-                              setVisible(e.target.checked)
-                            }
-                          }}
-                        />
-                      )}
-                    </CardActionArea>
-                    
-                    <Dialog
-                      open={selectedArt === tile.artId}
-                      onClose={handleCloseVisible}
-                      aria-labelledby="alert-dialog-title"
-                      aria-describedby="alert-dialog-description"
-                    >
-                      <DialogTitle id="alert-dialog-title">
-                        {"¿Estás seguro de ocultar este arte?"}
-                      </DialogTitle>
-                      <DialogContent>
-                        <DialogContentText
-                          id="alert-dialog-description"
-                          style={{
-                            textAlign: "center",
-                          }}
-                        >
-                          Este arte ya no será visible en tu perfil y la página
-                          de inicio.
-                        </DialogContentText>
-                      </DialogContent>
-                      <div
-                        item
-                        xs={12}
-                        style={{
-                          display: "flex",
-                          justifyContent: "center",
-                        }}
-                      >
-                        <TextField
-                          style={{ width: "95%", marginBottom: "5px" }}
-                          fullWidth
-                          multiline
-                          required
-                          id="disabledReason"
-                          label="¿Por qué quieres ocultar este arte?"
-                          variant="outlined"
-                          onChange={(e) => {
-                            setDisabledReason(e.target.value)
-                          }}
-                        />
-                      </div>
-                      <DialogActions>
-                        <Button
-                          onClick={handleCloseVisible}
-                          color="primary"
-                        >
-                          Cancelar
-                        </Button>
-                        <Button
-                          onClick={(e) => {
-                            setVisibleArt(tile, selectedArt, e)
-                            setSelectedArt(undefined)
-                            handleCloseVisible()
-                          }}
-                          background="primary"
-                          style={{
-                            color: "white",
-                            backgroundColor: "#d33f49",
-                          }}
-                        >
-                          Aceptar
-                        </Button>
-                      </DialogActions>
-                    </Dialog>
-                  </div>
-                ) : (
-                  JSON.parse(localStorage.getItem("adminToken")) && (
-                    <div key={i}>
-                      <Img
-                        onClick={(e) => {
-                          handleFullImageClick(e, tile)
-                        }}
-                        placeholder="/imgLoading.svg"
-                        style={{
-                          backgroundColor: "#eeeeee",
-                          width: "100%",
-                          marginBottom: "7px",
-                          borderRadius: "4px",
-                          // objectFit: "cover",
-                        }}
-                        src={tile.squareThumbUrl}
-                        debounce={1000}
-                        cache
-                        error="/imgError.svg"
-                        // srcSet={tile.smallThumbUrl + ' 600w, ' + tile.mediumThumbUrl + ' 850w, ' + tile.largeThumbUrl + ' 1300w'}
-                        // sizes="(min-width: 1600px) 850px, (min-width: 960px) 450px, (min-width: 640px) 400px, 200px"
-                        // sizes="(min-width: 1600px) 850px, (min-width: 960px) 450px, (min-width: 640px) 200px, (min-width: 375px) 80px"
-                        alt={tile.title}
-                        id={tile.artId}
-                        key={tile.artId}
-                      />
-                      {props.permissions?.banArt && (
-                        <IOSSwitch
-                          color="primary"
-                          size="normal"
-                          onChange={(e) => {
-                            if (e.target.checked === false) {
-                              setVisible(e.target.checked)
-                              setSelectedArt(tile.artId)
-                            } else {
-                              setVisible(e.target.checked)
-                              setVisibleArt(tile, tile.artId, e)
-                            }
-                          }}
-                        ></IOSSwitch>
-                      )}
-                    </div>
-                  )
+              tiles.map(
+                (tile, i) => (
+                  // tile.visible ? (
+                  <ArtThumbnail
+                    tile={tile}
+                    i={i}
+                    handleCloseVisible={handleCloseVisible}
+                    setSelectedArt={props.setSelectedArt}
+                    setIsOpenAssociateProduct={props.setIsOpenAssociateProduct}
+                  />
                 )
+                // ) : (
+                //   JSON.parse(localStorage.getItem("adminToken")) && (
+                //     <div key={i}>
+                //       <Img
+                //         onClick={(e) => {
+                //           handleFullImageClick(e, tile)
+                //         }}
+                //         placeholder="/imgLoading.svg"
+                //         style={{
+                //           backgroundColor: "#eeeeee",
+                //           width: "100%",
+                //           marginBottom: "7px",
+                //           borderRadius: "4px",
+                //           // objectFit: "cover",
+                //         }}
+                //         src={tile.squareThumbUrl}
+                //         debounce={1000}
+                //         cache
+                //         error="/imgError.svg"
+                //         // srcSet={tile.smallThumbUrl + ' 600w, ' + tile.mediumThumbUrl + ' 850w, ' + tile.largeThumbUrl + ' 1300w'}
+                //         // sizes="(min-width: 1600px) 850px, (min-width: 960px) 450px, (min-width: 640px) 400px, 200px"
+                //         // sizes="(min-width: 1600px) 850px, (min-width: 960px) 450px, (min-width: 640px) 200px, (min-width: 375px) 80px"
+                //         alt={tile.title}
+                //         id={tile.artId}
+                //         key={tile.artId}
+                //       />
+                //       {props.permissions?.banArt && (
+                //         <IOSSwitch
+                //           color="primary"
+                //           size="normal"
+                //           onChange={(e) => {
+                //             if (e.target.checked === false) {
+                //               setVisible(e.target.checked)
+                //               setSelectedArt(tile.artId)
+                //             } else {
+                //               setVisible(e.target.checked)
+                //               setVisibleArt(tile, tile.artId, e)
+                //             }
+                //           }}
+                //         ></IOSSwitch>
+                //       )}
+                //     </div>
+                //   )
+                // )
               )
             ) : (
               <h1>Pronto encontrarás todo el arte que buscas.</h1>
@@ -481,115 +328,11 @@ export default function Grid(props) {
           searchResult={props.searchResult}
         />
       )}
-      <Box
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignSelf: "center",
-          paddingTop: 5,
-          marginBottom: 4,
-          width: "100%",
-        }}
-      >
-        {pageNumber - 3 > 0 && (
-          <Button
-            style={{ minWidth: 30, marginRight: 5 }}
-            onClick={() => {
-              setPageNumber(1)
-            }}
-          >
-            {1}
-          </Button>
-        )}
-        {pageNumber - 3 > 0 && (
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              marginRight: 5,
-            }}
-          >
-            ...
-          </div>
-        )}
-        {pageNumber - 2 > 0 && (
-          <Button
-            style={{ minWidth: 30, marginRight: 5 }}
-            onClick={() => {
-              setPageNumber(pageNumber - 2)
-            }}
-          >
-            {pageNumber - 2}
-          </Button>
-        )}
-        {pageNumber - 1 > 0 && (
-          <Button
-            style={{ minWidth: 30, marginRight: 5 }}
-            onClick={() => {
-              setPageNumber(pageNumber - 1)
-            }}
-          >
-            {pageNumber - 1}
-          </Button>
-        )}
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            width: 80,
-            marginRight: 5,
-            backgroundColor: "rgb(238, 238, 238)",
-            borderRadius: 4,
-          }}
-        >
-          Página {pageNumber}
-        </div>
-        {pageNumber + 1 <= noOfPages && (
-          <Button
-            style={{ minWidth: 30, marginRight: 5 }}
-            onClick={() => {
-              setPageNumber(pageNumber + 1)
-            }}
-          >
-            {pageNumber + 1}
-          </Button>
-        )}
-
-        {pageNumber + 2 <= noOfPages && (
-          <Button
-            style={{ minWidth: 30, marginRight: 5 }}
-            onClick={() => {
-              setPageNumber(pageNumber + 2)
-            }}
-          >
-            {pageNumber + 2}
-          </Button>
-        )}
-        {pageNumber + 3 <= noOfPages && (
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              marginRight: 5,
-            }}
-          >
-            ...
-          </div>
-        )}
-        {pageNumber + 3 <= noOfPages && (
-          <Button
-            style={{ minWidth: 30, marginRight: 5 }}
-            onClick={() => {
-              setPageNumber(noOfPages)
-            }}
-          >
-            {noOfPages}
-          </Button>
-        )}
-      </Box>
+      <PaginationBar
+        pageNumber={pageNumber}
+        setPageNumber={setPageNumber}
+        noOfPages={noOfPages}
+      />
     </div>
   )
 }

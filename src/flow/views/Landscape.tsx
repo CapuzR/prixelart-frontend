@@ -15,7 +15,7 @@ import {
 } from "@material-ui/core";
 import { Share as ShareIcon, ExpandMore as ExpandMoreIcon } from "@material-ui/icons";
 
-import ArtsGrid from "prixerProfile/grid/grid";
+import Grid from "../../art/components/grid";
 import Button from "components/Button/Button";
 
 import { generateWaProductMessage } from 'utils/utils';
@@ -196,7 +196,7 @@ const Landscape: React.FC<LandscapeProps> = (props) => {
             <h2>Elige el arte:</h2>
             <div className={styles['art-selection-container']}>
               <div className={styles['art-grid-wrapper']}>
-                <ArtsGrid
+                <Grid
                   setSelectedArt={props.addArt}
                   setFullArt={props.setFullArt}
                   fullArt={props.fullArt}

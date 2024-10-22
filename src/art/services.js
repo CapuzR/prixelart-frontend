@@ -43,11 +43,11 @@ export const handleFullImage = async (
   setOpenFullArt(true)
 }
 
-export const addingToCart = (e, tile, props) => {
+export const addingToCart = (e, tile, setSelectedArt, setIsOpenAssociateProduct) => {
   e.preventDefault()
   const isProductPage = window.location.search.includes("producto=")
-  props.setSelectedArt(tile)
+  setSelectedArt(tile)
   if (!isProductPage) {
-    props.setIsOpenAssociateProduct(true)
+    setIsOpenAssociateProduct(true)
   }
 }

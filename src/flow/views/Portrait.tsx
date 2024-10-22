@@ -4,7 +4,7 @@ import MDEditor from "@uiw/react-md-editor";
 import Button from 'components/Button/Button';
 import { EditAttributes, Share as ShareIcon } from '@material-ui/icons';
 import { generateWaProductMessage } from 'utils/utils';
-import ArtsGrid from 'prixerProfile/grid/grid';
+import Grid from "../../art/components/grid";
 import FlowStepper from 'components/FlowStepper/FlowStepper';
 import { formatPriceForDisplay } from 'utils/formats';
 import { updateAttributes } from "../utils";
@@ -222,7 +222,7 @@ const Portrait: React.FC<PortraitProps> = (props) => {
                             <h2>Elige el arte:</h2>
                             <div className={styles['art-selection-container']}>
                                 <div className={styles['art-grid-wrapper']}>
-                                <ArtsGrid
+                                <Grid
                                     setSelectedArt={props.addArt}
                                     setFullArt={props.setFullArt}
                                     fullArt={props.fullArt}

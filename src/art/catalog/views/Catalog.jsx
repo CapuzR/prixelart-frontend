@@ -197,6 +197,7 @@ export default function Catalog(props) {
             lupa.
           </Typography>
         </Grid>
+
         <Grid>
           <ArtsGrid
             prixerUsername={props.prixer}
@@ -210,6 +211,8 @@ export default function Catalog(props) {
             searchResult={props.searchResult}
           />
         </Grid>
+
+        {/* Art uploader */}
         {openArtFormDialog && (
           <ArtUploader
             openArtFormDialog={openArtFormDialog}
@@ -217,6 +220,7 @@ export default function Catalog(props) {
           />
         )}
 
+        {/* Serivices uploader */}
         {openServiceFormDialog && (
           <CreateService
             openArtFormDialog={openServiceFormDialog}
@@ -225,6 +229,7 @@ export default function Catalog(props) {
           />
         )}
 
+        {/* Floating buttons */}
         <Grid className={classes.float}>
           <FloatingAddButton
             setOpenArtFormDialog={setOpenArtFormDialog}
@@ -233,6 +238,7 @@ export default function Catalog(props) {
           />
         </Grid>
 
+        {/* Asociación de productos */}
         <Dialog
           open={props.isOpenAssociateProduct}
           keepMounted
@@ -350,6 +356,8 @@ export default function Catalog(props) {
             )}
           </DialogActions>
         </Dialog>
+
+        {/* Cart Review (?) */}
         <Dialog
           maxWidth={"lg"}
           open={openShoppingCart}

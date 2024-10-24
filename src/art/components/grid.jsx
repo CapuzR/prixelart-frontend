@@ -1,5 +1,4 @@
-//[]      17. Búsqueda de Prixers.
-
+// Hay un montón de imports que no se utilizan, eliminar
 import React, { useState, useEffect } from "react"
 import { makeStyles, withStyles } from "@material-ui/core/styles"
 import { useTheme } from "@material-ui/core/styles"
@@ -7,7 +6,6 @@ import axios from "axios"
 import { useHistory } from "react-router-dom"
 import TextField from "@material-ui/core/TextField"
 import Button from "@material-ui/core/Button"
-import Backdrop from "@material-ui/core/Backdrop"
 import CircularProgress from "@material-ui/core/CircularProgress"
 import Img from "react-cool-img"
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry"
@@ -36,61 +34,64 @@ import PaginationBar from "../../components/Pagination/PaginationBar"
 import { useLoading, useSnackBar } from "context/GlobalContext"
 import Detail from "./Detail"
 
-const IOSSwitch = withStyles((theme) => ({
-  root: {
-    width: 42,
-    height: 26,
-    padding: 0,
-    margin: theme.spacing(1),
-    position: "absolute",
-    marginLeft: "-8vh",
-  },
-  switchBase: {
-    padding: 1,
-    "&$checked": {
-      transform: "translateX(16px)",
-      color: theme.palette.common.white,
-      "& + $track": {
-        backgroundColor: "primary",
-        opacity: 1,
-        border: "none",
+// Todos los estilo debería estar en el SCSS
+  const IOSSwitch = withStyles((theme) => ({
+    root: {
+      width: 42,
+      height: 26,
+      padding: 0,
+      margin: theme.spacing(1),
+      position: "absolute",
+      marginLeft: "-8vh",
+    },
+    switchBase: {
+      padding: 1,
+      "&$checked": {
+        transform: "translateX(16px)",
+        color: theme.palette.common.white,
+        "& + $track": {
+          backgroundColor: "primary",
+          opacity: 1,
+          border: "none",
+        },
+      },
+      "&$focusVisible $thumb": {
+        color: "#52d869",
+        border: "6px solid #fff",
       },
     },
-    "&$focusVisible $thumb": {
-      color: "#52d869",
-      border: "6px solid #fff",
+    thumb: {
+      width: 24,
+      height: 24,
     },
-  },
-  thumb: {
-    width: 24,
-    height: 24,
-  },
-  track: {
-    borderRadius: 26 / 2,
-    border: `1px solid ${theme.palette.grey[400]}`,
-    backgroundColor: theme.palette.grey[400],
-    opacity: 1,
-    transition: theme.transitions.create(["background-color", "border"]),
-  },
-  checked: {},
-  focusVisible: {},
-}))(({ classes, ...props }) => {
-  return (
-    <Switch
-      focusVisibleClassName={classes.focusVisible}
-      disableRipple
-      classes={{
-        root: classes.root,
-        switchBase: classes.switchBase,
-        thumb: classes.thumb,
-        track: classes.track,
-        checked: classes.checked,
-      }}
-      {...props}
-    />
-  )
+    track: {
+      borderRadius: 26 / 2,
+      border: `1px solid ${theme.palette.grey[400]}`,
+      backgroundColor: theme.palette.grey[400],
+      opacity: 1,
+      transition: theme.transitions.create(["background-color", "border"]),
+    },
+    checked: {},
+    focusVisible: {},
+  })
+)(({ classes, ...props }) => {
+    return (
+      <Switch
+        focusVisibleClassName={classes.focusVisible}
+        disableRipple
+        classes={{
+          root: classes.root,
+          switchBase: classes.switchBase,
+          thumb: classes.thumb,
+          track: classes.track,
+          checked: classes.checked,
+        }}
+        {...props}
+      />
+    )
 })
 
+// Todos los estilo debería estar en el SCSS
 const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
@@ -154,6 +155,7 @@ export default function Grid(props) {
   const itemsToSkip = (pageNumber - 1) * itemsPerPage
   const noOfPages = Math.ceil(total / itemsPerPage)
 
+  // Hay varias funciones que no se utilizan, eliminar
   const handleClickVisible = () => {
     setOpenV(true)
   }
@@ -225,6 +227,7 @@ export default function Grid(props) {
   })
 
   return (
+    // Todos los estilo debería estar en el SCSS
     <div style={{ height: "100%", width: "100%" }}>
       <div className={classes.root}>
         <div
@@ -271,49 +274,6 @@ export default function Grid(props) {
                     />
                   </div>
                 )
-                //   JSON.parse(localStorage.getItem("adminToken")) && (
-                //     <div key={i}>
-                //       <Img
-                //         onClick={(e) => {
-                //           handleFullImageClick(e, tile)
-                //         }}
-                //         placeholder="/imgLoading.svg"
-                //         style={{
-                //           backgroundColor: "#eeeeee",
-                //           width: "100%",
-                //           marginBottom: "7px",
-                //           borderRadius: "4px",
-                //           // objectFit: "cover",
-                //         }}
-                //         src={tile.squareThumbUrl}
-                //         debounce={1000}
-                //         cache
-                //         error="/imgError.svg"
-                //         // srcSet={tile.smallThumbUrl + ' 600w, ' + tile.mediumThumbUrl + ' 850w, ' + tile.largeThumbUrl + ' 1300w'}
-                //         // sizes="(min-width: 1600px) 850px, (min-width: 960px) 450px, (min-width: 640px) 400px, 200px"
-                //         // sizes="(min-width: 1600px) 850px, (min-width: 960px) 450px, (min-width: 640px) 200px, (min-width: 375px) 80px"
-                //         alt={tile.title}
-                //         id={tile.artId}
-                //         key={tile.artId}
-                //       />
-                //       {props.permissions?.banArt && (
-                //         <IOSSwitch
-                //           color="primary"
-                //           size="normal"
-                //           onChange={(e) => {
-                //             if (e.target.checked === false) {
-                //               setVisible(e.target.checked)
-                //               setSelectedArt(tile.artId)
-                //             } else {
-                //               setVisible(e.target.checked)
-                //               setVisibleArt(tile, tile.artId, e)
-                //             }
-                //           }}
-                //         ></IOSSwitch>
-                //       )}
-                //     </div>
-                //   )
-                // )
               )
             ) : (
               <h1>Pronto encontrarás todo el arte que buscas.</h1>
@@ -321,13 +281,17 @@ export default function Grid(props) {
           </Masonry>
         </ResponsiveMasonry>
       </div>
-      {openFullArt && (
-        <Detail
-          art={props.fullArt}
-          buyState={props.buyState}
-          searchResult={props.searchResult}
-        />
-      )}
+
+      {
+        openFullArt && (
+          <Detail
+            art={props.fullArt}
+            buyState={props.buyState}
+            searchResult={props.searchResult}
+          />
+        )
+      }
+
       <PaginationBar
         pageNumber={pageNumber}
         setPageNumber={setPageNumber}

@@ -27,7 +27,7 @@ export default function ArtThumbnail({
   const [selectedLocalArt, setSelectedLocalArt] = useState<Art | undefined>(
     undefined
   )
-
+  //Mover estilo a archivos de estilos y eliminar funciones que no se utilizan.
   const hideArt = (tile: Art, e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault()
     setVisibleArt(tile)
@@ -113,24 +113,6 @@ export default function ArtThumbnail({
           id={tile.artId}
           key={tile.artId}
         />
-
-        {/* {props.permissions?.artBan && (
-          <IOSSwitch
-            color="primary"
-            size="normal"
-            checked={tile.visible}
-            onChange={(e) => {
-              if (e.target.checked === false) {
-                handleClickVisible()
-                setSelectedArt(tile.artId)
-                setVisible(e.target.checked)
-              } else {
-                setVisibleArt(tile)
-                setVisible(e.target.checked)
-              }
-            }}
-          />
-        )} */}
       </CardActionArea>
     </div>
   )

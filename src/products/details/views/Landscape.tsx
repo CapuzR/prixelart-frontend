@@ -1,7 +1,5 @@
 import React from "react";
 
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
 import {
   Typography,
   Accordion,
@@ -14,8 +12,6 @@ import {
 } from "@material-ui/core";
 import { Share as ShareIcon, ExpandMore as ExpandMoreIcon } from "@material-ui/icons";
 
-import ArtsGrid from "art/components/grid";
-// import { ProductCarousel } from "components/productCarousel/productCarousel";
 import Button from "components/Button/Button";
 
 import { generateWaProductMessage } from 'utils/utils';
@@ -133,10 +129,10 @@ const Landscape: React.FC<LandscapeProps> = (props) => {
             >
               {
                 props.product?.attributes?.map((att, iAtt, attributesArr) =>
-                  <div key={iAtt} style={{ width: "45%" }}>
+                  <div key={iAtt} className={ styles['attribute-select-wrapper'] }>
                     <FormControl
                       variant="outlined"
-                      style={{ width: "100%" }}
+                      className={styles['attribute-form-control']}
                     >
                       <InputLabel id={att.name}>{att.name}</InputLabel>
                       <Select

@@ -2,11 +2,6 @@ import React from 'react';
 
 import MDEditor from "@uiw/react-md-editor";
 import Button from 'components/Button/Button';
-import { EditAttributes, Share as ShareIcon } from '@material-ui/icons';
-import { generateWaProductMessage } from 'utils/utils';
-// import { ProductCarousel } from 'components/productCarousel/productCarousel';
-import ArtsGrid from 'art/components/grid';
-import FlowStepper from 'components/FlowStepper/FlowStepper';
 import { formatPriceForDisplay } from 'utils/formats';
 import styles from './Portrait.module.scss';
 import { Product } from '../../interfaces';
@@ -85,10 +80,10 @@ const Portrait: React.FC<PortraitProps> = (props) => {
             >
             {
                 props.product?.attributes?.map((att, iAtt, attributesArr) =>
-                <div key={iAtt} style={{ width: "45%" }}>
+                <div key={iAtt} className={styles['attribute-select-wrapper']}>
                     <FormControl
                     variant="outlined"
-                    style={{ width: "100%" }}
+                    className={styles['attribute-form-control']}
                     >
                     <InputLabel id={att.name}>{att.name}</InputLabel>
                     <Select

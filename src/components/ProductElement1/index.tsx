@@ -19,29 +19,28 @@ export const ProductElement1: React.FC<ProductElement1Props> = ({
   roundedCorner = true,
 }) => {
   return (
-    <div className={styles.productElement}>
+    <div className={styles['product-element']}>
       {/* Image */}
-      <div className={styles.imageContainer}>
+      <div className={styles['image-container']}>
         <Image
           src={src}
           alt={productName}
-          aspectRatio="square"
-          objectFit="contain"
+          objectFit="cover"
           roundedCorner={roundedCorner}
-          fitTo="width"
+          fitTo="square"
         />
       </div>
 
       {/* Product Name */}
-      <div className={styles.productName}>
+      <div className={styles['product-name']}>
         <span>{productName}</span>
       </div>
 
       {/* Button */}
-      <div className={styles.buttonContainer}>
+      <div className={styles['button-container']}>
         <Button
           variant="contained"
-          className={styles.detailsButton}
+          className={styles['details-button']}
           onClick={onButtonClick}
         >
           {buttonLabel}

@@ -58,7 +58,7 @@ const Landscape: React.FC<LandscapeProps> = (props) => {
             >
               {
                 props.product?.sources?.images?.map((image, i) => (
-                  <Image key={i} src={image.url} alt={props.product?.name} />
+                  <Image key={i} src={image.url} alt={props.product?.name}/>
                 ))
               }
             </Slider>

@@ -1,5 +1,6 @@
 import React from 'react';
 import styles from '../Styles.module.scss';
+import { helpers } from '../helpers';
 
 interface TrackProps {
   children: React.ReactNode;
@@ -18,16 +19,13 @@ export const Track: React.FC<TrackProps> = ({ children, currentIndex, speed, qty
   const flattenedChildren = React.Children.toArray(children);
 
   return (
-    <div className={`${styles["slider-container"]} ${styles[trackFormatClass]}`}
-    style={{
-      height: dotsPosition === 'below' ? 'auto' : '100%',
-    }}
-    >
+    <div className={`${styles["slider-container"]} ${styles[dotsPosition]} ${styles[trackFormatClass]}`}>
       <div
         className={`${styles["slider-wrapper"]} ${styles[`spacing-${spacing}`]}`}
         style={{
-          transform: `translateX(-${currentIndex * (100 / qtyPerSlide)}%)`,
+          transform: `translateX(-${currentIndex * (100 / (qtyPerSlide))}%)`,
           transition: `transform ${speed}ms ease-in-out`,
+          maxHeight: "100%",
           width: `${(flattenedChildren.length / qtyPerSlide) * 100}%`,  // Adjust width
           display: 'flex',
         }}
@@ -44,8 +42,10 @@ export const Track: React.FC<TrackProps> = ({ children, currentIndex, speed, qty
               key={index}
               className={`${styles["slider-slide"]} ${dots && dotsPosition === 'below' && styles['dots-below']} ${useThumbnails && dotsPosition === 'below' && styles['thumbnails-below']}`}
               style={{
-                flex: `0 0 calc(${100 / qtyPerSlide}%)`,
-                maxWidth: `${100 / qtyPerSlide}%`,
+                // flex: `0 0 calc(${100 / qtyPerSlide}%)`,
+                // maxWidth: `${100 / qtyPerSlide}%`,
+                maxWidth: `${100 / (qtyPerSlide)}%`,
+                maxHeight: "100%",
                 padding: spacing === 'none' ? '0' : spacing === 'sm' ? '5px' : spacing === 'md' ? '10px' : '15px',
               }}
             >

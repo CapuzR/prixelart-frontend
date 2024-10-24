@@ -41,6 +41,7 @@ import BrandsCarousel from "../sharedComponents/brandsCarousel/brandsCarousel"
 import { Slider } from "components/Slider"
 import { Image } from "components/Image"
 import { ProductElement1 } from "components/ProductElement1"
+import { getImageSize } from "utils/util";
 
 ReactGA.initialize("G-0RWP9B33D8")
 ReactGA.pageview("/")
@@ -240,16 +241,39 @@ export default function Home(props) {
       console.log(error)
     }
   }
+  const [sizes, setSizes] = useState([{}]);
 
   const getLatest = async () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + "/art/get-latest"
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/art/get-latest";
     try {
-      const getLatestArts = await axios.get(base_url)
-      setLatestArts(getLatestArts.data.arts)
+        const getLatestArts = await axios.get(base_url);
+        const artsArray = getLatestArts.data.arts.map(art => ({
+            ...art,
+            url: art?.largeThumbUrl ? art?.largeThumbUrl : art?.thumbUrl
+        }));
+
+        const sizesArray = await Promise.all(
+            artsArray.map(async (art) => {
+                try {
+                    return await getImageSize(art.url);
+                } catch (error) {
+                    console.error("Failed to get image size for:", art.url, error);
+                    return { width: 0, height: 0 };
+                }
+            })
+        );
+
+        const artsWithSizes = artsArray.map((art, index) => ({
+            ...art,
+            width: sizesArray[index]?.width || 0,
+            height: sizesArray[index]?.height || 0,
+        }));
+
+        setLatestArts(artsWithSizes);
     } catch (error) {
-      console.log(error)
+        console.log("Error fetching latest arts:", error);
     }
-  }
+};
 
   useEffect(() => {
     getImagesForTheCarousel()
@@ -334,23 +358,24 @@ export default function Home(props) {
                   <Slider 
                   images={desktopImages}
                   useIndicators= { {type: 'dots', position: 'over', color: { active: 'primary', inactive: 'white' }} }
+                  childConfig={ { qtyPerSlide: 1, spacing: "none" } }
                   >
                     {desktopImages
                       .map((img, i) => (
-                        <Image src={img.images.url} roundedCorner={false}  />
+                        <Image src={img.images.url} roundedCorner={false} fitTo="width" roundedCorner={false} objectFit="fill"  />
                       ))}
                   </Slider>
                 ) : (
                   <Slider 
                   images={mobileImages}
                   useIndicators= { {type: 'dots', position: 'over', color: { active: 'primary', inactive: 'white' }} }
-                  childConfig={ { qtyPerSlide: 1, spacing: "sm" } }
-                  roundedCorner={false}
+                  childConfig={ { qtyPerSlide: 1, spacing: "none" } }
+                  // roundedCorner={false}
                   >
                     {mobileImages
                       .map((img, i) => (
-                        <Image key={i} src={img.images.url} alt={props?.product?.name} />
-                      ))}
+                        <Image key={i} src={img.images.url} fitTo="height" roundedCorner={false} objectFit="cover" />
+                    ))}
                   </Slider>
                 )}
               </div>            
@@ -384,12 +409,11 @@ export default function Home(props) {
               </div>
             </div>
           </div>
-          <Grid container>
+          <Grid container style={{ padding: "20px" }}>
             <Grid
               item
               sm={12}
               xs={12}
-              // style={{ paddingRight: isMobile && 10 }}
             >
               <Paper
                 style={{
@@ -481,11 +505,11 @@ export default function Home(props) {
                       position: "relative",
                       width: "100%",
                       height:
-                        (isDesktop && 390) ||
-                        (isMobile && 190) ||
+                        (isDesktop && 450) ||
+                        (isMobile && 390) ||
                         (isTab && 235),
                       marginLeft: isMobile && 10,
-                      padding: isMobile ? 0 : "10px 30px 10px 30px",
+                      padding: isMobile ? 20 : "10px 30px 10px 30px",
                       marginTop: "-10px",
                     }}
                   >
@@ -495,6 +519,7 @@ export default function Home(props) {
                       }))}
                       useIndicators= { {type: 'dots', position: 'below', color: { active: 'primary', inactive: 'secondary' }} }
                       childConfig={ { qtyPerSlide: isDesktop ? 5 : isMobile ? 3 : 5, spacing: "sm" } }
+                      autoplay={false}
                     >
                         {bestSellers?.map((product) => (
                           <ProductElement1
@@ -517,8 +542,8 @@ export default function Home(props) {
                   flexDirection: "column",
                   position: "relative",
                   width: "100%",
-                  // height:
-                  //   (isDesktop && 470) || (isMobile && 330) || (isTab && 380),
+                  height:
+                    (isDesktop && 450) || (isMobile && 500) || (isTab && 380),
                   borderRadius:
                     (isDesktop && "2.9375rem") ||
                     (isMobile && "1.875rem") ||
@@ -545,9 +570,11 @@ export default function Home(props) {
                   <div
                     style={{
                       display: "flex",
-                      flexDirection: "column",
+                      flexDirection: "row",
                       width: "50%",
                       margin: "1.2rem",
+                      gap: "1rem",
+                      alignItems: "center",
                       paddingLeft:
                         (isDesktop && 40) || (isMobile && 5) || (isTab && 20),
                     }}
@@ -562,23 +589,10 @@ export default function Home(props) {
                           (isMobile && 12) ||
                           (isTab && 18),
                         marginBottom: isDesktop && 12,
+                        margin: "0",
                       }}
                     >
-                      Artes
-                    </Typography>
-                    <Typography
-                      variant="h4"
-                      style={{
-                        color: "white",
-                        fontWeight: "bold",
-                        fontSize:
-                          (isDesktop && 30) ||
-                          (isMobile && 12) ||
-                          (isTab && 18),
-                        marginBottom: isDesktop && 12,
-                      }}
-                    >
-                      más vendidos
+                      Artes más vendidos
                     </Typography>
                     <Button
                       style={{
@@ -590,6 +604,7 @@ export default function Home(props) {
                         paddingLeft: 20,
                         paddingRight: 20,
                         maxWidth: 150,
+                        transform: "tran"
                       }}
                       onClick={handleGallery}
                       size={isMobile ? "small" : "medium"}
@@ -613,69 +628,25 @@ export default function Home(props) {
                     }}
                   />
                 </div>
-                <Grid
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "center",
-                    position: "relative",
-                    width: isMobile ? "88%" : "100%",
-                    height:
-                      (isDesktop && 580) || (isMobile && 190) || (isTab && 220),
-                    marginLeft: isMobile && 20,
-                    padding: isMobile ? 0 : "0px 30px 0px 30px",
-                  }}
-                >
                 <Slider
-                  images={bestSellers?.map((product) => ({
-                    url: product?.sources?.images.length > 0 ? product.sources.images[0]?.url : product.thumbUrl,
+                  images={mostSelledArts?.map((art) => ({
+                    url: art?.largeThumbUrl ? art?.largeThumbUrl : art?.thumbUrl
                   }))}
                   useIndicators= { {type: 'dots', position: 'below', color: { active: 'primary', inactive: 'secondary' }} }
-                  childConfig={ { qtyPerSlide: isDesktop ? 5 : isMobile ? 3 : 5, spacing: "sm" } }
+                  childConfig={ { qtyPerSlide: isDesktop ? 5 : isMobile ? 1 : 5, spacing: "sm" } }
+                  autoplay={false}
                 >
                     {mostSelledArts?.map((art) => (
                       <Image
                         src={art?.largeThumbUrl ? art?.largeThumbUrl : art?.thumbUrl}
                         roundedCorner={true}
+                        fitTo="square"
+                        objectFit="contain"
                       />
                     ))}
                 </Slider>
-                  {/* <Slider {...settings2}>
-                    {mostSelledArts?.map((art) => (
-                      <div
-                        key={art._id}
-                        style={{
-                          display: "flex",
-                          flexDirection: "column",
-                          height:
-                            (isDesktop && 220) ||
-                            (isMobile && 180) ||
-                            (isTab && 220),
-                        }}
-                        onClick={() => handleArt(art)}
-                      >
-                        <div
-                          style={{
-                            backgroundImage:
-                              `url(${encodeURI(art?.largeThumbUrl)})` ||
-                              `url(${encodeURI(art?.thumbUrl)})`,
-                            height:
-                              (isDesktop && 220) ||
-                              (isMobile && 180) ||
-                              (isTab && 220),
-                            width: "95%",
-                            backgroundSize: "contain",
-                            backgroundRepeat: "no-repeat",
-                            backgroundPosition: "center",
-                          }}
-                        />
-                      </div>
-                    ))}
-                  </Slider> */}
-                </Grid>
               </Paper>
             )}
-
             {latestArts && (
               <Paper
                 style={{
@@ -725,10 +696,11 @@ export default function Home(props) {
                   <div
                     style={{
                       display: "flex",
-                      flexDirection: "column",
                       width: "50%",
                       margin: "1.2rem",
-                      alignItems: "end",
+                      gap: "1rem",
+                      // alignItems: "center",
+                      justifyContent: "end",
                       paddingRight:
                         (isDesktop && 40) || (isMobile && 5) || (isTab && 20),
                     }}
@@ -745,21 +717,7 @@ export default function Home(props) {
                         marginBottom: isDesktop && 12,
                       }}
                     >
-                      Artes
-                    </Typography>
-                    <Typography
-                      variant="h4"
-                      style={{
-                        color: "white",
-                        fontWeight: "bold",
-                        fontSize:
-                          (isDesktop && 30) ||
-                          (isMobile && 12) ||
-                          (isTab && 18),
-                        marginBottom: isDesktop && 12,
-                      }}
-                    >
-                      más recientes
+                      Artes más recientes
                     </Typography>
                     <Button
                       style={{
@@ -786,47 +744,32 @@ export default function Home(props) {
                     position: "relative",
                     width: isMobile ? "88%" : "100%",
                     height:
-                      (isDesktop && 240) || (isMobile && 190) || (isTab && 220),
+                      (isDesktop && 490) || (isMobile && 450) || (isTab && 490),
                     marginLeft: isMobile && 20,
                     padding: isMobile ? 0 : "0px 30px 0px 30px",
                     marginTop: "-5px",
                   }}
                 >
-                  {/* <Slider {...settings2}>
-                    {latestArts?.map((art) => (
-                      <div
-                        key={art._id}
-                        style={{
-                          display: "flex",
-                          flexDirection: "column",
-                          height:
-                            (isDesktop && 220) ||
-                            (isMobile && 180) ||
-                            (isTab && 220),
-                          marginRight: 10,
-                        }}
-                        onClick={() => handleArt(art)}
-                      >
-                        <div
-                          style={{
-                            backgroundImage:
-                              `url(${encodeURI(art?.largeThumbUrl)})` ||
-                              `url(${encodeURI(art?.thumbUrl)})`,
-                            height:
-                              (isDesktop && 220) ||
-                              (isMobile && 180) ||
-                              (isTab && 220),
-                            width: "95%",
-                            marginRight: 10,
-
-                            backgroundSize: "contain",
-                            backgroundRepeat: "no-repeat",
-                            backgroundPosition: "center",
-                          }}
-                        />
-                      </div>
-                    ))}
-                  </Slider> */}
+                <Slider
+                  images={latestArts.map((art) => ({
+                    url: art?.largeThumbUrl ? art?.largeThumbUrl : art?.thumbUrl,
+                    width: art.width,
+                    height: art.height
+                  }))}
+                  useIndicators= { {type: 'dots', position: 'below', color: { active: 'primary', inactive: 'secondary' }} }
+                  childConfig={ { qtyPerSlide: isDesktop ? 5 : isMobile ? 1 : 5, spacing: "sm" } }
+                  autoplay={false}
+                >
+                    {latestArts.map((art) => {
+                      const artUrl = art?.largeThumbUrl ? art?.largeThumbUrl : art?.thumbUrl;
+                      return <Image
+                        src={artUrl}
+                        roundedCorner={false}
+                        fitTo={ art.width > art.height ? "width" : "height" }
+                        objectFit={ art.width > art.height ? "cover" : "contain" }
+                      />
+                    })}
+                </Slider>
                 </Grid>
               </Paper>
             )}

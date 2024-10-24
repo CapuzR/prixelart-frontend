@@ -9,8 +9,8 @@ import { UseIndicatorsType } from './interfaces';
 
 interface SliderProps {
   children: React.ReactNode;
-  images: { url: string }[];
-  fitTo?: 'width' | 'height' | 'square';
+  images: { url: string, width?: string, height?: string }[];
+  fitTo?: 'width' | 'height' | 'square' | 'variable';
   useIndicators?: UseIndicatorsType;
   childConfig?: { qtyPerSlide: number, spacing: 'sm' | 'md' | 'lg' | 'xl' | 'none' };
   autoplay?: boolean;
@@ -33,55 +33,36 @@ export const Slider: React.FC<SliderProps> = ({
   pauseOnHover = config.pauseOnHover,
 }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [maxSize, setMaxSize] = useState(0);
   const sliderRef = useRef<HTMLDivElement>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const quatityPerSlide = childConfig.qtyPerSlide > 1 ? childConfig.qtyPerSlide + 1 : 1;
   const dotsPerSlide = childConfig.qtyPerSlide - 1;
-  const nextSlide = helpers.nextSlide(currentIndex, images, setCurrentIndex, infinite, childConfig.qtyPerSlide);
-  const prevSlide = helpers.prevSlide(currentIndex, images, setCurrentIndex, infinite, childConfig.qtyPerSlide);
 
+  const nextSlide = images.length > childConfig.qtyPerSlide 
+  ? helpers.nextSlide(currentIndex, images, setCurrentIndex, infinite, childConfig.qtyPerSlide) 
+  : () => {};
+  const prevSlide = images.length > childConfig.qtyPerSlide 
+  ? helpers.prevSlide(currentIndex, images, setCurrentIndex, infinite, childConfig.qtyPerSlide) 
+  : () => {};
 
-  const getImageSize = (url: string): Promise<{ width: number; height: number }> => {
-    return new Promise((resolve) => {
-      const img = new Image();
-      img.src = url;
-      img.onload = () => resolve({ width: img.naturalWidth, height: img.naturalHeight });
-    });
-  };
+  const goToSlide = (index: number) => setCurrentIndex(index);
 
-  useEffect(() => {
-    const calculateMaxSize = async () => {
-      const sizes = await Promise.all(images.map(image => getImageSize(image.url)));
-      const maxSize = fitTo === 'height' 
-        ? Math.max(...sizes.map(size => size.height)) 
-        : Math.max(...sizes.map(size => size.width));
-      setMaxSize(maxSize);
-    };
-    calculateMaxSize();
-  }, [images, fitTo]);
+  const trackFormatClass = `${useIndicators && styles[`${useIndicators.position}-indicator-type-${useIndicators.type}-fit-to-${fitTo}`]}`;
 
   useEffect(() => {
-    if (autoplay) {
+    if (autoplay && images.length > childConfig.qtyPerSlide) {
       timeoutRef.current = setTimeout(nextSlide, autoplaySpeed);
       return () => {
         if (timeoutRef.current) clearTimeout(timeoutRef.current);
       };
     }
-  }, [currentIndex, autoplay, autoplaySpeed]);
+  }, [currentIndex, autoplay, autoplaySpeed, images.length, childConfig.qtyPerSlide]);
 
-  const goToSlide = (index: number) => setCurrentIndex(index);
-
-  const trackFormatClass = `${useIndicators && styles[`${useIndicators.position}-indicator-type-${useIndicators.type}-fit-to-${fitTo}`]}`;
   return (
     <div
       className={`${styles['custom-slider']}`}
       ref={sliderRef}
-      style={{
-        width: fitTo === 'square' || fitTo === 'width' ? "100%" : "auto",
-        height: fitTo === 'square' || fitTo === 'height' ? "100%" : "auto", // No trackHeight variable
-      }}
       onMouseEnter={pauseOnHover ? () => timeoutRef.current && clearTimeout(timeoutRef.current) : undefined}
       onMouseLeave={pauseOnHover ? () => (timeoutRef.current = setTimeout(nextSlide, autoplaySpeed)) : undefined}
     >
@@ -98,7 +79,7 @@ export const Slider: React.FC<SliderProps> = ({
       </Track>
 
       {
-        images.length > 1 &&
+        images.length > childConfig.qtyPerSlide &&
           <>
             <Controls prevSlide={prevSlide} nextSlide={nextSlide} />
 

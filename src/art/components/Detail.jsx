@@ -622,6 +622,7 @@ export default function ArtDetail(props) {
         className={classes.paper}
       >
         <div style={{ marginTop: 55 }}>
+          {/* Art Detail */}
           {tiles !== undefined ? (
             tilesv2.map((tile) =>
               artDataState !== tile.artId ? (
@@ -633,6 +634,7 @@ export default function ArtDetail(props) {
                     <>
                       <Card style={{ marginTop: 35 }}>
                         <CardActionArea disabled>
+                          {/* Badge de arte exclusivo (?) */}
                           {tile.exclusive === "exclusive" && (
                             <Tooltip title="Arte exclusivo">
                               <IconButton
@@ -739,6 +741,7 @@ export default function ArtDetail(props) {
                                 </Button>
                               </Grid>
                               <Grid item>
+                                {/* ADMIN:  */}
                                 {JSON.parse(
                                   localStorage.getItem("adminToken")
                                 ) && (
@@ -865,6 +868,8 @@ export default function ArtDetail(props) {
                             )}
                           </Typography>
                         </CardContent>
+
+                        {/* ADMIN: Art ban */}
                         <CardActions>
                           {props.permissions?.artBan && (
                             <div
@@ -1049,6 +1054,7 @@ export default function ArtDetail(props) {
                           )}
                         </CardActions>
                       </Card>
+                      {/* PRIXER: Modal de ocultar arte  */}
                       <Dialog
                         open={hiddenArt === tile.artId}
                         onClose={handleCloseVisible}
@@ -1111,6 +1117,7 @@ export default function ArtDetail(props) {
                           </Button>
                         </DialogActions>
                       </Dialog>
+                      {/* PRIXER: Eliminar arte */}
                       <Dialog
                         open={open}
                         onClose={handleClose}
@@ -1154,6 +1161,7 @@ export default function ArtDetail(props) {
                       </Dialog>
                     </>
                   ) : (
+                    // ADMIN: Bloque de admin con cosas de Prixer mezcladas
                     JSON.parse(localStorage.getItem("adminToken")) && (
                       <Card style={{ marginTop: 35 }}>
                         <CardActionArea disabled>
@@ -1311,6 +1319,7 @@ export default function ArtDetail(props) {
                           >
                             <WhatsAppIcon /> Escríbenos
                           </Button>
+                          {/* ADMIN: Dentro de un área que ya es de admin (?) */}
                           {JSON.parse(localStorage.getItem("adminToken")) && (
                             <IOSSwitch
                               color="primary"
@@ -1327,7 +1336,9 @@ export default function ArtDetail(props) {
                               }}
                             ></IOSSwitch>
                           )}
-                          {JSON.parse(localStorage.getItem("token")) &&
+                          {/* PRIXER: Pero dentro de un bloque de ADMIN (?) */}
+                          {
+                            JSON.parse(localStorage.getItem("token")) &&
                             JSON.parse(localStorage.getItem("token"))
                               .username == tile.prixerUsername && (
                               <Button
@@ -1340,7 +1351,9 @@ export default function ArtDetail(props) {
                               >
                                 Eliminar
                               </Button>
-                            )}
+                            )
+                          }
+                          {/* PRIXER: Pero dentro de un bloque de ADMIN (?) */}
                           <Dialog
                             open={open}
                             onClose={handleClose}
@@ -1386,9 +1399,11 @@ export default function ArtDetail(props) {
                         </CardActions>
                       </Card>
                     )
-                  )}
+                  )
+                  }
                 </div>
               ) : (
+                // QUÉ ES ESTO? EDICIÓN DEL ARTE??
                 <Card
                   id={tile.artId}
                   key={tile.artId}
@@ -1665,40 +1680,6 @@ export default function ArtDetail(props) {
                               ></Grid>
                             </React.Fragment>
                           )}
-                          {/* <Grid item container xs={12} style={{marginBottom: 15}}>
-                  <Grid item xs={4} sm={4}>
-                    <Typography style={{whiteSpace: 'pre-line', padding: 15, fontSize: '0.7em'}}> Máximo para <br/> impresión (cm) </Typography>
-                  </Grid>
-                  <Grid item container xs={8} sm={8}>
-                    <Grid item xs={5} sm={5}>
-                      <TextField
-                        variant="outlined"
-                        required
-                        fullWidth
-                        id="originalArtWidth"
-                        label="Ancho"
-                        name="originalArtWidth"
-                        autoComplete="originalArtHeight"
-                        value={tile.originalArtWidth}
-                        onChange={(e)=> {handleArtOriginalWidthEdit(e, tile)}}
-                      />
-                    </Grid>
-                      <Typography style={{padding: 10}}> x </Typography>
-                    <Grid item xs={5} sm={5}>
-                      <TextField
-                        variant="outlined"
-                        required
-                        fullWidth
-                        id="originalArtHeight"
-                        label="Alto"
-                        name="originalArtHeight"
-                        autoComplete="originalArtHeight"
-                        value={tile.originalArtHeight}
-                        onChange={(e)=> {handleArtOriginalHeightEdit(e, tile)}}
-                      />
-                    </Grid>
-                  </Grid>
-                </Grid> */}
                           <Grid
                             item
                             xs
@@ -1870,16 +1851,12 @@ export default function ArtDetail(props) {
                     </Grid>
                   </CardContent>
                   <CardActions>
-                    {/* <Button size="small" color="primary">
-                Comparte
-                </Button> */}
                     {JSON.parse(localStorage.getItem("token")) &&
                       JSON.parse(localStorage.getItem("token")).username && (
                         <Button
                           size="small"
                           color="primary"
                           onClick={(e) => {
-                            // updateArtData(e, tile);
                             handleArtEdit(e, tile)
                           }}
                         >
@@ -1893,18 +1870,21 @@ export default function ArtDetail(props) {
           ) : (
             <p>Prueba prueba</p>
           )}
+          {/* Art uploader */}
           {openArtFormDialog && (
             <ArtUploader
               openArtFormDialog={openArtFormDialog}
               setOpenArtFormDialog={setOpenArtFormDialog}
             />
           )}
+          {/* Floating buttons */}
           <Grid className={classes.float}>
             <FloatingAddButton
               setOpenArtFormDialog={setOpenArtFormDialog}
               setOpenShoppingCart={setOpenShoppingCart}
             />
           </Grid>
+          {/* Snackbar */}
           <Snackbar
             open={snackBar}
             autoHideDuration={2000}
@@ -1913,6 +1893,7 @@ export default function ArtDetail(props) {
             onClose={() => setSnackBar(false)}
           />
         </div>
+        {/* Paginación */}
         <Box
           style={{
             display: "flex",
@@ -2022,6 +2003,7 @@ export default function ArtDetail(props) {
             </Button>
           )}
         </Box>
+        {/* Términos y condiciones */}
         <Modal
           xl={800}
           lg={800}
@@ -2075,6 +2057,7 @@ export default function ArtDetail(props) {
             </div>
           </div>
         </Modal>
+        {/* Asociación de productos */}
         <Dialog
           open={props.isOpenAssociateProduct}
           keepMounted
@@ -2210,6 +2193,7 @@ export default function ArtDetail(props) {
             )}
           </DialogActions>
         </Dialog>
+        {/* Cart Review (?) */}
         <Dialog
           maxWidth={"lg"}
           open={openShoppingCart}

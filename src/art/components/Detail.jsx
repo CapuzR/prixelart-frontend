@@ -47,7 +47,7 @@ import Menu from "@material-ui/core/Menu"
 import MenuItem from "@material-ui/core/MenuItem"
 import MoreVertIcon from "@material-ui/icons/MoreVert"
 import CloseIcon from "@material-ui/icons/Close"
-import { useLoading, useSnackBar } from 'context/GlobalContext';
+import { useLoading, useSnackBar } from "context/GlobalContext"
 
 const IOSSwitch = withStyles((theme) => ({
   root: {
@@ -149,10 +149,10 @@ export default function ArtDetail(props) {
   const theme = useTheme()
   const globalParams = new URLSearchParams(window.location.pathname)
   const [ready, setReady] = useState(false)
-  const [tiles, setTiles] = useState(props?.searchResult)
+  const [tiles, setTiles] = useState(props?.searchResult || undefined)
   // const [newTag, setNewTag] = useState([]);
   const [updatedTile, setUpdatedTile] = useState([])
-  const { setLoading } = useLoading();
+  const { setLoading } = useLoading()
   const [artDataState, setArtDataState] = useState()
   const [snackBar, setSnackBar] = useState(false)
   const [snackBarMessage, setSnackBarMessage] = useState(false)
@@ -184,8 +184,6 @@ export default function ArtDetail(props) {
   const [pageNumber, setPageNumber] = useState(1)
   const itemsToSkip = (pageNumber - 1) * itemsPerPage
   const tilesv2 = tiles?.slice(itemsToSkip, itemsPerPage + itemsToSkip)
-
-  // const [isOpenAssociateProduct, setIsOpenAssociateProduct] = useState(false);
 
   const propsRank = {
     min: 0,
@@ -462,9 +460,9 @@ export default function ArtDetail(props) {
 
   const readArt = async () => {
     setLoading(true)
-    if (props.fullArt) {
+    if (props.fullArt && props?.searchResult && props?.searchResult?.length > 0) {
       let index
-      const s = tiles.find((art, i) => {
+      const s = props?.searchResult?.find((art, i) => {
         if (art.artId === fullArt) {
           index = i
         }
@@ -624,7 +622,7 @@ export default function ArtDetail(props) {
         className={classes.paper}
       >
         <div style={{ marginTop: 55 }}>
-          {tiles ? (
+          {tiles !== undefined ? (
             tilesv2.map((tile) =>
               artDataState !== tile.artId ? (
                 <div
@@ -853,15 +851,18 @@ export default function ArtDetail(props) {
                               whiteSpace: "pre-line",
                               fontSize: "1.1em",
                               marginBottom: 10,
-                              textAlign: "center"
+                              textAlign: "center",
                             }}
                           >
                             Creado el{" "}
-                            { new Date(tile?.createdOn).toLocaleDateString("es-ES", {
-                              year: "numeric",
-                              month: "long",
-                              day: "numeric",
-                            })}
+                            {new Date(tile?.createdOn).toLocaleDateString(
+                              "es-ES",
+                              {
+                                year: "numeric",
+                                month: "long",
+                                day: "numeric",
+                              }
+                            )}
                           </Typography>
                         </CardContent>
                         <CardActions>

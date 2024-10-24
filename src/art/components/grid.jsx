@@ -30,9 +30,11 @@ import Star from "@material-ui/icons/StarRate"
 import StarOutline from "@material-ui/icons/StarOutline"
 
 import { readGallery, setVisibleArt } from "../api"
-import { searchPhotos } from "../services"
-import ArtThumbnail from "./artThumbnail"
+import { searchPhotos, handleFullImage } from "../services"
+import ArtThumbnail from "./ArtThumbnail"
 import PaginationBar from "../../components/Pagination/PaginationBar"
+import { useLoading, useSnackBar } from "context/GlobalContext"
+import Detail from "./Detail"
 
 const IOSSwitch = withStyles((theme) => ({
   root: {
@@ -125,6 +127,9 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 export default function Grid(props) {
+  const { setLoading } = useLoading()
+  const { showSnackBar } = useSnackBar()
+
   const classes = useStyles()
   const [tiles, setTiles] = useState([])
   const [total, setTotal] = useState(1)
@@ -136,17 +141,14 @@ export default function Grid(props) {
   const [categoryValue, setCategoryValue] = useState(
     globalParams.get("category") || null
   )
-  const [backdrop, setBackdrop] = useState(true)
   const theme = useTheme()
   const [snackBar, setSnackBar] = useState(false)
-  const [loading, setLoading] = useState(false)
   const [snackBarMessage, setSnackBarMessage] = useState(false)
   const [selectedArt, setSelectedArt] = useState(undefined)
   const [open, setOpen] = useState(false)
   const [openV, setOpenV] = useState(false)
   const [openFullArt, setOpenFullArt] = useState(false)
   const [disabledReason, setDisabledReason] = useState("")
-  // const [visible, setVisible] = useState(true)
   const itemsPerPage = 30
   const [pageNumber, setPageNumber] = useState(1)
   const itemsToSkip = (pageNumber - 1) * itemsPerPage
@@ -177,6 +179,8 @@ export default function Grid(props) {
   }
 
   useEffect(() => {
+    setLoading(true)
+
     const fetchData = async () => {
       try {
         let filters = {}
@@ -191,14 +195,14 @@ export default function Grid(props) {
         const response = await readGallery(filters)
         setTiles(response.arts)
         setTotal(response.length)
-        props.setSearchResult(response?.data?.arts)
+        props.setSearchResult(response?.arts)
       } catch (error) {
         console.error("Error fetching products:", error)
       } finally {
-        setBackdrop(false)
       }
     }
     fetchData()
+    setLoading(false)
   }, [searchValue, categoryValue, pageNumber, props, globalParams])
 
   const handleSearch = (queryValue, categories) => {
@@ -223,12 +227,6 @@ export default function Grid(props) {
   return (
     <div style={{ height: "100%", width: "100%" }}>
       <div className={classes.root}>
-        <Backdrop
-          className={classes.backdrop}
-          open={backdrop}
-        >
-          <CircularProgress color="inherit" />
-        </Backdrop>
         <div
           style={{ width: "100%", display: "flex", justifyContent: "center" }}
         >
@@ -260,16 +258,19 @@ export default function Grid(props) {
             {tiles ? (
               tiles.map(
                 (tile, i) => (
-                  // tile.visible ? (
-                  <ArtThumbnail
-                    tile={tile}
-                    i={i}
-                    handleCloseVisible={handleCloseVisible}
-                    setSelectedArt={props.setSelectedArt}
-                    setIsOpenAssociateProduct={props.setIsOpenAssociateProduct}
-                  />
+                  <div key={i + 1000}>
+                    <ArtThumbnail
+                      tile={tile}
+                      i={i}
+                      handleCloseVisible={handleCloseVisible}
+                      setSelectedArt={props.setSelectedArt}
+                      setIsOpenAssociateProduct={
+                        props.setIsOpenAssociateProduct
+                      }
+                      handleFullImageClick={handleFullImageClick}
+                    />
+                  </div>
                 )
-                // ) : (
                 //   JSON.parse(localStorage.getItem("adminToken")) && (
                 //     <div key={i}>
                 //       <Img
@@ -321,10 +322,9 @@ export default function Grid(props) {
         </ResponsiveMasonry>
       </div>
       {openFullArt && (
-        <FullscreenPhoto
+        <Detail
           art={props.fullArt}
           buyState={props.buyState}
-          // prixer={fullPrixer}
           searchResult={props.searchResult}
         />
       )}

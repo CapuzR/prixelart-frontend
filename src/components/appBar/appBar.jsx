@@ -469,7 +469,7 @@ export default function MenuAppBar() {
           color="secondary"
         >
           <Toolbar style={{ display: "flex", justifyContent: "space-between" }}>
-            <div style={{ width: "30%" }}>
+            <div style={{ width: "fit-content", paddingRight: "4vw" }}>
               <IconButton
                 className={classes.a}
                 onClick={handleMain}
@@ -482,7 +482,7 @@ export default function MenuAppBar() {
               </IconButton>
             </div>
 
-            <div style={{ width: "40%" }}>
+            <div style={{ width: "fit-content" }}>
               <Tabs>
                 <Tab
                   className={classes.button}
@@ -532,13 +532,13 @@ export default function MenuAppBar() {
             </div>
             
             
-            <div style={{ display: "flex", width: "30%" }}>
+            <div style={{ display: "flex", width:"fit-content" }}>
               <div
                 style={{
                   display: "flex",
                   justifyContent: "center",
                   alignItems: "center",
-                  width: "50%"
+                  marginRight: "5vw"
                 }}
               >
                 {/* <IconButton
@@ -562,7 +562,6 @@ export default function MenuAppBar() {
                   display: "flex",
                   justifyContent: "flex-end",
                   alignItems: "center",
-                  width: "50%"
                 }}
               >
                 <IconButton

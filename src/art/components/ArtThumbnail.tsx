@@ -6,30 +6,31 @@ import {
   Typography,
   IconButton,
   Tooltip,
-  Dialog,
-  DialogTitle,
-  DialogContentText,
-  DialogContent,
-  DialogActions,
-  Button,
-  TextField,
 } from "@material-ui/core"
-// import {} from
 import Img from "react-cool-img"
 import AddShoppingCartIcon from "@material-ui/icons/AddShoppingCart"
 import FullscreenPhoto from "../../prixerProfile/fullscreenPhoto/fullscreenPhoto"
 import Star from "@material-ui/icons/StarRate"
 import StarOutline from "@material-ui/icons/StarOutline"
-
+import { Art } from "../interface"
 import { setVisibleArt } from "../api"
 import { addingToCart } from "../services"
 
-export default function ArtThumbnail({ tile, i, handleCloseVisible, setSelectedArt, setIsOpenAssociateProduct }) {
-  const [selectedLocalArt, setSelectedLocalArt] = useState()
+export default function ArtThumbnail({
+  tile,
+  i,
+  handleCloseVisible,
+  setSelectedArt,
+  setIsOpenAssociateProduct,
+  handleFullImageClick,
+}) {
+  const [selectedLocalArt, setSelectedLocalArt] = useState<Art | undefined>(
+    undefined
+  )
 
-  const hideArt = (tile, selectedArt, e) => {
+  const hideArt = (tile: Art, e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault()
-    setVisibleArt(tile, selectedArt, e)
+    setVisibleArt(tile)
     setSelectedLocalArt(undefined)
     handleCloseVisible()
   }
@@ -131,68 +132,6 @@ export default function ArtThumbnail({ tile, i, handleCloseVisible, setSelectedA
           />
         )} */}
       </CardActionArea>
-
-      <Dialog
-        open={selectedLocalArt === tile.artId}
-        onClose={handleCloseVisible}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title">
-          {"¿Estás seguro de ocultar este arte?"}
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText
-            id="alert-dialog-description"
-            style={{
-              textAlign: "center",
-            }}
-          >
-            Este arte ya no será visible en tu perfil y la página de inicio.
-          </DialogContentText>
-        </DialogContent>
-        <div
-          item
-          xs={12}
-          style={{
-            display: "flex",
-            justifyContent: "center",
-          }}
-        >
-          <TextField
-            style={{ width: "95%", marginBottom: "5px" }}
-            fullWidth
-            multiline
-            required
-            id="disabledReason"
-            label="¿Por qué quieres ocultar este arte?"
-            variant="outlined"
-            onChange={(e) => {
-              setDisabledReason(e.target.value)
-            }}
-          />
-        </div>
-        <DialogActions>
-          <Button
-            onClick={handleCloseVisible}
-            color="primary"
-          >
-            Cancelar
-          </Button>
-          <Button
-            onClick={(e) => {
-              hideArt(tile, selectedArt, e)
-            }}
-            background="primary"
-            style={{
-              color: "white",
-              backgroundColor: "#d33f49",
-            }}
-          >
-            Aceptar
-          </Button>
-        </DialogActions>
-      </Dialog>
     </div>
   )
 }

@@ -7,6 +7,7 @@ import Register from "./register/userRegistration"
 import PrixerRegistration from "./register/prixerRegistration"
 import PrixerProfile from "./prixerProfile/prixerProfile"
 import FullscreenPhoto from "./prixerProfile/fullscreenPhoto/fullscreenPhoto"
+import ArtDetail from "./art/components/Detail"
 import Home from "./home/home"
 import { Switch, Route } from "react-router-dom"
 import Catalog from "art/catalog/views/Catalog"
@@ -483,9 +484,9 @@ function Routes() {
         <Route
           exact
           path="/art=:artId"
-          component={FullscreenPhoto}
+          component={ArtDetail}
         >
-          <FullscreenPhoto
+          <ArtDetail
             buyState={buyState}
             deleteItemInBuyState={deleteItemInBuyState}
             addItemToBuyState={addItemToBuyState}

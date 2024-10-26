@@ -72,7 +72,6 @@ export const fetchBestSellers = async (): Promise<Product[]> => {
   
   try {
     const response = await axios.get<FetchBestSellersAPIResponse>(base_url);
-    console.log("Best sellers:", response.data.products);
     return response.data.products;
   } catch (error) {
     console.error("Error fetching best sellers:", error);

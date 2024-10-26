@@ -1,4 +1,4 @@
-@import 'theme.scss'; // Adjust the path to theme.scss
+@import 'theme.scss';
 
 .catalog {
   overflow: hidden;
@@ -11,6 +11,28 @@
   margin: 0;
   border-radius: $border-radius-md;
   padding: $spacing-xl;
+}
+
+.grid-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  padding: 0 10%;
+}
+
+.search-bar {
+  display: flex;
+  justify-content: right;
+  align-items: center;
+  margin: $spacing-sm 0;
+  padding: 0 $spacing-lg;
+}
+
+.sorting-select {
+  position: relative;
+  width: 10%;
+  display: flex;
+  justify-content: right;
 }
 
 .avatar {
@@ -113,7 +135,7 @@
   border-radius: $border-radius-lg;
 }
 
-.paper-products {
+.best-sellers {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -122,7 +144,7 @@
   background-color: gainsboro;
   padding: $spacing-md $spacing-xl $spacing-lg $spacing-xl;
   width: 80%;
-  height: 350px;
+  height: 300px;
   margin: 20px auto;
   box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.2), 
             0px 1px 5px rgba(0, 0, 0, 0.14), 

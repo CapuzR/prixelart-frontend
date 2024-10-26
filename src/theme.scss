@@ -122,6 +122,14 @@ $z-index-tooltip: 1100;
   line-height: $line-height;
 }
 
+@mixin paper($bg-color: white, $shadow: $box-shadow-medium, $radius: $border-radius-lg, $spacing: $spacing-md) {
+  background-color: $bg-color;
+  box-shadow: $shadow;
+  border-radius: $radius;
+  padding: $spacing;
+  overflow: hidden;
+}
+
 h1, h2, h3 {
   @include text-heading();
   color: $text-color;

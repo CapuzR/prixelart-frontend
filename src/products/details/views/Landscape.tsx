@@ -16,7 +16,7 @@ import Button from "components/Button";
 
 import { generateWaProductMessage } from 'utils/utils';
 import { formatPriceForUI } from 'utils/formats';
-import { useConversionRate } from "context/GlobalContext";
+import { useConversionRate, useLoading } from "context/GlobalContext";
 
 import styles from './Landscape.module.scss';
 
@@ -39,7 +39,7 @@ interface LandscapeProps {
 const Landscape: React.FC<LandscapeProps> = (props) => {
   const { currency } = useCurrency();
   const { conversionRate } = useConversionRate();
-
+  
   return (
     <div className={styles['prix-product-container']}>
         {/* Left Side - Carusel e Info */}
@@ -59,7 +59,7 @@ const Landscape: React.FC<LandscapeProps> = (props) => {
           </div>
         </div>
 
-        {/* Right Side - Gallery */}
+        {/* Right Side */}
         <div className={styles['right-side']}>
           <div className={styles['first-row-title-container']}>
             <div className={styles['product-title']}>
@@ -67,7 +67,10 @@ const Landscape: React.FC<LandscapeProps> = (props) => {
             </div>
             <div className={styles['price-selected']}>
               {
-                formatPriceForUI(props.product?.price, currency, conversionRate)
+                props.product?.price ?
+                  formatPriceForUI(props.product?.price, currency, conversionRate) :
+                  formatPriceForUI(props.product?.priceRange.from, currency, conversionRate, props.product?.priceRange.to)
+
               }
             </div>
             <Button

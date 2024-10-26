@@ -90,7 +90,19 @@
   background-color: transparent !important;
   border: none;
   font-weight: 500 !important;
-  color: inherit !important;
+  // color: inherit !important;
+
+  &.primary {
+    color: $primary-color !important;
+  }
+
+  &.secondary {
+    color: $secondary-color !important;
+  }
+
+  &.tertiary {
+    color: $tertiary-color !important;
+  }
 
   &:hover {
     text-decoration: underline !important;

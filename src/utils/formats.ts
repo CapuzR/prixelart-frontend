@@ -9,11 +9,15 @@ const parsePrice = (input: string | number): number => {
   };
 
 const formatPriceForUI = (
-    from: string | number,
+    from: string | number | undefined,
     currency: "Bs" | "USD",
     conversionRate: number,
     to?: string | number
   ): string => {
+
+    if (!from) {
+      return '';
+    }
     
     const stringPrice = (price: number): string => {
       return new Intl.NumberFormat('es-ES', {

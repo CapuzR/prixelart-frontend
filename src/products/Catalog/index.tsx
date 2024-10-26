@@ -1,12 +1,6 @@
-import React, { useEffect } from "react"
-import axios from "axios"
-import FloatingAddButton from "components/floatingAddButton/floatingAddButton"
-import ProductsGrid from "../components/Grid"
+import React, { useEffect, useState } from "react"
 
-import Container from "@material-ui/core/Container"
 import CssBaseline from "@material-ui/core/CssBaseline"
-import Grid from "@material-ui/core/Grid"
-import { makeStyles } from "@material-ui/core/styles"
 import Dialog from "@material-ui/core/Dialog"
 import DialogContent from "@material-ui/core/DialogContent"
 import DialogContentText from "@material-ui/core/DialogContentText"
@@ -14,37 +8,38 @@ import DialogTitle from "@material-ui/core/DialogTitle"
 import DialogActions from "@material-ui/core/DialogActions"
 import Button from "@material-ui/core/Button"
 import Typography from "@material-ui/core/Typography"
-import Tooltip from "@material-ui/core/Tooltip"
-import Search from "@material-ui/icons/Search"
+
 import useMediaQuery from "@material-ui/core/useMediaQuery"
-import { IconButton } from "@material-ui/core"
 import { useTheme } from "@material-ui/core/styles"
-import { ProductElement1 } from "components/ProductElement1"
-
-import { fetchBestSellers } from '../api';
-
-import { Slider } from "components/Slider"
-
-// import Slider from "react-slick"
-import "slick-carousel/slick/slick.css"
-import "slick-carousel/slick/slick-theme.css"
-import { useState } from "react"
-import ArtUploader from "components/artUploader/artUploader"
-import Img from "react-cool-img"
 import { useHistory } from "react-router-dom"
-import CartReview from "../../cart/cartReview"
+
+import FloatingAddButton from "components/floatingAddButton/floatingAddButton"
 import CreateService from "components/createService/createService"
+import ArtUploader from "components/artUploader/artUploader"
+import { ProductElement1 } from "components/ProductElement1"
+import Grid from "components/Grid"
+import { Slider } from "components/Slider"
+import SortingSelect from "components/SortingSelect"
+
+import Card from "products/components/Card"
+import CartReview from "cart/cartReview"
+
+import { fetchBestSellers, fetchProducts } from '../api';
+
+
+import Img from "react-cool-img"
 import ReactGA from "react-ga"
 
-import styles from './Catalog.module.scss';
-import { Product } from "products/interfaces"
+import styles from './styles.module.scss';
+import { CartItem, Product } from "products/interfaces"
+import { useConversionRate, useCurrency } from "context/GlobalContext"
 
 ReactGA.initialize("G-0RWP9B33D8")
 ReactGA.pageview("/productos")
 
 interface ProductsCatalogProps {
   setPointedProduct: (productName: string) => void;
-  buyState: any[]; // This should be updated to your buyState type
+  buyState: CartItem[];
   addItemToBuyState: (item: any) => void; // Update "any" to the proper type
   setIsOpenAssociateArt: (isOpen: boolean) => void;
   pointedProduct: string | null;
@@ -60,23 +55,29 @@ interface ProductsCatalogProps {
 const ProductsCatalog: React.FC<ProductsCatalogProps> = (props) => {
   const theme = useTheme()
 
+  const [products, setProducts] = useState([])
   const [openArtFormDialog, setOpenArtFormDialog] = useState(false)
   const [openShoppingCart, setOpenShoppingCart] = useState(false)
   const isDesktop = useMediaQuery(theme.breakpoints.up("md"))
-  const isDeskTop = useMediaQuery(theme.breakpoints.up("sm"))
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
-  const isTab = useMediaQuery(theme.breakpoints.down("md"))
 
   const [bestSellers, setBestSellers] = useState<Product[] | undefined>(undefined);
   const [selectedProduct, setSelectedProduct] = useState<Product | undefined>(undefined);
   const history = useHistory()
   const [openServiceFormDialog, setOpenServiceFormDialog] = useState(false)
+  const [currentPage, setCurrentPage] = useState(1);
+  const [productsPerPage] = useState(10);
+  const [sort, setSort] = useState("")
+  const { currency } = useCurrency();
+  const { conversionRate } = useConversionRate();
   const [createdService, setCreatedService] = useState(false)
-  const [zone, setZone] = useState(
-    localStorage.getItem("zone")
-    ? JSON.parse(localStorage.getItem("zone") as string)
-      : "base"
-  )
+  
+  const sortingOptions = [
+    { value: "A-Z", label: "A-Z" },
+    { value: "Z-A", label: "Z-A" },
+    { value: "lowerPrice", label: "Menor precio" },
+    { value: "maxPrice", label: "Mayor precio" },
+  ];
   
   const handleProduct = async (product) => {
     props.setPointedProduct(product.name)
@@ -86,19 +87,14 @@ const ProductsCatalog: React.FC<ProductsCatalogProps> = (props) => {
     })
   }
 
-  useEffect(() => {
-    const getBestSellers = async () => {
-      const bestSellers = await fetchBestSellers();
-      setBestSellers(bestSellers);
-    };
+  const handleChangeSort = (event) => {
+    setSort(event.target.value)
+  };
   
-    getBestSellers();
-  }, []);
-
   const viewDetails = (product) => {
     history.push({
       pathname: "/",
-      search: "?producto=" + product._id,
+      search: "?producto=" + product.id,
     })
     ReactGA.event({
       category: "Productos",
@@ -107,6 +103,30 @@ const ProductsCatalog: React.FC<ProductsCatalogProps> = (props) => {
     })
   }
   
+
+  useEffect(() => {
+    const getBestSellers = async () => {
+      const bestSellers = await fetchBestSellers();
+      setBestSellers(bestSellers);
+    };
+  
+    getBestSellers();
+  }, []);
+  
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetchProducts(sort, currentPage, productsPerPage);
+        const { products, maxLength } = { products: response.products, maxLength: response.maxLength };
+        setProducts(products);
+      } catch (error) {
+        console.error('Error fetching products:', error);
+      }
+    };
+
+    fetchData();
+  }, [sort, currentPage, productsPerPage]);
+
   return (
     <div className={styles['catalog']}>
       <CssBaseline />
@@ -117,7 +137,7 @@ const ProductsCatalog: React.FC<ProductsCatalogProps> = (props) => {
       </div>
 
       {bestSellers && (
-        <div className={styles['paper-products']}>
+        <div className={styles['best-sellers']}>
           <div className={styles['title-wrapper']}>
             <Typography variant="h5" className={styles['best-seller-title']}>
               {isMobile ? (
@@ -133,7 +153,7 @@ const ProductsCatalog: React.FC<ProductsCatalogProps> = (props) => {
                   url: product?.sources?.images.length > 0 ? product.sources.images[0]?.url : product.thumbUrl,
                 }))}
                 useIndicators= { {type: 'dots', position: 'below', color: { active: 'primary', inactive: 'secondary' }} }
-                childConfig={ { qtyPerSlide: isDesktop ? 3 : isMobile ? 1 : 3, spacing: "sm" } }
+                childConfig={ { qtyPerSlide: isDesktop ? 4 : isMobile ? 1 : 3, spacing: "sm" } }
                 autoplay={false}
               >
                   {bestSellers?.map((product) => (
@@ -150,15 +170,32 @@ const ProductsCatalog: React.FC<ProductsCatalogProps> = (props) => {
         </div>
       )}
 
-      <ProductsGrid
-        prixerUsername={null}
-        buyState={props.buyState}
-        addItemToBuyState={props.addItemToBuyState}
-        setSelectedProduct={setSelectedProduct}
-        setIsOpenAssociateArt={props.setIsOpenAssociateArt}
-        pointedProduct={props.pointedProduct}
-      />
+      <div className={styles['grid-container']}>
+            <div className={styles['search-bar']}>
+              <div className={styles['sorting-select']}>
+                <SortingSelect sort={sort} handleChange={handleChangeSort} options={sortingOptions} />
+              </div>
+            </div>
+            <Grid isParent={true}>
+                {products && products.length > 0 ? (
+                  products.map((product) => (
+                    <Grid key={product.id}>
+                      <Card
+                        product={product}
+                        currency={currency}
+                        conversionRate={conversionRate}
+                        viewDetails={viewDetails}
+                        pointedProduct={props.pointedProduct}
+                      />
+                    </Grid>
+                  ))
+                ) : (
+                  <h1>Pronto encontrarás los productos ideales para ti.</h1>
+                )}
+            </Grid>
+          </div>
 
+      {/* Utility?, it shouldn't be here. */}
       {openArtFormDialog && (
         <ArtUploader
           openArtFormDialog={openArtFormDialog}
@@ -166,6 +203,7 @@ const ProductsCatalog: React.FC<ProductsCatalogProps> = (props) => {
         />
       )}
 
+      {/* Utility?, it shouldn't be here. */}
       {openServiceFormDialog && (
         <CreateService
           openArtFormDialog={openServiceFormDialog}
@@ -174,10 +212,10 @@ const ProductsCatalog: React.FC<ProductsCatalogProps> = (props) => {
         />
       )}
 
+      {/* Utility, it shouldn't be here. */}
       <Grid className={styles['float']}>
         <FloatingAddButton
           setOpenArtFormDialog={setOpenArtFormDialog}
-          setOpenShoppingCart={setOpenShoppingCart}
           setOpenServiceFormDialog={setOpenServiceFormDialog}
         />
       </Grid>
@@ -229,7 +267,6 @@ const ProductsCatalog: React.FC<ProductsCatalogProps> = (props) => {
                             placeholder="/imgLoading.svg"
                             style={{
                               backgroundColor: "#eeeeee",
-                              // maxWidth: 200,
                               maxHeight: 200,
                               borderRadius: 10,
                               marginRight: 10,
@@ -316,7 +353,7 @@ const ProductsCatalog: React.FC<ProductsCatalogProps> = (props) => {
         maxWidth={"lg"}
         open={openShoppingCart}
         style={{
-          width: isDeskTop ? 850 : "100%",
+          width: isDesktop ? 850 : "100%",
           margin: isDesktop ? "auto" : 0,
         }}
       >

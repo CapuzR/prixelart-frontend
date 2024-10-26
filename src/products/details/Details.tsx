@@ -23,7 +23,7 @@ interface Props {
 }
 
 const Details: React.FC<Props> = (props) => {
-  const { setLoading } = useLoading();
+  const { loading, setLoading } = useLoading();
   const { currency } = useCurrency();
   const { conversionRate } = useConversionRate();
   const { showSnackBar } = useSnackBar();
@@ -69,7 +69,7 @@ const Details: React.FC<Props> = (props) => {
   
   useEffect(() => {
     const fetchAndSetPrice = async () => {
-      if(product?.selection && Object.keys(product?.selection).every((s) => s !== "")) {
+      if(product?.selection && Object.keys(product?.selection).every((s) => product?.selection[s] !== '')) {
         const selectedVariant = getSelectedVariantPrice(product?.selection, product?.variants);
         
         if (selectedVariant) {
@@ -136,25 +136,26 @@ const Details: React.FC<Props> = (props) => {
   return (
     <div style={{ maxHeight: `${windowHeight - 64}px`, overflowY: 'auto' }}>
       {
-      isPortrait ? (
-        <Portrait
-          product={product}
-          addItemToBuyState={addItemToBuyState}
-          handleChange={handleChange}
-          handleSelection={handleSelection}
-          expanded={expanded}
-          description={description}
-        />
-      ) : (
-        <Landscape
-          product={product}
-          addItemToBuyState={addItemToBuyState}
-          handleChange={handleChange}
-          handleSelection={handleSelection}
-          expanded={expanded}
-          description={description}
-        />
-      )}
+          isPortrait ? (
+            <Portrait
+              product={product}
+              addItemToBuyState={addItemToBuyState}
+              handleChange={handleChange}
+              handleSelection={handleSelection}
+              expanded={expanded}
+              description={description}
+            />
+          ) : (
+            <Landscape
+              product={product}
+              addItemToBuyState={addItemToBuyState}
+              handleChange={handleChange}
+              handleSelection={handleSelection}
+              expanded={expanded}
+              description={description}
+            />
+          )
+    }
     </div>
   );
 };

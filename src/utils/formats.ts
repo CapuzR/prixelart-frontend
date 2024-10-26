@@ -1,17 +1,40 @@
-    const parsePriceFromInput = (input: string | number): number => {
-        if (typeof input === 'number') {
-            return input; // If already a number, no need to parse
-        }
-        // Replace commas with dots and remove thousand separators (dot in comma-decimal locales)
-        return parseFloat(input.replace(/\./g, '').replace(',', '.'));
-    };
+const parsePrice = (input: string | number): number => {
+    if (typeof input === 'number') {
+      return input;
+    }
+    
+    const cleanedInput = input.replace(/[^\d.,-]/g, '').trim();
 
-    const formatPriceForDisplay = (price: number, locale: string): string => {
-        return new Intl.NumberFormat(locale, {
-            style: 'decimal',
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-        }).format(price);
-    };
+    return parseFloat(cleanedInput.replace(/\./g, '').replace(',', '.'));
+  };
 
-export { parsePriceFromInput, formatPriceForDisplay };
+const formatPriceForUI = (
+    from: string | number,
+    currency: "Bs" | "USD",
+    conversionRate: number,
+    to?: string | number
+  ): string => {
+    
+    const stringPrice = (price: number): string => {
+      return new Intl.NumberFormat('es-ES', {
+        style: 'decimal',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      }).format(price);
+    };
+  
+    const parsedFrom = parsePrice(from);
+    const parsedTo = to ? parsePrice(to) : undefined;
+  
+    const formattedFrom = currency === "Bs" ? stringPrice(parsedFrom * conversionRate) : stringPrice(parsedFrom);
+  
+    if (!to || parsedFrom === parsedTo) {
+      return `${currency} ${formattedFrom}`;
+    }
+  
+    const formattedTo = currency === "Bs" ? stringPrice(parsedTo * conversionRate) : stringPrice(parsedTo);
+  
+    return `${currency} ${formattedFrom} - ${formattedTo}`;
+  };
+
+export { formatPriceForUI, parsePrice };

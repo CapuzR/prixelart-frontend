@@ -1,6 +1,6 @@
 import React from "react";
 import { Image } from "components/Image"; // Assuming Image component is already created
-import Button from "@material-ui/core/Button"; // Using material UI button, replace if needed
+import Button from "components/Button"; // Using material UI button, replace if needed
 import styles from "./Styles.module.scss"; // Custom SCSS file
 
 interface ProductElement1Props {
@@ -39,8 +39,8 @@ export const ProductElement1: React.FC<ProductElement1Props> = ({
       {/* Button */}
       <div className={styles['button-container']}>
         <Button
-          variant="contained"
-          className={styles['details-button']}
+          type="filled"
+          color="primary"
           onClick={onButtonClick}
         >
           {buttonLabel}

@@ -6,7 +6,7 @@
   align-items: center;
   text-transform: none !important;
   border-radius: $border-radius-button !important;
-  font-size: clamp($font-size-small, $font-size-medium, $font-size-large) !important;
+  font-size: clamp($font-size-small, $font-size-small, $font-size-small) !important;
   padding: $spacing-sm $spacing-md;
   cursor: pointer;
   transition: background-color $transition-normal, box-shadow $transition-normal;

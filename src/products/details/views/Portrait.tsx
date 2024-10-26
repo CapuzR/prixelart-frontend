@@ -1,8 +1,8 @@
 import React from 'react';
 
 import MDEditor from "@uiw/react-md-editor";
-import Button from 'components/Button/Button';
-import { formatPriceForDisplay } from 'utils/formats';
+import Button from 'components/Button';
+import { formatPriceForUI } from 'utils/formats';
 import styles from './Portrait.module.scss';
 import { Product } from '../../interfaces';
 import {
@@ -16,32 +16,25 @@ import {
   InputLabel
 } from "@material-ui/core";
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import { useHistory, useLocation } from 'react-router-dom';
 
-import { useCurrency } from 'context/GlobalContext';
+import { getFilteredOptions } from 'products/services';
+
+import { useConversionRate, useCurrency } from 'context/GlobalContext';
 import { Slider } from 'components/Slider';
 import { Image } from 'components/Image';
 
 interface PortraitProps {
-  product: Product | null;
-  selectedItem: any;
+  product: Product;
+  expanded: string | false;
+  description: { generalDescription: string; technicalSpecification: string };
   addItemToBuyState: () => void;
-  getFilteredOptions: (att: { name: string; value: string[] }) => string[];
   handleSelection: (e: React.ChangeEvent<{ name: string; value: number }>) => void;
   handleChange: (panel: string) => (event: React.ChangeEvent<{}>, isExpanded: boolean) => void;
-  expanded: string | false;
-  generalDescription: string;
-  technicalSpecification: string;
-  fullArt: any;
-  setFullArt: (art: any) => void;
-  searchResult: any;
-  setSearchResult: (result: any) => void;
 }
 
 const Portrait: React.FC<PortraitProps> = (props) => {
-    const history = useHistory();
-    const location = useLocation();
     const { currency } = useCurrency();
+    const { conversionRate } = useConversionRate();
 
   const handleSelect = (e: React.ChangeEvent<{ name: string; value: number }>) => {
     props.handleSelection(e);
@@ -57,7 +50,7 @@ const Portrait: React.FC<PortraitProps> = (props) => {
                 className={styles['price']}
             >
                 {
-                    currency + " " + formatPriceForDisplay(props.product?.price, 'de-DE')
+                  formatPriceForUI(props.product?.price, currency, conversionRate)
                 }
             </div>
         </div>
@@ -98,7 +91,7 @@ const Portrait: React.FC<PortraitProps> = (props) => {
                         <em>Selecciona una opción</em>
                         </MenuItem>
 
-                        {props.getFilteredOptions(att).map((option) => (
+                        {getFilteredOptions(props.product, att).map((option) => (
                         <MenuItem key={option} value={option}>
                             {option}
                         </MenuItem>
@@ -140,7 +133,7 @@ const Portrait: React.FC<PortraitProps> = (props) => {
             </AccordionSummary>
             <AccordionDetails>
                 <MDEditor.Markdown
-                source={props.generalDescription || "No description available."}
+                source={props.description.generalDescription || "No description available."}
                 className={styles['markdown-content']}
                 />
             </AccordionDetails>
@@ -157,7 +150,7 @@ const Portrait: React.FC<PortraitProps> = (props) => {
             </AccordionSummary>
             <AccordionDetails className={styles['accordion-details']}>
                 <MDEditor.Markdown
-                source={props.technicalSpecification || "No technical specifications available."}
+                source={props.description.technicalSpecification || "No technical specifications available."}
                 className={styles['markdown-content']}
                 />
             </AccordionDetails>

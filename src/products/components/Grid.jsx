@@ -20,7 +20,7 @@ import ReactGA from "react-ga"
 import world from "images/world.svg"
 import worldBlack from "images/world-black.svg"
 import vzla from "images/vzla.svg"
-import { formatPrice } from "../services"
+import { formatPriceForUI } from "utils/formats"
 import { useCurrency, useConversionRate } from 'context/GlobalContext';
 import { fetchProducts } from '../api';
 import { processProductsResponse } from '../services';
@@ -217,7 +217,7 @@ export default function ProductGrid(props) {
     const fetchData = async () => {
       try {
         const response = await fetchProducts(order, currentPage, productsPerPage);
-        const { products, maxLength } = processProductsResponse(response);
+        const { products, maxLength } = { products: response.products, maxLength: response.maxLength };
         setMaxLength(maxLength);
         setTiles(products);
       } catch (error) {
@@ -259,7 +259,7 @@ export default function ProductGrid(props) {
           justifyContent: "end",
           width: "80%",
           margin: "0 auto",
-          marginTop: "2rem",
+          marginTop: "1rem",
         }}
       >
         <div style={{ display: "flex", justifyContent: "center", marginRight: "10px", padding: "0px" }}>
@@ -313,30 +313,6 @@ export default function ProductGrid(props) {
             <MenuItem value={"maxPrice"}>Mayor precio</MenuItem>
           </Select>
         </FormControl>
-        {/* <div
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            alignItems: "center",
-            marginLeft: 10,
-          }}
-        >
-          <Switch
-            classes={{
-              root: classes.base,
-              switchBase: classes.switchBase,
-              thumb: currency ? classes.thumbTrue : classes.thumb,
-              track: classes.track,
-              checked: classes.checked,
-            }}
-            color="primary"
-            value={currency}
-            onChange={(e) => {
-              changeCurrency(e)
-            }}
-            style={{ marginRight: "-5px" }}
-          />
-        </div> */}
       </div>
       <ResponsiveMasonry columnsCountBreakPoints={{ 0: 1, 768: 2 }}>
         <Masonry style={{ columnGap: "1.8rem", width: "80%", margin: "0 auto" }}>
@@ -354,10 +330,6 @@ export default function ProductGrid(props) {
                     " 0 0 10px 3px #d33f49",
                 }}
               >
-                {/* <CardMedia style={{ width: "110%", maxWidth: "14.68rem" }}> */}
-                  {/* TO DO: Mover carrousel de foto producto a su propio componente, para reusar
-                  en prixProducts. */}
-
                 <div style={{ width: "50%", padding: 0, }}>
                   <Slider images={tile?.sources?.images} size="100%">
                     {tile?.sources?.images?.map((image, i) => (
@@ -365,77 +337,6 @@ export default function ProductGrid(props) {
                     ))}
                   </Slider>
                 </div>
-                  
-                  {/* <Carousel
-                    autoPlay={false}
-                    stopAutoPlayOnHover={true}
-                    animation="slide"
-                    duration={500}
-                    fullHeightHover={true}
-                    IndicatorIcon={<MaximizeIcon />}
-                    NextIcon={<ArrowForwardIosIcon />}
-                    PrevIcon={<ArrowBackIosIcon />}
-                    activeIndicatorIconButtonProps={{
-                      style: {
-                        color: "#d33f49",
-                      },
-                    }}
-                    navButtonsProps={{
-                      style: {
-                        backgroundColor: "rgba(0, 0, 0, 0)",
-                        color: "#d33f49",
-                        width: "98%",
-                        height: "100vh",
-                        marginTop: "-50vh",
-                        borderRadius: "0",
-                        marginLeft: "1px",
-                      },
-                    }}
-                    indicatorContainerProps={{
-                      style: {
-                        position: "absolute",
-                        marginTop: "-17px",
-                      },
-                    }}
-                  >
-                  {
-                    tile.sources &&
-                    tile.sources.images && 
-                    tile.sources.images[0] !== undefined ? (
-                      tile.sources.images?.map((img, i) =>
-                        img.url !== null && img.type === "images" ? (
-                          <img
-                            key={i}
-                            src={img.url?.replace(/[,]/gi, "") || tile.thumbUrl}
-                            className={classes.img}
-                            alt="product.png"
-                            style={{ borderRadius: 30 }}
-                          />
-                        ) : (
-                          img.type === "video" &&
-                          img.url !== null && (
-                            <span
-                              key={"video"}
-                              style={{ width: "100%", borderRadius: 30 }}
-                              dangerouslySetInnerHTML={{
-                                __html: img.url,
-                              }}
-                            />
-                          )
-                        )
-                      )
-                    ) : (
-                      <img
-                        src={tile.thumbUrl}
-                        className={classes.img}
-                        alt="*"
-                        style={{ borderRadius: 30 }}
-                      />
-                    )
-                    }
-                  </Carousel> */}
-                {/* </CardMedia> */}
-
                 <CardContent
                   data-color-mode="light"
                   style={{
@@ -471,7 +372,7 @@ export default function ProductGrid(props) {
                       variant="h5"
                       component="h2"
                     >
-                      {formatPrice(tile.priceRange, currency, conversionRate)}
+                      { formatPriceForUI(tile.priceRange.from, currency, conversionRate, tile.priceRange.to) }
                     </Typography>
                   </Grid>
                   <Grid

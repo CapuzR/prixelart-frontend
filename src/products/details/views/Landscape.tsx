@@ -12,37 +12,33 @@ import {
 } from "@material-ui/core";
 import { Share as ShareIcon, ExpandMore as ExpandMoreIcon } from "@material-ui/icons";
 
-import Button from "components/Button/Button";
+import Button from "components/Button";
 
 import { generateWaProductMessage } from 'utils/utils';
-import { formatPriceForDisplay } from 'utils/formats';
+import { formatPriceForUI } from 'utils/formats';
+import { useConversionRate } from "context/GlobalContext";
 
 import styles from './Landscape.module.scss';
+
+import { getFilteredOptions } from "products/services";
 
 import { Product } from '../../interfaces';
 import { useCurrency } from "context/GlobalContext";
 import { Slider } from "components/Slider";
 import { Image } from "components/Image"
 
-
 interface LandscapeProps {
-  product: Product | null;
-  selectedItem: any;
+  product: Product;
+  expanded: string | false;
+  description: { generalDescription: string; technicalSpecification: string };
   addItemToBuyState: () => void;
-  getFilteredOptions: (att: { name: string; value: string[] }) => string[];
   handleSelection: (e: React.ChangeEvent<{ name: string; value: number }>) => void;
   handleChange: (panel: string) => (event: React.ChangeEvent<{}>, isExpanded: boolean) => void;
-  expanded: string | false;
-  generalDescription: string;
-  technicalSpecification: string;
-  fullArt: any;
-  setFullArt: (art: any) => void;
-  searchResult: any;
-  setSearchResult: (result: any) => void;
 }
 
 const Landscape: React.FC<LandscapeProps> = (props) => {
   const { currency } = useCurrency();
+  const { conversionRate } = useConversionRate();
 
   return (
     <div className={styles['prix-product-container']}>
@@ -71,7 +67,7 @@ const Landscape: React.FC<LandscapeProps> = (props) => {
             </div>
             <div className={styles['price-selected']}>
               {
-                currency + " " + formatPriceForDisplay(props.product?.price, 'de-DE')
+                formatPriceForUI(props.product?.price, currency, conversionRate)
               }
             </div>
             <Button
@@ -98,7 +94,7 @@ const Landscape: React.FC<LandscapeProps> = (props) => {
               </AccordionSummary>
               <AccordionDetails>
                 <Typography>
-                  {props.generalDescription}
+                  {props.description.generalDescription}
                 </Typography>
               </AccordionDetails>
             </Accordion>
@@ -115,7 +111,7 @@ const Landscape: React.FC<LandscapeProps> = (props) => {
               </AccordionSummary>
               <AccordionDetails>
                 <Typography>
-                  {props.technicalSpecification}
+                  {props.description.technicalSpecification}
                 </Typography>
               </AccordionDetails>
             </Accordion>
@@ -147,7 +143,7 @@ const Landscape: React.FC<LandscapeProps> = (props) => {
                           <em>Selecciona una opción</em>
                         </MenuItem>
 
-                        {props.getFilteredOptions(att).map((option) => (
+                        {getFilteredOptions(props.product, att).map((option) => (
                           <MenuItem key={option} value={option}>
                             {option}
                           </MenuItem>

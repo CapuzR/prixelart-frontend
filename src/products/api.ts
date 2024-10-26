@@ -26,10 +26,10 @@ interface FetchVariantPriceAPIResponse {
   price: string;
 };
 
-export const fetchVariantPrice = async (variantId: String, artId: String): Promise<string> => {
+export const fetchVariantPrice = async (variantId: String, artId?: String): Promise<string> => {
   try {
     const response = await axios.get<FetchVariantPriceAPIResponse>(`${base_url}/product/getVariantPrice`, {
-      params: { variantId, artId: artId ? artId : null },
+      params: { variantId, artId: artId || null },
     });
     return response.data.price;
   } catch (error) {

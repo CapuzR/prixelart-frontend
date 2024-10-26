@@ -2,10 +2,10 @@ import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 
 import ReactGA from "react-ga";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
 import { useConversionRate, useCurrency, useLoading, useSnackBar } from 'context/GlobalContext';
-import { getPriceWithSelectedVariant, formatPrice, prepareProductData } from "../services";
+import { prepareProductData, getSelectedVariantPrice } from "../services";
+import { fetchVariantPrice } from "../api";
+import { parsePrice } from "utils/formats";
 import { splitDescription } from "../utils";
 
 import { fetchProductDetails } from '../api';
@@ -14,17 +14,12 @@ import Portrait from "./views/Portrait";
 import Landscape from "./views/Landscape";
 
 import { CartItem, Product } from '../interfaces';
-import { getUrlParams } from "./services";
 
 ReactGA.initialize("G-0RWP9B33D8");
 
 interface Props {
   buyState: CartItem[];
   setBuyState: (cart: CartItem[]) => void;
-  setFullArt: (art: any) => void;
-  fullArt: any;
-  setSearchResult: (result: any) => void;
-  searchResult: any;
 }
 
 const Details: React.FC<Props> = (props) => {
@@ -41,6 +36,8 @@ const Details: React.FC<Props> = (props) => {
   const [isPortrait, setIsPortrait] = useState(window.innerWidth < 768);
   const [windowHeight, setWindowHeight] = useState(window.innerHeight);
   const [expanded, setExpanded] = useState<string | false>("panel1");
+
+  const description = splitDescription(product?.description);
   
   useEffect(() => {
     const handleResize = () => {
@@ -50,46 +47,7 @@ const Details: React.FC<Props> = (props) => {
     
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  const { generalDescription, technicalSpecification } = splitDescription(product?.description);
-  
-
-  const handleSelection = (e: React.ChangeEvent<{ name: string; value: number }>) => {
-    const newSelection = product?.selection && { ...product?.selection };
-    e.target.name && (newSelection[e.target.name] = e.target.value as number);
-    setProduct((prevProduct) => ({
-      ...prevProduct,
-      selection: newSelection,
-    }));
-  };
-
-  const getFilteredOptions = (att: { name: string; value: string[] }) => {
-    
-    if (Object.values(product?.selection).every((s) => s.value === "") ||
-    !Object.keys(product?.selection).some((key) => key !== att.name && product?.selection[key] !== "")) {
-      return att.value || [];
-    }
-    
-    return Object.keys(product?.selection)
-    .filter((key) => {
-      if (key !== att.name && product?.selection[key] !== "") {
-        return att.value;
-    }})
-    .map((key) => {
-      return product?.variants?.filter((variant) => { return variant.attributes?.some(
-          (a) => a.name === key && a.value === product?.selection[key]
-      )})
-      ?.map((vari) => {
-        return vari.attributes?.filter((a) => a.name === att.name)[0].value;
-      });
-    })
-    .flat();
-  };
-
-  const handleChange = (panel: string) => (event: React.ChangeEvent<{}>, isExpanded: boolean) => {
-    setExpanded(isExpanded ? panel : false);
-  };
+  }, []);  
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -111,37 +69,54 @@ const Details: React.FC<Props> = (props) => {
   
   useEffect(() => {
     const fetchAndSetPrice = async () => {
-      const updatedPrice = product?.selection && Object.keys(product?.selection).every((s) => s !== "")
-        ? await getPriceWithSelectedVariant(product?.priceRange, currency, conversionRate, product?.selection, product?.variants)
-        : formatPrice(product?.priceRange, currency, conversionRate);
+      if(product?.selection && Object.keys(product?.selection).every((s) => s !== "")) {
+        const selectedVariant = getSelectedVariantPrice(product?.selection, product?.variants);
         
-        const numericPrice = typeof updatedPrice === 'string'
-          ? Math.round(parseFloat(updatedPrice.replace(',', '.')) * 100) / 100
-          : Math.round(updatedPrice * 100) / 100;
+        if (selectedVariant) {
+          const updatedPrice = await fetchVariantPrice(selectedVariant._id);
+          const parsedPrice = parsePrice(updatedPrice);
 
-      setProduct((prevProduct) => ({
-        ...prevProduct,
-        price: numericPrice
-      }));
-      setSelectedItem((prevSelectedProduct) => ({
-        ...prevSelectedProduct,
-        price: updatedPrice,
-        //Esto está acá solo por el carrito, hay que volárselo..
-        //Considerar qué pasa si el user metió todo en el carrito y de repente inicia sesión como Prixer.
-        publicEquation: {
-          from: updatedPrice,
-          to: updatedPrice
-        },
-        publicPrice: {
-          from: updatedPrice,
-          to: updatedPrice
+          setProduct((prevProduct) => ({
+            ...prevProduct,
+            price: parsedPrice
+          }));
+          setSelectedItem((prevSelectedProduct) => ({
+            ...prevSelectedProduct,
+            price: parsedPrice,
+            //Esto está acá solo por el carrito, hay que volárselo..
+            //Considerar qué pasa si el user metió todo en el carrito y de repente inicia sesión como Prixer.
+            publicEquation: {
+              from: parsedPrice,
+              to: parsedPrice
+            },
+            publicPrice: {
+              from: parsedPrice,
+              to: parsedPrice
+            }
+          }));
         }
-      }));
+      }
     };
-  
     fetchAndSetPrice();
-  
   }, [product?.selection, currency, conversionRate]);
+
+  const handleSelection = (e: React.ChangeEvent<{ name: string; value: number }>) => {
+    const { name, value } = e.target;
+    if (!name) return;
+  
+    setProduct((prevProduct) => ({
+      ...prevProduct,
+      id: productId,
+      selection: {
+        ...prevProduct?.selection,
+        [name]: value,
+      },
+    }));
+  };
+
+  const handleChange = (panel: string) => (event: React.ChangeEvent<{}>, isExpanded: boolean) => {
+    setExpanded(isExpanded ? panel : false);
+  };
 
 //TO DO: CART. Esto no debería ir acá. Todo debería estar en el Cart, que QUIZÁS debería ser un Context.
   const addItemToBuyState = () => { 
@@ -165,33 +140,19 @@ const Details: React.FC<Props> = (props) => {
         <Portrait
           product={product}
           addItemToBuyState={addItemToBuyState}
-          getFilteredOptions={getFilteredOptions}
           handleChange={handleChange}
           handleSelection={handleSelection}
-          selectedItem={selectedItem}
           expanded={expanded}
-          generalDescription={generalDescription}
-          technicalSpecification={technicalSpecification}
-          fullArt={props.fullArt}
-          setFullArt={props.setFullArt}
-          searchResult={props.searchResult}
-          setSearchResult={props.setSearchResult}
+          description={description}
         />
       ) : (
         <Landscape
           product={product}
           addItemToBuyState={addItemToBuyState}
-          getFilteredOptions={getFilteredOptions}
           handleChange={handleChange}
           handleSelection={handleSelection}
-          selectedItem={selectedItem}
           expanded={expanded}
-          generalDescription={generalDescription}
-          technicalSpecification={technicalSpecification}
-          fullArt={props.fullArt}
-          setFullArt={props.setFullArt}
-          searchResult={props.searchResult}
-          setSearchResult={props.setSearchResult}
+          description={description}
         />
       )}
     </div>

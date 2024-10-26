@@ -3,7 +3,7 @@ import { fetchConversionRateFromAPI } from './api';
 
 // Define the shape of the context
 interface GlobalContextType {
-  currency: string;
+  currency: 'Bs' | 'USD';
   conversionRate: number;
   theme: string;
   toggleCurrency: () => void;
@@ -29,7 +29,7 @@ interface GlobalProviderProps {
 
 // Global Provider component
 export const GlobalProvider: React.FC<GlobalProviderProps> = ({ children }) => {
-  const [currency, setCurrency] = useState<string>('USD');
+  const [currency, setCurrency] = useState<'Bs' | 'USD'>('USD');
   const [conversionRate, setConversionRate] = useState<number>(() => {
     const storedRate = localStorage.getItem('conversionRate');
     return storedRate ? parseFloat(storedRate) : 1;

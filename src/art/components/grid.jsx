@@ -154,6 +154,7 @@ export default function Grid(props) {
   const [pageNumber, setPageNumber] = useState(1)
   const itemsToSkip = (pageNumber - 1) * itemsPerPage
   const noOfPages = Math.ceil(total / itemsPerPage)
+  const activePrixer = globalParams.get("prixer");
 
   // Hay varias funciones que no se utilizan, eliminar
   const handleClickVisible = () => {
@@ -184,16 +185,17 @@ export default function Grid(props) {
     setLoading(true)
 
     const fetchData = async () => {
+      console.log("fetchData - props", props);
       try {
         let filters = {}
         if (searchValue) filters.text = searchValue
         if (categoryValue) filters.category = categoryValue
-        if (props.prixerUsername || globalParams.get("prixer")) {
-          filters.username = props.prixerUsername || globalParams.get("prixer")
+        if (props.prixerUsername || activePrixer) {
+          filters.username = props.prixerUsername || activePrixer
         }
         filters.initialPoint = (pageNumber - 1) * itemsPerPage
         filters.itemsPerPage = itemsPerPage
-
+        
         const response = await readGallery(filters)
         setTiles(response.arts)
         setTotal(response.length)
@@ -203,9 +205,10 @@ export default function Grid(props) {
       } finally {
       }
     }
+
     fetchData()
     setLoading(false)
-  }, [searchValue, categoryValue, pageNumber, props, globalParams])
+  }, [searchValue, categoryValue, pageNumber, props.prixerUsername])
 
   const handleSearch = (queryValue, categories) => {
     setSearchValue(queryValue)
@@ -291,10 +294,12 @@ export default function Grid(props) {
           />
         )
       }
-
+      
       <PaginationBar
         pageNumber={pageNumber}
         setPageNumber={setPageNumber}
+        itemsPerPage={itemsPerPage}
+        maxLength={total}
         noOfPages={noOfPages}
       />
     </div>

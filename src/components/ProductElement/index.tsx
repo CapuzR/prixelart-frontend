@@ -11,7 +11,7 @@ interface ProductElement1Props {
   roundedCorner?: boolean;
 }
 
-export const ProductElement1: React.FC<ProductElement1Props> = ({
+const ProductElement: React.FC<ProductElement1Props> = ({
   src,
   productName,
   buttonLabel,
@@ -49,3 +49,5 @@ export const ProductElement1: React.FC<ProductElement1Props> = ({
     </div>
   );
 };
+
+export default ProductElement;

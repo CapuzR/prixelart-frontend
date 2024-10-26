@@ -5,10 +5,10 @@ import ReactGA from "react-ga";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { useConversionRate, useCurrency, useLoading, useSnackBar } from 'context/GlobalContext';
-import { getPriceWithSelectedVariant, prepareProductData, formatPrice } from "products/services";
+import { getSelectedVariantPrice, prepareProductData } from "products/services";
   import { splitDescription } from "products/utils";
 
-import { fetchProductDetails } from 'products/api';
+import { fetchProductDetails, fetchVariantPrice } from 'products/api';
 import { fetchArtDetails } from 'art/api';
 
 import Portrait from "./views/Portrait";
@@ -16,6 +16,7 @@ import Landscape from "./views/Landscape";
 
 import { CartItem, Product } from './interfaces';
 import { queryCreator, getUrlParams } from "./utils";
+import { parsePrice } from "utils/formats";
 
 ReactGA.initialize("G-0RWP9B33D8");
 
@@ -129,37 +130,36 @@ const Flow: React.FC<Props> = (props) => {
   
   useEffect(() => {
     const fetchAndSetPrice = async () => {
-      const updatedPrice = product?.selection && Object.keys(product?.selection).every((s) => s !== "")
-        ? await getPriceWithSelectedVariant(product?.priceRange, currency, conversionRate, product?.selection, product?.variants, selectedArt)
-        : formatPrice(product?.priceRange, currency, conversionRate);
+      if(product?.selection && Object.keys(product?.selection).every((s) => product?.selection[s] !== '')) {
+        const selectedVariant = getSelectedVariantPrice(product?.selection, product?.variants);
         
-        const numericPrice = typeof updatedPrice === 'string'
-          ? Math.round(parseFloat(updatedPrice.replace(',', '.')) * 100) / 100
-          : Math.round(updatedPrice * 100) / 100;
+        if (selectedVariant) {
+          const updatedPrice = await fetchVariantPrice(selectedVariant._id);
+          const parsedPrice = parsePrice(updatedPrice);
 
-      setProduct((prevProduct) => ({
-        ...prevProduct,
-        price: numericPrice
-      }));
-      setSelectedItem((prevSelectedProduct) => ({
-        ...prevSelectedProduct,
-        price: updatedPrice,
-        //Esto está acá solo por el carrito, hay que volárselo..
-        //Considerar qué pasa si el user metió todo en el carrito y de repente inicia sesión como Prixer.
-        publicEquation: {
-          from: updatedPrice,
-          to: updatedPrice
-        },
-        publicPrice: {
-          from: updatedPrice,
-          to: updatedPrice
+          setProduct((prevProduct) => ({
+            ...prevProduct,
+            price: parsedPrice
+          }));
+          setSelectedItem((prevSelectedProduct) => ({
+            ...prevSelectedProduct,
+            price: parsedPrice,
+            //Esto está acá solo por el carrito, hay que volárselo..
+            //Considerar qué pasa si el user metió todo en el carrito y de repente inicia sesión como Prixer.
+            publicEquation: {
+              from: parsedPrice,
+              to: parsedPrice
+            },
+            publicPrice: {
+              from: parsedPrice,
+              to: parsedPrice
+            }
+          }));
         }
-      }));
+      }
     };
-  
     fetchAndSetPrice();
-  
-  }, [product?.selection, selectedArt, currency, conversionRate]);
+  }, [product?.selection, currency, conversionRate]);
 
   const addArt = (selectedArt) => {
     setSelectedArt(selectedArt);
@@ -172,7 +172,7 @@ const Flow: React.FC<Props> = (props) => {
         : (product?.selection || {});
 
     const queryString = queryCreator(
-      product?.productId,
+      product?.id,
       selectedArt?.artId,
       selectionAsObject,
       '3'

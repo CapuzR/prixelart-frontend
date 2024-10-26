@@ -16,15 +16,16 @@ import {
 import { Share as ShareIcon, ExpandMore as ExpandMoreIcon } from "@material-ui/icons";
 
 import Grid from "../../art/components/grid";
-import Button from "components/Button/Button";
+import Button from "components/Button";
 
 import { generateWaProductMessage } from 'utils/utils';
-import { formatPriceForDisplay } from 'utils/formats';
+import { formatPriceForUI } from 'utils/formats';
 
-import styles from '../Details.module.scss';
+import styles from '../Flow.module.scss';
 
 import { Product } from '../interfaces';
-import { useCurrency } from "context/GlobalContext";
+import { useConversionRate, useCurrency } from "context/GlobalContext";
+import { ProductCarousel } from "components/ProductCarousel";
 
 
 interface LandscapeProps {
@@ -49,11 +50,8 @@ interface LandscapeProps {
 
 const Landscape: React.FC<LandscapeProps> = (props) => {
   const { currency } = useCurrency();
+  const { conversionRate } = useConversionRate();
 
-  // useEffect(() => {
-  //   console.log("Product: ", props.product);
-  // }, [props.product]);
-  
   return (
     <div className={styles['prix-product-container']}>
 
@@ -66,7 +64,10 @@ const Landscape: React.FC<LandscapeProps> = (props) => {
             className={styles['price-selected']}
           >
             {
-              currency + " " + formatPriceForDisplay(props.product?.price, 'de-DE')
+                props.product?.price ?
+                  formatPriceForUI(props.product?.price, currency, conversionRate) :
+                  formatPriceForUI(props.product?.priceRange.from, currency, conversionRate, props.product?.priceRange.to)
+
             }
           </div>
         </div>
@@ -95,7 +96,7 @@ const Landscape: React.FC<LandscapeProps> = (props) => {
         <div className={styles['left-side']}>
           {/* Carousel Container */}
           <div className={styles['carousel-wrapper']}>
-            {/* <ProductCarousel product={props.product} selectedArt={props.selectedArt} selectedItem={props.selectedItem} type="withImages" size="100%" /> */}
+            <ProductCarousel product={props.product} selectedArt={props.selectedArt} selectedItem={props.selectedItem} type="withImages" size="100%" />
           </div>
           <div className={styles['info-accordion-wrapper']}>
             {/* First Accordion - General Description */}

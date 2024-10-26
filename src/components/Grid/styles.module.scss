@@ -1,6 +1,6 @@
 @import 'theme.scss';
 
-$min-item-width: 500px;
+$min-item-width: 600px;
 
 .grid-wrapper {
   width: 100%;  // Ensure grid takes full width
@@ -11,7 +11,7 @@ $min-item-width: 500px;
 .grid-container {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax($min-item-width, 1fr));
-  gap: $spacing-md;
+  gap: $spacing-sm;
   padding: $spacing-md;
   width: 100%;
   box-sizing: border-box;
@@ -25,7 +25,7 @@ $min-item-width: 500px;
   font-size: 1.2em;
   text-align: center;
   border-radius: 8px;
-  max-height: 390px;
+  max-height: 420px;
 }
 
 // Responsive adjustment for smaller screens

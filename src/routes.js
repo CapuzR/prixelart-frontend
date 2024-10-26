@@ -33,8 +33,9 @@ import { getComission } from "./cart/pricesFunctions"
 import ChiguireHome from "./orgLanding/chiguireHome"
 import ProductDetail from "./orgLanding/productDetail"
 import ShoppingCartCb from "./orgLanding/ShoppingCartCb"
-import ProductDetails from "./products/details/Details"
+import ProductDetails from "./products/Details/Details"
 import AdminRoutes from './admin/adminRoutes.js';
+import Flow from "flow/Flow"
 
 
 
@@ -163,6 +164,11 @@ function Routes() {
     }
   }, [])
 
+  const checkOrgs = (art) => {
+    const org = orgs?.find((el) => el.username === art.owner)
+    return org
+  }
+  
   const getORGs = async () => {
     const base_url =
       process.env.REACT_APP_BACKEND_URL + "/organization/read-all-full"
@@ -266,11 +272,6 @@ function Routes() {
         ? "Producto asociado correctamente."
         : "Arte asociado correctamente."
     )
-  }
-
-  const checkOrgs = (art) => {
-    const org = orgs?.find((el) => el.username === art.owner)
-    return org
   }
 
   function changeQuantity(input) {
@@ -571,8 +572,9 @@ function Routes() {
           <ChiguireHome />
         </Route>
 
+        
         <Route
-          path="/"
+          path="/flow"
           render={(props) => {
             const params = new URLSearchParams(props.location.search)
             const prod = params.get("producto")
@@ -584,10 +586,9 @@ function Routes() {
               }
             });
 
-
             if (prod) {
               return (
-                <ProductDetails
+                <Flow
                   addItemToBuyState={addItemToBuyState}
                   isOpenAssociateProduct={isOpenAssociateProduct}
                   setIsOpenAssociateProduct={setIsOpenAssociateProduct}
@@ -606,6 +607,60 @@ function Routes() {
                   setBuyState={setBuyState}
                   art={art}
                   attributes={attributes}
+                />
+              )
+            } 
+            else {
+              return (
+                <Home
+                    deleteItemInBuyState={deleteItemInBuyState}
+                    component={Home}
+                    buyState={buyState}
+                    addItemToBuyState={addItemToBuyState}
+                    isOpenAssociateProduct={isOpenAssociateProduct}
+                    setIsOpenAssociateProduct={setIsOpenAssociateProduct}
+                    setSelectedProductToAssociate={setSelectedProductToAssociate}
+                    selectedProductToAssociate={selectedProductToAssociate}
+                    AssociateProduct={AssociateProduct}
+                    setBuyState={setBuyState}
+                    deleteProductInItem={deleteProductInItem}
+                    setSelectedArtToAssociate={setSelectedArtToAssociate}
+                    changeQuantity={changeQuantity}
+                    valuesConsumerForm={valuesConsumerForm}
+                    setValuesConsumerForm={setValuesConsumerForm}
+                    setOpen={setOpen}
+                    setMessage={setMessage}
+                    setPrixer={setPrixer}
+                    setFullArt={setFullArt}
+                    setSearchResult={setSearchResult}
+                    dollarValue={dollarValue}
+                    setPointedProduct={setPointedProduct}
+                    pointedProduct={pointedProduct}
+                    permissions={permissions}
+                />
+              )
+            }
+          }}
+        />
+
+        <Route
+          path="/"
+          render={(props) => {
+            const params = new URLSearchParams(props.location.search)
+            const prod = params.get("producto")
+            const attributes = {};
+            params.forEach((value, key) => {
+              if (key !== "producto") {
+                attributes[key] = value;
+              }
+            });
+
+
+            if (prod) {
+              return (
+                <ProductDetails
+                  buyState={buyState}
+                  setBuyState={setBuyState}
                 />
               )
             } 

@@ -15,8 +15,7 @@ export const fetchArtDetails = async (artId: string): Promise<any> => {
 
   export const readGallery = async (filters: object): Promise<any> => {
     try {
-      const base_url =
-        process.env.REACT_APP_BACKEND_URL + "/art/read-for-gallery"
+      const base_url = process.env.REACT_APP_BACKEND_URL + "/art/read-for-gallery"
       const response = await axios.post(base_url, filters)
       return response?.data
     } catch (error) {

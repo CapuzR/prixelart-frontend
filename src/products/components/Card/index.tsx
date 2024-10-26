@@ -14,10 +14,10 @@ export interface CardProps {
   product: Product;
   currency: 'USD' | 'Bs';
   conversionRate: number;
-  viewDetails: (product: Product) => void;
+  handleDetails: (product: Product) => void;
   pointedProduct: string;
 }
-export default function Card({ product, currency, conversionRate, viewDetails, pointedProduct }) {
+export default function Card({ product, currency, conversionRate, handleDetails, pointedProduct }) {
   return (
     <div className={`${styles['card-root']} ${product.name === pointedProduct && styles['pointed']}`} id={product.name}>
       <div className={styles['slider-container']}>
@@ -29,13 +29,17 @@ export default function Card({ product, currency, conversionRate, viewDetails, p
       </div>
       <div className={styles['card-content']}>
         <div className={styles['main-content']}>
-          <Typography gutterBottom variant="h4" component="h2">
-            {product.name}
+          <Typography gutterBottom variant="h4" component="h3">
+            {
+              product.name.split("\r\n")[0].length > 15 ?
+              `${product.name.split("\r\n")[0].slice(0, 15)}...` :
+              `${product.name.split("\r\n")[0]}`
+            }
           </Typography>
           <p>
             {
             product.description.split("\r\n")[0].length > 60
-              ? `${product.description.split("\r\n")[0].slice(0, 60)}...`
+              ? `${product.description.split("\r\n")[0].slice(0, 65)}...`
               : `${product.description.split("\r\n")[0]}`
             }
           </p>
@@ -45,7 +49,7 @@ export default function Card({ product, currency, conversionRate, viewDetails, p
         </div>
         <div className={styles['buttons-wrapper']}>
           <Button
-            onClick={() => viewDetails(product)}
+            onClick={() => handleDetails(product)}
           >
             Detalles
           </Button>

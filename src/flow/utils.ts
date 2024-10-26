@@ -1,8 +1,8 @@
 export const queryCreator = (
     productId: string | undefined,
-    selectedArtId: string | undefined,
-    attributes: { [key: string]: string },
-    step: string
+    selectedArtId?: string | undefined,
+    attributes?: { [key: string]: string },
+    step?: string
   ) => {
     const searchParams = new URLSearchParams(window.location.search);
   

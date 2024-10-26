@@ -16,10 +16,11 @@ import { useHistory } from "react-router-dom"
 import FloatingAddButton from "components/floatingAddButton/floatingAddButton"
 import CreateService from "components/createService/createService"
 import ArtUploader from "components/artUploader/artUploader"
-import { ProductElement1 } from "components/ProductElement1"
 import Grid from "components/Grid"
+import ProductElement from "components/ProductElement"
 import { Slider } from "components/Slider"
 import SortingSelect from "components/SortingSelect"
+import PaginationBar from "components/Pagination/PaginationBar"
 
 import Card from "products/components/Card"
 import CartReview from "cart/cartReview"
@@ -38,39 +39,44 @@ ReactGA.initialize("G-0RWP9B33D8")
 ReactGA.pageview("/productos")
 
 interface ProductsCatalogProps {
-  setPointedProduct: (productName: string) => void;
   buyState: CartItem[];
-  addItemToBuyState: (item: any) => void; // Update "any" to the proper type
-  setIsOpenAssociateArt: (isOpen: boolean) => void;
   pointedProduct: string | null;
   isOpenAssociateArt: boolean;
   selectedArtToAssociate?: { previous?: boolean; index?: number; item?: any };
-  setSelectedArtToAssociate: (data: any) => void; // Update "any" to the proper type
+  setPointedProduct: (productName: string) => void;
+  addItemToBuyState: (item: any) => void;
+  setIsOpenAssociateArt: (isOpen: boolean) => void;
+  setSelectedArtToAssociate: (data: any) => void;
   changeQuantity: (item: any) => void;
   deleteItemInBuyState: (item: any) => void;
   deleteProductInItem: (item: any) => void;
-  AssociateProduct: (data: { index: number; item: any; type: string }) => void; // Update "any" to the proper type
+  AssociateProduct: (data: { index: number; item: any; type: string }) => void;
 }
 
 const ProductsCatalog: React.FC<ProductsCatalogProps> = (props) => {
   const theme = useTheme()
+  const history = useHistory()
+  const { currency } = useCurrency();
+  const { conversionRate } = useConversionRate();
 
   const [products, setProducts] = useState([])
-  const [openArtFormDialog, setOpenArtFormDialog] = useState(false)
-  const [openShoppingCart, setOpenShoppingCart] = useState(false)
+  const [selectedProduct, setSelectedProduct] = useState<Product | undefined>(undefined);
+  const [bestSellers, setBestSellers] = useState<Product[] | undefined>(undefined);
+  
   const isDesktop = useMediaQuery(theme.breakpoints.up("md"))
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
 
-  const [bestSellers, setBestSellers] = useState<Product[] | undefined>(undefined);
-  const [selectedProduct, setSelectedProduct] = useState<Product | undefined>(undefined);
-  const history = useHistory()
-  const [openServiceFormDialog, setOpenServiceFormDialog] = useState(false)
+  
   const [currentPage, setCurrentPage] = useState(1);
+  const [maxLength, setMaxLength] = useState(0);
   const [productsPerPage] = useState(10);
-  const [sort, setSort] = useState("")
-  const { currency } = useCurrency();
-  const { conversionRate } = useConversionRate();
-  const [createdService, setCreatedService] = useState(false)
+  const [sort, setSort] = useState("");
+  
+  // Pronto se moverá.
+  const [openServiceFormDialog, setOpenServiceFormDialog] = useState(false)
+  const [createdService, setCreatedService] = useState(false);
+  const [openArtFormDialog, setOpenArtFormDialog] = useState(false)
+  const [openShoppingCart, setOpenShoppingCart] = useState(false)
   
   const sortingOptions = [
     { value: "A-Z", label: "A-Z" },
@@ -91,7 +97,7 @@ const ProductsCatalog: React.FC<ProductsCatalogProps> = (props) => {
     setSort(event.target.value)
   };
   
-  const viewDetails = (product) => {
+  const handleDetails = (product) => {
     history.push({
       pathname: "/",
       search: "?producto=" + product.id,
@@ -101,8 +107,7 @@ const ProductsCatalog: React.FC<ProductsCatalogProps> = (props) => {
       action: "Ver_mas",
       label: product.name,
     })
-  }
-  
+  }  
 
   useEffect(() => {
     const getBestSellers = async () => {
@@ -119,6 +124,7 @@ const ProductsCatalog: React.FC<ProductsCatalogProps> = (props) => {
         const response = await fetchProducts(sort, currentPage, productsPerPage);
         const { products, maxLength } = { products: response.products, maxLength: response.maxLength };
         setProducts(products);
+        setMaxLength(maxLength);
       } catch (error) {
         console.error('Error fetching products:', error);
       }
@@ -157,7 +163,7 @@ const ProductsCatalog: React.FC<ProductsCatalogProps> = (props) => {
                 autoplay={false}
               >
                   {bestSellers?.map((product) => (
-                    <ProductElement1
+                    <ProductElement
                       src={product?.sources?.images.length > 0 ? product.sources.images[0]?.url : product.thumbUrl}
                       productName={product.name}
                       buttonLabel="Ver detalles"
@@ -184,7 +190,7 @@ const ProductsCatalog: React.FC<ProductsCatalogProps> = (props) => {
                         product={product}
                         currency={currency}
                         conversionRate={conversionRate}
-                        viewDetails={viewDetails}
+                        handleDetails={handleDetails}
                         pointedProduct={props.pointedProduct}
                       />
                     </Grid>
@@ -194,6 +200,13 @@ const ProductsCatalog: React.FC<ProductsCatalogProps> = (props) => {
                 )}
             </Grid>
           </div>
+
+          <PaginationBar 
+            setPageNumber={setCurrentPage} 
+            pageNumber={currentPage} 
+            itemsPerPage={productsPerPage}
+            maxLength={maxLength}
+          />
 
       {/* Utility?, it shouldn't be here. */}
       {openArtFormDialog && (

@@ -40,7 +40,7 @@ import backG from "../images/Rectangle108.png"
 import BrandsCarousel from "../sharedComponents/brandsCarousel/brandsCarousel"
 import { Slider } from "components/Slider"
 import { Image } from "components/Image"
-import { ProductElement1 } from "components/ProductElement1"
+import ProductElement from "components/ProductElement"
 import { getImageSize } from "utils/util";
 
 ReactGA.initialize("G-0RWP9B33D8")
@@ -522,7 +522,7 @@ export default function Home(props) {
                       autoplay={false}
                     >
                         {bestSellers?.map((product) => (
-                          <ProductElement1
+                          <ProductElement
                             src={product?.sources?.images.length > 0 ? product.sources.images[0]?.url : product.thumbUrl}
                             productName={product.name}
                             buttonLabel="Ver detalles"

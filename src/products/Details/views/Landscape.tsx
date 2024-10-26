@@ -1,4 +1,5 @@
 import React from "react";
+import { useHistory } from "react-router-dom";
 
 import {
   Typography,
@@ -26,6 +27,7 @@ import { Product } from '../../interfaces';
 import { useCurrency } from "context/GlobalContext";
 import { Slider } from "components/Slider";
 import { Image } from "components/Image"
+import { queryCreator } from "flow/utils";
 
 interface LandscapeProps {
   product: Product;
@@ -39,7 +41,26 @@ interface LandscapeProps {
 const Landscape: React.FC<LandscapeProps> = (props) => {
   const { currency } = useCurrency();
   const { conversionRate } = useConversionRate();
+
+  const history = useHistory();
   
+  function handleFlow(e): void {
+    const selectionAsObject: { [key: string]: string } = Array.isArray(props.product?.selection)
+        ? props.product?.selection.reduce((acc, item, index) => {
+            acc[`selection-${index}`] = String(item);
+            return acc;
+          }, {} as { [key: string]: string })
+        : (props.product?.selection || {});
+
+    const queryString = queryCreator(
+      props.product?.id,
+      undefined,
+      selectionAsObject,
+      '1'
+    );
+    history.push({ pathname: '/flow', search: queryString });
+  }
+
   return (
     <div className={styles['prix-product-container']}>
         {/* Left Side - Carusel e Info */}
@@ -169,7 +190,7 @@ const Landscape: React.FC<LandscapeProps> = (props) => {
             <Button
               color="primary"
               disabled={props.product?.selection && Object.keys(props.product.selection).length === 0 && Object.keys(props.product.selection).every((item: any) => item === "")}
-              onClick={props.addItemToBuyState}
+              onClick={handleFlow}
             >
               Seleccionar Arte
             </Button>

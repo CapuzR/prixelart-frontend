@@ -20,7 +20,7 @@ html, body, #root {
 .app-bar {
   display: flex;
   min-width: 100%;
-  min-height: 64px;
+  min-height: 30px;
 }
 
 .routes {

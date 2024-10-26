@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from 'react';
 
 import MDEditor from "@uiw/react-md-editor";
-import Button from 'components/Button/Button';
-import { EditAttributes, Share as ShareIcon } from '@material-ui/icons';
+import Button from 'components/Button';
+import { Share as ShareIcon } from '@material-ui/icons';
 import { generateWaProductMessage } from 'utils/utils';
 import Grid from "../../art/components/grid";
 import FlowStepper from 'components/FlowStepper/FlowStepper';
-import { formatPriceForDisplay } from 'utils/formats';
 import { updateAttributes } from "../utils";
 import { queryCreator } from "../utils";
 import styles from './Portrait.module.scss';
@@ -24,7 +23,10 @@ import {
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { useHistory, useLocation } from 'react-router-dom';
 
-import { useCurrency } from 'context/GlobalContext';
+import { useConversionRate, useCurrency } from 'context/GlobalContext';
+import { formatPriceForUI } from 'utils/formats';
+
+import { ProductCarousel } from 'components/ProductCarousel';
 
 interface PortraitProps {
   product: Product | null;
@@ -50,6 +52,7 @@ const Portrait: React.FC<PortraitProps> = (props) => {
     const history = useHistory();
     const location = useLocation();
     const { currency } = useCurrency();
+    const { conversionRate } = useConversionRate();
     const [ step, setStep ] = useState<number>(props.searchParams.get('step') ? parseInt(props.searchParams.get('step') as string) : 1);
     const steps = ['Selecciona', 'Elige el Arte', 'Confirmar'];
 
@@ -82,7 +85,7 @@ const Portrait: React.FC<PortraitProps> = (props) => {
 
     (Object.keys(props.product?.selection).every(key => props.product?.selection[key] !== '')) && setStep(2);
     const queryString = queryCreator(
-        props.product?.productId,
+        props.product?.id,
         props.selectedArt?.artId,
         updateAttributes(props.product?.selection, e.target.name, String(e.target.value)),
         '2'
@@ -101,7 +104,10 @@ const Portrait: React.FC<PortraitProps> = (props) => {
                 className={styles['price']}
             >
                 {
-                    currency + " " + formatPriceForDisplay(props.product?.price, 'de-DE')
+                props.product?.price ?
+                  formatPriceForUI(props.product?.price, currency, conversionRate) :
+                  formatPriceForUI(props.product?.priceRange.from, currency, conversionRate, props.product?.priceRange.to)
+
                 }
             </div>
         </div>
@@ -117,7 +123,7 @@ const Portrait: React.FC<PortraitProps> = (props) => {
                     <>
                         
                         <div className={styles['carousel-wrapper']}>
-                            {/* <ProductCarousel product={props.product} selectedArt={props.selectedArt} selectedItem={props.selectedItem} type="withImages" size="100%" /> */}
+                            <ProductCarousel product={props.product} selectedArt={props.selectedArt} selectedItem={props.selectedItem} type="withImages" size="100%" />
                         </div>
 
                         <div className={styles['select']}>

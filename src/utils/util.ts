@@ -11,3 +11,17 @@ export const getImageSize = (url: string): Promise<{ width: number; height: numb
         img.src = url;
     });
 };
+
+//TODO: Reemplazar Todos los URLSearchParams del app con este util.
+export function getUrlParams(excludedParams: string[] = []): { name: string; value: string }[] {
+    const searchParams = new URLSearchParams(window.location.search);
+    const paramsArray: { name: string; value: string }[] = [];
+  
+    searchParams.forEach((value, key) => {
+      if (!excludedParams.includes(key)) {
+        paramsArray.push({ name: key, value });
+      }
+    });
+  
+    return paramsArray;
+  }

@@ -3,8 +3,10 @@ import {Box, Button} from "@material-ui/core"
 export default function PaginationBar({
   setPageNumber,
   pageNumber,
-  noOfPages,
+  itemsPerPage,
+  maxLength,
 }) {
+  const noOfPages = Math.ceil(maxLength / itemsPerPage);
   return (
     <Box
       style={{

@@ -25,7 +25,6 @@ export default function ItemPlayground({ item }: ItemPlaygroundProps) {
               return acc;
             }, {} as { [key: string]: string })
           : (item?.product?.selection || {});
-            console.log('ItemPlayground -> item?.product: ', item?.product);
         const queryString = queryCreator(
             item?.id,
             item?.product?.id,
@@ -33,7 +32,6 @@ export default function ItemPlayground({ item }: ItemPlaygroundProps) {
             selectionAsObject,
             '1'
         );
-        console.log('ItemPlayground -> queryString: ', queryString);
         history.push({ pathname: '/flow', search: queryString });
     };
 

@@ -21,7 +21,6 @@ import MDEditor from "@uiw/react-md-editor";
 import Dialog from "@material-ui/core/Dialog";
 import Typography from "@material-ui/core/Typography";
 import { useHistory } from "react-router-dom";
-import CartReview from "../cart/cartReview";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { useTheme } from "@material-ui/core/styles";
 import DialogActions from "@material-ui/core/DialogActions";
@@ -290,68 +289,6 @@ export default function PrixerProfile(props) {
             </Button>
           )}
         </DialogActions>
-      </Dialog>
-
-      {/* Shopping Cart
-       */}
-      <Dialog
-        maxWidth={"lg"}
-        open={openShoppingCart}
-        style={{
-          width: isDeskTop ? 850 : "100%",
-          margin: isDesktop ? "auto" : 0,
-        }}
-      >
-        {props.buyState?.length > 0 ? (
-          <div
-            style={{
-              marginLeft: 15,
-              marginRight: 15,
-              marginTop: -60,
-            }}
-          >
-            <CartReview
-              buyState={props.buyState}
-              changeQuantity={props.changeQuantity}
-              deleteItemInBuyState={props.deleteItemInBuyState}
-              deleteProductInItem={props.deleteProductInItem}
-              setSelectedArtToAssociate={props.setSelectedArtToAssociate}
-            />
-          </div>
-        ) : (
-          <div style={{ margin: "90px 10px 40px 10px" }}>
-            <Typography variant={"h6"} align={"Center"} justify={"center"}>
-              Actualmente no tienes ningun producto dentro del carrito de
-              compra.
-            </Typography>
-          </div>
-        )}
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-around",
-            marginBottom: 20,
-          }}
-        >
-          <Button
-            onClick={() => {
-              setOpenShoppingCart(false);
-            }}
-            color="primary"
-          >
-            Cerrar
-          </Button>
-          {props.buyState?.length > 0 && (
-            <Button
-              onClick={() => {
-                history.push({ pathname: "/shopping" });
-              }}
-              color="primary"
-            >
-              Comprar
-            </Button>
-          )}
-        </div>
       </Dialog>
     </Container>
   );

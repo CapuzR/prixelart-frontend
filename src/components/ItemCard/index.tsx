@@ -11,14 +11,10 @@ import Typography from "components/Typography";
 
 export interface ItemCardProps {
   item: CartItem;
-  currency: 'USD' | 'Bs';
-  conversionRate: number;
 }
 
 export default function ItemCard({
-  item,
-  currency,
-  conversionRate,
+  item
 }: ItemCardProps) {
   const { deleteItemInCart, addItemToCart, updateItemInCart } = useCart();
   const [quantity, setQuantity] = useState(item.quantity);
@@ -42,19 +38,11 @@ export default function ItemCard({
   };
 
   const getUnitPrice = () => {
-    if (item.product?.price) {
-      const price = (item.product.price / conversionRate).toFixed(2);
-      return currency === 'USD' ? `$${price}` : `Bs.${price}`;
-    }
-    return 'N/A';
+    return '0';
   };
 
   const getFinalPrice = () => {
-    if (item?.product?.price) {
-      const finalPrice = (item?.product?.price * quantity / conversionRate).toFixed(2);
-      return currency === 'USD' ? `$${finalPrice}` : `Bs.${finalPrice}`;
-    }
-    return 'N/A';
+    return '0';
   };
 
   return (

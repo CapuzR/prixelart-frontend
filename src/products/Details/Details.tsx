@@ -24,18 +24,13 @@ interface Props {
 }
 
 const Details: React.FC<Props> = (props) => {
-  const { addItemToCart } = useCart();
-
   const { loading, setLoading } = useLoading();
   const { currency } = useCurrency();
   const { conversionRate } = useConversionRate();
-  const { showSnackBar } = useSnackBar();
   
-  const history = useHistory();
   const productId = new URLSearchParams(window.location.search).get("producto");
 
   const [product, setProduct] = useState<Product | null>(null);
-  const [selectedItem, setSelectedItem] = useState<any>(undefined);
   const [isPortrait, setIsPortrait] = useState(window.innerWidth < 768);
   const [windowHeight, setWindowHeight] = useState(window.innerHeight);
   const [expanded, setExpanded] = useState<string | false>("panel1");
@@ -57,9 +52,8 @@ const Details: React.FC<Props> = (props) => {
       setLoading(true);
       try {
         const productData = await fetchProductDetails(productId);
-        const { product, selectedItem } = prepareProductData(productData);
+        const product = prepareProductData(productData);
         setProduct({...product, productId: productId});
-        setSelectedItem({...selectedItem, price: product?.price});
       } catch (error) {
         console.error("Error fetching product attributes:", error);
       } finally {
@@ -83,20 +77,6 @@ const Details: React.FC<Props> = (props) => {
             ...prevProduct,
             price: parsedPrice
           }));
-          setSelectedItem((prevSelectedProduct) => ({
-            ...prevSelectedProduct,
-            price: parsedPrice,
-            //Esto está acá solo por el carrito, hay que volárselo..
-            //Considerar qué pasa si el user metió todo en el carrito y de repente inicia sesión como Prixer.
-            publicEquation: {
-              from: parsedPrice,
-              to: parsedPrice
-            },
-            publicPrice: {
-              from: parsedPrice,
-              to: parsedPrice
-            }
-          }));
         }
       }
     };
@@ -119,21 +99,6 @@ const Details: React.FC<Props> = (props) => {
 
   const handleChange = (panel: string) => (event: React.ChangeEvent<{}>, isExpanded: boolean) => {
     setExpanded(isExpanded ? panel : false);
-  };
-
-//TO DO: CART. Esto no debería ir acá. Todo debería estar en el Cart, que QUIZÁS debería ser un Context.
-  const addItemToBuyState = () => { 
-      const newState = [...props.buyState];
-      // newState.push({
-      //   product: selectedItem,
-      //   quantity: 1,
-      // });
-      props.setBuyState(newState);
-      localStorage.setItem("buyState", JSON.stringify(newState));
-      showSnackBar("¡Producto agregado!");
-    history.push({
-      pathname: "/shopping",
-    })
   };
 
   return (

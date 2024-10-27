@@ -4,10 +4,7 @@ import { Product, Variant } from './interfaces';
 export const prepareProductData = (product) => {
   const initialSelection = product.attributes?.reduce((acc, attr) => { acc[attr.name] = ""; return acc; }, {});
 
-    return {
-      product: { ...product, selection: initialSelection },
-      selectedItem: product
-    };
+    return { ...product, selection: initialSelection };
 };
 
 //Details.tsx

@@ -582,21 +582,7 @@ export default function ShoppingPage(props) {
               xl={7}
               style={{ marginTop: isMobile ? "-190px" : "-150px" }}
             >
-              <CartReview
-                buyState={cart}
-                setBuyState={props.setBuyState}
-                changeQuantity={props.changeQuantity}
-                deleteItemInBuyState={props.deleteItemInBuyState}
-                deleteProductInItem={props.deleteProductInItem}
-                setSelectedArtToAssociate={props.setSelectedArtToAssociate}
-                surchargeList={props.surchargeList}
-                dollarValue={dollarValue}
-                currency={currency}
-                setOpen={props.setOpen}
-                setMessage={props.setMessage}
-                handleBuy={handleBuy}
-                orgs={orgs}
-              />
+              <CartReview />
             </Grid>
 
             <Grid

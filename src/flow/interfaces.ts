@@ -1,5 +1,12 @@
-import { CartItem as C_CartItem } from 'cart/interfaces';
-export type CartItem = C_CartItem;
+import { 
+    CartItem,
+    PickedProduct,
+    PickedArt
+  } from 'cart/interfaces';
+  export type { CartItem, PickedProduct, PickedArt };
 
-import { Product as P_Product } from 'products/interfaces';
-export type Product = P_Product;
+  import { Product } from 'products/interfaces';
+  export type { Product };
+
+  import { Art } from 'art/interfaces';
+  export type { Art };

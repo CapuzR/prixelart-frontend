@@ -1,5 +1,8 @@
-import { CartItem as C_CartItem } from 'cart/interfaces';
-export type CartItem = C_CartItem;
+import { 
+  CartItem,
+  PickedProduct
+} from 'cart/interfaces';
+export type { CartItem, PickedProduct };
 
   export interface Product {
     id: string;
@@ -14,7 +17,9 @@ export type CartItem = C_CartItem;
     thumbUrl: string;
     sources: {
       images: { url: string }[];
-    }
+    },
+    productionTime: number;
+    mockUp: any;
   }
 
   

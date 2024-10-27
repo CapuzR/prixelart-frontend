@@ -3,6 +3,7 @@ import { useHistory } from "react-router-dom";
 
 import ReactGA from "react-ga";
 import { useConversionRate, useCurrency, useLoading, useSnackBar } from 'context/GlobalContext';
+import { useCart } from 'context/CartContext';
 import { prepareProductData, getSelectedVariantPrice } from "../services";
 import { fetchVariantPrice } from "../api";
 import { parsePrice } from "utils/formats";
@@ -23,6 +24,8 @@ interface Props {
 }
 
 const Details: React.FC<Props> = (props) => {
+  const { addItemToCart } = useCart();
+
   const { loading, setLoading } = useLoading();
   const { currency } = useCurrency();
   const { conversionRate } = useConversionRate();
@@ -121,10 +124,10 @@ const Details: React.FC<Props> = (props) => {
 //TO DO: CART. Esto no debería ir acá. Todo debería estar en el Cart, que QUIZÁS debería ser un Context.
   const addItemToBuyState = () => { 
       const newState = [...props.buyState];
-      newState.push({
-        product: selectedItem,
-        quantity: 1,
-      });
+      // newState.push({
+      //   product: selectedItem,
+      //   quantity: 1,
+      // });
       props.setBuyState(newState);
       localStorage.setItem("buyState", JSON.stringify(newState));
       showSnackBar("¡Producto agregado!");
@@ -139,7 +142,7 @@ const Details: React.FC<Props> = (props) => {
           isPortrait ? (
             <Portrait
               product={product}
-              addItemToBuyState={addItemToBuyState}
+              // addItemToBuyState={addItemToCart}
               handleChange={handleChange}
               handleSelection={handleSelection}
               expanded={expanded}
@@ -148,7 +151,7 @@ const Details: React.FC<Props> = (props) => {
           ) : (
             <Landscape
               product={product}
-              addItemToBuyState={addItemToBuyState}
+              // addItemToBuyState={addItemToCart}
               handleChange={handleChange}
               handleSelection={handleSelection}
               expanded={expanded}

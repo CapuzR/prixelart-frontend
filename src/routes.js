@@ -577,8 +577,10 @@ function Routes() {
           path="/flow"
           render={(props) => {
             const params = new URLSearchParams(props.location.search)
+            const item = params.get("itemId")
             const prod = params.get("producto")
-            const art = params.get("art")
+            const art = params.get("arte")
+            console.log("Routes -> params: ", item, prod, art)
             const attributes = {};
             params.forEach((value, key) => {
               if (key !== "producto" && key !== "arte") {
@@ -586,7 +588,7 @@ function Routes() {
               }
             });
 
-            if (prod) {
+            if (prod || art) {
               return (
                 <Flow
                   addItemToBuyState={addItemToBuyState}

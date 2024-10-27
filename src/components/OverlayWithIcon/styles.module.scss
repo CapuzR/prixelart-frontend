@@ -1,0 +1,53 @@
+@import 'theme.scss'; // Assuming your theme.scss is in the correct path
+
+.hover-overlay-container {
+  position: relative;
+  width: 100%;
+  height: auto; 
+}
+
+.hover-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: $overlay-bg-color; // Use variable from theme.scss
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0; /* Hidden by default */
+  transition: opacity $transition-normal ease; /* Smooth fade-in */
+}
+
+.hover-overlay-container:hover .hover-overlay {
+  opacity: 1; /* Show overlay on hover */
+}
+
+.icon-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon {
+  font-size: 34px;
+  color: $text-light-color; // Using a theme variable for the icon color
+  margin: 0 10px;
+  cursor: pointer; // Make the icon clickable
+}
+
+.separator {
+  width: 2px;
+  height: 30px;
+  background-color: $text-light-color; // Use a theme variable for separator color
+}
+
+.cover-parent {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: auto;
+  z-index: 1;
+}

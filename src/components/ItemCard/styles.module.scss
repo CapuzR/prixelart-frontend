@@ -1,0 +1,71 @@
+@import 'theme.scss';
+
+.card-root {
+    display: flex;
+    overflow: hidden;
+    align-content: space-between;
+    height: 300px;
+    @include paper(undefined, $box-shadow-heavy, $border-radius-xl, $spacing-md);
+    padding: 0;
+}
+
+.item-playground {
+    // width: 50%;
+    height: 100%;
+    flex: 2;
+    max-width: 540px;
+}
+
+.card-content {
+    display: flex;
+    flex: 1;
+    padding: $spacing-md;
+    justify-content: space-between;
+}
+
+.item-content {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding: $spacing-md;
+    justify-content: space-between;
+}
+
+.pricing-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: $spacing-md;
+
+    .price-group {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        small {
+            font-size: $font-size-small;
+            color: $text-color;
+            margin-bottom: $spacing-xs;
+        }
+
+        p {
+            font-size: $font-size-medium;
+            font-weight: $font-weight-bold;
+            margin: 0;
+        }
+    }
+
+    .quantity-input {
+        width: 60px;
+        padding: $spacing-xs;
+        font-size: $font-size-medium;
+        text-align: center;
+        border: 1px solid $border-color;
+        border-radius: $border-radius-sm;
+        outline: none;
+
+        &:focus {
+            border-color: $primary-color;
+        }
+    }
+}

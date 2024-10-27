@@ -1,0 +1,43 @@
+@import 'theme.scss';
+
+.action-bar {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  width: 60px;
+  background-color: transparent;
+  right: 0;
+}
+
+.icon-wrapper {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color $transition-normal, color $transition-normal;
+  background-color: transparent;
+  border: 1px solid $border-color;
+  
+
+  &:hover {
+    background-color: $error-color;
+    color: white;
+    .icon {
+      color: $text-light-color;
+    }
+  }
+  
+  &:nth-child(2):hover {
+    background-color: $warning-color;
+    .icon {
+      color: $text-light-color;
+    }
+  }
+}
+
+.icon {
+  color: $secondary-color;
+  transition: color $transition-normal;
+}

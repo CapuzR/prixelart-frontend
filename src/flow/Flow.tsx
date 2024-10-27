@@ -11,12 +11,13 @@ import { getSelectedVariantPrice, prepareProductData } from "products/services";
 import { fetchProductDetails, fetchVariantPrice } from 'products/api';
 import { fetchArtDetails } from 'art/api';
 
-import Portrait from "./views/Portrait";
-import Landscape from "./views/Landscape";
+import Portrait from "flow/views/Portrait";
+import Landscape from "flow/views/Landscape";
 
-import { CartItem, Product } from './interfaces';
+import { CartItem, PickedProduct, PickedArt, Product } from './interfaces';
 import { queryCreator, getUrlParams } from "./utils";
 import { parsePrice } from "utils/formats";
+import { useCart } from "context/CartContext"; 
 
 ReactGA.initialize("G-0RWP9B33D8");
 
@@ -38,7 +39,7 @@ const Flow: React.FC<Props> = (props) => {
   const history = useHistory();
   const productId = new URLSearchParams(window.location.search).get("producto");
   const artId = new URLSearchParams(window.location.search).get("arte");
-  const selectedAttributes = getUrlParams(["producto", "arte", "step"]);
+  const selectedAttributes = getUrlParams(["producto", "arte", "step", "itemId"]);
 
   const [product, setProduct] = useState<Product | null>(null);
   const [selectedItem, setSelectedItem] = useState<any>(undefined);
@@ -47,6 +48,18 @@ const Flow: React.FC<Props> = (props) => {
   const [expanded, setExpanded] = useState<string | false>(false);
   const searchParams = new URLSearchParams(window.location.search);
   
+  const { addItemToCart, deleteElementInItem, updateItemInCart } = useCart();
+
+  const handleUpdateItem = (product?: Product, art?: PickedArt, quantity?: number) => {
+    addItemToCart({ product, art, quantity });
+    showSnackBar("Item updated in the cart");
+  };
+
+  const handleDeleteElement = (type: "product" | "art") => {
+    // deleteElementInItem(selectedItem?.id, type);
+    // showSnackBar(`${type === 'product' ? 'Product' : 'Art'} removed from the cart`);
+  };
+
   useEffect(() => {
     const handleResize = () => {
       setIsPortrait(window.innerWidth < 768);
@@ -57,7 +70,6 @@ const Flow: React.FC<Props> = (props) => {
   }, []);
 
   const { generalDescription, technicalSpecification } = splitDescription(product?.description);
-  
 
   const handleSelection = (e: React.ChangeEvent<{ name: string; value: number }>) => {
     const newSelection = product?.selection && { ...product?.selection };
@@ -102,9 +114,10 @@ const Flow: React.FC<Props> = (props) => {
       try {
         const productData = await fetchProductDetails(productId);
         const { product, selectedItem } = prepareProductData(productData);
+        console.log("Flow -> selectedAttributes", selectedAttributes);
         selectedAttributes ? 
-          setProduct({...product, productId: productId, selection: selectedAttributes.reduce((acc, param) => ({ ...acc, [param.name]: param.value }), {})}) :
-          setProduct({...product, productId: productId});
+          setProduct({...product, id: productId, selection: selectedAttributes.reduce((acc, param) => ({ ...acc, [param.name]: param.value }), {})}) :
+          setProduct({...product, id: productId});
         setSelectedItem({...selectedItem, price: product?.price});
       } catch (error) {
         console.error("Error fetching product attributes:", error);
@@ -172,6 +185,7 @@ const Flow: React.FC<Props> = (props) => {
         : (product?.selection || {});
 
     const queryString = queryCreator(
+      undefined,
       product?.id,
       selectedArt?.artId,
       selectionAsObject,
@@ -182,33 +196,6 @@ const Flow: React.FC<Props> = (props) => {
     showSnackBar("¡Arte seleccionado! Puedes agregar el item al carrito");
   };
   
-//TO DO: CART. Esto no debería ir acá. Todo debería estar en el Cart, que QUIZÁS debería ser un Context.
-  const addItemToBuyState = () => { 
-    if (selectedArt === undefined) {
-      const newState = [...props.buyState];
-      newState.push({
-        product: selectedItem,
-        quantity: 1,
-      });
-      props.setBuyState(newState);
-      localStorage.setItem("buyState", JSON.stringify(newState));
-      showSnackBar("¡Producto agregado!");
-    } else {
-      const newState = [...props.buyState];
-      newState.push({
-        art: selectedArt,
-        product: selectedItem,
-        quantity: 1,
-      });
-      props.setBuyState(newState);
-      localStorage.setItem("buyState", JSON.stringify(newState));
-      showSnackBar("¡Producto agregado!");
-    }
-    history.push({
-      pathname: "/shopping",
-    })
-  };
-
   return (
     <>
       {
@@ -217,7 +204,8 @@ const Flow: React.FC<Props> = (props) => {
           product={product}
           selectedArt={selectedArt}
           setSelectedArt={setSelectedArt}
-          addItemToBuyState={addItemToBuyState}
+          handleUpdateItem={handleUpdateItem}
+          // addItemToBuyState={addItemToBuyState}
           getFilteredOptions={getFilteredOptions}
           handleChange={handleChange}
           handleSelection={handleSelection}
@@ -237,7 +225,9 @@ const Flow: React.FC<Props> = (props) => {
           product={product}
           selectedArt={selectedArt}
           setSelectedArt={setSelectedArt}
-          addItemToBuyState={addItemToBuyState}
+          handleUpdateItem={handleUpdateItem}
+          handleDeleteElement={handleDeleteElement}
+          // addItemToBuyState={addItemToBuyState}
           getFilteredOptions={getFilteredOptions}
           handleChange={handleChange}
           handleSelection={handleSelection}

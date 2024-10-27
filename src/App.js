@@ -6,6 +6,7 @@ import { GlobalProvider, useTheme  } from 'context/GlobalContext';
 import './globalTheme.css';
 import ReactGA from "react-ga";
 import Utility from "Utility";
+import { CartProvider } from "context/CartContext";
 
 function ThemedApp() {
   const { theme } = useTheme();
@@ -32,9 +33,11 @@ function App() {
 
   return (
     <GlobalProvider>
-      <Router>
-        <ThemedApp />
-      </Router>
+      <CartProvider>
+        <Router>
+          <ThemedApp />
+        </Router>
+      </CartProvider>
     </GlobalProvider>
   );
 }

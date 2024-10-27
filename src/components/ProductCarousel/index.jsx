@@ -124,7 +124,7 @@ export const ProductCarousel = ({ product, selectedArt, selectedItem, type, size
                     // cache
                     error="/imgError.svg"
                     alt={product && product.name}
-                    id={product.id}
+                    id={product?.id}
                     />
                 </div>
                 <div

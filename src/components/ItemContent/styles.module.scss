@@ -1,0 +1,37 @@
+@import 'theme.scss';
+
+.content-section {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: $spacing-md;
+    align-items: flex-start;
+}
+
+.product-section {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-xs;
+
+    p {
+        font-size: $font-size-medium;
+    }
+
+    strong {
+        font-weight: bold;
+    }
+}
+
+.art-section {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-xs;
+
+    p {
+        font-size: $font-size-medium;
+    }
+
+    strong {
+        font-weight: bold;
+    }
+}

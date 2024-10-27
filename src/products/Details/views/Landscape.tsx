@@ -23,17 +23,18 @@ import styles from './Landscape.module.scss';
 
 import { getFilteredOptions } from "products/services";
 
-import { Product } from '../../interfaces';
+import { Product, PickedProduct } from '../../interfaces';
 import { useCurrency } from "context/GlobalContext";
 import { Slider } from "components/Slider";
 import { Image } from "components/Image"
 import { queryCreator } from "flow/utils";
+import { PickedArt } from "art/interfaces";
 
 interface LandscapeProps {
   product: Product;
   expanded: string | false;
   description: { generalDescription: string; technicalSpecification: string };
-  addItemToBuyState: () => void;
+  // addItemToBuyState: (input: { product?: PickedProduct; art?: PickedArt; quantity?: number }) => void;
   handleSelection: (e: React.ChangeEvent<{ name: string; value: number }>) => void;
   handleChange: (panel: string) => (event: React.ChangeEvent<{}>, isExpanded: boolean) => void;
 }
@@ -53,11 +54,13 @@ const Landscape: React.FC<LandscapeProps> = (props) => {
         : (props.product?.selection || {});
 
     const queryString = queryCreator(
+      undefined,
       props.product?.id,
       undefined,
       selectionAsObject,
       '1'
     );
+    // props.addItemToBuyState({ product: props.product })
     history.push({ pathname: '/flow', search: queryString });
   }
 
@@ -183,7 +186,7 @@ const Landscape: React.FC<LandscapeProps> = (props) => {
             <Button
               type="onlyText"
               color="primary"
-              onClick={props.addItemToBuyState}
+              // onClick={() => props.addItemToBuyState({ product: props.product })}
             >
               Guardar
             </Button>

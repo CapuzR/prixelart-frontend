@@ -9,7 +9,7 @@ import FlowStepper from 'components/FlowStepper/FlowStepper';
 import { updateAttributes } from "../utils";
 import { queryCreator } from "../utils";
 import styles from './Portrait.module.scss';
-import { Product } from '../interfaces';
+import { Product, Art } from '../interfaces';
 import {
   Typography,
   Accordion,
@@ -33,7 +33,8 @@ interface PortraitProps {
   selectedArt: any;
   selectedItem: any;
   setSelectedArt: (art: any) => void;
-  addItemToBuyState: () => void;
+  handleUpdateItem: (product?: Product, art?: Art, quantity?: number) => void;
+//   addItemToBuyState: () => void;
   getFilteredOptions: (att: { name: string; value: string[] }) => string[];
   handleSelection: (e: React.ChangeEvent<{ name: string; value: number }>) => void;
   handleChange: (panel: string) => (event: React.ChangeEvent<{}>, isExpanded: boolean) => void;
@@ -85,6 +86,7 @@ const Portrait: React.FC<PortraitProps> = (props) => {
 
     (Object.keys(props.product?.selection).every(key => props.product?.selection[key] !== '')) && setStep(2);
     const queryString = queryCreator(
+        undefined,
         props.product?.id,
         props.selectedArt?.artId,
         updateAttributes(props.product?.selection, e.target.name, String(e.target.value)),
@@ -260,7 +262,7 @@ const Portrait: React.FC<PortraitProps> = (props) => {
                             <Button
                                 color="primary"
                                 disabled={props.selectedArt === undefined}
-                                onClick={props.addItemToBuyState}
+                                // onClick={props.addItemToBuyState}
                             >
                                 Agregar al carrito
                             </Button>

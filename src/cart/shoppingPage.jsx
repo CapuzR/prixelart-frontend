@@ -22,6 +22,7 @@ import Switch from "@material-ui/core/Switch"
 import { Alert } from "@material-ui/lab"
 import useMediaQuery from "@material-ui/core/useMediaQuery"
 
+import { useCart } from "context/CartContext"
 import {
   getPVP,
   getPVM,
@@ -136,6 +137,7 @@ export default function ShoppingPage(props) {
   const history = useHistory()
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
+  const { cart } = useCart();
 
   const [orderPaymentMethod, setOrderPaymentMethod] = useState(undefined)
   const [observations, setObservations] = useState()
@@ -219,8 +221,8 @@ export default function ShoppingPage(props) {
 
   const getTotal = (x) => {
     let n = []
-    n.push(getTotalPrice(props.buyState))
-    n.push(getIvaCost(props.buyState))
+    n.push(getTotalPrice(cart))
+    n.push(getIvaCost(cart))
 
     if (props.valuesConsumerForm.shippingMethod) {
       if (props.currency) {
@@ -244,11 +246,11 @@ export default function ShoppingPage(props) {
       props.setOpen(true)
 
       let orderLines = []
-      let taxv2 = getIvaCost(props.buyState)
-      let subtotalv2 = getTotalPrice(props.buyState)
-      let totalv2 = getTotal(props.buyState)
+      let taxv2 = getIvaCost(cart)
+      let subtotalv2 = getTotalPrice(cart)
+      let totalv2 = getTotal(cart)
 
-      props.buyState.map((s) => {
+      cart.map((s) => {
         s.product &&
           s.art &&
           orderLines.push({
@@ -429,7 +431,7 @@ export default function ShoppingPage(props) {
           destinatary: JSON.parse(localStorage.getItem("token")).account,
           description: `Pago de la orden #${input.orderId}`,
           type: "Retiro",
-          value: getTotal(props.buyState),
+          value: getTotal(cart),
         }
         data.movement = movement
       }
@@ -472,7 +474,7 @@ export default function ShoppingPage(props) {
       history.push({ pathname: "/" })
       props.setValuesConsumerForm(undefined)
       localStorage.removeItem("buyState")
-      props.setBuyState([])
+      props.setCart([])
       setLoading(false)
     } else {
       props.setOpen(true)
@@ -518,7 +520,7 @@ export default function ShoppingPage(props) {
         className={classes.paper}
       >
         <CssBaseline />
-        {props.buyState.length > 0 ? (
+        {cart.length > 0 ? (
           <Grid
             container
             spacing={2}
@@ -581,7 +583,7 @@ export default function ShoppingPage(props) {
               style={{ marginTop: isMobile ? "-190px" : "-150px" }}
             >
               <CartReview
-                buyState={props.buyState}
+                buyState={cart}
                 setBuyState={props.setBuyState}
                 changeQuantity={props.changeQuantity}
                 deleteItemInBuyState={props.deleteItemInBuyState}
@@ -636,7 +638,7 @@ export default function ShoppingPage(props) {
                     <ConsumerForm
                       setValues={props.setValuesConsumerForm}
                       values={props.valuesConsumerForm}
-                      buyState={props.buyState}
+                      buyState={cart}
                       setOpen={props.setOpen}
                       setMessage={props.setMessage}
                       expanded={expanded}
@@ -648,8 +650,8 @@ export default function ShoppingPage(props) {
                       values={props.valuesConsumerForm}
                       setValuesConsumer={props.setValues}
                       onCreateConsumer={props.onCreateConsumer}
-                      buyState={props.buyState}
-                      setBuyState={props.setBuyState}
+                      buyState={cart}
+                      setBuyState={cart}
                       orderPaymentMethod={orderPaymentMethod}
                       setOrderPaymentMethod={setOrderPaymentMethod}
                       setPaymentVoucher={setPaymentVoucher}

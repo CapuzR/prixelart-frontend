@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Art } from './interface'
+import { Art } from './interfaces'
 
 export const fetchArtDetails = async (artId: string): Promise<any> => {
     const base_url = `${process.env.REACT_APP_BACKEND_URL}/art/read-by-id`;

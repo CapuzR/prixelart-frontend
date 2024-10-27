@@ -1,19 +1,24 @@
 export const queryCreator = (
+    itemId: string | undefined,
     productId: string | undefined,
-    selectedArtId?: string | undefined,
+    artId?: string | undefined,
     attributes?: { [key: string]: string },
     step?: string
   ) => {
     const searchParams = new URLSearchParams(window.location.search);
   
     searchParams.set("step", step);
+
+    if (itemId) {
+      searchParams.set("itemId", itemId);
+    }
   
     if (productId) {
       searchParams.set("producto", productId);
     }
   
-    if (selectedArtId) {
-      searchParams.set("arte", selectedArtId);
+    if (artId) {
+      searchParams.set("arte", artId);
     }
     
     Object.keys(attributes).forEach((attrKey) => {

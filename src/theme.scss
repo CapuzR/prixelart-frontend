@@ -17,8 +17,8 @@ $font-family-sans: 'Roboto', sans-serif;
 $font-family-serif: 'Merriweather', serif;
 $font-size-base: 16px;
 $font-size-small: 1rem;
-$font-size-medium: 1.3rem;
-$font-size-large: 1.8rem;
+$font-size-medium: 1.25rem;
+$font-size-large: 1.5rem;
 $font-size-extra-large: 2.5rem;
 $line-height-base: 1.6;
 $font-weight-light: 300;
@@ -46,12 +46,14 @@ $box-shadow-heavy: 0 6px 12px rgba(0, 0, 0, 0.3);
 $button-padding: $spacing-sm $spacing-md;
 $button-border-radius: $border-radius-button;
 $button-font-size: $font-size-base;
-$button-primary-bg: #d33f49;
+$button-primary-bg: $primary-color;
 $button-secondary-bg: $secondary-color;
 $button-disabled-bg: #d33f4970;
 $button-hover-shadow: $box-shadow-light;
 $button-hover-color: $hover-bg-color;
 $button-hover-text: $hover-text-color;
+
+$overlay-bg-color: rgba(0, 0, 0, 0.3);
 
 $breakpoint-xs: 480px;
 $breakpoint-sm: 576px;
@@ -80,7 +82,7 @@ $z-index-tooltip: 1100;
   }
 }
 
-@mixin button($bg-color, $text-color: white, $hover-bg-color: darken($bg-color, 10%), $hover-text-color: $text-color) {
+@mixin button($bg-color, $text-color: $text-light-color, $hover-bg-color: darken($bg-color, 10%), $hover-text-color: $text-color) {
   background-color: $bg-color;
   color: $text-color;
   padding: $button-padding;
@@ -141,11 +143,11 @@ p {
 }
 
 .btn-primary {
-  @include button($button-primary-bg);
+  @include button($primary-color);
 }
 
 .btn-secondary {
-  @include button($button-secondary-bg);
+  @include button($secondary-color);
 }
 
 .container {

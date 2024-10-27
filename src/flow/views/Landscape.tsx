@@ -23,7 +23,7 @@ import { formatPriceForUI } from 'utils/formats';
 
 import styles from '../Flow.module.scss';
 
-import { Product } from '../interfaces';
+import { Product, Art } from '../interfaces';
 import { useConversionRate, useCurrency } from "context/GlobalContext";
 import { ProductCarousel } from "components/ProductCarousel";
 
@@ -33,7 +33,9 @@ interface LandscapeProps {
   selectedArt: any;
   selectedItem: any;
   setSelectedArt: (art: any) => void;
-  addItemToBuyState: () => void;
+  handleDeleteElement: (type: "product" | "art") => void;
+  handleUpdateItem: (product?: Product, art?: Art, quantity?: number) => void;
+  // addItemToBuyState: () => void;
   getFilteredOptions: (att: { name: string; value: string[] }) => string[];
   handleSelection: (e: React.ChangeEvent<{ name: string; value: number }>) => void;
   handleChange: (panel: string) => (event: React.ChangeEvent<{}>, isExpanded: boolean) => void;
@@ -51,6 +53,13 @@ interface LandscapeProps {
 const Landscape: React.FC<LandscapeProps> = (props) => {
   const { currency } = useCurrency();
   const { conversionRate } = useConversionRate();
+
+  const handleCart = () => {
+    console.log("props.selectedArt", props.selectedArt);
+    console.log("props", props);
+    props.handleUpdateItem(props.product, props.selectedArt, 1);
+    console.log("aja");
+  }
 
   return (
     <div className={styles['prix-product-container']}>
@@ -84,7 +93,7 @@ const Landscape: React.FC<LandscapeProps> = (props) => {
           <Button
             color="primary"
             disabled={props.selectedArt === undefined}
-            onClick={props.addItemToBuyState}
+            onClick={handleCart}
           >
             Agregar al carrito
           </Button>

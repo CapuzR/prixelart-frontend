@@ -26,7 +26,7 @@ export const Image: React.FC<ImageProps> = ({
       <img
         src={src}
         alt={alt}
-        className={`${styles['image']} ${styles[objectFit]} ${className} ${roundedCorner ? styles['rounded'] : ''}`}
+        className={`${styles['image']} ${styles[`fit-to-${fitTo}`]} ${styles[objectFit]} ${className} ${roundedCorner ? styles['rounded'] : ''}`}
       />
     </div>
   );

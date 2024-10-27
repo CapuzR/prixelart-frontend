@@ -12,7 +12,7 @@ import AddShoppingCartIcon from "@material-ui/icons/AddShoppingCart"
 import FullscreenPhoto from "../../prixerProfile/fullscreenPhoto/fullscreenPhoto"
 import Star from "@material-ui/icons/StarRate"
 import StarOutline from "@material-ui/icons/StarOutline"
-import { Art } from "../interface"
+import { Art } from "../interfaces"
 import { setVisibleArt } from "../api"
 import { addingToCart } from "../services"
 

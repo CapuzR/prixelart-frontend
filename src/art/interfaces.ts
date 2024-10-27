@@ -1,3 +1,7 @@
+import {
+  PickedArt
+} from 'cart/interfaces';
+export type { PickedArt };
 
 interface Crop {
     id: number;

@@ -27,7 +27,7 @@ import CB from "../../orgLanding/assets/isotipo.svg"
 import Brightness4Icon from '@material-ui/icons/Brightness4'; // Dark mode icon
 import Brightness7Icon from '@material-ui/icons/Brightness7'; // Light mode icon
 import AttachMoneyIcon from '@material-ui/icons/AttachMoney'; // USD icon
-import { useGlobalContext  } from '../../context/globalContext';
+import { useGlobalContext  } from '../../context/GlobalContext';
 import "./appBar.css"
 
 

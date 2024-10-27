@@ -147,7 +147,7 @@ const useStyles = makeStyles((theme) => ({
     transition: theme.transitions.create("width", {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
-    })
+    }),
   },
   appBarSpacer: theme.mixins.toolbar,
   content: {
@@ -178,7 +178,8 @@ export default function AdminMain(props) {
   const location = useLocation()
   const history = useHistory()
   const [openDollarView, setOpenDollarView] = useState(false)
-
+  // const permissions = localStorage.getItem("adminToken").permissions
+  
   const handleDrawerOpen = () => {
     setOpen(true)
   }
@@ -221,6 +222,7 @@ export default function AdminMain(props) {
           <AppBar
             position="fixed"
             className={clsx(classes.appBar, open && classes.appBarShift)}
+            style={{ minHeight: "74px" }}
           >
             <Toolbar className={classes.toolbar}>
               <IconButton

@@ -28,7 +28,7 @@ import world from "../images/world.svg"
 import worldBlack from "../images/world-black.svg"
 import vzla from "../images/vzla.svg"
 import { priceSelect } from "./services"
-import { useGlobalContext  } from '../context/globalContext';
+import { useGlobalContext  } from '../context/GlobalContext';
 import { ProductCarousel } from "../sharedComponents/productCarousel/productCarousel"
 
 ReactGA.initialize("G-0RWP9B33D8")

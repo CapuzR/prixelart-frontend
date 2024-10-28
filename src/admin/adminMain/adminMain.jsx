@@ -158,6 +158,8 @@ const useStyles = makeStyles((theme) => ({
   container: {
     paddingTop: theme.spacing(4),
     paddingBottom: theme.spacing(4),
+    paddingLeft: 0,
+    width: "90vw"
   },
   paper: {
     padding: theme.spacing(2),
@@ -178,7 +180,6 @@ export default function AdminMain(props) {
   const location = useLocation()
   const history = useHistory()
   const [openDollarView, setOpenDollarView] = useState(false)
-  // const permissions = localStorage.getItem("adminToken").permissions
   
   const handleDrawerOpen = () => {
     setOpen(true)
@@ -285,7 +286,7 @@ export default function AdminMain(props) {
           <main className={classes.content}>
             <div className={classes.appBarSpacer} />
             <Container
-              maxWidth="lg"
+              maxWidth="xl"
               className={classes.container}
             >
               {active === "user" ? (

@@ -94,8 +94,13 @@ const AdminRoutes = ({
           "/admin/payment-method/read",
           "/admin/shipping-method/read",
           "/admin/testimonials/read",
-        ]}
-      >
+          "/admin/product/createDiscount",
+          "/admin/product/updateDiscount/:discountId",
+          "/admin/product/createSurcharge",
+          "/admin/product/updateSurcharge/:surchargeId",
+          "/admin/product/createCategory",
+          "/admin/product/updateCategory/:categoryId"
+        ]}      >
         <AdminMain permissions={permissions} />
       </Route>
 

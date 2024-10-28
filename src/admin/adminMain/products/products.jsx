@@ -1,34 +1,37 @@
-import React, { useEffect, useState, useRef } from "react";
-import axios from "axios";
+import React, { useEffect, useState, useRef } from "react"
+import axios from "axios"
 
-import { useHistory, useLocation } from "react-router-dom";
-import Grid from "@material-ui/core/Grid";
-import Paper from "@material-ui/core/Paper";
-import clsx from "clsx";
-import { useTheme } from "@material-ui/core/styles";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
-import { makeStyles } from "@material-ui/core/styles";
-import Fab from "@material-ui/core/Fab";
-import AddIcon from "@material-ui/icons/Add";
-import ViewListIcon from "@material-ui/icons/ViewList";
-import Modal from "@material-ui/core/Modal";
-import Button from "@material-ui/core/Button";
-import MDEditor from "@uiw/react-md-editor";
+import { useHistory, useLocation } from "react-router-dom"
+import Grid from "@material-ui/core/Grid"
+import Paper from "@material-ui/core/Paper"
+import clsx from "clsx"
+import { useTheme } from "@material-ui/core/styles"
+import useMediaQuery from "@material-ui/core/useMediaQuery"
+import { makeStyles } from "@material-ui/core/styles"
+import Fab from "@material-ui/core/Fab"
+import AddIcon from "@material-ui/icons/Add"
+import ViewListIcon from "@material-ui/icons/ViewList"
+import Modal from "@material-ui/core/Modal"
+import Button from "@material-ui/core/Button"
+import MDEditor from "@uiw/react-md-editor"
 
-import CreateProduct from "../../productCrud/createProduct";
-import UpdateProduct from "../../productCrud/updateProduct";
+import CreateProduct from "../../productCrud/createProduct"
+import UpdateProduct from "../../productCrud/updateProduct"
 // import DisableProduct from "../../productCrud/disableProduct";
-import ReadProducts from "../../productCrud/readProducts";
-import CreateDiscount from "./createDiscount";
-import UpdateDiscount from "./updateDiscount";
-import ListAltIcon from "@material-ui/icons/ListAlt";
-import PublishIcon from "@material-ui/icons/Publish";
-import Tooltip from "@material-ui/core/Tooltip";
-import CreateSurcharge from "./createSurcharge";
-import UpdateSurcharge from "./updateSurcharge";
-const excelJS = require("exceljs");
+import ReadProducts from "../../productCrud/readProducts"
+import CreateDiscount from "./createDiscount"
+import UpdateDiscount from "./updateDiscount"
+import ListAltIcon from "@material-ui/icons/ListAlt"
+import PublishIcon from "@material-ui/icons/Publish"
+import Tooltip from "@material-ui/core/Tooltip"
+import CreateSurcharge from "./createSurcharge"
+import UpdateSurcharge from "./updateSurcharge"
+import CreateCategory from "./createCategory"
+import UpdateCategory from "./updateCategory"
 
-const drawerWidth = 240;
+const excelJS = require("exceljs")
+
+const drawerWidth = 240
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -125,43 +128,48 @@ const useStyles = makeStyles((theme) => ({
     transform: "translate(-50%, -50%)",
     textAlign: "justify",
   },
-}));
+}))
 
 export default function Products(props) {
-  const classes = useStyles();
-  const history = useHistory();
-  const location = useLocation();
-  const theme = useTheme();
-  const inputRef = useRef(null);
-  const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
-  const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
-  const [productEdit, setProductEdit] = useState(true);
-  const [activeCrud, setActiveCrud] = useState("read");
-  const [page, setPage] = useState(0);
-  const [products, setProducts] = useState([]);
+  const classes = useStyles()
+  const history = useHistory()
+  const location = useLocation()
+  const theme = useTheme()
+  const inputRef = useRef(null)
+  const isDesktop = useMediaQuery(theme.breakpoints.up("md"))
+  const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight)
+  const [productEdit, setProductEdit] = useState(true)
+  const [activeCrud, setActiveCrud] = useState("read")
+  const [page, setPage] = useState(0)
+  const [products, setProducts] = useState([])
 
-  const [loading, setLoading] = useState(false);
-  const [deleteMessage, setDeleteMessage] = useState();
-  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [loading, setLoading] = useState(false)
+  const [deleteMessage, setDeleteMessage] = useState()
+  const [deleteOpen, setDeleteOpen] = useState(false)
 
   const [product, setProduct] = useState(
     localStorage.getItem("product")
       ? JSON.parse(localStorage.getItem("product"))
       : undefined
-  );
+  )
+  const [category, setCategory] = useState(
+    localStorage.getItem("category")
+      ? JSON.parse(localStorage.getItem("category"))
+      : undefined
+  )
   const [discount, setDiscount] = useState(
     localStorage.getItem("discount")
       ? JSON.parse(localStorage.getItem("discount"))
       : undefined
-  );
+  )
   const [surcharge, setSurcharge] = useState(
     localStorage.getItem("surcharge")
       ? JSON.parse(localStorage.getItem("surcharge"))
       : undefined
-  );
+  )
   const handleProductAction = (action) => {
-    history.push({ pathname: "/admin/product/" + action });
-  };
+    history.push({ pathname: "/admin/product/" + action })
+  }
   useEffect(() => {
     location.pathname.split("/").length === 5
       ? setActiveCrud(
@@ -170,21 +178,21 @@ export default function Products(props) {
       : location.pathname.split("/").length === 4 &&
         setActiveCrud(
           location.pathname.split("/")[location.pathname.split("/").length - 1]
-        );
-  }, [location.pathname]);
+        )
+  }, [location.pathname])
 
   const getProducts = (x) => {
-    setProducts(x);
-  };
+    setProducts(x)
+  }
 
   const Callback = (childData) => {
-    setPage(childData);
-  };
+    setPage(childData)
+  }
 
   const downloadProducts = async () => {
-    const workbook = new excelJS.Workbook();
-    const date = new Date().toLocaleDateString().replace(/\//g, "-");
-    const worksheet = workbook.addWorksheet(`Productos`);
+    const workbook = new excelJS.Workbook()
+    const date = new Date().toLocaleDateString().replace(/\//g, "-")
+    const worksheet = workbook.addWorksheet(`Productos`)
     worksheet.columns = [
       { header: "ID", key: "ID", width: 10 },
       { header: "Nombre", key: "name", width: 12 },
@@ -200,21 +208,21 @@ export default function Products(props) {
       { header: "PVM máximo", key: "PVMmax", width: 10 },
       { header: "Variantes especiales", key: "hasSpecialVar", width: 12 },
       { header: "bestSeller", key: "bestSeller", width: 12 },
-    ];
+    ]
     worksheet.getRow(1).eachCell((cell) => {
-      cell.font = { bold: true };
+      cell.font = { bold: true }
       cell.border = {
         top: { style: "thin" },
         left: { style: "thin" },
         bottom: { style: "thin" },
         right: { style: "thin" },
-      };
+      }
       cell.alignment = {
         vertical: "middle",
         horizontal: "center",
         wrapText: true,
-      };
-    });
+      }
+    })
 
     products.map((prod, i) => {
       const v2 = {
@@ -232,7 +240,7 @@ export default function Products(props) {
         PVMmax: prod.prixerPrice.to,
         hasSpecialVar: prod.hasSpecialVar,
         bestSeller: prod.bestSeller,
-      };
+      }
 
       worksheet.addRow(v2).eachCell({ includeEmpty: true }, (cell) => {
         cell.border = {
@@ -240,13 +248,13 @@ export default function Products(props) {
           left: { style: "thin" },
           bottom: { style: "thin" },
           right: { style: "thin" },
-        };
+        }
         cell.alignment = {
           vertical: "middle",
           horizontal: "left",
           wrapText: true,
-        };
-      });
+        }
+      })
 
       prod.variants.map((v) => {
         const vsub2 = {
@@ -260,7 +268,7 @@ export default function Products(props) {
           cost: v.cost,
           PVPmin: v.publicPrice.equation,
           PVMmin: v.prixerPrice.equation,
-        };
+        }
 
         worksheet.addRow(vsub2).eachCell({ includeEmpty: true }, (cell) => {
           cell.border = {
@@ -268,43 +276,43 @@ export default function Products(props) {
             left: { style: "thin" },
             bottom: { style: "thin" },
             right: { style: "thin" },
-          };
+          }
           cell.alignment = {
             vertical: "middle",
             horizontal: "left",
             wrapText: true,
-          };
-        });
-      });
-    });
+          }
+        })
+      })
+    })
 
     workbook.xlsx.writeBuffer().then((buffer) => {
       const blob = new Blob([buffer], {
         type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-      });
+      })
 
-      const link = document.createElement("a");
-      link.href = URL.createObjectURL(blob);
-      link.download = `Productos ${date}.xlsx`;
-      link.click();
-    });
-  };
+      const link = document.createElement("a")
+      link.href = URL.createObjectURL(blob)
+      link.download = `Productos ${date}.xlsx`
+      link.click()
+    })
+  }
 
   const handleFileSelect = () => {
-    inputRef.current.click();
-  };
+    inputRef.current.click()
+  }
 
   const updateManyProds = async (e) => {
-    setLoading(true);
-    const file = e.target.files[0];
-    const workbook = new excelJS.Workbook();
-    await workbook.xlsx.load(file);
-    const worksheet = workbook.getWorksheet(1);
-    let data = [];
+    setLoading(true)
+    const file = e.target.files[0]
+    const workbook = new excelJS.Workbook()
+    await workbook.xlsx.load(file)
+    const worksheet = workbook.getWorksheet(1)
+    let data = []
 
     worksheet.eachRow((row, i) => {
       if (i > 1) {
-        const rowData = row.values;
+        const rowData = row.values
         const prod = {
           _id: rowData[1],
           name: rowData[2],
@@ -319,74 +327,74 @@ export default function Products(props) {
           hasSpecialVar: rowData[13],
           bestSeller: rowData[14],
           variants: [],
-        };
+        }
 
-        const x = products.find((item) => prod._id === item._id);
+        const x = products.find((item) => prod._id === item._id)
         if (x) {
-          data.push(prod);
+          data.push(prod)
         } else {
-          prod.publicPrice = { equation: rowData[9] };
-          prod.prixerPrice = { equation: rowData[11] };
-          delete prod.hasSpecialVar;
-          delete prod.bestSeller;
-          data.at(-1)?.variants.push(prod);
+          prod.publicPrice = { equation: rowData[9] }
+          prod.prixerPrice = { equation: rowData[11] }
+          delete prod.hasSpecialVar
+          delete prod.bestSeller
+          data.at(-1)?.variants.push(prod)
         }
       }
-    });
+    })
 
-    const v2 = products;
+    const v2 = products
     v2.map((prod, i) => {
-      prod.name = data[i].name;
-      prod.active = data[i].active;
-      prod.description = data[i].description;
-      prod.category = data[i].category;
-      prod.considerations = data[i].considerations;
-      prod.productionTime = data[i].productionTime;
-      prod.cost = data[i].cost;
+      prod.name = data[i].name
+      prod.active = data[i].active
+      prod.description = data[i].description
+      prod.category = data[i].category
+      prod.considerations = data[i].considerations
+      prod.productionTime = data[i].productionTime
+      prod.cost = data[i].cost
       prod.publicPrice = {
         from: data[i].publicPrice.from,
         to: data[i].publicPrice.to,
-      };
+      }
       prod.prixerPrice = {
         from: data[i].prixerPrice.from,
         to: data[i].prixerPrice.to,
-      };
-      prod.hasSpecialVar = data[i].hasSpecialVar;
-      prod.bestSeller = data[i].bestSeller;
+      }
+      prod.hasSpecialVar = data[i].hasSpecialVar
+      prod.bestSeller = data[i].bestSeller
 
       if (prod.variants.length > 0) {
         prod.variants.map((v, j) => {
-          v.name = data[i].variants[j].name;
-          v.active = data[i].variants[j].active;
-          v.description = data[i].variants[j].description;
-          v.category = data[i].variants[j].category;
-          v.considerations = data[i].variants[j].considerations;
-          v.productionTime = data[i].variants[j].productionTime;
-          v.cost = data[i].variants[j].cost;
-          v.publicPrice.equation = data[i].variants[j].publicPrice.equation;
-          v.prixerPrice.equation = data[i].variants[j].prixerPrice.equation;
-        });
+          v.name = data[i].variants[j].name
+          v.active = data[i].variants[j].active
+          v.description = data[i].variants[j].description
+          v.category = data[i].variants[j].category
+          v.considerations = data[i].variants[j].considerations
+          v.productionTime = data[i].variants[j].productionTime
+          v.cost = data[i].variants[j].cost
+          v.publicPrice.equation = data[i].variants[j].publicPrice.equation
+          v.prixerPrice.equation = data[i].variants[j].prixerPrice.equation
+        })
       }
-    });
+    })
 
-    const base_url = process.env.REACT_APP_BACKEND_URL + `/product/updateMany`;
+    const base_url = process.env.REACT_APP_BACKEND_URL + `/product/updateMany`
     const response = await axios.put(
       base_url,
       { adminToken: localStorage.getItem("adminTokenV"), products: v2 },
       {
         withCredentials: true,
       }
-    );
+    )
     if (response.data.success === false) {
-      setLoading(false);
-      setDeleteOpen(true);
-      setDeleteMessage(response.data.message);
+      setLoading(false)
+      setDeleteOpen(true)
+      setDeleteMessage(response.data.message)
     } else {
-      setLoading(false);
-      setDeleteOpen(true);
-      setDeleteMessage(response.data.message);
+      setLoading(false)
+      setDeleteOpen(true)
+      setDeleteMessage(response.data.message)
     }
-  };
+  }
 
   return (
     <>
@@ -444,7 +452,7 @@ export default function Products(props) {
               color="default"
               aria-label="edit"
               onClick={() => {
-                handleProductAction("read");
+                handleProductAction("read")
               }}
               style={{ marginRight: "10px" }}
             >
@@ -457,11 +465,11 @@ export default function Products(props) {
                 aria-label="add"
                 onClick={() => {
                   if (page === 0) {
-                    handleProductAction("create");
+                    handleProductAction("create")
                   } else if (page === 1) {
-                    handleProductAction("createDiscount");
+                    handleProductAction("createDiscount")
                   } else {
-                    handleProductAction("createSurcharge");
+                    handleProductAction("createSurcharge")
                   }
                 }}
               >
@@ -475,7 +483,12 @@ export default function Products(props) {
           spacing={3}
           style={{ margin: isDesktop ? "10px" : "", height: "100%" }}
         >
-          <Grid item xs={12} md={12} lg={12}>
+          <Grid
+            item
+            xs={12}
+            md={12}
+            lg={12}
+          >
             <Paper className={fixedHeightPaper}>
               {activeCrud === "create" ? (
                 <CreateProduct />
@@ -484,6 +497,8 @@ export default function Products(props) {
                   handleCallback={Callback}
                   setProduct={setProduct}
                   product={product}
+                  category={category}
+                  setCategory={setCategory}
                   setDiscount={setDiscount}
                   setSurcharge={setSurcharge}
                   surcharge={surcharge}
@@ -503,6 +518,10 @@ export default function Products(props) {
                   product={product}
                   setProductEdit={setProductEdit}
                 />
+              ) : activeCrud === "createCategory" ? (
+                <CreateCategory />
+              ) : activeCrud === "updateCategory" ? (
+                <UpdateCategory category={category} />
               ) : activeCrud === "createDiscount" ? (
                 <CreateDiscount />
               ) : activeCrud === "updateDiscount" ? (
@@ -519,5 +538,5 @@ export default function Products(props) {
         </Grid>
       </div>
     </>
-  );
+  )
 }

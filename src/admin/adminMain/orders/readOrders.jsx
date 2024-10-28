@@ -189,7 +189,7 @@ export default function ReadOrders(props) {
   }, [])
 
   useEffect(() => {
-    readOrders();
+    readOrders()
   }, [filters])
 
   const findOrder = async (ID) => {
@@ -316,7 +316,7 @@ export default function ReadOrders(props) {
                 // fullWidth
                 label="ID"
                 onChange={handleID}
-                style={{ marginLeft: -15, width: "150%" }}
+                style={{ maxWidth: 160 }}
               />
             </TableCell>
             <TableCell align="center">

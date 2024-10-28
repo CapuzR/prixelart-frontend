@@ -20,6 +20,7 @@ import FormControl from "@material-ui/core/FormControl"
 import Select from "@material-ui/core/Select"
 import MenuItem from "@material-ui/core/MenuItem"
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry"
+import IconButton from "@material-ui/core/IconButton"
 
 import { useHistory } from "react-router-dom"
 import Switch from "@material-ui/core/Switch"
@@ -28,13 +29,17 @@ import world from "../images/world.svg"
 import worldBlack from "../images/world-black.svg"
 import vzla from "../images/vzla.svg"
 import { priceSelect } from "./services"
-import { useGlobalContext  } from '../context/globalContext';
+import { useGlobalContext } from "../context/GlobalContext"
 import { ProductCarousel } from "../sharedComponents/productCarousel/productCarousel"
 
 ReactGA.initialize("G-0RWP9B33D8")
 
-{/* TO DO: Llevar CSS a su propio archivo? A mi me gusta más, debatir con War.
-  Tailwind y cualquier inline desordena el código imo. Hasta qué punto?*/}
+{
+  /* TO DO: Llevar CSS a su propio archivo? A mi me gusta más, debatir con War.
+  Yeah, es necesario llevar estilos a su propio scss file pero hay que desarmar MaterialUI o chocarán estilos.
+  
+  Tailwind y cualquier inline desordena el código imo. Hasta qué punto?*/
+}
 const useStyles = makeStyles((theme) => ({
   formControl: {
     margin: theme.spacing(1),
@@ -187,7 +192,7 @@ const useStyles = makeStyles((theme) => ({
       right: "7px",
       backgroundImage: `url(${worldBlack})`,
     },
-  },  
+  },
   checked: {
     color: "#d33f49 !important",
     transform: "translateX(35px) !important",
@@ -210,47 +215,59 @@ export default function ProductGrid(props) {
 
   const [order, setOrder] = useState("")
   const history = useHistory()
-  const [currentPage, setCurrentPage] = useState(1);
-  const [productsPerPage] = useState(10);
-  const { currency } = useGlobalContext();
-  console.log("dollarValue", props.dollarValue);
+  const [currentPage, setCurrentPage] = useState(1)
+  const [productsPerPage] = useState(10)
+  const { currency } = useGlobalContext()
+  // console.log("dollarValue", props.dollarValue);
 
   const handleChange = (event) => {
     setOrder(event.target.value)
-  };
+  }
 
   useEffect(() => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + "/product/read-all-v2";
-    axios.get(base_url, {
-      params: {
-        orderType: order === "A-Z" || order === "lowerPrice" ? "asc" : order === "" ? "" : "desc",
-        sortBy: order === "lowerPrice" || order === "maxPrice" ? "priceRange" : order === "" ? "" : "name",
-        initialPoint: (currentPage - 1) * productsPerPage,
-        productsPerPage: productsPerPage
-      }
-    }).then(async (response) => {
-      let productsAttTemp1 = response.data.products;
-      let maxLength = response.data.maxLength;
-      setMaxLength(maxLength);
-      setTiles(productsAttTemp1);
-    });
-  }, [order, currentPage, productsPerPage]);
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/product/read-all-v2"
+    axios
+      .get(base_url, {
+        params: {
+          orderType:
+            order === "A-Z" || order === "lowerPrice"
+              ? "asc"
+              : order === ""
+              ? ""
+              : "desc",
+          sortBy:
+            order === "lowerPrice" || order === "maxPrice"
+              ? "priceRange"
+              : order === ""
+              ? ""
+              : "name",
+          initialPoint: (currentPage - 1) * productsPerPage,
+          productsPerPage: productsPerPage,
+        },
+      })
+      .then(async (response) => {
+        let productsAttTemp1 = response.data.products
+        let maxLength = response.data.maxLength
+        setMaxLength(maxLength)
+        setTiles(productsAttTemp1)
+      })
+  }, [order, currentPage, productsPerPage])
 
   const handleNextPage = () => {
-    setCurrentPage((prevPage) => prevPage + 1);
-  };
-  
+    setCurrentPage((prevPage) => prevPage + 1)
+  }
+
   const handlePreviousPage = () => {
     if (currentPage > 1) {
-      setCurrentPage((prevPage) => prevPage - 1);
+      setCurrentPage((prevPage) => prevPage - 1)
     }
-  };
-  
+  }
+
   const viewDetails = (product) => {
     history.push({
       pathname: "/",
       search: "?producto=" + product.id,
-      state: { product: product }
+      state: { product: product },
     })
     ReactGA.event({
       category: "Productos",
@@ -274,36 +291,38 @@ export default function ProductGrid(props) {
           marginTop: "2rem",
         }}
       >
-        <div style={{ display: "flex", justifyContent: "center", marginRight: "10px", padding: "0px" }}>
-          <Button
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            marginRight: "10px",
+            padding: "0px",
+          }}
+        >
+          <IconButton
+            size="small"
             onClick={handlePreviousPage}
             disabled={currentPage === 1}
-            size="small"
-            style={{ minWidth: "auto", padding: "2px", marginRight: "0.2rem", transform: "scale(0.75)" }}
           >
-            &lt;
-          </Button>
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <Typography
-              variant="h6"
-              style={{
-                margin: "0 0.2rem",
-                color: "#d33f49",
-                textAlign: "center",
-                transform: "scale(0.75)",
-              }}
-            >
-              {currentPage}
-            </Typography>
-          </div>
-          <Button
+            <ArrowBackIosIcon />
+          </IconButton>
+          <Typography
+            variant="h6"
+            style={{
+              margin: "auto 1rem",
+              color: "#d33f49",
+              fontSize: "1.5rem",
+            }}
+          >
+            {currentPage}
+          </Typography>
+          <IconButton
+            size="small"
             onClick={handleNextPage}
             disabled={currentPage === Math.ceil(maxLength / productsPerPage)}
-            size="small"
-            style={{ minWidth: "auto", padding: "2px", marginLeft: "0.2rem", transform: "scale(0.75)" }}
           >
-            &gt;
-          </Button>
+            <ArrowForwardIosIcon />
+          </IconButton>
         </div>
         <FormControl className={classes.formControl}>
           <InputLabel
@@ -351,7 +370,9 @@ export default function ProductGrid(props) {
         </div> */}
       </div>
       <ResponsiveMasonry columnsCountBreakPoints={{ 350: 1, 750: 2, 1800: 3 }}>
-        <Masonry style={{ columnGap: "1.8rem", width: "80%", margin: "0 auto" }}>
+        <Masonry
+          style={{ columnGap: "1.8rem", width: "80%", margin: "0 auto" }}
+        >
           {tiles && tiles.length > 0 ? (
             tiles.map((tile) => (
               <Card
@@ -367,13 +388,19 @@ export default function ProductGrid(props) {
                 }}
               >
                 {/* <CardMedia style={{ width: "110%", maxWidth: "14.68rem" }}> */}
-                  {/* TO DO: Mover carrousel de foto producto a su propio componente, para reusar
+                {/* TO DO: Mover carrousel de foto producto a su propio componente, para reusar
                   en prixProducts. */}
-                <div style={{ width: "150px", height: "150px", padding: 0, }}>
-                  <ProductCarousel product={tile} selectedArt={undefined} selectedItem={tile} type="noImages" size="138px" />
+                <div style={{ width: "150px", height: "150px", padding: 0 }}>
+                  <ProductCarousel
+                    product={tile}
+                    selectedArt={undefined}
+                    selectedItem={tile}
+                    type="noImages"
+                    size="138px"
+                  />
                 </div>
-                  
-                  {/* <Carousel
+
+                {/* <Carousel
                     autoPlay={false}
                     stopAutoPlayOnHover={true}
                     animation="slide"
@@ -478,7 +505,11 @@ export default function ProductGrid(props) {
                       variant="h5"
                       component="h2"
                     >
-                      {priceSelect(tile.priceRange, currency, props.dollarValue)}
+                      {priceSelect(
+                        tile.priceRange,
+                        currency,
+                        props.dollarValue
+                      )}
                     </Typography>
                   </Grid>
                   <Grid
@@ -528,26 +559,33 @@ export default function ProductGrid(props) {
           )}
         </Masonry>
       </ResponsiveMasonry>
-      {/* TO DO: Mover Paginación a su propio componente para poder utilizar en todo el website:
-      galeria, productos, mini galería, órdenes, etc. */}
-      <div style={{ display: "flex", justifyContent: "center", marginTop: "2rem", marginBottom: "50px" }}>
-        <Button
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          marginTop: "2rem",
+          marginBottom: "50px",
+        }}
+      >
+        <IconButton
           onClick={handlePreviousPage}
           disabled={currentPage === 1}
         >
-          &lt;
-        </Button>
-        <Typography variant="h6" style={{ margin: "0 1rem", color: "#d33f49" }}>
+          <ArrowBackIosIcon />
+        </IconButton>
+        <Typography
+          variant="h6"
+          style={{ margin: "auto 1rem", color: "#d33f49", fontSize: "1.5rem" }}
+        >
           {currentPage}
         </Typography>
-            <Button 
-            onClick={handleNextPage}
-            disabled={currentPage === Math.ceil(maxLength / productsPerPage)}
-            >
-              &gt;
-            </Button>
+        <IconButton
+          onClick={handleNextPage}
+          disabled={currentPage === Math.ceil(maxLength / productsPerPage)}
+        >
+          <ArrowForwardIosIcon />
+        </IconButton>
       </div>
     </>
-    
   )
 }

@@ -148,6 +148,7 @@ export default function CBProducts() {
           width: "17px",
           height: "17px",
           display: "flex",
+          right: "-20px",
           placeContent: "center",
         }}
         onClick={onClick}
@@ -168,6 +169,7 @@ export default function CBProducts() {
           width: "17px",
           height: "17px",
           display: "flex",
+          left: "-20px",
           placeContent: "center",
         }}
         onClick={onClick}
@@ -270,7 +272,7 @@ export default function CBProducts() {
                   justifyContent: "center",
                   position: "relative",
                   width: isTab ? 215 : 250,
-                  height: isTab ? 135 : 180,
+                  height: isTab ? 135 : 225,
                   padding: "0px 30px 0px 30px",
                   margin: isTab && "0px -15px 0px -15px",
                 }}
@@ -290,14 +292,14 @@ export default function CBProducts() {
                     >
                       <div
                         style={{
-                          width: isTab ? 154 : "95%",
+                          width: isTab ? 154 : "100%",
                           height: isTab ? 130 : 181,
                           backgroundImage: `url(${art.img})`,
                           backgroundSize: "contain",
                           backgroundRepeat: "no-repeat",
                           backgroundPosition: "center",
                           borderRadius: 10,
-                          opacity: tile?.product.name === "Tote Bag" ? 0.5 : 1
+                          opacity: tile?.product.available === false ? 0.5 : 1
                         }}
                       ></div>
                     </div>
@@ -330,15 +332,6 @@ export default function CBProducts() {
                     >
                       {tile?.product.description}
                     </Typography>
-                    {/* {tile?.product?.offer !== undefined && (
-                      <Typography
-                        className={classes.typography}
-                        style={{ fontSize: isTab ? 13 : 16, fontWeight: "bold" }}
-                        color="primary"
-                      >
-                        {tile?.product.offer}
-                      </Typography>
-                    )} */}
                   </div>
                   <Typography
                     className={classes.typography}
@@ -347,12 +340,12 @@ export default function CBProducts() {
                       fontSize: isTab ? 16 : 20,
                       fontWeight: 600,
                       color:
-                        tile?.product.name === "Tote Bag"
+                        tile.product.available === false
                           ? "#d33f49"
                           : "#00A650",
                     }}
                   >
-                    {tile?.product.name !== "Tote Bag"
+                    {tile.product.available === true
                       ? `$${tile?.product.finalPrice?.toLocaleString("de-DE", {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
@@ -360,7 +353,7 @@ export default function CBProducts() {
                       : "Agotado"}
                   </Typography>
                 </div>
-                {tile?.product.name !== "Tote Bag" && (
+                {tile.product.available !== false && (
                   <Button
                     className={classes.typography}
                     style={{

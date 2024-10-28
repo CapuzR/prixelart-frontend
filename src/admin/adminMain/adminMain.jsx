@@ -147,7 +147,7 @@ const useStyles = makeStyles((theme) => ({
     transition: theme.transitions.create("width", {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
-    })
+    }),
   },
   appBarSpacer: theme.mixins.toolbar,
   content: {
@@ -158,6 +158,8 @@ const useStyles = makeStyles((theme) => ({
   container: {
     paddingTop: theme.spacing(4),
     paddingBottom: theme.spacing(4),
+    paddingLeft: 0,
+    width: "90vw"
   },
   paper: {
     padding: theme.spacing(2),
@@ -178,7 +180,7 @@ export default function AdminMain(props) {
   const location = useLocation()
   const history = useHistory()
   const [openDollarView, setOpenDollarView] = useState(false)
-
+  
   const handleDrawerOpen = () => {
     setOpen(true)
   }
@@ -221,6 +223,7 @@ export default function AdminMain(props) {
           <AppBar
             position="fixed"
             className={clsx(classes.appBar, open && classes.appBarShift)}
+            style={{ minHeight: "74px" }}
           >
             <Toolbar className={classes.toolbar}>
               <IconButton
@@ -283,7 +286,7 @@ export default function AdminMain(props) {
           <main className={classes.content}>
             <div className={classes.appBarSpacer} />
             <Container
-              maxWidth="lg"
+              maxWidth="xl"
               className={classes.container}
             >
               {active === "user" ? (

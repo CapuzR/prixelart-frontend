@@ -121,6 +121,7 @@ const getProducts = () => {
         points: 4.7,
         item: "CBfr01",
         name: "Franela",
+        available: true,
         productionTime: "4",
       },
       quantity: 1,
@@ -159,7 +160,8 @@ const getProducts = () => {
         basePrice: 9.8,
 
         item: "CBfr02",
-        name: "Franela",
+        name: "Franela",         available: true,
+
         count: 0,
         points: 4.7,
         productionTime: "4",
@@ -192,7 +194,8 @@ const getProducts = () => {
           color: ["Negro", "Azul", "Verde"],
           talla: ["S", "M", "L", "XL"],
         },
-        name: "Franela",
+        name: "Franela",         available: true,
+
         description:
           "Si estos últimos años te dejaron muerto por dentro, al menos puedes lucir fresco y elegante por fuera con esta franela.",
         specs:
@@ -230,7 +233,8 @@ const getProducts = () => {
         attributes: {
           color: ["Negro", "Azul", "Verde"],
         },
-        name: "Taza de Peltre",
+        name: "Taza de Peltre",         available: true,
+
         description:
           "Tu café sabrá mucho mejor en esta taza de peltre al estilo Chigüire, ideal para leer las noticias cada mañana.",
         specs:
@@ -266,7 +270,8 @@ const getProducts = () => {
         thumbUrl: undefined,
         _id: "6177f8697404fa0011b10417",
         item: "CBtp02",
-        name: "Taza de Peltre",
+        name: "Taza de Peltre",        available: true,
+
         description:
           "Ahora tú también podrás tomar café en la misma taza que usa el Rey de Inglaterra para tomar té por las mañanas.",
         specs:
@@ -305,7 +310,8 @@ const getProducts = () => {
         thumbUrl: undefined,
         _id: "6177f8697404fa0011b10417",
         item: "CBtp03",
-        name: "Taza de Peltre",
+        name: "Taza de Peltre",        available: true,
+
         description:
           "Añade a tu colección de tazas increíbles este modelo de taza, antes de que Iker Casillas la agote.",
         specs:
@@ -342,7 +348,8 @@ const getProducts = () => {
         thumbUrl: undefined,
         _id: "6177f8697404fa0011b10417",
         item: "CBtp04",
-        name: "Taza de Peltre",
+        name: "Taza de Peltre",        available: true,
+
         description:
           "Esta taza es una réplica legítima de las tazas que usa el Pasante Subpagado para servirnos café cada mañana.",
         specs:
@@ -379,7 +386,8 @@ const getProducts = () => {
         thumbUrl: undefined,
         _id: "6177f8697404fa0011b10417",
         item: "CBtp05",
-        name: "Taza de Peltre",
+        name: "Taza de Peltre",        available: true,
+
         description:
           "Todo el mundo lo sabe: por cada taza de arroz, dos de agua. Y si es esta taza, mejor aún.",
         specs:
@@ -416,7 +424,8 @@ const getProducts = () => {
         thumbUrl: undefined,
         _id: "6177f8697404fa0011b10417",
         item: "CBtp06",
-        name: "Taza de Peltre",
+        name: "Taza de Peltre",        available: true,
+
         description:
           "La señora María Alejandra López asegura que esta taza es la mejor para darle a la cacerola. Descubre por qué.",
         specs:
@@ -451,6 +460,7 @@ const getProducts = () => {
         _id: "6360260eaf8bc30011a35f02",
         item: "CBbr01",
         name: "Botella Rock",
+        available: false,
         description:
           "Con estos calorones que están haciendo, no olvides tomar agua de tu flamante botella.",
         specs:
@@ -485,6 +495,7 @@ const getProducts = () => {
         _id: "6360260eaf8bc30011a35f02",
         item: "CBbr02",
         name: "Botella Rock",
+        available: false,
         description:
           "¿De excursión, al gimnasio o a tomar curda con los panas? Esta botella sirve para todo eso y más.",
         specs:
@@ -519,6 +530,7 @@ const getProducts = () => {
         _id: "6360260eaf8bc30011a35f02",
         item: "CBbr03",
         name: "Botella Rock",
+        available: false,
         description:
           "Si buscas algo ligero, cómodo y que apoye la explotación laboral a los pasantes, esta botella es ideal para ti.",
         specs:
@@ -553,9 +565,9 @@ const getProducts = () => {
         _id: "6657f83b7a000200122b54de",
         item: "CBtb01",
         name: "Tote Bag",
+        available: false,
         description:
           "Salva al planeta con este tote bag del Chigüire, ideal para llevar lo que sea. Hasta las penas y los traumas.",
-        offer: "¡Pocas unidades disponibles!",
         specs:
           "ESPECIFICACIÓN TÉCNICA\nMaterial: gabardina Toscana.\nColor: beige clara.\n\nImpresión: tinta de sublimación.\nTamaño: 38x44cm apróx.\nEmpaque: bolsa plástica.\n\nTiempo de producción estimado: 3 días.",
         finalPrice: 15,
@@ -588,7 +600,7 @@ const getProducts = () => {
         _id: "6657f83b7a000200122b54de",
         item: "CBtb02",
         name: "Tote Bag",
-        offer: "¡Pocas unidades disponibles!",
+        available: false,
         description:
           "Demuéstrale al mundo que tú llevas tus cargas con dignidad y estilo. Lúcete con tu tote bag.",
         specs:
@@ -623,7 +635,7 @@ const getProducts = () => {
         _id: "6657f83b7a000200122b54de",
         item: "CBtb03",
         name: "Tote Bag",
-        offer: "¡Pocas unidades disponibles!",
+        available: false,
         description:
           "Fun fact: el pasante usa un tote bag como este cuando lo mandamos a hacernos las compras.",
         specs:
@@ -658,7 +670,7 @@ const getProducts = () => {
         _id: "6657f83b7a000200122b54de",
         item: "CBtb04",
         name: "Tote Bag",
-        offer: "¡Pocas unidades disponibles!",
+        available: false,
         description:
           "¿Todavía usando bolsas de plástico para la compra? Compra tu tote bag y haz que Greta Thumberg sonría de nuevo.",
         specs:
@@ -693,7 +705,7 @@ const getProducts = () => {
         _id: "6657f83b7a000200122b54de",
         item: "CBtb05",
         name: "Tote Bag",
-        offer: "¡Pocas unidades disponibles!",
+        available: false,
         title: "Sobreviví",
         description:
           "Si algo nos enseñaron estos años es que se podrá estar muerto por dentro, pero siempre con estilo.",

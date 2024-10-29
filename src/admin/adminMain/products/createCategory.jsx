@@ -99,9 +99,10 @@ export default function CreateCategory() {
       const data = {
         name: name,
         active: active,
-        // appliedProducts: appliedProducts,
+        appliedProducts: appliedProducts,
       }
-      const base_url = process.env.REACT_APP_BACKEND_URL + "/product/create-category"
+      const base_url =
+        process.env.REACT_APP_BACKEND_URL + "/product/create-category"
       const response = await axios.post(base_url, data)
       if (response.data.success === false) {
         setLoading(false)
@@ -140,6 +141,34 @@ export default function CreateCategory() {
   useEffect(() => {
     getProducts()
   }, [])
+
+  const checkCategories = (product) => {
+    const isProductApplied = appliedProducts.some(
+      (item) => item._id === product._id
+    )
+    return isProductApplied
+  }
+
+  const handleProduct = (product) => {
+    if (appliedProducts.length === 0) {
+      setAppliedProducts([{ name: product.name, _id: product._id }])
+    } else {
+      const isProductApplied = appliedProducts.some(
+        (item) => item._id === product._id
+      )
+
+      if (isProductApplied) {
+        setAppliedProducts(
+          appliedProducts.filter((item) => item._id !== product._id)
+        )
+      } else {
+        setAppliedProducts([
+          ...appliedProducts,
+          { name: product.name, _id: product._id },
+        ])
+      }
+    }
+  }
 
   const convertToBase64 = (blob) => {
     return new Promise((resolve) => {
@@ -338,19 +367,11 @@ export default function CreateCategory() {
                 xs={3}
               >
                 <Checkbox
-                  checked={appliedProducts.includes(product.name)}
+                  checked={checkCategories(product)}
                   color="primary"
                   inputProps={{ "aria-label": "secondary checkbox" }}
                   onChange={() => {
-                    if (appliedProducts[0] === undefined) {
-                      setAppliedProducts([product.name])
-                    } else if (appliedProducts.includes(product.name)) {
-                      setAppliedProducts(
-                        appliedProducts.filter((item) => item !== product.name)
-                      )
-                    } else {
-                      setAppliedProducts([...appliedProducts, product.name])
-                    }
+                    handleProduct(product)
                   }}
                 />
                 {product.name}

@@ -467,6 +467,8 @@ export default function Products(props) {
                   if (page === 0) {
                     handleProductAction("create")
                   } else if (page === 1) {
+                    handleProductAction("createCategory")
+                  } else if (page === 2) {
                     handleProductAction("createDiscount")
                   } else {
                     handleProductAction("createSurcharge")

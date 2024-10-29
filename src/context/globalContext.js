@@ -5,7 +5,8 @@ const GlobalContext = createContext();
 export const GlobalProvider = ({ children }) => {
   // State for currency toggle (USD or Bs)
   const [currency, setCurrency] = useState('USD');
-  
+  const [zone, setZone] = useState('VZLA');
+
   // State for conversion rate from USD to Bs
   const [conversionRate, setConversionRate] = useState(30); // Example: 1 USD = 30 Bs
   
@@ -15,6 +16,10 @@ export const GlobalProvider = ({ children }) => {
   // Toggle currency between USD and Bs
   const toggleCurrency = () => {
     setCurrency((prevCurrency) => (prevCurrency === 'USD' ? 'Bs' : 'USD'));
+  };
+
+  const toggleZone = () => {
+    setZone((prevZone) => (prevZone === 'VZLA' ? 'INTER' : 'VZLA'));
   };
 
   // Update conversion rate (e.g., when fetching from an API)
@@ -36,6 +41,8 @@ export const GlobalProvider = ({ children }) => {
         toggleCurrency,
         updateConversionRate,
         toggleTheme,
+        zone,
+        toggleZone
       }}
     >
       {children}

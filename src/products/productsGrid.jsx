@@ -217,14 +217,13 @@ export default function ProductGrid(props) {
   const history = useHistory()
   const [currentPage, setCurrentPage] = useState(1)
   const [productsPerPage] = useState(10)
-  const { currency } = useGlobalContext()
-  // console.log("dollarValue", props.dollarValue);
+  const { currency, toggleCurrency, zone, toggleZone } = useGlobalContext()
 
   const handleChange = (event) => {
     setOrder(event.target.value)
   }
 
-  useEffect(() => {
+  const getProducts = () => {
     const base_url = process.env.REACT_APP_BACKEND_URL + "/product/read-all-v2"
     axios
       .get(base_url, {
@@ -251,7 +250,45 @@ export default function ProductGrid(props) {
         setMaxLength(maxLength)
         setTiles(productsAttTemp1)
       })
-  }, [order, currentPage, productsPerPage])
+  }
+
+  const getInter = () => {
+    const base_url =
+      process.env.REACT_APP_BACKEND_URL + "/product/read-international"
+    axios
+      .get(base_url, {
+        params: {
+          orderType:
+            order === "A-Z" || order === "lowerPrice"
+              ? "asc"
+              : order === ""
+              ? ""
+              : "desc",
+          sortBy:
+            order === "lowerPrice" || order === "maxPrice"
+              ? "priceRange"
+              : order === ""
+              ? ""
+              : "name",
+          initialPoint: (currentPage - 1) * productsPerPage,
+          productsPerPage: productsPerPage,
+        },
+      })
+      .then(async (response) => {
+        let productsAttTemp1 = response.data.products
+        let maxLength = response.data.maxLength
+        setMaxLength(maxLength)
+        setTiles(productsAttTemp1)
+      })
+  }
+
+  useEffect(() => {
+    if (zone === "VZLA") {
+      getProducts()
+    } else {
+      getInter()
+    }
+  }, [order, currentPage, productsPerPage, zone])
 
   const handleNextPage = () => {
     setCurrentPage((prevPage) => prevPage + 1)
@@ -275,10 +312,6 @@ export default function ProductGrid(props) {
       label: product.name,
     })
   }
-
-  // const changeCurrency = () => {
-  //   setCurrency(!currency)
-  // }
 
   return (
     <>
@@ -344,7 +377,7 @@ export default function ProductGrid(props) {
             <MenuItem value={"maxPrice"}>Mayor precio</MenuItem>
           </Select>
         </FormControl>
-        {/* <div
+        <div
           style={{
             display: "flex",
             flexDirection: "row",
@@ -356,25 +389,51 @@ export default function ProductGrid(props) {
             classes={{
               root: classes.base,
               switchBase: classes.switchBase,
-              thumb: currency ? classes.thumbTrue : classes.thumb,
+              thumb: currency !== "USD" ? classes.thumbTrue : classes.thumb,
               track: classes.track,
               checked: classes.checked,
             }}
             color="primary"
             value={currency}
             onChange={(e) => {
-              changeCurrency(e)
+              toggleCurrency()
             }}
             style={{ marginRight: "-5px" }}
           />
-        </div> */}
-      </div>
-      <ResponsiveMasonry columnsCountBreakPoints={{ 350: 1, 750: 2, 1800: 3 }}>
-        <Masonry
-          style={{ columnGap: "1.8rem", width: "80%", margin: "0 auto" }}
+        </div>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+            marginLeft: 10,
+          }}
         >
-          {tiles && tiles.length > 0 ? (
-            tiles.map((tile) => (
+          <Switch
+            classes={{
+              root: classes.base,
+              switchBase: classes.switchBase,
+              thumb: zone === "VZLA" ? classes.thumbTrueZ : classes.thumbZ,
+              track: classes.trackZ,
+              checked: classes.checked,
+            }}
+            color="primary"
+            value={zone}
+            onChange={(e) => {
+              toggleZone()
+            }}
+            style={{ marginRight: "-5px" }}
+          />
+        </div>
+      </div>{" "}
+      {tiles && tiles.length > 0 ? (
+        <ResponsiveMasonry
+          columnsCountBreakPoints={{ 350: 1, 750: 2, 1800: 3 }}
+        >
+          <Masonry
+            style={{ columnGap: "1.8rem", width: "80%", margin: "0 auto" }}
+          >
+            {tiles.map((tile) => (
               <Card
                 className={classes.root}
                 id={tile.name}
@@ -553,12 +612,21 @@ export default function ProductGrid(props) {
                   </Grid>
                 </CardContent>
               </Card>
-            ))
-          ) : (
-            <h1>Pronto encontrarás los productos ideales para ti.</h1>
-          )}
-        </Masonry>
-      </ResponsiveMasonry>
+            ))}
+          </Masonry>
+        </ResponsiveMasonry>
+      ) : (
+        <Typography
+          color="secondary"
+          variant="h3"
+          style={{ textAlign: "center", margin: "40px auto" }}
+          textAlign="center"
+        >
+          {zone !== "VZLA"
+            ? "Próximamente tendremos productos para distribución internacional."
+            : "Pronto encontrarás los productos ideales para ti."}
+        </Typography>
+      )}
       <div
         style={{
           display: "flex",

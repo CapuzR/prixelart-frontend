@@ -99,7 +99,7 @@ export default function UpdateCategory(props) {
       const data = {
         name: name,
         active: active,
-        // appliedProducts: appliedProducts,
+        appliedProducts: appliedProducts,
       }
       const base_url =
         process.env.REACT_APP_BACKEND_URL +
@@ -140,11 +140,36 @@ export default function UpdateCategory(props) {
     setLoading(false)
   }
 
-  const checkCategories = (data) => {
-    const id = props.category._id
-     const ver = data.some(category => category.id === id);
-     console.log(ver)
-     return ver
+  const checkCategories = (product) => {
+    const categoryId = props.category._id
+    const hasCategory =
+      product.categories?.some((category) => category._id === categoryId) ||
+      false
+    const isProductApplied = appliedProducts.some(
+      (item) => item._id === product._id
+    )
+    return hasCategory || isProductApplied
+  }
+
+  const handleProduct = (product) => {
+    if (appliedProducts.length === 0) {
+      setAppliedProducts([{ name: product.name, _id: product._id }])
+    } else {
+      const isProductApplied = appliedProducts.some(
+        (item) => item._id === product._id
+      )
+
+      if (isProductApplied) {
+        setAppliedProducts(
+          appliedProducts.filter((item) => item._id !== product._id)
+        )
+      } else {
+        setAppliedProducts([
+          ...appliedProducts,
+          { name: product.name, _id: product._id },
+        ])
+      }
+    }
   }
 
   useEffect(() => {
@@ -348,20 +373,11 @@ export default function UpdateCategory(props) {
                 xs={3}
               >
                 <Checkbox
-                  checked={checkCategories(product.categories)}
+                  checked={checkCategories(product)}
                   color="primary"
                   inputProps={{ "aria-label": "secondary checkbox" }}
                   onChange={() => {
-                    // need to complete this function and his part in BE
-                    if (appliedProducts[0] === undefined) {
-                      setAppliedProducts([product.name])
-                    } else if (appliedProducts.includes(product.name)) {
-                      setAppliedProducts(
-                        appliedProducts.filter((item) => item !== product.name)
-                      )
-                    } else {
-                      setAppliedProducts([...appliedProducts, product.name])
-                    }
+                    handleProduct(product)
                   }}
                 />
                 {product.name}

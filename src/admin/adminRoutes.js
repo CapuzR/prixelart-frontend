@@ -99,8 +99,12 @@ const AdminRoutes = ({
           "/admin/product/createSurcharge",
           "/admin/product/updateSurcharge/:surchargeId",
           "/admin/product/createCategory",
-          "/admin/product/updateCategory/:categoryId"
-        ]}      >
+          "/admin/product/updateCategory/:categoryId",
+          "/admin/product/:productId/variant/read",
+          "/admin/product/:productId/variant/create",
+          "/admin/product/:productId/variant/:variantId/update",
+        ]}
+      >
         <AdminMain permissions={permissions} />
       </Route>
 

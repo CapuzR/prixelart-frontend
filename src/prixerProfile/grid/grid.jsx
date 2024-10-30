@@ -293,7 +293,7 @@ export default function Grid(props) {
         setBackdrop(false)
       })
     }
-  }, [searchValue, categoryValue])
+  }, [searchValue, categoryValue, props.artSaved])
 
   const handleFullImage = async (e, tile) => {
     if (onAdmin) {

@@ -615,6 +615,22 @@ export default function FullscreenPhoto(props) {
     props.setIsOpenAssociateProduct(true)
   }
 
+  const getCreationDate = (art) => {
+    let date
+    if (art.createdOn !== undefined) {
+      date = new Date(art.createdOn)
+    } else {
+      const timestamp = parseInt(art._id.substring(0, 8), 16)
+      date = new Date(timestamp * 1000)
+    }
+    console.log(date)
+    return date.toLocaleDateString("es-ES", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    })
+  }
+
   return !ready ? (
     <div className={classes.loading}>
       <CircularProgress />
@@ -858,15 +874,10 @@ export default function FullscreenPhoto(props) {
                               whiteSpace: "pre-line",
                               fontSize: "1.1em",
                               marginBottom: 10,
-                              textAlign: "center"
+                              textAlign: "center",
                             }}
                           >
-                            Creado el{" "}
-                            { new Date(tile?.createdOn).toLocaleDateString("es-ES", {
-                              year: "numeric",
-                              month: "long",
-                              day: "numeric",
-                            })}
+                            {`Creado el ${getCreationDate(tile)}`}
                           </Typography>
                         </CardContent>
                         <CardActions>

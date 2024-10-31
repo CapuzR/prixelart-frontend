@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import AppBar from "./sharedComponents/appBar/appBar";
 import Routes from "./routes";
-import { GlobalProvider, useGlobalContext  } from './context/GlobalContext';
+import { GlobalProvider, useGlobalContext  } from './context/globalContext';
 import './globalTheme.css';
 
 function ThemedApp() {

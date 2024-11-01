@@ -357,6 +357,7 @@ function Routes() {
                 setPermissions={setPermissions}
                 setSearchResult={setSearchResult}
                 searchResult={searchResult}
+                addItemToBuyState={addItemToBuyState}
             />
         </Route>
         

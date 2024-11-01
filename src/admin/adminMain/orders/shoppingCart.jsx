@@ -302,28 +302,29 @@ export default function ShoppingCart(props) {
   useEffect(() => {
     let pricesList = []
     let artists = selectedArtist
-
-    props.buyState.map((item) => {
-      if (item.art) {
-        artists.push(item.art.prixerUsername)
-      } else {
-        artists.push(undefined)
-      }
-      if (item.art && item.product) {
-        pricesList.push(
-          UnitPrice(
-            item.product,
-            item.art,
-            false,
-            1,
-            props.discountList,
-            props?.selectedPrixer?.username
+    if (props.buyState && props.buyState.length > 0) {
+      props.buyState.map((item) => {
+        if (item.art) {
+          artists.push(item.art.prixerUsername)
+        } else {
+          artists.push(undefined)
+        }
+        if (item.art && item.product) {
+          pricesList.push(
+            UnitPrice(
+              item.product,
+              item.art,
+              false,
+              1,
+              props.discountList,
+              props?.selectedPrixer?.username
+            )
           )
-        )
-      }
-    })
-    setPrices(pricesList)
-    setSelectedArtist(artists)
+        }
+      })
+      setPrices(pricesList)
+      setSelectedArtist(artists)
+    }
   }, [])
 
   const changeArtistFilter = (artist, i) => {
@@ -708,7 +709,8 @@ export default function ShoppingCart(props) {
       container
       style={{ display: "flex", justifyContent: "center" }}
     >
-      {props.buyState.length > 0 &&
+      {props.buyState &&
+        props.buyState.length > 0 &&
         props.buyState.map((buy, index) => {
           return (
             <Grid

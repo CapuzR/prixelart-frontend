@@ -24,6 +24,7 @@ const AdminRoutes = ({
   setPermissions,
   setSearchResult,
   searchResult,
+  addItemToBuyState,
 }) => {
   return (
     <Switch>
@@ -60,6 +61,7 @@ const AdminRoutes = ({
           permissions={permissions}
           setSearchResult={setSearchResult}
           searchResult={searchResult}
+          addItemToBuyState={addItemToBuyState}
         />
       </Route>
 
@@ -105,7 +107,26 @@ const AdminRoutes = ({
           "/admin/product/:productId/variant/:variantId/update",
         ]}
       >
-        <AdminMain permissions={permissions} />
+        <AdminMain
+          permissions={permissions}
+          buyState={buyState}
+          setBuyState={setBuyState}
+          deleteItemInBuyState={deleteItemInBuyState}
+          deleteProductInItem={deleteProductInItem}
+          setSelectedArtToAssociate={setSelectedArtToAssociate}
+          setSelectedProductToAssociate={setSelectedProductToAssociate}
+          setValues={setValuesConsumerForm}
+          values={valuesConsumerForm}
+          AssociateProduct={AssociateProduct}
+          changeQuantity={changeQuantity}
+          setOpen={setOpen}
+          setMessage={setMessage}
+          sellers={sellers}
+          permissions={permissions}
+          setSearchResult={setSearchResult}
+          searchResult={searchResult}
+          addItemToBuyState={addItemToBuyState}
+        />
       </Route>
 
       <Route path="/admin/product/create">

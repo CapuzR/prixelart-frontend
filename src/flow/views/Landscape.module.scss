@@ -14,9 +14,15 @@
 
   .buttons-container {
     position: relative;
-    width: auto;
-    background-color: transparent;
+    width: 100%;
+    display: flex;
     justify-content: flex-end;
+    align-content: center;
+    gap: $spacing-md;
+
+    @include respond-below($breakpoint-md) {
+      gap: $spacing-sm;
+    }
   }
 }
 

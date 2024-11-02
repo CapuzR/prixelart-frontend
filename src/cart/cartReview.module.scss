@@ -1,0 +1,19 @@
+.cart-container {
+  display: flex;
+  flex-direction: column;
+  // flex: 1;
+  justify-content: space-between;
+  width: 100%;
+  height: auto;
+}
+
+.cart-title-container {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;    
+}
+
+.cart-grid-container {
+  height: 100%;
+  overflow-y: auto;
+}

@@ -3,6 +3,10 @@
 .image-wrapper {
   position: relative;
   overflow: hidden;
+  height: auto;
+  display:flex;
+  justify-content: center;
+  align-items: center;
 
   &.rounded {
     border-radius: $border-radius-lg;
@@ -43,9 +47,9 @@
 }
 
 .image {
-  width: 100%;
-  height: 100%;
   border-radius: inherit;
+  height: auto;
+  display: block;
 
   &.rounded {
     border-radius: $border-radius-lg;

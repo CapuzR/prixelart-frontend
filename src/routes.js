@@ -580,7 +580,7 @@ function Routes() {
             const item = params.get("itemId")
             const prod = params.get("producto")
             const art = params.get("arte")
-            console.log("Routes -> params: ", item, prod, art)
+            const openSection = params.get("openSection")
             const attributes = {};
             params.forEach((value, key) => {
               if (key !== "producto" && key !== "arte") {
@@ -609,6 +609,7 @@ function Routes() {
                   setBuyState={setBuyState}
                   art={art}
                   attributes={attributes}
+                  openSection={openSection}
                 />
               )
             } 

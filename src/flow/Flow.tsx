@@ -22,12 +22,11 @@ import { useCart } from "context/CartContext";
 ReactGA.initialize("G-0RWP9B33D8");
 
 interface Props {
-  buyState: CartItem[];
-  setBuyState: (cart: CartItem[]) => void;
   setFullArt: (art: any) => void;
   fullArt: any;
   setSearchResult: (result: any) => void;
   searchResult: any;
+  openSection: string;
 }
 
 const Flow: React.FC<Props> = (props) => {
@@ -35,29 +34,30 @@ const Flow: React.FC<Props> = (props) => {
   const { currency } = useCurrency();
   const { conversionRate } = useConversionRate();
   const { showSnackBar } = useSnackBar();
+  const { cart } = useCart();
   
   const history = useHistory();
+  const itemId = new URLSearchParams(window.location.search).get("itemId");
   const productId = new URLSearchParams(window.location.search).get("producto");
   const artId = new URLSearchParams(window.location.search).get("arte");
-  const selectedAttributes = getUrlParams(["producto", "arte", "step", "itemId"]);
+  const selectedAttributes = getUrlParams(["producto", "arte", "step", "itemId", "openSection"]);
 
   const [product, setProduct] = useState<Product | null>(null);
-  const [selectedItem, setSelectedItem] = useState<any>(undefined);
   const [selectedArt, setSelectedArt] = useState<any>(undefined);
   const [isPortrait, setIsPortrait] = useState(window.innerWidth < 768);
   const [expanded, setExpanded] = useState<string | false>(false);
   const searchParams = new URLSearchParams(window.location.search);
+  const isUpdate = cart.some((i)=> i.id === itemId);
   
-  const { addItemToCart, deleteElementInItem, updateItemInCart } = useCart();
+  const { addItemToCart, updateItemInCart } = useCart();
 
-  const handleUpdateItem = (product?: Product, art?: PickedArt, quantity?: number) => {
-    addItemToCart({ product, art, quantity });
-    showSnackBar("Item updated in the cart");
-  };
-
-  const handleDeleteElement = (type: "product" | "art") => {
-    // deleteElementInItem(selectedItem?.id, type);
-    // showSnackBar(`${type === 'product' ? 'Product' : 'Art'} removed from the cart`);
+  const handleCart = (product?: Product, art?: PickedArt, quantity?: number) => {
+    isUpdate ? 
+      updateItemInCart({ id : itemId, product, art, quantity }) : 
+      addItemToCart({ product, art, quantity });
+    
+    showSnackBar("Item added in the cart");
+    history.push("/shopping");
   };
 
   useEffect(() => {
@@ -78,10 +78,26 @@ const Flow: React.FC<Props> = (props) => {
       ...prevProduct,
       selection: newSelection,
     }));
+    
+    const selectionAsObject: { [key: string]: string } = Array.isArray(product?.selection)
+        ? product?.selection.reduce((acc, item, index) => {
+            acc[`selection-${index}`] = String(item);
+            return acc;
+          }, {} as { [key: string]: string })
+        : (product?.selection || {});
+
+    const queryString = queryCreator(
+      undefined,
+      product?.id,
+      selectedArt?.artId,
+      { ...selectionAsObject, [e.target.name]: String(e.target.value) },
+      'product',
+      '3'
+    );
+    history.push({ pathname: location.pathname, search: queryString });
   };
 
   const getFilteredOptions = (att: { name: string; value: string[] }) => {
-    
     if (Object.values(product?.selection).every((s) => s.value === "") ||
     !Object.keys(product?.selection).some((key) => key !== att.name && product?.selection[key] !== "")) {
       return att.value || [];
@@ -102,23 +118,21 @@ const Flow: React.FC<Props> = (props) => {
     })
     .flat();
   };
-
+  //TO DO: Eliminar
   const handleChange = (panel: string) => (event: React.ChangeEvent<{}>, isExpanded: boolean) => {
     setExpanded(isExpanded ? panel : false);
   };
-
+  
+  //TO DO: Todo debería ir dentro de un item (?)
   useEffect(() => {
-    console.log("buyState", props.buyState);
     const fetchProduct = async () => {
       setLoading(true);
       try {
         const productData = await fetchProductDetails(productId);
-        const { product, selectedItem } = prepareProductData(productData);
-        console.log("Flow -> selectedAttributes", selectedAttributes);
+        const product= prepareProductData(productData);
         selectedAttributes ? 
           setProduct({...product, id: productId, selection: selectedAttributes.reduce((acc, param) => ({ ...acc, [param.name]: param.value }), {})}) :
           setProduct({...product, id: productId});
-        setSelectedItem({...selectedItem, price: product?.price});
       } catch (error) {
         console.error("Error fetching product attributes:", error);
       } finally {
@@ -145,28 +159,15 @@ const Flow: React.FC<Props> = (props) => {
     const fetchAndSetPrice = async () => {
       if(product?.selection && Object.keys(product?.selection).every((s) => product?.selection[s] !== '')) {
         const selectedVariant = getSelectedVariantPrice(product?.selection, product?.variants);
-        
+        console.log("selectedVariant", selectedVariant);
         if (selectedVariant) {
-          const updatedPrice = await fetchVariantPrice(selectedVariant._id);
+          const updatedPrice = await fetchVariantPrice(selectedVariant._id, selectedArt?.artId);
+          console.log("updatedPrice", updatedPrice);
           const parsedPrice = parsePrice(updatedPrice);
 
           setProduct((prevProduct) => ({
             ...prevProduct,
             price: parsedPrice
-          }));
-          setSelectedItem((prevSelectedProduct) => ({
-            ...prevSelectedProduct,
-            price: parsedPrice,
-            //Esto está acá solo por el carrito, hay que volárselo..
-            //Considerar qué pasa si el user metió todo en el carrito y de repente inicia sesión como Prixer.
-            publicEquation: {
-              from: parsedPrice,
-              to: parsedPrice
-            },
-            publicPrice: {
-              from: parsedPrice,
-              to: parsedPrice
-            }
           }));
         }
       }
@@ -189,6 +190,7 @@ const Flow: React.FC<Props> = (props) => {
       product?.id,
       selectedArt?.artId,
       selectionAsObject,
+      'art',
       '3'
     );
   
@@ -198,51 +200,46 @@ const Flow: React.FC<Props> = (props) => {
   
   return (
     <>
-      {
+      {/* {
       isPortrait ? (
         <Portrait
           product={product}
           selectedArt={selectedArt}
           setSelectedArt={setSelectedArt}
+          handleAddItem={handleAddItem}
           handleUpdateItem={handleUpdateItem}
-          // addItemToBuyState={addItemToBuyState}
           getFilteredOptions={getFilteredOptions}
           handleChange={handleChange}
           handleSelection={handleSelection}
           addArt={addArt}
-          selectedItem={selectedItem}
           expanded={expanded}
           generalDescription={generalDescription}
           technicalSpecification={technicalSpecification}
-          fullArt={props.fullArt}
-          setFullArt={props.setFullArt}
           searchResult={props.searchResult}
           setSearchResult={props.setSearchResult}
           searchParams={searchParams}
+          openSection={props.openSection}
         />
-      ) : (
+      ) : ( */}
         <Landscape
           product={product}
           selectedArt={selectedArt}
           setSelectedArt={setSelectedArt}
-          handleUpdateItem={handleUpdateItem}
-          handleDeleteElement={handleDeleteElement}
-          // addItemToBuyState={addItemToBuyState}
+          isUpdate={isUpdate}
+          handleCart={handleCart}
           getFilteredOptions={getFilteredOptions}
           handleChange={handleChange}
           handleSelection={handleSelection}
           addArt={addArt}
-          selectedItem={selectedItem}
           expanded={expanded}
           generalDescription={generalDescription}
           technicalSpecification={technicalSpecification}
-          fullArt={props.fullArt}
-          setFullArt={props.setFullArt}
           searchResult={props.searchResult}
           setSearchResult={props.setSearchResult}
           searchParams={searchParams}
+          openSection={props.openSection}
         />
-      )}
+      {/* )} */}
     </>
   );
 };

@@ -22,13 +22,13 @@ import { getFilteredOptions } from 'products/services';
 import { useConversionRate, useCurrency } from 'context/GlobalContext';
 import { Slider } from 'components/Slider';
 import { Image } from 'components/Image';
-import { Art } from 'art/interfaces';
 
 interface PortraitProps {
   product: Product;
   expanded: string | false;
   description: { generalDescription: string; technicalSpecification: string };
-  // addItemToBuyState: (input: { product?: Product; art?: Art; quantity?: number }) => void;
+  handleArtSelection: () => void;
+  handleSaveProduct: () => void;
   handleSelection: (e: React.ChangeEvent<{ name: string; value: number }>) => void;
   handleChange: (panel: string) => (event: React.ChangeEvent<{}>, isExpanded: boolean) => void;
 }
@@ -109,14 +109,14 @@ const Portrait: React.FC<PortraitProps> = (props) => {
             <Button
               type="onlyText"
               color="primary"
-              // onClick={() => props.addItemToBuyState({ product: props.product })}
+              onClick={props.handleSaveProduct}
             >
               Guardar
             </Button>
             <Button
               color="primary"
               disabled={props.product?.selection && Object.keys(props.product.selection).length === 0 && Object.keys(props.product.selection).every((item: any) => item === "")}
-              // onClick={() => props.addItemToBuyState({ product: props.product })}
+              onClick={props.handleArtSelection}
             >
               Seleccionar Arte
             </Button>

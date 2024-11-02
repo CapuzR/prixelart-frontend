@@ -11,10 +11,14 @@ import Typography from "components/Typography";
 
 export interface ItemCardProps {
   item: CartItem;
+  direction?: 'row' | 'column';
+  hasActionBar?: boolean;
 }
 
 export default function ItemCard({
-  item
+  item,
+  direction = 'row',
+  hasActionBar=true
 }: ItemCardProps) {
   const { deleteItemInCart, addItemToCart, updateItemInCart } = useCart();
   const [quantity, setQuantity] = useState(item.quantity);
@@ -47,44 +51,45 @@ export default function ItemCard({
 
   return (
     <div className={`${styles['card-root']}`} id={item.id}>
-    <div className={styles['card-content']}>
+      <div className={`${styles['card-content']} ${styles[direction]}`}>
+        <div className={styles['item-playground']}>
+          <ItemPlayground item={item} />
+        </div>
 
-      <div className={styles['item-playground']}>
-        <ItemPlayground item={item} />
-      </div>
+        <div className={styles['item-content']}>
+          <ItemContent item={item} direction={direction == 'row' ? 'column' : 'row'} />
+          <div className={styles['pricing-info']}>
+            <div className={styles['price-group']}>
+              <small>Unidad</small>
+              <p>{getUnitPrice()}</p>
+            </div>
 
-      <div className={styles['item-content']}>
-        <ItemContent item={item} /><div className={styles['pricing-info']}>
-          <div className={styles['price-group']}>
-            <small>Unidad</small>
-            <p>{getUnitPrice()}</p>
-          </div>
+            <div className={styles['price-group']}>
+              <small>Cantidad</small>
+              <input 
+                type="number"
+                value={item.quantity}
+                onChange={handleQuantityChange}
+                className={styles['quantity-input']}
+                min="1"
+              />
+            </div>
 
-          <div className={styles['price-group']}>
-            <small>Cantidad</small>
-            <input 
-              type="number"
-              value={item.quantity}
-              onChange={handleQuantityChange}
-              className={styles['quantity-input']}
-              min="1"
-            />
-          </div>
-
-          <div className={styles['price-group']}>
-            <small>Subtotal</small>
-            <p>{getFinalPrice()}</p>
+            <div className={styles['price-group']}>
+              <small>Subtotal</small>
+              <p>{getFinalPrice()}</p>
+            </div>
           </div>
         </div>
       </div>
-    </div>
     
-    <ActionBar
-      onUpperAction={handleDelete}
-      onLowerAction={handleCopy}
-      upperIcon={<DeleteIcon className={styles['icon']} />}
-      lowerIcon={<FileCopyIcon className={styles['icon']} />}
-    />
+      {hasActionBar &&
+      <ActionBar
+        onUpperAction={handleDelete}
+        onLowerAction={handleCopy}
+        upperIcon={<DeleteIcon className={styles['icon']} />}
+        lowerIcon={<FileCopyIcon className={styles['icon']} />}
+      />}
 
     </div>
   );

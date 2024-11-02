@@ -15,6 +15,7 @@ import Portrait from "./views/Portrait";
 import Landscape from "./views/Landscape";
 
 import { CartItem, Product } from '../interfaces';
+import { queryCreator } from "flow/utils";
 
 ReactGA.initialize("G-0RWP9B33D8");
 
@@ -24,9 +25,11 @@ interface Props {
 }
 
 const Details: React.FC<Props> = (props) => {
+  const history = useHistory();
   const { loading, setLoading } = useLoading();
   const { currency } = useCurrency();
   const { conversionRate } = useConversionRate();
+  const { addItemToCart } = useCart();
   
   const productId = new URLSearchParams(window.location.search).get("producto");
 
@@ -45,7 +48,7 @@ const Details: React.FC<Props> = (props) => {
     
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, []);  
+  }, []);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -96,6 +99,33 @@ const Details: React.FC<Props> = (props) => {
       },
     }));
   };
+  
+  function handleArtSelection(): void {
+    const selectionAsObject: { [key: string]: string } = Array.isArray(product?.selection)
+        ? product?.selection.reduce((acc, item, index) => {
+            acc[`selection-${index}`] = String(item);
+            return acc;
+          }, {} as { [key: string]: string })
+        : (product?.selection || {});
+
+    const queryString = queryCreator(
+      undefined,
+      product?.id,
+      undefined,
+      selectionAsObject,
+      'art',
+      '1'
+    );
+
+    addItemToCart({ product, art: undefined, quantity: 1 });
+
+    history.push({ pathname: '/flow', search: queryString });
+  };
+
+  const handleSaveProduct = async () => {
+    addItemToCart({ product, art: undefined, quantity: 1 });
+  };
+
 
   const handleChange = (panel: string) => (event: React.ChangeEvent<{}>, isExpanded: boolean) => {
     setExpanded(isExpanded ? panel : false);
@@ -107,20 +137,22 @@ const Details: React.FC<Props> = (props) => {
           isPortrait ? (
             <Portrait
               product={product}
-              // addItemToBuyState={addItemToCart}
               handleChange={handleChange}
               handleSelection={handleSelection}
               expanded={expanded}
               description={description}
+              handleArtSelection={handleArtSelection}
+              handleSaveProduct={handleSaveProduct}
             />
           ) : (
             <Landscape
               product={product}
-              // addItemToBuyState={addItemToCart}
               handleChange={handleChange}
               handleSelection={handleSelection}
               expanded={expanded}
               description={description}
+              handleArtSelection={handleArtSelection}
+              handleSaveProduct={handleSaveProduct}
             />
           )
     }

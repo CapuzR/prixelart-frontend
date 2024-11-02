@@ -5,9 +5,10 @@ import Typography from "components/Typography";
 
 export interface ItemContentProps {
   item: CartItem;
+  direction?: 'row' | 'column';
 }
 
-export default function ItemContent({ item }: ItemContentProps) {
+export default function ItemContent({ item, direction='row' }: ItemContentProps) {
 
   const getSelectedAttributes = () => {
     return Object.keys(item?.product?.selection || {})
@@ -20,7 +21,7 @@ export default function ItemContent({ item }: ItemContentProps) {
   };
 
   return (
-    <div className={styles['content-section']}>
+    <div className={`${styles['content-section']} ${styles[direction]}`}>
       
       <div className={styles['product-section']}>
         <Typography level="h5" leading="normal" color="inherit">
@@ -29,7 +30,7 @@ export default function ItemContent({ item }: ItemContentProps) {
         {getSelectedAttributes()}
       </div>
 
-      <div className={styles['art-section']}>
+      <div className={`${styles['art-section']}`}>
         <Typography level="h5" leading="normal" color="inherit">
           <strong>Arte:</strong> {item.art?.title || 'Elígelo'}
         </Typography>

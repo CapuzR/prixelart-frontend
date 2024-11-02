@@ -4,10 +4,6 @@ import MDEditor from "@uiw/react-md-editor";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import {
-  Typography,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
   MenuItem,
   FormControl,
   Select,
@@ -25,17 +21,19 @@ import styles from '../Flow.module.scss';
 
 import { Product, Art } from '../interfaces';
 import { useConversionRate, useCurrency } from "context/GlobalContext";
-import { ProductCarousel } from "components/ProductCarousel";
+import ItemCard from "components/ItemCard";
+import ProductsCatalog from "products/Catalog";
+import { useCart } from "context/CartContext";
 
+
+//TO DO: Voy por aquí. 
 
 interface LandscapeProps {
   product: Product | null;
   selectedArt: any;
-  selectedItem: any;
   setSelectedArt: (art: any) => void;
-  handleDeleteElement: (type: "product" | "art") => void;
-  handleUpdateItem: (product?: Product, art?: Art, quantity?: number) => void;
-  // addItemToBuyState: () => void;
+  isUpdate: boolean;
+  handleCart: (product: Product | undefined, art: any, quantity?: number) => void;
   getFilteredOptions: (att: { name: string; value: string[] }) => string[];
   handleSelection: (e: React.ChangeEvent<{ name: string; value: number }>) => void;
   handleChange: (panel: string) => (event: React.ChangeEvent<{}>, isExpanded: boolean) => void;
@@ -43,22 +41,17 @@ interface LandscapeProps {
   expanded: string | false;
   generalDescription: string;
   technicalSpecification: string;
-  fullArt: any;
-  setFullArt: (art: any) => void;
   searchResult: any;
   setSearchResult: (result: any) => void;
   searchParams: URLSearchParams;
+  openSection: string;
 }
 
 const Landscape: React.FC<LandscapeProps> = (props) => {
-  const { currency } = useCurrency();
-  const { conversionRate } = useConversionRate();
+  const { cart } = useCart();
 
   const handleCart = () => {
-    console.log("props.selectedArt", props.selectedArt);
-    console.log("props", props);
-    props.handleUpdateItem(props.product, props.selectedArt, 1);
-    console.log("aja");
+      props.handleCart(props.product, props.selectedArt, 1)
   }
 
   return (
@@ -69,16 +62,16 @@ const Landscape: React.FC<LandscapeProps> = (props) => {
           <div className={styles['product-title']}>
             {props.product?.name}
           </div>
-          <div
+          {/* <div
             className={styles['price-selected']}
           >
             {
                 props.product?.price ?
                   formatPriceForUI(props.product?.price, currency, conversionRate) :
-                  formatPriceForUI(props.product?.priceRange.from, currency, conversionRate, props.product?.priceRange.to)
+                  formatPriceForUI(props.product?.priceRange?.from, currency, conversionRate, props.product?.priceRange?.to)
 
             }
-          </div>
+          </div> */}
         </div>
         <div className={styles['buttons-container']}>
           <Button
@@ -95,7 +88,7 @@ const Landscape: React.FC<LandscapeProps> = (props) => {
             disabled={props.selectedArt === undefined}
             onClick={handleCart}
           >
-            Agregar al carrito
+            { props.isUpdate ? 'Actualizar' : 'Agregar al carrito'}
           </Button>
         </div>
       </div>
@@ -103,62 +96,7 @@ const Landscape: React.FC<LandscapeProps> = (props) => {
       <div className={styles['main-content']}>
         {/* Left Side - Carusel e Info */}
         <div className={styles['left-side']}>
-          {/* Carousel Container */}
-          <div className={styles['carousel-wrapper']}>
-            <ProductCarousel product={props.product} selectedArt={props.selectedArt} selectedItem={props.selectedItem} type="withImages" size="100%" />
-          </div>
-          <div className={styles['info-accordion-wrapper']}>
-            {/* First Accordion - General Description */}
-            <Accordion expanded={props.expanded === 'panel1'} onChange={props.handleChange('panel1')}>
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                aria-controls="panel1a-content"
-                id="panel1a-header"
-              >
-              <Typography className={styles['accordion-title']}> Descripción </Typography>
-              </AccordionSummary>
-              <AccordionDetails>
-                <MDEditor.Markdown
-                  source={props.generalDescription || "No description available."}
-                  className={styles['markdown-content']}
-                />
-              </AccordionDetails>
-            </Accordion>
-
-            {/* Second Accordion - Technical Specification */}
-            <Accordion expanded={props.expanded === 'panel2'} onChange={props.handleChange('panel2')}>
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                aria-controls="panel2a-content"
-                id="panel2a-header"
-              >
-              <Typography className={styles['accordion-title']}> Especificación Técnica </Typography>
-              </AccordionSummary>
-              <AccordionDetails className={styles['accordion-details']}>
-                <MDEditor.Markdown
-                  source={props.technicalSpecification || "No technical specifications available."}
-                  className={styles['markdown-content']}
-                />
-              </AccordionDetails>
-            </Accordion>
-
-            {/* Third Accordion - Observations */}
-            <Accordion expanded={props.expanded === 'panel3'} onChange={props.handleChange('panel3')}>
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                aria-controls="panel3a-content"
-                id="panel3a-header"
-              >
-              <Typography className={styles['accordion-title']}> Observaciones </Typography>
-              </AccordionSummary>
-              <AccordionDetails>
-                <MDEditor.Markdown
-                  source={props.product?.observations || "No observations available."}
-                  className={styles['markdown-content']}
-                />
-              </AccordionDetails>
-            </Accordion>
-          </div>
+            <ItemCard item={{ id: undefined, product: props.product, art: props.selectedArt, quantity: undefined }} direction="column" hasActionBar={false}/>
         </div>
 
         {/* Right Side - Gallery */}
@@ -171,8 +109,9 @@ const Landscape: React.FC<LandscapeProps> = (props) => {
               }`}
             >
               {
-                props.product?.attributes?.map((att, iAtt, attributesArr) =>
+                props.product?.attributes?.map((att, iAtt) =>
                   <div key={iAtt} style={{ width: "45%" }}>
+                    {console.log("att", att)}
                     <FormControl
                       variant="outlined"
                       style={{ width: "100%" }}
@@ -203,16 +142,21 @@ const Landscape: React.FC<LandscapeProps> = (props) => {
             </div>
           </div>
           <div className={styles['right-side-bottom']}>
-            <h2>Elige el arte:</h2>
+            <h2>{`Elige el ${props.openSection === 'art' ? "arte" : "producto"}:`}</h2>
             <div className={styles['art-selection-container']}>
               <div className={styles['art-grid-wrapper']}>
-                <Grid
-                  setSelectedArt={props.addArt}
-                  setFullArt={props.setFullArt}
-                  fullArt={props.fullArt}
-                  setSearchResult={props.setSearchResult}
-                  searchResult={props.searchResult}
-                />
+                {
+                  props.openSection === 'art' ?
+                  (
+                    <Grid
+                      setSelectedArt={props.addArt}
+                      setSearchResult={props.setSearchResult}
+                      searchResult={props.searchResult}
+                    />
+                  ) : (
+                    <ProductsCatalog onlyGrid={true}/>
+                  )
+                }
               </div>
             </div>
           </div>

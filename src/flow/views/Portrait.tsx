@@ -31,10 +31,8 @@ import { ProductCarousel } from 'components/ProductCarousel';
 interface PortraitProps {
   product: Product | null;
   selectedArt: any;
-  selectedItem: any;
   setSelectedArt: (art: any) => void;
   handleUpdateItem: (product?: Product, art?: Art, quantity?: number) => void;
-//   addItemToBuyState: () => void;
   getFilteredOptions: (att: { name: string; value: string[] }) => string[];
   handleSelection: (e: React.ChangeEvent<{ name: string; value: number }>) => void;
   handleChange: (panel: string) => (event: React.ChangeEvent<{}>, isExpanded: boolean) => void;
@@ -42,11 +40,10 @@ interface PortraitProps {
   expanded: string | false;
   generalDescription: string;
   technicalSpecification: string;
-  fullArt: any;
-  setFullArt: (art: any) => void;
   searchResult: any;
   setSearchResult: (result: any) => void;
   searchParams: URLSearchParams;
+  openSection: string;
 }
 
 const Portrait: React.FC<PortraitProps> = (props) => {
@@ -68,7 +65,7 @@ const Portrait: React.FC<PortraitProps> = (props) => {
     } else if (props.selectedArt) {
       setStep(3);
     }
-  }, [props.selectedItem, props.selectedArt]);
+  }, [props.product.selection, props.selectedArt]);
 
   const handleStepClick = (stepIndex: number) => {
     console.log(`Step ${stepIndex + 1} clicked`);
@@ -90,6 +87,7 @@ const Portrait: React.FC<PortraitProps> = (props) => {
         props.product?.id,
         props.selectedArt?.artId,
         updateAttributes(props.product?.selection, e.target.name, String(e.target.value)),
+        'product',
         '2'
     );
     history.push({ pathname: location.pathname, search: queryString });
@@ -125,7 +123,7 @@ const Portrait: React.FC<PortraitProps> = (props) => {
                     <>
                         
                         <div className={styles['carousel-wrapper']}>
-                            <ProductCarousel product={props.product} selectedArt={props.selectedArt} selectedItem={props.selectedItem} type="withImages" size="100%" />
+                            <ProductCarousel product={props.product} selectedArt={props.selectedArt} type="withImages" size="100%" />
                         </div>
 
                         <div className={styles['select']}>
@@ -232,8 +230,6 @@ const Portrait: React.FC<PortraitProps> = (props) => {
                                 <div className={styles['art-grid-wrapper']}>
                                 <Grid
                                     setSelectedArt={props.addArt}
-                                    setFullArt={props.setFullArt}
-                                    fullArt={props.fullArt}
                                     setSearchResult={props.setSearchResult}
                                     searchResult={props.searchResult}
                                 />

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react"
 import axios from "axios"
 import Button from "@material-ui/core/Button"
 import { makeStyles, useTheme } from "@material-ui/core/styles"
-import Grid from "@material-ui/core/Grid"
+import Grid from "components/Grid"
 import Paper from "@material-ui/core/Paper"
 import Container from "@material-ui/core/Container"
 import CssBaseline from "@material-ui/core/CssBaseline"
@@ -21,6 +21,7 @@ import validations from "./validations"
 import Switch from "@material-ui/core/Switch"
 import { Alert } from "@material-ui/lab"
 import useMediaQuery from "@material-ui/core/useMediaQuery"
+import styles from './cart.module.scss';
 
 import { useCart } from "context/CartContext"
 import {
@@ -512,9 +513,44 @@ export default function ShoppingPage(props) {
       >
         <CircularProgress />
       </Backdrop>
-      {/* <AppBar prixerUsername={prixerUsername} /> */}
+      
 
-      <Container
+      <div className={styles['main-container']}>
+        <CssBaseline />
+
+        {/* Alert at the top, full width */}
+        <div className={styles['alert-container']}>
+          <Alert severity="info">
+            <strong>Importante:</strong> tus datos son 100% confidenciales y no serán compartidos con terceros
+          </Alert>
+        </div>
+
+        
+        <div className={styles['switch-container']}>
+          <Switch
+            classes={{
+              root: classes.base,
+              switchBase: classes.switchBase,
+              thumb: currency ? classes.thumbTrue : classes.thumb,
+              track: classes.track,
+              checked: classes.checked,
+            }}
+            color="primary"
+            value={currency}
+            onChange={changeCurrency}
+          />
+        </div>
+
+        {/* Main Content Row */}
+        <div className={styles['content-row']}>
+          <div className={styles['cart-review-container']}>
+            <CartReview />
+          </div>
+          <div className={styles['empty-space']} />
+        </div>
+      </div>
+
+      {/* <Container
         component="main"
         maxWidth="s"
         className={classes.paper}
@@ -583,9 +619,9 @@ export default function ShoppingPage(props) {
               style={{ marginTop: isMobile ? "-190px" : "-150px" }}
             >
               <CartReview />
-            </Grid>
+            </Grid> */}
 
-            <Grid
+            {/* <Grid
               item
               xs={12}
               sm={12}
@@ -698,9 +734,9 @@ export default function ShoppingPage(props) {
                   </Button>
                 </div>
               </Paper>
-            </Grid>
-          </Grid>
-        ) : (
+            </Grid> */}
+          {/* </Grid> */}
+        {/* ) : (
           <div
             style={{ marginTop: 100, display: "flex", flexDirection: "column" }}
           >
@@ -733,8 +769,10 @@ export default function ShoppingPage(props) {
               </Button>
             </div>
           </div>
-        )}
-      </Container>
+        )
+        } */}
+        {/* </div> */}
+      {/* </Container> */}
     </>
   )
 }

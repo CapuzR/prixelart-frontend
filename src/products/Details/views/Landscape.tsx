@@ -34,7 +34,8 @@ interface LandscapeProps {
   product: Product;
   expanded: string | false;
   description: { generalDescription: string; technicalSpecification: string };
-  // addItemToBuyState: (input: { product?: PickedProduct; art?: PickedArt; quantity?: number }) => void;
+  handleArtSelection: () => void;
+  handleSaveProduct: () => void;
   handleSelection: (e: React.ChangeEvent<{ name: string; value: number }>) => void;
   handleChange: (panel: string) => (event: React.ChangeEvent<{}>, isExpanded: boolean) => void;
 }
@@ -45,25 +46,6 @@ const Landscape: React.FC<LandscapeProps> = (props) => {
 
   const history = useHistory();
   
-  function handleFlow(e): void {
-    const selectionAsObject: { [key: string]: string } = Array.isArray(props.product?.selection)
-        ? props.product?.selection.reduce((acc, item, index) => {
-            acc[`selection-${index}`] = String(item);
-            return acc;
-          }, {} as { [key: string]: string })
-        : (props.product?.selection || {});
-
-    const queryString = queryCreator(
-      undefined,
-      props.product?.id,
-      undefined,
-      selectionAsObject,
-      '1'
-    );
-    // props.addItemToBuyState({ product: props.product })
-    history.push({ pathname: '/flow', search: queryString });
-  }
-
   return (
     <div className={styles['prix-product-container']}>
         {/* Left Side - Carusel e Info */}
@@ -186,14 +168,14 @@ const Landscape: React.FC<LandscapeProps> = (props) => {
             <Button
               type="onlyText"
               color="primary"
-              // onClick={() => props.addItemToBuyState({ product: props.product })}
+              onClick={props.handleSaveProduct}
             >
               Guardar
             </Button>
             <Button
               color="primary"
               disabled={props.product?.selection && Object.keys(props.product.selection).length === 0 && Object.keys(props.product.selection).every((item: any) => item === "")}
-              onClick={handleFlow}
+              onClick={props.handleArtSelection}
             >
               Seleccionar Arte
             </Button>

@@ -1,0 +1,40 @@
+@import 'theme.scss';
+
+.main-container {
+  width: 100%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  padding: $spacing-xl;
+  height: calc(100vh - 69px);
+}
+
+.alert-container {
+  display: flex;
+  justify-content: center;
+  // margin-top: 40px;
+}
+
+.content-row {
+  display: flex;
+  justify-content: space-between;
+  padding: $spacing-md;
+  max-height: 95%;
+}
+
+.switch-container {
+  display: flex;
+  justify-content: flex-end;
+  padding-right: $spacing-lg;
+}
+
+.cart-review-container {
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  width: 60%;
+}
+
+.empty-space {
+  width: 40%;
+}

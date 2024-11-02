@@ -1,12 +1,6 @@
 import React, { useEffect, useState } from "react"
 
 import CssBaseline from "@material-ui/core/CssBaseline"
-import Dialog from "@material-ui/core/Dialog"
-import DialogContent from "@material-ui/core/DialogContent"
-import DialogContentText from "@material-ui/core/DialogContentText"
-import DialogTitle from "@material-ui/core/DialogTitle"
-import DialogActions from "@material-ui/core/DialogActions"
-import Button from "@material-ui/core/Button"
 import Typography from "@material-ui/core/Typography"
 
 import useMediaQuery from "@material-ui/core/useMediaQuery"
@@ -35,9 +29,10 @@ ReactGA.initialize("G-0RWP9B33D8")
 ReactGA.pageview("/productos")
 
 interface ProductsCatalogProps {
-  buyState: CartItem[];
-  pointedProduct: string | null;
-  setPointedProduct: (productName: string) => void;
+  buyState?: CartItem[];
+  pointedProduct?: string | null;
+  setPointedProduct?: (productName: string) => void;
+  onlyGrid?: boolean;
 }
 
 const ProductsCatalog: React.FC<ProductsCatalogProps> = (props) => {
@@ -121,70 +116,74 @@ const ProductsCatalog: React.FC<ProductsCatalogProps> = (props) => {
   return (
     <div className={styles['catalog']}>
       <CssBaseline />
-      <div className={styles['title']}>
-        <Typography variant="h4">
-          <strong>Productos Prix</strong>
-        </Typography>
-      </div>
-
-      {bestSellers && (
-        <div className={styles['best-sellers']}>
-          <div className={styles['title-wrapper']}>
-            <Typography variant="h5" className={styles['best-seller-title']}>
-              {isMobile ? (
-                <strong>¡Más vendidos!</strong>
-              ) : (
-                <strong>¡Productos más vendidos! </strong>
-              )}
+      {
+        !props.onlyGrid &&
+        <>
+          <div className={styles['title']}>
+            <Typography variant="h4">
+              <strong>Productos Prix</strong>
             </Typography>
           </div>
-            <div className={styles['slider-wrapper']}>
-              <Slider
-                images={bestSellers?.map((product) => ({
-                  url: product?.sources?.images.length > 0 ? product.sources.images[0]?.url : product.thumbUrl,
-                }))}
-                useIndicators= { {type: 'dots', position: 'below', color: { active: 'primary', inactive: 'secondary' }} }
-                childConfig={ { qtyPerSlide: isDesktop ? 4 : isMobile ? 1 : 3, spacing: "sm" } }
-                autoplay={false}
-              >
-                  {bestSellers?.map((product) => (
-                    <ProductElement
-                      src={product?.sources?.images.length > 0 ? product.sources.images[0]?.url : product.thumbUrl}
-                      productName={product.name}
-                      buttonLabel="Ver detalles"
-                      onButtonClick={() => handleProduct(product)}
-                      roundedCorner={true}
-                    />
-                  ))}
-              </Slider>
-            </div>
-        </div>
-      )}
 
-      <div className={styles['grid-container']}>
-            <div className={styles['search-bar']}>
-              <div className={styles['sorting-select']}>
-                <SortingSelect sort={sort} handleChange={handleChangeSort} options={sortingOptions} />
+          {bestSellers && (
+            <div className={styles['best-sellers']}>
+              <div className={styles['title-wrapper']}>
+                <Typography variant="h5" className={styles['best-seller-title']}>
+                  {isMobile ? (
+                    <strong>¡Más vendidos!</strong>
+                  ) : (
+                    <strong>¡Productos más vendidos! </strong>
+                  )}
+                </Typography>
               </div>
+                <div className={styles['slider-wrapper']}>
+                  <Slider
+                    images={bestSellers?.map((product) => ({
+                      url: product?.sources?.images.length > 0 ? product.sources.images[0]?.url : product.thumbUrl,
+                    }))}
+                    useIndicators= { {type: 'dots', position: 'below', color: { active: 'primary', inactive: 'secondary' }} }
+                    childConfig={ { qtyPerSlide: isDesktop ? 4 : isMobile ? 1 : 3, spacing: "sm" } }
+                    autoplay={false}
+                  >
+                      {bestSellers?.map((product) => (
+                        <ProductElement
+                          src={product?.sources?.images.length > 0 ? product.sources.images[0]?.url : product.thumbUrl}
+                          productName={product.name}
+                          buttonLabel="Ver detalles"
+                          onButtonClick={() => handleProduct(product)}
+                          roundedCorner={true}
+                        />
+                      ))}
+                  </Slider>
+                </div>
             </div>
-            <Grid isParent={true}>
-                {products && products.length > 0 ? (
-                  products.map((product) => (
-                    <Grid key={product.id}>
-                      <Card
-                        product={product}
-                        currency={currency}
-                        conversionRate={conversionRate}
-                        handleDetails={handleDetails}
-                        pointedProduct={props.pointedProduct}
-                      />
-                    </Grid>
-                  ))
-                ) : (
-                  <h1>Pronto encontrarás los productos ideales para ti.</h1>
-                )}
-            </Grid>
+          )}
+        </>
+      }
+      <div className={styles['grid-container']}>
+        <div className={styles['search-bar']}>
+          <div className={styles['sorting-select']}>
+            <SortingSelect sort={sort} handleChange={handleChangeSort} options={sortingOptions} />
           </div>
+        </div>
+        <Grid isParent={true}>
+            {products && products.length > 0 ? (
+              products.map((product) => (
+                <Grid key={product.id}>
+                  <Card
+                    product={product}
+                    currency={currency}
+                    conversionRate={conversionRate}
+                    handleDetails={handleDetails}
+                    pointedProduct={props.pointedProduct}
+                  />
+                </Grid>
+              ))
+            ) : (
+              <h1>Pronto encontrarás los productos ideales para ti.</h1>
+            )}
+        </Grid>
+      </div>
 
           <PaginationBar 
             setPageNumber={setCurrentPage} 

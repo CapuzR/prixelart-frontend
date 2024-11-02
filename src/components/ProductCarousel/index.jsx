@@ -20,14 +20,14 @@ const useStyles = makeStyles(() => ({
     },
   }));
   
-export const ProductCarousel = ({ product, selectedArt, selectedItem, type, size }) => {
+export const ProductCarousel = ({ product, selectedArt, type, size }) => {
     const theme = useTheme();
     const classes = useStyles();
     const isTab = useMediaQuery(theme.breakpoints.down("sm"));
     
     const settings = {
         customPaging: function (i) {
-            let image = selectedItem?.sources?.images[i]?.url;
+            let image = product?.sources?.images[i]?.url;
             if (type === "withImages") {
                 return (
                     <li>

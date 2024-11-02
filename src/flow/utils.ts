@@ -3,6 +3,7 @@ export const queryCreator = (
     productId: string | undefined,
     artId?: string | undefined,
     attributes?: { [key: string]: string },
+    openSection?: 'product' | 'art',
     step?: string
   ) => {
     const searchParams = new URLSearchParams(window.location.search);
@@ -21,6 +22,10 @@ export const queryCreator = (
       searchParams.set("arte", artId);
     }
     
+    if (openSection) {
+      searchParams.set("openSection", openSection);
+    }
+  
     Object.keys(attributes).forEach((attrKey) => {
       searchParams.set(attrKey, attributes[attrKey]);
     });

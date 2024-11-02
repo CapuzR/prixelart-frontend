@@ -67,10 +67,14 @@
   .left-side, 
   .right-side {
     width: 45%;
-    height: 76vh;
+    height: 80vh;
     display: flex;
     flex-direction: column;
     justify-content: space-around;
+  }
+
+  .left-side {
+    padding-top: 1vw;
   }
   
   .carousel-wrapper {
@@ -158,7 +162,7 @@
     box-shadow: $box-shadow-medium;
     border-radius: $border-radius-md;
     text-align: center;
-    overflow: hidden;
+    overflow: auto;
   }
   
   .art-grid-wrapper {
@@ -241,4 +245,12 @@
     justify-content: space-between;
     align-items: center;
     margin: $spacing-md 0;
+  }
+
+  .item-content {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding: $spacing-md;
+    justify-content: space-between;
   }

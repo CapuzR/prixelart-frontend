@@ -2,10 +2,10 @@ import { Art } from '../art/interfaces';
 import { Product } from '../products/interfaces';
 
 export interface CartItem {
-  id: string;
+  id: string | undefined;
   art: PickedArt | undefined;
   product: PickedProduct | undefined;
-  quantity: number;
+  quantity: number | undefined;
 }
 
 export interface PickedProduct extends Pick<Product, 

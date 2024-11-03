@@ -95,7 +95,7 @@ const Landscape: React.FC<LandscapeProps> = (props) => {
         {/* Right Side - Gallery */}
         <div className={styles['right-side']}>
           {
-            props.openSection === 'producto' &&
+            props.openSection === 'producto' && props.product &&
               <div className={styles['select']}>
                 <h2>Selecciona:</h2>
                 <div

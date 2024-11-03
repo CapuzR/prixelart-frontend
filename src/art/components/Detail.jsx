@@ -611,7 +611,6 @@ export default function ArtDetail(props) {
   const addingToCart = (e, tile) => {
     e.preventDefault()
     setSelectedArt(tile)
-    props.setIsOpenAssociateProduct(true)
   }
 
   return (

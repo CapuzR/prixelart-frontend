@@ -111,7 +111,6 @@ export default function Catalog(props) {
         <Grid>
           <ArtsGrid
             prixerUsername={props.prixer}
-            setIsOpenAssociateProduct={props.setIsOpenAssociateProduct}
             setFullArt={props.setFullArt}
             fullArt={props.fullArt}
             setSearchResult={props.setSearchResult}

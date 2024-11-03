@@ -119,6 +119,50 @@
   animation: spin 0.6s linear infinite;
 }
 
+.highlighted {
+  position: relative;
+  z-index: 1001;
+  overflow: visible;
+  background-color: $primary-color;
+  color: $text-light-color;
+  animation: blinkBackground 0.8s infinite ease-in-out;
+
+  &:before {
+    content: '';
+    position: absolute;
+    top: -10%;
+    left: -10%;
+    right: -10%;
+    bottom: -10%;
+    background: rgba($primary-color, 0.8);
+    opacity: 0;
+    filter: blur(12px);
+    z-index: 1000;
+    border-radius: inherit;
+    animation: blinkGlow 0.8s infinite ease-in-out;
+  }
+}
+
+@keyframes blinkBackground {
+  0%, 100% {
+    background-color: $primary-color;
+    color: $text-light-color;
+  }
+  50% {
+    background-color: lighten($primary-color, 20%);
+    color: $background-color;
+  }
+}
+
+@keyframes blinkGlow {
+  0%, 100% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
 @keyframes spin {
   to {
     transform: rotate(360deg);

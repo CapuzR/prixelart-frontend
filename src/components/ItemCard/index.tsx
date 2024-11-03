@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import DeleteIcon from "@material-ui/icons/Delete";
 import FileCopyIcon from "@material-ui/icons/FileCopy";
 import styles from "./styles.module.scss";
@@ -8,6 +8,8 @@ import ItemContent from "components/ItemContent";
 import ItemPlayground from "components/ItemPlayground";
 import ActionBar from "./components/ActionBar"; // Import ActionBar
 import Typography from "components/Typography";
+import { formatPriceForUI } from "utils/formats";
+import { useConversionRate, useCurrency } from "context/GlobalContext";
 
 export interface ItemCardProps {
   item: CartItem;
@@ -22,18 +24,29 @@ export default function ItemCard({
   hasActionBar=true,
   handleDeleteElement,
 }: ItemCardProps) {
-  const { deleteItemInCart, addItemToCart, updateItemInCart } = useCart();
-  const [quantity, setQuantity] = useState(item.quantity);
+  const { deleteItemInCart, addItemToCart } = useCart();
+  const { currency } = useCurrency();
+  const { conversionRate } = useConversionRate();
+  const [quantity, setQuantity] = useState<string | number>(item.quantity);
+
+
+  useEffect(() => {
+    item?.product?.price === undefined &&
+    setQuantity(1);
+  }, [item]);
 
   const handleDelete = () => {
     deleteItemInCart(item.id);
   };
 
   const handleQuantityChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const newQuantity = parseInt(event.target.value, 10);
-    setQuantity(newQuantity);
-    updateItemInCart({ ...item, quantity: newQuantity });
-  }
+    const value = event.target.value;
+    setQuantity(value ? Math.max(1, parseInt(value, 10)) : "");
+  };
+  
+  const handleQuantityBlur = () => {
+    if (!quantity) setQuantity(1);
+  };
 
   const handleCopy = () => {
     addItemToCart({
@@ -44,11 +57,16 @@ export default function ItemCard({
   };
 
   const getUnitPrice = () => {
-    return '0';
+    return item?.product?.price ?
+      formatPriceForUI(item.product.price, currency, conversionRate) :
+      formatPriceForUI(item?.product?.priceRange?.from, currency, conversionRate, item?.product?.priceRange?.to)
   };
 
   const getFinalPrice = () => {
-    return '0';
+    const qty = typeof quantity === 'string' ? 1 : quantity;
+    return item?.product?.price ?
+      formatPriceForUI(qty * item.product.price, currency, conversionRate) :
+      undefined;
   };
 
   return (
@@ -61,28 +79,38 @@ export default function ItemCard({
         <div className={styles['item-content']}>
           {/* To do: Cambiar esta confusión cochina donde direction es distinto en todos lados conceptualmente. */}
           <ItemContent item={item} direction={direction == 'row' ? 'column' : 'row'} />
-          <div className={`${styles['pricing-info']} ${direction === 'column' && styles['extra-padding']}`}>
-            <div className={styles['price-group']}>
-              <small>Unidad</small>
-              <p>{getUnitPrice()}</p>
-            </div>
+          {console.log("ItemCard -> item.product", item.product)}
+          {
+            item.product &&
+              <div className={`${styles['pricing-info']} ${direction === 'column' && styles['extra-padding']}`}>
+                <div className={styles['unit-price']}>
+                  <Typography level="h6">Unitario</Typography>
+                  <Typography level="p">{getUnitPrice()}</Typography>
+                </div>
 
-            <div className={styles['price-group']}>
-              <small>Cantidad</small>
-              <input 
-                type="number"
-                value={item.quantity}
-                onChange={handleQuantityChange}
-                className={styles['quantity-input']}
-                min="1"
-              />
-            </div>
+                {item?.product?.price !== undefined && (
+                  <>
+                    <div className={styles['quantity']}>
+                      <Typography level="h6">Cantidad</Typography>
+                      <input
+                        type="number"
+                        value={quantity}
+                        onChange={handleQuantityChange}
+                        onBlur={handleQuantityBlur}
+                        className={styles['quantity-input']}
+                        min="1"
+                        disabled={item.product.price === undefined}
+                      />
+                    </div>
 
-            <div className={styles['price-group']}>
-              <small>Subtotal</small>
-              <p>{getFinalPrice()}</p>
-            </div>
-          </div>
+                    <div className={styles['subtotal']}>
+                      <Typography level="h6">Subtotal</Typography>
+                      <Typography level="p">{getFinalPrice()}</Typography>
+                    </div>
+                  </>
+                )}
+              </div>
+          }
         </div>
       </div>
     

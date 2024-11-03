@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useHistory } from "react-router-dom";
 
 import ReactGA, { set } from "react-ga";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import { useConversionRate, useCurrency, useLoading, useSnackBar } from 'context/GlobalContext';
+import { useBackdrop, useConversionRate, useCurrency, useLoading, useSnackBar } from 'context/GlobalContext';
 import { getSelectedVariantPrice, prepareProductData } from "products/services";
 
 import { fetchProductDetails, fetchVariantPrice } from 'products/api';
@@ -17,6 +17,8 @@ import { CartItem, PickedProduct, PickedArt, Product, Art } from './interfaces';
 import { queryCreator, getUrlParams } from "./utils";
 import { parsePrice } from "utils/formats";
 import { useCart } from "context/CartContext"; 
+import { debounce } from "utils/util";
+import { checkPermissions } from "./services";
 
 ReactGA.initialize("G-0RWP9B33D8");
 
@@ -33,7 +35,9 @@ const Flow: React.FC<Props> = (props) => {
   const { currency } = useCurrency();
   const { conversionRate } = useConversionRate();
   const { showSnackBar } = useSnackBar();
+  const { backdropOpen, showBackdrop } = useBackdrop();
   const { cart } = useCart();
+  const { addItemToCart, updateItemInCart } = useCart();
   
   const history = useHistory();
 
@@ -45,51 +49,34 @@ const Flow: React.FC<Props> = (props) => {
   const selectedAttributes = getUrlParams(["producto", "arte", "step", "itemId", "openSection"]);
   const [product, setProduct] = useState<Product | null>(null);
   const [selectedArt, setSelectedArt] = useState<any>(undefined);
-
+  const [flowReady, setFlowReady] = useState(false);
 
   const [isPortrait, setIsPortrait] = useState(window.innerWidth < 768);
   const [expanded, setExpanded] = useState<string | false>(false);
   const searchParams = new URLSearchParams(window.location.search);
   const isUpdate = cart.some((i)=> i.id === itemId);
   
-  const { addItemToCart, updateItemInCart } = useCart();
 
-  const handleCart = (product?: Product, art?: PickedArt, quantity?: number) => {
-    isUpdate ? 
-      updateItemInCart({ id : itemId, product, art, quantity }) : 
-      addItemToCart({ product, art, quantity });
-    
-    showSnackBar("Item added in the cart");
-    history.push("/shopping");
-  };
-  
-  const handleDeleteElement = (type: 'producto' | 'arte', item: CartItem) => {
-    // TO DO: Esto del selectionObject + QueryString + push debería agruparse de alguna manera...se utiliza mucho.
-    const selectionAsObject: { [key: string]: string } = Array.isArray(product?.selection)
-        ? product?.selection.reduce((acc, item, index) => {
-            acc[`selection-${index}`] = String(item);
-            return acc;
-          }, {} as { [key: string]: string })
-        : (product?.selection || {});
+  //Create a useEffect that check if product, and selectedArt are not undefined...
+  //Also checks if the product has all its attributes selected (using .every)
+  //If all those conditions are met, set flowReady to true.
 
-        type === 'arte' ? (
-          setSelectedArt(undefined)
-        ) : (
-          setProduct(null)
-        );
+  const debouncedCheckPermissions = useCallback(
+    debounce((product: Product | null, selectedArt: string | null) => {
+      const hasPermission = checkPermissions(product, selectedArt);
+      if (hasPermission) {
+        setFlowReady(true);
+        if (!backdropOpen) showBackdrop();
+      } else {
+        setFlowReady(false);
+      }
+    }, 300),
+    [showBackdrop, backdropOpen]
+  );
 
-    const queryString = queryCreator(
-      itemId,
-      type == 'producto' ? undefined : product?.id,
-      type == 'arte' ? undefined : selectedArt?.artId,
-      selectionAsObject,
-      'producto',
-      '3'
-    );
-    
-    history.push({ pathname: location.pathname, search: queryString });
-  };
-
+  useEffect(() => {
+    debouncedCheckPermissions(product, selectedArt);
+  }, [product, selectedArt]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -100,58 +87,6 @@ const Flow: React.FC<Props> = (props) => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const handleSelection = (e: React.ChangeEvent<{ name: string; value: number }>) => {
-    const newSelection = product?.selection && { ...product?.selection };
-    e.target.name && (newSelection[e.target.name] = e.target.value as number);
-    setProduct((prevProduct) => ({
-      ...prevProduct,
-      selection: newSelection,
-    }));
-
-    const selectionAsObject: { [key: string]: string } = Array.isArray(product?.selection)
-        ? product?.selection.reduce((acc, item, index) => {
-            acc[`selection-${index}`] = String(item);
-            return acc;
-          }, {} as { [key: string]: string })
-        : (product?.selection || {});
-
-    Object.values(newSelection).every((s) => typeof s === "string" && s !== "") && 
-    Object.values(newSelection).length === product?.attributes.length && 
-      (selectionAsObject.openSection = 'arte');
-        
-    const queryString = queryCreator(
-      itemId,
-      product?.id,
-      selectedArt?.artId,
-      selectionAsObject,
-      'producto',
-      '3'
-    );
-    history.push({ pathname: location.pathname, search: queryString });
-  };
-
-  const getFilteredOptions = (att: { name: string; value: string[] }) => {
-    if (Object.values(product?.selection).every((s) => s.value === "") ||
-    !Object.keys(product?.selection).some((key) => key !== att.name && product?.selection[key] !== "")) {
-      return att.value || [];
-    }
-    
-    return Object.keys(product?.selection)
-    .filter((key) => {
-      if (key !== att.name && product?.selection[key] !== "") {
-        return att.value;
-    }})
-    .map((key) => {
-      return product?.variants?.filter((variant) => { return variant.attributes?.some(
-          (a) => a.name === key && a.value === product?.selection[key]
-      )})
-      ?.map((vari) => {
-        return vari.attributes?.filter((a) => a.name === att.name)[0].value;
-      });
-    })
-    .flat();
-  };
-  
   //TO DO: Todo debería ir dentro de un item (?)
   useEffect(() => {
     const fetchProduct = async () => {
@@ -197,11 +132,107 @@ const Flow: React.FC<Props> = (props) => {
             price: parsedPrice
           }));
         }
+      } else {
+        product &&
+        setProduct((prevProduct) => ({
+          ...prevProduct,
+          price: undefined
+        }));
       }
     };
     fetchAndSetPrice();
-  }, [product?.selection, currency, conversionRate]);
+  }, [JSON.stringify(product?.selection), currency, conversionRate, selectedArt?.artId]);
 
+  const handleCart = (product?: Product, art?: PickedArt, quantity?: number) => {
+    isUpdate ? 
+      updateItemInCart({ id : itemId, product, art, quantity }) : 
+      addItemToCart({ product, art, quantity });
+    
+    showSnackBar("Item added in the cart");
+    history.push("/shopping");
+  };
+  
+  const handleDeleteElement = (type: 'producto' | 'arte', item: CartItem) => {
+    // TO DO: Esto del selectionObject + QueryString + push debería agruparse de alguna manera...se utiliza mucho.
+    const selectionAsObject: { [key: string]: string } = Array.isArray(product?.selection)
+        ? product?.selection.reduce((acc, item, index) => {
+            acc[`selection-${index}`] = String(item);
+            return acc;
+          }, {} as { [key: string]: string })
+        : (product?.selection || {});
+          console.log("HANDLE DELETE ELEMENT");
+        type === 'arte' ? (
+          setSelectedArt(undefined)
+        ) : (
+          setProduct(undefined)
+        );
+
+    const queryString = queryCreator(
+      itemId,
+      type == 'producto' ? undefined : product?.id,
+      type == 'arte' ? undefined : selectedArt?.artId,
+      selectionAsObject,
+      'producto',
+      '3'
+    );
+    
+    history.push({ pathname: location.pathname, search: queryString });
+  };
+
+  const handleSelection = (e: React.ChangeEvent<{ name: string; value: number }>) => {
+    let openSection : 'producto' | 'arte' = 'producto';
+    const newSelection = product?.selection && { ...product?.selection };
+    e.target.name && (newSelection[e.target.name] = e.target.value as number);
+    setProduct((prevProduct) => ({
+      ...prevProduct,
+      selection: newSelection,
+    }));
+
+    const selectionAsObject = Array.isArray(newSelection)
+        ? newSelection.reduce((acc, item, index) => {
+            acc[`selection-${index}`] = String(item);
+            return acc;
+          }, {} as { [key: string]: string })
+        : (newSelection || {});
+
+    Object.values(newSelection).every((s) => typeof s === "string" && s !== "") && 
+    Object.values(newSelection).length === product?.attributes.length && 
+    !selectedArt?.artId &&
+      (openSection = 'arte');
+        
+    const queryString = queryCreator(
+      itemId,
+      product?.id,
+      selectedArt?.artId,
+      selectionAsObject,
+      openSection,
+      '3'
+    );
+    history.push({ pathname: location.pathname, search: queryString });
+  };
+
+  const getFilteredOptions = (att: { name: string; value: string[] }) => {
+    if (Object.values(product?.selection).every((s) => s.value === "") ||
+    !Object.keys(product?.selection).some((key) => key !== att.name && product?.selection[key] !== "")) {
+      return att.value || [];
+    }
+    
+    return Object.keys(product?.selection)
+    .filter((key) => {
+      if (key !== att.name && product?.selection[key] !== "") {
+        return att.value;
+    }})
+    .map((key) => {
+      return product?.variants?.filter((variant) => { return variant.attributes?.some(
+          (a) => a.name === key && a.value === product?.selection[key]
+      )})
+      ?.map((vari) => {
+        return vari.attributes?.filter((a) => a.name === att.name)[0].value;
+      });
+    })
+    .flat();
+  };
+  
   const addInFlow = (updatedArt?: Art, updatedProduct?: Product) => {
     updatedArt && setSelectedArt(updatedArt);
     updatedProduct && setProduct(updatedProduct);
@@ -212,8 +243,6 @@ const Flow: React.FC<Props> = (props) => {
             return acc;
           }, {} as { [key: string]: string })
         : (product?.selection || {});
-        console.log("selectionAsObject", selectionAsObject);
-        console.log("updatedProduct", updatedProduct);
         
     const queryString = queryCreator(
       itemId,
@@ -223,9 +252,6 @@ const Flow: React.FC<Props> = (props) => {
       updatedArt ? 'arte' : 'producto',
       '3'
     );
-
-    console.log("queryString", queryString);
-    console.log("location.pathname", location.pathname);
   
     history.push({ pathname: location.pathname, search: queryString });
     showSnackBar("¡Arte seleccionado! Puedes agregar el item al carrito");
@@ -233,6 +259,7 @@ const Flow: React.FC<Props> = (props) => {
   
   return (
     <>
+    {console.log("FLOW -> useEffect -> flowReady", flowReady)}
       {/* {
       isPortrait ? (
         <Portrait
@@ -267,6 +294,7 @@ const Flow: React.FC<Props> = (props) => {
           setSearchResult={props.setSearchResult}
           searchParams={searchParams}
           openSection={openSection}
+          flowReady={flowReady}
         />
       {/* )} */}
     </>

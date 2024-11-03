@@ -17,6 +17,9 @@ interface GlobalContextType {
   snackbarMessage: string;
   showSnackBar: (message: string) => void;
   closeSnackBar: () => void;
+  backdropOpen: boolean;
+  showBackdrop: () => void;
+  closeBackdrop: () => void;
 }
 
 // Create the context with the type
@@ -40,6 +43,8 @@ export const GlobalProvider: React.FC<GlobalProviderProps> = ({ children }) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [snackbarOpen, setSnackbarOpen] = useState<boolean>(false);
   const [snackbarMessage, setSnackbarMessage] = useState<string>('');
+  const [backdropOpen, setBackdropOpen] = useState<boolean>(false); // New state for the backdrop
+
 
   // Function to fetch the conversion rate
   const fetchConversionRate = async () => {
@@ -83,6 +88,14 @@ export const GlobalProvider: React.FC<GlobalProviderProps> = ({ children }) => {
   const closeSnackBar = () => {
     setSnackbarOpen(false);
   };
+  
+  const showBackdrop = () => {
+    setBackdropOpen(true);
+  };
+
+  const closeBackdrop = () => {
+    setBackdropOpen(false);
+  };
 
   // Memoize the context value to avoid unnecessary re-renders
   const value = useMemo(
@@ -101,6 +114,9 @@ export const GlobalProvider: React.FC<GlobalProviderProps> = ({ children }) => {
       snackbarMessage,
       showSnackBar,
       closeSnackBar,
+      backdropOpen,
+      showBackdrop,
+      closeBackdrop,
     }),
     [
       currency,
@@ -111,6 +127,7 @@ export const GlobalProvider: React.FC<GlobalProviderProps> = ({ children }) => {
       loading,
       snackbarOpen,
       snackbarMessage,
+      backdropOpen,
     ]
   );
 
@@ -156,4 +173,12 @@ export const useSnackBar = () => {
     throw new Error('useSnackBar must be used within a GlobalProvider');
   }
   return { snackbarOpen: context.snackbarOpen, snackbarMessage: context.snackbarMessage, showSnackBar: context.showSnackBar, closeSnackBar: context.closeSnackBar };
+};
+
+export const useBackdrop = () => {
+  const context = useContext(GlobalContext);
+  if (!context) {
+    throw new Error('useBackdrop must be used within a GlobalProvider');
+  }
+  return { backdropOpen: context.backdropOpen, showBackdrop: context.showBackdrop, closeBackdrop: context.closeBackdrop };
 };

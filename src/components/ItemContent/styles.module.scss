@@ -37,7 +37,7 @@
 }
 
 .paper {
-    @include paper(undefined, $box-shadow-heavy, $border-radius-md, $spacing-md);
+    @include paper(undefined, $box-shadow-medium, $border-radius-md, $spacing-md);
 }
 
 .art-section {

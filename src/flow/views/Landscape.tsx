@@ -38,6 +38,7 @@ interface LandscapeProps {
   setSearchResult: (result: any) => void;
   searchParams: URLSearchParams;
   openSection: string;
+  flowReady: boolean;
 }
 
 const Landscape: React.FC<LandscapeProps> = (props) => {
@@ -53,18 +54,8 @@ const Landscape: React.FC<LandscapeProps> = (props) => {
       <div className={styles['first-row']}>
         <div className={styles['first-row-title-container']}>
           <div className={styles['product-title']}>
-            {props.product?.name}
+            Crea tu Prix ideal
           </div>
-          {/* <div
-            className={styles['price-selected']}
-          >
-            {
-                props.product?.price ?
-                  formatPriceForUI(props.product?.price, currency, conversionRate) :
-                  formatPriceForUI(props.product?.priceRange?.from, currency, conversionRate, props.product?.priceRange?.to)
-
-            }
-          </div> */}
         </div>
         <div className={styles['buttons-container']}>
           <Button
@@ -80,6 +71,7 @@ const Landscape: React.FC<LandscapeProps> = (props) => {
             color="primary"
             disabled={props.selectedArt === undefined}
             onClick={handleCart}
+            highlighted={props.flowReady}
           >
             { cart.some((i) => i.id === props.itemId) ? 'Actualizar' : 'Agregar al carrito'}
           </Button>
@@ -89,7 +81,7 @@ const Landscape: React.FC<LandscapeProps> = (props) => {
       <div className={styles['main-content']}>
         {/* Left Side - Carusel e Info */}
         <div className={styles['left-side']}>
-            <ItemCard item={{ id: props.itemId, product: props.product, art: props.selectedArt, quantity: undefined }} direction="column" hasActionBar={false} handleDeleteElement={props.handleDeleteElement}/>
+            <ItemCard item={{ id: props.itemId, product: props.product, art: props.selectedArt, quantity: 1 }} direction="column" hasActionBar={false} handleDeleteElement={props.handleDeleteElement}/>
         </div>
 
         {/* Right Side - Gallery */}

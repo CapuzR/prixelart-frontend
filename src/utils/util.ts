@@ -25,3 +25,12 @@ export function getUrlParams(excludedParams: string[] = []): { name: string; val
   
     return paramsArray;
   }
+
+  export function debounce(fn: (...args: any[]) => void, delay: number) {
+    let timeoutId: NodeJS.Timeout;
+    return (...args: any[]) => {
+      if (timeoutId) clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => fn(...args), delay);
+    };
+  }
+  

@@ -6,6 +6,7 @@ interface ButtonProps {
   color?: 'primary' | 'secondary';
   disabled?: boolean;
   loading?: boolean;
+  highlighted?: boolean;
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
   children: React.ReactNode;
   className?: string;
@@ -16,11 +17,19 @@ const Button: React.FC<ButtonProps> = ({
   color = 'primary',
   disabled = false,
   loading = false,
+  highlighted = false,
   onClick,
   children,
   className = '',
 }) => {
-  const buttonClass = `${styles.btn} ${styles[type]} ${styles[color]} ${disabled ? styles.disabled : ''} ${className}`;
+  console.log("highlighted", highlighted);
+  const buttonClass = 
+    `${styles['btn']}
+    ${styles[type]}
+    ${styles[color]}
+    ${highlighted ? styles['highlighted'] : ''}
+    ${disabled ? styles['disabled'] : ''}
+    ${className}`;
 
   return (
     <button

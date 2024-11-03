@@ -12,12 +12,13 @@ export default function ItemContent({ item, direction='row' }: ItemContentProps)
 
   const getSelectedAttributes = () => {
     return Object.keys(item?.product?.selection || {})
-      .slice(0, 3)
-      .map((key, index) => (
-        <Typography key={index} level="p" color="textSecondary" leading="normal">
-          <strong>{key}</strong>: {item?.product?.selection[key]}
-        </Typography>
-      ));
+        .slice(0, 3)
+        .filter((key) => item?.product?.selection[key] !== '')
+        .map((key, index) => (
+          <Typography key={index} level="p" color="textSecondary" leading="normal">
+            <strong>{key}</strong>: {item?.product?.selection[key]}
+          </Typography>
+        ));
   };
 
   return (
@@ -32,7 +33,7 @@ export default function ItemContent({ item, direction='row' }: ItemContentProps)
 
       <div className={`${styles['art-section']} ${ direction === "row" && styles['paper']  }`}>
         <Typography level="h5" leading="normal" color="inherit">
-          <strong>Arte:</strong> {item.art?.title || 'Elígelo'}
+          <strong>Arte:</strong> {item.art?.title || 'Selecciónalo'}
         </Typography>
         {item.art?.title && item.art?.prixerUsername &&
         <Typography level="p" color="textSecondary" leading="normal">

@@ -269,9 +269,6 @@ export default function Grid(props) {
                       i={i}
                       handleCloseVisible={handleCloseVisible}
                       setSelectedArt={props.setSelectedArt}
-                      setIsOpenAssociateProduct={
-                        props.setIsOpenAssociateProduct
-                      }
                       handleFullImageClick={handleFullImageClick}
                     />
                   </div>

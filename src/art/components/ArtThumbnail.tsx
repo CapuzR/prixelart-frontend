@@ -24,7 +24,6 @@ export default function ArtThumbnail({
   i,
   handleCloseVisible,
   setSelectedArt,
-  setIsOpenAssociateProduct,
   handleFullImageClick,
 }) {
   const [selectedLocalArt, setSelectedLocalArt] = useState<Art | undefined>(
@@ -42,7 +41,7 @@ export default function ArtThumbnail({
   function handleArtSelection(e): void {
     console.log("selectedArt", setSelectedArt);
     if (setSelectedArt) {
-      addingToCart(e, tile, setSelectedArt, setIsOpenAssociateProduct)
+      addingToCart(e, tile, setSelectedArt)
     } else {
       const queryString = queryCreator(
         undefined,

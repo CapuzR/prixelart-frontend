@@ -1,6 +1,7 @@
 import { Art } from '../art/interfaces';
 import { Product } from '../products/interfaces';
 
+//cartItem debe tener price jaja wtf, y también subTotal (?) para no estarlo calculando en todos lados ?
 export interface CartItem {
   id: string | undefined;
   art: PickedArt | undefined;
@@ -18,7 +19,8 @@ export interface PickedProduct extends Pick<Product,
   'thumbUrl' |
   'price' |
   'productionTime' |
-  'mockUp'
+  'mockUp' |
+  'priceRange'
 > {}
 
 export interface PickedArt extends Pick<Art,

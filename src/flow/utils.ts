@@ -2,14 +2,16 @@ export const queryCreator = (
     itemId: string | undefined,
     productId: string | undefined,
     artId: string | undefined,
-    attributes?: { [key: string]: string },
+    attributes: { [key: string]: string } | undefined,
     openSection?: 'producto' | 'arte',
     step?: string
   ) => {
     const searchParams = new URLSearchParams(window.location.search);
 
-    searchParams.forEach((v, key) => searchParams.delete(key));
-    console.log("itemId", itemId);
+    for (const key of Array.from(searchParams.keys())) {
+      searchParams.delete(key);
+    }
+    
     if (itemId) {
       searchParams.set("itemId", itemId);
     }
@@ -25,12 +27,12 @@ export const queryCreator = (
     if (openSection) {
       searchParams.set("openSection", openSection);
     }
-
-    attributes &&  
+    
+    attributes && attributes !== undefined &&
       Object.keys(attributes).forEach((attrKey) => {
         searchParams.set(attrKey, attributes[attrKey]);
       });
-  
+    
     return searchParams.toString();
   };
   

@@ -6,7 +6,6 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { useConversionRate, useCurrency, useLoading, useSnackBar } from 'context/GlobalContext';
 import { getSelectedVariantPrice, prepareProductData } from "products/services";
-  import { splitDescription } from "products/utils";
 
 import { fetchProductDetails, fetchVariantPrice } from 'products/api';
 import { fetchArtDetails } from 'art/api';
@@ -65,6 +64,7 @@ const Flow: React.FC<Props> = (props) => {
   };
   
   const handleDeleteElement = (type: 'producto' | 'arte', item: CartItem) => {
+    // TO DO: Esto del selectionObject + QueryString + push debería agruparse de alguna manera...se utiliza mucho.
     const selectionAsObject: { [key: string]: string } = Array.isArray(product?.selection)
         ? product?.selection.reduce((acc, item, index) => {
             acc[`selection-${index}`] = String(item);
@@ -77,7 +77,7 @@ const Flow: React.FC<Props> = (props) => {
         ) : (
           setProduct(null)
         );
-        
+
     const queryString = queryCreator(
       itemId,
       type == 'producto' ? undefined : product?.id,
@@ -86,7 +86,7 @@ const Flow: React.FC<Props> = (props) => {
       'producto',
       '3'
     );
-    console.log("queryString", queryString);
+    
     history.push({ pathname: location.pathname, search: queryString });
   };
 
@@ -99,8 +99,6 @@ const Flow: React.FC<Props> = (props) => {
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
-
-  const { generalDescription, technicalSpecification } = splitDescription(product?.description);
 
   const handleSelection = (e: React.ChangeEvent<{ name: string; value: number }>) => {
     const newSelection = product?.selection && { ...product?.selection };
@@ -117,9 +115,9 @@ const Flow: React.FC<Props> = (props) => {
           }, {} as { [key: string]: string })
         : (product?.selection || {});
 
-    if (Object.values(product?.selection).every((s) => s.value !== "")) {
-      selectionAsObject.openSection = 'arte';
-    }
+    Object.values(newSelection).every((s) => typeof s === "string" && s !== "") && 
+    Object.values(newSelection).length === product?.attributes.length && 
+      (selectionAsObject.openSection = 'arte');
         
     const queryString = queryCreator(
       itemId,
@@ -214,7 +212,9 @@ const Flow: React.FC<Props> = (props) => {
             return acc;
           }, {} as { [key: string]: string })
         : (product?.selection || {});
-          console.log("selectionAsObject", selectionAsObject);
+        console.log("selectionAsObject", selectionAsObject);
+        console.log("updatedProduct", updatedProduct);
+        
     const queryString = queryCreator(
       itemId,
       updatedProduct?.id || product?.id,

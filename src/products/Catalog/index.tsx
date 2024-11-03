@@ -40,7 +40,6 @@ const ProductsCatalog: React.FC<ProductsCatalogProps> = ({
   pointedProduct,
   flowData = { onlyGrid: false, addInFlow: undefined },
   setPointedProduct,
-  ...props
 }) => {
   const theme = useTheme();
   const history = useHistory();
@@ -99,6 +98,7 @@ const ProductsCatalog: React.FC<ProductsCatalogProps> = ({
     if(flowData?.addInFlow) {
       flowData.addInFlow(art, product)
     } else {
+      console.log("Entró acá el joputa");
       const queryString = queryCreator(
           undefined,
           product?.id,
@@ -107,6 +107,7 @@ const ProductsCatalog: React.FC<ProductsCatalogProps> = ({
           'producto',
           '1'
       )
+      console.log("Catalog -> queryString", queryString);
       history.push({ pathname: '/flow', search: queryString });
     };
   }

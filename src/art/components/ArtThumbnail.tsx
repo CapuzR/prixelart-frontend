@@ -1,5 +1,6 @@
 import axios from "axios"
 import React, { useState, useEffect } from "react"
+import { useHistory } from "react-router-dom"
 
 import {
   CardActionArea,
@@ -15,6 +16,8 @@ import StarOutline from "@material-ui/icons/StarOutline"
 import { Art } from "../interfaces"
 import { setVisibleArt } from "../api"
 import { addingToCart } from "../services"
+import { queryCreator } from "flow/utils"
+import { set } from "react-ga"
 
 export default function ArtThumbnail({
   tile,
@@ -34,6 +37,25 @@ export default function ArtThumbnail({
     setSelectedLocalArt(undefined)
     handleCloseVisible()
   }
+  const history = useHistory();
+
+  function handleArtSelection(e): void {
+    console.log("selectedArt", setSelectedArt);
+    if (setSelectedArt) {
+      addingToCart(e, tile, setSelectedArt, setIsOpenAssociateProduct)
+    } else {
+      const queryString = queryCreator(
+        undefined,
+        undefined,
+        tile.artId,
+        undefined,
+        'producto',
+        '1'
+      );
+  
+      history.push({ pathname: '/flow', search: queryString });
+    }
+  };
 
   return (
     <div key={i}>
@@ -61,9 +83,7 @@ export default function ArtThumbnail({
           <IconButton
             size="small"
             color="primary"
-            onClick={(e) => {
-              addingToCart(e, tile, setSelectedArt, setIsOpenAssociateProduct)
-            }}
+            onClick={handleArtSelection}
             style={{ position: "absolute", padding: "8px" }}
           >
             <AddShoppingCartIcon />

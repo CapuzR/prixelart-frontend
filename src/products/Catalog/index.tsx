@@ -98,7 +98,6 @@ const ProductsCatalog: React.FC<ProductsCatalogProps> = ({
     if(flowData?.addInFlow) {
       flowData.addInFlow(art, product)
     } else {
-      console.log("Entró acá el joputa");
       const queryString = queryCreator(
           undefined,
           product?.id,
@@ -107,7 +106,7 @@ const ProductsCatalog: React.FC<ProductsCatalogProps> = ({
           'producto',
           '1'
       )
-      console.log("Catalog -> queryString", queryString);
+      
       history.push({ pathname: '/flow', search: queryString });
     };
   }

@@ -110,14 +110,12 @@ const Details: React.FC<Props> = (props) => {
 
     const queryString = queryCreator(
       undefined,
-      product?.id,
+      productId,
       undefined,
-      selectionAsObject,
-      'arte',
+      selectionAsObject || undefined,
+      Object.values(selectionAsObject).every((s) => typeof s === "string" && s !== "") ? 'arte' : 'producto',
       '1'
     );
-
-    addItemToCart({ product, art: undefined, quantity: 1 });
 
     history.push({ pathname: '/flow', search: queryString });
   };

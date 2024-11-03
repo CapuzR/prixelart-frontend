@@ -27,6 +27,7 @@ import CB from "../../orgLanding/assets/isotipo.svg"
 import AttachMoneyIcon from '@material-ui/icons/AttachMoney'; // USD icon
 import { useCurrency, useConversionRate } from 'context/GlobalContext';
 import "./appBar.css"
+import { useCart } from "context/CartContext";
 
 
 const drawerWidth = 240
@@ -144,6 +145,7 @@ export default function MenuAppBar() {
   const [open2, setOpen] = useState(false)
   const [avatar, setAvatar] = useState("")
   const { currency, toggleCurrency } = useCurrency();
+  const { cart } = useCart();
 
   const handleMenu = (event) => {
     setAnchorEl(event.currentTarget)
@@ -323,7 +325,7 @@ export default function MenuAppBar() {
                 <Badge
                   overlap="rectangular"
                   badgeContent={
-                    JSON.parse(localStorage.getItem("buyState"))?.length
+                    cart.length
                   }
                   color="white"
                 >
@@ -571,7 +573,8 @@ export default function MenuAppBar() {
                   <Badge
                     overlap="rectangular"
                     badgeContent={
-                      JSON.parse(localStorage.getItem("buyState"))?.length
+                      cart.length
+                      // JSON.parse(localStorage.getItem("buyState"))?.length
                     }
                     color="white"
                   >

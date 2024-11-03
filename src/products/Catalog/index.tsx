@@ -24,18 +24,24 @@ import ReactGA from "react-ga"
 import styles from './styles.module.scss';
 import { CartItem, Product } from "products/interfaces"
 import { useConversionRate, useCurrency } from "context/GlobalContext"
+import { Art } from "../interfaces"
+import { queryCreator } from "flow/utils"
 
 ReactGA.initialize("G-0RWP9B33D8")
 ReactGA.pageview("/productos")
 
 interface ProductsCatalogProps {
-  buyState?: CartItem[];
   pointedProduct?: string | null;
   setPointedProduct?: (productName: string) => void;
-  onlyGrid?: boolean;
+  flowData?: { onlyGrid?: boolean; addInFlow: (updatedArt?: Art, updatedProduct?: Product) => void | undefined; };
 }
 
-const ProductsCatalog: React.FC<ProductsCatalogProps> = (props) => {
+const ProductsCatalog: React.FC<ProductsCatalogProps> = ({
+  pointedProduct,
+  flowData = { onlyGrid: false, addInFlow: undefined },
+  setPointedProduct,
+  ...props
+}) => {
   const theme = useTheme();
   const history = useHistory();
   const { currency } = useCurrency();
@@ -66,7 +72,7 @@ const ProductsCatalog: React.FC<ProductsCatalogProps> = (props) => {
   ];
   
   const handleProduct = async (product) => {
-    props.setPointedProduct(product.name)
+    setPointedProduct(product.name)
     document.getElementById(product.name)?.scrollIntoView({
       behavior: "smooth",
       block: "start",
@@ -88,6 +94,22 @@ const ProductsCatalog: React.FC<ProductsCatalogProps> = (props) => {
       label: product.name,
     })
   }  
+
+  const goToFlow = (art: Art, product: Product) => {
+    if(flowData?.addInFlow) {
+      flowData.addInFlow(art, product)
+    } else {
+      const queryString = queryCreator(
+          undefined,
+          product?.id,
+          undefined,
+          undefined,
+          'producto',
+          '1'
+      )
+      history.push({ pathname: '/flow', search: queryString });
+    };
+  }
 
   useEffect(() => {
     const getBestSellers = async () => {
@@ -117,7 +139,7 @@ const ProductsCatalog: React.FC<ProductsCatalogProps> = (props) => {
     <div className={styles['catalog']}>
       <CssBaseline />
       {
-        !props.onlyGrid &&
+        !flowData.onlyGrid &&
         <>
           <div className={styles['title']}>
             <Typography variant="h4">
@@ -175,7 +197,8 @@ const ProductsCatalog: React.FC<ProductsCatalogProps> = (props) => {
                     currency={currency}
                     conversionRate={conversionRate}
                     handleDetails={handleDetails}
-                    pointedProduct={props.pointedProduct}
+                    pointedProduct={pointedProduct}
+                    goToFlow={goToFlow}
                   />
                 </Grid>
               ))

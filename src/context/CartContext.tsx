@@ -8,7 +8,7 @@ interface CartContextType {
   addItemToCart: (input: { product: PickedProduct | undefined; art: PickedArt | undefined; quantity?: number }) => void;
   updateItemInCart: (input: { product: PickedProduct | undefined; art: PickedArt | undefined; id: string; quantity?: number }) => void;
   deleteItemInCart: (id: string) => void;
-  deleteElementInItem: (id: string, type: "product" | "art") => void;
+  deleteElementInItem: (id: string, type: "producto" | "arte") => void;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -67,10 +67,10 @@ export const CartProvider: React.FC = ({ children }) => {
     setCart(newCart);
   };
 
-  const deleteElementInItem = (id: string, type: "product" | "art") => {
+  const deleteElementInItem = (id: string, type: "producto" | "arte") => {
     const newCart = cart.map(item => {
       if (item.id === id) {
-        if (type === "product") {
+        if (type === "producto") {
           return { ...item, product: undefined };
         } else {
           return { ...item, art: undefined };

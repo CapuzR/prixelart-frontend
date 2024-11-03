@@ -4,6 +4,9 @@ import {
 } from 'cart/interfaces';
 export type { CartItem, PickedProduct };
 
+import { Art } from 'art/interfaces';
+export type { Art };
+
   export interface Product {
     id: string;
     name: string;

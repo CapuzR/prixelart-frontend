@@ -11,12 +11,12 @@ import { queryCreator } from 'flow/utils';
 
 export interface ItemPlaygroundProps {
     item: CartItem;
+    handleDeleteElement: (type: 'producto' | 'arte', item : CartItem) => void;
 }
-export default function ItemPlayground({ item }: ItemPlaygroundProps) {
+export default function ItemPlayground({ item, handleDeleteElement }: ItemPlaygroundProps) {
     const history = useHistory();
-    const { deleteItemInCart, deleteElementInItem } = useCart();
 
-    const handleCartUpdate = (type : 'product' | 'art') => {
+    const handleCartUpdate = (type : 'producto' | 'arte') => {
         const selectionAsObject: { [key: string]: string } = Array.isArray(item?.product?.selection)
           ? item?.product?.selection.reduce((acc, sel, index) => {
               acc[`selection-${index}`] = String(sel);
@@ -33,11 +33,6 @@ export default function ItemPlayground({ item }: ItemPlaygroundProps) {
             '1'
         );
         history.push({ pathname: '/flow', search: queryString });
-    };
-
-    const handleDeleteElement = (type: 'product' | 'art') => {
-        const hasOtherItem = type === 'art' ? item?.product : item?.art;
-        hasOtherItem ? deleteElementInItem(item?.id, type) : deleteItemInCart(item?.id);
     };
 
   return (
@@ -57,8 +52,8 @@ export default function ItemPlayground({ item }: ItemPlaygroundProps) {
                                     iconLeft={<AutorenewIcon />}
                                     iconRight={<DeleteIcon />}
                                     coverTarget='parent'
-                                    onClickLeft={() => handleCartUpdate('product')}
-                                    onClickRight={() => handleDeleteElement('product')}
+                                    onClickLeft={() => handleCartUpdate('producto')}
+                                    onClickRight={() => handleDeleteElement('producto', item)}
                                 >
                                     <Image
                                         src={item?.product?.sources?.images?.[0]?.url}
@@ -67,7 +62,7 @@ export default function ItemPlayground({ item }: ItemPlaygroundProps) {
                                         objectFit='cover'
                                     /> 
                                 </OverlayWithIcon> :
-                                <AddImage  onClick={() => handleCartUpdate('product')}/>
+                                <AddImage  onClick={() => handleCartUpdate('producto')}/>
                         }
                     </div>
                     <div className={styles['art-area']}>
@@ -77,8 +72,8 @@ export default function ItemPlayground({ item }: ItemPlaygroundProps) {
                                     iconLeft={<AutorenewIcon />}
                                     iconRight={<DeleteIcon />}
                                     coverTarget='parent'
-                                    onClickLeft={() => handleCartUpdate('art')}
-                                    onClickRight={() => handleDeleteElement('art')}
+                                    onClickLeft={() => handleCartUpdate('arte')}
+                                    onClickRight={() => handleDeleteElement('arte', item)}
                                 >
                                     <Image
                                         src={item?.art?.largeThumbUrl}
@@ -87,7 +82,7 @@ export default function ItemPlayground({ item }: ItemPlaygroundProps) {
                                         objectFit='contain'
                                     /> 
                                 </OverlayWithIcon> :
-                                <AddImage onClick={() => handleCartUpdate('art')}/>
+                                <AddImage onClick={() => handleCartUpdate('arte')}/>
                         }
                     </div>
                 </div>

@@ -149,6 +149,7 @@
   
   .right-side-bottom {
     display: flex;
+    flex: 1;
     width: 100%;
     flex-direction: column;
     justify-content: space-around;
@@ -160,7 +161,7 @@
     margin: $spacing-sm;
     background-color: $background-color;
     box-shadow: $box-shadow-medium;
-    border-radius: $border-radius-md;
+    border-radius: $border-radius-xl;
     text-align: center;
     overflow: auto;
   }

@@ -25,22 +25,15 @@ import ItemCard from "components/ItemCard";
 import ProductsCatalog from "products/Catalog";
 import { useCart } from "context/CartContext";
 
-
-//TO DO: Voy por aquí. 
-
 interface LandscapeProps {
+  itemId: string;
   product: Product | null;
   selectedArt: any;
-  setSelectedArt: (art: any) => void;
-  isUpdate: boolean;
+  addInFlow: (updatedArt?: Art, updatedProduct?: Product) => void;
   handleCart: (product: Product | undefined, art: any, quantity?: number) => void;
+  handleDeleteElement: (type: 'producto' | 'arte', item: any) => void;
   getFilteredOptions: (att: { name: string; value: string[] }) => string[];
   handleSelection: (e: React.ChangeEvent<{ name: string; value: number }>) => void;
-  handleChange: (panel: string) => (event: React.ChangeEvent<{}>, isExpanded: boolean) => void;
-  addArt: (art: any) => void;
-  expanded: string | false;
-  generalDescription: string;
-  technicalSpecification: string;
   searchResult: any;
   setSearchResult: (result: any) => void;
   searchParams: URLSearchParams;
@@ -88,7 +81,7 @@ const Landscape: React.FC<LandscapeProps> = (props) => {
             disabled={props.selectedArt === undefined}
             onClick={handleCart}
           >
-            { props.isUpdate ? 'Actualizar' : 'Agregar al carrito'}
+            { cart.some((i) => i.id === props.itemId) ? 'Actualizar' : 'Agregar al carrito'}
           </Button>
         </div>
       </div>
@@ -96,65 +89,68 @@ const Landscape: React.FC<LandscapeProps> = (props) => {
       <div className={styles['main-content']}>
         {/* Left Side - Carusel e Info */}
         <div className={styles['left-side']}>
-            <ItemCard item={{ id: undefined, product: props.product, art: props.selectedArt, quantity: undefined }} direction="column" hasActionBar={false}/>
+            <ItemCard item={{ id: props.itemId, product: props.product, art: props.selectedArt, quantity: undefined }} direction="column" hasActionBar={false} handleDeleteElement={props.handleDeleteElement}/>
         </div>
 
         {/* Right Side - Gallery */}
         <div className={styles['right-side']}>
-          <div className={styles['select']}>
-            <h2>Selecciona:</h2>
-            <div
-              className={`${styles['attributes-container']} ${
-                props.product?.attributes?.length > 1 ? styles['space-between'] : styles['flex-start']
-              }`}
-            >
-              {
-                props.product?.attributes?.map((att, iAtt) =>
-                  <div key={iAtt} style={{ width: "45%" }}>
-                    {console.log("att", att)}
-                    <FormControl
-                      variant="outlined"
-                      style={{ width: "100%" }}
-                    >
-                      <InputLabel id={att.name}>{att.name}</InputLabel>
-                      <Select
-                        labelId={att.name}
-                        id={att.name}
-                        name={att.name}
-                        value={props.product?.selection[att.name] || ''}
-                        onChange={props.handleSelection}
-                        label={att.name}
-                      >
-                        <MenuItem value="">
-                          <em>Selecciona una opción</em>
-                        </MenuItem>
+          {
+            props.openSection === 'producto' &&
+              <div className={styles['select']}>
+                <h2>Selecciona:</h2>
+                <div
+                  className={`${styles['attributes-container']} ${
+                    props.product?.attributes?.length > 1 ? styles['space-between'] : styles['flex-start']
+                  }`}
+                >
+                  {
+                    props.product?.attributes?.map((att, iAtt) =>
+                      <div key={iAtt} style={{ width: "45%" }}>
+                        {console.log("att", att)}
+                        <FormControl
+                          variant="outlined"
+                          style={{ width: "100%" }}
+                        >
+                          <InputLabel id={att.name}>{att.name}</InputLabel>
+                          <Select
+                            labelId={att.name}
+                            id={att.name}
+                            name={att.name}
+                            value={props.product?.selection[att.name] || ''}
+                            onChange={props.handleSelection}
+                            label={att.name}
+                          >
+                            <MenuItem value="">
+                              <em>Selecciona una opción</em>
+                            </MenuItem>
 
-                        {props.getFilteredOptions(att).map((option) => (
-                          <MenuItem key={option} value={option}>
-                            {option}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
-                  </div>
-                )
-              }
-            </div>
-          </div>
+                            {props.getFilteredOptions(att).map((option) => (
+                              <MenuItem key={option} value={option}>
+                                {option}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        </FormControl>
+                      </div>
+                    )
+                  }
+                </div>
+              </div>
+          }
           <div className={styles['right-side-bottom']}>
-            <h2>{`Elige el ${props.openSection === 'art' ? "arte" : "producto"}:`}</h2>
+            <h2>{`Elige el ${props.openSection === 'arte' ? "arte" : "producto"}:`}</h2>
             <div className={styles['art-selection-container']}>
               <div className={styles['art-grid-wrapper']}>
                 {
-                  props.openSection === 'art' ?
+                  props.openSection === 'arte' ?
                   (
                     <Grid
-                      setSelectedArt={props.addArt}
+                      setSelectedArt={props.addInFlow}
                       setSearchResult={props.setSearchResult}
                       searchResult={props.searchResult}
                     />
                   ) : (
-                    <ProductsCatalog onlyGrid={true}/>
+                    <ProductsCatalog flowData={{ onlyGrid : true, addInFlow: props.addInFlow }}/>
                   )
                 }
               </div>

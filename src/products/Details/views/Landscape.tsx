@@ -27,7 +27,6 @@ import { Product, PickedProduct } from '../../interfaces';
 import { useCurrency } from "context/GlobalContext";
 import { Slider } from "components/Slider";
 import { Image } from "components/Image"
-import { queryCreator } from "flow/utils";
 import { PickedArt } from "art/interfaces";
 
 interface LandscapeProps {

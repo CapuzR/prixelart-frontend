@@ -13,12 +13,14 @@ export interface ItemCardProps {
   item: CartItem;
   direction?: 'row' | 'column';
   hasActionBar?: boolean;
+  handleDeleteElement?: (type: 'producto' | 'arte', item: CartItem) => void;
 }
 
 export default function ItemCard({
   item,
   direction = 'row',
-  hasActionBar=true
+  hasActionBar=true,
+  handleDeleteElement,
 }: ItemCardProps) {
   const { deleteItemInCart, addItemToCart, updateItemInCart } = useCart();
   const [quantity, setQuantity] = useState(item.quantity);
@@ -53,12 +55,13 @@ export default function ItemCard({
     <div className={`${styles['card-root']}`} id={item.id}>
       <div className={`${styles['card-content']} ${styles[direction]}`}>
         <div className={styles['item-playground']}>
-          <ItemPlayground item={item} />
+          <ItemPlayground item={item} handleDeleteElement={handleDeleteElement} />
         </div>
 
         <div className={styles['item-content']}>
+          {/* To do: Cambiar esta confusión cochina donde direction es distinto en todos lados conceptualmente. */}
           <ItemContent item={item} direction={direction == 'row' ? 'column' : 'row'} />
-          <div className={styles['pricing-info']}>
+          <div className={`${styles['pricing-info']} ${direction === 'column' && styles['extra-padding']}`}>
             <div className={styles['price-group']}>
               <small>Unidad</small>
               <p>{getUnitPrice()}</p>

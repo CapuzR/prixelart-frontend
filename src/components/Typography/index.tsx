@@ -10,6 +10,7 @@ interface TypographyProps {
   tracking?: 'tight' | 'normal' | 'wide';
   kerning?: 'tight' | 'normal' | 'wide';
   children: React.ReactNode;
+  className?: string;
 }
 
 const Typography: React.FC<TypographyProps> = ({
@@ -20,6 +21,7 @@ const Typography: React.FC<TypographyProps> = ({
   tracking = 'normal',
   kerning = 'normal',
   children,
+  className,
 }) => {
   const Tag = level;
 
@@ -29,6 +31,7 @@ const Typography: React.FC<TypographyProps> = ({
         styles.typography,
         styles[level],
         styles[align],
+        styles[className],
         styles[`leading-${leading}`],
         styles[`tracking-${tracking}`],
         styles[`kerning-${kerning}`],

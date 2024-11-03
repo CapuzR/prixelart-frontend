@@ -23,14 +23,14 @@ export default function ItemContent({ item, direction='row' }: ItemContentProps)
   return (
     <div className={`${styles['content-section']} ${styles[direction]}`}>
       
-      <div className={styles['product-section']}>
+      <div className={`${styles['product-section']} ${ direction === "row" && styles['paper']  }`}>
         <Typography level="h5" leading="normal" color="inherit">
           <strong>Producto:</strong> {item.product?.name || 'Elígelo'}
         </Typography>
         {getSelectedAttributes()}
       </div>
 
-      <div className={`${styles['art-section']}`}>
+      <div className={`${styles['art-section']} ${ direction === "row" && styles['paper']  }`}>
         <Typography level="h5" leading="normal" color="inherit">
           <strong>Arte:</strong> {item.art?.title || 'Elígelo'}
         </Typography>

@@ -87,7 +87,7 @@ const Portrait: React.FC<PortraitProps> = (props) => {
         props.product?.id,
         props.selectedArt?.artId,
         updateAttributes(props.product?.selection, e.target.name, String(e.target.value)),
-        'product',
+        'producto',
         '2'
     );
     history.push({ pathname: location.pathname, search: queryString });

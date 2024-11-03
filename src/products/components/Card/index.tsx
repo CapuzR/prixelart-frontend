@@ -1,7 +1,8 @@
 
 import Button from "components/Button";
 import Typography from "@material-ui/core/Typography";
-import WhatsAppIcon from "@material-ui/icons/WhatsApp";
+import { WhatsApp, AddShoppingCart } from "@material-ui/icons";
+// import AddShoppingCartIcon from "@material-ui/icons/AddShoppingCart"
 import { formatPriceForUI } from "utils/formats";
 import { Slider } from "components/Slider";
 import { Image } from "components/Image";
@@ -16,8 +17,9 @@ export interface CardProps {
   conversionRate: number;
   handleDetails: (product: Product) => void;
   pointedProduct: string;
+  goToFlow: (updatedArt?: any, updatedProduct?: Product) => void;
 }
-export default function Card({ product, currency, conversionRate, handleDetails, pointedProduct }) {
+export default function Card({ product, currency, conversionRate, handleDetails, pointedProduct, goToFlow }) {
   return (
     <div className={`${styles['card-root']} ${product.name === pointedProduct && styles['pointed']}`} id={product.name}>
       <div className={styles['slider-container']}>
@@ -49,6 +51,11 @@ export default function Card({ product, currency, conversionRate, handleDetails,
         </div>
         <div className={styles['buttons-wrapper']}>
           <Button
+            onClick={() => goToFlow(undefined, product)}
+          >
+            <AddShoppingCart />
+          </Button>
+          <Button
             onClick={() => handleDetails(product)}
           >
             Detalles
@@ -58,7 +65,7 @@ export default function Card({ product, currency, conversionRate, handleDetails,
             color= "primary"
             onClick={() => window.open(utils.generateWaProductMessage(product), "_blank")}
           >
-            <WhatsAppIcon /> Info
+            <WhatsApp /> Info
           </Button>
         </div>
       </div>

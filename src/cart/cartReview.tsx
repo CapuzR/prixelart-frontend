@@ -5,10 +5,17 @@ import ItemCard from "components/ItemCard";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import Typography from "components/Typography";
 import styles from './cartReview.module.scss';
+import { CartItem } from "./interfaces";
 
 const CartReview: React.FC = () => {
   const { cart } = useCart(); // Get cart from context
   const isMobile = useMediaQuery("(max-width: 600px)"); // Mobile media query
+  const { deleteItemInCart, deleteElementInItem } = useCart();
+
+  const handleDeleteElement = (type: 'producto' | 'arte', item: CartItem) => {
+    const hasOtherItem = type === 'arte' ? item?.product : item?.art;
+    hasOtherItem ? deleteElementInItem(item?.id, type) : deleteItemInCart(item?.id);
+  };
 
   return (
     <div className={styles['cart-container']}>
@@ -24,6 +31,7 @@ const CartReview: React.FC = () => {
             <ItemCard 
               key={index}
               item={item}
+              handleDeleteElement={handleDeleteElement}
             />
           ))}
         </Grid>

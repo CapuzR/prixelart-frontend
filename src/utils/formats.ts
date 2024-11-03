@@ -1,4 +1,8 @@
 const parsePrice = (input: string | number): number => {
+    if (!input) {
+      return 0;
+    }
+
     if (typeof input === 'number') {
       return input;
     }

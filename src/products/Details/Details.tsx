@@ -113,7 +113,7 @@ const Details: React.FC<Props> = (props) => {
       product?.id,
       undefined,
       selectionAsObject,
-      'art',
+      'arte',
       '1'
     );
 

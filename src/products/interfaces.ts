@@ -13,7 +13,7 @@ export type { Art };
     price: number;
     description: string;
     attributes: Attribute[];
-    selection: Selection[];
+    selection: any[] | undefined;
     variants: Array<Variant>;
     priceRange: PriceRange;
     observations: string;

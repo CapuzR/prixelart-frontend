@@ -1,9 +1,10 @@
 import { 
     CartItem,
     PickedProduct,
-    PickedArt
+    PickedArt,
+    Item
   } from 'cart/interfaces';
-  export type { CartItem, PickedProduct, PickedArt };
+  export type { CartItem, PickedProduct, PickedArt, Item };
 
   import { Product } from 'products/interfaces';
   export type { Product };

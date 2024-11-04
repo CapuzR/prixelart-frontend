@@ -31,7 +31,7 @@ import Tab from "@material-ui/core/Tab";
 import Box from "@material-ui/core/Box";
 import Typography from "@material-ui/core/Typography";
 
-import validations from "../../cart/validations";
+import validations from "../../checkout/validations";
 import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
 import Paper from "@material-ui/core/Paper";
 import Mockup from "./updateMockUp";

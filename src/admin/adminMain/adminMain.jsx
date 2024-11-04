@@ -37,7 +37,7 @@ import Grid from "@material-ui/core/Grid"
 import TextField from "@material-ui/core/TextField"
 import SaveIcon from "@material-ui/icons/Save"
 import Tooltip from "@material-ui/core/Tooltip"
-import validations from "../../cart/validations"
+import validations from "../../checkout/validations"
 import axios from "axios"
 
 function Copyright() {

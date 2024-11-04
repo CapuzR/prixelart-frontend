@@ -56,7 +56,7 @@ const Details: React.FC<Props> = (props) => {
       try {
         const productData = await fetchProductDetails(productId);
         const product = prepareProductData(productData);
-        setProduct({...product, productId: productId});
+        setProduct({...product, id: productId});
       } catch (error) {
         console.error("Error fetching product attributes:", error);
       } finally {

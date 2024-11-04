@@ -17,6 +17,7 @@ export default function ItemPlayground({ item, handleDeleteElement }: ItemPlaygr
     const history = useHistory();
 
     const handleCartUpdate = (type : 'producto' | 'arte') => {
+        console.log("itemPlayground.tsx: ", item);
         const selectionAsObject: { [key: string]: string } = Array.isArray(item?.product?.selection)
           ? item?.product?.selection.reduce((acc, sel, index) => {
               acc[`selection-${index}`] = String(sel);
@@ -32,6 +33,7 @@ export default function ItemPlayground({ item, handleDeleteElement }: ItemPlaygr
             type,
             '1'
         );
+        console.log("itemPlayground.tsx: ", queryString);
         history.push({ pathname: '/flow', search: queryString });
     };
 

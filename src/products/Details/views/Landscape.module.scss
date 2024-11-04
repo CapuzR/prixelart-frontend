@@ -33,7 +33,6 @@
 
 .slider-wrapper {
   display: flex;
-  // width: 70%;
   min-height: 100%;
   transition: transform $transition-normal;
   border-radius: $border-radius-lg;
@@ -45,7 +44,7 @@
   
 .product-title {
   font-size: $font-size-large;
-  width: 100%;
+  width: 50%;
 }
 
 

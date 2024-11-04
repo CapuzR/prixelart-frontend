@@ -16,7 +16,6 @@ import ListItem from "@material-ui/core/ListItem"
 import ListItemText from "@material-ui/core/ListItemText"
 import Collapse from "@material-ui/core/Collapse"
 import Divider from "@material-ui/core/Divider"
-import Switch from "@material-ui/core/Switch"
 import Checkbox from "@material-ui/core/Checkbox"
 import FormControlLabel from "@material-ui/core/FormControlLabel"
 
@@ -28,7 +27,8 @@ import {
   getPVM,
   getTotalUnitsPVM,
   getTotalUnitsPVP,
-} from "../../../cart/pricesFunctions"
+} from "../../../checkout/pricesFunctions"
+import CurrencySwitch from "components/CurrencySwitch"
 const drawerWidth = 240
 
 const useStyles = makeStyles((theme) => ({
@@ -497,21 +497,7 @@ export default function Checkout(props) {
         xl={12}
         style={{ display: "flex", justifyContent: "end" }}
       >
-        <Switch
-          classes={{
-            root: classes.base,
-            switchBase: classes.switchBase,
-            thumb: currency ? classes.thumbTrue : classes.thumb,
-            track: classes.track,
-            checked: classes.checked,
-          }}
-          color="primary"
-          value={currency}
-          onChange={(e) => {
-            changeCurrency(e)
-          }}
-          style={{ marginRight: "-5px" }}
-        />
+        <CurrencySwitch />
       </Grid>
       <Grid
         item

@@ -88,7 +88,7 @@ export default function ItemCard({
                   <Typography level="p">{getUnitPrice()}</Typography>
                 </div>
 
-                {item?.product?.price !== undefined && (
+                {item?.product?.price !== undefined && item.quantity !== undefined && (
                   <>
                     <div className={styles['quantity']}>
                       <Typography level="h6">Cantidad</Typography>

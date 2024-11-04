@@ -1,10 +1,10 @@
-import { Product } from "products/interfaces";
+import { PickedProduct, PickedArt } from "./interfaces";
 
 
-export const checkPermissions = (product: Product | null, selectedArt: string | null) => {
+export const checkPermissions = (product: PickedProduct | null, art: PickedArt | null) => {
     return (
         product &&
-        selectedArt &&
+        art &&
         product.selection &&
         Object.keys(product.selection).every(
             (key) => typeof product.selection![key] === 'string' && product.selection![key] !== ''

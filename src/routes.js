@@ -29,7 +29,7 @@ import SoloService from "./prixerProfile/fullscreenPhoto/fullscreenService"
 import TestimonialsGrid from "./testimonials/testimonialsGrid"
 import Map from "./map/index"
 import OrgGrid from "components/prixerGrid/orgGrid"
-import { getComission } from "./cart/pricesFunctions"
+import { getComission } from "./checkout/pricesFunctions"
 import ChiguireHome from "./orgLanding/chiguireHome"
 import ProductDetail from "./orgLanding/productDetail"
 import ShoppingCartCb from "./orgLanding/ShoppingCartCb"
@@ -571,12 +571,12 @@ function Routes() {
         <Route path="/ChiguireBipolar">
           <ChiguireHome />
         </Route>
-
         
         <Route
           path="/flow"
           render={(props) => {
             const params = new URLSearchParams(props.location.search)
+            params.forEach((value, key) => { console.log("ROUTES ->", key, value) })
             const item = params.get("itemId")
             const prod = params.get("producto")
             const art = params.get("arte")

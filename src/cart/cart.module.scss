@@ -29,10 +29,10 @@
 }
 
 .cart-review-container {
-  flex: 1;
+  // flex: 1;
   display: flex;
   justify-content: space-between;
-  width: 60%;
+  min-width: 60%;
 }
 
 .empty-space {

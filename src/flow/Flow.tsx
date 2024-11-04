@@ -13,7 +13,7 @@ import { fetchArtDetails } from 'art/api';
 import Portrait from "flow/views/Portrait";
 import Landscape from "flow/views/Landscape";
 
-import { CartItem, PickedProduct, PickedArt, Product, Art } from './interfaces';
+import { CartItem, PickedProduct, PickedArt, Product, Art, Item } from './interfaces';
 import { queryCreator, getUrlParams } from "./utils";
 import { parsePrice } from "utils/formats";
 import { useCart } from "context/CartContext"; 
@@ -35,11 +35,16 @@ const Flow: React.FC<Props> = (props) => {
   const { currency } = useCurrency();
   const { conversionRate } = useConversionRate();
   const { showSnackBar } = useSnackBar();
-  const { backdropOpen, showBackdrop } = useBackdrop();
+  const { backdropOpen, showBackdrop, closeBackdrop } = useBackdrop();
   const { cart } = useCart();
   const { addItemToCart, updateItemInCart } = useCart();
   
   const history = useHistory();
+  const urlParams = Object.fromEntries(new URLSearchParams(window.location.search).entries());
+  console.log("FLOW -> useEffect -> urlParams", urlParams);
+
+  const [item, setItem] = useState<Item | undefined>(undefined);
+  const [flow, setFlow] = useState<{ flowReady: boolean } | undefined>(undefined);
 
   //TO DO: Todo esto debería estar dentro de ITEM!!!
   const itemId = new URLSearchParams(window.location.search).get("itemId");
@@ -52,17 +57,11 @@ const Flow: React.FC<Props> = (props) => {
   const [flowReady, setFlowReady] = useState(false);
 
   const [isPortrait, setIsPortrait] = useState(window.innerWidth < 768);
-  const [expanded, setExpanded] = useState<string | false>(false);
   const searchParams = new URLSearchParams(window.location.search);
   const isUpdate = cart.some((i)=> i.id === itemId);
   
-
-  //Create a useEffect that check if product, and selectedArt are not undefined...
-  //Also checks if the product has all its attributes selected (using .every)
-  //If all those conditions are met, set flowReady to true.
-
   const debouncedCheckPermissions = useCallback(
-    debounce((product: Product | null, selectedArt: string | null) => {
+    debounce((product: PickedProduct, selectedArt: PickedArt) => {
       const hasPermission = checkPermissions(product, selectedArt);
       if (hasPermission) {
         setFlowReady(true);
@@ -74,9 +73,10 @@ const Flow: React.FC<Props> = (props) => {
     [showBackdrop, backdropOpen]
   );
 
+
   useEffect(() => {
-    debouncedCheckPermissions(product, selectedArt);
-  }, [product, selectedArt]);
+      debouncedCheckPermissions(item?.product, item?.art);
+  }, [item?.product, item?.art]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -89,14 +89,37 @@ const Flow: React.FC<Props> = (props) => {
 
   //TO DO: Todo debería ir dentro de un item (?)
   useEffect(() => {
-    const fetchProduct = async () => {
+    const fetchItem = async () => {
       setLoading(true);
       try {
-        const productData = await fetchProductDetails(productId);
-        const product= prepareProductData(productData);
-        selectedAttributes ? 
-          setProduct({...product, id: productId, selection: selectedAttributes.reduce((acc, param) => ({ ...acc, [param.name]: param.value }), {})}) :
-          setProduct({...product, id: productId});
+        let fetchedProduct = undefined;
+        let selectedProduct = undefined;
+        let selectedArt = undefined;
+        let atts = {};
+
+        if (urlParams.producto) {
+          fetchedProduct = await fetchProductDetails(productId)
+          selectedProduct = prepareProductData(fetchedProduct)
+        };
+        artId &&
+          (selectedArt = await fetchArtDetails(artId));
+
+        selectedAttributes &&
+          selectedAttributes.map(att => {
+            atts[att.name] = att.value;
+          })
+
+        setItem({
+          id: urlParams.itemId,
+          product: selectedProduct ?{
+            ...selectedProduct,
+            id: urlParams.producto,
+            selection: atts || undefined,
+          } : undefined,
+          art: selectedArt ? selectedArt : undefined,
+          price: undefined,
+          discount: undefined
+        })
       } catch (error) {
         console.error("Error fetching product attributes:", error);
       } finally {
@@ -104,19 +127,7 @@ const Flow: React.FC<Props> = (props) => {
       }
     };
 
-    const fetchArt = async () => {
-      try {
-        if (artId) {
-          const art = await fetchArtDetails(artId);
-          setSelectedArt(art);
-        }
-      } catch (error) {
-        console.error("Error fetching selected art:", error);
-      };
-    };
-
-    fetchProduct();
-    artId && fetchArt();
+    fetchItem();
   }, [productId, artId]);
   
   useEffect(() => {
@@ -127,40 +138,35 @@ const Flow: React.FC<Props> = (props) => {
           const updatedPrice = await fetchVariantPrice(selectedVariant._id, selectedArt?.artId);
           const parsedPrice = parsePrice(updatedPrice);
 
-          setProduct((prevProduct) => ({
-            ...prevProduct,
+          setItem((prevItem)=>({
+            ...prevItem,
             price: parsedPrice
-          }));
+          }))
         }
-      } else {
-        product &&
-        setProduct((prevProduct) => ({
-          ...prevProduct,
-          price: undefined
-        }));
-      }
+      } 
     };
     fetchAndSetPrice();
-  }, [JSON.stringify(product?.selection), currency, conversionRate, selectedArt?.artId]);
+  }, [JSON.stringify(item?.product?.selection), currency, conversionRate, item?.art?.artId]);
 
-  const handleCart = (product?: Product, art?: PickedArt, quantity?: number) => {
+  const handleCart = (item : Item) => {
     isUpdate ? 
-      updateItemInCart({ id : itemId, product, art, quantity }) : 
-      addItemToCart({ product, art, quantity });
+      updateItemInCart(item) : 
+      addItemToCart({ product: item.product, art: item.art, quantity: undefined });
     
     showSnackBar("Item added in the cart");
+    closeBackdrop();
     history.push("/shopping");
   };
   
   const handleDeleteElement = (type: 'producto' | 'arte', item: CartItem) => {
     // TO DO: Esto del selectionObject + QueryString + push debería agruparse de alguna manera...se utiliza mucho.
-    const selectionAsObject: { [key: string]: string } = Array.isArray(product?.selection)
-        ? product?.selection.reduce((acc, item, index) => {
+    const selectionAsObject: { [key: string]: string } = Array.isArray(item?.product?.selection)
+        ? item?.product?.selection.reduce((acc, item, index) => {
             acc[`selection-${index}`] = String(item);
             return acc;
           }, {} as { [key: string]: string })
-        : (product?.selection || {});
-          console.log("HANDLE DELETE ELEMENT");
+        : (item?.product?.selection || {});
+        
         type === 'arte' ? (
           setSelectedArt(undefined)
         ) : (
@@ -168,9 +174,9 @@ const Flow: React.FC<Props> = (props) => {
         );
 
     const queryString = queryCreator(
-      itemId,
-      type == 'producto' ? undefined : product?.id,
-      type == 'arte' ? undefined : selectedArt?.artId,
+      item?.id,
+      type == 'producto' ? undefined : item?.product?.id,
+      type == 'arte' ? undefined : item?.art?.artId,
       selectionAsObject,
       'producto',
       '3'
@@ -181,11 +187,14 @@ const Flow: React.FC<Props> = (props) => {
 
   const handleSelection = (e: React.ChangeEvent<{ name: string; value: number }>) => {
     let openSection : 'producto' | 'arte' = 'producto';
-    const newSelection = product?.selection && { ...product?.selection };
+    const newSelection = item?.product?.selection && { ...item?.product?.selection };
     e.target.name && (newSelection[e.target.name] = e.target.value as number);
-    setProduct((prevProduct) => ({
-      ...prevProduct,
-      selection: newSelection,
+    setItem((prevItem) => ({
+      ...prevItem,
+      product: {
+        ...prevItem.product,
+        selection: newSelection,
+      },
     }));
 
     const selectionAsObject = Array.isArray(newSelection)
@@ -196,14 +205,14 @@ const Flow: React.FC<Props> = (props) => {
         : (newSelection || {});
 
     Object.values(newSelection).every((s) => typeof s === "string" && s !== "") && 
-    Object.values(newSelection).length === product?.attributes.length && 
-    !selectedArt?.artId &&
+    Object.values(newSelection).length === item?.product?.attributes?.length && 
+    !item?.art?.artId &&
       (openSection = 'arte');
         
     const queryString = queryCreator(
-      itemId,
-      product?.id,
-      selectedArt?.artId,
+      item?.id,
+      item?.product?.id,
+      item?.art?.artId,
       selectionAsObject,
       openSection,
       '3'
@@ -212,19 +221,19 @@ const Flow: React.FC<Props> = (props) => {
   };
 
   const getFilteredOptions = (att: { name: string; value: string[] }) => {
-    if (Object.values(product?.selection).every((s) => s.value === "") ||
-    !Object.keys(product?.selection).some((key) => key !== att.name && product?.selection[key] !== "")) {
+    if (Object.values(item?.product?.selection).every((s) => s.value === "") ||
+    !Object.keys(item?.product?.selection).some((key) => key !== att.name && item?.product?.selection[key] !== "")) {
       return att.value || [];
     }
     
-    return Object.keys(product?.selection)
+    return Object.keys(item?.product?.selection)
     .filter((key) => {
-      if (key !== att.name && product?.selection[key] !== "") {
+      if (key !== att.name && item?.product?.selection[key] !== "") {
         return att.value;
     }})
     .map((key) => {
-      return product?.variants?.filter((variant) => { return variant.attributes?.some(
-          (a) => a.name === key && a.value === product?.selection[key]
+      return item?.product?.variants?.filter((variant) => { return variant.attributes?.some(
+          (a) => a.name === key && a.value === item?.product?.selection[key]
       )})
       ?.map((vari) => {
         return vari.attributes?.filter((a) => a.name === att.name)[0].value;
@@ -234,20 +243,24 @@ const Flow: React.FC<Props> = (props) => {
   };
   
   const addInFlow = (updatedArt?: Art, updatedProduct?: Product) => {
-    updatedArt && setSelectedArt(updatedArt);
-    updatedProduct && setProduct(updatedProduct);
+    setItem((prevItem) => ({
+      ...prevItem,
+      id: urlParams.itemId,
+      product: updatedProduct ? updatedProduct : undefined,
+      art: updatedArt ? updatedArt : undefined,
+    }));
 
-    const selectionAsObject: { [key: string]: string } = Array.isArray(product?.selection)
-        ? product?.selection.reduce((acc, item, index) => {
+    const selectionAsObject: { [key: string]: string } = Array.isArray(item?.product?.selection)
+        ? item?.product?.selection.reduce((acc, item, index) => {
             acc[`selection-${index}`] = String(item);
             return acc;
           }, {} as { [key: string]: string })
-        : (product?.selection || {});
+        : (item?.product?.selection || {});
         
     const queryString = queryCreator(
       itemId,
-      updatedProduct?.id || product?.id,
-      updatedArt?.artId || selectedArt?.artId,
+      updatedProduct?.id || item?.product?.id,
+      updatedArt?.artId || item?.art?.artId,
       updatedProduct ? undefined : selectionAsObject,
       updatedArt ? 'arte' : 'producto',
       '3'
@@ -259,7 +272,6 @@ const Flow: React.FC<Props> = (props) => {
   
   return (
     <>
-    {console.log("FLOW -> useEffect -> flowReady", flowReady)}
       {/* {
       isPortrait ? (
         <Portrait
@@ -282,6 +294,7 @@ const Flow: React.FC<Props> = (props) => {
         />
       ) : ( */}
         <Landscape
+          item={item}
           itemId={itemId}
           product={product}
           selectedArt={selectedArt}

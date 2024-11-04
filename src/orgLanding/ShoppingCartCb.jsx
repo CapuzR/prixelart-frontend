@@ -17,7 +17,7 @@ import { TextField } from "@material-ui/core";
 import DeleteIcon from "@material-ui/icons/Delete";
 import Snackbar from "@material-ui/core/Snackbar";
 import Paper from "@material-ui/core/Paper";
-import ConsumerForm from "../cart/consumerForm";
+import ConsumerForm from "checkout/ConsumerForm.jsx";
 import Stepper from "@material-ui/core/Stepper";
 import Step from "@material-ui/core/Step";
 import StepLabel from "@material-ui/core/StepLabel";

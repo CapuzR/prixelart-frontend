@@ -16,7 +16,7 @@ export default function ItemContent({ item, direction='row' }: ItemContentProps)
         .filter((key) => item?.product?.selection[key] !== '')
         .map((key, index) => (
           <Typography key={index} level="p" color="textSecondary" leading="normal">
-            <strong>{key}</strong>: {item?.product?.selection[key]}
+            <strong>{key}</strong>: {item?.product?.selection?.[key]}
           </Typography>
         ));
   };

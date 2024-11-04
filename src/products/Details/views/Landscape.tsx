@@ -28,6 +28,7 @@ import { useCurrency } from "context/GlobalContext";
 import { Slider } from "components/Slider";
 import { Image } from "components/Image"
 import { PickedArt } from "art/interfaces";
+import CurrencySwitch from "components/CurrencySwitch";
 
 interface LandscapeProps {
   product: Product;
@@ -42,8 +43,6 @@ interface LandscapeProps {
 const Landscape: React.FC<LandscapeProps> = (props) => {
   const { currency } = useCurrency();
   const { conversionRate } = useConversionRate();
-
-  const history = useHistory();
   
   return (
     <div className={styles['prix-product-container']}>
@@ -69,6 +68,9 @@ const Landscape: React.FC<LandscapeProps> = (props) => {
           <div className={styles['first-row-title-container']}>
             <div className={styles['product-title']}>
               {props.product?.name}
+            </div>
+            <div className={styles['product-title']}>
+              <CurrencySwitch />
             </div>
             <div className={styles['price-selected']}>
               {

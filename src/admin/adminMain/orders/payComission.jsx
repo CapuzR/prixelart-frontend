@@ -18,7 +18,7 @@ import {
   getTotalUnitsPVM,
   getTotalUnitsPVP,
   getComissionv2,
-} from "../../../cart/pricesFunctions"
+} from "../../../checkout/pricesFunctions"
 const drawerWidth = 240
 
 const useStyles = makeStyles((theme) => ({

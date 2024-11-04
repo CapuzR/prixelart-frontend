@@ -26,6 +26,7 @@ import { CartItem, Product } from "products/interfaces"
 import { useConversionRate, useCurrency } from "context/GlobalContext"
 import { Art } from "../interfaces"
 import { queryCreator } from "flow/utils"
+import CurrencySwitch from "components/CurrencySwitch"
 
 ReactGA.initialize("G-0RWP9B33D8")
 ReactGA.pageview("/productos")
@@ -186,6 +187,9 @@ const ProductsCatalog: React.FC<ProductsCatalogProps> = ({
         <div className={styles['search-bar']}>
           <div className={styles['sorting-select']}>
             <SortingSelect sort={sort} handleChange={handleChangeSort} options={sortingOptions} />
+          </div>
+          <div className={styles['sorting-select']}>
+            <CurrencySwitch />
           </div>
         </div>
         <Grid isParent={true}>

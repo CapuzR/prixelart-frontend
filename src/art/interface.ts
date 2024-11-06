@@ -50,3 +50,11 @@ export interface Art {
     owner: string;
     createdOn: string;
   }
+
+   export interface Filters {
+    text?: string;
+    category?: string;
+    username?: string;
+    initialPoint: number;
+    itemsPerPage: number;
+  }

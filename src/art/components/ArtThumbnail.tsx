@@ -1,6 +1,3 @@
-import axios from "axios"
-import React, { useState, useEffect } from "react"
-
 import {
   CardActionArea,
   Typography,
@@ -9,45 +6,22 @@ import {
 } from "@material-ui/core"
 import Img from "react-cool-img"
 import AddShoppingCartIcon from "@material-ui/icons/AddShoppingCart"
-import FullscreenPhoto from "../../prixerProfile/fullscreenPhoto/fullscreenPhoto"
 import Star from "@material-ui/icons/StarRate"
 import StarOutline from "@material-ui/icons/StarOutline"
-import { Art } from "../interface"
-import { setVisibleArt } from "../api"
 import { addingToCart } from "../services"
+import styles from "./artThumbnail.module.scss"
 
 export default function ArtThumbnail({
   tile,
   i,
-  handleCloseVisible,
   setSelectedArt,
   setIsOpenAssociateProduct,
-  handleFullImageClick,
+  handleFullImageClick
 }) {
-  const [selectedLocalArt, setSelectedLocalArt] = useState<Art | undefined>(
-    undefined
-  )
-  //Mover estilo a archivos de estilos y eliminar funciones que no se utilizan.
-  const hideArt = (tile: Art, e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault()
-    setVisibleArt(tile)
-    setSelectedLocalArt(undefined)
-    handleCloseVisible()
-  }
-
   return (
     <div key={i}>
       {JSON.parse(localStorage.getItem("adminToken")) && tile.visible && (
-        <Typography
-          style={{
-            opacity: 0.5,
-            fontSize: "0.8rem",
-            fontWeight: 100,
-            backgroundColor: "#fff",
-          }}
-        >
-          Puntos: {tile.points}
-        </Typography>
+        <Typography className={styles.points}>Puntos: {tile.points}</Typography>
       )}
 
       <CardActionArea>
@@ -64,7 +38,7 @@ export default function ArtThumbnail({
             onClick={(e) => {
               addingToCart(e, tile, setSelectedArt, setIsOpenAssociateProduct)
             }}
-            style={{ position: "absolute", padding: "8px" }}
+            className={styles.iconButton}
           >
             <AddShoppingCartIcon />
           </IconButton>
@@ -74,20 +48,15 @@ export default function ArtThumbnail({
             <IconButton
               size="small"
               color="primary"
-              style={{ position: "absolute", right: 0 }}
+              className={styles.iconButton2}
             >
               <Star
-                style={{
-                  marginRight: "-2.2rem",
-                  marginTop: "0.05rem",
-                }}
+                className={styles.iconButton2__star}
                 color="primary"
                 fontSize="large"
               />
               <StarOutline
-                style={{
-                  color: "white",
-                }}
+                className={styles.iconButton2__star__outline}
                 fontSize="large"
               />
             </IconButton>
@@ -99,12 +68,7 @@ export default function ArtThumbnail({
             handleFullImageClick(e, tile)
           }}
           placeholder="/imgLoading.svg"
-          style={{
-            backgroundColor: "#eeeeee",
-            width: "100%",
-            marginBottom: "7px",
-            borderRadius: "4px",
-          }}
+          className={styles.img}
           src={tile.largeThumbUrl || tile.squareThumbUrl}
           debounce={1000}
           cache

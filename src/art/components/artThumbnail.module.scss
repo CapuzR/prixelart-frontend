@@ -1,0 +1,32 @@
+.points {
+    opacity: 0.5;
+    font-size: 0.8rem;
+    font-weight: 100;
+    background-color: #fff;
+}
+
+.iconButton {
+    position: absolute;
+    padding: 8px;
+}
+
+.iconButton2 {
+    position: absolute;
+    right: 0;
+
+    &__star {
+        margin-right: -2.2rem;
+        margin-top: 0.05rem;
+
+        &__outline {
+            color: white
+        }
+    }
+}
+
+.img {
+    background-color: #eeeeee;
+    width: 100%;
+    margin-bottom: 7px;
+    border-radius: 4px;
+}

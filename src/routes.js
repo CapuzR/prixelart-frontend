@@ -484,7 +484,6 @@ function Routes() {
         <Route
           exact
           path="/art=:artId"
-          component={ArtDetail}
         >
           <ArtDetail
             buyState={buyState}

@@ -1,4 +1,3 @@
-// Hay un montón de imports que no se utilizan, eliminar
 import { useState, useEffect } from "react"
 import styles from "./grid.module.scss"
 import { useHistory } from "react-router-dom"
@@ -10,12 +9,10 @@ import PaginationBar from "../../components/Pagination/PaginationBar"
 import SearchBar from "components/searchBar/searchBar"
 import Detail from "./Detail"
 import { Filters, Art } from "../interface"
-import { useLoading, useSnackBar } from "context/GlobalContext"
+import { useLoading } from "context/GlobalContext"
 
 export default function Grid(props) {
   const { setLoading } = useLoading()
-  const { showSnackBar } = useSnackBar()
-
   const [tiles, setTiles] = useState([])
   const [total, setTotal] = useState(1)
   const history = useHistory()
@@ -26,15 +23,12 @@ export default function Grid(props) {
   const [categoryValue, setCategoryValue] = useState(
     globalParams.get("category") || null
   )
-  const [selectedArt, setSelectedArt] = useState(undefined)
   const [openFullArt, setOpenFullArt] = useState(false)
   const itemsPerPage = 30
   const [pageNumber, setPageNumber] = useState(1)
   const noOfPages = Math.ceil(total / itemsPerPage)
 
-  const handleCloseVisible = () => {
-    setSelectedArt(undefined)
-  }
+
 
   const fetchData = async () => {
     try {
@@ -74,6 +68,7 @@ export default function Grid(props) {
     handleFullImage(e, tile, props, history, setOpenFullArt)
   }
   
+  
   return (
     <div className={styles.container}>
       <div className={styles.root}>
@@ -101,7 +96,6 @@ export default function Grid(props) {
                   <ArtThumbnail
                     tile={tile}
                     i={i}
-                    handleCloseVisible={handleCloseVisible}
                     setSelectedArt={props.setSelectedArt}
                     setIsOpenAssociateProduct={props.setIsOpenAssociateProduct}
                     handleFullImageClick={handleFullImageClick}

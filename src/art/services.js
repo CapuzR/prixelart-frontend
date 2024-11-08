@@ -35,10 +35,11 @@ export const handleFullImage = async (
   setOpenFullArt
 ) => {
   props.setFullArt(tile)
-  props.setSearchResult(props.tiles)
+  props.setSearchResult(props.searchResult)
   const artId = e.target.id
   history.push({
     pathname: `/art=${artId}`,
+    state: { searchResult: props?.searchResult }
   })
   setOpenFullArt(true)
 }

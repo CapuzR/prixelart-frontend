@@ -5,9 +5,10 @@ export const checkPermissions = (product: PickedProduct | null, art: PickedArt |
     return (
         product &&
         art &&
-        product.selection &&
-        Object.keys(product.selection).every(
-            (key) => typeof product.selection![key] === 'string' && product.selection![key] !== ''
+        product?.selection &&
+        Object.keys(product?.selection).length !== 0 &&
+        Object.keys(product?.selection).every(
+            (key) => typeof product?.selection![key] === 'string' && product?.selection![key] !== ''
         )
     );
 };

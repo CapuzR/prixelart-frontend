@@ -2,14 +2,18 @@ export const searchPhotos = (
   queryValue,
   categories,
   history,
-  props,
-  globalParams
+  prixerUsername,
+  globalParams,
+  // isFlow
 ) => {
-  const basePath = window.location.pathname.includes("producto=")
-    ? window.location.pathname
-    : "/galeria"
-  const isPrixer = props.prixerUsername || globalParams.get("prixer")
+  // const basePath = window.location.pathname.includes("producto=")
+  //   ? window.location.pathname
+  //   : "/galeria"
+  // console.log("SERVICES - searchPhotos - window.location", window.location.pathname);
+  const basePath = window.location.pathname;
+  const isPrixer = prixerUsername || globalParams.get("prixer")
   const prixerParam = isPrixer ? `?prixer=${isPrixer}` : ""
+  // const flowParam = isFlow ? `flow=${isFlow}` : ""
   const queryParams = new URLSearchParams()
   if (categories && categories.length > 0) {
     queryParams.append("category", categories)
@@ -24,7 +28,7 @@ export const searchPhotos = (
     : `${basePath}/s${
         queryParams.toString() ? "?" + queryParams.toString() : ""
       }`
-  history.push({ pathname: finalPath })
+  return finalPath;
 }
 
 export const handleFullImage = async (

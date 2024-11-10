@@ -1,4 +1,5 @@
 export const queryCreator = (
+    lineId: string | undefined,
     itemId: string | undefined,
     productId: string | undefined,
     artId: string | undefined,
@@ -6,10 +7,15 @@ export const queryCreator = (
     openSection?: 'producto' | 'arte',
     step?: string
   ) => {
+    
     const searchParams = new URLSearchParams(window.location.search);
 
     for (const key of Array.from(searchParams.keys())) {
       searchParams.delete(key);
+    }
+
+    if (lineId) {
+      searchParams.set("lineId", lineId);
     }
     
     if (itemId) {

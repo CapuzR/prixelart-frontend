@@ -1,43 +1,9 @@
 @import 'theme.scss';
 
-.card-root {
-    display: flex;
-    overflow: hidden;
-    align-content: space-between;
-    // width: 100%;
-    height: auto;
-    @include paper(undefined, $box-shadow-heavy, $border-radius-xl, $spacing-md);
-    padding: 0;
-}
-
 .item-playground {
     // height: 100%;
     flex: 1;
     // max-width: 540px;
-}
-
-.card-content {
-    display: flex;
-    flex: 1;
-    padding: $spacing-md;
-    justify-content: space-between;
-
-    &.row {
-        flex-direction: row;
-    }
-
-    &.column {
-        flex-direction: column;
-
-    }
-}
-
-.item-content {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    padding: $spacing-md;
-    justify-content: space-between;
 }
 
 .pricing-info {
@@ -82,7 +48,41 @@
     }
 }
 
-.extra-padding {
-    @include paper(undefined, $box-shadow-medium, $border-radius-lg, $spacing-xl);
-    padding: $spacing-xl $spacing-lg*2;
+.item-content {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding: $spacing-md;
+    justify-content: space-between;
 }
+
+.card-root {
+    display: flex;
+    overflow: hidden;
+    align-content: space-between;
+    // width: 100%;
+    height: auto;
+    @include paper(undefined, $box-shadow-heavy, $border-radius-xl, $spacing-md);
+    padding: 0;
+}
+
+.card-content {
+    display: flex;
+    flex: 1;
+    padding: $spacing-md;
+    justify-content: space-between;
+
+    &.row {
+        flex-direction: row;
+    }
+
+    &.column {
+        flex-direction: column;
+
+    }
+}
+
+// .extra-padding {
+//     @include paper(undefined, $box-shadow-medium, $border-radius-lg, $spacing-xl);
+//     padding: $spacing-xl $spacing-lg*2;
+// }

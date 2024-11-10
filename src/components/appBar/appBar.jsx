@@ -325,7 +325,7 @@ export default function MenuAppBar() {
                 <Badge
                   overlap="rectangular"
                   badgeContent={
-                    cart.length
+                    cart.lines.length
                   }
                   color="white"
                 >
@@ -573,7 +573,7 @@ export default function MenuAppBar() {
                   <Badge
                     overlap="rectangular"
                     badgeContent={
-                      cart.length
+                      cart.lines.length
                       // JSON.parse(localStorage.getItem("buyState"))?.length
                     }
                     color="white"

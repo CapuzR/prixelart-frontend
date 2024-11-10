@@ -39,3 +39,15 @@ export const fetchArtDetails = async (artId: string): Promise<any> => {
       }
     )
   }
+
+  export const fetchNextArtNumber = async (artId: string): Promise<number> => {
+    const base_url = `${process.env.REACT_APP_BACKEND_URL}/art/get-next-art-number`;
+  
+    try {
+      const response = await axios.post(base_url, { artId });
+      return response?.data?.nextArtNumber;
+    } catch (error) {
+      console.error("Error fetching next art number:", error);
+      throw error;
+    }
+  }

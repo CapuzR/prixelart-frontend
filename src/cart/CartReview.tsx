@@ -1,21 +1,28 @@
 import React from "react";
 import Grid from "components/Grid";
 import { useCart } from "context/CartContext";
-import ItemCard from "components/ItemCard";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import Typography from "components/Typography";
 import styles from './cartReview.module.scss';
-import { CartItem } from "./interfaces";
+import { Item } from "./interfaces";
+import LineCard from "components/lineCard";
 
 const CartReview: React.FC = () => {
   const { cart } = useCart(); // Get cart from context
   const isMobile = useMediaQuery("(max-width: 600px)"); // Mobile media query
-  const { deleteItemInCart, deleteElementInItem } = useCart();
+  const { deleteLineInCart, deleteElementInItem } = useCart();
 
-  const handleDeleteElement = (type: 'producto' | 'arte', item: CartItem) => {
-    const hasOtherItem = type === 'arte' ? item?.product : item?.art;
-    hasOtherItem ? deleteElementInItem(item?.id, type) : deleteItemInCart(item?.id);
+  // const handleDeleteElement = (type: 'producto' | 'arte', item: Item) => {
+  //   const hasOtherItem = type === 'arte' ? item.product : item.art;
+  //   hasOtherItem ? deleteElementInItem(id, type) : deleteLineInCart(line.id);
+  // };
+
+  const handleDeleteElement = (type: 'producto' | 'arte', item: Item) => {
+    const hasOtherItem = type === 'arte' ? item.product : item.art;
+    const line = cart.lines.filter((line) => line.item.sku === item.sku);
+    hasOtherItem ? deleteElementInItem(item.sku, type) : deleteLineInCart(line[0].id);
   };
+
 
   return (
     <div className={styles['cart-container']}>
@@ -27,10 +34,11 @@ const CartReview: React.FC = () => {
 
       <div className={styles['cart-grid-container']}>
         <Grid isParent={true}>
-          {cart?.map((item, index) => (
-            <ItemCard 
+          {cart.lines.map((line, index) => (
+            <LineCard 
               key={index}
-              item={item}
+              direction="row"
+              line={line}
               handleDeleteElement={handleDeleteElement}
             />
           ))}

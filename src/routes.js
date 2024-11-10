@@ -78,7 +78,6 @@ function Routes() {
   const [fullArt, setFullArt] = useState(null)
   const [open, setOpen] = useState(false)
   const [message, setMessage] = useState("")
-  const [searchResult, setSearchResult] = useState([])
   const [sellers, setSellers] = useState()
   const [pointedProduct, setPointedProduct] = useState()
   const [dollarValue, setDollarValue] = useState("1")
@@ -355,8 +354,6 @@ function Routes() {
                 sellers={sellers}
                 permissions={permissions}
                 setPermissions={setPermissions}
-                setSearchResult={setSearchResult}
-                searchResult={searchResult}
             />
         </Route>
         
@@ -397,8 +394,6 @@ function Routes() {
             prixer={prixer}
             setFullArt={setFullArt}
             fullArt={fullArt}
-            setSearchResult={setSearchResult}
-            searchResult={searchResult}
             permissions={permissions}
             setOpen={setOpen}
             setMessage={setMessage}
@@ -493,7 +488,6 @@ function Routes() {
             addItemToBuyState={addItemToBuyState}
             prixer={prixer}
             fullArt={fullArt}
-            searchResult={searchResult}
             isOpenAssociateProduct={isOpenAssociateProduct}
             setIsOpenAssociateProduct={setIsOpenAssociateProduct}
             setSelectedProductToAssociate={setSelectedProductToAssociate}
@@ -535,7 +529,6 @@ function Routes() {
             setMessage={setMessage}
             setPrixer={setPrixer}
             setFullArt={setFullArt}
-            setSearchResult={setSearchResult}
             permissions={permissions}
           />
         </Route>
@@ -558,7 +551,6 @@ function Routes() {
             setMessage={setMessage}
             setPrixer={setPrixer}
             setFullArt={setFullArt}
-            setSearchResult={setSearchResult}
             permissions={permissions}
           />
         </Route>
@@ -576,7 +568,6 @@ function Routes() {
           path="/flow"
           render={(props) => {
             const params = new URLSearchParams(props.location.search)
-            params.forEach((value, key) => { console.log("ROUTES ->", key, value) })
             const item = params.get("itemId")
             const prod = params.get("producto")
             const art = params.get("arte")
@@ -600,8 +591,6 @@ function Routes() {
                   setSelectedArtToAssociate={setSelectedArtToAssociate}
                   setIsOpenAssociateArt={setIsOpenAssociateArt}
                   isOpenAssociateArt={isOpenAssociateArt}
-                  setSearchResult={setSearchResult}
-                  searchResult={searchResult}
                   setFullArt={setFullArt}
                   fullArt={fullArt}
                   dollarValue={dollarValue}
@@ -635,7 +624,6 @@ function Routes() {
                     setMessage={setMessage}
                     setPrixer={setPrixer}
                     setFullArt={setFullArt}
-                    setSearchResult={setSearchResult}
                     dollarValue={dollarValue}
                     setPointedProduct={setPointedProduct}
                     pointedProduct={pointedProduct}
@@ -689,7 +677,6 @@ function Routes() {
                     setMessage={setMessage}
                     setPrixer={setPrixer}
                     setFullArt={setFullArt}
-                    setSearchResult={setSearchResult}
                     dollarValue={dollarValue}
                     setPointedProduct={setPointedProduct}
                     pointedProduct={pointedProduct}

@@ -8,7 +8,7 @@ export const prepareProductData = (product) => {
 };
 
 //Details.tsx
-export const getSelectedVariantPrice = (selectedAtt: any, variants: Variant[]): Variant | null => {
+export const getSelectedVariant = (selectedAtt: any, variants: Variant[]): Variant | null => {
   const selectedVariant = variants?.find((variant) =>
     variant.attributes?.every((attr) => selectedAtt && Object.keys(selectedAtt).includes(attr.name))
   );

@@ -18,14 +18,15 @@ export interface CardProps {
   handleDetails: (product: Product) => void;
   pointedProduct: string;
   goToFlow: (updatedArt?: any, updatedProduct?: Product) => void;
+  isSelectedInFlow?: boolean;
 }
-export default function Card({ product, currency, conversionRate, handleDetails, pointedProduct, goToFlow }) {
+export default function Card({ product, currency, conversionRate, handleDetails, pointedProduct, goToFlow, isSelectedInFlow }: CardProps) {
   return (
     <div className={`${styles['card-root']} ${product.name === pointedProduct && styles['pointed']}`} id={product.name}>
       <div className={styles['slider-container']}>
         <Slider images={product?.sources?.images}>
           {product?.sources?.images?.map((image, i) => (
-            <Image key={i} src={image.url} alt={product?.product?.name} />
+            <Image key={i} src={image.url} alt={product?.name} />
           ))}
         </Slider>
       </div>
@@ -50,11 +51,14 @@ export default function Card({ product, currency, conversionRate, handleDetails,
           </Typography>
         </div>
         <div className={styles['buttons-wrapper']}>
+          {
+            !isSelectedInFlow &&
           <Button
             onClick={() => goToFlow(undefined, product)}
           >
             <AddShoppingCart />
           </Button>
+          }
           <Button
             onClick={() => handleDetails(product)}
           >

@@ -54,12 +54,12 @@ const Checkout: React.FC<CheckoutProps> = ({
       let subtotalv2 = "getTotalPrice(cart)"
       let totalv2 = "getTotal(cart)"
 
-      cart.map((s) => {
-        s.product &&
-          s.art &&
+      cart.lines.map((s) => {
+        s.item.product &&
+          s.item.art &&
           orderLines.push({
-            product: s.product,
-            art: s.art,
+            product: s.item.product,
+            art: s.item.art,
             quantity: s.quantity,
           })
       })

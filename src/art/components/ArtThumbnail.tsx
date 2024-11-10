@@ -25,6 +25,7 @@ export default function ArtThumbnail({
   handleCloseVisible,
   setSelectedArt,
   handleFullImageClick,
+  isSelectedInFlow
 }) {
   const [selectedLocalArt, setSelectedLocalArt] = useState<Art | undefined>(
     undefined
@@ -44,6 +45,7 @@ export default function ArtThumbnail({
       addingToCart(e, tile, setSelectedArt)
     } else {
       const queryString = queryCreator(
+        undefined,
         undefined,
         undefined,
         tile.artId,
@@ -72,22 +74,25 @@ export default function ArtThumbnail({
       )}
 
       <CardActionArea>
-        <Tooltip
-          title={
-            window.location.search.includes("producto=")
-              ? "Asociar al producto"
-              : "Agregar al carrito"
-          }
-        >
-          <IconButton
-            size="small"
-            color="primary"
-            onClick={handleArtSelection}
-            style={{ position: "absolute", padding: "8px" }}
-          >
-            <AddShoppingCartIcon />
-          </IconButton>
-        </Tooltip>
+        {
+          !isSelectedInFlow &&
+            <Tooltip
+              title={
+                window.location.search.includes("producto=")
+                  ? "Asociar al producto"
+                  : "Agregar al carrito"
+              }
+            >
+              <IconButton
+                size="small"
+                color="primary"
+                onClick={handleArtSelection}
+                style={{ position: "absolute", padding: "8px" }}
+              >
+                <AddShoppingCartIcon />
+              </IconButton>
+            </Tooltip>
+        }
         {tile.exclusive === "exclusive" && (
           <Tooltip title="Arte exclusivo">
             <IconButton

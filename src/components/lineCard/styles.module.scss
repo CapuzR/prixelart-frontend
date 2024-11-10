@@ -1,0 +1,94 @@
+@import 'theme.scss';
+
+.card-root {
+    display: flex;
+    overflow: hidden;
+    align-content: space-between;
+    // width: 100%;
+    height: auto;
+    @include paper(undefined, $box-shadow-heavy, $border-radius-xl, $spacing-md);
+    padding: 0;
+}
+
+.card-content {
+    display: flex;
+    flex: 1;
+    padding: $spacing-md;
+    justify-content: space-between;
+
+    &.row {
+        flex-direction: row;
+    }
+
+    &.column {
+        flex-direction: column;
+
+    }
+}
+
+.item-content {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding: $spacing-md;
+    justify-content: space-between;
+}
+
+.line-details {
+    display: flex;
+    flex-direction: column;
+    flex: 0;
+    // padding: $spacing-md;
+    justify-content: space-between;
+}
+
+.item-playground {
+    flex: 1;
+}
+
+.pricing-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: $spacing-md;
+}
+
+.quantity,
+.subtotal {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+
+    small {
+        font-size: $font-size-small;
+        color: $text-color;
+        margin-bottom: $spacing-xs;
+    }
+
+    p {
+        font-size: $font-size-medium;
+        font-weight: $font-weight-bold;
+        margin: 0;
+    }
+}
+
+.quantity-input {
+    width: 60px;
+    padding: $spacing-xs;
+    font-size: $font-size-medium;
+    text-align: center;
+    border: 1px solid $border-color;
+    border-radius: $border-radius-sm;
+    outline: none;
+
+    &:focus {
+        border-color: $primary-color;
+    }
+}
+
+.extra-padding {
+    @include paper(undefined, $box-shadow-medium, $border-radius-lg, $spacing-xl);
+    padding: $spacing-xl $spacing-lg*2;
+}

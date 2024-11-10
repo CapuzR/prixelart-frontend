@@ -1,8 +1,8 @@
 import { Dispatch, SetStateAction } from 'react';
-import { CartItem } from 'cart/interfaces';
+import { Cart } from 'cart/interfaces';
 
 export interface CheckoutProps {
-  cart: CartItem[];
+  cart: Cart;
   props: {
     setValuesConsumerForm: (values: any) => void;
     valuesConsumerForm: any;

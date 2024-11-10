@@ -22,7 +22,6 @@ const Button: React.FC<ButtonProps> = ({
   children,
   className = '',
 }) => {
-  console.log("highlighted", highlighted);
   const buttonClass = 
     `${styles['btn']}
     ${styles[type]}

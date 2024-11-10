@@ -4,7 +4,7 @@ import { useHistory } from "react-router-dom";
 import ReactGA from "react-ga";
 import { useConversionRate, useCurrency, useLoading, useSnackBar } from 'context/GlobalContext';
 import { useCart } from 'context/CartContext';
-import { prepareProductData, getSelectedVariantPrice } from "../services";
+import { prepareProductData, getSelectedVariant } from "../services";
 import { fetchVariantPrice } from "../api";
 import { parsePrice } from "utils/formats";
 import { splitDescription } from "../utils";
@@ -14,22 +14,18 @@ import { fetchProductDetails } from '../api';
 import Portrait from "./views/Portrait";
 import Landscape from "./views/Landscape";
 
-import { CartItem, Product } from '../interfaces';
+import { Item, Product } from '../interfaces';
 import { queryCreator } from "flow/utils";
 
 ReactGA.initialize("G-0RWP9B33D8");
 
-interface Props {
-  buyState: CartItem[];
-  setBuyState: (cart: CartItem[]) => void;
-}
 
-const Details: React.FC<Props> = (props) => {
+const Details = () => {
   const history = useHistory();
   const { loading, setLoading } = useLoading();
   const { currency } = useCurrency();
   const { conversionRate } = useConversionRate();
-  const { addItemToCart } = useCart();
+  // const { addItemToCart } = useCart();
   
   const productId = new URLSearchParams(window.location.search).get("producto");
 
@@ -70,7 +66,7 @@ const Details: React.FC<Props> = (props) => {
   useEffect(() => {
     const fetchAndSetPrice = async () => {
       if(product?.selection && Object.keys(product?.selection).every((s) => product?.selection[s] !== '')) {
-        const selectedVariant = getSelectedVariantPrice(product?.selection, product?.variants);
+        const selectedVariant = getSelectedVariant(product?.selection, product?.variants);
         
         if (selectedVariant) {
           const updatedPrice = await fetchVariantPrice(selectedVariant._id);
@@ -110,6 +106,7 @@ const Details: React.FC<Props> = (props) => {
 
     const queryString = queryCreator(
       undefined,
+      undefined,
       productId,
       undefined,
       selectionAsObject || undefined,
@@ -120,9 +117,9 @@ const Details: React.FC<Props> = (props) => {
     history.push({ pathname: '/flow', search: queryString });
   };
 
-  const handleSaveProduct = async () => {
-    addItemToCart({ product, art: undefined, quantity: 1 });
-  };
+  // const handleSaveProduct = async () => {
+  //   addItemToCart({ product, art: undefined, quantity: 1 });
+  // };
 
 
   const handleChange = (panel: string) => (event: React.ChangeEvent<{}>, isExpanded: boolean) => {
@@ -140,7 +137,7 @@ const Details: React.FC<Props> = (props) => {
               expanded={expanded}
               description={description}
               handleArtSelection={handleArtSelection}
-              handleSaveProduct={handleSaveProduct}
+              // handleSaveProduct={handleSaveProduct}
             />
           ) : (
             <Landscape
@@ -150,7 +147,7 @@ const Details: React.FC<Props> = (props) => {
               expanded={expanded}
               description={description}
               handleArtSelection={handleArtSelection}
-              handleSaveProduct={handleSaveProduct}
+              // handleSaveProduct={handleSaveProduct}
             />
           )
     }

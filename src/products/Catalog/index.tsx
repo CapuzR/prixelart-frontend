@@ -22,7 +22,7 @@ import { fetchBestSellers, fetchProducts } from '../api';
 import ReactGA from "react-ga"
 
 import styles from './styles.module.scss';
-import { CartItem, Product } from "products/interfaces"
+import { Product } from "products/interfaces"
 import { useConversionRate, useCurrency } from "context/GlobalContext"
 import { Art } from "../interfaces"
 import { queryCreator } from "flow/utils"
@@ -34,12 +34,12 @@ ReactGA.pageview("/productos")
 interface ProductsCatalogProps {
   pointedProduct?: string | null;
   setPointedProduct?: (productName: string) => void;
-  flowData?: { onlyGrid?: boolean; addInFlow: (updatedArt?: Art, updatedProduct?: Product) => void | undefined; };
+  flowData?: { onlyGrid?: boolean; addInFlow: (updatedArt?: Art, updatedProduct?: Product) => void | undefined; selectedProductId?: string | undefined };
 }
 
 const ProductsCatalog: React.FC<ProductsCatalogProps> = ({
   pointedProduct,
-  flowData = { onlyGrid: false, addInFlow: undefined },
+  flowData = { onlyGrid: false, addInFlow: undefined, selectedProductId: undefined },
   setPointedProduct,
 }) => {
   const theme = useTheme();
@@ -97,9 +97,10 @@ const ProductsCatalog: React.FC<ProductsCatalogProps> = ({
 
   const goToFlow = (art: Art, product: Product) => {
     if(flowData?.addInFlow) {
-      flowData.addInFlow(art, product)
+      flowData.addInFlow(art, {...product, selection: product?.attributes})
     } else {
       const queryString = queryCreator(
+          undefined,
           undefined,
           product?.id,
           undefined,
@@ -203,6 +204,7 @@ const ProductsCatalog: React.FC<ProductsCatalogProps> = ({
                     handleDetails={handleDetails}
                     pointedProduct={pointedProduct}
                     goToFlow={goToFlow}
+                    isSelectedInFlow={flowData?.selectedProductId === product.id}
                   />
                 </Grid>
               ))

@@ -15,7 +15,7 @@ import { Product } from '../products/interfaces';
 // }
 
 export interface Cart {
-  items: CartLine[];
+  lines: CartLine[];
   subTotal: number;
   totalUnits: number;
   cartDiscount: number;
@@ -23,27 +23,19 @@ export interface Cart {
 }
 
 export interface CartLine {
+  id: string;
   item: Item;
   quantity: number;
   discount: number;
   subtotal: number;
 }
 
-export interface Item {
-  id: string | undefined;
+  export interface Item {
+  sku: string | undefined;
   art: PickedArt | undefined;
   product: PickedProduct | undefined;
-  price: number;
-  discount: number;
-}
-
-
-//cartItem debe tener price jaja wtf, y también subTotal (?) para no estarlo calculando en todos lados ?
-export interface CartItem {
-  id: string | undefined;
-  art: PickedArt | undefined;
-  product: PickedProduct | undefined;
-  quantity: number | undefined;
+  price: number | undefined;
+  discount: number | undefined;
 }
 
 export interface PickedProduct extends Pick<Product, 

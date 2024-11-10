@@ -84,6 +84,7 @@ const Portrait: React.FC<PortraitProps> = (props) => {
     (Object.keys(props.product?.selection).every(key => props.product?.selection[key] !== '')) && setStep(2);
     const queryString = queryCreator(
         undefined,
+        undefined,
         props.product?.id,
         props.selectedArt?.artId,
         updateAttributes(props.product?.selection, e.target.name, String(e.target.value)),

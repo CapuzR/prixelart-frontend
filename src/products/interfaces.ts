@@ -1,8 +1,8 @@
 import { 
-  CartItem,
+  Item,
   PickedProduct
 } from 'cart/interfaces';
-export type { CartItem, PickedProduct };
+export type { Item, PickedProduct };
 
 import { Art } from 'art/interfaces';
 export type { Art };
@@ -28,11 +28,12 @@ export type { Art };
   
   export interface Variant {
     _id: string;
+    id: string;
     name: string;
     attributes: VariantAttribute[];
   }
   
-  interface VariantAttribute {
+  export interface VariantAttribute {
     name: string;
     value: string;
   }

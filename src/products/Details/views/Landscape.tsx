@@ -35,7 +35,7 @@ interface LandscapeProps {
   expanded: string | false;
   description: { generalDescription: string; technicalSpecification: string };
   handleArtSelection: () => void;
-  handleSaveProduct: () => void;
+  // handleSaveProduct: () => void;
   handleSelection: (e: React.ChangeEvent<{ name: string; value: number }>) => void;
   handleChange: (panel: string) => (event: React.ChangeEvent<{}>, isExpanded: boolean) => void;
 }
@@ -166,13 +166,13 @@ const Landscape: React.FC<LandscapeProps> = (props) => {
             </div>
           </div>
           <div className={styles['buttons-container']}>
-            <Button
+            {/* <Button
               type="onlyText"
               color="primary"
               onClick={props.handleSaveProduct}
             >
               Guardar
-            </Button>
+            </Button> */}
             <Button
               color="primary"
               disabled={props.product?.selection && Object.keys(props.product.selection).length === 0 && Object.keys(props.product.selection).every((item: any) => item === "")}

@@ -17,7 +17,7 @@ import { generateWaProductMessage } from 'utils/utils';
 
 import styles from '../Flow.module.scss';
 
-import { Product, Art, Item } from '../interfaces';
+import { Product, Art, Item, PickedProduct, PickedArt } from '../interfaces';
 import ItemCard from "components/ItemCard";
 import ProductsCatalog from "products/Catalog";
 import { useCart } from "context/CartContext";
@@ -25,19 +25,16 @@ import CurrencySwitch from "components/CurrencySwitch";
 
 interface LandscapeProps {
   itemId: string;
-  product: Product | null;
   item: Item;
-  selectedArt: any;
+  isUpdate: boolean;
   addInFlow: (updatedArt?: Art, updatedProduct?: Product) => void;
   handleCart: (item : Item) => void;
   handleDeleteElement: (type: 'producto' | 'arte', item: any) => void;
   getFilteredOptions: (att: { name: string; value: string[] }) => string[];
   handleSelection: (e: React.ChangeEvent<{ name: string; value: number }>) => void;
-  searchResult: any;
-  setSearchResult: (result: any) => void;
-  searchParams: URLSearchParams;
   openSection: string;
   flowReady: boolean;
+  handleFlow: (type: 'producto' | 'arte') => void;
 }
 
 const Landscape: React.FC<LandscapeProps> = (props) => {
@@ -67,21 +64,21 @@ const Landscape: React.FC<LandscapeProps> = (props) => {
           >
             <ShareIcon className={styles['share-icon']} /> Compartir
           </Button>
-          <Button
-            color="primary"
-            disabled={props.item?.art === undefined}
-            onClick={handleCart}
-            highlighted={props.flowReady}
-          >
-            { cart.some((i) => i.id === props.itemId) ? 'Actualizar' : 'Agregar al carrito'}
-          </Button>
+            <Button
+              color="primary"
+              disabled={!props.flowReady}
+              onClick={handleCart}
+              highlighted={props.flowReady}
+            >
+              { cart.lines.some((l) => l.item.sku === props.item.sku) ? 'Actualizar' : 'Agregar al carrito'}
+            </Button>
         </div>
       </div>
 
       <div className={styles['main-content']}>
         {/* Left Side - Carusel e Info */}
         <div className={styles['left-side']}>
-            <ItemCard item={{ id: props.itemId, product: props.item?.product, art: props.item?.art, quantity: undefined }} direction="column" hasActionBar={false} handleDeleteElement={props.handleDeleteElement}/>
+            <ItemCard item={props.item} direction="column" handleDeleteElement={props.handleDeleteElement} handleFlow={props.handleFlow} />
         </div>
 
         {/* Right Side - Gallery */}
@@ -98,7 +95,6 @@ const Landscape: React.FC<LandscapeProps> = (props) => {
                   {
                     props.item?.product?.attributes?.map((att, iAtt) =>
                       <div key={iAtt} style={{ width: "45%" }}>
-                        {console.log("att", att)}
                         <FormControl
                           variant="outlined"
                           style={{ width: "100%" }}
@@ -138,11 +134,10 @@ const Landscape: React.FC<LandscapeProps> = (props) => {
                   (
                     <Grid
                       setSelectedArt={props.addInFlow}
-                      setSearchResult={props.setSearchResult}
-                      searchResult={props.searchResult}
+                      selectedArtId={props.item?.art?.artId || undefined}
                     />
                   ) : (
-                    <ProductsCatalog flowData={{ onlyGrid : true, addInFlow: props.addInFlow }}/>
+                    <ProductsCatalog flowData={{ onlyGrid : true, addInFlow: props.addInFlow, selectedProductId: props.item?.product?.id || undefined }}/>
                   )
                 }
               </div>

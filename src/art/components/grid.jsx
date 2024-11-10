@@ -154,6 +154,7 @@ export default function Grid(props) {
   const itemsToSkip = (pageNumber - 1) * itemsPerPage
   const noOfPages = Math.ceil(total / itemsPerPage)
   const activePrixer = globalParams.get("prixer");
+  const [searchResult, setSearchResult] = useState([])
 
   // Hay varias funciones que no se utilizan, eliminar
   const handleClickVisible = () => {
@@ -198,7 +199,7 @@ export default function Grid(props) {
         const response = await readGallery(filters)
         setTiles(response.arts)
         setTotal(response.length)
-        props.setSearchResult(response?.arts)
+        setSearchResult(response?.arts)
       } catch (error) {
         console.error("Error fetching products:", error)
       } finally {
@@ -212,7 +213,9 @@ export default function Grid(props) {
   const handleSearch = (queryValue, categories) => {
     setSearchValue(queryValue)
     setCategoryValue(categories)
-    searchPhotos(queryValue, categories, history, props, globalParams)
+    //TO DO War: Se debe utilizar para ?s= si no hay más params, si hay otros se debe usar &s=, igual con cat, etc.
+    // const finalPath= searchPhotos(queryValue, categories, history, props.prixerUsername, globalParams);
+    // history.push({ pathname: finalPath })
   }
 
   const handleFullImageClick = (e, tile) => {
@@ -270,6 +273,7 @@ export default function Grid(props) {
                       handleCloseVisible={handleCloseVisible}
                       setSelectedArt={props.setSelectedArt}
                       handleFullImageClick={handleFullImageClick}
+                      isSelectedInFlow={props.selectedArtId === tile.artId || undefined}
                     />
                   </div>
                 )
@@ -286,7 +290,7 @@ export default function Grid(props) {
           <Detail
             art={props.fullArt}
             buyState={props.buyState}
-            searchResult={props.searchResult}
+            searchResult={searchResult}
           />
         )
       }

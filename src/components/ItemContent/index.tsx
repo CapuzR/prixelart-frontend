@@ -1,22 +1,23 @@
 import React from "react";
 import styles from "./styles.module.scss";
-import { CartItem } from 'cart/interfaces';
+import { Item } from './interfaces';
 import Typography from "components/Typography";
 
 export interface ItemContentProps {
-  item: CartItem;
+  item: Item;
+  // item: CartItem;
   direction?: 'row' | 'column';
 }
 
 export default function ItemContent({ item, direction='row' }: ItemContentProps) {
 
   const getSelectedAttributes = () => {
-    return Object.keys(item?.product?.selection || {})
+    return Object.keys(item.product?.selection || {})
         .slice(0, 3)
-        .filter((key) => item?.product?.selection[key] !== '')
+        .filter((key) => item.product?.selection[key] !== '')
         .map((key, index) => (
           <Typography key={index} level="p" color="textSecondary" leading="normal">
-            <strong>{key}</strong>: {item?.product?.selection?.[key]}
+            <strong>{key}</strong>: {item.product?.selection?.[key]}
           </Typography>
         ));
   };

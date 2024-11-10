@@ -41,10 +41,10 @@ const ShoppingPage: React.FC<ShoppingPageProps> = (props) => {
         </div>
 
         <div className={styles['checkout-container']}>
-          <Checkout
+          {/* <Checkout
             cart={cart}
             props={props}
-          />
+          /> */}
         </div>
       </div>
     </div>

@@ -1,56 +1,55 @@
 @import 'theme.scss';
 
 .content-section {
-    display: flex;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: $spacing-xl;
+  align-items: flex-start;
+
+  &.row {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  &.column {
     flex-direction: column;
     justify-content: space-between;
-    gap: $spacing-xl;
     align-items: flex-start;
-
-    &.row {
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    &.column {
-        flex-direction: column;
-        justify-content: space-between;
-        align-items: flex-start;
-    }
-
+  }
 }
 
 .product-section {
-    display: flex;
-    flex-direction: column;
-    gap: $spacing-xs;
-    width: 50%;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+  width: 50%;
 
-    p {
-        font-size: $font-size-medium;
-    }
+  p {
+    font-size: $font-size-medium;
+  }
 
-    strong {
-        font-weight: bold;
-    }
+  strong {
+    font-weight: bold;
+  }
 }
 
 .paper {
-    @include paper(undefined, $box-shadow-medium, $border-radius-md, $spacing-md);
+  @include paper(undefined, $box-shadow-medium, $border-radius-md, $spacing-md);
 }
 
 .art-section {
-    display: flex;
-    flex-direction: column;
-    gap: $spacing-xs;
-    width: 50%;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+  width: 50%;
 
-    p {
-        font-size: $font-size-medium;
-    }
+  p {
+    font-size: $font-size-medium;
+  }
 
-    strong {
-        font-weight: bold;
-    }
+  strong {
+    font-weight: bold;
+  }
 }

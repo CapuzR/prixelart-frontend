@@ -1,85 +1,84 @@
 @import 'theme.scss';
 
 .item-playground {
-    // height: 100%;
-    flex: 1;
-    // max-width: 540px;
+  // height: 100%;
+  flex: 1;
+  // max-width: 540px;
 }
 
 .pricing-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: $spacing-md;
+
+  .quantity,
+  .subtotal,
+  .unit-price {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
     align-items: center;
-    margin-top: $spacing-md;
+    flex: 1;
 
-    .quantity,
-    .subtotal,
-    .unit-price {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        flex: 1;
-
-        small {
-            font-size: $font-size-small;
-            color: $text-color;
-            margin-bottom: $spacing-xs;
-        }
-
-        p {
-            font-size: $font-size-medium;
-            font-weight: $font-weight-bold;
-            margin: 0;
-        }
+    small {
+      font-size: $font-size-small;
+      color: $text-color;
+      margin-bottom: $spacing-xs;
     }
 
-    .quantity-input {
-        width: 60px;
-        padding: $spacing-xs;
-        font-size: $font-size-medium;
-        text-align: center;
-        border: 1px solid $border-color;
-        border-radius: $border-radius-sm;
-        outline: none;
-
-        &:focus {
-            border-color: $primary-color;
-        }
+    p {
+      font-size: $font-size-medium;
+      font-weight: $font-weight-bold;
+      margin: 0;
     }
+  }
+
+  .quantity-input {
+    width: 60px;
+    padding: $spacing-xs;
+    font-size: $font-size-medium;
+    text-align: center;
+    border: 1px solid $border-color;
+    border-radius: $border-radius-sm;
+    outline: none;
+
+    &:focus {
+      border-color: $primary-color;
+    }
+  }
 }
 
 .item-content {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    padding: $spacing-md;
-    justify-content: space-between;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: $spacing-md;
+  justify-content: space-between;
 }
 
 .card-root {
-    display: flex;
-    overflow: hidden;
-    align-content: space-between;
-    // width: 100%;
-    height: auto;
-    @include paper(undefined, $box-shadow-heavy, $border-radius-xl, $spacing-md);
-    padding: 0;
+  display: flex;
+  overflow: hidden;
+  align-content: space-between;
+  // width: 100%;
+  height: auto;
+  @include paper(undefined, $box-shadow-heavy, $border-radius-xl, $spacing-md);
+  padding: 0;
 }
 
 .card-content {
-    display: flex;
-    flex: 1;
-    padding: $spacing-md;
-    justify-content: space-between;
+  display: flex;
+  flex: 1;
+  padding: $spacing-md;
+  justify-content: space-between;
 
-    &.row {
-        flex-direction: row;
-    }
+  &.row {
+    flex-direction: row;
+  }
 
-    &.column {
-        flex-direction: column;
-
-    }
+  &.column {
+    flex-direction: column;
+  }
 }
 
 // .extra-padding {

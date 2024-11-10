@@ -7,32 +7,30 @@ interface SnackbarProps {
 }
 
 const Snackbar: FC<SnackbarProps> = ({ message, onClose }) => {
-    const [visible, setVisible] = useState(true);
+  const [visible, setVisible] = useState(true);
 
-    const handleClose = useCallback(() => {
-        setVisible(false);
-        if (onClose) {
-            onClose();
-        }
-    }, [onClose]);
+  const handleClose = useCallback(() => {
+    setVisible(false);
+    if (onClose) {
+      onClose();
+    }
+  }, [onClose]);
 
-    useEffect(() => {
-        const timer = setTimeout(() => {
-          handleClose();
-        }, 3000);
-    
-        return () => clearTimeout(timer);
-    }, [handleClose]);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      handleClose();
+    }, 3000);
 
-    if (!visible) return null;
+    return () => clearTimeout(timer);
+  }, [handleClose]);
 
-    return (
-        <div className={styles.snackbar}>
-            <div className={styles['snackbar-content']}>
-            {message}
-            </div>
-        </div>
-    );
+  if (!visible) return null;
+
+  return (
+    <div className={styles.snackbar}>
+      <div className={styles['snackbar-content']}>{message}</div>
+    </div>
+  );
 };
 
 export default Snackbar;

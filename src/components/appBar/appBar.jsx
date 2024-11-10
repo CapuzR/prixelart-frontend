@@ -1,43 +1,42 @@
-import React, { useState, useEffect } from "react"
-import axios from "axios"
-import clsx from "clsx"
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import clsx from 'clsx';
 
-import { useHistory } from "react-router-dom"
+import { useHistory } from 'react-router-dom';
 
-import { makeStyles, useTheme } from "@material-ui/core/styles"
-import AppBar from "@material-ui/core/AppBar"
-import Toolbar from "@material-ui/core/Toolbar"
-import IconButton from "@material-ui/core/IconButton"
-import MenuItem from "@material-ui/core/MenuItem"
-import Menu from "@material-ui/core/Menu"
-import Tabs from "@material-ui/core/Tabs"
-import Tab from "@material-ui/core/Tab"
-import useMediaQuery from "@material-ui/core/useMediaQuery"
-import Drawer from "@material-ui/core/Drawer"
-import Divider from "@material-ui/core/Divider"
-import MenuIcon from "@material-ui/icons/Menu"
-import ChevronLeftIcon from "@material-ui/icons/ChevronLeft"
-import ChevronRightIcon from "@material-ui/icons/ChevronRight"
-import ShoppingCartOutlinedIcon from "@material-ui/icons/ShoppingCartOutlined";
-import Badge from "@material-ui/core/Badge";
+import { makeStyles, useTheme } from '@material-ui/core/styles';
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
+import IconButton from '@material-ui/core/IconButton';
+import MenuItem from '@material-ui/core/MenuItem';
+import Menu from '@material-ui/core/Menu';
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
+import Drawer from '@material-ui/core/Drawer';
+import Divider from '@material-ui/core/Divider';
+import MenuIcon from '@material-ui/icons/Menu';
+import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
+import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import ShoppingCartOutlinedIcon from '@material-ui/icons/ShoppingCartOutlined';
+import Badge from '@material-ui/core/Badge';
 
-import logo from "./Logotipo_Prixelart_H#2.png"
-import CB from "../../orgLanding/assets/isotipo.svg"
+import logo from './Logotipo_Prixelart_H#2.png';
+import CB from '../../apps/orgs/orgLanding/assets/isotipo.svg';
 
 import AttachMoneyIcon from '@material-ui/icons/AttachMoney'; // USD icon
 import { useCurrency, useConversionRate } from 'context/GlobalContext';
-import "./appBar.css"
-import { useCart } from "context/CartContext";
+import './appBar.css';
+import { useCart } from 'context/CartContext';
 
-
-const drawerWidth = 240
+const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
     zIndex: 10,
-    minWidth: "100%",
-    minHeight: "100%",
+    minWidth: '100%',
+    minHeight: '100%',
   },
   menuButton: {
     marginRight: theme.spacing(2),
@@ -46,26 +45,26 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
   },
   a: {
-    textDecoration: "none",
-    color: "#fff",
-    position: "relative",
-    borderRadius: "30%",
+    textDecoration: 'none',
+    color: '#fff',
+    position: 'relative',
+    borderRadius: '30%',
   },
   title: {
     flexGrow: 1,
   },
   menu: {
-    display: "flex",
-    direction: "column",
+    display: 'flex',
+    direction: 'column',
   },
   button: {
-    minWidth: "0px",
+    minWidth: '0px',
   },
   root2: {
-    display: "flex",
+    display: 'flex',
   },
   appBar: {
-    transition: theme.transitions.create(["margin", "width"], {
+    transition: theme.transitions.create(['margin', 'width'], {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
     }),
@@ -73,7 +72,7 @@ const useStyles = makeStyles((theme) => ({
   appBarShift: {
     width: `calc(100% - ${drawerWidth}px)`,
     marginLeft: drawerWidth,
-    transition: theme.transitions.create(["margin", "width"], {
+    transition: theme.transitions.create(['margin', 'width'], {
       easing: theme.transitions.easing.easeOut,
       duration: theme.transitions.duration.enteringScreen,
     }),
@@ -82,7 +81,7 @@ const useStyles = makeStyles((theme) => ({
     marginRight: theme.spacing(2),
   },
   hide: {
-    display: "none",
+    display: 'none',
   },
   drawer: {
     width: drawerWidth,
@@ -93,23 +92,23 @@ const useStyles = makeStyles((theme) => ({
     // height: "400px",
   },
   drawerHeader: {
-    display: "flex",
-    alignItems: "center",
+    display: 'flex',
+    alignItems: 'center',
     padding: theme.spacing(0, 1),
     ...theme.mixins.toolbar,
-    justifyContent: "flex-end",
+    justifyContent: 'flex-end',
   },
   content: {
     flexGrow: 1,
     padding: theme.spacing(3),
-    transition: theme.transitions.create("margin", {
+    transition: theme.transitions.create('margin', {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
     }),
     marginLeft: -drawerWidth,
   },
   contentShift: {
-    transition: theme.transitions.create("margin", {
+    transition: theme.transitions.create('margin', {
       easing: theme.transitions.easing.easeOut,
       duration: theme.transitions.duration.enteringScreen,
     }),
@@ -118,150 +117,147 @@ const useStyles = makeStyles((theme) => ({
   brillante: {
     width: 45,
     height: 45,
-    borderRadius: "50%",
+    borderRadius: '50%',
     // backgroundColor: "black",
-    animation: "$animacion-brillo 2s infinite",
+    animation: '$animacion-brillo 2s infinite',
   },
-  "@keyframes animacion-brillo": {
-    "0%": {
-      boxShadow: "0 0 0 0 rgba(255, 255, 255, 0.7)",
+  '@keyframes animacion-brillo': {
+    '0%': {
+      boxShadow: '0 0 0 0 rgba(255, 255, 255, 0.7)',
     },
-    "50%": {
-      boxShadow: "0 0 0 20px rgba(255, 255, 255, 0)",
+    '50%': {
+      boxShadow: '0 0 0 20px rgba(255, 255, 255, 0)',
     },
-    "100%": {
-      boxShadow: "0 0 0 0 rgba(255, 255, 255, 0)",
+    '100%': {
+      boxShadow: '0 0 0 0 rgba(255, 255, 255, 0)',
     },
   },
-}))
+}));
 
 export default function MenuAppBar() {
-  const theme = useTheme()
-  const classes = useStyles()
-  const [anchorEl, setAnchorEl] = useState(null)
-  const history = useHistory()
-  const open = Boolean(anchorEl)
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"))
-  const [open2, setOpen] = useState(false)
-  const [avatar, setAvatar] = useState("")
+  const theme = useTheme();
+  const classes = useStyles();
+  const [anchorEl, setAnchorEl] = useState(null);
+  const history = useHistory();
+  const open = Boolean(anchorEl);
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const [open2, setOpen] = useState(false);
+  const [avatar, setAvatar] = useState('');
   const { currency, toggleCurrency } = useCurrency();
   const { cart } = useCart();
 
   const handleMenu = (event) => {
-    setAnchorEl(event.currentTarget)
-  }
+    setAnchorEl(event.currentTarget);
+  };
 
   const handleClose = () => {
-    setAnchorEl(null)
-  }
+    setAnchorEl(null);
+  };
 
   const handleMain = () => {
-    history.push({ pathname: "/" })
-    setAnchorEl(null)
-  }
+    history.push({ pathname: '/' });
+    setAnchorEl(null);
+  };
 
   const handleBack = () => {
-    history.goBack()
-    setAnchorEl(null)
-  }
+    history.goBack();
+    setAnchorEl(null);
+  };
 
   const handlePasswordChange = () => {
-    history.push({ pathname: "/cambio-contraseña" })
-    setAnchorEl(null)
-  }
+    history.push({ pathname: '/cambio-contraseña' });
+    setAnchorEl(null);
+  };
 
   const handleCTLogin = () => {
-    history.push({ pathname: "/iniciar" })
-    setAnchorEl(null)
-  }
+    history.push({ pathname: '/iniciar' });
+    setAnchorEl(null);
+  };
 
   const handleOrg = () => {
     // e.preventDefault();
-    history.push({ pathname: "/organizaciones" })
-  }
+    history.push({ pathname: '/organizaciones' });
+  };
 
   const handleMyAccount = () => {
     history.push({
-      pathname: "/prixer=" + JSON.parse(localStorage.getItem("token")).username,
-    })
-    setAnchorEl(null)
-  }
+      pathname: '/prixer=' + JSON.parse(localStorage.getItem('token')).username,
+    });
+    setAnchorEl(null);
+  };
 
   const handleMyStats = () => {
     history.push({
-      pathname:
-        "/prixer=" +
-        JSON.parse(localStorage.getItem("token")).username +
-        "/stats",
-    })
-    setAnchorEl(null)
-  }
+      pathname: '/prixer=' + JSON.parse(localStorage.getItem('token')).username + '/stats',
+    });
+    setAnchorEl(null);
+  };
 
   const handleLogout = () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + "/logout"
+    const base_url = process.env.REACT_APP_BACKEND_URL + '/logout';
     axios.post(base_url).then((response) => {
-      localStorage.removeItem("token")
-      localStorage.removeItem("tokenExpire")
-      history.push({ pathname: "/iniciar" })
-      setAnchorEl(null)
-    })
-  }
+      localStorage.removeItem('token');
+      localStorage.removeItem('tokenExpire');
+      history.push({ pathname: '/iniciar' });
+      setAnchorEl(null);
+    });
+  };
 
   const handleGallery = (e) => {
-    e.preventDefault()
-    history.push({ pathname: "/galeria" })
-  }
+    e.preventDefault();
+    history.push({ pathname: '/galeria' });
+  };
 
   const handlePrixers = (e) => {
-    e.preventDefault()
-    history.push({ pathname: "/prixers" })
-  }
+    e.preventDefault();
+    history.push({ pathname: '/prixers' });
+  };
 
   const handleProductCatalog = (e) => {
-    e.preventDefault()
-    history.push({ pathname: "/productos" })
-  }
+    e.preventDefault();
+    history.push({ pathname: '/productos' });
+  };
 
   const handleServices = (e) => {
-    e.preventDefault()
-    history.push({ pathname: "/servicios" })
-  }
+    e.preventDefault();
+    history.push({ pathname: '/servicios' });
+  };
 
   const handleTestimonials = (e) => {
-    e.preventDefault()
-    history.push({ pathname: "/testimonios" })
-  }
+    e.preventDefault();
+    history.push({ pathname: '/testimonios' });
+  };
 
   const handleCB = (e) => {
-    e.preventDefault()
-    history.push({ pathname: "/chiguirebipolar" })
-  }
+    e.preventDefault();
+    history.push({ pathname: '/chiguirebipolar' });
+  };
 
   const openShoppingCart = () => {
-    history.push({ pathname: "/shopping" });
+    history.push({ pathname: '/shopping' });
   };
 
   const handleDrawerOpen = () => {
-    setOpen(true)
-  }
+    setOpen(true);
+  };
 
   const handleDrawerClose = () => {
-    setOpen(false)
-  }
+    setOpen(false);
+  };
 
   useEffect(() => {
-    getPrixerAvatar()
-  }, [])
+    getPrixerAvatar();
+  }, []);
 
   const getPrixerAvatar = async () => {
-    if (JSON.parse(localStorage.getItem("token"))) {
-      const user = JSON.parse(localStorage.getItem("token")).username
-      const base_url = process.env.REACT_APP_BACKEND_URL + "/prixer/get/" + user
+    if (JSON.parse(localStorage.getItem('token'))) {
+      const user = JSON.parse(localStorage.getItem('token')).username;
+      const base_url = process.env.REACT_APP_BACKEND_URL + '/prixer/get/' + user;
       await axios.get(base_url).then((response) => {
-        setAvatar(response.data.avatar)
-      })
+        setAvatar(response.data.avatar);
+      });
     }
-  }
+  };
 
   return (
     <div className={classes.root}>
@@ -276,8 +272,8 @@ export default function MenuAppBar() {
           >
             <Toolbar
               style={{
-                display: "flex",
-                justifyContent: "space-between",
+                display: 'flex',
+                justifyContent: 'space-between',
               }}
             >
               <IconButton
@@ -288,47 +284,24 @@ export default function MenuAppBar() {
               >
                 <MenuIcon />
               </IconButton>
-              <div style={{ display: "flex" }}>
-                <IconButton
-                  className={classes.a}
-                  onClick={handleMain}
-                >
-                  <img
-                    src={logo}
-                    alt="Prixelart logo"
-                    style={{ width: 100 }}
-                  />
+              <div style={{ display: 'flex' }}>
+                <IconButton className={classes.a} onClick={handleMain}>
+                  <img src={logo} alt="Prixelart logo" style={{ width: 100 }} />
                 </IconButton>
                 <div
                   style={{
-                    display: "flex",
-                    placeContent: "center",
-                    alignItems: "center",
+                    display: 'flex',
+                    placeContent: 'center',
+                    alignItems: 'center',
                   }}
                 >
-                  <IconButton
-                    onClick={handleCB}
-                    size="medium"
-                  >
-                    <img
-                      className={classes.brillante}
-                      src={CB}
-                      style={{ height: 45 }}
-                    />
+                  <IconButton onClick={handleCB} size="medium">
+                    <img className={classes.brillante} src={CB} style={{ height: 45 }} />
                   </IconButton>
                 </div>
               </div>
-              <IconButton
-                onClick={openShoppingCart}
-                color="inherit"
-              >
-                <Badge
-                  overlap="rectangular"
-                  badgeContent={
-                    cart.lines.length
-                  }
-                  color="white"
-                >
+              <IconButton onClick={openShoppingCart} color="inherit">
+                <Badge overlap="rectangular" badgeContent={cart.lines.length} color="white">
                   <ShoppingCartOutlinedIcon />
                 </Badge>
               </IconButton>
@@ -345,23 +318,19 @@ export default function MenuAppBar() {
           >
             <div className={classes.drawerHeader}>
               <IconButton onClick={handleDrawerClose}>
-                {theme.direction === "ltr" ? (
-                  <ChevronLeftIcon />
-                ) : (
-                  <ChevronRightIcon />
-                )}
+                {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
               </IconButton>
             </div>
             <Divider />
 
             <Divider />
-            {JSON.parse(localStorage.getItem("token")) && (
+            {JSON.parse(localStorage.getItem('token')) && (
               <div
                 style={{
-                  display: "flex",
-                  alignContent: "center",
-                  justifyContent: "center",
-                  margin: "30px 0px",
+                  display: 'flex',
+                  alignContent: 'center',
+                  justifyContent: 'center',
+                  margin: '30px 0px',
                 }}
               >
                 <img
@@ -370,95 +339,49 @@ export default function MenuAppBar() {
                   style={{
                     height: 180,
                     width: 180,
-                    borderRadius: "50%",
-                    objectFit: "cover",
+                    borderRadius: '50%',
+                    objectFit: 'cover',
                   }}
                 />
               </div>
             )}
-            <Tabs
-              display="flex"
-              orientation="vertical"
-            >
-              <Tab
-                className={classes.button}
-                onClick={handleGallery}
-                label="Galería"
-              />
-              <Tab
-                className={classes.button}
-                onClick={handleProductCatalog}
-                label="Productos"
-              />
-              <Tab
-                className={classes.button}
-                onClick={handlePrixers}
-                label="Prixers"
-              />
-              <Tab
-                className={classes.button}
-                onClick={handleOrg}
-                label="Organizaciones"
-              />
-              <Tab
-                className={classes.button}
-                label="Servicios"
-                onClick={handleServices}
-              />
-              <Tab
-                className={classes.button}
-                label="Testimonios"
-                onClick={handleTestimonials}
-              />
+            <Tabs display="flex" orientation="vertical">
+              <Tab className={classes.button} onClick={handleGallery} label="Galería" />
+              <Tab className={classes.button} onClick={handleProductCatalog} label="Productos" />
+              <Tab className={classes.button} onClick={handlePrixers} label="Prixers" />
+              <Tab className={classes.button} onClick={handleOrg} label="Organizaciones" />
+              <Tab className={classes.button} label="Servicios" onClick={handleServices} />
+              <Tab className={classes.button} label="Testimonios" onClick={handleTestimonials} />
               <Divider />
 
-              {JSON.parse(localStorage.getItem("token")) &&
-              JSON.parse(localStorage.getItem("token")).username ? (
-                <Tabs
-                  display="flex"
-                  orientation="vertical"
-                >
-                  <Tab
-                    className={classes.button}
-                    onClick={handleMyAccount}
-                    label="Mi Perfil"
-                  />
-                  <Tab
-                    className={classes.button}
-                    onClick={handleMyStats}
-                    label="Mi Cuenta"
-                  />
+              {JSON.parse(localStorage.getItem('token')) &&
+              JSON.parse(localStorage.getItem('token')).username ? (
+                <Tabs display="flex" orientation="vertical">
+                  <Tab className={classes.button} onClick={handleMyAccount} label="Mi Perfil" />
+                  <Tab className={classes.button} onClick={handleMyStats} label="Mi Cuenta" />
                   <Tab
                     className={classes.button}
                     onClick={handlePasswordChange}
                     label="Cambiar contraseña"
                   />
-                  <Tab
-                    className={classes.button}
-                    onClick={handleLogout}
-                    label="Cerrar Sesión"
-                  />
+                  <Tab className={classes.button} onClick={handleLogout} label="Cerrar Sesión" />
                 </Tabs>
               ) : (
-                <Tab
-                  className={classes.button}
-                  onClick={handleCTLogin}
-                  label="Iniciar sesión"
-                />
+                <Tab className={classes.button} onClick={handleCTLogin} label="Iniciar sesión" />
               )}
               <Divider />
               <Divider />
               <Tab
                 className={classes.button}
                 onClick={(e) => {
-                  window.open("https://linktr.ee/prixelart", "_blank")
+                  window.open('https://linktr.ee/prixelart', '_blank');
                 }}
                 label="Contáctanos"
               />
               <Tab
                 className={classes.button}
                 onClick={(e) => {
-                  window.open("http://blog.prixelart.com/", "_blank")
+                  window.open('http://blog.prixelart.com/', '_blank');
                 }}
                 label="Blog"
               />
@@ -466,63 +389,30 @@ export default function MenuAppBar() {
           </Drawer>
         </>
       ) : (
-        <AppBar
-          position="fixed"
-          color="secondary"
-        >
-          <Toolbar style={{ display: "flex", justifyContent: "space-between" }}>
-            <div style={{ width: "fit-content", paddingRight: "4vw" }}>
-              <IconButton
-                className={classes.a}
-                onClick={handleMain}
-              >
-                <img
-                  src={logo}
-                  alt="Prixelart logo"
-                  style={{ width: 100 }}
-                />
+        <AppBar position="fixed" color="secondary">
+          <Toolbar style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <div style={{ width: 'fit-content', paddingRight: '4vw' }}>
+              <IconButton className={classes.a} onClick={handleMain}>
+                <img src={logo} alt="Prixelart logo" style={{ width: 100 }} />
               </IconButton>
             </div>
 
-            <div style={{ width: "fit-content" }}>
+            <div style={{ width: 'fit-content' }}>
               <Tabs>
-                <Tab
-                  className={classes.button}
-                  onClick={handleGallery}
-                  label="Galería"
-                />
-                <Tab
-                  className={classes.button}
-                  onClick={handleProductCatalog}
-                  label="Productos"
-                />
-                <Tab
-                  className={classes.button}
-                  onClick={handlePrixers}
-                  label="Prixers"
-                />
-                <Tab
-                  className={classes.button}
-                  label="Servicios"
-                  onClick={handleServices}
-                />
-                <Tab
-                  className={classes.button}
-                  label="Testimonios"
-                  onClick={handleTestimonials}
-                />
+                <Tab className={classes.button} onClick={handleGallery} label="Galería" />
+                <Tab className={classes.button} onClick={handleProductCatalog} label="Productos" />
+                <Tab className={classes.button} onClick={handlePrixers} label="Prixers" />
+                <Tab className={classes.button} label="Servicios" onClick={handleServices} />
+                <Tab className={classes.button} label="Testimonios" onClick={handleTestimonials} />
                 <div
                   style={{
-                    display: "flex",
-                    placeContent: "center",
-                    alignItems: "center",
+                    display: 'flex',
+                    placeContent: 'center',
+                    alignItems: 'center',
                     paddingRight: 20,
                   }}
                 >
-                  <IconButton
-                    onClick={handleCB}
-                    size="medium"
-                  >
+                  <IconButton onClick={handleCB} size="medium">
                     <img
                       className={classes.brillante}
                       src={CB}
@@ -532,15 +422,14 @@ export default function MenuAppBar() {
                 </div>
               </Tabs>
             </div>
-            
-            
-            <div style={{ display: "flex", width:"fit-content" }}>
+
+            <div style={{ display: 'flex', width: 'fit-content' }}>
               <div
                 style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  marginRight: "5vw"
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  marginRight: '5vw',
                 }}
               >
                 {/* <IconButton
@@ -551,25 +440,18 @@ export default function MenuAppBar() {
                   {currentTheme === 'light' ? <Brightness4Icon /> : <Brightness7Icon />}
                 </IconButton> */}
 
-                <IconButton
-                  onClick={toggleCurrency}
-                  color="inherit"
-                  aria-label="Toggle currency"
-                >
-                  {currency === 'USD' ? <AttachMoneyIcon /> : <p className="currency-icon">Bs</p> }
+                <IconButton onClick={toggleCurrency} color="inherit" aria-label="Toggle currency">
+                  {currency === 'USD' ? <AttachMoneyIcon /> : <p className="currency-icon">Bs</p>}
                 </IconButton>
               </div>
               <div
                 style={{
-                  display: "flex",
-                  justifyContent: "flex-end",
-                  alignItems: "center",
+                  display: 'flex',
+                  justifyContent: 'flex-end',
+                  alignItems: 'center',
                 }}
               >
-                <IconButton
-                  onClick={openShoppingCart}
-                  color="inherit"
-                >
+                <IconButton onClick={openShoppingCart} color="inherit">
                   <Badge
                     overlap="rectangular"
                     badgeContent={
@@ -589,34 +471,34 @@ export default function MenuAppBar() {
                   color="inherit"
                   size="medium"
                 >
-                  {JSON.parse(localStorage.getItem("token")) ? (
+                  {JSON.parse(localStorage.getItem('token')) ? (
                     <img
                       src={avatar}
                       style={{
                         height: 40,
                         width: 40,
-                        borderRadius: "50%",
-                        objectFit: "cover",
+                        borderRadius: '50%',
+                        objectFit: 'cover',
                       }}
                     />
                   ) : (
                     <MenuIcon />
                   )}
                 </IconButton>
-                {JSON.parse(localStorage.getItem("token")) &&
-                JSON.parse(localStorage.getItem("token")).username ? (
+                {JSON.parse(localStorage.getItem('token')) &&
+                JSON.parse(localStorage.getItem('token')).username ? (
                   <Menu
                     id="menu-appbar"
                     label="menu-appbar"
                     anchorEl={anchorEl}
                     anchorOrigin={{
-                      vertical: "top",
-                      horizontal: "right",
+                      vertical: 'top',
+                      horizontal: 'right',
                     }}
                     keepMounted
                     transformOrigin={{
-                      vertical: "top",
-                      horizontal: "right",
+                      vertical: 'top',
+                      horizontal: 'right',
                     }}
                     open={open}
                     onClose={handleClose}
@@ -624,22 +506,20 @@ export default function MenuAppBar() {
                     <MenuItem onClick={handleMyAccount}>Mi Perfil</MenuItem>
                     <MenuItem onClick={handleMyStats}>Mi Cuenta</MenuItem>
 
-                    <MenuItem onClick={handlePasswordChange}>
-                      Cambiar contraseña
-                    </MenuItem>
+                    <MenuItem onClick={handlePasswordChange}>Cambiar contraseña</MenuItem>
                     <MenuItem onClick={handleLogout}>Cerrar Sesión</MenuItem>
                     <Divider />
                     <MenuItem onClick={handleOrg}>Organizaciones</MenuItem>
                     <MenuItem
                       onClick={(e) => {
-                        window.open("https://linktr.ee/prixelart", "_blank")
+                        window.open('https://linktr.ee/prixelart', '_blank');
                       }}
                     >
                       Contáctanos
                     </MenuItem>
                     <MenuItem
                       onClick={(e) => {
-                        window.open("http://blog.prixelart.com/", "_blank")
+                        window.open('http://blog.prixelart.com/', '_blank');
                       }}
                     >
                       Blog
@@ -651,13 +531,13 @@ export default function MenuAppBar() {
                     label="menu-appbar"
                     anchorEl={anchorEl}
                     anchorOrigin={{
-                      vertical: "top",
-                      horizontal: "right",
+                      vertical: 'top',
+                      horizontal: 'right',
                     }}
                     keepMounted
                     transformOrigin={{
-                      vertical: "top",
-                      horizontal: "right",
+                      vertical: 'top',
+                      horizontal: 'right',
                     }}
                     open={open}
                     onClose={handleClose}
@@ -666,14 +546,14 @@ export default function MenuAppBar() {
 
                     <MenuItem
                       onClick={(e) => {
-                        window.open("https://linktr.ee/prixelart", "_blank")
+                        window.open('https://linktr.ee/prixelart', '_blank');
                       }}
                     >
                       Contáctanos
                     </MenuItem>
                     <MenuItem
                       onClick={(e) => {
-                        window.open("http://blog.prixelart.com/", "_blank")
+                        window.open('http://blog.prixelart.com/', '_blank');
                       }}
                     >
                       Blog
@@ -687,5 +567,5 @@ export default function MenuAppBar() {
         </AppBar>
       )}
     </div>
-  )
+  );
 }

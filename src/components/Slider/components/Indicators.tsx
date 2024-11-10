@@ -12,21 +12,19 @@ interface IndicatorsProps {
   qtyPerSlide: number;
 }
 
-export const Indicators: React.FC<IndicatorsProps> = (
-  { 
-    images, 
-    currentIndex, 
-    goToSlide, 
-    useIndicators = { 
-      type: 'dots', 
-      position: 'over', 
-      color: { active: 'primary', inactive: 'tertiary' }
-    },
-    qtyPerSlide,
-  }
-) => {
+export const Indicators: React.FC<IndicatorsProps> = ({
+  images,
+  currentIndex,
+  goToSlide,
+  useIndicators = {
+    type: 'dots',
+    position: 'over',
+    color: { active: 'primary', inactive: 'tertiary' },
+  },
+  qtyPerSlide,
+}) => {
   const isBelow = useIndicators && useIndicators.position === 'below';
-  
+
   return (
     <div
       className={`${isBelow ? styles['below-indicator'] : styles['over-indicator']}`}
@@ -38,7 +36,12 @@ export const Indicators: React.FC<IndicatorsProps> = (
       // }}
     >
       {useIndicators && useIndicators.type === 'dots' ? (
-        <Dots total={images.length - qtyPerSlide} currentIndex={currentIndex} goToSlide={goToSlide} useIndicators={useIndicators} />
+        <Dots
+          total={images.length - qtyPerSlide}
+          currentIndex={currentIndex}
+          goToSlide={goToSlide}
+          useIndicators={useIndicators}
+        />
       ) : (
         <Thumbnails images={images} currentIndex={currentIndex} goToSlide={goToSlide} />
       )}

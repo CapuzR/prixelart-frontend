@@ -9,7 +9,13 @@ interface GridProps {
 
 const Grid: React.FC<GridProps> = ({ children, isParent = false, className = '' }) => {
   return (
-    <div className={isParent ? `${styles['grid-container']} ${className}` : `${styles['grid-item']} ${className}`}>
+    <div
+      className={
+        isParent
+          ? `${styles['grid-container']} ${className}`
+          : `${styles['grid-item']} ${className}`
+      }
+    >
       {children}
     </div>
   );

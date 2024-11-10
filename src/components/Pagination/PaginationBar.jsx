@@ -1,28 +1,23 @@
-import {Box, Button} from "@material-ui/core"
+import { Box, Button } from '@material-ui/core';
 
-export default function PaginationBar({
-  setPageNumber,
-  pageNumber,
-  itemsPerPage,
-  maxLength,
-}) {
+export default function PaginationBar({ setPageNumber, pageNumber, itemsPerPage, maxLength }) {
   const noOfPages = Math.ceil(maxLength / itemsPerPage);
   return (
     <Box
       style={{
-        display: "flex",
-        justifyContent: "center",
-        alignSelf: "center",
+        display: 'flex',
+        justifyContent: 'center',
+        alignSelf: 'center',
         paddingTop: 5,
         marginBottom: 4,
-        width: "100%",
+        width: '100%',
       }}
     >
       {pageNumber - 3 > 0 && (
         <Button
           style={{ minWidth: 30, marginRight: 5 }}
           onClick={() => {
-            setPageNumber(1)
+            setPageNumber(1);
           }}
         >
           {1}
@@ -31,9 +26,9 @@ export default function PaginationBar({
       {pageNumber - 3 > 0 && (
         <div
           style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
             marginRight: 5,
           }}
         >
@@ -44,7 +39,7 @@ export default function PaginationBar({
         <Button
           style={{ minWidth: 30, marginRight: 5 }}
           onClick={() => {
-            setPageNumber(pageNumber - 2)
+            setPageNumber(pageNumber - 2);
           }}
         >
           {pageNumber - 2}
@@ -54,7 +49,7 @@ export default function PaginationBar({
         <Button
           style={{ minWidth: 30, marginRight: 5 }}
           onClick={() => {
-            setPageNumber(pageNumber - 1)
+            setPageNumber(pageNumber - 1);
           }}
         >
           {pageNumber - 1}
@@ -62,12 +57,12 @@ export default function PaginationBar({
       )}
       <div
         style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
           width: 80,
           marginRight: 5,
-          backgroundColor: "rgb(238, 238, 238)",
+          backgroundColor: 'rgb(238, 238, 238)',
           borderRadius: 4,
         }}
       >
@@ -77,7 +72,7 @@ export default function PaginationBar({
         <Button
           style={{ minWidth: 30, marginRight: 5 }}
           onClick={() => {
-            setPageNumber(pageNumber + 1)
+            setPageNumber(pageNumber + 1);
           }}
         >
           {pageNumber + 1}
@@ -88,7 +83,7 @@ export default function PaginationBar({
         <Button
           style={{ minWidth: 30, marginRight: 5 }}
           onClick={() => {
-            setPageNumber(pageNumber + 2)
+            setPageNumber(pageNumber + 2);
           }}
         >
           {pageNumber + 2}
@@ -97,9 +92,9 @@ export default function PaginationBar({
       {pageNumber + 3 <= noOfPages && (
         <div
           style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
             marginRight: 5,
           }}
         >
@@ -110,12 +105,12 @@ export default function PaginationBar({
         <Button
           style={{ minWidth: 30, marginRight: 5 }}
           onClick={() => {
-            setPageNumber(noOfPages)
+            setPageNumber(noOfPages);
           }}
         >
           {noOfPages}
         </Button>
       )}
     </Box>
-  )
+  );
 }

@@ -1,4 +1,4 @@
-@import "theme.scss";
+@import 'theme.scss';
 
 .btn {
   display: inline-flex;
@@ -9,7 +9,9 @@
   font-size: clamp($font-size-small, $font-size-small, $font-size-small) !important;
   padding: $spacing-sm $spacing-md;
   cursor: pointer;
-  transition: background-color $transition-normal, box-shadow $transition-normal;
+  transition:
+    background-color $transition-normal,
+    box-shadow $transition-normal;
   border: none;
   white-space: nowrap;
 
@@ -144,7 +146,8 @@
 }
 
 @keyframes blinkBackground {
-  0%, 100% {
+  0%,
+  100% {
     background-color: $primary-color;
     color: $text-light-color;
   }
@@ -155,7 +158,8 @@
 }
 
 @keyframes blinkGlow {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 0;
   }
   50% {

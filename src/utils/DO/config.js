@@ -1,4 +1,4 @@
 export default {
-    digitalOceanSpaces: 'https://cdn.prixelart.com/',
-    bucketName: 'prixelart'
-  };
+  digitalOceanSpaces: 'https://cdn.prixelart.com/',
+  bucketName: 'prixelart',
+};

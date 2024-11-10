@@ -1,24 +1,24 @@
-import React, { useState } from "react";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
-import Paper from "@material-ui/core/Paper";
-import InputBase from "@material-ui/core/InputBase";
-import IconButton from "@material-ui/core/IconButton";
-import SearchIcon from "@material-ui/icons/Search";
-import Input from "@material-ui/core/Input";
-import InputLabel from "@material-ui/core/InputLabel";
-import MenuItem from "@material-ui/core/MenuItem";
-import FormControl from "@material-ui/core/FormControl";
-import Select from "@material-ui/core/Select";
-import FilterListIcon from "@material-ui/icons/FilterList";
-import Tooltip from "@material-ui/core/Tooltip";
-import { useLocation } from "react-router-dom";
-import { useEffect } from "react";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
+import React, { useState } from 'react';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
+import Paper from '@material-ui/core/Paper';
+import InputBase from '@material-ui/core/InputBase';
+import IconButton from '@material-ui/core/IconButton';
+import SearchIcon from '@material-ui/icons/Search';
+import Input from '@material-ui/core/Input';
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
+import FilterListIcon from '@material-ui/icons/FilterList';
+import Tooltip from '@material-ui/core/Tooltip';
+import { useLocation } from 'react-router-dom';
+import { useEffect } from 'react';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    display: "flex",
-    alignItems: "center",
+    display: 'flex',
+    alignItems: 'center',
   },
   input: {
     marginLeft: theme.spacing(1),
@@ -29,8 +29,8 @@ const useStyles = makeStyles((theme) => ({
   },
   formControl: {
     minWidth: 100,
-    width: "100%",
-    marginTop: "12px",
+    width: '100%',
+    marginTop: '12px',
   },
 }));
 
@@ -38,10 +38,10 @@ export default function serviceSearchBar(props) {
   const classes = useStyles();
   const theme = useTheme();
   let params = new URLSearchParams(window.location.search);
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  const isDesktop = useMediaQuery(theme.breakpoints.up("lg"));
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isDesktop = useMediaQuery(theme.breakpoints.up('lg'));
 
-  const serviceAreas = ["Diseño", "Fotografía", "Artes Plásticas", "Otro"];
+  const serviceAreas = ['Diseño', 'Fotografía', 'Artes Plásticas', 'Otro'];
 
   const ITEM_HEIGHT = 48;
   const ITEM_PADDING_TOP = 8;
@@ -59,13 +59,13 @@ export default function serviceSearchBar(props) {
   return (
     <div
       style={{
-        width: isDesktop ? "50%" : "100%",
-        margin: "auto",
+        width: isDesktop ? '50%' : '100%',
+        margin: 'auto',
         maxWidth: 616,
       }}
     >
       <Paper component="form" className={classes.root} elevation={3}>
-        <div style={{ display: "flex", width: "100%", alignItems: "center" }}>
+        <div style={{ display: 'flex', width: '100%', alignItems: 'center' }}>
           <IconButton
             type="submit"
             className={classes.iconButton}
@@ -83,13 +83,13 @@ export default function serviceSearchBar(props) {
           <InputBase
             className={classes.input}
             placeholder="Busca el servicio ideal"
-            inputProps={{ "aria-label": "Busca el servicio ideal" }}
+            inputProps={{ 'aria-label': 'Busca el servicio ideal' }}
             value={props.query}
             onChange={(e) => {
               props.setQuery(e.target.value);
             }}
           />
-          <Tooltip title={"Aplicar filtro"}>
+          <Tooltip title={'Aplicar filtro'}>
             <IconButton
               className={classes.iconButton}
               onClick={() => {

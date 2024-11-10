@@ -29,7 +29,6 @@
 //   const { conversionRate } = useConversionRate();
 //   const [quantity, setQuantity] = useState<string | number>(line.quantity);
 
-
 //   useEffect(() => {
 //     line.item.product?.price === undefined &&
 //     setQuantity(1);
@@ -43,7 +42,7 @@
 //     const value = event.target.value;
 //     setQuantity(value ? Math.max(1, parseInt(value, 10)) : "");
 //   };
-  
+
 //   const handleQuantityBlur = () => {
 //     if (!quantity) setQuantity(1);
 //   };
@@ -115,7 +114,7 @@
 //           }
 //         </div>
 //       </div>
-    
+
 //       {hasActionBar &&
 //       <ActionBar
 //         onUpperAction={handleDelete}
@@ -128,19 +127,19 @@
 //   );
 // }
 
-import React from "react";
-import styles from "./styles.module.scss";
-import ItemPlayground from "components/ItemPlayground";
-import ItemContent from "components/ItemContent";
-import Typography from "components/Typography";
-import { formatPriceForUI } from "utils/formats";
-import { Item } from "./interfaces";
-import { useConversionRate, useCurrency } from "context/GlobalContext";
+import React from 'react';
+import styles from './styles.module.scss';
+import ItemPlayground from 'components/ItemPlayground';
+import ItemContent from 'components/ItemContent';
+import Typography from 'components/Typography';
+import { formatPriceForUI } from 'utils/formats';
+import { Item } from './interfaces';
+import { useConversionRate, useCurrency } from 'context/GlobalContext';
 
 export interface ItemCardProps {
   item: Item;
   direction?: 'row' | 'column';
-  handleFlow: (type : 'producto' | 'arte') => void;
+  handleFlow: (type: 'producto' | 'arte') => void;
   handleDeleteElement: (type: 'producto' | 'arte', item: Item) => void;
 }
 
@@ -150,25 +149,36 @@ export default function ItemCard({
   handleDeleteElement,
   handleFlow,
 }: ItemCardProps) {
-    const { currency } = useCurrency();
-    const { conversionRate } = useConversionRate();
-    
+  const { currency } = useCurrency();
+  const { conversionRate } = useConversionRate();
+
   const getUnitPrice = () => {
-    console.log("ItemCard - getUnitPrice - item: ", item);
+    console.log('ItemCard - getUnitPrice - item: ', item);
     return item.price
       ? formatPriceForUI(item.price, currency, conversionRate)
-      : formatPriceForUI(item.product?.priceRange?.from, currency, conversionRate, item.product?.priceRange?.to);
+      : formatPriceForUI(
+          item.product?.priceRange?.from,
+          currency,
+          conversionRate,
+          item.product?.priceRange?.to
+        );
   };
 
   return (
     <>
       <div className={styles['item-playground']}>
-        <ItemPlayground item={item} handleDeleteElement={handleDeleteElement} handleFlow={handleFlow} />
+        <ItemPlayground
+          item={item}
+          handleDeleteElement={handleDeleteElement}
+          handleFlow={handleFlow}
+        />
       </div>
       <div className={styles['item-content']}>
         <ItemContent item={item} direction={direction === 'row' ? 'column' : 'row'} />
         {item.product && (
-          <div className={`${styles['pricing-info']} ${direction === 'column' && styles['extra-padding']}`}>
+          <div
+            className={`${styles['pricing-info']} ${direction === 'column' && styles['extra-padding']}`}
+          >
             <div className={styles['unit-price']}>
               <Typography level="h6">Unitario</Typography>
               <Typography level="p">{getUnitPrice()}</Typography>
@@ -179,4 +189,3 @@ export default function ItemCard({
     </>
   );
 }
-

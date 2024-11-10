@@ -16,10 +16,11 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: background-color $transition-normal, color $transition-normal;
+  transition:
+    background-color $transition-normal,
+    color $transition-normal;
   background-color: transparent;
   border: 1px solid $border-color;
-  
 
   &:hover {
     background-color: $error-color;
@@ -28,7 +29,7 @@
       color: $text-light-color;
     }
   }
-  
+
   &:nth-child(2):hover {
     background-color: $warning-color;
     .icon {

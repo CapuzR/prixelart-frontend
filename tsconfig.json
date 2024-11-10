@@ -4,7 +4,16 @@
     "paths": {
       "@components/*": ["components/*"],
       "@utils/*": ["utils/*"],
-      "@services/*": ["services/*"]
+      "@services/*": ["services/*"],
+      "@art/*": ["consumer/art/*"],
+      "@cart/*": ["consumer/cart/*"],
+      "@checkout/*": ["consumer/checkout/*"],
+      "@flow/*": ["consumer/flow/*"],
+      "@home/*": ["consumer/home/*"],
+      "@prixerServices/*": ["consumer/prixerServices/*"],
+      "@products/*": ["consumer/products/*"],
+      "@testimonials/*": ["consumer/testimonials/*"],
+      "@ups404/*": ["consumer/ups404/*"]
     },
     "jsx": "react-jsx",
     "allowJs": true,

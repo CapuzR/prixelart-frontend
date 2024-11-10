@@ -12,8 +12,8 @@ export default async function expire(valueKey, expiryKey) {
     localStorage.removeItem(valueKey);
     localStorage.removeItem(expiryKey);
 
-    if (valueKey === "adminToken") {
-      localStorage.removeItem("adminTokenV");
+    if (valueKey === 'adminToken') {
+      localStorage.removeItem('adminTokenV');
     }
     return null;
   }

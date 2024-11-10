@@ -5,8 +5,7 @@ function isAValidEmail(email) {
 }
 
 function isAValidPassword(password) {
-  const re =
-    /^(?=.*[\d])(?=.*[A-Z])(?=.*[a-z])(?=.*[!@#$%^.&*])[\w!@.#$%^&*]{8,}$/;
+  const re = /^(?=.*[\d])(?=.*[A-Z])(?=.*[a-z])(?=.*[!@#$%^.&*])[\w!@.#$%^&*]{8,}$/;
   return re.test(String(password));
 }
 

@@ -4,7 +4,7 @@
   position: relative;
   overflow: hidden;
   height: auto;
-  display:flex;
+  display: flex;
   justify-content: center;
   align-items: center;
 
@@ -54,7 +54,7 @@
   &.rounded {
     border-radius: $border-radius-lg;
   }
-  
+
   &.cover {
     object-fit: cover;
   }

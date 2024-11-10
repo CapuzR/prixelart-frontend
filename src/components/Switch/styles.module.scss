@@ -1,4 +1,4 @@
-@import "theme.scss";
+@import 'theme.scss';
 
 .switch {
   position: relative;
@@ -54,7 +54,7 @@
   background-color: $primary-color;
   border-radius: $border-radius-pill;
   transition: transform $transition-normal;
-  
+
   &.thumbRight {
     transform: translateX(45px);
   }

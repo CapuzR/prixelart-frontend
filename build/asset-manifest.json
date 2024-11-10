@@ -104,8 +104,5 @@
     "main.906e9118.css.map": "/static/css/main.906e9118.css.map",
     "main.bde56746.js.map": "/static/js/main.bde56746.js.map"
   },
-  "entrypoints": [
-    "static/css/main.906e9118.css",
-    "static/js/main.bde56746.js"
-  ]
+  "entrypoints": ["static/css/main.906e9118.css", "static/js/main.bde56746.js"]
 }

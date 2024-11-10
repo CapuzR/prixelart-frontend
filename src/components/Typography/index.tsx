@@ -34,7 +34,7 @@ const Typography: React.FC<TypographyProps> = ({
         styles[className],
         styles[`leading-${leading}`],
         styles[`tracking-${tracking}`],
-        styles[`kerning-${kerning}`],
+        styles[`kerning-${kerning}`]
       )}
       style={{ color: color ? color : 'inherit' }}
     >

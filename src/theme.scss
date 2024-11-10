@@ -82,7 +82,12 @@ $z-index-tooltip: 1100;
   }
 }
 
-@mixin button($bg-color, $text-color: $text-light-color, $hover-bg-color: darken($bg-color, 10%), $hover-text-color: $text-color) {
+@mixin button(
+  $bg-color,
+  $text-color: $text-light-color,
+  $hover-bg-color: darken($bg-color, 10%),
+  $hover-text-color: $text-color
+) {
   background-color: $bg-color;
   color: $text-color;
   padding: $button-padding;
@@ -90,7 +95,10 @@ $z-index-tooltip: 1100;
   font-size: $button-font-size;
   border: none;
   cursor: pointer;
-  transition: background-color $transition-normal, color $transition-normal, box-shadow $transition-fast;
+  transition:
+    background-color $transition-normal,
+    color $transition-normal,
+    box-shadow $transition-fast;
 
   &:hover {
     background-color: $hover-bg-color;
@@ -118,13 +126,22 @@ $z-index-tooltip: 1100;
   line-height: $line-height;
 }
 
-@mixin text-body($size: $font-size-base, $weight: $font-weight-normal, $line-height: $line-height-base) {
+@mixin text-body(
+  $size: $font-size-base,
+  $weight: $font-weight-normal,
+  $line-height: $line-height-base
+) {
   font-size: $size;
   font-weight: $weight;
   line-height: $line-height;
 }
 
-@mixin paper($bg-color: white, $shadow: $box-shadow-medium, $radius: $border-radius-lg, $spacing: $spacing-md) {
+@mixin paper(
+  $bg-color: white,
+  $shadow: $box-shadow-medium,
+  $radius: $border-radius-lg,
+  $spacing: $spacing-md
+) {
   background-color: $bg-color;
   box-shadow: $shadow;
   border-radius: $radius;
@@ -132,7 +149,9 @@ $z-index-tooltip: 1100;
   overflow: hidden;
 }
 
-h1, h2, h3 {
+h1,
+h2,
+h3 {
   @include text-heading();
   color: $text-color;
 }

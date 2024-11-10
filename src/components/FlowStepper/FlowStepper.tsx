@@ -8,7 +8,12 @@ interface FlowStepperProps {
   onStepClick?: (index: number) => void;
 }
 
-const FlowStepper: React.FC<FlowStepperProps> = ({ activeStep, steps, showLabels, onStepClick  }) => {
+const FlowStepper: React.FC<FlowStepperProps> = ({
+  activeStep,
+  steps,
+  showLabels,
+  onStepClick,
+}) => {
   return (
     <div className={styles.stepperContainer}>
       {steps.map((label, index) => (

@@ -22,8 +22,7 @@ const Button: React.FC<ButtonProps> = ({
   children,
   className = '',
 }) => {
-  const buttonClass = 
-    `${styles['btn']}
+  const buttonClass = `${styles['btn']}
     ${styles[type]}
     ${styles[color]}
     ${highlighted ? styles['highlighted'] : ''}
@@ -31,11 +30,7 @@ const Button: React.FC<ButtonProps> = ({
     ${className}`;
 
   return (
-    <button
-      className={buttonClass}
-      onClick={onClick}
-      disabled={disabled || loading}
-    >
+    <button className={buttonClass} onClick={onClick} disabled={disabled || loading}>
       {loading ? <span className="spinner"></span> : children}
     </button>
   );

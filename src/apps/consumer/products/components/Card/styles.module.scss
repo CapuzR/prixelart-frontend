@@ -1,0 +1,42 @@
+@import 'theme.scss';
+
+.card-root {
+  display: flex;
+  overflow: hidden;
+  align-content: space-between;
+  height: 100%;
+  @include paper(undefined, $box-shadow-heavy, $border-radius-xl, $spacing-md);
+
+  &.pointed {
+    transition: box-shadow 0.2s ease-in-out;
+    box-shadow: 0 0 10px 3px $primary-color;
+  }
+}
+
+.slider-container {
+  width: 80%;
+  padding: 10px;
+}
+
+.card-content {
+  align-content: space-between;
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+  padding: $spacing-md;
+}
+
+.main-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: $spacing-md;
+  text-align: left;
+}
+
+.buttons-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 $spacing-md;
+}

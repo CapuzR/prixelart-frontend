@@ -1,9 +1,9 @@
 .currency-icon {
-    font-family: 'Material Icons', sans-serif; /* Use Material Icons font */
-    font-size: 19px; /* Adjust the size to match the AttachMoneyIcon */
-    font-weight: bold; /* Bold to match the icon's thickness */
-    color: inherit; /* Make sure the color is the same as the icon */
-    display: inline-block;
-    vertical-align: middle; /* Align with text like an icon */
-    margin: 0;
-  }  
+  font-family: 'Material Icons', sans-serif; /* Use Material Icons font */
+  font-size: 19px; /* Adjust the size to match the AttachMoneyIcon */
+  font-weight: bold; /* Bold to match the icon's thickness */
+  color: inherit; /* Make sure the color is the same as the icon */
+  display: inline-block;
+  vertical-align: middle; /* Align with text like an icon */
+  margin: 0;
+}

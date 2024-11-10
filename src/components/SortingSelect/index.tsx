@@ -5,7 +5,7 @@ import styles from './styles.module.scss';
 interface SortingSelectProps {
   sort: string;
   handleChange: (event: React.ChangeEvent<{ value: unknown }>) => void;
-  options: { value: string; label: string }[];  // Array of options for sorting
+  options: { value: string; label: string }[]; // Array of options for sorting
 }
 
 //OLD: MUI should be replaced

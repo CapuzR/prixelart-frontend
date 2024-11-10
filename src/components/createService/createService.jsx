@@ -1,63 +1,63 @@
-import React, { useEffect } from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import Button from "@material-ui/core/Button";
-import Dialog from "@material-ui/core/Dialog";
-import AppBar from "@material-ui/core/AppBar";
-import Toolbar from "@material-ui/core/Toolbar";
-import IconButton from "@material-ui/core/IconButton";
-import Typography from "@material-ui/core/Typography";
-import CloseIcon from "@material-ui/icons/Close";
-import Slide from "@material-ui/core/Slide";
-import MenuItem from "@material-ui/core/MenuItem";
-import Select from "@material-ui/core/Select";
-import Backdrop from "@material-ui/core/Backdrop";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import { useTheme } from "@material-ui/core/styles";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
+import React, { useEffect } from 'react';
+import { makeStyles } from '@material-ui/core/styles';
+import Button from '@material-ui/core/Button';
+import Dialog from '@material-ui/core/Dialog';
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
+import IconButton from '@material-ui/core/IconButton';
+import Typography from '@material-ui/core/Typography';
+import CloseIcon from '@material-ui/icons/Close';
+import Slide from '@material-ui/core/Slide';
+import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@material-ui/core/Select';
+import Backdrop from '@material-ui/core/Backdrop';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import { useTheme } from '@material-ui/core/styles';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
 
-import { useState } from "react";
-import axios from "axios";
+import { useState } from 'react';
+import axios from 'axios';
 
-import Copyright from "../Copyright/copyright";
+import Copyright from '../Copyright/copyright';
 
 //material-ui
-import Grid from "@material-ui/core/Grid";
-import Box from "@material-ui/core/Box";
-import Container from "@material-ui/core/Container";
-import Snackbar from "@material-ui/core/Snackbar";
-import InputLabel from "@material-ui/core/InputLabel";
-import FormControl from "@material-ui/core/FormControl";
-import TextField from "@material-ui/core/TextField";
-import CssBaseline from "@material-ui/core/CssBaseline";
-import Paper from "@material-ui/core/Paper";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Checkbox from "@material-ui/core/Checkbox";
-import InputAdornment from "@material-ui/core/InputAdornment";
-import InfoIcon from "@material-ui/icons/Info";
-import HighlightOffOutlinedIcon from "@material-ui/icons/HighlightOffOutlined";
-import EditIcon from "@material-ui/icons/Edit";
-import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css";
+import Grid from '@material-ui/core/Grid';
+import Box from '@material-ui/core/Box';
+import Container from '@material-ui/core/Container';
+import Snackbar from '@material-ui/core/Snackbar';
+import InputLabel from '@material-ui/core/InputLabel';
+import FormControl from '@material-ui/core/FormControl';
+import TextField from '@material-ui/core/TextField';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import Paper from '@material-ui/core/Paper';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Checkbox from '@material-ui/core/Checkbox';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import InfoIcon from '@material-ui/icons/Info';
+import HighlightOffOutlinedIcon from '@material-ui/icons/HighlightOffOutlined';
+import EditIcon from '@material-ui/icons/Edit';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 
 const useStyles = makeStyles((theme) => ({
   img: {
-    maxWidth: "80vw",
-    maxHeight: "300px",
-    width: "100%",
-    height: "100%",
-    objectFit: "cover",
-    objectPosition: "50% 50%",
+    maxWidth: '80vw',
+    maxHeight: '300px',
+    width: '100%',
+    height: '100%',
+    objectFit: 'cover',
+    objectPosition: '50% 50%',
   },
   formControl: {
     margin: theme.spacing(1),
-    width: "100%",
+    width: '100%',
   },
   form: {
-    width: "100%",
+    width: '100%',
     marginTop: theme.spacing(0),
   },
   snackbar: {
-    [theme.breakpoints.down("xs")]: {
+    [theme.breakpoints.down('xs')]: {
       bottom: 90,
     },
     margin: {
@@ -67,17 +67,17 @@ const useStyles = makeStyles((theme) => ({
       marginTop: theme.spacing(3),
     },
     textField: {
-      width: "25ch",
+      width: '25ch',
     },
   },
   paper: {
     marginTop: theme.spacing(3),
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
   },
   appBar: {
-    position: "relative",
+    position: 'relative',
   },
   title: {
     marginLeft: theme.spacing(2),
@@ -89,7 +89,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const serviceAreas = ["Diseño", "Fotografía", "Artes Plásticas", "Otro"];
+const serviceAreas = ['Diseño', 'Fotografía', 'Artes Plásticas', 'Otro'];
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -99,21 +99,21 @@ export default function CreateService(props) {
   const classes = useStyles();
   const theme = useTheme();
 
-  const isMobile = useMediaQuery(theme.breakpoints.down("xs"));
+  const isMobile = useMediaQuery(theme.breakpoints.down('xs'));
 
   const [title, setTitle] = useState();
   const [description, setDescription] = useState();
   const [serviceArea, setServiceArea] = useState();
   const [location, setLocation] = useState();
-  const [requiredPhoto, setRequiredPhoto] = useState("");
-  const [mimeType, setMimeType] = useState("");
+  const [requiredPhoto, setRequiredPhoto] = useState('');
+  const [mimeType, setMimeType] = useState('');
   const [backdrop, setBackdrop] = useState(false);
   const [isLocal, setIsLocal] = useState(false);
   const [isRemote, setIsRemote] = useState(false);
   const [priceFrom, setPriceFrom] = useState(0);
   const [priceTo, setPriceTo] = useState();
   const [productionTime, setProductionTime] = useState();
-  const [disabledReason, setDisabledReason] = useState("");
+  const [disabledReason, setDisabledReason] = useState('');
   const [active, setActive] = useState(true);
   const [imageLoader, setLoadImage] = useState([]);
   const [images, setImages] = useState([]);
@@ -121,9 +121,7 @@ export default function CreateService(props) {
   const [errorMessage, setErrorMessage] = useState();
   const [snackBarAction, setSnackBarAction] = useState();
   const [snackBarError, setSnackBarError] = useState(false);
-  const prixerUsername = new URLSearchParams(window.location)
-    .get("pathname")
-    .replace(/[/]/gi, "");
+  const prixerUsername = new URLSearchParams(window.location).get('pathname').replace(/[/]/gi, '');
 
   const handleEditorChange = (value) => {
     setDescription(value);
@@ -132,10 +130,10 @@ export default function CreateService(props) {
   const handleServiceAreaChange = (e) => {
     if (!e.target.value) {
       setRequiredPhoto(false);
-      setErrorMessage("Por favor indica a qué categoría pertenece el arte.");
+      setErrorMessage('Por favor indica a qué categoría pertenece el arte.');
       setSnackBarError(true);
     } else {
-      if (e.target.value === "Foto") {
+      if (e.target.value === 'Foto') {
         setRequiredPhoto(true);
       }
       setServiceArea(e.target.value);
@@ -151,16 +149,14 @@ export default function CreateService(props) {
       if (title && description && serviceArea && priceFrom > 0) {
         await newService();
       } else {
-        setErrorMessage("Por favor completa los campos requeridos.");
+        setErrorMessage('Por favor completa los campos requeridos.');
         setSnackBarError(true);
       }
     } catch (err) {
       console.log(err);
       setBackdrop(false);
       props.setOpenServiceFormDialog(false);
-      setErrorMessage(
-        "Ocurrió un error inesperado, por favor valida e inicia sesión."
-      );
+      setErrorMessage('Ocurrió un error inesperado, por favor valida e inicia sesión.');
       setSnackBarError(true);
     }
   };
@@ -175,53 +171,48 @@ export default function CreateService(props) {
 
   async function newService() {
     var formData = new FormData();
-    
-    const ID = JSON.parse(localStorage.getItem("token")).role === "Organization" ?
-      JSON.parse(localStorage.getItem("token")).orgId :
-      JSON.parse(localStorage.getItem("token")).prixerId;
-    
-    formData.append("title", title);
-    formData.append("description", description);
-    formData.append("serviceArea", serviceArea);
-    formData.append("isLocal", isLocal);
-    formData.append("isRemote", isRemote);
-    if (location !== ("" || undefined)) {
-      formData.append("location", location);
-    }
-    if (productionTime !== ("" || undefined)) {
-      formData.append("productionTime", productionTime);
-    }
-    formData.append("priceFrom", priceFrom);
-    if (priceTo !== ("" || undefined)) {
-      formData.append("priceTo", priceTo);
-    }
-    formData.append("userId", JSON.parse(localStorage.getItem("token")).id);
-    formData.append(
-      "prixerUsername",
-      JSON.parse(localStorage.getItem("token")).username
-    );
-    formData.append(
-      "prixer",
-      ID
-    );
-    formData.append("active", active);
 
-    images.map((file) => formData.append("serviceImages", file));
+    const ID =
+      JSON.parse(localStorage.getItem('token')).role === 'Organization'
+        ? JSON.parse(localStorage.getItem('token')).orgId
+        : JSON.parse(localStorage.getItem('token')).prixerId;
 
-    const base_url = process.env.REACT_APP_BACKEND_URL + "/service/create";
+    formData.append('title', title);
+    formData.append('description', description);
+    formData.append('serviceArea', serviceArea);
+    formData.append('isLocal', isLocal);
+    formData.append('isRemote', isRemote);
+    if (location !== ('' || undefined)) {
+      formData.append('location', location);
+    }
+    if (productionTime !== ('' || undefined)) {
+      formData.append('productionTime', productionTime);
+    }
+    formData.append('priceFrom', priceFrom);
+    if (priceTo !== ('' || undefined)) {
+      formData.append('priceTo', priceTo);
+    }
+    formData.append('userId', JSON.parse(localStorage.getItem('token')).id);
+    formData.append('prixerUsername', JSON.parse(localStorage.getItem('token')).username);
+    formData.append('prixer', ID);
+    formData.append('active', active);
+
+    images.map((file) => formData.append('serviceImages', file));
+
+    const base_url = process.env.REACT_APP_BACKEND_URL + '/service/create';
     const create = await axios.post(base_url, formData, {
-      "Content-Type": "multipart/form-data",
+      'Content-Type': 'multipart/form-data',
     });
     if (create.data.success) {
       setBackdrop(false);
       props.setOpenServiceFormDialog(false);
       props.setCreatedService(true);
       setSnackBarError(true);
-      setErrorMessage("Servicio creado exitosamente.");
+      setErrorMessage('Servicio creado exitosamente.');
     } else {
       setSnackBarError(true);
       setErrorMessage(
-        "Por favor vuelve a intentarlo, puede que exista algún inconveniente de conexión. Si aún no lo has hecho por favor inicia sesión."
+        'Por favor vuelve a intentarlo, puede que exista algún inconveniente de conexión. Si aún no lo has hecho por favor inicia sesión.'
       );
     }
   }
@@ -271,7 +262,7 @@ export default function CreateService(props) {
       setImages([file]);
     } else if (imageLoader.length === 6) {
       setSnackBarError(true);
-      setErrorMessage("Has alcanzado el límite de imágenes permitidas.");
+      setErrorMessage('Has alcanzado el límite de imágenes permitidas.');
     } else {
       setLoadImage([...imageLoader, resizedString]);
       setImages([...images, file]);
@@ -293,12 +284,7 @@ export default function CreateService(props) {
         </Backdrop>
         <AppBar className={classes.appBar}>
           <Toolbar>
-            <IconButton
-              edge="start"
-              color="inherit"
-              onClick={handleClose}
-              aria-label="close"
-            >
+            <IconButton edge="start" color="inherit" onClick={handleClose} aria-label="close">
               <CloseIcon />
             </IconButton>
             <Typography variant="h6" className={classes.title}>
@@ -332,29 +318,29 @@ export default function CreateService(props) {
                   <Paper
                     variant="outlined"
                     style={{
-                      textAlign: "center",
-                      hover: { background: "#000000" },
+                      textAlign: 'center',
+                      hover: { background: '#000000' },
                     }}
                   >
-                    <Grid item xs={12} sm={12} style={{ display: "flex" }}>
+                    <Grid item xs={12} sm={12} style={{ display: 'flex' }}>
                       {imageLoader &&
                         imageLoader.map((img, i) => {
                           return (
                             <div
                               style={{
-                                width: "25%",
-                                marginRight: "4px",
+                                width: '25%',
+                                marginRight: '4px',
                               }}
                             >
                               <div
                                 style={{
-                                  textAlign: "right",
+                                  textAlign: 'right',
                                 }}
                               >
                                 <IconButton
                                   variant="text"
                                   className={classes.buttonImgLoader}
-                                  style={{ color: "#d33f49", marginRight: -15 }}
+                                  style={{ color: '#d33f49', marginRight: -15 }}
                                   component="label"
                                 >
                                   <input
@@ -373,7 +359,7 @@ export default function CreateService(props) {
                                   variant="text"
                                   className={classes.buttonImgLoader}
                                   style={{
-                                    color: "#d33f49",
+                                    color: '#d33f49',
                                     marginRight: -5,
                                   }}
                                   onClick={() => {
@@ -386,9 +372,9 @@ export default function CreateService(props) {
 
                               <img
                                 style={{
-                                  width: "100%",
+                                  width: '100%',
                                   // height: "200px",
-                                  objectFit: "contain",
+                                  objectFit: 'contain',
                                   marginTop: -35,
                                 }}
                                 src={img}
@@ -403,18 +389,14 @@ export default function CreateService(props) {
                       xs={12}
                       sm={12}
                       style={{
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
                         margin: 10,
                       }}
                     >
                       <FormControl variant="outlined">
-                        <Button
-                          variant="contained"
-                          component="label"
-                          color="primary"
-                        >
+                        <Button variant="contained" component="label" color="primary">
                           Subir foto
                           <input
                             name="productImages"
@@ -433,13 +415,7 @@ export default function CreateService(props) {
                 </Grid>
 
                 <Grid item xs={12} sm={12}>
-                  <FormControl
-                    variant="outlined"
-                    className={classes.form}
-                    xs={12}
-                    sm={12}
-                    md={12}
-                  >
+                  <FormControl variant="outlined" className={classes.form} xs={12} sm={12} md={12}>
                     <InputLabel id="serviceAreaLabel">Tipo</InputLabel>
                     <Select
                       labelId="serviceAreaLabel"
@@ -480,9 +456,9 @@ export default function CreateService(props) {
                     modules={{
                       toolbar: [
                         [{ header: [1, 2, 3, 4, 5, 6, false] }],
-                        ["bold", "italic", "underline", "strike"],
+                        ['bold', 'italic', 'underline', 'strike'],
                         [{ align: [] }],
-                        [{ list: "ordered" }, { list: "bullet" }],
+                        [{ list: 'ordered' }, { list: 'bullet' }],
                       ],
                     }}
                     value={description}
@@ -491,12 +467,7 @@ export default function CreateService(props) {
                   />
                 </Grid>
 
-                <Grid
-                  item
-                  xs={12}
-                  sm={12}
-                  style={{ marginTop: isMobile && 30 }}
-                >
+                <Grid item xs={12} sm={12} style={{ marginTop: isMobile && 30 }}>
                   <FormControlLabel
                     control={
                       <Checkbox
@@ -543,13 +514,11 @@ export default function CreateService(props) {
                   />
                 </Grid>
                 <Grid item xs={12}>
-                  <Typography variant="subtitle1">
-                    Valor
-                  </Typography>
+                  <Typography variant="subtitle1">Valor</Typography>
                   <div
                     style={{
-                      display: "flex",
-                      justifyContent: "space-between",
+                      display: 'flex',
+                      justifyContent: 'space-between',
                       marginTop: 10,
                     }}
                   >
@@ -563,9 +532,7 @@ export default function CreateService(props) {
                         value={priceFrom}
                         onChange={(e) => setPriceFrom(e.target.value)}
                         InputProps={{
-                          startAdornment: (
-                            <InputAdornment position="start">$</InputAdornment>
-                          ),
+                          startAdornment: <InputAdornment position="start">$</InputAdornment>,
                         }}
                       />
                     </Grid>
@@ -577,9 +544,7 @@ export default function CreateService(props) {
                         value={priceTo}
                         onChange={(e) => setPriceTo(e.target.value)}
                         InputProps={{
-                          startAdornment: (
-                            <InputAdornment position="start">$</InputAdornment>
-                          ),
+                          startAdornment: <InputAdornment position="start">$</InputAdornment>,
                         }}
                       />
                     </Grid>
@@ -589,12 +554,12 @@ export default function CreateService(props) {
                   item
                   xs={12}
                   style={{
-                    display: "flex",
-                    justifyContent: "center",
+                    display: 'flex',
+                    justifyContent: 'center',
                   }}
                 >
-                  <InfoIcon color={"secondary"} />
-                  <Typography color={"secondary"}>
+                  <InfoIcon color={'secondary'} />
+                  <Typography color={'secondary'}>
                     Tu servicio podrá ser encontrado por estos datos.
                   </Typography>
                 </Grid>
@@ -605,7 +570,7 @@ export default function CreateService(props) {
             <Copyright />
           </Box>
           <Snackbar
-            textalign={"center"}
+            textalign={'center'}
             open={snackBarError}
             autoHideDuration={5000}
             message={errorMessage}

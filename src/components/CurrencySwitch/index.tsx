@@ -7,12 +7,7 @@ const CurrencySwitch: React.FC = () => {
 
   return (
     <div>
-      <Switch
-        checked={currency === 'Bs'}
-        onChange={toggleCurrency}
-        leftLabel="$"
-        rightLabel="Bs"
-      />
+      <Switch checked={currency === 'Bs'} onChange={toggleCurrency} leftLabel="$" rightLabel="Bs" />
     </div>
   );
 };

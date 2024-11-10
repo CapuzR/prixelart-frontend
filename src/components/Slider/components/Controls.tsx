@@ -8,7 +8,10 @@ interface ControlsProps {
 
 export const Controls: React.FC<ControlsProps> = ({ prevSlide, nextSlide }) => (
   <>
-    <button className={`${styles["slider-arrow"]} ${styles["slider-arrow-left"]}`} onClick={prevSlide}>
+    <button
+      className={`${styles['slider-arrow']} ${styles['slider-arrow-left']}`}
+      onClick={prevSlide}
+    >
       <svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 24 24"
@@ -23,7 +26,10 @@ export const Controls: React.FC<ControlsProps> = ({ prevSlide, nextSlide }) => (
         <path d="M15 18l-6-6 6-6"></path>
       </svg>
     </button>
-    <button className={`${styles["slider-arrow"]} ${styles["slider-arrow-right"]}`} onClick={nextSlide}>
+    <button
+      className={`${styles['slider-arrow']} ${styles['slider-arrow-right']}`}
+      onClick={nextSlide}
+    >
       <svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 24 24"

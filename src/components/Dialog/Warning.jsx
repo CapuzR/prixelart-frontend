@@ -11,7 +11,7 @@ import {
   Button,
   TextField,
   Grid,
-} from "@material-ui/core"
+} from '@material-ui/core';
 
 export default function DialogWarning({}) {
   return (
@@ -21,14 +21,12 @@ export default function DialogWarning({}) {
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description"
     >
-      <DialogTitle id="alert-dialog-title">
-        {"¿Estás seguro de ocultar este arte?"}
-      </DialogTitle>
+      <DialogTitle id="alert-dialog-title">{'¿Estás seguro de ocultar este arte?'}</DialogTitle>
       <DialogContent>
         <DialogContentText
           id="alert-dialog-description"
           style={{
-            textAlign: "center",
+            textAlign: 'center',
           }}
         >
           Este arte ya no será visible en tu perfil y la página de inicio.
@@ -38,12 +36,12 @@ export default function DialogWarning({}) {
         item
         xs={12}
         style={{
-          display: "flex",
-          justifyContent: "center",
+          display: 'flex',
+          justifyContent: 'center',
         }}
       >
         <TextField
-          style={{ width: "95%", marginBottom: "5px" }}
+          style={{ width: '95%', marginBottom: '5px' }}
           fullWidth
           multiline
           required
@@ -51,30 +49,27 @@ export default function DialogWarning({}) {
           label="¿Por qué quieres ocultar este arte?"
           variant="outlined"
           onChange={(e) => {
-            setDisabledReason(e.target.value)
+            setDisabledReason(e.target.value);
           }}
         />
       </Grid>
       <DialogActions>
-        <Button
-          onClick={handleCloseVisible}
-          color="primary"
-        >
+        <Button onClick={handleCloseVisible} color="primary">
           Cancelar
         </Button>
         <Button
           onClick={(e) => {
-            hideArt(tile, e)
+            hideArt(tile, e);
           }}
           background="primary"
           style={{
-            color: "white",
-            backgroundColor: "#d33f49",
+            color: 'white',
+            backgroundColor: '#d33f49',
           }}
         >
           Aceptar
         </Button>
       </DialogActions>
     </Dialog>
-  )
+  );
 }

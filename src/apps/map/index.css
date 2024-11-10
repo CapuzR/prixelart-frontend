@@ -1,0 +1,19 @@
+#root {
+  padding: 0;
+  margin: 0;
+}
+
+.rotating-logo {
+  animation: rotation infinite 1s linear;
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@keyframes rotation {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(359deg);
+  }
+}

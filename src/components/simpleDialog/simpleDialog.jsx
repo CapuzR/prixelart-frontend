@@ -11,7 +11,6 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 });
 
 export default function SimpleDialog(props) {
-
   const handleClose = () => {
     props.setTabValue(0);
     props.setArts(true);
@@ -28,17 +27,33 @@ export default function SimpleDialog(props) {
         aria-labelledby="alert-dialog-slide-title"
         aria-describedby="alert-dialog-slide-description"
       >
-        <DialogTitle id="alert-dialog-slide-title">{"Esperamos saber de ti muy pronto."}</DialogTitle>
+        <DialogTitle id="alert-dialog-slide-title">
+          {'Esperamos saber de ti muy pronto.'}
+        </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-slide-description">
             Te apoyaremos a través de nuestro proceso de asesorías:
-                <ol>
-                    <li>Escríbenos al whatsapp haciendo click <a href={utils.generateWaMessage()} target="blank">aquí</a>.</li>
-                    <li>Puedes ver tus artes favoritos <a href="/galeria" target="blank">aquí</a>.</li>
-                    <li>Te ayudaremos a elegir el tamaño y el arte ideal para tu cuadro Prix.</li>
-                    <li>Si lo deseas puedes enviarnos una foto de tu espacio y realizaremos una simulación.</li>
-                </ol>
-                <strong>La asesoría es 100% gratuita.</strong>
+            <ol>
+              <li>
+                Escríbenos al whatsapp haciendo click{' '}
+                <a href={utils.generateWaMessage()} target="blank">
+                  aquí
+                </a>
+                .
+              </li>
+              <li>
+                Puedes ver tus artes favoritos{' '}
+                <a href="/galeria" target="blank">
+                  aquí
+                </a>
+                .
+              </li>
+              <li>Te ayudaremos a elegir el tamaño y el arte ideal para tu cuadro Prix.</li>
+              <li>
+                Si lo deseas puedes enviarnos una foto de tu espacio y realizaremos una simulación.
+              </li>
+            </ol>
+            <strong>La asesoría es 100% gratuita.</strong>
           </DialogContentText>
         </DialogContent>
       </Dialog>

@@ -1,61 +1,61 @@
-import React, { useEffect } from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import { useState, useCallback } from "react";
-import EasyCropper from "./easyCropper";
-import Tabs from "@material-ui/core/Tabs";
-import Tab from "@material-ui/core/Tab";
-import PhotoLibraryIcon from "@material-ui/icons/PhotoLibrary";
-import Paper from "@material-ui/core/Paper";
-import Grid from "@material-ui/core/Grid";
-import CheckCircleOutlineIcon from "@material-ui/icons/CheckCircleOutline";
-import Tooltip from "@material-ui/core/Tooltip";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Checkbox from "@material-ui/core/Checkbox";
-import { Typography } from "@material-ui/core";
-import IconButton from "@material-ui/core/IconButton";
-import getCroppedImg from "../../utils/cropImage";
-import CropIcon from "@material-ui/icons/Crop";
+import React, { useEffect } from 'react';
+import { makeStyles } from '@material-ui/core/styles';
+import { useState, useCallback } from 'react';
+import EasyCropper from './easyCropper';
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
+import PhotoLibraryIcon from '@material-ui/icons/PhotoLibrary';
+import Paper from '@material-ui/core/Paper';
+import Grid from '@material-ui/core/Grid';
+import CheckCircleOutlineIcon from '@material-ui/icons/CheckCircleOutline';
+import Tooltip from '@material-ui/core/Tooltip';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Checkbox from '@material-ui/core/Checkbox';
+import { Typography } from '@material-ui/core';
+import IconButton from '@material-ui/core/IconButton';
+import getCroppedImg from '../../utils/cropImage';
+import CropIcon from '@material-ui/icons/Crop';
 
 const useStyles = makeStyles((theme) => ({
   iconTabs: {
     flexGrow: 1,
-    width: "100%",
-    margin: "auto",
+    width: '100%',
+    margin: 'auto',
     marginBottom: 10,
   },
   root: {
-    display: "flex",
-    flexWrap: "wrap",
-    justifyContent: "space-around",
-    overflow: "hidden",
+    display: 'flex',
+    flexWrap: 'wrap',
+    justifyContent: 'space-around',
+    overflow: 'hidden',
     backgroundColor: theme.palette.background.paper,
   },
   paper: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "left",
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'left',
     flexGrow: 1,
-    overflow: "visible",
+    overflow: 'visible',
   },
   icon: {
     marginRight: theme.spacing(2),
   },
   cardGrid: {
-    position: "relative",
+    position: 'relative',
   },
   img: {
-    maxWidth: "100%",
-    maxHeight: "200px",
-    width: "100%",
-    height: "100%",
-    objectFit: "contain",
-    objectPosition: "50% 50%",
+    maxWidth: '100%',
+    maxHeight: '200px',
+    width: '100%',
+    height: '100%',
+    objectFit: 'contain',
+    objectPosition: '50% 50%',
   },
   tab: {
     minWidth: 100,
   },
   button: {
-    width: "10px",
+    width: '10px',
   },
 }));
 
@@ -80,7 +80,7 @@ export default function AspectRatioSelector(props) {
   };
 
   const updateCrop = (i) => {
-    croppedArtTemp[i].thumb = "";
+    croppedArtTemp[i].thumb = '';
     croppedArtTemp[i].cropped = false;
     setCroppedArt([...croppedArtTemp]);
   };
@@ -88,10 +88,7 @@ export default function AspectRatioSelector(props) {
   const handleCrop = useCallback(
     async (i) => {
       try {
-        const { croppedImg, croppedImgFile } = await getCroppedImg(
-          art,
-          croppedAreaPixels
-        );
+        const { croppedImg, croppedImgFile } = await getCroppedImg(art, croppedAreaPixels);
         croppedArtTemp[i].thumb = croppedImg;
         croppedArtTemp[i].thumbFile = croppedImgFile;
         croppedArtTemp[i].cropped = true;
@@ -118,17 +115,17 @@ export default function AspectRatioSelector(props) {
             sm={12}
             md={12}
             style={{
-              position: "relative",
+              position: 'relative',
               height: 300,
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
             }}
           >
-            <label htmlFor="inputfile" style={{ cursor: "pointer" }}>
+            <label htmlFor="inputfile" style={{ cursor: 'pointer' }}>
               <Tooltip
                 title={
-                  "Carga tu arte con un mínimo de 1080px tanto de ancho como de alto. Tu Arte debe pesar máximo 5Mb y estar en formato .jpeg o .png"
+                  'Carga tu arte con un mínimo de 1080px tanto de ancho como de alto. Tu Arte debe pesar máximo 5Mb y estar en formato .jpeg o .png'
                 }
               >
                 <img className={classes.img} alt="Uploaded" src={art} />
@@ -147,14 +144,14 @@ export default function AspectRatioSelector(props) {
                 sm={12}
                 md={12}
                 style={{
-                  position: "relative",
+                  position: 'relative',
                   height: 300,
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "center",
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'center',
                 }}
               >
-                {croppedArt[index].thumb == "" ? (
+                {croppedArt[index].thumb == '' ? (
                   <EasyCropper
                     art={art}
                     ar={ar}
@@ -170,16 +167,16 @@ export default function AspectRatioSelector(props) {
                     sm={12}
                     md={12}
                     style={{
-                      position: "relative",
+                      position: 'relative',
                       height: 300,
-                      display: "flex",
-                      flexDirection: "column",
-                      justifyContent: "center",
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'center',
                     }}
                   >
                     <Tooltip
                       title={
-                        "Genera el recorte para recomendar a tus clientes las mejores secciones de tu arte."
+                        'Genera el recorte para recomendar a tus clientes las mejores secciones de tu arte.'
                       }
                     >
                       <img
@@ -196,7 +193,7 @@ export default function AspectRatioSelector(props) {
                     xs={12}
                     sm={12}
                     md={12}
-                    style={{ position: "absolute", right: 5, bottom: 5 }}
+                    style={{ position: 'absolute', right: 5, bottom: 5 }}
                   >
                     <IconButton
                       color="secondary"
@@ -217,7 +214,7 @@ export default function AspectRatioSelector(props) {
                     sm={12}
                     md={12}
                     style={{
-                      position: "absolute",
+                      position: 'absolute',
                       right: 5,
                       bottom: 5,
                       zIndex: 20,
@@ -252,11 +249,7 @@ export default function AspectRatioSelector(props) {
               variant="scrollable"
               scrollButtons="auto"
             >
-              <Tab
-                className={classes.tab}
-                icon={<PhotoLibraryIcon />}
-                label="Original"
-              />
+              <Tab className={classes.tab} icon={<PhotoLibraryIcon />} label="Original" />
 
               {state.checkedA === true &&
                 croppedArt.map((ar) => (
@@ -272,23 +265,19 @@ export default function AspectRatioSelector(props) {
         </Paper>
         <Grid
           style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
         >
           <FormControlLabel
             name="checkedA"
-            style={{ marginRight: "0px" }}
+            style={{ marginRight: '0px' }}
             control={
-              <Checkbox
-                color={"primary"}
-                checked={state.checkedA}
-                onChange={handleChangeCheck}
-              />
+              <Checkbox color={'primary'} checked={state.checkedA} onChange={handleChangeCheck} />
             }
           />
-          <Typography style={{ color: "gray", fontSize: "0.875rem" }}>
+          <Typography style={{ color: 'gray', fontSize: '0.875rem' }}>
             Quiero seleccionar los cortes de mi arte.
           </Typography>
         </Grid>

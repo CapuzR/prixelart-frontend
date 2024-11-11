@@ -8,7 +8,6 @@ import LocalPhoneIcon from '@material-ui/icons/LocalPhone';
 import EmailIcon from '@material-ui/icons/Email';
 import HomeIcon from '@material-ui/icons/Home';
 import BusinessIcon from '@material-ui/icons/Business';
-import UtilVals from '../../../utils/validations';
 import Accordion from '@material-ui/core/Accordion';
 import Typography from '@material-ui/core/Typography';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
@@ -113,7 +112,7 @@ function ConsumerForm(props) {
     readyDate.getFullYear() + '-' + monthsOrder[readyDate.getMonth()] + '-' + readyDate.getDate();
 
   const getShippingMethods = async () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/shipping-method/read-all-v2';
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/shipping-method/read-all-v2';
     axios
       .get(base_url)
       .then((response) => {
@@ -126,7 +125,7 @@ function ConsumerForm(props) {
 
   const getConsumer = async () => {
     if (localStorage.getItem('token')) {
-      const base_url = process.env.REACT_APP_BACKEND_URL + '/consumer/read';
+      const base_url = import.meta.env.VITE_BACKEND_URL + '/consumer/read';
       const email = JSON.parse(localStorage.getItem('token')).email;
       axios
         .post(base_url, { email: email })
@@ -144,7 +143,7 @@ function ConsumerForm(props) {
               billingAddress: consumer?.billingShAddress,
             });
           } else {
-            const base_url2 = process.env.REACT_APP_BACKEND_URL + '/prixer/read';
+            const base_url2 = import.meta.env.VITE_BACKEND_URL + '/prixer/read';
             const username = JSON.parse(localStorage.getItem('token')).username;
             axios.post(base_url2, { username: username }).then((response) => {
               if (response.data) {

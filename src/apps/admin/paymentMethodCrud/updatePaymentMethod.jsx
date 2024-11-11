@@ -60,7 +60,7 @@ export default function UpdatePaymentMethod(props) {
         paymentData: paymentData,
         adminToken: localStorage.getItem('adminTokenV'),
       };
-      const base_url = process.env.REACT_APP_BACKEND_URL + '/payment-method/update';
+      const base_url = import.meta.env.VITE_BACKEND_URL + '/payment-method/update';
       const response = await axios.put(base_url, data);
       if (response.data.success === false) {
         setLoading(false);

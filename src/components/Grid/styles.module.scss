@@ -1,5 +1,4 @@
-@import 'theme.scss';
-
+@use '@/theme.scss' as theme;
 $min-item-width: 600px;
 
 .grid-wrapper {
@@ -11,8 +10,8 @@ $min-item-width: 600px;
 .grid-container {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax($min-item-width, 1fr));
-  gap: $spacing-sm;
-  padding: $spacing-md;
+  gap: theme.$spacing-sm;
+  padding: theme.$spacing-md;
   width: 100%;
   box-sizing: border-box;
 }
@@ -21,7 +20,7 @@ $min-item-width: 600px;
 .grid-item {
   display: flex;
   color: white;
-  padding: $spacing-md;
+  padding: theme.$spacing-md;
   font-size: 1.2em;
   text-align: center;
   border-radius: 8px;

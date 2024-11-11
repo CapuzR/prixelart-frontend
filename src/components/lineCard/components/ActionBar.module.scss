@@ -1,5 +1,4 @@
-@import 'theme.scss';
-
+@use '@/theme.scss' as theme;
 .action-bar {
   display: flex;
   flex-direction: column;
@@ -17,28 +16,28 @@
   justify-content: center;
   cursor: pointer;
   transition:
-    background-color $transition-normal,
-    color $transition-normal;
+    background-color theme.$transition-normal,
+    color theme.$transition-normal;
   background-color: transparent;
-  border: 1px solid $border-color;
+  border: 1px solid theme.$border-color;
 
   &:hover {
-    background-color: $error-color;
+    background-color: theme.$error-color;
     color: white;
     .icon {
-      color: $text-light-color;
+      color: theme.$text-light-color;
     }
   }
 
   &:nth-child(2):hover {
-    background-color: $warning-color;
+    background-color: theme.$warning-color;
     .icon {
-      color: $text-light-color;
+      color: theme.$text-light-color;
     }
   }
 }
 
 .icon {
-  color: $secondary-color;
-  transition: color $transition-normal;
+  color: theme.$secondary-color;
+  transition: color theme.$transition-normal;
 }

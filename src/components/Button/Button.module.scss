@@ -1,28 +1,30 @@
-@import 'theme.scss';
+
+@use '@/theme.scss' as theme;
+@use "sass:color";
 
 .btn {
   display: inline-flex;
   justify-content: center;
   align-items: center;
   text-transform: none !important;
-  border-radius: $border-radius-button !important;
-  font-size: clamp($font-size-small, $font-size-small, $font-size-small) !important;
-  padding: $spacing-sm $spacing-md;
+  border-radius: theme.$border-radius-button !important;
+  font-size: clamp(theme.$font-size-small, theme.$font-size-small, theme.$font-size-small) !important;
+  padding: theme.$spacing-sm theme.$spacing-md;
   cursor: pointer;
   transition:
-    background-color $transition-normal,
-    box-shadow $transition-normal;
+    background-color theme.$transition-normal,
+    box-shadow theme.$transition-normal;
   border: none;
   white-space: nowrap;
 
   &:focus {
     outline: none;
-    box-shadow: 0 0 0 4px rgba($primary-color, 0.2);
+    box-shadow: 0 0 0 4px rgba(theme.$primary-color, 0.2);
   }
 
   &.disabled {
-    background-color: $button-disabled-bg !important;
-    color: $text-light-color !important;
+    background-color: theme.$button-disabled-bg !important;
+    color: theme.$text-light-color !important;
     cursor: not-allowed;
     opacity: 0.5;
   }
@@ -32,9 +34,9 @@
     opacity: 0.9;
   }
 
-  @include respond-below($breakpoint-md) {
-    padding: $spacing-xs $spacing-sm !important;
-    font-size: $font-size-small;
+  @include theme.respond-below(theme.$breakpoint-md) {
+    padding: theme.$spacing-xs theme.$spacing-sm !important;
+    font-size: theme.$font-size-small;
     max-height: 48px;
     min-height: 36px;
     width: 100%;
@@ -43,23 +45,23 @@
 
 .filled {
   &.primary {
-    background-color: $primary-color !important;
-    color: $text-light-color !important;
+    background-color: theme.$primary-color !important;
+    color: theme.$text-light-color !important;
     font-weight: 500 !important;
     border: none;
 
     &:hover:not(.disabled) {
-      background-color: darken($primary-color, 10%) !important;
+      background-color: color.mix(white, theme.$primary-color, 10%) !important;
     }
   }
 
   &.secondary {
-    background-color: $secondary-color !important;
-    color: $text-light-color !important;
+    background-color: theme.$secondary-color !important;
+    color: theme.$text-light-color !important;
     font-weight: 500 !important;
 
     &:hover:not(.disabled) {
-      background-color: darken($secondary-color, 10%) !important;
+      background-color: color.mix(white, theme.$secondary-color, 10%) !important;
     }
   }
 }
@@ -67,23 +69,23 @@
 .bordered {
   background-color: transparent !important;
   font-weight: 500 !important;
-  padding: calc($spacing-sm + 4px) calc($spacing-md + 4px) !important;
+  padding: calc(theme.$spacing-sm + 4px) calc(theme.$spacing-md + 4px) !important;
 
   &.primary {
-    border: 2px solid $primary-color !important;
-    color: $primary-color !important;
+    border: 2px solid theme.$primary-color !important;
+    color: theme.$primary-color !important;
 
     &:hover:not(.disabled) {
-      background-color: rgba($primary-color, 0.1) !important;
+      background-color: rgba(theme.$primary-color, 0.1) !important;
     }
   }
 
   &.secondary {
-    border: 2px solid $secondary-color !important;
-    color: $secondary-color !important;
+    border: 2px solid theme.$secondary-color !important;
+    color: theme.$secondary-color !important;
 
     &:hover:not(.disabled) {
-      background-color: rgba($secondary-color, 0.1) !important;
+      background-color: rgba(theme.$secondary-color, 0.1) !important;
     }
   }
 }
@@ -95,15 +97,15 @@
   // color: inherit !important;
 
   &.primary {
-    color: $primary-color !important;
+    color: theme.$primary-color !important;
   }
 
   &.secondary {
-    color: $secondary-color !important;
+    color: theme.$secondary-color !important;
   }
 
   &.tertiary {
-    color: $tertiary-color !important;
+    color: theme.$tertiary-color !important;
   }
 
   &:hover {
@@ -125,8 +127,8 @@
   position: relative;
   z-index: 1001;
   overflow: visible;
-  background-color: $primary-color;
-  color: $text-light-color;
+  background-color: theme.$primary-color;
+  color: theme.$text-light-color;
   animation: blinkBackground 0.8s infinite ease-in-out;
 
   &:before {
@@ -136,7 +138,7 @@
     left: -10%;
     right: -10%;
     bottom: -10%;
-    background: rgba($primary-color, 0.8);
+    background: rgba(theme.$primary-color, 0.8);
     opacity: 0;
     filter: blur(12px);
     z-index: 1000;
@@ -148,12 +150,12 @@
 @keyframes blinkBackground {
   0%,
   100% {
-    background-color: $primary-color;
-    color: $text-light-color;
+    background-color: theme.$primary-color;
+    color: theme.$text-light-color;
   }
   50% {
-    background-color: lighten($primary-color, 20%);
-    color: $background-color;
+    background-color: color.mix(white, theme.$primary-color, 20%);
+    color: theme.$background-color;
   }
 }
 

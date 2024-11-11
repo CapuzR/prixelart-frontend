@@ -2,7 +2,7 @@ import axios from 'axios';
 
 export const fetchConversionRateFromAPI = async () => {
   try {
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/dollarValue/read';
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/dollarValue/read';
     const response = await axios.get(base_url);
 
     if (response?.data?.dollarValue == null) {

@@ -1,11 +1,11 @@
-@import 'theme.scss';
+@use '@/theme.scss' as theme;
 
 .main-container {
   width: 100%;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  padding: $spacing-xl;
+  padding: theme.$spacing-xl;
   height: calc(100vh - 69px);
 }
 
@@ -18,14 +18,14 @@
 .content-row {
   display: flex;
   justify-content: space-between;
-  padding: $spacing-md;
+  padding: theme.$spacing-md;
   max-height: 95%;
 }
 
 .switch-container {
   display: flex;
   justify-content: flex-end;
-  padding-right: $spacing-lg;
+  padding-right: theme.$spacing-lg;
 }
 
 .cart-review-container {

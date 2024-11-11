@@ -132,7 +132,6 @@ export default function CBProducts() {
         className={className}
         style={{
           ...style,
-          display: 'block',
           backgroundColor: '#789BEC',
           borderRadius: '50%',
           width: '17px',
@@ -152,7 +151,6 @@ export default function CBProducts() {
         className={className}
         style={{
           ...style,
-          display: 'block',
           backgroundColor: '#789BEC',
           borderRadius: '50%',
           width: '17px',

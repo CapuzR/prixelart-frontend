@@ -136,7 +136,7 @@ export default function UserData(props) {
   }
 
   useEffect(() => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/prixer/read';
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/prixer/read';
     const data = {
       username: props.prixerUsername,
     };
@@ -194,7 +194,7 @@ export default function UserData(props) {
       formData.append('phone', phone);
       formData.append('country', country);
       formData.append('city', city);
-      const base_url = process.env.REACT_APP_BACKEND_URL + '/prixer/update';
+      const base_url = import.meta.env.VITE_BACKEND_URL + '/prixer/update';
       const response = await axios.post(base_url, formData, {
         'Content-Type': 'multipart/form-data',
       });

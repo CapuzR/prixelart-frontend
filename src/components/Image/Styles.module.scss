@@ -1,5 +1,4 @@
-@import 'theme.scss';
-
+@use '@/theme.scss' as theme;
 .image-wrapper {
   position: relative;
   overflow: hidden;
@@ -9,7 +8,7 @@
   align-items: center;
 
   &.rounded {
-    border-radius: $border-radius-lg;
+    border-radius: theme.$border-radius-lg;
   }
 
   &.cover {
@@ -43,7 +42,7 @@
 }
 
 .rounded {
-  border-radius: $border-radius-lg;
+  border-radius: theme.$border-radius-lg;
 }
 
 .image {
@@ -52,7 +51,7 @@
   display: block;
 
   &.rounded {
-    border-radius: $border-radius-lg;
+    border-radius: theme.$border-radius-lg;
   }
 
   &.cover {

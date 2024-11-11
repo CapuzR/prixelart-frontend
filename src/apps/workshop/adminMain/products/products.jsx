@@ -28,7 +28,7 @@ import CreateSurcharge from './createSurcharge';
 import UpdateSurcharge from './updateSurcharge';
 import CreateCategory from './createCategory';
 import UpdateCategory from './updateCategory';
-const excelJS = require('exceljs');
+import ExcelJS from 'exceljs';
 
 const drawerWidth = 240;
 
@@ -364,7 +364,7 @@ export default function Products(props) {
       }
     });
 
-    const base_url = process.env.REACT_APP_BACKEND_URL + `/product/updateMany`;
+    const base_url = import.meta.env.VITE_BACKEND_URL + `/product/updateMany`;
     const response = await axios.put(
       base_url,
       { adminToken: localStorage.getItem('adminTokenV'), products: v2 },

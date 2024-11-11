@@ -43,7 +43,7 @@ export default function ReadAdmins(props) {
   const globalParams = window.location.pathname;
 
   const loadRoles = async () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/admin/read-roles';
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/admin/read-roles';
     try {
       const rolesState = await axios.post(
         base_url,
@@ -68,7 +68,7 @@ export default function ReadAdmins(props) {
 
   const deleteMethod = async (username) => {
     setLoading(true);
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/admin/delete/' + username;
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/admin/delete/' + username;
     axios
       .put(base_url, { adminToken: localStorage.getItem('adminTokenV') }, { withCredentials: true })
       .then((response) => {
@@ -80,7 +80,7 @@ export default function ReadAdmins(props) {
 
   const deleteRole = async (id) => {
     setLoading(true);
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/adminRole/delete/' + id;
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/adminRole/delete/' + id;
     axios
       .put(base_url, { adminToken: localStorage.getItem('adminTokenV') }, { withCredentials: true })
       .then((response) => {

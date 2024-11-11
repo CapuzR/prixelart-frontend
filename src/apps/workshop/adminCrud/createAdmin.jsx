@@ -80,7 +80,7 @@ export default function CreateAdmin() {
   //END Password
 
   const loadRoles = async () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/admin/read-roles';
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/admin/read-roles';
     try {
       const rolesState = await axios.post(
         base_url,
@@ -118,7 +118,7 @@ export default function CreateAdmin() {
         isSeller: isSeller,
       };
 
-      const base_url = process.env.REACT_APP_BACKEND_URL + '/admin/create';
+      const base_url = import.meta.env.VITE_BACKEND_URL + '/admin/create';
       const response = await axios.post(base_url, data, {
         withCredentials: true,
       });

@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { Cart, CartLine } from 'apps/consumer/cart/interfaces';
 import { Item } from 'types/item.types';
 import { v4 as uuidv4 } from 'uuid';
@@ -23,7 +23,11 @@ export const useCart = () => {
   return context;
 };
 
-export const CartProvider: React.FC = ({ children }) => {
+interface MyComponentProps {
+  children: ReactNode;
+}
+
+export const CartProvider: React.FC<MyComponentProps> = ({ children }) => {
   const [cart, setCart] = useState<Cart>(() => {
     const storedCart = localStorage.getItem('cart');
     return storedCart

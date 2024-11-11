@@ -73,7 +73,7 @@ export default function UpAdmin(props) {
   const [snackBarError, setSnackBarError] = useState(false);
 
   const loadRoles = async () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/admin/read-roles';
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/admin/read-roles';
     try {
       const rolesState = await axios.post(
         base_url,
@@ -109,7 +109,7 @@ export default function UpAdmin(props) {
         isSeller: isSeller,
       };
 
-      const base_url = process.env.REACT_APP_BACKEND_URL + '/admin/update/' + props.admin._id;
+      const base_url = import.meta.env.VITE_BACKEND_URL + '/admin/update/' + props.admin._id;
       const response = await axios.put(base_url, data, {
         withCredentials: true,
       });
@@ -138,7 +138,7 @@ export default function UpAdmin(props) {
       newPassword: password,
       adminToken: localStorage.getItem('adminTokenV'),
     };
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/emergency-reset';
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/emergency-reset';
     const response = await axios.post(base_url, data);
     if (response.data.success) {
       setSnackBarError(true);

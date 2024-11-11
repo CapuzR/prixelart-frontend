@@ -236,7 +236,7 @@ export default function PrixerRegistration() {
       formData.append('status', status);
       formData.append('avatar', avatarPic);
       formData.append('username', JSON.parse(localStorage.getItem('token')).username);
-      const base_url = process.env.REACT_APP_BACKEND_URL + '/prixer-registration';
+      const base_url = import.meta.env.VITE_BACKEND_URL + '/prixer-registration';
       axios
         .post(base_url, formData, {
           'Content-Type': 'multipart/form-data',
@@ -253,7 +253,7 @@ export default function PrixerRegistration() {
               balance: 0,
               email: JSON.parse(localStorage.getItem('token')).email,
             };
-            const base_url = process.env.REACT_APP_BACKEND_URL + '/account/create';
+            const base_url = import.meta.env.VITE_BACKEND_URL + '/account/create';
             axios.post(base_url, data, {
               'Content-Type': 'multipart/form-data',
             });
@@ -287,7 +287,7 @@ export default function PrixerRegistration() {
   };
 
   const getTerms = () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/termsAndConditions/read';
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/termsAndConditions/read';
     axios
       .get(base_url)
       .then((response) => {

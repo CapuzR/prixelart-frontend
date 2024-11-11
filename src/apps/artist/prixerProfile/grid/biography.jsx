@@ -126,8 +126,8 @@ export default function Biography(props) {
   const getBio = async () => {
     setBackdrop(true);
     const base_url = window.location.pathname.includes('/org=')
-      ? process.env.REACT_APP_BACKEND_URL + '/organization/getBio/' + props.prixerUsername
-      : process.env.REACT_APP_BACKEND_URL + '/prixer/getBio/' + props.prixerUsername;
+      ? import.meta.env.VITE_BACKEND_URL + '/organization/getBio/' + props.prixerUsername
+      : import.meta.env.VITE_BACKEND_URL + '/prixer/getBio/' + props.prixerUsername;
     await axios
       .get(base_url)
       .then((response) => {
@@ -163,7 +163,7 @@ export default function Biography(props) {
     const ID = key.includes('org')
       ? JSON.parse(localStorage.getItem('token')).orgId
       : JSON.parse(localStorage.getItem('token')).prixerId;
-    const base_url = process.env.REACT_APP_BACKEND_URL + espc_url + '/updateBio/' + ID;
+    const base_url = import.meta.env.VITE_BACKEND_URL + espc_url + '/updateBio/' + ID;
 
     const petition = await axios.put(base_url, formData, {
       'Content-Type': 'multipart/form-data',

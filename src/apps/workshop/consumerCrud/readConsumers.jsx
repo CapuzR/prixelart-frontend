@@ -63,7 +63,7 @@ export default function ReadConsumers(props) {
 
   const readConsumers = () => {
     setLoading(true);
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/consumer/read-all';
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/consumer/read-all';
     axios
       .post(base_url, { adminToken: localStorage.getItem('adminTokenV') })
       .then((response) => {
@@ -93,7 +93,7 @@ export default function ReadConsumers(props) {
 
   const deleteConsumer = (row) => {
     setLoading(true);
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/consumer/delete/' + row._id;
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/consumer/delete/' + row._id;
     axios
       .put(base_url, {
         adminToken: localStorage.getItem('adminTokenV'),

@@ -188,7 +188,7 @@ export default function ArtDetail(props) {
   };
 
   const verifyStandardArts = async () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/art/read-by-prixer';
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/art/read-by-prixer';
     const body = {
       username: JSON.parse(localStorage.getItem('token')).username,
     };
@@ -210,7 +210,7 @@ export default function ArtDetail(props) {
     if (artDataState === tile.artId) {
       if (updatedTile.title !== '' && updatedTile.description !== '') {
         setUpdatedTile(tile);
-        const base_url = process.env.REACT_APP_BACKEND_URL + '/art/update/' + selectedArt;
+        const base_url = import.meta.env.VITE_BACKEND_URL + '/art/update/' + selectedArt;
         const data = {
           title: tile.title,
           description: tile.description,
@@ -400,7 +400,7 @@ export default function ArtDetail(props) {
   };
 
   const deleteArt = async () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/art/delete/' + selectedArt;
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/art/delete/' + selectedArt;
     let res = await axios.delete(base_url);
     handleClose();
     setSnackBarMessage('Arte eliminado exitosamente');
@@ -412,7 +412,7 @@ export default function ArtDetail(props) {
     setLoading(true);
     art.visible = !art.visible;
 
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/art/disable/' + art.artId;
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/art/disable/' + art.artId;
     const response = await axios.put(base_url, {
       art: art,
       disabledReason: disabledReason,
@@ -429,7 +429,7 @@ export default function ArtDetail(props) {
 
   const rankArt = async (art, id, event) => {
     setLoading(true);
-    const URI = process.env.REACT_APP_BACKEND_URL + '/art/rank/' + id;
+    const URI = import.meta.env.VITE_BACKEND_URL + '/art/rank/' + id;
     art.points = parseInt(points);
     const certificate = {
       code: code,
@@ -465,7 +465,7 @@ export default function ArtDetail(props) {
       const newPage = Math.floor(index + 1);
       setPageNumber(newPage);
     } else {
-      const URI = process.env.REACT_APP_BACKEND_URL + '/art/read-by-id';
+      const URI = import.meta.env.VITE_BACKEND_URL + '/art/read-by-id';
       await axios.post(URI, { _id: fullArt }).then((response) => {
         setTiles([response.data.arts]);
         setPageNumber(1);
@@ -490,7 +490,7 @@ export default function ArtDetail(props) {
   const updateArtData = async (e, tile) => {
     setLoading(true);
     if (artDataState === '') {
-      const base_url = process.env.REACT_APP_BACKEND_URL + '/art/update/' + selectedArt;
+      const base_url = import.meta.env.VITE_BACKEND_URL + '/art/update/' + selectedArt;
       const data = {
         title: tile.title,
         description: tile.description,
@@ -522,7 +522,7 @@ export default function ArtDetail(props) {
   };
 
   const getTerms = () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/termsAndConditions/read';
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/termsAndConditions/read';
     axios
       .get(base_url)
       .then((response) => {
@@ -571,7 +571,7 @@ export default function ArtDetail(props) {
     const formData = new FormData();
     const termsAgree = true;
     formData.append('termsAgree', termsAgree);
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/prixer/update-terms/' + Id;
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/prixer/update-terms/' + Id;
     const response = await axios
       .put(
         base_url,
@@ -587,7 +587,7 @@ export default function ArtDetail(props) {
 
   const TermsAgreeModal = () => {
     const GetId = JSON.parse(localStorage.getItem('token')).username;
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/prixer/get/' + GetId;
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/prixer/get/' + GetId;
     axios.get(base_url).then((response) => {
       setTermsAgreeVar(response.data.termsAgree);
       getTerms();

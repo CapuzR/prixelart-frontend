@@ -39,7 +39,7 @@ export default function CreateWallet(props) {
       email: props.selectedPrixer.email,
       adminToken: localStorage.getItem('adminTokenV'),
     };
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/account/create';
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/account/create';
     axios.post(base_url, data).then((response) => {
       if (response.status === 200 && props.balance > 0) {
         ID = response.data.createAccount.newAccount._id;
@@ -54,7 +54,7 @@ export default function CreateWallet(props) {
           value: props.balance,
           adminToken: localStorage.getItem('adminTokenV'),
         };
-        const base_url2 = process.env.REACT_APP_BACKEND_URL + '/movement/create';
+        const base_url2 = import.meta.env.VITE_BACKEND_URL + '/movement/create';
         axios.post(base_url2, data2);
       }
     });

@@ -51,7 +51,7 @@ export default function ReadVariants(props) {
   }, []);
 
   const readVariants = async () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/product/read';
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/product/read';
 
     await axios
       .post(
@@ -91,7 +91,7 @@ export default function ReadVariants(props) {
 
   const deleteVariant = async (v) => {
     setLoading(true);
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/product/deleteVariant';
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/product/deleteVariant';
     const id = props.product._id;
 
     const deleteVar = await axios.put(

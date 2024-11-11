@@ -69,7 +69,7 @@ export function IconCard({ icon, openSelected, setOpenSelected, setSelectedIcon 
       </Modal>
       {openSelected === false && (
         <div style={{ display: 'flex', width: '100%', justifyContent: 'center' }}>
-          <Card sx={{ maxWidth: 350, maxWidth: 60 }}>
+          <Card sx={{ maxWidth: 60 }}>
             {/* <CardMedia
             component="img"
             sx={{ maxHeight: 200, margin: "auto", objectFit: "contain" }}

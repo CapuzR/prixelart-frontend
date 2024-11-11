@@ -71,7 +71,7 @@ export default function ArtBestSellers(props) {
   };
   const getAllArts = async () => {
     try {
-      const base_url = process.env.REACT_APP_BACKEND_URL + '/art/read-all-v2';
+      const base_url = import.meta.env.VITE_BACKEND_URL + '/art/read-all-v2';
       axios.get(base_url).then((response) => {
         setArts(response.data.arts);
       });
@@ -81,7 +81,7 @@ export default function ArtBestSellers(props) {
   };
 
   const getMostSellers = async () => {
-    const url = process.env.REACT_APP_BACKEND_URL + '/art/bestSellers';
+    const url = import.meta.env.VITE_BACKEND_URL + '/art/bestSellers';
     try {
       const getArts = await axios.get(url);
       setMostSellers(getArts.data.ref);
@@ -91,7 +91,7 @@ export default function ArtBestSellers(props) {
   };
 
   const getBestSellers = async () => {
-    const url = process.env.REACT_APP_BACKEND_URL + '/getArtBestSellers';
+    const url = import.meta.env.VITE_BACKEND_URL + '/getArtBestSellers';
     try {
       const getArts = await axios.get(url);
       setBestSellers(getArts.data.arts);
@@ -118,7 +118,7 @@ export default function ArtBestSellers(props) {
       bestSellers.map((prod) => {
         data.push(prod._id);
       });
-      const base_url = process.env.REACT_APP_BACKEND_URL + '/updateArtBestSellers';
+      const base_url = import.meta.env.VITE_BACKEND_URL + '/updateArtBestSellers';
       await axios
         .put(base_url, {
           data: data,

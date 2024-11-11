@@ -1,5 +1,4 @@
-@import 'src/theme.scss';
-@import '../Flow.module.scss';
+@use '../Flow.module.scss';
 
 .prix-product-container {
   justify-content: center;

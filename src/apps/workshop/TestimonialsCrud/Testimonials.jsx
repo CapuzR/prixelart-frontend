@@ -120,7 +120,7 @@ export default function Testimonials(props) {
   const [snackBarError, setSnackBarError] = useState(false);
 
   const readTestimonial = async () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/testimonial/read-all';
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/testimonial/read-all';
     const res = await axios
       .get(base_url)
       .then((response) => {
@@ -154,7 +154,7 @@ export default function Testimonials(props) {
       formData.append('status', state.checkedA);
       formData.append('adminToken', localStorage.getItem('adminTokenV'));
 
-      const base_url = process.env.REACT_APP_BACKEND_URL + '/testimonial/create';
+      const base_url = import.meta.env.VITE_BACKEND_URL + '/testimonial/create';
 
       const response = axios
         .post(base_url, formData, {
@@ -200,7 +200,7 @@ export default function Testimonials(props) {
   };
   const deleteTestimonial = async (DeleteId) => {
     setLoading(true);
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/testimonial/read/' + DeleteId;
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/testimonial/read/' + DeleteId;
     let res = await axios.put(base_url, {
       adminToken: localStorage.getItem('adminTokenV'),
     });
@@ -214,7 +214,7 @@ export default function Testimonials(props) {
     e.preventDefault();
     setLoading(true);
     handleChange(e);
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/testimonial/update-home/' + GetId;
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/testimonial/update-home/' + GetId;
     const response = await axios.put(
       base_url,
       {
@@ -232,7 +232,7 @@ export default function Testimonials(props) {
   const ChangePosition = async (index, GetId) => {
     // e.preventDefault();
     setLoading(true);
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/testimonial/update-position/' + GetId;
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/testimonial/update-position/' + GetId;
     const response = await axios.put(
       base_url,
       { position: index },
@@ -245,7 +245,7 @@ export default function Testimonials(props) {
   };
 
   const handleTestimonialDataEdit = async (GetId) => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/testimonial/' + GetId;
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/testimonial/' + GetId;
     const response = await axios.get(base_url);
     setName(response.data.name);
     setAvatarObj(response.data.avatar);
@@ -259,7 +259,7 @@ export default function Testimonials(props) {
   const saveChanges = async (e, GetId) => {
     e.preventDefault();
     setLoading(true);
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/testimonial/update/' + GetId;
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/testimonial/update/' + GetId;
     const formData = new FormData();
     formData.append('avatar', avatarPic || avatarObj);
     formData.append('type', type);

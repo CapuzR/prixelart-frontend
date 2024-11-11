@@ -273,7 +273,7 @@ export default function ConsumerData(props) {
     readyDate.getFullYear() + '-' + monthsOrder[readyDate.getMonth()] + '-' + readyDate.getDate();
 
   const getShippingMethods = () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/shipping-method/read-all-v2';
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/shipping-method/read-all-v2';
     axios
       .get(base_url)
       .then((response) => {
@@ -285,7 +285,7 @@ export default function ConsumerData(props) {
   };
 
   const getConsumers = () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/consumer/read-all';
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/consumer/read-all';
     axios
       .post(base_url)
       .then((response) => {
@@ -298,7 +298,7 @@ export default function ConsumerData(props) {
   };
 
   const getPrixers = async () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/prixer/read-all-full';
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/prixer/read-all-full';
     await axios
       .get(base_url)
       .then((response) => {

@@ -99,7 +99,7 @@ export default function CreateAdminRole() {
         modifyArtBestSellers: modifyArtBestSellers,
         adminToken: localStorage.getItem('adminTokenV'),
       };
-      const base_url = process.env.REACT_APP_BACKEND_URL + '/adminRole/create';
+      const base_url = import.meta.env.VITE_BACKEND_URL + '/adminRole/create';
       const response = await axios.post(base_url, data, {
         withCredentials: true,
       });

@@ -1,5 +1,4 @@
-@import 'theme.scss';
-
+@use '@/theme.scss' as theme;
 .catalog {
   overflow: hidden;
   display: flex;
@@ -9,7 +8,7 @@
   flex-grow: 1;
   max-width: 100%;
   margin: 0;
-  border-radius: $border-radius-md;
+  border-radius: theme.$border-radius-md;
 }
 
 .grid-container {
@@ -23,8 +22,8 @@
   display: flex;
   justify-content: right;
   align-items: center;
-  margin: $spacing-sm 0;
-  padding: 0 $spacing-lg;
+  margin: theme.$spacing-sm 0;
+  padding: 0 theme.$spacing-lg;
 }
 
 .sorting-select {
@@ -35,17 +34,17 @@
 }
 
 .avatar {
-  margin: $spacing-md;
-  background-color: $secondary-color;
+  margin: theme.$spacing-md;
+  background-color: theme.$secondary-color;
 }
 
 .form {
   width: 100%;
-  margin-top: $spacing-lg;
+  margin-top: theme.$spacing-lg;
 }
 
 .submit {
-  margin: $spacing-lg 0 $spacing-md;
+  margin: theme.$spacing-lg 0 theme.$spacing-md;
 }
 
 .float {
@@ -57,7 +56,7 @@
   max-height: 480px;
   width: 100%;
 
-  @include respond-below($breakpoint-md) {
+  @include theme.respond-below(theme.$breakpoint-md) {
     max-height: 200px;
   }
 
@@ -67,20 +66,20 @@
 }
 
 .title {
-  color: $secondary-color;
-  font-weight: $font-weight-bold;
-  padding-top: $spacing-lg;
+  color: theme.$secondary-color;
+  font-weight: theme.$font-weight-bold;
+  padding-top: theme.$spacing-lg;
 }
 
 .slider-item {
-  border-radius: $border-radius-lg;
+  border-radius: theme.$border-radius-lg;
   display: flex;
   flex-direction: column;
   height: 250px;
   width: 80%;
   margin-left: 100px;
 
-  @include respond-below($breakpoint-md) {
+  @include theme.respond-below(theme.$breakpoint-md) {
     height: 150px;
     margin-left: 35px;
   }
@@ -94,14 +93,14 @@
 
 .product-background {
   background-size: cover;
-  border-radius: $border-radius-md;
+  border-radius: theme.$border-radius-md;
   background-position: back;
   display: flex;
   justify-items: end;
   align-items: end;
 
   height: 170px;
-  @include respond-below($breakpoint-md) {
+  @include theme.respond-below(theme.$breakpoint-md) {
     height: 120px;
     width: 120px;
   }
@@ -112,26 +111,26 @@
 }
 
 .search-icon {
-  padding: $spacing-xs;
-  background-color: $primary-color;
-  color: $text-light-color;
-  margin: $spacing-xs;
+  padding: theme.$spacing-xs;
+  background-color: theme.$primary-color;
+  color: theme.$text-light-color;
+  margin: theme.$spacing-xs;
 }
 
 .product-name {
-  color: $secondary-color;
-  font-weight: $font-weight-bold;
-  font-size: $font-size-small;
+  color: theme.$secondary-color;
+  font-weight: theme.$font-weight-bold;
+  font-size: theme.$font-size-small;
   align-self: center;
 
-  @include respond-below($breakpoint-md) {
-    font-size: $font-size-small;
+  @include theme.respond-below(theme.$breakpoint-md) {
+    font-size: theme.$font-size-small;
   }
 }
 
 .details-button {
-  @include button($primary-color);
-  border-radius: $border-radius-lg;
+  @include theme.button(theme.$primary-color);
+  border-radius: theme.$border-radius-lg;
 }
 
 .best-sellers {
@@ -139,9 +138,9 @@
   flex-direction: column;
   justify-content: center;
   position: relative;
-  border-radius: $border-radius-xl;
+  border-radius: theme.$border-radius-xl;
   background-color: rgba(0, 0, 0, 0.05);
-  padding: $spacing-md $spacing-xl $spacing-lg $spacing-xl;
+  padding: theme.$spacing-md theme.$spacing-xl theme.$spacing-lg theme.$spacing-xl;
   width: 80%;
   height: 300px;
   margin: 20px auto;
@@ -150,11 +149,11 @@
     0px 1px 5px rgba(0, 0, 0, 0.14),
     0px 3px 5px rgba(0, 0, 0, 0.12);
 
-  @include respond-below($breakpoint-md) {
+  @include theme.respond-below(theme.$breakpoint-md) {
     width: 96%;
     height: 240px;
-    border-radius: $border-radius-md;
-    padding: $spacing-sm;
+    border-radius: theme.$border-radius-md;
+    padding: theme.$spacing-sm;
   }
 }
 
@@ -173,6 +172,6 @@
 }
 
 .best-seller-title {
-  color: $secondary-color;
-  font-weight: $font-weight-bold;
+  color: theme.$secondary-color;
+  font-weight: theme.$font-weight-bold;
 }

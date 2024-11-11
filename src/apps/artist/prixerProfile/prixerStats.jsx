@@ -63,19 +63,19 @@ export default function PrixerProfile() {
     setType(type);
   };
   const getBalance = async () => {
-    const url = process.env.REACT_APP_BACKEND_URL + '/account/readById';
+    const url = import.meta.env.VITE_BACKEND_URL + '/account/readById';
     const data = { _id: account };
     await axios.post(url, data).then((response) => setBalance(response.data.balance));
   };
 
   const getMovements = async () => {
-    const url = process.env.REACT_APP_BACKEND_URL + '/movement/readByAccount';
+    const url = import.meta.env.VITE_BACKEND_URL + '/movement/readByAccount';
     const data = { _id: account };
     await axios.post(url, data).then((response) => setMovements(response.data.movements.reverse()));
   };
 
   const getOrders = async () => {
-    const url = process.env.REACT_APP_BACKEND_URL + '/order/byEmail';
+    const url = import.meta.env.VITE_BACKEND_URL + '/order/byEmail';
     const data = {
       email: JSON.parse(localStorage.getItem('token')).email,
       prixerId: JSON.parse(localStorage.getItem('token')).prixerId,

@@ -22,7 +22,8 @@ import CloseIcon from '@material-ui/icons/Close';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
-import validations from '../../../utils/validations';
+import { isAValidEmail, isAValidPassword, isAValidUsername } from 'utils/validations.js';
+
 
 import clsx from 'clsx';
 
@@ -73,7 +74,7 @@ export default function UpAdmin(props) {
   const [snackBarError, setSnackBarError] = useState(false);
 
   const loadRoles = async () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/admin/read-roles';
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/admin/read-roles';
     try {
       const rolesState = await axios.post(
         base_url,
@@ -109,7 +110,7 @@ export default function UpAdmin(props) {
         isSeller: isSeller,
       };
 
-      const base_url = process.env.REACT_APP_BACKEND_URL + '/admin/update/' + props.admin._id;
+      const base_url = import.meta.env.VITE_BACKEND_URL + '/admin/update/' + props.admin._id;
       const response = await axios.put(base_url, data, {
         withCredentials: true,
       });
@@ -138,7 +139,7 @@ export default function UpAdmin(props) {
       newPassword: password,
       adminToken: localStorage.getItem('adminTokenV'),
     };
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/emergency-reset';
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/emergency-reset';
     const response = await axios.post(base_url, data);
     if (response.data.success) {
       setSnackBarError(true);
@@ -157,7 +158,7 @@ export default function UpAdmin(props) {
   };
 
   const handlePasswordChange = (e) => {
-    if (validations.isAValidPassword(e.target.value)) {
+    if (isAValidPassword(e.target.value)) {
       setPassword(e.target.value);
       setPasswordError(false);
       setSnackBarError(false);

@@ -89,7 +89,7 @@ export default function OrgCommission({
   }, [appliedProducts]);
 
   const getProducts = async () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/product/read-allv1';
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/product/read-allv1';
     await axios
       .post(
         base_url,
@@ -107,7 +107,7 @@ export default function OrgCommission({
   };
 
   const getSurcharges = async (prods) => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/surcharge/read-active';
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/surcharge/read-active';
     await axios
       .get(base_url)
       .then((response) => {
@@ -214,7 +214,7 @@ export default function OrgCommission({
   const updateComission = async () => {
     setLoading(true);
     const base_url =
-      process.env.REACT_APP_BACKEND_URL + '/organization/updateComission/' + selectedPrixer.orgId;
+      import.meta.env.VITE_BACKEND_URL + '/organization/updateComission/' + selectedPrixer.orgId;
     const body = {
       adminToken: localStorage.getItem('adminTokenV'),
       comission: Number(comission),

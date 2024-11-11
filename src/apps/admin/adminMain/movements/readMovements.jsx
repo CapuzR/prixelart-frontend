@@ -83,7 +83,7 @@ export default function ReadMovements(props) {
   };
 
   const readMovements = () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/movement/readAllMovements';
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/movement/readAllMovements';
     axios
       .post(
         base_url,
@@ -113,7 +113,7 @@ export default function ReadMovements(props) {
 
   const readPrixers = async () => {
     try {
-      const base_url = process.env.REACT_APP_BACKEND_URL + '/prixer/read-all-full';
+      const base_url = import.meta.env.VITE_BACKEND_URL + '/prixer/read-all-full';
 
       const response = await axios.get(base_url);
       setPrixers(response.data.prixers);
@@ -123,7 +123,7 @@ export default function ReadMovements(props) {
   };
 
   const getORGs = async () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/organization/read-all-full';
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/organization/read-all-full';
     await axios
       .get(base_url)
       .then((response) => {
@@ -205,7 +205,7 @@ export default function ReadMovements(props) {
 
   const deleteMov = async (mov) => {
     setLoading(true);
-    const URI = process.env.REACT_APP_BACKEND_URL + '/movement/delete/' + mov._id;
+    const URI = import.meta.env.VITE_BACKEND_URL + '/movement/delete/' + mov._id;
     const body = {
       adminToken: localStorage.getItem('adminTokenV'),
       movement: mov._id,

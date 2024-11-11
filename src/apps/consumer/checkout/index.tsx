@@ -149,7 +149,7 @@ const Checkout: React.FC<CheckoutProps> = ({ cart, props }) => {
       }
 
       //Mover al API
-      const base_url = process.env.REACT_APP_BACKEND_URL + '/order/createv2';
+      const base_url = import.meta.env.VITE_BACKEND_URL + '/order/createv2';
       const config: AxiosRequestConfig = {
         headers: {
           'Content-Type': 'application/json',
@@ -168,14 +168,14 @@ const Checkout: React.FC<CheckoutProps> = ({ cart, props }) => {
               const formData = new FormData();
               formData.append('paymentVoucher', paymentVoucher);
               let ID = input.orderId;
-              const base_url2 = process.env.REACT_APP_BACKEND_URL + '/order/addVoucher/' + ID;
+              const base_url2 = import.meta.env.VITE_BACKEND_URL + '/order/addVoucher/' + ID;
               await axios.put(base_url2, formData, configMulti);
             }
 
             props.setMessage(response.data.info);
             props.setMessage('¡Gracias por tu compra! Por favor revisa tu correo');
 
-            const base_url3 = process.env.REACT_APP_BACKEND_URL + '/order/sendEmail';
+            const base_url3 = import.meta.env.VITE_BACKEND_URL + '/order/sendEmail';
             await axios.post(base_url3, input).then(async (response) => {
               if (response.data.success === false) {
                 await axios.post(base_url3, input);

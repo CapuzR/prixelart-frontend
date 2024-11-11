@@ -23,10 +23,12 @@ import OrderDetails from './orderDetails';
 import CreateOrder from './createOrder';
 // import PayComission from "./payComission"
 import { nanoid } from 'nanoid';
-import { getComission } from '../../../consumer/checkout/pricesFunctions';
-import moment from 'moment';
+import { getComission } from '../../../consumer/checkout/pricesFunctions.jsx';
+// import moment from 'moment';
+import moment from 'moment-timezone';
 import 'moment/locale/es';
-const excelJS = require('exceljs');
+import ExcelJS from 'exceljs';
+
 
 const drawerWidth = 240;
 
@@ -236,7 +238,6 @@ export default function Orders(props) {
   // const history = useHistory();
   // const location = useLocation();
   const theme = useTheme();
-  const moment = require('moment-timezone');
 
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
   const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
@@ -269,7 +270,7 @@ export default function Orders(props) {
   const [refresh, setRefresh] = useState(null);
 
   const findPrixer = async (prx) => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/prixer/read';
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/prixer/read';
     return await axios
       .post(base_url, { username: prx })
       .then((response) => {
@@ -282,7 +283,7 @@ export default function Orders(props) {
 
   const readOrders = async () => {
     setLoading(true);
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/order/read-all';
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/order/read-all';
     try {
       const response = await axios.post(base_url, { withCredentials: true });
       // setRows(response.data.orders)
@@ -486,7 +487,7 @@ export default function Orders(props) {
   };
 
   // const deleteOrder = async (id) => {
-  //   const URI = process.env.REACT_APP_BACKEND_URL + "/order/delete/" + id;
+  //   const URI = import.meta.env.VITE_BACKEND_URL + "/order/delete/" + id;
   //   await axios.delete(
   //     URI,
   //     { adminToken: localStorage.getItem("adminTokenV") },
@@ -507,7 +508,7 @@ export default function Orders(props) {
   };
 
   const handleChangeStatus = async (order, status) => {
-    const URI = process.env.REACT_APP_BACKEND_URL + '/order/update/' + order.orderId;
+    const URI = import.meta.env.VITE_BACKEND_URL + '/order/update/' + order.orderId;
     const body = {
       adminToken: localStorage.getItem('adminTokenV'),
       status: status,
@@ -673,7 +674,7 @@ export default function Orders(props) {
         item.art?.prixerUsername !== 'Personalizado' &&
         destinatary !== undefined
       ) {
-        const url = process.env.REACT_APP_BACKEND_URL + '/movement/create';
+        const url = import.meta.env.VITE_BACKEND_URL + '/movement/create';
         const data = {
           _id: nanoid(),
           createdOn: new Date(),
@@ -697,7 +698,7 @@ export default function Orders(props) {
             //       adminToken: localStorage.getItem("adminTokenV"),
             //     }
             //     const url2 =
-            //       process.env.REACT_APP_BACKEND_URL + "/order/addComissions"
+            //       import.meta.env.VITE_BACKEND_URL + "/order/addComissions"
             //     await axios.put(url2, data2).then(async (res) => {
             //       if (res.data.success === false) {
             setSnackBarError(true);
@@ -716,7 +717,7 @@ export default function Orders(props) {
   };
 
   const handleChangePayStatus = async (order, payStatus) => {
-    const URI = process.env.REACT_APP_BACKEND_URL + '/order/updatePayStatus/' + order.orderId;
+    const URI = import.meta.env.VITE_BACKEND_URL + '/order/updatePayStatus/' + order.orderId;
     const body = {
       adminToken: localStorage.getItem('adminTokenV'),
       payStatus: payStatus,
@@ -757,7 +758,7 @@ export default function Orders(props) {
   };
 
   const getClients = async () => {
-    const URI = process.env.REACT_APP_BACKEND_URL + '/order/getClients';
+    const URI = import.meta.env.VITE_BACKEND_URL + '/order/getClients';
     const response = await axios.get(URI, { withCredentials: true });
     setClients(response.data.clients);
   };

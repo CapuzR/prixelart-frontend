@@ -155,7 +155,7 @@ export default function UpdateSurcharge(props) {
         considerations: considerations,
         adminToken: localStorage.getItem('adminTokenV'),
       };
-      const base_url = process.env.REACT_APP_BACKEND_URL + '/surcharge/update';
+      const base_url = import.meta.env.VITE_BACKEND_URL + '/surcharge/update';
       const response = await axios.put(base_url, data);
       if (response.data.success === false) {
         setLoading(false);
@@ -178,7 +178,7 @@ export default function UpdateSurcharge(props) {
 
   const getProducts = async () => {
     setLoading(true);
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/product/read-allv1';
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/product/read-allv1';
     await axios
       .post(
         base_url,
@@ -196,7 +196,7 @@ export default function UpdateSurcharge(props) {
 
   const getOwnersAndPrixers = async () => {
     setLoading(true);
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/prixer/getOwnersAndPrixers';
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/prixer/getOwnersAndPrixers';
     await axios
       .post(
         base_url,

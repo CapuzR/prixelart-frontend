@@ -75,7 +75,7 @@ export default function ForgotPassword() {
       );
       setSnackBarError(true);
     } else {
-      const base_url = process.env.REACT_APP_BACKEND_URL + '/forgot-password';
+      const base_url = import.meta.env.VITE_BACKEND_URL + '/forgot-password';
       const data = {
         email: email,
       };

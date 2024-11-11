@@ -27,7 +27,7 @@ import {
   getPVM,
   getTotalUnitsPVM,
   getTotalUnitsPVP,
-} from '../../../consumer/checkout/pricesFunctions';
+} from '../../../consumer/checkout/pricesFunctions.jsx';
 import CurrencySwitch from 'components/CurrencySwitch';
 const drawerWidth = 240;
 
@@ -261,7 +261,7 @@ export default function Checkout(props) {
   };
 
   const getDiscounts = async () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/discount/read-allv2';
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/discount/read-allv2';
     await axios
       .post(base_url)
       .then((response) => {
@@ -273,7 +273,7 @@ export default function Checkout(props) {
   };
 
   useEffect(() => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/prixer/read-all-full';
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/prixer/read-all-full';
 
     axios.get(base_url).then((response) => {
       let prev = response.data.prixers;
@@ -288,7 +288,7 @@ export default function Checkout(props) {
   }, []);
 
   useEffect(() => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/payment-method/read-all-v2';
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/payment-method/read-all-v2';
     axios
       .get(base_url)
       .then((response) => {

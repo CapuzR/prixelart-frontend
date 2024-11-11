@@ -1,16 +1,15 @@
-@import 'theme.scss';
-
+@use '@/theme.scss' as theme;
 .snackbar {
   position: fixed;
-  bottom: $spacing-lg;
+  bottom: theme.$spacing-lg;
   left: 50%;
   transform: translateX(-50%);
-  background-color: $secondary-color;
-  color: $text-light-color;
-  padding: $spacing-sm $spacing-md;
-  border-radius: $border-radius-md;
-  box-shadow: $box-shadow-medium;
-  z-index: $z-index-modal;
+  background-color: theme.$secondary-color;
+  color: theme.$text-light-color;
+  padding: theme.$spacing-sm theme.$spacing-md;
+  border-radius: theme.$border-radius-md;
+  box-shadow: theme.$box-shadow-medium;
+  z-index: theme.$z-index-modal;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -20,23 +19,23 @@
 }
 
 .snackbar-content {
-  font-size: $font-size-base;
-  font-family: $font-family-sans;
+  font-size: theme.$font-size-base;
+  font-family: theme.$font-family-sans;
   text-align: center;
 }
 
 .snackbar-close {
   background: none;
   border: none;
-  color: $text-light-color;
+  color: theme.$text-light-color;
   cursor: pointer;
-  font-size: $font-size-large;
-  margin-left: $spacing-sm;
+  font-size: theme.$font-size-large;
+  margin-left: theme.$spacing-sm;
   padding: 0;
-  transition: color $transition-normal;
+  transition: color theme.$transition-normal;
 
   &:hover {
-    color: $hover-text-color;
+    color: theme.$hover-text-color;
   }
 }
 
@@ -49,8 +48,8 @@
   opacity: 1;
   transform: translateX(-50%) translateY(0);
   transition:
-    opacity $transition-normal,
-    transform $transition-normal;
+    opacity theme.$transition-normal,
+    transform theme.$transition-normal;
 }
 
 .snackbar-exit {
@@ -62,6 +61,6 @@
   opacity: 0;
   transform: translateX(-50%) translateY(100%);
   transition:
-    opacity $transition-normal,
-    transform $transition-normal;
+    opacity theme.$transition-normal,
+    transform theme.$transition-normal;
 }

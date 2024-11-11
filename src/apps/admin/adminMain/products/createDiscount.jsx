@@ -105,7 +105,7 @@ export default function CreateDiscount() {
         appliedProducts: appliedProducts,
         adminToken: localStorage.getItem('adminTokenV'),
       };
-      const base_url = process.env.REACT_APP_BACKEND_URL + '/discount/create';
+      const base_url = import.meta.env.VITE_BACKEND_URL + '/discount/create';
       const response = await axios.post(base_url, data);
       if (response.data.success === false) {
         setLoading(false);
@@ -128,7 +128,7 @@ export default function CreateDiscount() {
 
   const getProducts = async () => {
     setLoading(true);
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/product/read-allv1';
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/product/read-allv1';
     await axios
       .post(
         base_url,

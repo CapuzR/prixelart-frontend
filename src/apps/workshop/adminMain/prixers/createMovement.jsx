@@ -46,7 +46,7 @@ export default function CreateMovement(props) {
       value: props.balance,
       adminToken: localStorage.getItem('adminTokenV'),
     };
-    const url = process.env.REACT_APP_BACKEND_URL + '/movement/create';
+    const url = import.meta.env.VITE_BACKEND_URL + '/movement/create';
     await axios.post(url, data);
     props.setOpen(true);
     props.setMessage('Balance actualizado exitosamente.');

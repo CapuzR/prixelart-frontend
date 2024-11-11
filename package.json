@@ -11,6 +11,7 @@
     "@testing-library/user-event": "^7.2.1",
     "@types/jest": "^29.5.4",
     "@uiw/react-md-editor": "^3.19.0",
+    "@vitejs/plugin-react": "^4.3.3",
     "aws-sdk": "^2.886.0",
     "axios": "^1.6.5",
     "axios-mock-adapter": "^1.22.0",
@@ -34,26 +35,25 @@
     "react-redux": "^7.2.6",
     "react-responsive-masonry": "^2.1.6",
     "react-router-dom": "^5.2.0",
-    "react-scripts": "^5.0.1",
     "react-slick": "^0.29.0",
     "react-world-flags": "^1.6.0",
     "recharts": "^2.8.0",
     "redux": "^5.0.1",
-    "sass": "^1.79.5",
+    "sass": "^1.80.6",
     "slick-carousel": "^1.8.1",
     "three": "^0.158.0",
     "update-browserslist-db": "^1.0.11",
     "victory": "^36.6.11",
+    "vite": "^5.4.10",
     "whatwg-fetch": "^3.6.19"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "prepare": "husky install",
-    "format": "prettier --config config/.prettierrc --ignore-path config/.prettierignore --write .",
-    "lint": "eslint -c config/.eslintrc --ignore-path config/.eslintignore . --ext .js,.jsx,.ts,.tsx"
+    "dev": "yarn vite",
+    "build": "yarn vite build",
+    "serve": "yarn vite preview",
+    "prepare": "yarn husky install",
+    "format": "yarn prettier --config config/.prettierrc --ignore-path config/.prettierignore --write .",
+    "lint": "yarn eslint -c config/.eslintrc --ignore-path config/.eslintignore . --ext .js,.jsx,.ts,.tsx"
   },
   "browserslist": {
     "production": [
@@ -69,20 +69,20 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "lint-staged --ignore-pattern \"**/*.test.{js,jsx,ts,tsx}\""
+      "pre-commit": "npx lint-staged --ignore-pattern \"**/*.test.{js,jsx,ts,tsx}\""
     }
   },
   "lint-staged": {
-    "*[!.test].{js,jsx,ts,tsx,json,css,scss,md}": [
+    "*.{js,jsx,ts,tsx,json,css,scss,md}": [
       "prettier --config config/.prettierrc --write",
-      "eslint --fix"
+      "eslint -c config/.eslintrc --fix"
     ],
-    "!*.test.js": []
+    "*.test.{js,jsx,ts,tsx}": []
   },
   "devDependencies": {
     "@commitlint/cli": "^17.0.3",
     "@commitlint/config-conventional": "^17.0.3",
-    "@types/node-sass": "^4.11.7",
+    "@types/node-sass": "^4.11.8",
     "eslint-plugin-react-hooks": "^4.2.0",
     "eslint-plugin-unicorn": "^56.0.0",
     "husky": "^8.0.0",

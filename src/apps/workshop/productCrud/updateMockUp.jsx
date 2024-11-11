@@ -164,7 +164,7 @@ export default function UpdateMockup(props) {
   };
 
   const getRandomArt = async () => {
-    const url = process.env.REACT_APP_BACKEND_URL + '/art/random';
+    const url = import.meta.env.VITE_BACKEND_URL + '/art/random';
     const response = await axios.get(url);
     if (response.data.arts !== null) {
       setArt(response.data.arts);
@@ -312,7 +312,7 @@ export default function UpdateMockup(props) {
     newFormData.append('warpOrientation', warpOrientation);
 
     const base_url =
-      process.env.REACT_APP_BACKEND_URL + `/product/updateMockup/${props.product._id}`;
+      import.meta.env.VITE_BACKEND_URL + `/product/updateMockup/${props.product._id}`;
     const response = await axios.put(base_url, newFormData, {
       withCredentials: true,
     });
@@ -333,7 +333,7 @@ export default function UpdateMockup(props) {
     setLoading(true);
 
     const base_url =
-      process.env.REACT_APP_BACKEND_URL + `/product/updateMockup/${props.product._id}`;
+      import.meta.env.VITE_BACKEND_URL + `/product/updateMockup/${props.product._id}`;
     const response = await axios.put(
       base_url,
       { adminToken: localStorage.getItem('adminTokenV') },

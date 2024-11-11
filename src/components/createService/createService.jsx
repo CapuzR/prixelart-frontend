@@ -199,7 +199,7 @@ export default function CreateService(props) {
 
     images.map((file) => formData.append('serviceImages', file));
 
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/service/create';
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/service/create';
     const create = await axios.post(base_url, formData, {
       'Content-Type': 'multipart/form-data',
     });

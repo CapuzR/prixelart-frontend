@@ -76,7 +76,7 @@ export default function OrgGrid(props) {
   const [backdrop, setBackdrop] = useState(true);
 
   useEffect(() => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/organization/read-all-full-v2';
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/organization/read-all-full-v2';
 
     axios.get(base_url).then((response) => {
       setTiles(utils.shuffle(response.data.organizations));

@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 export const getAllConsumers = async () => {
-  const base_url = process.env.REACT_APP_BACKEND_URL + '/consumer/read-all';
+  const base_url = import.meta.env.VITE_BACKEND_URL + '/consumer/read-all';
   const response = await axios.post(base_url);
   if (response.data) {
     return response.data;
@@ -11,7 +11,7 @@ export const getAllConsumers = async () => {
 };
 
 export const getConsumerById = async (id) => {
-  const base_url = process.env.REACT_APP_BACKEND_URL + '/consumer/read';
+  const base_url = import.meta.env.VITE_BACKEND_URL + '/consumer/read';
   const response = await axios.post(base_url, id);
   if (response.data === false) {
     return response.data;
@@ -21,7 +21,7 @@ export const getConsumerById = async (id) => {
 };
 
 export const searchConsumer = async (text) => {
-  const base_url = process.env.REACT_APP_BACKEND_URL + '/consumer/read-by-query';
+  const base_url = import.meta.env.VITE_BACKEND_URL + '/consumer/read-by-query';
   const response = await axios.post(base_url, { query: text });
   if (response.data) {
     return response.data;

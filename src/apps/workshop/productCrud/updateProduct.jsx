@@ -165,7 +165,7 @@ export default function UpdateProduct(props) {
   const [mustImage, setMustImages] = useState(false);
 
   const readProduct = () => {
-    const base_url2 = process.env.REACT_APP_BACKEND_URL + '/product/read';
+    const base_url2 = import.meta.env.VITE_BACKEND_URL + '/product/read';
     axios.post(base_url2, { _id: productId }).then((response) => {
       let product = response.data.products[0];
       props.setProduct(product);
@@ -338,7 +338,7 @@ export default function UpdateProduct(props) {
           if (videoUrl) {
             newFormData.append('video', videoUrl);
           }
-          const base_url = process.env.REACT_APP_BACKEND_URL + `/product/update/${productId}`;
+          const base_url = import.meta.env.VITE_BACKEND_URL + `/product/update/${productId}`;
           const response = await axios.put(base_url, newFormData, {
             withCredentials: true,
           });

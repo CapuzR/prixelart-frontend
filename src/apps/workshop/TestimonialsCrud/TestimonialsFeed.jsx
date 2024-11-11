@@ -61,7 +61,7 @@ export default function TestimonialsFeed() {
   const theme = useTheme();
 
   const readTestimonial = async () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/testimonial/read-all';
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/testimonial/read-all';
     const res = await axios
       .get(base_url)
       .then((response) => {

@@ -5,7 +5,7 @@ import { useState } from 'react';
 import axios from 'axios';
 import { useHistory } from 'react-router-dom';
 
-import validations from '../../../../utils/validations';
+import { isAValidEmail, isAValidPassword, isAValidUsername } from '/src/utils/validations.js';
 import Copyright from 'components/Copyright/copyright';
 
 //material-ui
@@ -87,7 +87,7 @@ export default function PasswordReset(props) {
       setErrorMessage('Token inválido o expirado. Por favor inténtalo de nuevo.');
       setSnackBarError(true);
     } else {
-      const base_url = process.env.REACT_APP_BACKEND_URL + '/pw-token-check';
+      const base_url = import.meta.env.VITE_BACKEND_URL + '/pw-token-check';
       const data = {
         token: token,
       };
@@ -113,7 +113,7 @@ export default function PasswordReset(props) {
       setErrorMessage('Por favor completa todos los campos requeridos.');
       setSnackBarError(true);
     } else {
-      const base_url = process.env.REACT_APP_BACKEND_URL + '/reset-password';
+      const base_url = import.meta.env.VITE_BACKEND_URL + '/reset-password';
       const data = {
         token: token,
         newPassword: newPassword,
@@ -139,7 +139,7 @@ export default function PasswordReset(props) {
 
   //New password
   const handleNewPasswordChange = (e) => {
-    if (validations.isAValidPassword(e.target.value)) {
+    if (isAValidPassword(e.target.value)) {
       setNewPassword(e.target.value);
       setNewPasswordError(false);
       setSnackBarError(false);

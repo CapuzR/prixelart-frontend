@@ -241,7 +241,7 @@ export default function CreateProduct() {
 
           formData.append('video', videoUrl);
           images.images.map((file) => formData.append('productImages', file));
-          const base_url = process.env.REACT_APP_BACKEND_URL + '/product/create';
+          const base_url = import.meta.env.VITE_BACKEND_URL + '/product/create';
           const response = await axios.post(base_url, formData);
           if (response.data.success === false) {
             setLoading(false);

@@ -38,7 +38,7 @@ export default function removePrixer({
   const classes = useStyles();
 
   const exPrixer = async () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/prixers/destroyPrixer';
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/prixers/destroyPrixer';
     await axios
       .put(base_url, {
         prixerId: selectedPrixer.prixerId,

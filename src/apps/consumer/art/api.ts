@@ -2,7 +2,7 @@ import axios from 'axios';
 import { Art } from './interfaces';
 
 export const fetchArtDetails = async (artId: string): Promise<any> => {
-  const base_url = `${process.env.REACT_APP_BACKEND_URL}/art/read-by-id`;
+  const base_url = `${import.meta.env.VITE_BACKEND_URL}/art/read-by-id`;
 
   try {
     const response = await axios.post(base_url, { _id: artId });
@@ -15,7 +15,7 @@ export const fetchArtDetails = async (artId: string): Promise<any> => {
 
 export const readGallery = async (filters: object): Promise<any> => {
   try {
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/art/read-for-gallery';
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/art/read-for-gallery';
     const response = await axios.post(base_url, filters);
     return response?.data;
   } catch (error) {
@@ -25,7 +25,7 @@ export const readGallery = async (filters: object): Promise<any> => {
 };
 
 export const setVisibleArt = async (art: Art) => {
-  const base_url = process.env.REACT_APP_BACKEND_URL + '/art/disable/' + art.artId;
+  const base_url = import.meta.env.VITE_BACKEND_URL + '/art/disable/' + art.artId;
   art.visible = !art.visible;
   const response = await axios.put(base_url, art, {
     headers: {
@@ -36,7 +36,7 @@ export const setVisibleArt = async (art: Art) => {
 };
 
 export const fetchNextArtNumber = async (artId: string): Promise<number> => {
-  const base_url = `${process.env.REACT_APP_BACKEND_URL}/art/get-next-art-number`;
+  const base_url = `${import.meta.env.VITE_BACKEND_URL}/art/get-next-art-number`;
 
   try {
     const response = await axios.post(base_url, { artId });

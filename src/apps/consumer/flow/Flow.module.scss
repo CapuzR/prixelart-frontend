@@ -1,4 +1,4 @@
-@import 'src/theme.scss';
+@use '@/theme.scss' as theme;
 
 .prix-product-container {
   display: flex;
@@ -24,14 +24,14 @@
 .product-title {
   display: flex;
   align-items: center;
-  font-size: $font-size-extra-large;
-  font-weight: $font-weight-bold;
-  color: $text-color;
+  font-size: theme.$font-size-extra-large;
+  font-weight: theme.$font-weight-bold;
+  color: theme.$text-color;
   width: auto;
 }
 
 .price-selected {
-  font-size: $font-size-medium;
+  font-size: theme.$font-size-medium;
   margin-top: 1rem;
   justify-content: flex-end;
   align-items: center;
@@ -46,10 +46,10 @@
   display: flex;
   justify-content: flex-end;
   align-content: center;
-  gap: $spacing-md;
+  gap: theme.$spacing-md;
 
-  @include respond-below($breakpoint-md) {
-    gap: $spacing-sm;
+  @include theme.respond-below(theme.$breakpoint-md) {
+    gap: theme.$spacing-sm;
   }
 }
 
@@ -78,11 +78,11 @@
 }
 
 .carousel-wrapper {
-  padding: $spacing-md;
-  margin: $spacing-sm 0;
-  background-color: $background-color;
-  box-shadow: $box-shadow-medium;
-  border-radius: $border-radius-md;
+  padding: theme.$spacing-md;
+  margin: theme.$spacing-sm 0;
+  background-color: theme.$background-color;
+  box-shadow: theme.$box-shadow-medium;
+  border-radius: theme.$border-radius-md;
   text-align: center;
   overflow: hidden;
   min-height: 500px;
@@ -95,7 +95,7 @@
 
 .accordion-title {
   font-size: 1.2rem;
-  font-weight: $font-weight-bold;
+  font-weight: theme.$font-weight-bold;
 }
 
 .accordion-details {
@@ -104,9 +104,9 @@
 }
 
 .markdown-content {
-  color: $text-color;
-  font-size: $font-size-small;
-  line-height: $line-height-base;
+  color: theme.$text-color;
+  font-size: theme.$font-size-small;
+  line-height: theme.$line-height-base;
   background-color: transparent;
   white-space: pre-wrap;
 }
@@ -125,10 +125,10 @@
 }
 
 .attributes-container {
-  padding: $spacing-md;
-  background-color: $background-color;
-  box-shadow: $box-shadow-medium;
-  border-radius: $border-radius-md;
+  padding: theme.$spacing-md;
+  background-color: theme.$background-color;
+  box-shadow: theme.$box-shadow-medium;
+  border-radius: theme.$border-radius-md;
   text-align: center;
   overflow: hidden;
   display: flex;
@@ -157,11 +157,11 @@
 }
 
 .art-selection-container {
-  padding: $spacing-md;
-  margin: $spacing-sm;
-  background-color: $background-color;
-  box-shadow: $box-shadow-medium;
-  border-radius: $border-radius-xl;
+  padding: theme.$spacing-md;
+  margin: theme.$spacing-sm;
+  background-color: theme.$background-color;
+  box-shadow: theme.$box-shadow-medium;
+  border-radius: theme.$border-radius-xl;
   text-align: center;
   overflow: auto;
 }
@@ -184,12 +184,12 @@
 .custom-paging-image {
   object-fit: cover;
 
-  @include respond-below($breakpoint-sm) {
+  @include theme.respond-below(theme.$breakpoint-sm) {
     width: 45px;
     height: 45px;
   }
 
-  @include respond-above($breakpoint-sm) {
+  @include theme.respond-above(theme.$breakpoint-sm) {
     width: 70px;
     height: 70px;
   }
@@ -206,11 +206,11 @@
   width: 210px;
   height: 210px;
   background-size: cover;
-  border-radius: $border-radius-lg;
+  border-radius: theme.$border-radius-lg;
   position: absolute;
   top: 0;
   left: 0;
-  z-index: $z-index-modal;
+  z-index: theme.$z-index-modal;
 }
 
 .art-comparison-grid {
@@ -230,7 +230,7 @@
 .art-image {
   background-color: #eeeeee;
   height: auto;
-  border-radius: $border-radius-button;
+  border-radius: theme.$border-radius-button;
 }
 
 .art-image-wrapper {
@@ -245,13 +245,13 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin: $spacing-md 0;
+  margin: theme.$spacing-md 0;
 }
 
 .item-content {
   display: flex;
   flex-direction: column;
   flex: 1;
-  padding: $spacing-md;
+  padding: theme.$spacing-md;
   justify-content: space-between;
 }

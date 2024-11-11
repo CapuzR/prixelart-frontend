@@ -166,7 +166,7 @@ export default function Prixers(props) {
 
   const readPrixers = async () => {
     try {
-      const base_url = process.env.REACT_APP_BACKEND_URL + '/prixer/read-all-full';
+      const base_url = import.meta.env.VITE_BACKEND_URL + '/prixer/read-all-full';
 
       const response = await axios.get(base_url);
       let prev = response.data.prixers;
@@ -183,7 +183,7 @@ export default function Prixers(props) {
 
   const readConsumers = async () => {
     try {
-      const base_url = process.env.REACT_APP_BACKEND_URL + '/consumer/read-prixers';
+      const base_url = import.meta.env.VITE_BACKEND_URL + '/consumer/read-prixers';
 
       const response = await axios.post(base_url, {
         adminToken: localStorage.getItem('adminTokenV'),
@@ -196,7 +196,7 @@ export default function Prixers(props) {
 
   const readOrg = async () => {
     try {
-      const base_url = process.env.REACT_APP_BACKEND_URL + '/organization/read-all-full';
+      const base_url = import.meta.env.VITE_BACKEND_URL + '/organization/read-all-full';
 
       const response = await axios.get(base_url);
       setOrg(response.data.organizations);
@@ -206,7 +206,7 @@ export default function Prixers(props) {
   };
 
   const getBalance = async () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/account/readAll';
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/account/readAll';
     await axios
       .post(base_url, {
         adminToken: localStorage.getItem('adminTokenV'),
@@ -237,7 +237,7 @@ export default function Prixers(props) {
     setLoading(true);
     setState({ ...state, [e.target.name]: e.target.checked });
 
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/prixer/update-home/' + prixer.prixerId;
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/prixer/update-home/' + prixer.prixerId;
     const body = {
       status: e.target.value === 'false' || e.target.value === '' ? true : false,
       adminToken: localStorage.getItem('adminTokenV'),
@@ -281,7 +281,7 @@ export default function Prixers(props) {
   }
 
   const TurnIntoOrg = async (event, user) => {
-    const url = process.env.REACT_APP_BACKEND_URL + '/turn-to-association';
+    const url = import.meta.env.VITE_BACKEND_URL + '/turn-to-association';
     const data = { username: user };
     const call = await axios.post(url, data);
     if (call.data.success) {
@@ -293,7 +293,7 @@ export default function Prixers(props) {
   };
 
   const TurnIntoPrixer = async (event, user) => {
-    const url = process.env.REACT_APP_BACKEND_URL + '/turn-to-prixer';
+    const url = import.meta.env.VITE_BACKEND_URL + '/turn-to-prixer';
     const data = { username: user };
     const call = await axios.post(url, data);
     if (call.data.success) {
@@ -309,7 +309,7 @@ export default function Prixers(props) {
   };
 
   // const addrole = async () => {
-  //   const url = process.env.REACT_APP_BACKEND_URL + "/prixers/addRole";
+  //   const url = import.meta.env.VITE_BACKEND_URL + "/prixers/addRole";
 
   //   await axios.put(url);
   //   setOpen(true);

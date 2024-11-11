@@ -9,7 +9,7 @@ const state = {
 
 //INIT
 const init = async () => {
-  const base_url = process.env.REACT_APP_BACKEND_URL + '/order/read-all';
+  const base_url = import.meta.env.VITE_BACKEND_URL + '/order/read-all';
   const response = await axios.post(base_url);
   if (response.data.length !== 0) {
     return Object.assign({}, state, {

@@ -2,7 +2,7 @@ import axios from 'axios';
 
 export default async function generateSignature(params) {
   try {
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/art/get-signature';
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/art/get-signature';
     const data = await axios.post(base_url, params);
 
     return {

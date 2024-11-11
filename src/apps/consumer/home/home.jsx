@@ -188,7 +188,7 @@ export default function Home(props) {
   ];
 
   const getImagesForTheCarousel = () => {
-    const URI = process.env.REACT_APP_BACKEND_URL + '/carousel';
+    const URI = import.meta.env.VITE_BACKEND_URL + '/carousel';
     fetch(URI)
       .then((res) =>
         res
@@ -213,7 +213,7 @@ export default function Home(props) {
   };
 
   const getBestSellers = async () => {
-    const url = process.env.REACT_APP_BACKEND_URL + '/product/bestSellers';
+    const url = import.meta.env.VITE_BACKEND_URL + '/product/bestSellers';
     try {
       const bestS = await axios.get(url);
       setBestSellers(bestS.data.products);
@@ -223,7 +223,7 @@ export default function Home(props) {
   };
 
   const getBestArts = async () => {
-    const url = process.env.REACT_APP_BACKEND_URL + '/art/bestSellers';
+    const url = import.meta.env.VITE_BACKEND_URL + '/art/bestSellers';
     try {
       const getArts = await axios.get(url);
       setMostSelledArts(getArts.data.arts);
@@ -234,7 +234,7 @@ export default function Home(props) {
   const [sizes, setSizes] = useState([{}]);
 
   const getLatest = async () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/art/get-latest';
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/art/get-latest';
     try {
       const getLatestArts = await axios.get(base_url);
       const artsArray = getLatestArts.data.arts.map((art) => ({
@@ -299,41 +299,6 @@ export default function Home(props) {
     });
   };
 
-  const settings = {
-    slidesToShow: (isDesktop && 5) || (isMobile && 2) || (isTab && 4),
-    slidesToScroll: 1,
-    autoplay: true,
-    autoplaySpeed: 4000,
-    speed: 1000,
-    infinite: true,
-    dots: true,
-    pauseOnHover: true,
-  };
-
-  const settings2 = {
-    slidesToShow: (isDesktop && 3) || (isMobile && 1) || (isTab && 3),
-    slidesToScroll: 1,
-    autoplay: true,
-    autoplaySpeed: 4000,
-    speed: 1000,
-    infinite: true,
-    dots: true,
-    pauseOnHover: true,
-  };
-
-  const settings3 = {
-    // className: "center",
-    centerMode: true,
-    infinite: true,
-    // centerPadding: "100px",
-    slidesToShow: (isDesktop && 4) || (isMobile && 2) || (isTab && 3),
-    autoplaySpeed: 4000,
-    speed: 1000,
-    autoplay: true,
-    infinite: true,
-    pauseOnHover: true,
-  };
-
   const desktopImages = imagesDesktop?.images.filter((img) => img?.images?.type === 'desktop');
   const mobileImages = imagesMobile?.images.filter(
     (img) => !img.images || img?.images?.type === 'mobile'
@@ -383,7 +348,6 @@ export default function Home(props) {
                       src={img.images.url}
                       roundedCorner={false}
                       fitTo="width"
-                      roundedCorner={false}
                       objectFit="fill"
                     />
                   ))}
@@ -397,7 +361,6 @@ export default function Home(props) {
                     color: { active: 'primary', inactive: 'white' },
                   }}
                   childConfig={{ qtyPerSlide: 1, spacing: 'none' }}
-                  // roundedCorner={false}
                 >
                   {mobileImages.map((img, i) => (
                     <Image

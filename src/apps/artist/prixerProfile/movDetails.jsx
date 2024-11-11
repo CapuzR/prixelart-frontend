@@ -223,7 +223,7 @@ export default function MovOrder(props) {
   const isDeskTop = useMediaQuery(theme.breakpoints.up('sm'));
 
   const getDiscounts = async () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/discount/read-allv2';
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/discount/read-allv2';
     await axios
       .post(base_url)
       .then((response) => {
@@ -239,7 +239,7 @@ export default function MovOrder(props) {
   }, []);
 
   useEffect(() => {
-    const url = process.env.REACT_APP_BACKEND_URL + '/order/readByPrixer';
+    const url = import.meta.env.VITE_BACKEND_URL + '/order/readByPrixer';
     axios
       .post(url, {
         order: props.orderId,

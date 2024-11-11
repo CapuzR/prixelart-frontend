@@ -34,14 +34,14 @@ export default function MultilineTextFields(props) {
   const [value, setValue] = useState('');
 
   const handleChange = async () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/termsAndConditions/update';
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/termsAndConditions/update';
     await axios
       .put(base_url, {
         termsAndConditions: value,
         adminToken: localStorage.getItem('adminTokenV'),
       })
       .then(async () => {
-        const base_url = process.env.REACT_APP_BACKEND_URL + '/prixer/read-all-full';
+        const base_url = import.meta.env.VITE_BACKEND_URL + '/prixer/read-all-full';
         let prixersIds = [];
         const response = await axios.get(base_url).then((response) => {
           for (const { prixerId: prixerId } of response.data.prixers) {
@@ -49,7 +49,7 @@ export default function MultilineTextFields(props) {
           }
         });
         const base_url2 =
-          process.env.REACT_APP_BACKEND_URL + '/prixer/update-home/updateTermsAgree';
+          import.meta.env.VITE_BACKEND_URL + '/prixer/update-home/updateTermsAgree';
         const data = {
           prixers: prixersIds,
           termsAgree: false,
@@ -59,7 +59,7 @@ export default function MultilineTextFields(props) {
   };
 
   useEffect(() => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/termsAndConditions/read';
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/termsAndConditions/read';
     axios
       .get(base_url)
       .then((response) => {
@@ -114,7 +114,6 @@ export default function MultilineTextFields(props) {
               <div
                 style={{
                   width: '100%',
-                  padding: '15px',
                   textAlign: 'justify',
                   padding: '2px',
                   minHeight: '400px',

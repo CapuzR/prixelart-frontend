@@ -19,7 +19,7 @@ import {
   getPVM,
   getTotalUnitsPVM,
   getTotalUnitsPVP,
-} from '../../../consumer/checkout/pricesFunctions';
+} from '../../../consumer/checkout/pricesFunctions.jsx';
 const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
@@ -315,9 +315,9 @@ export default function CreateOrder(props) {
     if (selectedPrixer) {
       consumerData.prixerId = selectedPrixer.prixerId;
     }
-    await axios.post(process.env.REACT_APP_BACKEND_URL + '/consumer/create', consumerData);
+    await axios.post(import.meta.env.VITE_BACKEND_URL + '/consumer/create', consumerData);
 
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/order/create';
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/order/create';
     let input = {
       adminToken: localStorage.getItem('adminTokenV'),
       orderId: nanoid(8),
@@ -347,7 +347,7 @@ export default function CreateOrder(props) {
       payStatus: 'Pendiente',
     };
 
-    const base_url3 = process.env.REACT_APP_BACKEND_URL + '/order/sendEmail';
+    const base_url3 = import.meta.env.VITE_BACKEND_URL + '/order/sendEmail';
 
     await axios.post(base_url, input).then(async (response) => {
       if (response.data.res.success) {
@@ -363,7 +363,7 @@ export default function CreateOrder(props) {
           //   )
           //   last = Math.max(...sequences)
           //   const URI =
-          //     process.env.REACT_APP_BACKEND_URL + "/art/rank/" + art.artId
+          //     import.meta.env.VITE_BACKEND_URL + "/art/rank/" + art.artId
           //   art.points = parseInt(art.points)
           //   const certificate = {
           //     code: art.certificate.code,
@@ -413,7 +413,7 @@ export default function CreateOrder(props) {
   }
 
   const getDiscounts = async () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/discount/read-allv2';
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/discount/read-allv2';
     await axios
       .post(base_url, { adminToken: localStorage.getItem('adminTokenV') })
       .then((response) => {
@@ -425,7 +425,7 @@ export default function CreateOrder(props) {
   };
 
   const getSurcharges = async () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/surcharge/read-active';
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/surcharge/read-active';
     await axios
       .get(base_url)
       .then((response) => {
@@ -437,7 +437,7 @@ export default function CreateOrder(props) {
   };
 
   const getORGs = async () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/organization/read-all-full';
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/organization/read-all-full';
     await axios
       .get(base_url)
       .then((response) => {

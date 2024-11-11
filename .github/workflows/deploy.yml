@@ -21,8 +21,8 @@ jobs:
       - name: create env file
         run: |
           touch .env
-          echo "REACT_APP_CLOUD_NAME=${{ secrets.REACT_APP_CLOUD_NAME }}" >> .env
-          echo "REACT_APP_BACKEND_URL=${{ secrets.REACT_APP_BACKEND_URL }}" >> .env
+          echo "VITE_CLOUD_NAME=${{ secrets.VITE_CLOUD_NAME }}" >> .env
+          echo "VITE_BACKEND_URL=${{ secrets.VITE_BACKEND_URL }}" >> .env
       - name: Publish to Github Packages Registry
         uses: elgohr/Publish-Docker-Github-Action@master
         with:

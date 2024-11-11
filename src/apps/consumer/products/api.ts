@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { Product } from './interfaces';
 
-const base_url = process.env.REACT_APP_BACKEND_URL;
+const base_url = import.meta.env.VITE_BACKEND_URL;
 
 interface FetchProductDetailsAPIResponse {
   info: string;
@@ -9,7 +9,7 @@ interface FetchProductDetailsAPIResponse {
 }
 
 export const fetchProductDetails = async (productId: string): Promise<Product> => {
-  const base_url = process.env.REACT_APP_BACKEND_URL + '/product/read_v2';
+  const base_url = import.meta.env.VITE_BACKEND_URL + '/product/read_v2';
 
   try {
     const response = await axios.get<FetchProductDetailsAPIResponse>(base_url, {
@@ -60,7 +60,7 @@ export const fetchProducts = async (
   currentPage: number,
   productsPerPage: number
 ): Promise<FetchProductsResponse> => {
-  const base_url = process.env.REACT_APP_BACKEND_URL + '/product/read-all-v2';
+  const base_url = import.meta.env.VITE_BACKEND_URL + '/product/read-all-v2';
   const params = {
     orderType: order === 'A-Z' || order === 'lowerPrice' ? 'asc' : order === '' ? '' : 'desc',
     sortBy:
@@ -84,7 +84,7 @@ interface FetchBestSellersAPIResponse {
 }
 
 export const fetchBestSellers = async (): Promise<Product[]> => {
-  const base_url = process.env.REACT_APP_BACKEND_URL + '/getBestSellers';
+  const base_url = import.meta.env.VITE_BACKEND_URL + '/getBestSellers';
 
   try {
     const response = await axios.get<FetchBestSellersAPIResponse>(base_url);

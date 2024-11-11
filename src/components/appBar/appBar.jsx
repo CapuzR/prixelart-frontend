@@ -21,7 +21,7 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ShoppingCartOutlinedIcon from '@material-ui/icons/ShoppingCartOutlined';
 import Badge from '@material-ui/core/Badge';
 
-import logo from './Logotipo_Prixelart_H#2.png';
+import logo from './Logotipo_Prixelart_H2.png';
 import CB from '../../apps/orgs/orgLanding/assets/isotipo.svg';
 
 import AttachMoneyIcon from '@material-ui/icons/AttachMoney'; // USD icon
@@ -40,9 +40,6 @@ const useStyles = makeStyles((theme) => ({
   },
   menuButton: {
     marginRight: theme.spacing(2),
-  },
-  title: {
-    flexGrow: 1,
   },
   a: {
     textDecoration: 'none',
@@ -76,9 +73,6 @@ const useStyles = makeStyles((theme) => ({
       easing: theme.transitions.easing.easeOut,
       duration: theme.transitions.duration.enteringScreen,
     }),
-  },
-  menuButton: {
-    marginRight: theme.spacing(2),
   },
   hide: {
     display: 'none',
@@ -194,7 +188,7 @@ export default function MenuAppBar() {
   };
 
   const handleLogout = () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/logout';
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/logout';
     axios.post(base_url).then((response) => {
       localStorage.removeItem('token');
       localStorage.removeItem('tokenExpire');
@@ -252,7 +246,7 @@ export default function MenuAppBar() {
   const getPrixerAvatar = async () => {
     if (JSON.parse(localStorage.getItem('token'))) {
       const user = JSON.parse(localStorage.getItem('token')).username;
-      const base_url = process.env.REACT_APP_BACKEND_URL + '/prixer/get/' + user;
+      const base_url = import.meta.env.VITE_BACKEND_URL + '/prixer/get/' + user;
       await axios.get(base_url).then((response) => {
         setAvatar(response.data.avatar);
       });

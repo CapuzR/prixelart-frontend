@@ -231,7 +231,7 @@ export default function CreateVariant(props) {
         formData.append('adminToken', localStorage.getItem('adminTokenV'));
 
         const base_url =
-          process.env.REACT_APP_BACKEND_URL + '/product/updateVariants/' + props.product._id;
+          import.meta.env.VITE_BACKEND_URL + '/product/updateVariants/' + props.product._id;
         const response = await axios.put(base_url, formData);
 
         if (response.data.success === false) {

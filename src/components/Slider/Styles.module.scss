@@ -1,5 +1,4 @@
-@import 'theme.scss';
-
+@use '@/theme.scss' as theme;
 .custom-slider {
   position: relative;
   overflow: hidden;
@@ -46,12 +45,12 @@
   .slider-wrapper {
     display: flex;
     // min-height: 100%;
-    transition: transform $transition-normal;
-    border-radius: $border-radius-lg;
+    transition: transform theme.$transition-normal;
+    border-radius: theme.$border-radius-lg;
   }
 
   .indicator {
-    background-color: $secondary-color;
+    background-color: theme.$secondary-color;
     border-radius: 50%;
   }
 
@@ -99,7 +98,7 @@
   // Dots positioned below
   &.below-indicator-type-dots {
     .dots-below-container {
-      margin-top: $spacing-md;
+      margin-top: theme.$spacing-md;
       display: flex;
       justify-content: center;
       height: 80px;
@@ -119,7 +118,7 @@
     .thumbnails-below {
       display: flex;
       justify-content: center;
-      margin-top: $spacing-md;
+      margin-top: theme.$spacing-md;
     }
   }
 
@@ -132,7 +131,7 @@
     .dots-below,
     .thumbnails-below {
       position: absolute;
-      bottom: $spacing-md;
+      bottom: theme.$spacing-md;
       left: 50%;
       transform: translateX(-50%);
       z-index: 2;
@@ -175,7 +174,7 @@
     transition: stroke 0.2s ease;
 
     &:hover {
-      stroke: $secondary-color;
+      stroke: theme.$secondary-color;
     }
   }
 }
@@ -186,7 +185,7 @@
   overflow-x: auto;
   white-space: nowrap;
   // position: absolute;
-  bottom: $spacing-md;
+  bottom: theme.$spacing-md;
   left: 50%;
   // transform: translateX(-50%);
   scrollbar-width: none;
@@ -196,27 +195,27 @@
   }
 
   .slider-dot {
-    width: $spacing-lg;
-    height: $spacing-xs;
-    margin: 0 $spacing-xs;
+    width: theme.$spacing-lg;
+    height: theme.$spacing-xs;
+    margin: 0 theme.$spacing-xs;
     border-radius: 0;
-    background-color: $border-color;
+    background-color: theme.$border-color;
     border: none;
     cursor: pointer;
 
     $colors: (
-      primary: $primary-color,
-      secondary: $secondary-color,
-      tertiary: $tertiary-color,
+      primary: theme.$primary-color,
+      secondary: theme.$secondary-color,
+      tertiary: theme.$tertiary-color,
       white: white,
     );
 
     @each $name, $color in $colors {
-      &.active-#{$name} {
+      &.active-#{"#{$name}"} {
         background-color: $color;
       }
 
-      &.inactive-#{$name} {
+      &.inactive-#{"#{$name}"} {
         background-color: $color;
         opacity: 0.5;
       }
@@ -228,14 +227,14 @@
 .slider-thumbnail {
   width: 80px;
   height: 80px;
-  margin: 0 $spacing-xs;
+  margin: 0 theme.$spacing-xs;
   object-fit: cover;
   cursor: pointer;
-  border-radius: $border-radius-sm;
+  border-radius: theme.$border-radius-sm;
   border: 2px solid transparent;
 
   &.active {
-    border-color: $primary-color;
+    border-color: theme.$primary-color;
   }
 }
 
@@ -256,7 +255,7 @@
 }
 
 .below-indicator {
-  margin-top: $spacing-md;
+  margin-top: theme.$spacing-md;
   display: flex;
   justify-content: center;
   min-height: 40px;
@@ -270,7 +269,7 @@
   z-index: 2;
 }
 
-@media (min-width: $breakpoint-md) {
+@media (min-width: theme.$breakpoint-md) {
   .slider-thumbnail {
     width: 100px;
     height: 100px;

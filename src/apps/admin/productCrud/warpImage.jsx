@@ -6,7 +6,7 @@ const WarpImage = forwardRef((props, ref) => {
   const [url, setUrl] = useState(null);
 
   const getImgUrl = async () => {
-    const url2 = process.env.REACT_APP_BACKEND_URL + '/images/' + props.randomArt.artId;
+    const url2 = import.meta.env.VITE_BACKEND_URL + '/images/' + props.randomArt.artId;
     try {
       const response = await axios.get(url2, { responseType: 'blob' });
       const imageUrl = URL.createObjectURL(response.data);

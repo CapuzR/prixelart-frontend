@@ -19,8 +19,9 @@ import Img from 'react-cool-img';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import WarpImage from '../../productCrud/warpImage';
 
-import { getPVP, getPVM } from '../../../consumer/checkout/pricesFunctions';
-import moment from 'moment';
+import { getPVP, getPVM } from '../../../consumer/checkout/pricesFunctions.jsx';
+// import moment from 'moment';
+import moment from 'moment-timezone';
 import 'moment/locale/es';
 
 const drawerWidth = 240;
@@ -230,7 +231,6 @@ const useStyles = makeStyles((theme) => ({
 
 export default function OrderDetails(props) {
   const classes = useStyles();
-  const moment = require('moment-timezone');
   const [consumer, setConsumer] = useState(undefined);
   const [activeStep, setActiveStep] = useState(0);
   const [paymentVoucher, setPaymentVoucher] = useState();
@@ -243,7 +243,7 @@ export default function OrderDetails(props) {
   };
 
   const checkMov = async (Id) => {
-    const url = process.env.REACT_APP_BACKEND_URL + '/movement/readMovementByOrderId';
+    const url = import.meta.env.VITE_BACKEND_URL + '/movement/readMovementByOrderId';
 
     const body = {
       adminToken: localStorage.getItem('adminTokenV'),
@@ -256,7 +256,7 @@ export default function OrderDetails(props) {
   };
 
   const checkConsumer = async (Id) => {
-    const url = process.env.REACT_APP_BACKEND_URL + '/consumer/read-by-id';
+    const url = import.meta.env.VITE_BACKEND_URL + '/consumer/read-by-id';
 
     const body = {
       adminToken: localStorage.getItem('adminTokenV'),
@@ -268,7 +268,7 @@ export default function OrderDetails(props) {
   };
 
   const updateItemStatus = async (newStatus, index, orderId) => {
-    const url = process.env.REACT_APP_BACKEND_URL + '/order/updateItemStatus';
+    const url = import.meta.env.VITE_BACKEND_URL + '/order/updateItemStatus';
     const body = {
       adminToken: localStorage.getItem('adminTokenV'),
       status: newStatus,
@@ -446,7 +446,7 @@ export default function OrderDetails(props) {
     const formData = new FormData();
     formData.append('paymentVoucher', paymentVoucher);
     let ID = props.modalContent.orderId;
-    const base_url2 = process.env.REACT_APP_BACKEND_URL + '/order/addVoucher/' + ID;
+    const base_url2 = import.meta.env.VITE_BACKEND_URL + '/order/addVoucher/' + ID;
     const uv = await axios.put(base_url2, formData, {
       'Content-Type': 'multipart/form-data',
     });
@@ -458,7 +458,7 @@ export default function OrderDetails(props) {
   };
 
   const findOwner = async (account) => {
-    const url = process.env.REACT_APP_BACKEND_URL + '/user/getByAccount';
+    const url = import.meta.env.VITE_BACKEND_URL + '/user/getByAccount';
     const user = await axios.post(url, { account: account });
     const data = user.data.username;
     if (typeof data === 'string') return data;

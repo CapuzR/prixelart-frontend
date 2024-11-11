@@ -1,19 +1,18 @@
-@import 'theme.scss';
-
+@use '@/theme.scss' as theme;
 .card-root {
   display: flex;
   overflow: hidden;
   align-content: space-between;
   // width: 100%;
   height: auto;
-  @include paper(undefined, $box-shadow-heavy, $border-radius-xl, $spacing-md);
+  @include theme.paper(undefined, theme.$box-shadow-heavy, theme.$border-radius-xl, theme.$spacing-md);
   padding: 0;
 }
 
 .card-content {
   display: flex;
   flex: 1;
-  padding: $spacing-md;
+  padding: theme.$spacing-md;
   justify-content: space-between;
 
   &.row {
@@ -29,7 +28,7 @@
   display: flex;
   flex-direction: column;
   flex: 1;
-  padding: $spacing-md;
+  padding: theme.$spacing-md;
   justify-content: space-between;
 }
 
@@ -37,7 +36,7 @@
   display: flex;
   flex-direction: column;
   flex: 0;
-  // padding: $spacing-md;
+  // padding: theme.$spacing-md;
   justify-content: space-between;
 }
 
@@ -49,7 +48,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: $spacing-md;
+  margin-top: theme.$spacing-md;
 }
 
 .quantity,
@@ -61,33 +60,33 @@
   flex: 1;
 
   small {
-    font-size: $font-size-small;
-    color: $text-color;
-    margin-bottom: $spacing-xs;
+    font-size: theme.$font-size-small;
+    color: theme.$text-color;
+    margin-bottom: theme.$spacing-xs;
   }
 
   p {
-    font-size: $font-size-medium;
-    font-weight: $font-weight-bold;
+    font-size: theme.$font-size-medium;
+    font-weight: theme.$font-weight-bold;
     margin: 0;
   }
 }
 
 .quantity-input {
   width: 60px;
-  padding: $spacing-xs;
-  font-size: $font-size-medium;
+  padding: theme.$spacing-xs;
+  font-size: theme.$font-size-medium;
   text-align: center;
-  border: 1px solid $border-color;
-  border-radius: $border-radius-sm;
+  border: 1px solid theme.$border-color;
+  border-radius: theme.$border-radius-sm;
   outline: none;
 
   &:focus {
-    border-color: $primary-color;
+    border-color: theme.$primary-color;
   }
 }
 
 .extra-padding {
-  @include paper(undefined, $box-shadow-medium, $border-radius-lg, $spacing-xl);
-  padding: $spacing-xl $spacing-lg * 2;
+  @include theme.paper(undefined, theme.$box-shadow-medium, theme.$border-radius-lg, theme.$spacing-xl);
+  padding: theme.$spacing-xl theme.$spacing-lg * 2;
 }

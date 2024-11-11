@@ -124,7 +124,7 @@ export default function SignUp() {
       setErrorMessage('Por favor completa todos los campos requeridos.');
       setSnackBarError(true);
     } else {
-      const base_url = process.env.REACT_APP_BACKEND_URL + '/register';
+      const base_url = import.meta.env.VITE_BACKEND_URL + '/register';
       const data = {
         username: username,
         email: email.toLowerCase(),

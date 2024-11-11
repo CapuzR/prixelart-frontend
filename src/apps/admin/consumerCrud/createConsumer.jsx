@@ -87,7 +87,7 @@ export default function CreateConsumer(props) {
         contactedBy: JSON.parse(localStorage.getItem('adminToken')),
       };
 
-      const base_url = process.env.REACT_APP_BACKEND_URL + '/consumer/create';
+      const base_url = import.meta.env.VITE_BACKEND_URL + '/consumer/create';
       const response = await axios.post(base_url, data);
       if (response.data.success === false) {
         setLoading(false);
@@ -119,7 +119,7 @@ export default function CreateConsumer(props) {
   const readPrixers = async () => {
     try {
       setLoading(true);
-      const base_url = process.env.REACT_APP_BACKEND_URL + '/prixer/read-all-full';
+      const base_url = import.meta.env.VITE_BACKEND_URL + '/prixer/read-all-full';
 
       const response = await axios.get(base_url);
       setPrixers(response.data.prixers);

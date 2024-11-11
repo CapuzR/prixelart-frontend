@@ -20,7 +20,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import oS from './orderServices';
 import StarOutline from '@material-ui/icons/StarOutline';
 
-import { UnitPrice, UnitPriceSug, getComission } from '../../../consumer/checkout/pricesFunctions';
+import { UnitPrice, UnitPriceSug, getComission } from '../../../consumer/checkout/pricesFunctions.jsx';
 import { update } from 'immutable';
 const drawerWidth = 240;
 
@@ -244,7 +244,7 @@ export default function ShoppingCart(props) {
   let custom = { name: 'Personalizado', attributes: [{ value: '0x0cm' }] };
 
   const getProducts = async () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/product/read-all';
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/product/read-all';
     await axios.get(base_url).then(async (response) => {
       let productsAttTemp1 = response.data.products;
       await productsAttTemp1.map(async (p, iProd, pArr) => {
@@ -265,7 +265,7 @@ export default function ShoppingCart(props) {
   };
 
   const getArts = async () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/art/read-all';
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/art/read-all';
     await axios.get(base_url).then((response) => {
       const arts = response.data.arts;
       arts.unshift({ title: 'Personalizado' });

@@ -113,7 +113,7 @@ export default function AdminUsers(props) {
   const globalParams = window.location.pathname;
 
   const loadAdmins = async () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/admin/read-all';
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/admin/read-all';
     try {
       const rowState = await axios.post(
         base_url,

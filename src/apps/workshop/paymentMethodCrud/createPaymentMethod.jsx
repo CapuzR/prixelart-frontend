@@ -54,7 +54,7 @@ export default function CreatePaymentMethod(props) {
       adminToken: localStorage.getItem('adminTokenV'),
     };
 
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/payment-method/create';
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/payment-method/create';
     const response = await axios.post(base_url, data);
     if (response.data.success === false) {
       setLoading(false);

@@ -206,14 +206,12 @@ export default function ProductDetail(props) {
       );
     },
     dots: true,
-    // dotsClass: classes.dotsContainer,
     infinite: true,
     speed: 500,
     slidesToShow: 1,
     slidesToScroll: 1,
     autoplay: true,
     autoplaySpeed: 4000,
-    infinite: true,
     pauseOnHover: true,
   };
 

@@ -1,3 +1,5 @@
+@use "sass:color";
+
 $primary-color: #d33f49;
 $secondary-color: #404e5c;
 $tertiary-color: #000000;
@@ -85,7 +87,7 @@ $z-index-tooltip: 1100;
 @mixin button(
   $bg-color,
   $text-color: $text-light-color,
-  $hover-bg-color: darken($bg-color, 10%),
+  $hover-bg-color: color.adjust($bg-color, $lightness: -10%),
   $hover-text-color: $text-color
 ) {
   background-color: $bg-color;

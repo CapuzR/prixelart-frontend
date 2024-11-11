@@ -18,7 +18,7 @@ import {
   getTotalUnitsPVM,
   getTotalUnitsPVP,
   getComissionv2,
-} from '../../../consumer/checkout/pricesFunctions';
+} from '../../../consumer/checkout/pricesFunctions.jsx';
 const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
@@ -269,7 +269,7 @@ export default function PayComission(props) {
   );
 
   const checkConsumer = async (Id) => {
-    const url = process.env.REACT_APP_BACKEND_URL + '/consumer/read-by-id';
+    const url = import.meta.env.VITE_BACKEND_URL + '/consumer/read-by-id';
 
     const body = {
       adminToken: localStorage.getItem('adminTokenV'),
@@ -339,7 +339,7 @@ export default function PayComission(props) {
   };
 
   const findPrixer = async (prx) => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/prixer/read';
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/prixer/read';
     return await axios
       .post(base_url, { username: prx })
       .then((response) => {
@@ -368,7 +368,7 @@ export default function PayComission(props) {
       item.art?.prixerUsername !== undefined &&
       destinatary !== undefined
     ) {
-      const url = process.env.REACT_APP_BACKEND_URL + '/movement/create';
+      const url = import.meta.env.VITE_BACKEND_URL + '/movement/create';
       const data = {
         _id: nanoid(),
         createdOn: new Date(),
@@ -391,7 +391,7 @@ export default function PayComission(props) {
             orderId: props.modalContent.orderId,
             comissions: updated,
           };
-          const url2 = process.env.REACT_APP_BACKEND_URL + '/order/updateComissions';
+          const url2 = import.meta.env.VITE_BACKEND_URL + '/order/updateComissions';
           await axios.post(url2, data2).then(async (res) => {
             if (res.data.success === false) {
               setSnackBarError(true);

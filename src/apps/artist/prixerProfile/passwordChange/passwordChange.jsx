@@ -5,7 +5,7 @@ import { useState } from 'react';
 import axios from 'axios';
 import { useHistory } from 'react-router-dom';
 
-import validations from '../../../../utils/validations';
+import { isAValidEmail, isAValidPassword, isAValidUsername } from '/src/utils/validations.js';
 import Copyright from 'components/Copyright/copyright';
 
 //material-ui
@@ -82,7 +82,7 @@ export default function PasswordChange() {
       setErrorMessage('Por favor completa todos los campos requeridos.');
       setSnackBarError(true);
     } else {
-      const base_url = process.env.REACT_APP_BACKEND_URL + '/password-change';
+      const base_url = import.meta.env.VITE_BACKEND_URL + '/password-change';
       const data = {
         username: JSON.parse(localStorage.getItem('token')).username,
         currentPassword: currentPassword,
@@ -115,7 +115,7 @@ export default function PasswordChange() {
 
   //Current password
   const handleCurrentPasswordChange = (e) => {
-    if (validations.isAValidPassword(e.target.value)) {
+    if (isAValidPassword(e.target.value)) {
       setCurrentPassword(e.target.value);
       setCurrentPasswordError(false);
       setSnackBarError(false);
@@ -140,7 +140,7 @@ export default function PasswordChange() {
 
   //New password
   const handleNewPasswordChange = (e) => {
-    if (validations.isAValidPassword(e.target.value)) {
+    if (isAValidPassword(e.target.value)) {
       setNewPassword(e.target.value);
       setNewPasswordError(false);
       setSnackBarError(false);

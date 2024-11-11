@@ -16,7 +16,7 @@ import axios from 'axios';
 import { useHistory } from 'react-router-dom';
 import { useState } from 'react';
 import Snackbar from '@material-ui/core/Snackbar';
-import validations from 'utils/validations';
+import { isAValidEmail, isAValidPassword, isAValidUsername } from '/src/utils/validations.js';
 import jwt from 'jwt-decode';
 import clsx from 'clsx';
 import IconButton from '@material-ui/core/IconButton';
@@ -95,7 +95,7 @@ export default function Login() {
       setSnackBarError(true);
     } else {
       try {
-        const base_url = process.env.REACT_APP_BACKEND_URL + '/login';
+        const base_url = import.meta.env.VITE_BACKEND_URL + '/login';
         const response = await axios.post(base_url, {
           email: email.toLowerCase(),
           password,
@@ -148,7 +148,7 @@ export default function Login() {
   };
 
   useEffect(() => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/art/random';
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/art/random';
 
     axios.get(base_url).then((response) => {
       if (response.data.arts) {
@@ -158,7 +158,7 @@ export default function Login() {
   }, []);
 
   const handleEmailChange = (e) => {
-    if (validations.isAValidEmail(e.target.value)) {
+    if (isAValidEmail(e.target.value)) {
       setEmail(e.target.value);
       setEmailError(false);
       setSnackBarError(false);
@@ -172,7 +172,7 @@ export default function Login() {
 
   //Password
   const handlePasswordChange = (e) => {
-    if (validations.isAValidPassword(e.target.value)) {
+    if (isAValidPassword(e.target.value)) {
       setPassword(e.target.value);
       setPasswordError(false);
       setSnackBarError(false);

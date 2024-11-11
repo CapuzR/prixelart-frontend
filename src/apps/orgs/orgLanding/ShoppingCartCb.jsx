@@ -165,7 +165,7 @@ export default function shoppingCartCb() {
   );
 
   const readDollarValue = async () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/dollarValue/read';
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/dollarValue/read';
     await axios.get(base_url).then((response) => {
       setDollarValue(response.data.dollarValue);
     });
@@ -346,7 +346,7 @@ export default function shoppingCartCb() {
         data.movement = movement;
       }
 
-      const base_url = process.env.REACT_APP_BACKEND_URL + '/order/createv2';
+      const base_url = import.meta.env.VITE_BACKEND_URL + '/order/createv2';
       const create = await axios
         .post(base_url, data, {
           'Content-Type': 'multipart/form-data',
@@ -357,7 +357,7 @@ export default function shoppingCartCb() {
               const formData = new FormData();
               formData.append('paymentVoucher', paymentVoucher);
               let ID = input.orderId;
-              const base_url2 = process.env.REACT_APP_BACKEND_URL + '/order/addVoucher/' + ID;
+              const base_url2 = import.meta.env.VITE_BACKEND_URL + '/order/addVoucher/' + ID;
               await axios.put(base_url2, formData, {
                 'Content-Type': 'multipart/form-data',
               });
@@ -369,7 +369,7 @@ export default function shoppingCartCb() {
             });
 
             setOpenModal(true);
-            const base_url3 = process.env.REACT_APP_BACKEND_URL + '/order/sendEmail';
+            const base_url3 = import.meta.env.VITE_BACKEND_URL + '/order/sendEmail';
             await axios.post(base_url3, input).then(async (response) => {
               if (response.data.success === false) {
                 await axios.post(base_url3, input);

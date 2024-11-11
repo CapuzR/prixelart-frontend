@@ -86,7 +86,7 @@ export default function UpdateConsumer(props) {
         _id: props.consumer._id,
       };
 
-      const base_url = process.env.REACT_APP_BACKEND_URL + '/consumer/update';
+      const base_url = import.meta.env.VITE_BACKEND_URL + '/consumer/update';
       const response = await axios.post(base_url, data);
       if (response.data.success === false) {
         setLoading(false);
@@ -104,7 +104,7 @@ export default function UpdateConsumer(props) {
   const readPrixers = async () => {
     try {
       setLoading(true);
-      const base_url = process.env.REACT_APP_BACKEND_URL + '/prixer/read-all-full';
+      const base_url = import.meta.env.VITE_BACKEND_URL + '/prixer/read-all-full';
 
       const response = await axios.get(base_url);
       setPrixers(response.data.prixers);

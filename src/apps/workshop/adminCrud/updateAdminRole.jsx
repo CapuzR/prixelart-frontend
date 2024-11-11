@@ -119,7 +119,7 @@ export default function UpdateAdminRole(props) {
         modifyArtBestSellers: modifyArtBestSellers,
         adminToken: localStorage.getItem('adminTokenV'),
       };
-      const base_url = process.env.REACT_APP_BACKEND_URL + '/adminRole/update/' + props.admin._id;
+      const base_url = import.meta.env.VITE_BACKEND_URL + '/adminRole/update/' + props.admin._id;
       const response = await axios.put(base_url, data, {
         withCredentials: true,
       });

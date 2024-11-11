@@ -80,7 +80,7 @@ export default function BestSellers(props) {
     }
   };
   const getProducts = async () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/product/read-allv1';
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/product/read-allv1';
     await axios
       .post(
         base_url,
@@ -96,7 +96,7 @@ export default function BestSellers(props) {
   };
 
   const getBestSellers = async () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/getBestSellers';
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/getBestSellers';
     await axios
       .get(base_url)
       .then((response) => {
@@ -108,7 +108,7 @@ export default function BestSellers(props) {
   };
 
   const getMostSellers = async () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/product/bestSellers';
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/product/bestSellers';
     await axios
       .get(base_url)
       .then((response) => {
@@ -136,7 +136,7 @@ export default function BestSellers(props) {
     bestSellers.map((prod) => {
       data.push(prod._id);
     });
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/updateBestSellers';
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/updateBestSellers';
     await axios
       .put(base_url, {
         data: data,

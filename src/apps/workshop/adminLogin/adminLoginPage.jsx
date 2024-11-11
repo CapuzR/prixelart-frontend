@@ -92,7 +92,7 @@ export default function Login(props) {
       setErrorMessage('Por favor completa todos los campos requeridos.');
       setSnackBarError(true);
     } else {
-      const base_url = process.env.REACT_APP_BACKEND_URL + '/admin/login';
+      const base_url = import.meta.env.VITE_BACKEND_URL + '/admin/login';
       const data = {
         email: email.toLowerCase(),
         password: password,
@@ -131,7 +131,7 @@ export default function Login(props) {
   };
 
   useEffect(() => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/art/random';
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/art/random';
 
     axios.get(base_url).then((response) => {
       if (response.data.arts) {

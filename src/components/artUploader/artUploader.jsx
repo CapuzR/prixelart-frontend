@@ -460,7 +460,7 @@ export default function ArtUploader(props) {
   // };
 
   const verifyStandardArts = async () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/art/read-by-prixer';
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/art/read-by-prixer';
     const body = {
       username: JSON.parse(localStorage.getItem('token')).username,
     };
@@ -503,7 +503,7 @@ export default function ArtUploader(props) {
     formData.append('comission', comission);
     formData.append('imageUrl', artUrl);
 
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/art/create';
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/art/create';
     const data = await axios.post(base_url, formData, {
       'Content-Type': 'multipart/form-data',
     });

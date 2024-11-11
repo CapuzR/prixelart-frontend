@@ -80,7 +80,7 @@ export default function ReadProducts(props) {
   const getRows = async () => {
     setLoading(true);
 
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/product/read-allv1';
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/product/read-allv1';
     await axios
       .post(
         base_url,
@@ -98,7 +98,7 @@ export default function ReadProducts(props) {
   };
 
   const getDiscounts = async () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/discount/read-allv1';
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/discount/read-allv1';
     await axios
       .post(
         base_url,
@@ -114,7 +114,7 @@ export default function ReadProducts(props) {
   };
 
   const getSurcharges = async () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/surcharge/read-all';
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/surcharge/read-all';
     await axios
       .post(
         base_url,
@@ -130,7 +130,7 @@ export default function ReadProducts(props) {
   };
 
   const getCategories = async () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/product/read-categories';
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/product/read-categories';
     await axios
       .get(base_url, { withCredentials: true })
       .then((response) => {
@@ -176,7 +176,7 @@ export default function ReadProducts(props) {
     props.setActiveCrud('updateCategory');
   };
   const deleteProduct = async (id) => {
-    const URI = process.env.REACT_APP_BACKEND_URL + `/product/delete/${id}`;
+    const URI = import.meta.env.VITE_BACKEND_URL + `/product/delete/${id}`;
     const res = await axios
       .put(URI, { adminToken: localStorage.getItem('adminTokenV') }, { withCredentials: true })
       .then(
@@ -189,7 +189,7 @@ export default function ReadProducts(props) {
   };
 
   const deleteDiscount = async (id) => {
-    const URI = process.env.REACT_APP_BACKEND_URL + `/discount/delete/${id}`;
+    const URI = import.meta.env.VITE_BACKEND_URL + `/discount/delete/${id}`;
     const res = await axios
       .put(URI, { adminToken: localStorage.getItem('adminTokenV') }, { withCredentials: true })
       .then(
@@ -202,7 +202,7 @@ export default function ReadProducts(props) {
   };
 
   const deleteCategory = async (id) => {
-    const URI = process.env.REACT_APP_BACKEND_URL + `/product/delete-category/${id}`;
+    const URI = import.meta.env.VITE_BACKEND_URL + `/product/delete-category/${id}`;
     const res = await axios
       .delete(URI, { adminToken: localStorage.getItem('adminTokenV') }, { withCredentials: true })
       .then(
@@ -215,7 +215,7 @@ export default function ReadProducts(props) {
   };
 
   const deleteSurcharge = async (id) => {
-    const URI = process.env.REACT_APP_BACKEND_URL + `/surcharge/delete/${id}`;
+    const URI = import.meta.env.VITE_BACKEND_URL + `/surcharge/delete/${id}`;
     const res = await axios
       .put(URI, { adminToken: localStorage.getItem('adminTokenV') }, { withCredentials: true })
       .then(

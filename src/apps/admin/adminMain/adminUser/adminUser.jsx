@@ -10,7 +10,7 @@ import ViewListIcon from '@material-ui/icons/ViewList';
 import CreateAdmin from '../../adminCrud/createAdmin';
 import ReadAdmins from '../../adminCrud/readAdmins';
 import UpdateAdmin from '../../adminCrud/updateAdmin';
-import DisableAdmin from '../../adminCrud/disableAdmin';
+// import DisableAdmin from '../../adminCrud/disableAdmin';
 import CreateAdminRole from '../../adminCrud/createAdminRole';
 import UpdateAdminRole from '../../adminCrud/updateAdminRole';
 import axios from 'axios';
@@ -113,7 +113,7 @@ export default function AdminUsers(props) {
   const globalParams = window.location.pathname;
 
   const loadAdmins = async () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/admin/read-all';
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/admin/read-all';
     try {
       const rowState = await axios.post(
         base_url,
@@ -203,7 +203,8 @@ export default function AdminUsers(props) {
             ) : activeCrud === 'updateRole' ? (
               <UpdateAdminRole admin={admin} />
             ) : (
-              <DisableAdmin />
+              <></>
+              // <DisableAdmin />
             )}
           </Paper>
         </Grid>

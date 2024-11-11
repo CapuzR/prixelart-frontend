@@ -1,5 +1,4 @@
-@import 'theme.scss';
-
+@use '@/theme.scss' as theme;
 .product-element {
   text-align: center;
   display: flex;
@@ -8,7 +7,7 @@
   align-items: center;
   width: auto;
   height: 100%;
-  gap: $spacing-sm;
+  gap: theme.$spacing-sm;
 
   .image-container {
     flex: 0 1 80%;

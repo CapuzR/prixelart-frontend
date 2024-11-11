@@ -193,7 +193,7 @@ export default function ReadOrders(props) {
   }, [filters]);
 
   const findOrder = async (ID) => {
-    const url = process.env.REACT_APP_BACKEND_URL + '/order/readById/' + ID;
+    const url = import.meta.env.VITE_BACKEND_URL + '/order/readById/' + ID;
 
     await axios.get(url, { withCredentials: true }).then((res) => {
       // if (res.data.success) {
@@ -230,7 +230,7 @@ export default function ReadOrders(props) {
   };
 
   const handleChangeSeller = async (order, seller) => {
-    const url = process.env.REACT_APP_BACKEND_URL + '/order/updateSeller/' + order.orderId;
+    const url = import.meta.env.VITE_BACKEND_URL + '/order/updateSeller/' + order.orderId;
     const body = {
       adminToken: localStorage.getItem('adminTokenV'),
       seller: { username: seller },
@@ -246,7 +246,7 @@ export default function ReadOrders(props) {
 
   const readOrders = async () => {
     setLoading(true);
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/order/read-allv2';
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/order/read-allv2';
     await axios
       .post(
         base_url,
@@ -271,7 +271,7 @@ export default function ReadOrders(props) {
   };
 
   const getSellers = async () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/admin/getSellers';
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/admin/getSellers';
     await axios
       .get(base_url)
       .then((response) => {

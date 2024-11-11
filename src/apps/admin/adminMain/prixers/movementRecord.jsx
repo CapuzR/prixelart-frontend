@@ -38,7 +38,7 @@ export default function MovementRecord(props) {
   const [movements, setMovements] = useState();
 
   const getMovements = async (account) => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/movement/readByPrixer';
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/movement/readByPrixer';
     await axios
       .post(base_url, {
         adminToken: localStorage.getItem('adminTokenV'),

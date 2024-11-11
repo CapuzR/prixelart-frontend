@@ -1,24 +1,24 @@
-@import 'src/theme.scss';
-@import '../Details.module.scss';
+@use '@/theme.scss' as theme;
+@use '../Details.module.scss';
 
 .prix-product-container {
   justify-content: center;
-  padding: $spacing-md $spacing-xl;
+  padding: theme.$spacing-md theme.$spacing-xl;
 }
 
 .steps-wrapper {
   display: flex;
   flex-direction: column;
   justify-content: space-around;
-  padding: $spacing-md;
-  gap: calc(3 * $spacing-xs);
+  padding: theme.$spacing-md;
+  gap: calc(3 * theme.$spacing-xs);
 }
 
 .flow-stepper-wrapper {
   display: flex;
   justify-content: center;
-  gap: $spacing-md;
-  padding: 0 $spacing-md;
+  gap: theme.$spacing-md;
+  padding: 0 theme.$spacing-md;
 }
 
 .title-price {
@@ -27,19 +27,19 @@
   justify-content: center;
   align-items: center;
   text-align: center;
-  margin-bottom: $spacing-sm;
+  margin-bottom: theme.$spacing-sm;
 
   .title {
-    font-size: $font-size-extra-large;
-    font-weight: $font-weight-bold;
-    color: $text-color;
-    margin: $spacing-xs;
+    font-size: theme.$font-size-extra-large;
+    font-weight: theme.$font-weight-bold;
+    color: theme.$text-color;
+    margin: theme.$spacing-xs;
   }
 
   .price {
-    font-size: $font-size-small;
-    font-weight: $font-weight-normal;
-    color: $text-color;
+    font-size: theme.$font-size-small;
+    font-weight: theme.$font-weight-normal;
+    color: theme.$text-color;
   }
 }
 
@@ -54,7 +54,7 @@
   flex-direction: column;
   justify-content: center;
   align-content: center;
-  margin: $spacing-md 0;
-  gap: $spacing-md;
+  margin: theme.$spacing-md 0;
+  gap: theme.$spacing-md;
   width: 100%;
-}
+};

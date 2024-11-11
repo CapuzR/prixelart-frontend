@@ -193,7 +193,7 @@ export default function SoloService(props) {
   const getService = async () => {
     setBackdrop(true);
 
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/service/readService/' + service;
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/service/readService/' + service;
     await axios
       .get(base_url)
       .then((response) => {
@@ -243,7 +243,7 @@ export default function SoloService(props) {
     }
 
     const base_url =
-      process.env.REACT_APP_BACKEND_URL + '/service/updateMyService/' + serviceOnEdit._id;
+      import.meta.env.VITE_BACKEND_URL + '/service/updateMyService/' + serviceOnEdit._id;
     const data = await axios.put(base_url, formData, {
       'Content-Type': 'multipart/form-data',
     });
@@ -261,7 +261,7 @@ export default function SoloService(props) {
   };
 
   const deleteService = async (id) => {
-    const url = process.env.REACT_APP_BACKEND_URL + '/service/deleteService/' + id;
+    const url = import.meta.env.VITE_BACKEND_URL + '/service/deleteService/' + id;
     const serviceToDelete = await axios.put(url);
     if (serviceToDelete.data.success) {
       setSnackBarMessage(serviceToDelete.data.message);
@@ -371,7 +371,7 @@ export default function SoloService(props) {
 
   const setVisibleService = async (service, event) => {
     setLoading(true);
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/service/disable/' + service._id;
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/service/disable/' + service._id;
     service.visible = event;
     const response = await axios.put(
       base_url,
@@ -385,7 +385,7 @@ export default function SoloService(props) {
   };
 
   const checkPhone = async (service) => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/prixer/read';
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/prixer/read';
     const prixer = await axios.post(base_url, { username: service.prixer });
     console.log(prixer);
     await window.open(utils.generateServiceMessage(service, prixer.data.phone), '_blank');

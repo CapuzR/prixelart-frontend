@@ -1,8 +1,8 @@
-@import '../Details.module.scss';
-@import 'src/theme.scss';
+@use '@/theme.scss' as theme;
+@use '../Details.module.scss';
 
 .prix-product-container {
-  padding: 2 * $spacing-xl;
+  padding: 2 * theme.$spacing-xl;
   display: flex;
   justify-content: space-around;
   align-content: center;
@@ -34,16 +34,16 @@
 .slider-wrapper {
   display: flex;
   min-height: 100%;
-  transition: transform $transition-normal;
-  border-radius: $border-radius-lg;
+  transition: transform theme.$transition-normal;
+  border-radius: theme.$border-radius-lg;
 }
 
 .right-side {
-  gap: $spacing-xl;
+  gap: theme.$spacing-xl;
 }
 
 .product-title {
-  font-size: $font-size-large;
+  font-size: theme.$font-size-large;
   width: 50%;
 }
 

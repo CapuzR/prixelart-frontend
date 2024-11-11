@@ -16,7 +16,7 @@ import axios from 'axios';
 import { useHistory } from 'react-router-dom';
 import { useState } from 'react';
 import Snackbar from '@material-ui/core/Snackbar';
-import validations from 'utils/validations';
+import { isAValidEmail, isAValidPassword, isAValidUsername } from 'utils/validations.js';
 import jwt from 'jwt-decode';
 
 import clsx from 'clsx';
@@ -92,7 +92,7 @@ export default function Login(props) {
       setErrorMessage('Por favor completa todos los campos requeridos.');
       setSnackBarError(true);
     } else {
-      const base_url = process.env.REACT_APP_BACKEND_URL + '/admin/login';
+      const base_url = import.meta.env.VITE_BACKEND_URL + '/admin/login';
       const data = {
         email: email.toLowerCase(),
         password: password,
@@ -131,7 +131,7 @@ export default function Login(props) {
   };
 
   useEffect(() => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/art/random';
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/art/random';
 
     axios.get(base_url).then((response) => {
       if (response.data.arts) {
@@ -141,7 +141,7 @@ export default function Login(props) {
   }, []);
 
   const handleEmailChange = (e) => {
-    if (validations.isAValidEmail(e.target.value)) {
+    if (isAValidEmail(e.target.value)) {
       setEmail(e.target.value);
       setEmailError(false);
       setSnackBarError(false);
@@ -155,7 +155,7 @@ export default function Login(props) {
 
   //Password
   const handlePasswordChange = (e) => {
-    if (validations.isAValidPassword(e.target.value)) {
+    if (isAValidPassword(e.target.value)) {
       setPassword(e.target.value);
       setPasswordError(false);
       setSnackBarError(false);

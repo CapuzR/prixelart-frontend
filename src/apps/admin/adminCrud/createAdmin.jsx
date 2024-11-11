@@ -21,7 +21,8 @@ import Select from '@material-ui/core/Select';
 import { Switch, Typography } from '@material-ui/core';
 
 import clsx from 'clsx';
-import validations from '../../../utils/validations';
+import { isAValidEmail, isAValidPassword, isAValidUsername } from 'utils/validations.js';
+
 
 const useStyles = makeStyles((theme) => ({
   loading: {
@@ -56,7 +57,7 @@ export default function CreateAdmin() {
 
   //Password
   const handlePasswordChange = (e) => {
-    if (validations.isAValidPassword(e.target.value)) {
+    if (isAValidPassword(e.target.value)) {
       setPassword(e.target.value);
       setPasswordError(false);
       setSnackBarError(false);
@@ -80,7 +81,7 @@ export default function CreateAdmin() {
   //END Password
 
   const loadRoles = async () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + '/admin/read-roles';
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/admin/read-roles';
     try {
       const rolesState = await axios.post(
         base_url,
@@ -118,7 +119,7 @@ export default function CreateAdmin() {
         isSeller: isSeller,
       };
 
-      const base_url = process.env.REACT_APP_BACKEND_URL + '/admin/create';
+      const base_url = import.meta.env.VITE_BACKEND_URL + '/admin/create';
       const response = await axios.post(base_url, data, {
         withCredentials: true,
       });

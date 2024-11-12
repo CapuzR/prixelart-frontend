@@ -359,7 +359,7 @@ export default function CreateOrder(props) {
     const base_url3 = process.env.REACT_APP_BACKEND_URL + "/order/sendEmail"
 
     await axios.post(base_url, input).then(async (response) => {
-      if (response.data.order.res.success) {
+      if (response.data.res.success) {
         for (const item of props.buyState) {
           // if (item.product.autoCertified === true) {
           //   let art = item.art

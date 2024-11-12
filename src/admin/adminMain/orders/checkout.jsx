@@ -330,7 +330,7 @@ export default function Checkout(props) {
   }
 
   const getTotalPrice = (state) => {
-    if (props.selectedPrixer && state.art && state.product) {
+    if (props.selectedPrixer) {
       return getTotalUnitsPVM(
         state,
         currency,
@@ -341,7 +341,7 @@ export default function Checkout(props) {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       })
-    } else if (state.art && state.product) {
+    } else {
       return getTotalUnitsPVP(
         state,
         currency,
@@ -351,7 +351,7 @@ export default function Checkout(props) {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       })
-    } else return ""
+    }
   }
 
   const changeCurrency = () => {

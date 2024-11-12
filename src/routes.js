@@ -641,8 +641,6 @@ function Routes() {
           }}
         />
         <Route component={Home} />
-        
-
       </Switch>
 
       <Modal

@@ -28,8 +28,6 @@ export default function Grid(props) {
   const [pageNumber, setPageNumber] = useState(1)
   const noOfPages = Math.ceil(total / itemsPerPage)
 
-
-
   const fetchData = async () => {
     try {
       let filters: Filters = {

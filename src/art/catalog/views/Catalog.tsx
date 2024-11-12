@@ -1,83 +1,46 @@
-import React, { useEffect } from "react";
-import axios from "axios";
-
-import AppBar from "components/appBar/appBar";
 import FloatingAddButton from "components/floatingAddButton/floatingAddButton";
-import ArtsGrid from "art/components/grid";
-import Container from "@material-ui/core/Container";
-import CssBaseline from "@material-ui/core/CssBaseline";
-import Grid from "@material-ui/core/Grid";
-import { makeStyles } from "@material-ui/core/styles";
-import { useState } from "react";
 import ArtUploader from "components/artUploader/artUploader";
-import Typography from "@material-ui/core/Typography";
-import Modal from "@material-ui/core/Modal";
-import Button from "@material-ui/core/Button";
-import MDEditor from "@uiw/react-md-editor";
-import Dialog from "@material-ui/core/Dialog";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogContentText from "@material-ui/core/DialogContentText";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import DialogActions from "@material-ui/core/DialogActions";
-import Img from "react-cool-img";
-import { useHistory } from "react-router-dom";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
-import { useTheme } from "@material-ui/core/styles";
+import CreateService from "components/createService/createService";
+import ArtsGrid from "art/components/grid";
 import CartReview from "cart/cartReview";
 import WarpImage from "admin/productCrud/warpImage";
-import CreateService from "components/createService/createService";
+import { CartItem } from "../../../cart/interfaces";
+import { 
+  Button, 
+  Container, 
+  CssBaseline, 
+  Grid, 
+  Typography, 
+  Dialog, 
+  DialogContent, 
+  DialogContentText, 
+  DialogTitle, 
+  DialogActions,
+  useMediaQuery 
+} from "@material-ui/core";
+import { useTheme } from "@material-ui/core/styles";
 
-const useStyles = makeStyles((theme) => ({
-  paper: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "left",
-    flexGrow: 1,
-  },
-  avatar: {
-    margin: theme.spacing(1),
-    backgroundColor: theme.palette.secondary.main,
-  },
-  form: {
-    width: "100%", // Fix IE 11 issue.
-    marginTop: theme.spacing(3),
-  },
-  submit: {
-    margin: theme.spacing(3, 0, 2),
-  },
-  float: {
-    position: "relative",
-    marginLeft: "95%",
-  },
-  paper2: {
-    position: "absolute",
-    width: "80%",
-    maxHeight: 450,
-    overflowY: "auto",
-    backgroundColor: "white",
-    boxShadow: theme.shadows[5],
-    padding: "16px 32px 24px",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    textAlign: "justify",
-  },
-}));
+import Img from "react-cool-img";
+import { useHistory } from "react-router-dom";
+import { useState } from "react";
+
+import styles from "./catalog.module.scss";
+
+const TypedWarpImage: React.FC<any> = WarpImage;
 
 export default function Catalog(props) {
-  const [openArtFormDialog, setOpenArtFormDialog] = useState(false);
-  const [openShoppingCart, setOpenShoppingCart] = useState(false);
-  const [selectedArt, setSelectedArt] = useState(undefined);
-  const history = useHistory();
-  const theme = useTheme();
-  const [openServiceFormDialog, setOpenServiceFormDialog] = useState(false);
-  const [createdService, setCreatedService] = useState(false);
+  const [openArtFormDialog, setOpenArtFormDialog] = useState(false)
+  const [openShoppingCart, setOpenShoppingCart] = useState(false)
+  const [selectedArt, setSelectedArt] = useState(undefined)
+  const history = useHistory()
+  const theme = useTheme()
+  const [openServiceFormDialog, setOpenServiceFormDialog] = useState(false)
+  const [createdService, setCreatedService] = useState(false)
 
-  const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
-  const isDeskTop = useMediaQuery(theme.breakpoints.up("sm"));
-  const classes = useStyles();
+  const isDesktop = useMediaQuery(theme.breakpoints.up("md"))
+  const isDeskTop = useMediaQuery(theme.breakpoints.up("sm"))
 
-  const allowMockup = (buy, index) => {
+  const allowMockup = (buy: CartItem, index: Number) => {
     if (buy.product?.mockUp !== undefined && buy.art !== undefined) {
       return (
         <div
@@ -96,7 +59,7 @@ export default function Catalog(props) {
               props.selectedProductToAssociate?.index === index ? "1" : "0.6",
           }}
         >
-          <WarpImage
+          <TypedWarpImage
             warpPercentage={buy.product.mockUp.warpPercentage}
             warpOrientation={buy.product.mockUp.warpOrientation}
             invertedWrap={buy.product.mockUp.invertedWrap}
@@ -117,7 +80,7 @@ export default function Catalog(props) {
             translateX={buy.product.mockUp.translateX}
             translateY={buy.product.mockUp.translateY}
             setOpen={props.setOpen}
-              setMessage={props.setMessage}
+            setMessage={props.setMessage}
           />
           <div
             style={{
@@ -133,7 +96,7 @@ export default function Catalog(props) {
             }}
           />
         </div>
-      );
+      )
     } else {
       return (
         <>
@@ -153,7 +116,11 @@ export default function Catalog(props) {
               opacity:
                 props.selectedProductToAssociate?.index === index ? "1" : "0.6",
             }}
-            src={ buy?.product?.sources?.images[0]?.url || buy?.product?.thumbUrl || "" }
+            src={
+              buy?.product?.sources?.images[0]?.url ||
+              buy?.product?.thumbUrl ||
+              ""
+            }
             debounce={1000}
             cache
             error="/imgError.svg"
@@ -162,36 +129,28 @@ export default function Catalog(props) {
             id={index}
           />
         </>
-      );
+      )
     }
-  };
+  }
 
   return (
     <>
-      <Container component="main" maxWidth="s" className={classes.paper}>
+      <Container
+        component="main"
+        className={styles.paper}
+      >
         <CssBaseline />
 
-        <Grid
-          style={{
-            marginTop: 20,
-            justifyContent: "center",
-            alignItems: "center",
-            display: "flex",
-            flexDirection: "column",
-          }}
-        >
+        <Grid className={styles.title}>
           <Typography
             variant="h4"
-            style={{ color: "#404e5c" }}
-            fontWeight="bold"
+            className={styles.title__main}
           >
-            <strong>Galería</strong>
+            Galería
           </Typography>
           <Typography
             variant="body2"
-            color="textSecondary"
-            component="p"
-            style={{ marginBottom: 20 }}
+            className={styles.title__alt}
           >
             Encuentra tu arte preferido. Ejemplo: escribe "playa" y toca la
             lupa.
@@ -220,7 +179,7 @@ export default function Catalog(props) {
           />
         )}
 
-        {/* Serivices uploader */}
+        {/* Services uploader */}
         {openServiceFormDialog && (
           <CreateService
             openArtFormDialog={openServiceFormDialog}
@@ -230,7 +189,7 @@ export default function Catalog(props) {
         )}
 
         {/* Floating buttons */}
-        <Grid className={classes.float}>
+        <Grid className={styles.float}>
           <FloatingAddButton
             setOpenArtFormDialog={setOpenArtFormDialog}
             setOpenShoppingCart={setOpenShoppingCart}
@@ -264,8 +223,10 @@ export default function Catalog(props) {
                 {props.selectedProductToAssociate?.previous ? (
                   "¿Deseas asociar este producto al item seleccionado previamente en el carrito?"
                 ) : props.buyState.length > 0 &&
-                  props.buyState.find((buy) => buy.product !== undefined) ? (
-                  props.buyState.map((buy, index) => {
+                  props.buyState.find(
+                    (buy: CartItem) => buy.product !== undefined
+                  ) ? (
+                  props.buyState.map((buy: CartItem, index: Number) => {
                     return (
                       <div
                         style={{
@@ -276,7 +237,7 @@ export default function Catalog(props) {
                       >
                         {buy.product && (
                           <div
-                            key={index}
+                            key={index.toString()}
                             style={{
                               marginBottom: "32px",
                               marginTop: 10,
@@ -294,7 +255,7 @@ export default function Catalog(props) {
                           </div>
                         )}
                       </div>
-                    );
+                    )
                   })
                 ) : (
                   <strong>
@@ -310,8 +271,8 @@ export default function Catalog(props) {
             <Button
               onClick={() => {
                 !props.selectedProductToAssociate?.previous &&
-                  props.setSelectedProductToAssociate(undefined);
-                props.setIsOpenAssociateProduct(false);
+                  props.setSelectedProductToAssociate(undefined)
+                props.setIsOpenAssociateProduct(false)
               }}
               color="primary"
             >
@@ -326,11 +287,11 @@ export default function Catalog(props) {
                       index: props.selectedProductToAssociate.index,
                       item: selectedArt,
                       type: "art",
-                    });
-                    props.setSelectedProductToAssociate(undefined);
-                    setSelectedArt(undefined);
-                    props.setIsOpenAssociateProduct(false);
-                    history.push({ pathname: "/" });
+                    })
+                    props.setSelectedProductToAssociate(undefined)
+                    setSelectedArt(undefined)
+                    props.setIsOpenAssociateProduct(false)
+                    history.push({ pathname: "/" })
                   }}
                   color="primary"
                 >
@@ -345,9 +306,9 @@ export default function Catalog(props) {
                   props.addItemToBuyState({
                     type: "art",
                     item: selectedArt,
-                  });
-                  setSelectedArt(undefined);
-                  history.push({ pathname: "/productos" });
+                  })
+                  setSelectedArt(undefined)
+                  history.push({ pathname: "/productos" })
                 }}
                 color="primary"
               >
@@ -384,7 +345,9 @@ export default function Catalog(props) {
             </div>
           ) : (
             <div style={{ margin: "90px 10px 40px 10px" }}>
-              <Typography variant={"h6"} align={"Center"} justify={"center"}>
+              <Typography
+                variant="h6"
+              >
                 Actualmente no tienes ningun producto dentro del carrito de
                 compra.
               </Typography>
@@ -399,7 +362,7 @@ export default function Catalog(props) {
           >
             <Button
               onClick={() => {
-                setOpenShoppingCart(false);
+                setOpenShoppingCart(false)
               }}
               color="primary"
             >
@@ -408,7 +371,7 @@ export default function Catalog(props) {
             {props.buyState?.length > 0 && (
               <Button
                 onClick={() => {
-                  history.push({ pathname: "/shopping" });
+                  history.push({ pathname: "/shopping" })
                 }}
                 color="primary"
               >
@@ -419,5 +382,5 @@ export default function Catalog(props) {
         </Dialog>
       </Container>
     </>
-  );
+  )
 }

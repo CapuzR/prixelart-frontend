@@ -47,3 +47,23 @@ export const verifyStandardArts = async () => {
     } else return false
   })
 }
+
+export const handleSubmit = async (e, Id) => {
+  e.preventDefault()
+  const formData = new FormData()
+  const termsAgree: boolean = true
+  formData.append("termsAgree", termsAgree)
+  const base_url =
+    process.env.REACT_APP_BACKEND_URL + "/prixer/update-terms/" + Id
+  const response = await axios
+    .put(
+      base_url,
+      { termsAgree: true },
+      {
+        "Content-Type": "multipart/form-data",
+      }
+    )
+    .then((response) => {
+      setTermsAgreeVar(true)
+    })
+}

@@ -1,0 +1,61 @@
+$spacing-unit: 8px;
+$secondary-color: #404e5c;
+$shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+
+.paper {
+    display: flex;
+    flex-direction: column;
+    align-items: left;
+    flex-grow: 1;
+}
+
+.avatar {
+    margin: $spacing-unit;
+    background-color: $secondary-color;
+}
+
+.form {
+    width: 100%; // Fix IE 11 issue.
+    margin-top: $spacing-unit * 3;
+}
+
+.submit {
+    margin: $spacing-unit * 3 0 $spacing-unit * 2;
+}
+
+.float {
+    position: relative;
+    margin-left: 95%;
+}
+
+.paper2 {
+    position: absolute;
+    width: 80%;
+    max-height: 450px;
+    overflow-y: auto;
+    background-color: white;
+    box-shadow: $shadow;
+    padding: 16px 32px 24px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: justify;
+}
+
+.title {
+    margin: 20px;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+
+    &__main {
+        color: $secondary-color;
+        font-weight: bold;
+    }
+
+    &__alt {
+        color: $secondary-color;
+        margin-bottom: 20px;
+    }
+}

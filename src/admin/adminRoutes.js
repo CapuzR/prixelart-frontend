@@ -108,7 +108,11 @@ const AdminRoutes = ({
           "/admin/product/:productId/variant/:variantId/update",
           "/admin/movements/read",
           "/admin/payment-method/create",
-          "/admin/shipping-method/create"
+          "/admin/shipping-method/create",
+          "/admin/shipping-method/update/:id",
+          "/admin/payment-method/update/:id",
+          "/admin/user/read",
+          "/admin/preferences/read"
         ]}
       >
         <AdminMain

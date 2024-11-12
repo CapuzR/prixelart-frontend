@@ -93,6 +93,7 @@ const AdminRoutes = ({
           "/admin/prixer/read",
           "/admin/product/update/:productId",
           "/admin/consumer/update/:consumerId",
+          "/admin/consumer/read",
           "/admin/payment-method/read",
           "/admin/shipping-method/read",
           "/admin/testimonials/read",
@@ -105,6 +106,9 @@ const AdminRoutes = ({
           "/admin/product/:productId/variant/read",
           "/admin/product/:productId/variant/create",
           "/admin/product/:productId/variant/:variantId/update",
+          "/admin/movements/read",
+          "/admin/payment-method/create",
+          "/admin/shipping-method/create"
         ]}
       >
         <AdminMain
@@ -122,7 +126,6 @@ const AdminRoutes = ({
           setOpen={setOpen}
           setMessage={setMessage}
           sellers={sellers}
-          permissions={permissions}
           setSearchResult={setSearchResult}
           searchResult={searchResult}
           addItemToBuyState={addItemToBuyState}

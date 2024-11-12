@@ -791,7 +791,7 @@ export default function ShoppingCart(props) {
                         <Select
                           id={"product " + index}
                           variant="outlined"
-                          value={buy.product.name}
+                          value={buy?.product?.name}
                           onChange={(e) => {
                             changeProduct(e, buy.art, index)
                           }}
@@ -927,7 +927,8 @@ export default function ShoppingCart(props) {
                       {props?.selectedPrixer?.username === undefined &&
                         props.discountList !== undefined &&
                         props.discountList !== null &&
-                        typeof buy.product.discount === "string" && (
+                        buy.product !== undefined &&
+                        typeof buy?.product?.discount === "string" && (
                           <Typography
                             variant="p"
                             style={{ paddingTop: 5, fontSize: "12px" }}

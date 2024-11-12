@@ -1,156 +1,86 @@
 import React, { useState, useEffect } from "react"
 import { useHistory } from "react-router-dom"
-import { makeStyles, withStyles } from "@material-ui/core/styles"
-import Card from "@material-ui/core/Card"
-import CardActionArea from "@material-ui/core/CardActionArea"
-import CardActions from "@material-ui/core/CardActions"
-import CardContent from "@material-ui/core/CardContent"
-import Button from "@material-ui/core/Button"
-import Typography from "@material-ui/core/Typography"
-import axios from "axios"
+import { useLocation } from "react-router-dom"
+import {
+  makeStyles,
+  withStyles,
+  Card,
+  CardActionArea,
+  CardActions,
+  CardContent,
+  Button,
+  Typography,
+  Container,
+  Grid,
+  TextField,
+  Snackbar,
+  CircularProgress,
+  FormControl,
+  InputLabel,
+  Select,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Switch,
+  Chip,
+  Modal,
+  useMediaQuery,
+  Box,
+  InputAdornment,
+  Tooltip,
+  IconButton,
+  Menu,
+  MenuItem,
+} from "@material-ui/core"
+
+import {
+  WhatsApp as WhatsAppIcon,
+  Share as ShareIcon,
+  AddShoppingCart as AddShoppingCartIcon,
+  StarRate as Star,
+  StarOutline,
+  MoreVert as MoreVertIcon,
+  Close as CloseIcon,
+} from "@material-ui/icons"
+
 import AppBar from "components/appBar/appBar"
-import Container from "@material-ui/core/Container"
-import Grid from "@material-ui/core/Grid"
-import TextField from "@material-ui/core/TextField"
-import Snackbar from "@material-ui/core/Snackbar"
-import Autocomplete from "@material-ui/lab/Autocomplete"
-import CircularProgress from "@material-ui/core/CircularProgress"
 import FloatingAddButton from "components/floatingAddButton/floatingAddButton"
 import ArtUploader from "components/artUploader/artUploader"
-import WhatsAppIcon from "@material-ui/icons/WhatsApp"
-import ShareIcon from "@material-ui/icons/Share"
-import utils from "../../utils/utils"
-import FormControl from "@material-ui/core/FormControl"
-import InputLabel from "@material-ui/core/InputLabel"
-import Select from "@material-ui/core/Select"
-import Img from "react-cool-img"
-import Dialog from "@material-ui/core/Dialog"
-import DialogActions from "@material-ui/core/DialogActions"
-import DialogContent from "@material-ui/core/DialogContent"
-import DialogContentText from "@material-ui/core/DialogContentText"
-import DialogTitle from "@material-ui/core/DialogTitle"
-import Switch from "@material-ui/core/Switch"
-import Chip from "@material-ui/core/Chip"
-import Modal from "@material-ui/core/Modal"
-import MDEditor from "@uiw/react-md-editor"
-import AddShoppingCartIcon from "@material-ui/icons/AddShoppingCart"
 import CartReview from "../../cart/cartReview"
-import useMediaQuery from "@material-ui/core/useMediaQuery"
+import PaginationBar from "../../components/Pagination/PaginationBar"
+import axios from "axios"
+import Img from "react-cool-img"
+import MDEditor from "@uiw/react-md-editor"
+import Autocomplete from "@material-ui/lab/Autocomplete"
+import styles from "./detail.module.scss"
+
+import utils from "../../utils/utils"
+import { verifyStandardArts } from "../api"
 import { useTheme } from "@material-ui/core/styles"
-import Box from "@material-ui/core/Box"
-import InputAdornment from "@material-ui/core/InputAdornment"
-import Tooltip from "@material-ui/core/Tooltip"
-import IconButton from "@material-ui/core/IconButton"
-import Star from "@material-ui/icons/StarRate"
-import StarOutline from "@material-ui/icons/StarOutline"
-import Menu from "@material-ui/core/Menu"
-import MenuItem from "@material-ui/core/MenuItem"
-import MoreVertIcon from "@material-ui/icons/MoreVert"
-import CloseIcon from "@material-ui/icons/Close"
 import { useLoading, useSnackBar } from "context/GlobalContext"
 
-const IOSSwitch = withStyles((theme) => ({
-  root: {
-    width: 42,
-    height: 26,
-    padding: 0,
-    margin: theme.spacing(1),
-  },
-  switchBase: {
-    padding: 1,
-    "&$checked": {
-      transform: "translateX(16px)",
-      color: theme.palette.common.white,
-      "& + $track": {
-        backgroundColor: "primary",
-        opacity: 1,
-        border: "none",
-      },
-    },
-    "&$focusVisible $thumb": {
-      color: "#52d869",
-      border: "6px solid #fff",
-    },
-  },
-  thumb: {
-    width: 24,
-    height: 24,
-  },
-  track: {
-    borderRadius: 26 / 2,
-    border: `1px solid ${theme.palette.grey[400]}`,
-    backgroundColor: theme.palette.grey[400],
-    opacity: 1,
-    transition: theme.transitions.create(["background-color", "border"]),
-  },
-  checked: {},
-  focusVisible: {},
-}))(({ classes, ...props }) => {
+const IOSSwitch = (props) => {
   return (
     <Switch
-      focusVisibleClassName={classes.focusVisible}
+      className="iosSwitch"
       disableRipple
-      classes={{
-        root: classes.root,
-        switchBase: classes.switchBase,
-        thumb: classes.thumb,
-        track: classes.track,
-        checked: classes.checked,
-      }}
       {...props}
     />
   )
-})
-
-const useStyles = makeStyles((theme) => ({
-  loading: {
-    display: "flex",
-    "& > * + *": {
-      marginLeft: theme.spacing(2),
-    },
-    marginLeft: "50vw",
-    marginTop: "50vh",
-  },
-  paper: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "left",
-    maxWidth: 850,
-    flexGrow: 1,
-  },
-  root: {
-    width: "100vw",
-  },
-  float: {
-    position: "relative",
-    marginLeft: "87%",
-  },
-  paper2: {
-    position: "absolute",
-    width: "80%",
-    maxHeight: 450,
-    overflowY: "auto",
-    backgroundColor: "white",
-    boxShadow: theme.shadows[5],
-    padding: "16px 32px 24px",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    textAlign: "justify",
-  },
-}))
+}
 
 const photoIsos = ["100", "200", "400"]
 
 export default function ArtDetail(props) {
-  console.log(props)
-  const classes = useStyles()
+  const location = useLocation()
   const history = useHistory()
+
   const theme = useTheme()
   const globalParams = new URLSearchParams(window.location.pathname)
   const [ready, setReady] = useState(false)
-  const [tiles, setTiles] = useState(props?.searchResult || undefined)
-  // const [newTag, setNewTag] = useState([]);
+  const [tiles, setTiles] = useState(location.state?.searchResult || undefined)
   const [updatedTile, setUpdatedTile] = useState([])
   const { setLoading } = useLoading()
   const [artDataState, setArtDataState] = useState()
@@ -183,25 +113,16 @@ export default function ArtDetail(props) {
   const noOfPages = Math.ceil(totalArts / itemsPerPage)
   const [pageNumber, setPageNumber] = useState(1)
   const itemsToSkip = (pageNumber - 1) * itemsPerPage
-  const tilesv2 = tiles?.slice(itemsToSkip, itemsPerPage + itemsToSkip)
 
   const propsRank = {
     min: 0,
     max: 100,
   }
 
-  const verifyStandardArts = async () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + "/art/read-by-prixer"
-    const body = {
-      username: JSON.parse(localStorage.getItem("token")).username,
-    }
-    axios.post(base_url, body).then((response) => {
-      if (response.data.arts.length > 5) {
-        setAllowExclusive(true)
-      }
-    })
+  const verifyStandardArtsQ = async () => {
+    setAllowExclusive(verifyStandardArts)
   }
-
+  
   useEffect(() => {
     if (JSON.parse(localStorage.getItem("token"))) {
       verifyStandardArts()
@@ -460,7 +381,11 @@ export default function ArtDetail(props) {
 
   const readArt = async () => {
     setLoading(true)
-    if (props.fullArt && props?.searchResult && props?.searchResult?.length > 0) {
+    if (
+      props.fullArt &&
+      props?.searchResult &&
+      props?.searchResult?.length > 0
+    ) {
       let index
       const s = props?.searchResult?.find((art, i) => {
         if (art.artId === fullArt) {
@@ -574,41 +499,6 @@ export default function ArtDetail(props) {
     })
   }
 
-  const handleSubmit = async (e, Id) => {
-    e.preventDefault()
-    const formData = new FormData()
-    const termsAgree = true
-    formData.append("termsAgree", termsAgree)
-    const base_url =
-      process.env.REACT_APP_BACKEND_URL + "/prixer/update-terms/" + Id
-    const response = await axios
-      .put(
-        base_url,
-        { termsAgree: true },
-        {
-          "Content-Type": "multipart/form-data",
-        }
-      )
-      .then((response) => {
-        setTermsAgreeVar(true)
-      })
-  }
-
-  const TermsAgreeModal = () => {
-    const GetId = JSON.parse(localStorage.getItem("token")).username
-    const base_url = process.env.REACT_APP_BACKEND_URL + "/prixer/get/" + GetId
-    axios.get(base_url).then((response) => {
-      setTermsAgreeVar(response.data.termsAgree)
-      getTerms()
-    })
-  }
-
-  useEffect(() => {
-    {
-      JSON.parse(localStorage.getItem("token")) && TermsAgreeModal()
-    }
-  }, [])
-
   const addingToCart = (e, tile) => {
     e.preventDefault()
     setSelectedArt(tile)
@@ -619,12 +509,11 @@ export default function ArtDetail(props) {
     <>
       <Container
         component="main"
-        className={classes.paper}
+        className={styles.paper}
       >
-        <div style={{ marginTop: 55 }}>
-          {/* Art Detail */}
+        <div className={styles.top}>
           {tiles !== undefined ? (
-            tilesv2.map((tile) =>
+            tiles.map((tile) =>
               artDataState !== tile.artId ? (
                 <div
                   id={tile.artId}
@@ -632,30 +521,18 @@ export default function ArtDetail(props) {
                 >
                   {tile.visible === true ? (
                     <>
-                      <Card style={{ marginTop: 35 }}>
+                      <Card className={styles.littleTop}>
                         <CardActionArea disabled>
-                          {/* Badge de arte exclusivo (?) */}
                           {tile.exclusive === "exclusive" && (
                             <Tooltip title="Arte exclusivo">
-                              <IconButton
-                                style={{
-                                  position: "absolute",
-                                  right: 0,
-                                  display: "flex",
-                                }}
-                              >
+                              <IconButton className={styles.starButton}>
                                 <Star
-                                  style={{
-                                    marginRight: "-2.2rem",
-                                    marginTop: "0.05rem",
-                                  }}
+                                  className={styles.star}
                                   color="primary"
                                   fontSize="large"
                                 />
                                 <StarOutline
-                                  style={{
-                                    color: "white",
-                                  }}
+                                  className={styles.white}
                                   fontSize="large"
                                 />
                               </IconButton>
@@ -663,12 +540,9 @@ export default function ArtDetail(props) {
                           )}
                           <Img
                             placeholder="/imgLoading.svg"
-                            style={{
-                              backgroundColor: "#eeeeee",
-                              width: "100%",
-                            }}
+                            className={styles.imgBg}
                             src={tile.largeThumbUrl || tile.thumbnailUrl}
-                            debounce={1000} // Default is 300 (ms)
+                            debounce={1000}
                             cache
                             error="/imgError.svg"
                             srcSet={
@@ -690,31 +564,15 @@ export default function ArtDetail(props) {
                             container
                             xs={12}
                             sm={12}
-                            style={{
-                              whiteSpace: "nowrap",
-                              padding: 0,
-                              margin: 0,
-                            }}
-                            justify="space-between"
+                            className={styles.info}
                           >
-                            <Typography
-                              style={{
-                                display: "inline-block",
-                                fontSize: "0.8em",
-                                paddingLeft: 0,
-                              }}
-                            >
+                            <Typography className={styles.info__id}>
                               ID: {tile.artId}
                             </Typography>
                             <Grid
                               container
                               spacing={1}
-                              style={{
-                                flexWrap: "nowrap",
-                                alignItems: "center",
-                                justifyContent: "flex-end",
-                                marginBottom: "-35px",
-                              }}
+                              className={styles.info__prixer}
                             >
                               <Grid item>
                                 <Button
@@ -726,15 +584,7 @@ export default function ArtDetail(props) {
                                 >
                                   <Typography
                                     gutterBottom
-                                    variant="h7"
-                                    component="h2"
-                                    style={{
-                                      display: "inline-block",
-                                      right: 0,
-                                      textAlign: "right",
-                                      margin: 0,
-                                      fontSize: 12,
-                                    }}
+                                    className={styles.info__prixer__text}
                                   >
                                     Prixer: {tile.prixerUsername}
                                   </Typography>
@@ -782,24 +632,18 @@ export default function ArtDetail(props) {
                             container
                             xs={12}
                             sm={12}
-                            justify="space-between"
-                            style={{ textAlign: "left", padding: 0, margin: 0 }}
+                            className={styles.info__title}
                           >
                             <Grid
                               item
                               xs={6}
                               sm={6}
-                              style={{
-                                textAlign: "left",
-                                padding: 0,
-                                margin: 0,
-                              }}
+                              className={styles.info__title__container}
                             >
                               <Typography
                                 gutterBottom
                                 variant="h5"
-                                component="h2"
-                                style={{ margin: 0 }}
+                                className={styles.info__title__text}
                               >
                                 {tile.title}
                               </Typography>
@@ -810,15 +654,11 @@ export default function ArtDetail(props) {
                             container
                             xs={12}
                             sm={12}
-                            style={{ textAlign: "left", padding: 0, margin: 0 }}
+                            className={styles.info__location}
                           >
                             {tile.artLocation && (
                               <Typography
-                                style={{
-                                  fontSize: "0.8em",
-                                  paddingBottom: 10,
-                                  paddingLeft: 3,
-                                }}
+                                className={styles.info__location__littleText}
                               >
                                 Ubicación: {tile.artLocation}
                               </Typography>
@@ -827,12 +667,7 @@ export default function ArtDetail(props) {
                           <Typography
                             variant="body2"
                             color="textSecondary"
-                            component="p"
-                            style={{
-                              whiteSpace: "pre-line",
-                              fontSize: "1.1em",
-                              marginBottom: 10,
-                            }}
+                            className={styles.info__description}
                           >
                             {tile.description}
                           </Typography>
@@ -841,7 +676,6 @@ export default function ArtDetail(props) {
                               <Typography
                                 variant="body2"
                                 color="textSecondary"
-                                component="p"
                               >
                                 Máximo para impresión: {maxPrintValues(tile)}
                               </Typography>
@@ -849,13 +683,7 @@ export default function ArtDetail(props) {
                           <Typography
                             variant="body2"
                             color="textSecondary"
-                            component="p"
-                            style={{
-                              whiteSpace: "pre-line",
-                              fontSize: "1.1em",
-                              marginBottom: 10,
-                              textAlign: "center",
-                            }}
+                            className={styles.info__creationDate}
                           >
                             Creado el{" "}
                             {new Date(tile?.createdOn).toLocaleDateString(
@@ -872,12 +700,7 @@ export default function ArtDetail(props) {
                         {/* ADMIN: Art ban */}
                         <CardActions>
                           {props.permissions?.artBan && (
-                            <div
-                              style={{
-                                display: "flex",
-                                alignItems: "center",
-                              }}
-                            >
+                            <div className={styles.switch}>
                               <Typography
                                 variant="body2"
                                 color="textSecondary"
@@ -904,20 +727,11 @@ export default function ArtDetail(props) {
                           {openSettings === true &&
                           selectedArt !== undefined &&
                           tile.artId === selectedArt.artId ? (
-                            <div
-                              style={{
-                                display: "flex",
-                                justifyContent: "space-around",
-                                width: "100%",
-                              }}
-                            >
+                            <div className={styles.certificate}>
                               <Grid
                                 container
                                 spacing={0.5}
-                                flexWrap="nowrap"
-                                justifyContent="space-between"
-                                alignItems="center"
-                                flexDirection="row"
+                                className={styles.certificate__container}
                               >
                                 <Grid
                                   item
@@ -937,10 +751,10 @@ export default function ArtDetail(props) {
                                 <Grid
                                   item
                                   xs={6}
-                                  style={{ display: "flex" }}
+                                  className={styles.flex}
                                 >
                                   <TextField
-                                    style={{ marginRight: 8 }}
+                                    className={styles.eight}
                                     variant="outlined"
                                     label="Código"
                                     onChange={(e) => {
@@ -949,7 +763,7 @@ export default function ArtDetail(props) {
                                     value={code}
                                   />
                                   <TextField
-                                    style={{ marginRight: 8 }}
+                                    className={styles.eight}
                                     type="number"
                                     variant="outlined"
                                     label="Arte"
@@ -968,21 +782,11 @@ export default function ArtDetail(props) {
                                     }}
                                   />
                                 </Grid>
-
-                                <div
-                                  style={{
-                                    width: "100%",
-                                    display: "flex",
-                                    justifyContent: "end",
-                                  }}
-                                >
+                                <div className={styles.certificate__button}>
                                   <Button
                                     color="primary"
                                     variant="outlined"
-                                    style={{
-                                      textTransform: "none",
-                                      marginTop: 8,
-                                    }}
+                                    className={styles.certificate__button__text}
                                     onClick={(e) => {
                                       rankArt(tile, tile.artId, e)
                                     }}
@@ -993,13 +797,7 @@ export default function ArtDetail(props) {
                               </Grid>
                             </div>
                           ) : (
-                            <div
-                              style={{
-                                display: "flex",
-                                justifyContent: "space-around",
-                                width: "100%",
-                              }}
-                            >
+                            <div className={styles.certificate}>
                               <Button
                                 size="small"
                                 color="primary"
@@ -1337,8 +1135,7 @@ export default function ArtDetail(props) {
                             ></IOSSwitch>
                           )}
                           {/* PRIXER: Pero dentro de un bloque de ADMIN (?) */}
-                          {
-                            JSON.parse(localStorage.getItem("token")) &&
+                          {JSON.parse(localStorage.getItem("token")) &&
                             JSON.parse(localStorage.getItem("token"))
                               .username == tile.prixerUsername && (
                               <Button
@@ -1351,8 +1148,7 @@ export default function ArtDetail(props) {
                               >
                                 Eliminar
                               </Button>
-                            )
-                          }
+                            )}
                           {/* PRIXER: Pero dentro de un bloque de ADMIN (?) */}
                           <Dialog
                             open={open}
@@ -1399,8 +1195,7 @@ export default function ArtDetail(props) {
                         </CardActions>
                       </Card>
                     )
-                  )
-                  }
+                  )}
                 </div>
               ) : (
                 // QUÉ ES ESTO? EDICIÓN DEL ARTE??
@@ -1792,7 +1587,7 @@ export default function ArtDetail(props) {
                               >
                                 <FormControl
                                   variant="outlined"
-                                  className={classes.form}
+                                  className={styles.form}
                                   fullWidth
                                 >
                                   <InputLabel
@@ -1878,7 +1673,7 @@ export default function ArtDetail(props) {
             />
           )}
           {/* Floating buttons */}
-          <Grid className={classes.float}>
+          <Grid className={styles.float}>
             <FloatingAddButton
               setOpenArtFormDialog={setOpenArtFormDialog}
               setOpenShoppingCart={setOpenShoppingCart}
@@ -1889,174 +1684,17 @@ export default function ArtDetail(props) {
             open={snackBar}
             autoHideDuration={2000}
             message={snackBarMessage}
-            className={classes.snackbar}
+            className={styles.snackbar}
             onClose={() => setSnackBar(false)}
           />
         </div>
-        {/* Paginación */}
-        <Box
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignSelf: "center",
-            paddingTop: 5,
-            marginBottom: 4,
-            width: "100%",
-          }}
-        >
-          {pageNumber - 3 > 0 && (
-            <Button
-              style={{ minWidth: 30, marginRight: 5 }}
-              onClick={() => {
-                setPageNumber(1)
-              }}
-            >
-              {1}
-            </Button>
-          )}
-          {pageNumber - 3 > 0 && (
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                marginRight: 5,
-              }}
-            >
-              ...
-            </div>
-          )}
-          {pageNumber - 2 > 0 && (
-            <Button
-              style={{ minWidth: 30, marginRight: 5 }}
-              onClick={() => {
-                setPageNumber(pageNumber - 2)
-              }}
-            >
-              {pageNumber - 2}
-            </Button>
-          )}
-          {pageNumber - 1 > 0 && (
-            <Button
-              style={{ minWidth: 30, marginRight: 5 }}
-              onClick={() => {
-                setPageNumber(pageNumber - 1)
-              }}
-            >
-              {pageNumber - 1}
-            </Button>
-          )}
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              width: 80,
-              marginRight: 5,
-              backgroundColor: "rgb(238, 238, 238)",
-              borderRadius: 4,
-            }}
-          >
-            Página {pageNumber}
-          </div>
-          {pageNumber + 1 <= noOfPages && (
-            <Button
-              style={{ minWidth: 30, marginRight: 5 }}
-              onClick={() => {
-                setPageNumber(pageNumber + 1)
-              }}
-            >
-              {pageNumber + 1}
-            </Button>
-          )}
 
-          {pageNumber + 2 <= noOfPages && (
-            <Button
-              style={{ minWidth: 30, marginRight: 5 }}
-              onClick={() => {
-                setPageNumber(pageNumber + 2)
-              }}
-            >
-              {pageNumber + 2}
-            </Button>
-          )}
-          {pageNumber + 3 <= noOfPages && (
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                marginRight: 5,
-              }}
-            >
-              ...
-            </div>
-          )}
-          {pageNumber + 3 <= noOfPages && (
-            <Button
-              style={{ minWidth: 30, marginRight: 5 }}
-              onClick={() => {
-                setPageNumber(noOfPages)
-              }}
-            >
-              {noOfPages}
-            </Button>
-          )}
-        </Box>
-        {/* Términos y condiciones */}
-        <Modal
-          xl={800}
-          lg={800}
-          md={480}
-          sm={360}
-          xs={360}
-          open={termsAgreeVar === false}
-          onClose={termsAgreeVar === true}
-        >
-          <div className={classes.paper2}>
-            <h2 style={{ textAlign: "center", fontWeight: "Normal" }}>
-              Hemos actualizado nuestros términos y condiciones y queremos que
-              estés al tanto.
-            </h2>
-            <div>
-              <div data-color-mode="light">
-                <div
-                  style={{
-                    textAlign: "center",
-                    marginBottom: "12px",
-                    fontWeight: "bold",
-                    fontSize: "1.2rem",
-                  }}
-                >
-                  CONVENIO DE RELACIÓN ENTRE LOS ARTISTAS Y LA COMPAÑÍA
-                </div>
-                <div data-color-mode="light">
-                  <MDEditor.Markdown
-                    source={value}
-                    style={{ textAlign: "justify" }}
-                  />
-                </div>
-              </div>
-            </div>
-            <div style={{ justifyContent: "center", display: "flex" }}>
-              <Button
-                onClick={(e) => {
-                  handleSubmit(
-                    e,
-                    JSON.parse(localStorage.getItem("token")).username
-                  )
-                }}
-                type="submit"
-                variant="contained"
-                color="primary"
-                className={classes.submit}
-                required
-              >
-                Acepto los nuevos términos y condiciones
-              </Button>
-            </div>
-          </div>
-        </Modal>
+        <PaginationBar
+          pageNumber={pageNumber}
+          setPageNumber={setPageNumber}
+          noOfPages={noOfPages}
+        />
+
         {/* Asociación de productos */}
         <Dialog
           open={props.isOpenAssociateProduct}

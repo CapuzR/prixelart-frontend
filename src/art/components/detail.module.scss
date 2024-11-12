@@ -1,0 +1,212 @@
+.iosSwitch {
+    width: 42px;
+    height: 26px;
+    padding: 0;
+    margin: 8px;
+    position: relative;
+
+
+    .MuiSwitch-base {
+        padding: 1px;
+    }
+
+    .MuiSwitch-track {
+        border-radius: 13px;
+        border: 1px solid #ccc;
+        background-color: #ccc;
+        opacity: 1;
+        transition: background-color 0.3s, border 0.3s;
+    }
+
+    .Mui-checked .MuiSwitch-track {
+        background-color: #d33f49;
+        border: none;
+    }
+
+    .Mui-focusVisible .MuiSwitch-thumb {
+        color: #52d869;
+        border: 6px solid #fff;
+    }
+
+    .MuiSwitch-thumb {
+        width: 24px;
+        height: 24px;
+    }
+
+    .Mui-checked .MuiSwitch-thumb {
+        transform: translateX(16px);
+        color: #fff;
+    }
+}
+
+.loading {
+    display: flex;
+    margin-left: 50vw;
+    margin-top: 50vh;
+
+    &>*+* {
+        margin-left: 16px;
+    }
+}
+
+.paper {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    max-width: 850px;
+    flex-grow: 1;
+
+    .top {
+        margin-top: 55px;
+    }
+
+    .littleTop {
+        margin-top: 35px;
+    }
+
+    .starButton {
+        position: absolute;
+        right: 0;
+        display: flex;
+    }
+
+    .star {
+        margin-right: -2.2rem;
+        margin-top: 0.05rem;
+    }
+
+    .white {
+        color: white
+    }
+
+    .imgBg {
+        background-color: #eeeeee;
+        width: 100%;
+    }
+
+    .info {
+        white-space: nowrap;
+        padding: 0;
+        margin: 0;
+        justify-content: space-between;
+
+        &__id {
+            display: inline-block;
+            font-size: 13px;
+            padding-left: 0;
+        }
+
+        &__prixer {
+            flex-wrap: nowrap;
+            align-items: center;
+            justify-content: flex-end;
+            margin-bottom: -35px;
+
+            &__text {
+                display: inline-block;
+                right: 0;
+                text-align: right;
+                margin: 0;
+                font-size: 12px;
+                text-transform: none;
+            }
+        }
+
+        &__title,
+        &__location {
+            justify-content: space-between;
+            text-align: left;
+            padding: 0;
+            margin: 0;
+
+            &__container {
+                text-align: left;
+                padding: 0;
+                margin: 0;
+            }
+
+            &__text {
+                margin: 0
+            }
+
+            &__littleText {
+                font-size: 0.8em;
+                padding-bottom: 10;
+                padding-left: 3;
+            }
+        }
+
+        &__description {
+            white-space: pre-line;
+            font-size: 17px;
+            margin-bottom: 10;
+        }
+
+        &__creationDate {
+            white-space: pre-line;
+            font-size: 17px;
+            margin-bottom: 10px;
+            text-align: center,
+        }
+    }
+
+    .switch {
+        display: flex;
+        align-items: center;
+    }
+
+    .certificate {
+        display: flex;
+        justify-content: space-around;
+        width: 100%;
+
+        &__container {
+            flex-wrap: nowrap;
+            justify-content: space-between;
+            align-items: center;
+            flex-direction: row;
+        }
+
+        &__flex {
+            display: flex;
+        }
+
+        &__eight {
+            margin-right: 8px;
+        }
+
+        &__button {
+            width: 100%;
+            display: flex;
+            justify-content: end;
+
+            &__text {
+                text-transform: none;
+                margin-top: 8;
+            }
+        }
+    }
+}
+
+.root {
+    width: 100vw;
+}
+
+.float {
+    position: relative;
+    margin-left: 87%;
+}
+
+.paper2 {
+    position: absolute;
+    width: 80%;
+    max-height: 450px;
+    overflow-y: auto;
+    background-color: white;
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.3);
+    padding: 16px 32px 24px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: justify;
+}

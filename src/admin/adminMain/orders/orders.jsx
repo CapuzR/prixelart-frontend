@@ -372,7 +372,7 @@ export default function Orders(props) {
           (order.basicData?.firstname || order.basicData?.name) +
           " " +
           order.basicData?.lastname,
-        typeConsumer: consumerData?.consumerType || searchConsumerType(order.basicData),
+        typeConsumer: order?.consumerData.consumerType || searchConsumerType(order.basicData),
         shippingDate: "",
         // Certificado
         prixer: "",

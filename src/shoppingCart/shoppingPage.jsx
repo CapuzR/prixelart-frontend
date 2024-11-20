@@ -22,6 +22,7 @@ import validations from "./validations"
 import Switch from "@material-ui/core/Switch"
 import { Alert } from "@material-ui/lab"
 import useMediaQuery from "@material-ui/core/useMediaQuery"
+import { useGlobalContext } from "../context/globalContext"
 
 import {
   getPVP,
@@ -144,12 +145,13 @@ export default function ShoppingPage(props) {
   const [loading, setLoading] = useState(false)
   const steps = [`Tus datos`, `Orden de compra`]
   const [dollarValue, setDollarValue] = useState(1)
-  const [currency, setCurrency] = useState(false)
+  // const [currency, setCurrency] = useState(false)
   const [paymentVoucher, setPaymentVoucher] = useState()
   const [discountList, setDiscountList] = useState([])
   const [seller, setSeller] = useState()
   const [expanded, setExpanded] = useState(false)
   const [orgs, setOrgs] = useState([])
+  const { currency, toggleCurrency, zone, toggleZone } = useGlobalContext()
 
   const getDiscounts = async () => {
     const base_url = process.env.REACT_APP_BACKEND_URL + "/discount/read-allv2"
@@ -493,8 +495,7 @@ export default function ShoppingPage(props) {
   }, [])
 
   const changeCurrency = () => {
-    setCurrency(!currency)
-  }
+    toggleCurrency()  }
 
   const handleBuy = () => {
     document.getElementById("next")?.scrollIntoView({

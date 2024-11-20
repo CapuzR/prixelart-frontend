@@ -171,13 +171,14 @@ export default function ProductsCatalog(props) {
               justifyContent: "center",
               position: "relative",
               width: isDesktop ? "80%" : "96%",
-              height: isMobile ? 240 : 300,
+              height: isMobile ? 240 : "fit-content",
               marginTop: 20,
               marginLeft: isDesktop ? "10%" : "2%",
               borderRadius: isMobile ? 30 : 52,
               backgroundColor: "gainsboro",
               padding: isMobile ? 10 : 30,
               paddingTop: isMobile ? 0 : 10,
+              paddingBottom: isDesktop && 30,
             }}
             elevation={5}
           >

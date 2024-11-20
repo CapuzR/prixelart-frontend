@@ -1,31 +1,33 @@
-import { makeStyles } from "@material-ui/core/styles";
-import React, { useState, Suspense } from "react";
-import Grid from "@material-ui/core/Grid";
-import TextField from "@material-ui/core/TextField";
-import InputAdornment from "@material-ui/core/InputAdornment";
+import { makeStyles } from "@material-ui/core/styles"
+import React, { useState, Suspense } from "react"
+import Grid from "@material-ui/core/Grid"
+import TextField from "@material-ui/core/TextField"
+import InputAdornment from "@material-ui/core/InputAdornment"
 
-import LocalPhoneIcon from "@material-ui/icons/LocalPhone";
-import EmailIcon from "@material-ui/icons/Email";
-import HomeIcon from "@material-ui/icons/Home";
-import BusinessIcon from "@material-ui/icons/Business";
-import UtilVals from "../utils/validations";
-import Accordion from "@material-ui/core/Accordion";
-import Typography from "@material-ui/core/Typography";
-import AccordionSummary from "@material-ui/core/AccordionSummary";
-import AccordionDetails from "@material-ui/core/AccordionDetails";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Checkbox from "@material-ui/core/Checkbox";
-import FormControl from "@material-ui/core/FormControl";
-import InputLabel from "@material-ui/core/InputLabel";
-import MenuItem from "@material-ui/core/MenuItem";
-import Select from "@material-ui/core/Select";
-import validations from "./validations";
-import InfoIcon from "@material-ui/icons/Info";
-import Tooltip from "@material-ui/core/Tooltip";
-import { useEffect } from "react";
-import axios from "axios";
-import { Snackbar } from "@material-ui/core";
+import LocalPhoneIcon from "@material-ui/icons/LocalPhone"
+import EmailIcon from "@material-ui/icons/Email"
+import HomeIcon from "@material-ui/icons/Home"
+import BusinessIcon from "@material-ui/icons/Business"
+import UtilVals from "../utils/validations"
+import Accordion from "@material-ui/core/Accordion"
+import Typography from "@material-ui/core/Typography"
+import AccordionSummary from "@material-ui/core/AccordionSummary"
+import AccordionDetails from "@material-ui/core/AccordionDetails"
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore"
+import FormControlLabel from "@material-ui/core/FormControlLabel"
+import Checkbox from "@material-ui/core/Checkbox"
+import FormControl from "@material-ui/core/FormControl"
+import InputLabel from "@material-ui/core/InputLabel"
+import MenuItem from "@material-ui/core/MenuItem"
+import Select from "@material-ui/core/Select"
+import validations from "./validations"
+import InfoIcon from "@material-ui/icons/Info"
+import Tooltip from "@material-ui/core/Tooltip"
+import { useEffect } from "react"
+import axios from "axios"
+import { Snackbar } from "@material-ui/core"
+import { useGlobalContext } from "../context/globalContext"
+import ShippingData from "./shippingData.json"
 
 const useStyles = makeStyles((theme) => ({
   gridInput: {
@@ -54,20 +56,23 @@ const useStyles = makeStyles((theme) => ({
       boxShadow: "0 0 0 0 #d33f4900",
     },
   },
-}));
+}))
+
 function ConsumerForm(props) {
-  const classes = useStyles();
-  const [shippingDataCheck, setShippingDataCheck] = useState(true);
-  const [billingDataCheck, setBillingDataCheck] = useState(true);
-  const [billingShDataCheck, setBillingShDataCheck] = useState(false);
-  const [shippingList, setShippingList] = useState();
-  const [openTooltip, setOpenTooltip] = useState(false);
-  const [openTooltip2, setOpenTooltip2] = useState(false);
-  const [open, setOpen] = useState(false);
-  const [openTooltipPh, setOpenTooltipPh] = useState(false);
-  const [openTooltipPh2, setOpenTooltipPh2] = useState(false);
-  const [openTooltipPh3, setOpenTooltipPh3] = useState(false);
-  let today = new Date();
+  const classes = useStyles()
+  const { currency, toggleCurrency, zone, toggleZone } = useGlobalContext()
+
+  const [shippingDataCheck, setShippingDataCheck] = useState(true)
+  const [billingDataCheck, setBillingDataCheck] = useState(true)
+  const [billingShDataCheck, setBillingShDataCheck] = useState(false)
+  const [shippingList, setShippingList] = useState()
+  const [openTooltip, setOpenTooltip] = useState(false)
+  const [openTooltip2, setOpenTooltip2] = useState(false)
+  const [open, setOpen] = useState(false)
+  const [openTooltipPh, setOpenTooltipPh] = useState(false)
+  const [openTooltipPh2, setOpenTooltipPh2] = useState(false)
+  const [openTooltipPh3, setOpenTooltipPh3] = useState(false)
+  let today = new Date()
   const months = [
     "Enero",
     "Febrero",
@@ -81,7 +86,7 @@ function ConsumerForm(props) {
     "Octubre",
     "Noviembre",
     "Diciembre",
-  ];
+  ]
   const monthsOrder = [
     "01",
     "02",
@@ -95,7 +100,7 @@ function ConsumerForm(props) {
     "10",
     "11",
     "12",
-  ];
+  ]
   const days = [
     "domingo",
     "lunes",
@@ -104,32 +109,51 @@ function ConsumerForm(props) {
     "jueves",
     "viernes",
     "sábado",
-  ];
+  ]
+  let country = props.values?.country
 
   let ProdTimes = props.buyState?.map((item) => {
-    if (item.product && item.art && item.product.productionTime !== undefined) {
-      return item.product.productionTime;
+    if (item.product && item.art && zone && country) {
+      let selectedCountry = item.product.interProductionTime.find(
+        (obj) => obj[country] !== undefined
+      )?.[country].at(-1)
+      if (props.values?.country === "Estados Unidos") {
+        selectedCountry = item.product.interProductionTime.filter(
+          (c) => c === "EEUU"
+        )
+      } else if (props.values?.country === "Reino Unido") {
+        selectedCountry = item.product.interProductionTime.filter(
+          (c) => c === "UK"
+        )
+      }
+      return selectedCountry
+    } else if (
+      item.product &&
+      item.art &&
+      item.product.productionTime !== undefined
+    ) {
+      return item.product.productionTime.toString()
     }
-  });
-
+  })
+console.log(ProdTimes)
   let orderedProdT = ProdTimes.sort(function (a, b) {
     if (a.toLowerCase() > b.toLowerCase()) {
-      return 1;
+      return 1
     }
     if (a.toLowerCase() < b.toLowerCase()) {
-      return -1;
+      return -1
     }
-    return 0;
-  });
+    return 0
+  })
 
   let readyDate = new Date(
     today.setDate(today.getDate() + Number(orderedProdT[0]))
-  );
+  )
 
   if (readyDate.getDay() === 6) {
-    readyDate = new Date(today.setDate(today.getDate() + 2));
+    readyDate = new Date(today.setDate(today.getDate() + 2))
   } else if (readyDate.getDay() === 0) {
-    readyDate = new Date(today.setDate(today.getDate() + 1));
+    readyDate = new Date(today.setDate(today.getDate() + 1))
   }
 
   const stringReadyDate =
@@ -137,30 +161,32 @@ function ConsumerForm(props) {
     "-" +
     monthsOrder[readyDate.getMonth()] +
     "-" +
-    readyDate.getDate();
+    readyDate.getDate()
 
   const getShippingMethods = async () => {
     const base_url =
-      process.env.REACT_APP_BACKEND_URL + "/shipping-method/read-all-v2";
+      process.env.REACT_APP_BACKEND_URL + "/shipping-method/read-all-v2"
     axios
       .get(base_url)
       .then((response) => {
-        setShippingList(response.data);
+        if (zone === "INTER") {
+          setShippingList(response.data.filter((method) => method.inter))
+        } else setShippingList(response.data)
       })
       .catch((error) => {
-        console.log(error);
-      });
-  };
+        console.log(error)
+      })
+  }
 
   const getConsumer = async () => {
     if (localStorage.getItem("token")) {
-      const base_url = process.env.REACT_APP_BACKEND_URL + "/consumer/read";
-      const email = JSON.parse(localStorage.getItem("token")).email;
+      const base_url = process.env.REACT_APP_BACKEND_URL + "/consumer/read"
+      const email = JSON.parse(localStorage.getItem("token")).email
       axios
         .post(base_url, { email: email })
         .then((response) => {
           if (response.data.success) {
-            const consumer = response.data.consumer;
+            const consumer = response.data.consumer
             props.setValues({
               name: consumer.firstname,
               lastName: consumer.lastname,
@@ -170,14 +196,13 @@ function ConsumerForm(props) {
               address: consumer.address,
               shippingAddress: consumer?.shippingAddress,
               billingAddress: consumer?.billingShAddress,
-            });
+            })
           } else {
-            const base_url2 =
-              process.env.REACT_APP_BACKEND_URL + "/prixer/read";
-            const username = JSON.parse(localStorage.getItem("token")).username;
+            const base_url2 = process.env.REACT_APP_BACKEND_URL + "/prixer/read"
+            const username = JSON.parse(localStorage.getItem("token")).username
             axios.post(base_url2, { username: username }).then((response) => {
               if (response.data) {
-                const prixer = response.data;
+                const prixer = response.data
                 props.setValues({
                   name: prixer.firstName,
                   lastName: prixer.lastName,
@@ -187,26 +212,26 @@ function ConsumerForm(props) {
                   address: prixer?.address,
                   // shippingAddress: consumer?.shippingAddress,
                   // billingAddress: consumer?.billingShAddress,
-                });
+                })
               }
-            });
+            })
           }
         })
         .catch((error) => {
-          console.log(error);
-        });
+          console.log(error)
+        })
     }
-  };
+  }
 
   useEffect(() => {
-    getShippingMethods();
-    getConsumer();
+    getShippingMethods()
+    getConsumer()
     // }
-  }, []);
+  }, [])
 
   const handleAccordionExpansion = (panel) => (event, isExpanded) => {
-    props.setExpanded(isExpanded ? panel : false);
-  };
+    props.setExpanded(isExpanded ? panel : false)
+  }
 
   const handleShippingDataCheck = () => {
     if (shippingDataCheck) {
@@ -216,7 +241,7 @@ function ConsumerForm(props) {
         shippingLastName: "",
         shippingPhone: "",
         shippingAddress: "",
-      });
+      })
     } else {
       props.setValues({
         ...props.values,
@@ -224,11 +249,11 @@ function ConsumerForm(props) {
         shippingLastName: props.values.lastName,
         shippingPhone: props.values.phone,
         shippingAddress: props.values.address,
-      });
+      })
     }
 
-    setShippingDataCheck(!shippingDataCheck);
-  };
+    setShippingDataCheck(!shippingDataCheck)
+  }
 
   const handleBillingDataCheck = () => {
     if (shippingDataCheck) {
@@ -238,7 +263,7 @@ function ConsumerForm(props) {
         billingLastName: "",
         billingPhone: "",
         billingAddress: "",
-      });
+      })
     } else {
       props.setValues({
         ...props.values,
@@ -246,11 +271,11 @@ function ConsumerForm(props) {
         billingLastName: props.values.shippingLastName,
         billingPhone: props.values.shippingPhone,
         billingAddress: props.values.shippingAddress,
-      });
+      })
     }
 
-    setShippingDataCheck(!shippingDataCheck);
-  };
+    setShippingDataCheck(!shippingDataCheck)
+  }
 
   const handleBillingShDataCheck = () => {
     if (billingShDataCheck) {
@@ -260,7 +285,7 @@ function ConsumerForm(props) {
         billingLastName: "",
         billingPhone: "",
         billingAddress: "",
-      });
+      })
     } else {
       props.setValues({
         ...props.values,
@@ -268,32 +293,32 @@ function ConsumerForm(props) {
         shippingLastName: props.values.shippingLastName,
         shippingPhone: props.values.shippingPhone,
         shippingAddress: props.values.shippingAddress,
-      });
+      })
     }
 
-    setShippingDataCheck(!shippingDataCheck);
-  };
+    setShippingDataCheck(!shippingDataCheck)
+  }
 
   const selectShDate = (value) => {
     // let date = Date(value);
     if (value < stringReadyDate) {
-      props.setOpen(true);
+      props.setOpen(true)
       props.setMessage(
         "Si lo requieres antes, coméntalo en el campo de observaciones y un asesor se comunicará contigo."
-      );
+      )
     }
     // } else
     props.setValues({
       ...props.values,
       shippingDate: value,
-    });
-  };
+    })
+  }
 
   if (props?.values?.shippingDate === undefined) {
     props.setValues({
       ...props.values,
       shippingDate: stringReadyDate,
-    });
+    })
   }
 
   useEffect(() => {
@@ -306,9 +331,9 @@ function ConsumerForm(props) {
       props.values.email !== undefined &&
       props.values.phone !== undefined
     ) {
-      props.setWarning(false);
+      props.setWarning(false)
     }
-  }, [props.values]);
+  }, [props.values])
 
   return (
     <>
@@ -582,13 +607,19 @@ function ConsumerForm(props) {
           <AccordionDetails>
             <form autoComplete="off">
               <Grid container>
-                <Grid item lg={12} md={12} sm={12} xs={12}>
+                <Grid
+                  item
+                  lg={12}
+                  md={12}
+                  sm={12}
+                  xs={12}
+                >
                   <FormControlLabel
                     control={
                       <Checkbox
                         checked={shippingDataCheck}
                         onChange={() => {
-                          handleShippingDataCheck();
+                          handleShippingDataCheck()
                         }}
                       />
                     }
@@ -691,7 +722,7 @@ function ConsumerForm(props) {
                       props.setValues({
                         ...props.values,
                         shippingPhone: e.target.value,
-                      });
+                      })
                     }}
                     required
                     margin="normal"
@@ -732,6 +763,127 @@ function ConsumerForm(props) {
                     }}
                   />
                 </Grid>
+                {zone === "INTER" && (
+                  <>
+                    <Grid
+                      item
+                      lg={4}
+                      md={4}
+                      sm={4}
+                      xs={12}
+                      // className={classes.gridInput}
+                    >
+                      <FormControl
+                        margin="normal"
+                        style={{ minWidth: "100%", alignSelf: "center" }}
+                        variant="outlined"
+                      >
+                        <InputLabel>País</InputLabel>
+                        <Select
+                          label="País"
+                          className={classes.textField}
+                          value={props.values?.country || ""}
+                          onChange={(e) => {
+                            props.setValues({
+                              ...props.values,
+                              country: e.target.value,
+                            })
+                          }}
+                        >
+                          <MenuItem value="">
+                            <em></em>
+                          </MenuItem>
+                          {ShippingData &&
+                            ShippingData.map((n) => (
+                              <MenuItem value={n.country}>{n.country}</MenuItem>
+                            ))}
+                        </Select>
+                      </FormControl>
+                    </Grid>
+                    <Grid
+                      item
+                      lg={4}
+                      md={4}
+                      sm={4}
+                      xs={12}
+                      className={classes.gridInput}
+                    >
+                      {/* <TextField
+                        variant="outlined"
+                        id="city"
+                        fullWidth
+                        label="Ciudad"
+                        className={classes.textField}
+                        value={props.values?.city ? props.values.city : ""}
+                        required
+                        onChange={(e) =>
+                          props.setValues({
+                            ...props.values,
+                            city: e.target.value,
+                          })
+                        }
+                        margin="normal"
+                      /> */}
+                      <FormControl
+                        margin="normal"
+                        style={{ minWidth: "100%", alignSelf: "center" }}
+                        variant="outlined"
+                      >
+                        <InputLabel>Ciudad</InputLabel>
+                        <Select
+                          label="Ciudad"
+                          className={classes.textField}
+                          value={props.values?.city || ""}
+                          onChange={(e) => {
+                            props.setValues({
+                              ...props.values,
+                              city: e.target.value,
+                            })
+                          }}
+                        >
+                          <MenuItem value="">
+                            <em></em>
+                          </MenuItem>
+                          {ShippingData && props.values?.country
+                            ? ShippingData.find(
+                                (item) => item.country === props.values?.country
+                              ).cities.map((n) => (
+                                <MenuItem value={n.name}>{n.name}</MenuItem>
+                              ))
+                            : ShippingData.map((n) => (
+                                <MenuItem value={n.country}>
+                                  {n.country}
+                                </MenuItem>
+                              ))}
+                        </Select>
+                      </FormControl>
+                    </Grid>
+                    <Grid
+                      item
+                      lg={4}
+                      md={4}
+                      sm={4}
+                      xs={12}
+                      className={classes.gridInput}
+                    >
+                      <TextField
+                        variant="outlined"
+                        id="country"
+                        fullWidth
+                        label="Código postal"
+                        className={classes.textField}
+                        value={props.values?.zip ? props.values.zip : ""}
+                        onChange={(e) =>
+                          props.setValues({
+                            ...props.values,
+                            zip: e.target.value,
+                          })
+                        }
+                        margin="normal"
+                      />
+                    </Grid>
+                  </>
+                )}
                 <Grid
                   item
                   lg={12}
@@ -782,7 +934,10 @@ function ConsumerForm(props) {
                   xs={12}
                   className={classes.gridInput}
                 >
-                  <FormControl style={{ minWidth: "100%" }} variant="outlined">
+                  <FormControl
+                    style={{ minWidth: "100%" }}
+                    variant="outlined"
+                  >
                     <InputLabel>Método de entrega</InputLabel>
                     <Select
                       label="Método de entrega"
@@ -792,7 +947,7 @@ function ConsumerForm(props) {
                         props.setValues({
                           ...props.values,
                           shippingMethod: e.target.value,
-                        });
+                        })
                       }}
                     >
                       <MenuItem value="">
@@ -813,7 +968,10 @@ function ConsumerForm(props) {
                   xs={12}
                   className={classes.gridInput}
                 >
-                  <FormControl style={{ minWidth: "100%" }} variant="outlined">
+                  <FormControl
+                    style={{ minWidth: "100%" }}
+                    variant="outlined"
+                  >
                     <TextField
                       style={{
                         width: "100%",
@@ -829,7 +987,7 @@ function ConsumerForm(props) {
                         shrink: true,
                       }}
                       onChange={(e) => {
-                        selectShDate(e.target.value);
+                        selectShDate(e.target.value)
                       }}
                     />
                   </FormControl>
@@ -878,10 +1036,10 @@ function ConsumerForm(props) {
                         checked={billingDataCheck}
                         onChange={(e) => {
                           if (billingShDataCheck) {
-                            setBillingDataCheck(!billingDataCheck);
-                            setBillingShDataCheck(!billingShDataCheck);
+                            setBillingDataCheck(!billingDataCheck)
+                            setBillingShDataCheck(!billingShDataCheck)
                           } else {
-                            setBillingDataCheck(!billingDataCheck);
+                            setBillingDataCheck(!billingDataCheck)
                           }
                         }}
                       />
@@ -894,10 +1052,10 @@ function ConsumerForm(props) {
                         checked={billingShDataCheck}
                         onChange={(e) => {
                           if (billingDataCheck) {
-                            setBillingShDataCheck(!billingShDataCheck);
-                            setBillingDataCheck(!billingDataCheck);
+                            setBillingShDataCheck(!billingShDataCheck)
+                            setBillingDataCheck(!billingDataCheck)
                           } else {
-                            setBillingShDataCheck(!billingShDataCheck);
+                            setBillingShDataCheck(!billingShDataCheck)
                           }
                         }}
                       />
@@ -1191,7 +1349,7 @@ function ConsumerForm(props) {
         </Accordion>
       </div>
     </>
-  );
+  )
 }
 
-export default ConsumerForm;
+export default ConsumerForm

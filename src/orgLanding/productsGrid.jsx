@@ -13,11 +13,17 @@ import Checkbox from "@material-ui/core/Checkbox"
 import Button from "@material-ui/core/Button"
 import { getProducts } from "./xoxo"
 import Slider from "react-slick"
+import Switch from "@material-ui/core/Switch"
+import { useGlobalContext } from "../context/globalContext"
+
 import "slick-carousel/slick/slick.css"
 import "slick-carousel/slick/slick-theme.css"
 import useMediaQuery from "@material-ui/core/useMediaQuery"
 import { useTheme } from "@material-ui/core/styles"
 import ReactGA from "react-ga"
+import world from "../images/world.svg"
+import worldBlack from "../images/world-black.svg"
+import vzla from "../images/vzla.svg"
 
 ReactGA.initialize("G-0RWP9B33D8")
 
@@ -30,6 +36,69 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: theme.typography.fontWeightRegular,
   },
   typography: { fontFamily: "Lastik" },
+  base: {
+    width: "70px",
+    height: "37px",
+    padding: "0px",
+    margin: "16px",
+  },
+  switchBase: {
+    color: "silver",
+    padding: "1px",
+    "&$checked": {
+      "& + $track": {
+        backgroundColor: "silver",
+      },
+    },
+  },
+  thumbZ: {
+    color: "#d33f49",
+    width: "30px",
+    height: "30px",
+    margin: "2px",
+    backgroundImage: `url(${world})`,
+    backgroundSize: "20px 20px",
+    backgroundRepeat: "no-repeat",
+    backgroundPosition: "center",
+  },
+  thumbTrueZ: {
+    color: "#d33f49",
+    width: "30px",
+    height: "30px",
+    margin: "2px",
+    backgroundImage: `url(${vzla})`,
+    backgroundSize: "20px 20px",
+    backgroundRepeat: "no-repeat",
+    backgroundPosition: "center",
+  },
+  trackZ: {
+    borderRadius: "20px",
+    backgroundColor: "silver !important",
+    opacity: "1 !important",
+    position: "relative",
+    "&:after, &:before": {
+      position: "absolute",
+      top: "8px",
+      width: "20px",
+      height: "20px",
+      content: "''",
+      backgroundSize: "contain",
+      backgroundRepeat: "no-repeat",
+    },
+    "&:after": {
+      left: "8px",
+      backgroundImage: `url(${vzla})`,
+    },
+    "&:before": {
+      right: "7px",
+      backgroundImage: `url(${worldBlack})`,
+    },
+  },
+  checked: {
+    color: "#d33f49 !important",
+    transform: "translateX(35px) !important",
+    padding: "1px",
+  },
 }))
 
 export default function CBProducts() {
@@ -43,6 +112,7 @@ export default function CBProducts() {
   const history = useHistory()
   const [checkedProducts, setCheckedProducts] = useState([])
   const [checkedDesigns, setCheckedDesigns] = useState([])
+  const { currency, toggleCurrency, zone, toggleZone } = useGlobalContext()
 
   const handleChange = (prod, filterType) => {
     let copyP = [...checkedProducts]
@@ -91,7 +161,7 @@ export default function CBProducts() {
     setAll(getProducts())
   }, [])
 
-  const products = ["Franelas", "Botella Rock", "Tazas", "Totes"]
+  const products = ["Franelas", "Tazas"]
 
   const designs = [
     "Cartoon",
@@ -182,11 +252,43 @@ export default function CBProducts() {
       id="prods"
       container
     >
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+          marginLeft: 10,
+        }}
+      ></div>
       {!isTab && (
         <Grid
           item
           md={2}
         >
+          <div style={{ display: "flex" }}>
+            <Switch
+              classes={{
+                root: classes.base,
+                switchBase: classes.switchBase,
+                thumb: zone === "VZLA" ? classes.thumbTrueZ : classes.thumbZ,
+                track: classes.trackZ,
+                checked: classes.checked,
+              }}
+              color="primary"
+              value={zone === "VZLA" ? true : false}
+              onChange={(e) => {
+                toggleZone()
+              }}
+              style={{ marginRight: "-5px" }}
+            />
+            <Typography
+              style={{ alignContent: "center" }}
+              className={classes.heading}
+            >
+              {zone === "VZLA" ? "Nacionales" : "Internacionales"}
+            </Typography>
+          </div>
+
           <Accordion style={{ marginBottom: 20 }}>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
               <Typography className={classes.heading}>Productos</Typography>
@@ -299,9 +401,9 @@ export default function CBProducts() {
                           backgroundRepeat: "no-repeat",
                           backgroundPosition: "center",
                           borderRadius: 10,
-                          opacity: tile?.product.available === false ? 0.5 : 1
+                          opacity: tile?.product.available === false ? 0.5 : 1,
                         }}
-                      ></div>
+                      />
                     </div>
                   ))}
                 </Slider>
@@ -346,7 +448,12 @@ export default function CBProducts() {
                     }}
                   >
                     {tile.product.available === true
-                      ? `$${tile?.product.finalPrice?.toLocaleString("de-DE", {
+                      ? zone === "INTER" ?
+                      `$${tile?.product.interPrice?.toLocaleString("de-DE", {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}` :
+                       `$${tile?.product.finalPrice?.toLocaleString("de-DE", {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
                         })}`

@@ -483,9 +483,11 @@ export default function OrderDetails(props) {
       props.modalContent?.comissions.length > 0
     ) {
       props.modalContent?.comissions.map(async (com, i) => {
-        const ownerPromises = props.modalContent.comissions.map(com => findOwner(com.destinatary));
-        const resolvedOwners = await Promise.all(ownerPromises);
-        setOwners(resolvedOwners.filter(owner => owner !== null));
+        const ownerPromises = props.modalContent.comissions.map((com) =>
+          findOwner(com.destinatary)
+        )
+        const resolvedOwners = await Promise.all(ownerPromises)
+        setOwners(resolvedOwners.filter((owner) => owner !== null))
       })
     }
   }, [])
@@ -662,7 +664,15 @@ export default function OrderDetails(props) {
                               )
                             )}
                             Precio unitario: $
-                            {item.product?.finalPrice
+                            {item.product?.inter
+                              ? item.product?.interPrice.toLocaleString(
+                                  "de-DE",
+                                  {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2,
+                                  }
+                                )
+                              : item.product?.finalPrice
                               ? item.product?.finalPrice?.toLocaleString(
                                   "de-DE",
                                   {
@@ -884,6 +894,23 @@ export default function OrderDetails(props) {
                                   .name}
                             </div>
                           )}
+                          {props.modalContent.shippingData?.country && (
+                            <div>
+                              {"País: " +
+                                props.modalContent?.shippingData?.country}
+                            </div>
+                          )}
+                          {props.modalContent.shippingData?.city && (
+                            <div>
+                              {"País: " +
+                                props.modalContent?.shippingData?.city}
+                            </div>
+                          )}
+                          {props.modalContent.shippingData?.zip && (
+                            <div>
+                              {"País: " + props.modalContent?.shippingData?.zip}
+                            </div>
+                          )}
                           {props.modalContent.shippingData?.address ? (
                             <div>
                               {"Dirección de envío: " +
@@ -1002,8 +1029,9 @@ export default function OrderDetails(props) {
                           {props.modalContent.shippingData?.shippingMethod &&
                             "Envío: $" +
                               Number(
-                                props.modalContent?.shippingData?.shippingMethod
-                                  ?.price
+                                props.modalContent?.shippingCost ||
+                                  props.modalContent?.shippingData
+                                    ?.shippingMethod?.price
                               ).toLocaleString("de-DE", {
                                 minimumFractionDigits: 2,
                                 maximumFractionDigits: 2,
@@ -1187,7 +1215,7 @@ export default function OrderDetails(props) {
                     <div
                       style={{
                         width: "100%",
-                        backgroundColor: i % 2 === 0 ?  "#eee" : "white",
+                        backgroundColor: i % 2 === 0 ? "#eee" : "white",
                         padding: "15px 30px",
                         borderRadius: 10,
                       }}

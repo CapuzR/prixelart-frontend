@@ -89,7 +89,7 @@ export default function CreateVariant(props) {
   const [videoPreview, setVideoPreview] = useState(undefined)
   const [loadeImage, setLoadImage] = useState({
     loader: [],
-  }) //props.variant && props.variant.variantImage ||
+  })
   const [errorMessage, setErrorMessage] = useState()
   const [open, setOpen] = useState(false)
   const [loadOpen, setLoadOpen] = useState(false)
@@ -103,7 +103,7 @@ export default function CreateVariant(props) {
         : setVideoUrl(url.url)
     })
   }
-
+console.log(image)
   const handleClickOpen = () => {
     setOpen(true)
   }
@@ -224,6 +224,7 @@ export default function CreateVariant(props) {
             formData.append("variantImage", img)
           }
         })
+        console.log(varImages)
         formData.append("images", varImages)
         if (videoUrl !== undefined) {
           formData.append("video", videoUrl)
@@ -251,7 +252,7 @@ export default function CreateVariant(props) {
           formData.append("variantPrixerPriceEq", variants.prixerPrice.equation)
         }
         formData.append("adminToken", localStorage.getItem("adminTokenV"))
-
+        formData.append("inter", inter)
         const base_url =
           process.env.REACT_APP_BACKEND_URL +
           "/product/updateVariants/" +
@@ -505,7 +506,7 @@ export default function CreateVariant(props) {
                   />
                   Habilitado / Visible
                 </div>
-                <div style={{marginLeft: 20}}>
+                <div style={{ marginLeft: 20 }}>
                   <Checkbox
                     checked={inter}
                     color="primary"

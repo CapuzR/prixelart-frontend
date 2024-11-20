@@ -196,7 +196,7 @@ const useStyles = makeStyles((theme) => ({
     color: "#d33f49 !important",
     transform: "translateX(35px) !important",
     padding: "1px",
-  }
+  },
 }))
 
 export default function ShoppingCartCB() {
@@ -219,12 +219,12 @@ export default function ShoppingCartCB() {
   const [observations, setObservations] = useState()
   const [paymentVoucher, setPaymentVoucher] = useState()
   const [dollarValue, setDollarValue] = useState(1)
-  const [currency, setCurrency] = useState(false);
+  const [currency, setCurrency] = useState(false)
   const [seller, setSeller] = useState()
   const [subtotal, setSubtotal] = useState(0)
   const [total, setTotal] = useState(0)
   const [warning, setWarning] = useState(false)
-  const {  toggleCurrency, zone, toggleZone } = useGlobalContext()
+  const { toggleCurrency, zone, toggleZone } = useGlobalContext()
 
   let shippingCost = Number(values?.shippingMethod?.price)
 
@@ -345,9 +345,7 @@ export default function ShoppingCartCB() {
       (item) => item.country === values?.country
     )
 
-    const isTshirt = buyState.filter(
-      (item) => item.product.name === "Franela"
-    )
+    const isTshirt = buyState.filter((item) => item.product.name === "Franela")
     const isCup = buyState.filter(
       (item) => item.product.name === "Taza de Peltre"
     )
@@ -386,9 +384,7 @@ export default function ShoppingCartCB() {
       (item) => item.country === values?.country
     )
 
-    const isTshirt = buyState.filter(
-      (item) => item.product.name === "Franela"
-    )
+    const isTshirt = buyState.filter((item) => item.product.name === "Franela")
     const isCup = buyState.filter(
       (item) => item.product.name === "Taza de Peltre"
     )
@@ -653,7 +649,7 @@ export default function ShoppingCartCB() {
   const handleCart = () => {
     history.push({ pathname: "/chiguirebipolar/carrito" })
   }
-
+  console.log(zone)
   return (
     <>
       <Backdrop
@@ -668,7 +664,7 @@ export default function ShoppingCartCB() {
         elevation={0}
         style={{
           backgroundColor: "white",
-          minHeight: 70
+          minHeight: 70,
         }}
       >
         <Toolbar
@@ -755,288 +751,347 @@ export default function ShoppingCartCB() {
         </Toolbar>
       </AppBar>
 
-      <Grid
-        container
-        style={{
-          marginTop: isTab ? 80 : 115,
-          marginLeft: isTab ? 10 : 40,
-          paddingRight: isTab ? 10 : 40,
-        }}
-      >
+      {buyState && buyState.length > 0 ? (
         <Grid
-          item
-          sm={11}
+          container
           style={{
-            marginRight: isTab && 30,
-            display: "flex",
-            justifyContent: "space-between",
+            marginTop: isTab ? 80 : 115,
+            marginLeft: isTab ? 10 : 40,
+            paddingRight: isTab ? 10 : 40,
           }}
         >
-          <Typography
-            className={classes.typography}
+          <Grid
+            item
+            sm={11}
             style={{
-              fontSize: isTab ? 22 : 30,
-              width: "100%",
-              marginBottom: 30,
+              marginRight: isTab && 30,
+              display: "flex",
+              justifyContent: "space-between",
             }}
           >
-            Carrito de compras
-          </Typography>
-          <div style={{ display: "flex" }}>
-            <Switch
-              classes={{
-                root: classes.base,
-                switchBase: classes.switchBase,
-                thumb: zone === "VZLA" ? classes.thumbTrueZ : classes.thumbZ,
-                track: classes.trackZ,
-                checked: classes.checked,
-              }}
-              color="primary"
-              value={zone === "VZLA" ? true : false}
-              onChange={(e) => {
-                toggleZone()
-              }}
-              style={{ marginRight: "-5px" }}
-            />
             <Typography
-              style={{ alignContent: "center" }}
-              className={classes.heading}
+              className={classes.typography}
+              style={{
+                fontSize: isTab ? 22 : 30,
+                width: "100%",
+                marginBottom: 30,
+              }}
             >
-              {zone === "VZLA" ? "Venezuela" : "Internacional"}
+              Carrito de compras
             </Typography>
-          </div>
-        </Grid>
-        <Grid
-          item
-          sm={12}
-          md={7}
-          style={{ marginRight: isTab && 10, width: "100%" }}
-        >
-          {buyState &&
-            buyState.length > 0 &&
-            buyState.map((item, index) => (
-              <Grid
-                container
-                style={{
-                  boxShadow: "0px 1px 8px rgba(0, 0, 0, 0.2)",
-                  borderRadius: 30,
-                  backgroundColor: "#FAFAFA",
-                  padding: 10,
-                  marginBottom: 20,
-                }}
-              >
-                <Grid
-                  item
-                  xs={11}
-                  sm={6}
-                  style={{ display: "flex" }}
+            {!isTab && (
+              <div style={{ display: "flex" }}>
+                <Switch
+                  classes={{
+                    root: classes.base,
+                    switchBase: classes.switchBase,
+                    thumb:
+                      zone === "VZLA" ? classes.thumbTrueZ : classes.thumbZ,
+                    track: classes.trackZ,
+                    checked: classes.checked,
+                  }}
+                  color="primary"
+                  value={zone === "VZLA" ? true : false}
+                  onChange={(e) => {
+                    toggleZone()
+                  }}
+                  style={{ marginRight: "-5px" }}
+                />
+                <Typography
+                  style={{ alignContent: "center" }}
+                  className={classes.heading}
                 >
-                  <img
-                    src={item?.art?.images[0]?.img}
-                    alt="Item de Chiguire Bipolar"
-                    style={{
-                      width: isMobile ? 88 : 181,
-                      height: isMobile ? 76 : 180,
-                      borderRadius: 15,
-                      marginRight: 10,
-                    }}
-                  />
-                  <div
-                    style={{
-                      width: isMobile ? "100% " : isTab ? 240 : 181,
-                      display: "flex",
-                      flexDirection: "column",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <Typography
-                      className={classes.typography}
-                      style={{ fontSize: isMobile ? 16 : 20, fontWeight: 600 }}
-                    >
-                      {item?.product?.name} {item.art.title}
-                    </Typography>
-                    <Typography
-                      className={classes.typography}
-                      style={{ fontSize: isMobile ? 12 : 14 }}
-                    >
-                      {item?.product?.selection}
-                    </Typography>
-                    {isMobile && (
-                      <>
-                        <Typography
-                          className={classes.typography}
-                          style={{
-                            fontSize: isMobile ? 16 : 18,
-                            fontWeight: 600,
-                          }}
-                        >
-                          $
-                          {item?.product?.finalPrice?.toLocaleString("de-DE", {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                          })}
-                        </Typography>
-                        <div style={{ display: "flex", alignItems: "center" }}>
-                          <IconButton
-                            style={{
-                              width: 30,
-                              height: 32,
-                              textAlign: "center",
-                              marginRight: 10,
-                            }}
-                            onClick={() => changeQuantity("+1", index)}
-                          >
-                            +
-                          </IconButton>
-                          <TextField
-                            disabled
-                            variant="outlined"
-                            value={item.quantity}
-                            className={classes.inputRoot}
-                            InputProps={{
-                              classes: {
-                                input: classes.inputRoot,
-                              },
-                            }}
-                          />
-                          <IconButton
-                            style={{
-                              width: isMobile ? 18 : 30,
-                              height: isMobile ? 19 : 32,
-                              textAlign: "center",
-                              marginRight: !isTab && 10,
-                            }}
-                            onClick={() => changeQuantity("-1", index)}
-                          >
-                            -
-                          </IconButton>
-                        </div>
-                      </>
-                    )}
-                  </div>
-                </Grid>
-                {!isMobile && (
+                  {zone === "VZLA" ? "Venezuela" : "Internacional"}
+                </Typography>
+              </div>
+            )}
+          </Grid>
+          <Grid
+            item
+            sm={12}
+            md={7}
+            style={{ marginRight: isTab && 10, width: "100%" }}
+          >
+            {buyState &&
+              buyState.length > 0 &&
+              buyState.map((item, index) => (
+                <Grid
+                  container
+                  style={{
+                    boxShadow: "0px 1px 8px rgba(0, 0, 0, 0.2)",
+                    borderRadius: 30,
+                    backgroundColor: "#FAFAFA",
+                    padding: 10,
+                    marginBottom: 20,
+                  }}
+                >
                   <Grid
                     item
-                    xs={5}
-                    style={{
-                      display: "flex",
-                      alignContent: "center",
-                      justifyContent: "space-evenly",
-                    }}
+                    xs={11}
+                    sm={6}
+                    style={{ display: "flex" }}
                   >
-                    <div style={{ display: "flex", alignItems: "center" }}>
-                      <IconButton
-                        style={{
-                          width: 30,
-                          height: 32,
-                          textAlign: "center",
-                          marginRight: 10,
-                        }}
-                        onClick={() => changeQuantity("+1", index)}
-                      >
-                        +
-                      </IconButton>
-                      <TextField
-                        disabled
-                        variant="outlined"
-                        value={item.quantity}
-                        className={classes.inputRoot}
-                        InputProps={{
-                          classes: {
-                            input: classes.inputRoot,
-                          },
-                        }}
-                      />
-                      <IconButton
-                        style={{
-                          width: 30,
-                          height: 32,
-                          textAlign: "center",
-                          marginRight: 10,
-                        }}
-                        onClick={() => changeQuantity("-1", index)}
-                      >
-                        -
-                      </IconButton>
-                    </div>
-                    <div style={{ display: "flex", alignItems: "center" }}>
+                    <img
+                      src={item?.art?.images[0]?.img}
+                      alt="Item de Chiguire Bipolar"
+                      style={{
+                        width: isMobile ? 88 : 181,
+                        height: isMobile ? 76 : 180,
+                        borderRadius: 15,
+                        marginRight: 10,
+                      }}
+                    />
+                    <div
+                      style={{
+                        width: isMobile ? "100% " : isTab ? 240 : 181,
+                        display: "flex",
+                        flexDirection: "column",
+                        justifyContent: "center",
+                      }}
+                    >
                       <Typography
                         className={classes.typography}
-                        style={{ fontSize: 18, fontWeight: 600 }}
+                        style={{
+                          fontSize: isMobile ? 16 : 20,
+                          fontWeight: 600,
+                        }}
                       >
-                        $
-                        {zone === "INTER" ?
-                        item?.product?.interPrice?.toLocaleString("de-DE", {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                        })
-                        : item?.product?.finalPrice?.toLocaleString("de-DE", {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                        })}
+                        {item?.product?.name} {item.art.title}
                       </Typography>
+                      <Typography
+                        className={classes.typography}
+                        style={{ fontSize: isMobile ? 12 : 14 }}
+                      >
+                        {item?.product?.selection}
+                      </Typography>
+                      {isMobile && (
+                        <>
+                          <Typography
+                            className={classes.typography}
+                            style={{
+                              fontSize: isMobile ? 16 : 18,
+                              fontWeight: 600,
+                            }}
+                          >
+                            $
+                            {zone === "INTER"
+                              ? item.product?.interPrice?.toLocaleString(
+                                  "de-DE",
+                                  {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2,
+                                  }
+                                )
+                              : item?.product?.finalPrice?.toLocaleString(
+                                  "de-DE",
+                                  {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2,
+                                  }
+                                )}
+                          </Typography>
+                          <div
+                            style={{ display: "flex", alignItems: "center" }}
+                          >
+                            <IconButton
+                              style={{
+                                width: 30,
+                                height: 32,
+                                textAlign: "center",
+                                marginRight: 10,
+                              }}
+                              onClick={() => changeQuantity("+1", index)}
+                            >
+                              +
+                            </IconButton>
+                            <TextField
+                              disabled
+                              variant="outlined"
+                              value={item.quantity}
+                              className={classes.inputRoot}
+                              InputProps={{
+                                classes: {
+                                  input: classes.inputRoot,
+                                },
+                              }}
+                            />
+                            <IconButton
+                              style={{
+                                width: isMobile ? 18 : 30,
+                                height: isMobile ? 19 : 32,
+                                textAlign: "center",
+                                marginRight: !isTab && 10,
+                              }}
+                              onClick={() => changeQuantity("-1", index)}
+                            >
+                              -
+                            </IconButton>
+                          </div>
+                        </>
+                      )}
                     </div>
                   </Grid>
-                )}
-                <Grid
-                  item
-                  xs={1}
-                  style={{ display: "flex", alignItems: "center" }}
-                >
-                  <IconButton
-                    style={{
-                      width: isMobile ? 18 : 30,
-                      height: isMobile ? 19 : 32,
-                      textAlign: "center",
-                      marginRight: 10,
-                    }}
-                    onClick={() => deleteItemInBuyState(index)}
+                  {!isMobile && (
+                    <Grid
+                      item
+                      xs={5}
+                      style={{
+                        display: "flex",
+                        alignContent: "center",
+                        justifyContent: "space-evenly",
+                      }}
+                    >
+                      <div style={{ display: "flex", alignItems: "center" }}>
+                        <IconButton
+                          style={{
+                            width: 30,
+                            height: 32,
+                            textAlign: "center",
+                            marginRight: 10,
+                          }}
+                          onClick={() => changeQuantity("+1", index)}
+                        >
+                          +
+                        </IconButton>
+                        <TextField
+                          disabled
+                          variant="outlined"
+                          value={item.quantity}
+                          className={classes.inputRoot}
+                          InputProps={{
+                            classes: {
+                              input: classes.inputRoot,
+                            },
+                          }}
+                        />
+                        <IconButton
+                          style={{
+                            width: 30,
+                            height: 32,
+                            textAlign: "center",
+                            marginRight: 10,
+                          }}
+                          onClick={() => changeQuantity("-1", index)}
+                        >
+                          -
+                        </IconButton>
+                      </div>
+                      <div style={{ display: "flex", alignItems: "center" }}>
+                        <Typography
+                          className={classes.typography}
+                          style={{ fontSize: 18, fontWeight: 600 }}
+                        >
+                          $
+                          {zone === "INTER"
+                            ? item?.product?.interPrice?.toLocaleString(
+                                "de-DE",
+                                {
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 2,
+                                }
+                              )
+                            : item?.product?.finalPrice?.toLocaleString(
+                                "de-DE",
+                                {
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 2,
+                                }
+                              )}
+                        </Typography>
+                      </div>
+                    </Grid>
+                  )}
+                  <Grid
+                    item
+                    xs={1}
+                    style={{ display: "flex", alignItems: "center" }}
                   >
-                    <DeleteIcon />
-                  </IconButton>
+                    <IconButton
+                      style={{
+                        width: isMobile ? 18 : 30,
+                        height: isMobile ? 19 : 32,
+                        textAlign: "center",
+                        marginRight: 10,
+                      }}
+                      onClick={() => deleteItemInBuyState(index)}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </Grid>
                 </Grid>
-              </Grid>
-            ))}
-        </Grid>
+              ))}
+          </Grid>
 
-        <Grid
-          item
-          sm={12}
-          md={5}
-          style={{ padding: !isTab && 20, marginRight: isTab && 10 }}
-        >
-          <Paper
-            elevation={4}
-            style={{
-              width: "100%",
-              padding: 20,
-              borderRadius: 30,
-            }}
+          <Grid
+            item
+            sm={12}
+            md={5}
+            style={{ padding: !isTab && 20, marginRight: isTab && 10 }}
           >
-            <Stepper activeStep={activeStep}>
-              {["Tus datos", "Orden de compra"].map((label, index) => {
-                const stepProps = {}
-                const labelProps = {
-                  StepIconComponent: CustomStepIcon,
-                }
+            <Paper
+              elevation={4}
+              style={{
+                width: "100%",
+                padding: 20,
+                borderRadius: 30,
+              }}
+            >
+              <Stepper activeStep={activeStep}>
+                {["Tus datos", "Orden de compra"].map((label, index) => {
+                  const stepProps = {}
+                  const labelProps = {
+                    StepIconComponent: CustomStepIcon,
+                  }
 
-                return (
-                  <Step
-                    key={label}
-                    {...stepProps}
-                  >
-                    <StepLabel {...labelProps}>{label}</StepLabel>
-                  </Step>
-                )
-              })}
-            </Stepper>
-            <div className={classes.instructions}>
-              {getStepContent(activeStep)}
-            </div>
-          </Paper>
+                  return (
+                    <Step
+                      key={label}
+                      {...stepProps}
+                    >
+                      <StepLabel {...labelProps}>{label}</StepLabel>
+                    </Step>
+                  )
+                })}
+              </Stepper>
+              <div className={classes.instructions}>
+                {getStepContent(activeStep)}
+              </div>
+            </Paper>
+          </Grid>
         </Grid>
-      </Grid>
+      ) : (
+        <div>
+        <div style={{ margin: "120px 10px 40px 10px" }}>
+          <Typography
+            variant={"h6"}
+            align={"Center"}
+            justify={"center"}
+            style={{ fontFamily: "Lastik" }}
+          >
+            Actualmente no tienes ningun producto dentro del carrito de compra.
+          </Typography>
+        </div>
+        <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                marginTop: 20,
+              }}
+            >
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => {
+                  history.push({
+                    pathname: "/chiguirebipolar",
+                  })
+                }}
+              >
+                Elegir Producto
+              </Button>
+            </div>
+        </div>
+      )}
 
       <Snackbar
         open={open}

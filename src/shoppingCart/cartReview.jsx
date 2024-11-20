@@ -612,7 +612,6 @@ export default function CartReview(props) {
           justifyContent: "space-between",
         }}
       >
-        {console.log("buyState", buyState)}
         <h1
           style={{
             marginBottom: isMobile ? 40 : 20,

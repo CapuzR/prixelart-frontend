@@ -15,6 +15,8 @@ import { getProducts } from "./xoxo"
 import Slider from "react-slick"
 import Switch from "@material-ui/core/Switch"
 import { useGlobalContext } from "../context/globalContext"
+import Tabs from "@material-ui/core/Tabs"
+import Tab from "@material-ui/core/Tab"
 
 import "slick-carousel/slick/slick.css"
 import "slick-carousel/slick/slick-theme.css"
@@ -99,6 +101,12 @@ const useStyles = makeStyles((theme) => ({
     transform: "translateX(35px) !important",
     padding: "1px",
   },
+  button: {
+    fontFamily: "Lastik ",
+    textTransform: "none",
+    width: "50%",
+    color: "white",
+  },
 }))
 
 export default function CBProducts() {
@@ -113,7 +121,12 @@ export default function CBProducts() {
   const [checkedProducts, setCheckedProducts] = useState([])
   const [checkedDesigns, setCheckedDesigns] = useState([])
   const { currency, toggleCurrency, zone, toggleZone } = useGlobalContext()
+  const [tab, setTab] = useState(0)
 
+  const handleTab = (event, newValue) => {
+    setTab(newValue)
+    toggleZone()
+  }
   const handleChange = (prod, filterType) => {
     let copyP = [...checkedProducts]
     let copyD = [...checkedDesigns]
@@ -252,15 +265,7 @@ export default function CBProducts() {
       id="prods"
       container
     >
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "row",
-          alignItems: "center",
-          marginLeft: 10,
-        }}
-      ></div>
-      {!isTab && (
+      {!isTab ? (
         <Grid
           item
           md={2}
@@ -344,6 +349,27 @@ export default function CBProducts() {
             </AccordionDetails>
           </Accordion>
         </Grid>
+      ) : (
+        <Tabs
+          style={{
+            width: "100vw",
+            backgroundColor: "rgb(0, 97, 52)",
+            marginBottom: 20,
+          }}
+          value={tab}
+          onChange={handleTab}
+        >
+          <Tab
+            className={classes.button}
+            label="Productos en Venezuela"
+            index={0}
+          />
+          <Tab
+            className={classes.button}
+            label="Productos internacionales"
+            index={1}
+          />
+        </Tabs>
       )}
 
       <Grid
@@ -448,15 +474,21 @@ export default function CBProducts() {
                     }}
                   >
                     {tile.product.available === true
-                      ? zone === "INTER" ?
-                      `$${tile?.product.interPrice?.toLocaleString("de-DE", {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                        })}` :
-                       `$${tile?.product.finalPrice?.toLocaleString("de-DE", {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                        })}`
+                      ? zone === "INTER"
+                        ? `$${tile?.product.interPrice?.toLocaleString(
+                            "de-DE",
+                            {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                            }
+                          )}`
+                        : `$${tile?.product.finalPrice?.toLocaleString(
+                            "de-DE",
+                            {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                            }
+                          )}`
                       : "Agotado"}
                   </Typography>
                 </div>

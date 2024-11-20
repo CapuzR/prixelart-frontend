@@ -418,14 +418,14 @@ export default function ProductGrid(props) {
               checked: classes.checked,
             }}
             color="primary"
-            value={zone}
+            value={zone === "VZLA" ? true : false}
             onChange={(e) => {
               toggleZone()
             }}
             style={{ marginRight: "-5px" }}
           />
         </div>
-      </div>{" "}
+      </div>
       {tiles && tiles.length > 0 ? (
         <ResponsiveMasonry
           columnsCountBreakPoints={{ 350: 1, 750: 2, 1800: 3 }}

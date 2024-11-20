@@ -1,21 +1,23 @@
-import { makeStyles, useTheme } from "@material-ui/core/styles";
-import Grid from "@material-ui/core/Grid";
-import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemText from "@material-ui/core/ListItemText";
-import Collapse from "@material-ui/core/Collapse";
-import Divider from "@material-ui/core/Divider";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
-import MenuItem from "@material-ui/core/MenuItem";
-import OutlinedInput from "@material-ui/core/OutlinedInput";
-import Select from "@material-ui/core/Select";
-import InputLabel from "@material-ui/core/InputLabel";
-import FormControl from "@material-ui/core/FormControl";
-import Button from "@material-ui/core/Button";
-import { Typography } from "@material-ui/core";
-import TextField from "@material-ui/core/TextField";
-import { useEffect, useState } from "react";
-import axios from "axios";
+import { makeStyles, useTheme } from "@material-ui/core/styles"
+import Grid from "@material-ui/core/Grid"
+import List from "@material-ui/core/List"
+import ListItem from "@material-ui/core/ListItem"
+import ListItemText from "@material-ui/core/ListItemText"
+import Collapse from "@material-ui/core/Collapse"
+import Divider from "@material-ui/core/Divider"
+import useMediaQuery from "@material-ui/core/useMediaQuery"
+import MenuItem from "@material-ui/core/MenuItem"
+import OutlinedInput from "@material-ui/core/OutlinedInput"
+import Select from "@material-ui/core/Select"
+import InputLabel from "@material-ui/core/InputLabel"
+import FormControl from "@material-ui/core/FormControl"
+import Button from "@material-ui/core/Button"
+import { Typography } from "@material-ui/core"
+import TextField from "@material-ui/core/TextField"
+import { useEffect, useState } from "react"
+import axios from "axios"
+import { useGlobalContext } from "../../context/globalContext"
+import ShippingData from "../../shoppingCart/shippingData.json"
 
 const useStyles = makeStyles((theme) => ({
   gridInput: {
@@ -25,137 +27,218 @@ const useStyles = makeStyles((theme) => ({
   textField: {
     marginRight: "8px",
   },
-}));
+}))
 
 export default function OrderFormCB(props) {
-  const classes = useStyles();
-  const theme = useTheme();
-  const [paymentMethods, setPaymentMethods] = useState([]);
-  const [previewVoucher, setPreviewVoucher] = useState();
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
-  const [balance, setBalance] = useState(0);
+  const classes = useStyles()
+  const { currency, toggleCurrency, zone, toggleZone } = useGlobalContext()
+
+  const theme = useTheme()
+  const [paymentMethods, setPaymentMethods] = useState([])
+  const [previewVoucher, setPreviewVoucher] = useState()
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"))
+  const [balance, setBalance] = useState(0)
 
   const getDiscounts = async () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + "/discount/read-allv2";
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/discount/read-allv2"
     await axios
       .post(base_url)
       .then((response) => {
-        setDiscountList(response.data.discounts);
+        setDiscountList(response.data.discounts)
       })
       .catch((error) => {
-        console.log(error);
-      });
-  };
+        console.log(error)
+      })
+  }
 
   useEffect(() => {
-    getDiscounts();
-  }, []);
+    getDiscounts()
+  }, [])
 
   const getBalance = async () => {
-    const url = process.env.REACT_APP_BACKEND_URL + "/account/readById";
-    const data = { _id: JSON.parse(localStorage.getItem("token"))?.account };
+    const url = process.env.REACT_APP_BACKEND_URL + "/account/readById"
+    const data = { _id: JSON.parse(localStorage.getItem("token"))?.account }
     await axios
       .post(url, data)
-      .then((response) => setBalance(response.data.balance));
-  };
+      .then((response) => setBalance(response.data.balance))
+  }
 
   const getPaymentMethod = () => {
     const base_url =
-      process.env.REACT_APP_BACKEND_URL + "/payment-method/read-all-v2";
+      process.env.REACT_APP_BACKEND_URL + "/payment-method/read-all-v2"
     axios
       .get(base_url)
       .then((response) => {
         if (localStorage?.getItem("token")) {
-          let prev = response.data;
-          prev.push({ name: "Balance Prixer" });
-          setPaymentMethods(prev);
+          let prev = response.data
+          prev.push({ name: "Balance Prixer" })
+          setPaymentMethods(prev)
         } else {
-          setPaymentMethods(response.data);
+          setPaymentMethods(response.data)
         }
       })
       .catch((error) => {
-        console.log(error);
-      });
-  };
+        console.log(error)
+      })
+  }
 
   useEffect(() => {
-    getPaymentMethod();
-  }, []);
+    getPaymentMethod()
+  }, [])
 
   useEffect(() => {
     if (
       JSON.parse(localStorage.getItem("token")) &&
       JSON.parse(localStorage.getItem("token")).username
     ) {
-      getBalance();
+      getBalance()
     }
-  }, []);
+  }, [])
 
   const onImageChange = async (e) => {
     if (e.target.files && e.target.files[0]) {
-      props.setPaymentVoucher(e.target.files[0]);
-      setPreviewVoucher(URL.createObjectURL(e.target.files[0]));
+      props.setPaymentVoucher(e.target.files[0])
+      setPreviewVoucher(URL.createObjectURL(e.target.files[0]))
     }
-  };
+  }
 
   const getSubtotal = (state) => {
-    let prices = [0];
+    let prices = [0]
 
     state.map((item) => {
-      prices.push(item.product.finalPrice * (item.quantity || 1));
-    });
+      if (zone === "INTER") {
+        prices.push(item.product.interPrice * (item.quantity || 1))
+      } else {
+        prices.push(item.product.finalPrice * (item.quantity || 1))
+      }
+    })
 
     let total = prices?.reduce(function (a, b) {
-      return a + b;
-    });
-    props.setSubtotal(total);
+      return a + b
+    })
+    props.setSubtotal(total)
     if (props.currency) {
-      return total * dollarValue;
-    } else return total;
-  };
+      return total * props.dollarValue
+    } else return total
+  }
 
   const getTotalCombinedItems = (state) => {
-    const totalNotCompleted = state.filter(
-      (item) => !item.art || !item.product
-    );
+    const totalNotCompleted = state.filter((item) => !item.art || !item.product)
     return {
       totalNotCompleted,
-    };
-  };
+    }
+  }
 
   const getTotal = (x) => {
-    let n = [];
-    n.push(Number(getSubtotal(props.buyState)));
+    let n = []
+    n.push(Number(getSubtotal(props.buyState)))
 
     if (props.valuesConsumer.shippingMethod) {
       if (props.currency) {
-        let prev = shippingCost * props.dollarValue;
+        let prev = shippingCost * props.dollarValue
         {
-          n.push(prev);
+          n.push(prev)
         }
       } else {
-        n.push(shippingCost);
+        n.push(shippingCost)
       }
     }
+    if (zone === "INTER") {
+      n.push(tax)
+    }
     let total = n.reduce(function (a, b) {
-      return a + b;
-    });
-    props.setTotal(total);
+      return a + b
+    })
+    props.setTotal(total)
     return total.toLocaleString("de-DE", {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
-    });
-  };
+    })
+  }
 
   let shippingCost = Number(
     props.valuesConsumer?.shippingMethod
       ? props.valuesConsumer?.shippingMethod?.price?.replace(/[$]/gi, "")
       : 0
-  );
+  )
+  const getShippingCost = () => {
+    let selectedCountry = ShippingData.find(
+      (item) => item.country === props.valuesConsumer?.country
+    )
 
+    const isTshirt = props.buyState.filter(
+      (item) => item.product.name === "Franela"
+    )
+    const isCup = props.buyState.filter(
+      (item) => item.product.name === "Taza de Peltre"
+    )
+
+    let cost = [0]
+
+    const countTshirts =
+      isTshirt.reduce((sum, item) => sum + item.quantity, 0) - 1
+    const countCups = isCup.reduce((sum, item) => sum + item.quantity, 0) - 1
+
+    if (isTshirt.length > 0) {
+      cost.push(selectedCountry.shirtCost)
+      if (countTshirts > 0) {
+        cost.push(countTshirts * selectedCountry.shirtExtra)
+      }
+    }
+
+    if (isCup.length > 0) {
+      cost.push(selectedCountry.cupCost)
+      if (countCups > 0) {
+        cost.push(countCups * selectedCountry.cupExtra)
+      }
+    }
+
+    if (zone === "INTER") {
+      shippingCost = cost.reduce(function (a, b) {
+        return a + b
+      })
+    }
+  }
+
+  let tax = 0
+
+  const getTax = () => {
+    let selectedCountry = ShippingData.find(
+      (item) => item.country === props.valuesConsumer?.country
+    )
+
+    const isTshirt = props.buyState.filter(
+      (item) => item.product.name === "Franela"
+    )
+    const isCup = props.buyState.filter(
+      (item) => item.product.name === "Taza de Peltre"
+    )
+
+    const countTshirts = isTshirt.reduce((sum, item) => sum + item.quantity, 0)
+    const countCups = isCup.reduce((sum, item) => sum + item.quantity, 0)
+
+    let tx = [0]
+
+    if (isTshirt) {
+      tx.push(countTshirts * selectedCountry.shirtTax)
+    } else if (isCup) {
+      tx.push(countCups * selectedCountry.cupTax)
+    }
+    if (zone === "INTER") {
+      tax = tx.reduce(function (a, b) {
+        return a + b
+      })
+    }
+  }
+
+  getShippingCost()
+  getTax()
   return (
     <>
-      <form noValidate autoComplete="off">
+      <form
+        noValidate
+        autoComplete="off"
+      >
         <Grid container>
           <Grid
             item
@@ -175,7 +258,10 @@ export default function OrderFormCB(props) {
               <div style={{ width: "100%" }}>
                 <div style={{ fontWeight: "bold" }}>Items:</div>
                 <div>
-                  <List component="div" disablePadding>
+                  <List
+                    component="div"
+                    disablePadding
+                  >
                     {props.buyState?.map((item, index) => (
                       <>
                         {item.product && item.art && (
@@ -183,15 +269,26 @@ export default function OrderFormCB(props) {
                             <ListItem>
                               <ListItemText primary={`#${index + 1}`} />
                             </ListItem>
-                            <Collapse in={true} timeout="auto" unmountOnExit>
-                              <List component="div" disablePadding>
+                            <Collapse
+                              in={true}
+                              timeout="auto"
+                              unmountOnExit
+                            >
+                              <List
+                                component="div"
+                                disablePadding
+                              >
                                 <ListItem>
                                   <ListItemText
                                     inset
                                     style={{ marginLeft: 0, paddingLeft: 0 }}
                                     primary={
                                       <Grid container>
-                                        <Grid item xs={12} md={8}>
+                                        <Grid
+                                          item
+                                          xs={12}
+                                          md={8}
+                                        >
                                           {item.product.name +
                                             " X " +
                                             item.art.title.substring(0, 27)}
@@ -220,13 +317,21 @@ export default function OrderFormCB(props) {
                                             Monto:
                                             <br></br>
                                             {props.currency ? " Bs" : "$"}
-                                            {Number(
-                                              item.product.finalPrice *
-                                                item.quantity
-                                            ).toLocaleString("de-DE", {
-                                              minimumFractionDigits: 2,
-                                              maximumFractionDigits: 2,
-                                            })}
+                                            {zone === "INTER"
+                                              ? Number(
+                                                  item.product.interPrice *
+                                                    item.quantity
+                                                ).toLocaleString("de-DE", {
+                                                  minimumFractionDigits: 2,
+                                                  maximumFractionDigits: 2,
+                                                })
+                                              : Number(
+                                                  item.product.finalPrice *
+                                                    item.quantity
+                                                ).toLocaleString("de-DE", {
+                                                  minimumFractionDigits: 2,
+                                                  maximumFractionDigits: 2,
+                                                })}
                                           </div>
                                         </Grid>
                                       </Grid>
@@ -307,7 +412,7 @@ export default function OrderFormCB(props) {
                                 <br></br>
                                 {props?.orderPaymentMethod?.paymentData}
                               </p>
-                               <div>
+                              <div>
                                 {props.paymentVoucher && (
                                   <img
                                     src={previewVoucher}
@@ -331,7 +436,7 @@ export default function OrderFormCB(props) {
                                     Cargar comprobante
                                   </Button>
                                 </label>
-                              </div> 
+                              </div>
                             </div>
                           </>
                         )}
@@ -405,6 +510,11 @@ export default function OrderFormCB(props) {
                           )
                         )}
                         <strong>
+                          {props.currency
+                            ? `Impuestos: Bs ${tax * props.dollarValue}`
+                            : `Impuestos: $${tax}`}
+                        </strong>
+                        <strong>
                           {props.currency ? "Total: Bs" : "Total: $"}
                           {getTotal(props.buyState)}
                         </strong>
@@ -419,6 +529,22 @@ export default function OrderFormCB(props) {
                       xs={12}
                       style={{ paddingLeft: 0, marginTop: 30 }}
                     >
+                      <Typography
+                        style={{
+                          fontSize: "11px",
+                          color: "gray",
+                          margin: "0 16px",
+                          textAlign: "center",
+                        }}
+                      >
+                        {
+                          "El cálculo del envío y los impuestos son refrenciales y está sujeto a cambios."
+                        }
+                        <br />
+                        {
+                          "Un asesor de ventas se pondrá en contacto para concretar la compra."
+                        }
+                      </Typography>
                     </Grid>
                     <Grid
                       item
@@ -445,5 +571,5 @@ export default function OrderFormCB(props) {
         </Grid>
       </form>
     </>
-  );
+  )
 }

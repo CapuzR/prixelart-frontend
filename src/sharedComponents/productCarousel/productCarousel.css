@@ -77,7 +77,7 @@
   .slick-dots {
     width: 100%;
     display: flex !important;
-    margin-bottom: 26px;
+    margin-bottom: 0;
     justify-content: center;
   }
 
@@ -143,7 +143,7 @@
   }
   
   .slick-list {
-    height: 80% !important;
+    height: 100% !important;
     flex-grow: 1;
     overflow: hidden;
   }

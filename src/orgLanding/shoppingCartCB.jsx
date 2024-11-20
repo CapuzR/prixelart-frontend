@@ -1,42 +1,48 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import AppBar from "@material-ui/core/AppBar";
-import Toolbar from "@material-ui/core/Toolbar";
-import Button from "@material-ui/core/Button";
-import Tabs from "@material-ui/core/Tabs";
-import Tab from "@material-ui/core/Tab";
-import { makeStyles, withStyles } from "@material-ui/core/styles";
-import { useHistory } from "react-router-dom";
-import Badge from "@material-ui/core/Badge";
-import CB_isologo from "./assets/CB_isologo_black.svg";
-import ShoppingCartOutlined from "@material-ui/icons/ShoppingCartOutlined";
-import Grid from "@material-ui/core/Grid";
-import Typography from "@material-ui/core/Typography";
-import IconButton from "@material-ui/core/IconButton";
-import { TextField } from "@material-ui/core";
-import DeleteIcon from "@material-ui/icons/Delete";
-import Snackbar from "@material-ui/core/Snackbar";
-import Paper from "@material-ui/core/Paper";
-import ConsumerForm from "../shoppingCart/consumerForm";
-import Stepper from "@material-ui/core/Stepper";
-import Step from "@material-ui/core/Step";
-import StepLabel from "@material-ui/core/StepLabel";
-import StepIcon from "@material-ui/core/StepIcon";
-import OrderFormCB from "./cartComponents/orderFormCB";
-import { Backdrop } from "@material-ui/core";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import { nanoid } from "nanoid";
-import Modal from "@material-ui/core/Modal";
-import CheckIcon from "@material-ui/icons/Check";
-import isotipo from "./assets/isotipo.svg";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
-import { useTheme } from "@material-ui/core/styles";
-import Menu from "@material-ui/core/Menu";
-import MenuIcon from "@material-ui/icons/Menu";
-import MenuItem from "@material-ui/core/MenuItem";
-import ReactGA from "react-ga";
+import React, { useState, useEffect } from "react"
+import axios from "axios"
+import AppBar from "@material-ui/core/AppBar"
+import Toolbar from "@material-ui/core/Toolbar"
+import Button from "@material-ui/core/Button"
+import Tabs from "@material-ui/core/Tabs"
+import Tab from "@material-ui/core/Tab"
+import { makeStyles, withStyles } from "@material-ui/core/styles"
+import { useHistory } from "react-router-dom"
+import Badge from "@material-ui/core/Badge"
+import CB_isologo from "./assets/CB_isologo_black.svg"
+import ShoppingCartOutlined from "@material-ui/icons/ShoppingCartOutlined"
+import Grid from "@material-ui/core/Grid"
+import Typography from "@material-ui/core/Typography"
+import IconButton from "@material-ui/core/IconButton"
+import { TextField } from "@material-ui/core"
+import DeleteIcon from "@material-ui/icons/Delete"
+import Snackbar from "@material-ui/core/Snackbar"
+import Paper from "@material-ui/core/Paper"
+import ConsumerForm from "../shoppingCart/consumerForm"
+import Stepper from "@material-ui/core/Stepper"
+import Step from "@material-ui/core/Step"
+import StepLabel from "@material-ui/core/StepLabel"
+import StepIcon from "@material-ui/core/StepIcon"
+import OrderFormCB from "./cartComponents/orderFormCB"
+import { Backdrop } from "@material-ui/core"
+import CircularProgress from "@material-ui/core/CircularProgress"
+import { nanoid } from "nanoid"
+import Modal from "@material-ui/core/Modal"
+import CheckIcon from "@material-ui/icons/Check"
+import isotipo from "./assets/isotipo.svg"
+import useMediaQuery from "@material-ui/core/useMediaQuery"
+import { useTheme } from "@material-ui/core/styles"
+import Menu from "@material-ui/core/Menu"
+import MenuIcon from "@material-ui/icons/Menu"
+import MenuItem from "@material-ui/core/MenuItem"
+import ReactGA from "react-ga"
+import { useGlobalContext } from "../context/globalContext"
+import ShippingData from "../shoppingCart/shippingData.json"
+import world from "../images/world.svg"
+import worldBlack from "../images/world-black.svg"
+import vzla from "../images/vzla.svg"
+import Switch from "@material-ui/core/Switch"
 
-ReactGA.initialize("G-0RWP9B33D8");
+ReactGA.initialize("G-0RWP9B33D8")
 
 const useStyles = makeStyles((theme) => ({
   typography: { fontFamily: "Lastik" },
@@ -128,139 +134,284 @@ const useStyles = makeStyles((theme) => ({
   modal: {
     overflow: "visible !important",
   },
-}));
+  base: {
+    width: "70px",
+    height: "37px",
+    padding: "0px",
+    margin: "16px",
+  },
+  switchBase: {
+    color: "silver",
+    padding: "1px",
+    "&$checked": {
+      "& + $track": {
+        backgroundColor: "silver",
+      },
+    },
+  },
+  thumbZ: {
+    color: "#d33f49",
+    width: "30px",
+    height: "30px",
+    margin: "2px",
+    backgroundImage: `url(${world})`,
+    backgroundSize: "20px 20px",
+    backgroundRepeat: "no-repeat",
+    backgroundPosition: "center",
+  },
+  thumbTrueZ: {
+    color: "#d33f49",
+    width: "30px",
+    height: "30px",
+    margin: "2px",
+    backgroundImage: `url(${vzla})`,
+    backgroundSize: "20px 20px",
+    backgroundRepeat: "no-repeat",
+    backgroundPosition: "center",
+  },
+  trackZ: {
+    borderRadius: "20px",
+    backgroundColor: "silver !important",
+    opacity: "1 !important",
+    position: "relative",
+    "&:after, &:before": {
+      position: "absolute",
+      top: "8px",
+      width: "20px",
+      height: "20px",
+      content: "''",
+      backgroundSize: "contain",
+      backgroundRepeat: "no-repeat",
+    },
+    "&:after": {
+      left: "8px",
+      backgroundImage: `url(${vzla})`,
+    },
+    "&:before": {
+      right: "7px",
+      backgroundImage: `url(${worldBlack})`,
+    },
+  },
+  checked: {
+    color: "#d33f49 !important",
+    transform: "translateX(35px) !important",
+    padding: "1px",
+  }
+}))
 
 export default function ShoppingCartCB() {
-  const classes = useStyles();
-  const history = useHistory();
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("xs"));
-  const isTab = useMediaQuery(theme.breakpoints.down("sm"));
-  const [anchorEl, setAnchorEl] = useState(null);
-  const openMenu = Boolean(anchorEl);
-  const [expanded, setExpanded] = useState(false);
+  const classes = useStyles()
+  const history = useHistory()
+  const theme = useTheme()
+  const isMobile = useMediaQuery(theme.breakpoints.down("xs"))
+  const isTab = useMediaQuery(theme.breakpoints.down("sm"))
+  const [anchorEl, setAnchorEl] = useState(null)
+  const openMenu = Boolean(anchorEl)
+  const [expanded, setExpanded] = useState(false)
 
-  const [loading, setLoading] = useState(false);
-  const [open, setOpen] = useState(false);
-  const [message, setMessage] = useState("");
-  const [openModal, setOpenModal] = useState(false);
-  const [values, setValues] = useState("");
-  const [activeStep, setActiveStep] = useState(0);
-  const [orderPaymentMethod, setOrderPaymentMethod] = useState(undefined);
-  const [observations, setObservations] = useState();
-  const [paymentVoucher, setPaymentVoucher] = useState();
-  const [dollarValue, setDollarValue] = useState(1);
+  const [loading, setLoading] = useState(false)
+  const [open, setOpen] = useState(false)
+  const [message, setMessage] = useState("")
+  const [openModal, setOpenModal] = useState(false)
+  const [values, setValues] = useState("")
+  const [activeStep, setActiveStep] = useState(0)
+  const [orderPaymentMethod, setOrderPaymentMethod] = useState(undefined)
+  const [observations, setObservations] = useState()
+  const [paymentVoucher, setPaymentVoucher] = useState()
+  const [dollarValue, setDollarValue] = useState(1)
   const [currency, setCurrency] = useState(false);
-  const [seller, setSeller] = useState();
-  const [subtotal, setSubtotal] = useState(0);
-  const [total, setTotal] = useState(0);
-  const [warning, setWarning] = useState(false);
-  let shippingCost = Number(values?.shippingMethod?.price);
+  const [seller, setSeller] = useState()
+  const [subtotal, setSubtotal] = useState(0)
+  const [total, setTotal] = useState(0)
+  const [warning, setWarning] = useState(false)
+  const {  toggleCurrency, zone, toggleZone } = useGlobalContext()
+
+  let shippingCost = Number(values?.shippingMethod?.price)
 
   const [buyState, setBuyState] = useState(
     localStorage.getItem("CBbuyState")
       ? JSON.parse(localStorage.getItem("CBbuyState"))
       : []
-  );
+  )
   const [cartLength, setCartLength] = useState(
     localStorage.getItem("CBbuyState")
       ? JSON.parse(localStorage.getItem("CBbuyState")).length
       : 0
-  );
+  )
 
   const readDollarValue = async () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + "/dollarValue/read";
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/dollarValue/read"
     await axios.get(base_url).then((response) => {
-      setDollarValue(response.data.dollarValue);
-    });
-  };
+      setDollarValue(response.data.dollarValue)
+    })
+  }
+
+  const checkInter = () => {
+    buyState.some((item) => item.finalPrice === item.interPrice)
+  }
 
   useEffect(() => {
-    readDollarValue();
-  }, []);
+    readDollarValue()
+    if (checkInter() && zone === "VZLA") {
+      toggleZone
+    }
+  }, [])
 
   const StyledBadge = withStyles((theme) => ({
     badge: {
       backgroundColor: "#FF9934",
       color: "black",
     },
-  }))(Badge);
+  }))(Badge)
 
   const CustomStepIcon = ({ active }) => {
-    const classes = useStyles();
+    const classes = useStyles()
 
     return (
       <StepIcon
         icon={active ? <div className={classes.stepIcon}>✔️</div> : null}
       />
-    );
-  };
+    )
+  }
 
   const handleMenu = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
+    setAnchorEl(event.currentTarget)
+  }
 
   const handleCloseMenu = () => {
-    setAnchorEl(null);
-  };
+    setAnchorEl(null)
+  }
 
   const handleMain = () => {
-    history.push({ pathname: "/chiguirebipolar" });
-  };
+    history.push({ pathname: "/chiguirebipolar" })
+  }
 
   const scrollToSection = (selector) => {
-    const section = document.querySelector(selector);
+    const section = document.querySelector(selector)
     if (section) {
-      section.scrollIntoView({ behavior: "smooth" });
+      section.scrollIntoView({ behavior: "smooth" })
     }
-  };
+  }
 
   const handleToProduct = () => {
-    handleMain();
+    handleMain()
     setTimeout(() => {
-      scrollToSection("#productos");
-    }, 500);
-  };
+      scrollToSection("#productos")
+    }, 500)
+  }
 
   const handleToPrixelart = () => {
-    handleMain();
+    handleMain()
     setTimeout(() => {
-      scrollToSection("#prixelart");
-    }, 1200);
-  };
+      scrollToSection("#prixelart")
+    }, 1200)
+  }
 
   const deleteItemInBuyState = (index) => {
-    const newState = [...buyState];
-    newState.splice(index, 1);
-    setBuyState(newState);
-    localStorage.setItem("CBbuyState", JSON.stringify(newState));
-    setOpen(true);
-    setMessage("Item eliminado correctamente");
-    setCartLength((prevLength) => prevLength - 1);
-  };
+    const newState = [...buyState]
+    newState.splice(index, 1)
+    setBuyState(newState)
+    localStorage.setItem("CBbuyState", JSON.stringify(newState))
+    setOpen(true)
+    setMessage("Item eliminado correctamente")
+    setCartLength((prevLength) => prevLength - 1)
+  }
 
   const changeQuantity = (type, index) => {
-    const newState = [...buyState];
+    const newState = [...buyState]
     if (type === "+1") {
-      newState[index].quantity++;
+      newState[index].quantity++
     } else if (type === "-1" && newState[index].quantity > 1) {
-      newState[index].quantity--;
+      newState[index].quantity--
     }
-    setBuyState(newState);
-    localStorage.setItem("CBbuyState", JSON.stringify(newState));
-  };
+    setBuyState(newState)
+    localStorage.setItem("CBbuyState", JSON.stringify(newState))
+  }
 
   const finish = () => {
-    handleMain();
-    handleClose();
-  };
+    handleMain()
+    handleClose()
+  }
   const handleClose = () => {
-    setOpenModal(false);
-    setValues(undefined);
-    localStorage.removeItem("CBbuyState");
-    setBuyState([]);
-    setLoading(false);
-  };
+    setOpenModal(false)
+    setValues(undefined)
+    localStorage.removeItem("CBbuyState")
+    setBuyState([])
+    setLoading(false)
+  }
+
+  const getShippingCost = () => {
+    let selectedCountry = ShippingData.find(
+      (item) => item.country === values?.country
+    )
+
+    const isTshirt = buyState.filter(
+      (item) => item.product.name === "Franela"
+    )
+    const isCup = buyState.filter(
+      (item) => item.product.name === "Taza de Peltre"
+    )
+
+    let cost = [0]
+
+    const countTshirts =
+      isTshirt.reduce((sum, item) => sum + item.quantity, 0) - 1
+    const countCups = isCup.reduce((sum, item) => sum + item.quantity, 0) - 1
+
+    if (isTshirt.length > 0) {
+      cost.push(selectedCountry?.shirtCost)
+      if (countTshirts > 0) {
+        cost.push(countTshirts * selectedCountry?.shirtExtra)
+      }
+    }
+
+    if (isCup.length > 0) {
+      cost.push(selectedCountry?.cupCost)
+      if (countCups > 0) {
+        cost.push(countCups * selectedCountry?.cupExtra)
+      }
+    }
+
+    if (zone === "INTER") {
+      shippingCost = cost.reduce(function (a, b) {
+        return a + b
+      })
+    }
+  }
+
+  let tax = 0
+
+  const getTax = () => {
+    let selectedCountry = ShippingData.find(
+      (item) => item.country === values?.country
+    )
+
+    const isTshirt = buyState.filter(
+      (item) => item.product.name === "Franela"
+    )
+    const isCup = buyState.filter(
+      (item) => item.product.name === "Taza de Peltre"
+    )
+
+    const countTshirts = isTshirt.reduce((sum, item) => sum + item.quantity, 0)
+    const countCups = isCup.reduce((sum, item) => sum + item.quantity, 0)
+
+    let tx = [0]
+
+    if (isTshirt) {
+      tx.push(countTshirts * selectedCountry?.shirtTax)
+    } else if (isCup) {
+      tx.push(countCups * selectedCountry?.cupTax)
+    }
+    if (zone === "INTER") {
+      tax = tx.reduce(function (a, b) {
+        return a + b
+      })
+    }
+  }
+
+  getShippingCost()
+  getTax()
 
   const createOrder = async () => {
     if (
@@ -271,8 +422,8 @@ export default function ShoppingCartCB() {
       values?.email &&
       values?.phone
     ) {
-      setLoading(true);
-      setOpen(true);
+      setLoading(true)
+      setOpen(true)
 
       const consumerData = {
         active: true,
@@ -290,7 +441,7 @@ export default function ShoppingCartCB() {
         address: values.address,
         billingAddress: values.billingAddress || values.address,
         shippingAddress: values.shippingAddress || values.address,
-      };
+      }
       const input = {
         orderId: nanoid(8),
         requests: buyState,
@@ -309,6 +460,9 @@ export default function ShoppingCartCB() {
           address: values.shippingAddress,
           shippingMethod: values.shippingMethod,
           shippingDate: values.shippingDate,
+          country: values?.country,
+          city: values?.city,
+          zip: values?.zip,
         },
         billingData: {
           name: values.billingShName,
@@ -320,7 +474,7 @@ export default function ShoppingCartCB() {
           orderPaymentMethod: orderPaymentMethod.name,
         },
         dollarValue: dollarValue,
-        tax: 0,
+        tax: tax,
         subtotal: subtotal,
         shippingCost: shippingCost,
         total: total,
@@ -334,12 +488,12 @@ export default function ShoppingCartCB() {
         status: "Por producir",
         observations: observations,
         payStatus: "Pendiente",
-      };
+      }
 
       let data = {
         consumerData,
         input,
-      };
+      }
       if (orderPaymentMethod.name === "Balance Prixer") {
         const movement = {
           _id: nanoid(),
@@ -350,11 +504,11 @@ export default function ShoppingCartCB() {
           description: `Pago de la orden #${input.orderId}`,
           type: "Retiro",
           value: total,
-        };
-        data.movement = movement;
+        }
+        data.movement = movement
       }
 
-      const base_url = process.env.REACT_APP_BACKEND_URL + "/order/createv2";
+      const base_url = process.env.REACT_APP_BACKEND_URL + "/order/createv2"
       const create = await axios
         .post(base_url, data, {
           "Content-Type": "multipart/form-data",
@@ -362,46 +516,46 @@ export default function ShoppingCartCB() {
         .then(async (response) => {
           if (response.status === 200) {
             if (paymentVoucher !== undefined) {
-              const formData = new FormData();
-              formData.append("paymentVoucher", paymentVoucher);
-              let ID = input.orderId;
+              const formData = new FormData()
+              formData.append("paymentVoucher", paymentVoucher)
+              let ID = input.orderId
               const base_url2 =
-                process.env.REACT_APP_BACKEND_URL + "/order/addVoucher/" + ID;
+                process.env.REACT_APP_BACKEND_URL + "/order/addVoucher/" + ID
               await axios.put(base_url2, formData, {
                 "Content-Type": "multipart/form-data",
-              });
+              })
             }
             ReactGA.event({
               category: "shoppingCart",
               action: "ordenar",
               label: "crear_pedido_CB",
-            });
+            })
 
-            setOpenModal(true);
+            setOpenModal(true)
             const base_url3 =
-              process.env.REACT_APP_BACKEND_URL + "/order/sendEmail";
+              process.env.REACT_APP_BACKEND_URL + "/order/sendEmail"
             await axios.post(base_url3, input).then(async (response) => {
               if (response.data.success === false) {
-                await axios.post(base_url3, input);
-              } else return;
-            });
+                await axios.post(base_url3, input)
+              } else return
+            })
           }
         })
         .catch((error) => {
-          console.log(error.response);
-        });
+          console.log(error.response)
+        })
     } else if (orderPaymentMethod === undefined) {
-      setOpen(true);
-      setMessage("Por favor selecciona una forma de pago.");
+      setOpen(true)
+      setMessage("Por favor selecciona una forma de pago.")
     } else {
-      setOpen(true);
-      setMessage("Por favor completa los datos básicos.");
+      setOpen(true)
+      setMessage("Por favor completa los datos básicos.")
 
-      setActiveStep(0);
-      setExpanded("basic");
-      setWarning(true);
+      setActiveStep(0)
+      setExpanded("basic")
+      setWarning(true)
     }
-  };
+  }
 
   function getStepContent(step) {
     switch (step) {
@@ -438,7 +592,7 @@ export default function ShoppingCartCB() {
               Siguiente
             </Button>
           </div>
-        );
+        )
       case 1:
         return (
           <div>
@@ -492,17 +646,20 @@ export default function ShoppingCartCB() {
               Ordenar
             </Button>
           </div>
-        );
+        )
     }
   }
 
   const handleCart = () => {
-    history.push({ pathname: "/chiguirebipolar/carrito" });
-  };
+    history.push({ pathname: "/chiguirebipolar/carrito" })
+  }
 
   return (
     <>
-      <Backdrop className={classes.backdrop} open={loading}>
+      <Backdrop
+        className={classes.backdrop}
+        open={loading}
+      >
         <CircularProgress />
       </Backdrop>
 
@@ -511,6 +668,7 @@ export default function ShoppingCartCB() {
         elevation={0}
         style={{
           backgroundColor: "white",
+          minHeight: 70
         }}
       >
         <Toolbar
@@ -530,7 +688,10 @@ export default function ShoppingCartCB() {
 
           {isTab ? (
             <>
-              <IconButton onClick={handleMenu} size="medium">
+              <IconButton
+                onClick={handleMenu}
+                size="medium"
+              >
                 <StyledBadge badgeContent={cartLength}>
                   <MenuIcon />
                 </StyledBadge>
@@ -604,9 +765,12 @@ export default function ShoppingCartCB() {
       >
         <Grid
           item
-          sm={12}
-          md={7}
-          style={{ marginRight: isTab && 10, width: "100%" }}
+          sm={11}
+          style={{
+            marginRight: isTab && 30,
+            display: "flex",
+            justifyContent: "space-between",
+          }}
         >
           <Typography
             className={classes.typography}
@@ -618,7 +782,36 @@ export default function ShoppingCartCB() {
           >
             Carrito de compras
           </Typography>
-
+          <div style={{ display: "flex" }}>
+            <Switch
+              classes={{
+                root: classes.base,
+                switchBase: classes.switchBase,
+                thumb: zone === "VZLA" ? classes.thumbTrueZ : classes.thumbZ,
+                track: classes.trackZ,
+                checked: classes.checked,
+              }}
+              color="primary"
+              value={zone === "VZLA" ? true : false}
+              onChange={(e) => {
+                toggleZone()
+              }}
+              style={{ marginRight: "-5px" }}
+            />
+            <Typography
+              style={{ alignContent: "center" }}
+              className={classes.heading}
+            >
+              {zone === "VZLA" ? "Venezuela" : "Internacional"}
+            </Typography>
+          </div>
+        </Grid>
+        <Grid
+          item
+          sm={12}
+          md={7}
+          style={{ marginRight: isTab && 10, width: "100%" }}
+        >
           {buyState &&
             buyState.length > 0 &&
             buyState.map((item, index) => (
@@ -632,7 +825,12 @@ export default function ShoppingCartCB() {
                   marginBottom: 20,
                 }}
               >
-                <Grid item xs={11} sm={6} style={{ display: "flex" }}>
+                <Grid
+                  item
+                  xs={11}
+                  sm={6}
+                  style={{ display: "flex" }}
+                >
                   <img
                     src={item?.art?.images[0]?.img}
                     alt="Item de Chiguire Bipolar"
@@ -768,7 +966,12 @@ export default function ShoppingCartCB() {
                         style={{ fontSize: 18, fontWeight: 600 }}
                       >
                         $
-                        {item?.product?.finalPrice?.toLocaleString("de-DE", {
+                        {zone === "INTER" ?
+                        item?.product?.interPrice?.toLocaleString("de-DE", {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })
+                        : item?.product?.finalPrice?.toLocaleString("de-DE", {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
                         })}
@@ -813,16 +1016,19 @@ export default function ShoppingCartCB() {
           >
             <Stepper activeStep={activeStep}>
               {["Tus datos", "Orden de compra"].map((label, index) => {
-                const stepProps = {};
+                const stepProps = {}
                 const labelProps = {
                   StepIconComponent: CustomStepIcon,
-                };
+                }
 
                 return (
-                  <Step key={label} {...stepProps}>
+                  <Step
+                    key={label}
+                    {...stepProps}
+                  >
                     <StepLabel {...labelProps}>{label}</StepLabel>
                   </Step>
-                );
+                )
               })}
             </Stepper>
             <div className={classes.instructions}>
@@ -839,7 +1045,11 @@ export default function ShoppingCartCB() {
         onClose={() => setOpen(false)}
       />
 
-      <Modal open={openModal} onClose={handleClose} className={classes.modal}>
+      <Modal
+        open={openModal}
+        onClose={handleClose}
+        className={classes.modal}
+      >
         <Grid
           container
           className={classes.paper2}
@@ -918,7 +1128,10 @@ export default function ShoppingCartCB() {
               marginBottom: 50,
             }}
           >
-            <Typography className={classes.typography} style={{ fontSize: 16 }}>
+            <Typography
+              className={classes.typography}
+              style={{ fontSize: 16 }}
+            >
               Te enviaremos un correo con todos los detalles
             </Typography>
           </Grid>
@@ -938,5 +1151,5 @@ export default function ShoppingCartCB() {
         </Grid>
       </Modal>
     </>
-  );
+  )
 }

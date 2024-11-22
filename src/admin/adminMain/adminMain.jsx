@@ -159,7 +159,7 @@ const useStyles = makeStyles((theme) => ({
     paddingTop: theme.spacing(4),
     paddingBottom: theme.spacing(4),
     paddingLeft: 0,
-    width: "90vw"
+    width: "90vw",
   },
   paper: {
     padding: theme.spacing(2),
@@ -180,7 +180,7 @@ export default function AdminMain(props) {
   const location = useLocation()
   const history = useHistory()
   const [openDollarView, setOpenDollarView] = useState(false)
-  
+
   const handleDrawerOpen = () => {
     setOpen(true)
   }
@@ -188,6 +188,8 @@ export default function AdminMain(props) {
     setOpen(false)
   }
 
+  console.log(props)
+  
   useEffect(() => {
     location.pathname.split("/").length === 7
       ? setActive(

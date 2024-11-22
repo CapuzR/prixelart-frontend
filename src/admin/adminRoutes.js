@@ -62,12 +62,18 @@ const AdminRoutes = ({
           setSearchResult={setSearchResult}
           searchResult={searchResult}
           addItemToBuyState={addItemToBuyState}
+          dollarValue={dollarValue}
+          setDollarValue={setDollarValue}
+          updateDollarValue={updateDollarValue}
+
         />
       </Route>
 
       <Route path="/admin/user/create">
         <AdminMain
           dollarValue={dollarValue}
+          setDollarValue={setDollarValue}
+          updateDollarValue={updateDollarValue}
           permissions={permissions}
         />
       </Route>
@@ -133,12 +139,18 @@ const AdminRoutes = ({
           setSearchResult={setSearchResult}
           searchResult={searchResult}
           addItemToBuyState={addItemToBuyState}
+          dollarValue={dollarValue}
+          setDollarValue={setDollarValue}
+          updateDollarValue={updateDollarValue}
+
         />
       </Route>
 
       <Route path="/admin/product/create">
         <AdminMain
           dollarValue={dollarValue}
+          setDollarValue={setDollarValue}
+          updateDollarValue={updateDollarValue}
           permissions={permissions}
         />
       </Route>
@@ -157,6 +169,8 @@ const AdminRoutes = ({
       <Route path="/admin/consumer/create">
         <AdminMain
           dollarValue={dollarValue}
+          setDollarValue={setDollarValue}
+          updateDollarValue={updateDollarValue}
           permissions={permissions}
         />
       </Route>

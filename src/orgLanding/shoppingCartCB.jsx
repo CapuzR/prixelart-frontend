@@ -37,7 +37,7 @@ import MenuItem from "@material-ui/core/MenuItem"
 import ReactGA from "react-ga"
 import { useGlobalContext } from "../context/globalContext"
 import ShippingData from "../shoppingCart/shippingData.json"
-import world from "../images/world.svg"
+import world from "../images/world-black.svg"
 import worldBlack from "../images/world-black.svg"
 import vzla from "../images/vzla.svg"
 import Switch from "@material-ui/core/Switch"
@@ -135,67 +135,69 @@ const useStyles = makeStyles((theme) => ({
     overflow: "visible !important",
   },
   base: {
-    width: "70px",
+    width: "100px",
     height: "37px",
     padding: "0px",
     margin: "16px",
+    marginLeft: "0px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
   switchBase: {
-    color: "silver",
+    color: "white",
     padding: "1px",
     "&$checked": {
       "& + $track": {
-        backgroundColor: "silver",
+        backgroundColor: "white",
       },
     },
   },
   thumbZ: {
-    color: "#d33f49",
+    color: "white",
     width: "30px",
     height: "30px",
     margin: "2px",
-    backgroundImage: `url(${world})`,
+    marginLeft: "3px",
     backgroundSize: "20px 20px",
     backgroundRepeat: "no-repeat",
     backgroundPosition: "center",
-  },
-  thumbTrueZ: {
-    color: "#d33f49",
-    width: "30px",
-    height: "30px",
-    margin: "2px",
     backgroundImage: `url(${vzla})`,
+  },
+  thumbFalseZ: {
+    color: "white",
+    width: "30px",
+    height: "30px",
+    margin: "2px",
+    marginLeft: "3px",
     backgroundSize: "20px 20px",
     backgroundRepeat: "no-repeat",
     backgroundPosition: "center",
+    backgroundImage: `url(${world})`,
   },
   trackZ: {
     borderRadius: "20px",
     backgroundColor: "silver !important",
     opacity: "1 !important",
     position: "relative",
-    "&:after, &:before": {
-      position: "absolute",
-      top: "8px",
-      width: "20px",
-      height: "20px",
-      content: "''",
-      backgroundSize: "contain",
-      backgroundRepeat: "no-repeat",
-    },
-    "&:after": {
-      left: "8px",
-      backgroundImage: `url(${vzla})`,
-    },
-    "&:before": {
-      right: "7px",
-      backgroundImage: `url(${worldBlack})`,
-    },
+    display: "flex",
+    alignItems: "center",
+    padding: "0 10px",
+  },
+  labelText: {
+    color: "#333",
+    fontSize: "14px",
+    fontWeight: "bold",
+    marginLeft: "10px",
   },
   checked: {
     color: "#d33f49 !important",
-    transform: "translateX(35px) !important",
+    transform: "translateX(61px) !important",
     padding: "1px",
+  },
+  backdrop: {
+    zIndex: theme.zIndex.drawer + 1,
+    color: theme.palette.primary.main,
   },
 }))
 
@@ -225,9 +227,6 @@ export default function ShoppingCartCB() {
   const [total, setTotal] = useState(0)
   const [warning, setWarning] = useState(false)
   const { toggleCurrency, zone, toggleZone } = useGlobalContext()
-
-  let shippingCost = Number(values?.shippingMethod?.price)
-
   const [buyState, setBuyState] = useState(
     localStorage.getItem("CBbuyState")
       ? JSON.parse(localStorage.getItem("CBbuyState"))
@@ -238,6 +237,9 @@ export default function ShoppingCartCB() {
       ? JSON.parse(localStorage.getItem("CBbuyState")).length
       : 0
   )
+
+  let tax = 0
+  let shippingCost = Number(values?.shippingMethod?.price)
 
   const readDollarValue = async () => {
     const base_url = process.env.REACT_APP_BACKEND_URL + "/dollarValue/read"
@@ -253,7 +255,7 @@ export default function ShoppingCartCB() {
   useEffect(() => {
     readDollarValue()
     if (checkInter() && zone === "VZLA") {
-      toggleZone
+      toggleZone()
     }
   }, [])
 
@@ -332,6 +334,7 @@ export default function ShoppingCartCB() {
     handleMain()
     handleClose()
   }
+
   const handleClose = () => {
     setOpenModal(false)
     setValues(undefined)
@@ -376,8 +379,6 @@ export default function ShoppingCartCB() {
       })
     }
   }
-
-  let tax = 0
 
   const getTax = () => {
     let selectedCountry = ShippingData.find(
@@ -649,7 +650,14 @@ export default function ShoppingCartCB() {
   const handleCart = () => {
     history.push({ pathname: "/chiguirebipolar/carrito" })
   }
-  console.log(zone)
+
+  const setZone = () => {
+    setLoading(true)
+    toggleZone()
+    setTimeout(() => {
+      setLoading(false)
+    }, 500)
+  }
   return (
     <>
       <Backdrop
@@ -762,49 +770,67 @@ export default function ShoppingCartCB() {
         >
           <Grid
             item
-            sm={11}
+            sm={12}
             style={{
-              marginRight: isTab && 30,
+              marginRight: isTab && "0.7rem",
               display: "flex",
               justifyContent: "space-between",
+              flexDirection: isTab && "column",
+              width: isTab && "100%",
             }}
           >
             <Typography
               className={classes.typography}
               style={{
-                fontSize: isTab ? 22 : 30,
-                width: "100%",
+                fontSize: 30,
+                width: isTab ? "auto" : "100%",
                 marginBottom: 30,
+                alignSelf: isTab && "center",
               }}
             >
               Carrito de compras
             </Typography>
-            {!isTab && (
-              <div style={{ display: "flex" }}>
-                <Switch
-                  classes={{
-                    root: classes.base,
-                    switchBase: classes.switchBase,
-                    thumb:
-                      zone === "VZLA" ? classes.thumbTrueZ : classes.thumbZ,
-                    track: classes.trackZ,
-                    checked: classes.checked,
-                  }}
-                  color="primary"
-                  value={zone === "VZLA" ? true : false}
-                  onChange={(e) => {
-                    toggleZone()
-                  }}
-                  style={{ marginRight: "-5px" }}
-                />
-                <Typography
-                  style={{ alignContent: "center" }}
-                  className={classes.heading}
-                >
-                  {zone === "VZLA" ? "Venezuela" : "Internacional"}
-                </Typography>
-              </div>
-            )}
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                backgroundColor: "rgb(120, 155, 236)",
+                width: !isTab ? "40%" : "90%",
+                borderRadius: 25,
+                margin: "0 auto 20px",
+                maxWidth: 350,
+                marginRight: 20,
+              }}
+            >
+              <Switch
+                classes={{
+                  root: classes.base,
+                  switchBase: classes.switchBase,
+                  thumb: zone === "VZLA" ? classes.thumbZ : classes.thumbFalseZ,
+                  track: classes.trackZ,
+                  checked: classes.checked,
+                }}
+                value={zone === "VZLA"}
+                onChange={() => setZone()}
+                style={{ color: "rgb(0, 97, 52)" }}
+              >
+                <span className={classes.labelText}>
+                  {zone === "VZLA" ? "Nacional" : "Internacionales"}
+                </span>
+              </Switch>
+              <Typography
+                style={{
+                  alignContent: "center",
+                  color: "white",
+                  fontWeight: "normal",
+                  fontFamily: "Lastik",
+                  width: "50%",
+                }}
+                variant="h5"
+              >
+                {zone === "VZLA" ? "Nacionales" : "Internacionales"}
+              </Typography>
+            </div>
           </Grid>
           <Grid
             item
@@ -1061,35 +1087,36 @@ export default function ShoppingCartCB() {
         </Grid>
       ) : (
         <div>
-        <div style={{ margin: "120px 10px 40px 10px" }}>
-          <Typography
-            variant={"h6"}
-            align={"Center"}
-            justify={"center"}
-            style={{ fontFamily: "Lastik" }}
+          <div style={{ margin: "120px 10px 40px 10px" }}>
+            <Typography
+              variant={"h6"}
+              align={"Center"}
+              justify={"center"}
+              style={{ fontFamily: "Lastik" }}
+            >
+              Actualmente no tienes ningun producto dentro del carrito de
+              compra.
+            </Typography>
+          </div>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              marginTop: 20,
+            }}
           >
-            Actualmente no tienes ningun producto dentro del carrito de compra.
-          </Typography>
-        </div>
-        <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                marginTop: 20,
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => {
+                history.push({
+                  pathname: "/chiguirebipolar",
+                })
               }}
             >
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={() => {
-                  history.push({
-                    pathname: "/chiguirebipolar",
-                  })
-                }}
-              >
-                Elegir Producto
-              </Button>
-            </div>
+              Elegir Producto
+            </Button>
+          </div>
         </div>
       )}
 

@@ -5,7 +5,7 @@ import ArtDetail from 'apps/consumer/art/components/Detail';
 import Home from 'apps/consumer/home/home';
 import Catalog from 'apps/consumer/art/catalog/views/Catalog';
 import Products from 'apps/consumer/products/Catalog';
-import ShoppingPage from 'apps/consumer/cart/shoppingPage';
+import ShoppingPage from '@apps/consumer/cart';
 import Prixers from 'apps/consumer/prixers/prixersGrid';
 import OrgGrid from 'apps/consumer/components/orgGrid/orgGrid';
 import PrixersService from 'apps/consumer/prixerServices/prixerService';

@@ -2,6 +2,7 @@
   "name": "frontend",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "dependencies": {
     "@emotion/react": "^11.13.5",
     "@emotion/styled": "^11.13.5",
@@ -33,7 +34,7 @@
     "sass": "^1.80.6",
     "slick-carousel": "^1.8.1",
     "victory": "^36.6.11",
-    "vite": "^5.4.10"
+    "vite": "^5.4.11"
   },
   "scripts": {
     "dev": "yarn vite",
@@ -41,7 +42,7 @@
     "serve": "yarn vite preview",
     "prepare": "yarn husky install",
     "format": "yarn prettier --config config/.prettierrc --ignore-path config/.prettierignore --write .",
-    "lint": "yarn eslint -c config/.eslintrc --ignore-path config/.eslintignore . --ext .js,.jsx,.ts,.tsx"
+    "lint": "yarn eslint -c config/eslint.config.js --ignore-pattern config/.eslintignore ."
   },
   "browserslist": {
     "production": [
@@ -68,12 +69,18 @@
     "*.test.{js,jsx,ts,tsx}": []
   },
   "devDependencies": {
+    "@types/node": "^22.9.3",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
+    "@typescript-eslint/eslint-plugin": "^8.15.0",
+    "@typescript-eslint/parser": "^8.15.0",
+    "eslint": "^9.15.0",
+    "eslint-plugin-react": "^7.37.2",
     "eslint-plugin-unicorn": "^56.0.0",
     "husky": "^8.0.0",
     "lint-staged": "^15.2.10",
     "prettier": "^3.3.3",
+    "typescript": "^5.7.2",
     "vite-tsconfig-paths": "^5.1.3"
   }
 }

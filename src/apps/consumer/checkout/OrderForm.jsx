@@ -22,7 +22,7 @@ import axios from 'axios';
 import InfoIcon from '@mui/icons-material/Info';
 import Tooltip from '@mui/material/Tooltip';
 import { format } from 'utils/utils.js';
-import { calculateTotalPrice } from '../cart/services';
+import { calculateTotalPrice } from '../cart/services.ts';
 import {
   getPVP,
   getPVM,

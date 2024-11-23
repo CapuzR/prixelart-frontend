@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import axios from 'axios';
 
 import AppBar from '@components/appBar';
 import FloatingAddButton from 'components/floatingAddButton/floatingAddButton';

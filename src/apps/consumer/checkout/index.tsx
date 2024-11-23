@@ -50,7 +50,6 @@ const Checkout: React.FC<CheckoutProps> = ({ cart, props }) => {
   const createOrder = async () => {
     if (orderPaymentMethod) {
       setLoading(true);
-      props.setOpen(true);
 
       let orderLines = [];
       let taxv2 = 'getIvaCost(cart)';
@@ -200,7 +199,6 @@ const Checkout: React.FC<CheckoutProps> = ({ cart, props }) => {
       history.push({ pathname: '/' });
       setLoading(false);
     } else {
-      props.setOpen(true);
       showSnackBar('Por favor selecciona una forma de pago.');
     }
   };

@@ -3,19 +3,14 @@ import Grid from 'components/Grid';
 import { useCart } from 'context/CartContext';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import Typography from 'components/Typography';
-import styles from './cartReview.module.scss';
-import { Item } from './interfaces';
-import LineCard from 'components/lineCard';
+import styles from './styles.module.scss';
+import { Item } from '../interfaces';
+import LineCard from '../Detail';
 
 const CartReview: React.FC = () => {
-  const { cart } = useCart(); // Get cart from context
-  const isMobile = useMediaQuery('(max-width: 600px)'); // Mobile media query
+  const { cart } = useCart();
+  const isMobile = useMediaQuery('(max-width: 600px)');
   const { deleteLineInCart, deleteElementInItem } = useCart();
-
-  // const handleDeleteElement = (type: 'producto' | 'arte', item: Item) => {
-  //   const hasOtherItem = type === 'arte' ? item.product : item.art;
-  //   hasOtherItem ? deleteElementInItem(id, type) : deleteLineInCart(line.id);
-  // };
 
   const handleDeleteElement = (type: 'producto' | 'arte', item: Item) => {
     const hasOtherItem = type === 'arte' ? item.product : item.art;

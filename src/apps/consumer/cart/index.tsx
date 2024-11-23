@@ -5,17 +5,17 @@ import { useCart } from 'context/CartContext';
 
 import CurrencySwitch from 'components/CurrencySwitch';
 import Checkout from 'apps/consumer/checkout';
-import CartReview from './CartReview';
+import CartGrid from './Grid';
 
-import styles from './cart.module.scss';
+import styles from './styles.module.scss';
 
 // Define the types for props if any additional ones are passed
-interface ShoppingPageProps {
+interface CartProps {
   setValuesConsumerForm: (values: any) => void;
   valuesConsumerForm: any;
 }
 
-const ShoppingPage: React.FC<ShoppingPageProps> = (props) => {
+const Cart: React.FC<CartProps> = (props) => {
   const { cart } = useCart();
 
   return (
@@ -33,7 +33,7 @@ const ShoppingPage: React.FC<ShoppingPageProps> = (props) => {
 
       <div className={styles['content-row']}>
         <div className={styles['cart-review-container']}>
-          <CartReview />
+          <CartGrid />
         </div>
 
         <div className={styles['checkout-container']}>
@@ -47,4 +47,4 @@ const ShoppingPage: React.FC<ShoppingPageProps> = (props) => {
   );
 };
 
-export default ShoppingPage;
+export default Cart;

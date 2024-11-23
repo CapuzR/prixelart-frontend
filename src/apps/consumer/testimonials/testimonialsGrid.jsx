@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import axios from 'axios';
 
 import Container from '@mui/material/Container';
 import CssBaseline from '@mui/material/CssBaseline';

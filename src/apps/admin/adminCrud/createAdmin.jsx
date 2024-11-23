@@ -137,7 +137,7 @@ export default function CreateAdmin() {
         setEmail('');
         setPhone('');
         setPassword('');
-        history.push({ pathname: '/admin/user/read' });
+        history.push({ pathname: '/user/read' });
       }
     }
   };

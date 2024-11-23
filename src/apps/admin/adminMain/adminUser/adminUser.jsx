@@ -134,13 +134,13 @@ export default function AdminUsers(props) {
   };
 
   useEffect(() => {
-    if (globalParams === '/admin/user/read') {
+    if (globalParams === '/user/read') {
       loadAdmins();
     }
   }, []);
 
   const handleUserAction = (action) => {
-    history.push('/admin/user/' + action);
+    history.push('/user/' + action);
     setActiveCrud(action);
   };
 

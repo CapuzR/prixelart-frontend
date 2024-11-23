@@ -9,6 +9,7 @@ import OrgsRoutes from 'apps/orgs/orgs.routes';
 
 const Routes = () => {
   const [valuesConsumerForm, setValuesConsumerForm] = useState<string>('');
+  const hostname = window.location.hostname;
 
   const [permissions, setPermissions] = useState<any>(
     JSON.parse(localStorage.getItem('adminToken') || '{}')?.permissions
@@ -28,24 +29,31 @@ const Routes = () => {
 
   return (
     <>
-      <ArtistRoutes />
+    {
+      hostname.includes('admin') ?
+        <AdminRoutes
+          valuesConsumerForm={valuesConsumerForm}
+          setValuesConsumerForm={setValuesConsumerForm}
+          permissions={permissions}
+          setPermissions={setPermissions}
+        /> : 
+      hostname.includes('prixer') ?
+        <ArtistRoutes /> :
+      hostname.includes('wip') ?
+        <MapRoutes /> :
+      hostname.includes('orgs') ?
+        <OrgsRoutes /> :      
+        <ConsumerRoutes
+          valuesConsumerForm={valuesConsumerForm}
+          setValuesConsumerForm={setValuesConsumerForm}
+          permissions={permissions}
+        />
+    }
 
-      <AdminRoutes
-        valuesConsumerForm={valuesConsumerForm}
-        setValuesConsumerForm={setValuesConsumerForm}
-        permissions={permissions}
-        setPermissions={setPermissions}
-      />
 
-      <MapRoutes />
+      
 
-      <OrgsRoutes />
 
-      <ConsumerRoutes
-        valuesConsumerForm={valuesConsumerForm}
-        setValuesConsumerForm={setValuesConsumerForm}
-        permissions={permissions}
-      />
     </>
   );
 };

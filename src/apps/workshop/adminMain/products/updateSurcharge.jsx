@@ -171,7 +171,7 @@ export default function UpdateSurcharge(props) {
         setType();
         setValue();
         setAppliedProducts([]);
-        history.push('/admin/product/read');
+        history.push('/product/read');
       }
     }
   };

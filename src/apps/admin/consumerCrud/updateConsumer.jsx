@@ -96,7 +96,7 @@ export default function UpdateConsumer(props) {
       } else {
         setErrorMessage('Actualización de consumidor exitosa.');
         setSnackBarError(true);
-        history.push('/admin/consumer/read');
+        history.push('/consumer/read');
       }
     }
   };

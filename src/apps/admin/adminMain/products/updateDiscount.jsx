@@ -120,7 +120,7 @@ export default function UpdateDiscount(props) {
         setType();
         setValue('');
         setAppliedProducts([]);
-        history.push('/admin/product/read');
+        history.push('/product/read');
       }
     }
   };

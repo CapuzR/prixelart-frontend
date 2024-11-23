@@ -118,7 +118,7 @@ export default function Login(props) {
             localStorage.setItem('adminToken', JSON.stringify(token));
             localStorage.setItem('adminTokenV', response.data.adminToken);
             localStorage.setItem('adminTokenExpire', JSON.stringify(now.getTime() + 21600000));
-            history.push({ pathname: '/admin/order/read' });
+            history.push({ pathname: '/order/read' });
             props.setPermissions(token.permissions);
             // props.checkP();
             // props.loadAdmins();

@@ -128,7 +128,7 @@ export default function CreateCategory() {
         setActive(false);
         setName();
         setAppliedProducts([]);
-        history.push('/admin/product/read');
+        history.push('/product/read');
       }
     }
   };

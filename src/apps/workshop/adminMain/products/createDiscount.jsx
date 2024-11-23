@@ -121,7 +121,7 @@ export default function CreateDiscount() {
         setType();
         setValue();
         setAppliedProducts([]);
-        history.push('/admin/product/read');
+        history.push('/product/read');
       }
     }
   };

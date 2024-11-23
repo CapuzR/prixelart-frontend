@@ -78,7 +78,7 @@ const ArtistRoutes: React.FC<ConsumerRoutesProps> = ({
         <ProductDetails />
       </Route>
 
-      <Route component={Home} />
+      <Route path="/" component={Home} />
     </Switch>
   );
 };

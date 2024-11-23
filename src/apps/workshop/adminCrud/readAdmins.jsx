@@ -57,7 +57,7 @@ export default function ReadAdmins(props) {
   };
 
   useEffect(() => {
-    if (globalParams === '/admin/user/read') {
+    if (globalParams === '/user/read') {
       loadRoles();
     }
   }, []);
@@ -96,13 +96,13 @@ export default function ReadAdmins(props) {
   };
 
   const handleActive = (row) => {
-    history.push('/admin/user/update');
+    history.push('/user/update');
     props.handleCallback2(row);
   };
 
   const handleActiveRole = (role) => {
     props.handleCallback2(role);
-    history.push('/admin/user/updateRole');
+    history.push('/user/updateRole');
     props.setActiveCrud('updateRole');
   };
 

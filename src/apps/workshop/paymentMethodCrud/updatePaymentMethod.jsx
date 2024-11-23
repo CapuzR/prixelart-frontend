@@ -70,7 +70,7 @@ export default function UpdatePaymentMethod(props) {
       } else {
         setErrorMessage('Actualización del método de pago exitosa.');
         setSnackBarError(true);
-        history.push('/admin/payment-method/read');
+        history.push('/payment-method/read');
       }
     }
   };

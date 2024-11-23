@@ -160,13 +160,17 @@ export default function Products(props) {
     localStorage.getItem('category') ? JSON.parse(localStorage.getItem('category')) : undefined
   );
   const handleProductAction = (action) => {
-    history.push({ pathname: '/admin/product/' + action });
+    history.push({ pathname: '/product/' + action });
   };
   useEffect(() => {
-    location.pathname.split('/').length === 5
-      ? setActiveCrud(location.pathname.split('/')[location.pathname.split('/').length - 2])
-      : location.pathname.split('/').length === 4 &&
-        setActiveCrud(location.pathname.split('/')[location.pathname.split('/').length - 1]);
+    const pathSegments = location.pathname.split('/').filter(Boolean);
+    const rootSegment = pathSegments.length > 0 ? pathSegments[1] : '';
+    console.log('rootSegment', rootSegment);
+    setActiveCrud(rootSegment);
+    // location.pathname.split('/').length === 5
+    //   ? setActiveCrud(location.pathname.split('/')[location.pathname.split('/').length - 2])
+    //   : location.pathname.split('/').length === 4 &&
+    //     setActiveCrud(location.pathname.split('/')[location.pathname.split('/').length - 1]);
   }, [location.pathname]);
 
   const getProducts = (x) => {

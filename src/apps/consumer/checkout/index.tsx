@@ -4,19 +4,28 @@ import axios, { AxiosRequestConfig } from 'axios';
 import { Stepper, Step, StepLabel, Button } from '@material-ui/core';
 import ConsumerForm from './ConsumerForm';
 import OrderForm from './OrderForm';
-import { CheckoutProps } from './interfaces';
 import styles from './styles.module.scss';
 import { getTotalUnitsPVP, getTotalUnitsPVM } from './pricesFunctions.js';
 import validations from './validations';
 import { nanoid } from 'nanoid';
-import { useConversionRate, useCurrency } from 'context/GlobalContext';
+import { useConversionRate, useCurrency, useSnackBar } from 'context/GlobalContext';
+import { Cart } from 'apps/consumer/cart/interfaces';
 
 //Order: { id: id, lines: line[],  }
 //Line: { item: item, quantity: number, discount: number, subtotal: number }
 //item: { id: id, product: Product, art: Art, price: number }
+interface CheckoutProps {
+  cart: Cart;
+  props: {
+    setValuesConsumerForm: (values: any) => void;
+    valuesConsumerForm: any;
+  };
+}
+
 const Checkout: React.FC<CheckoutProps> = ({ cart, props }) => {
   const { currency } = useCurrency();
   const { conversionRate } = useConversionRate();
+  const { showSnackBar } = useSnackBar();
   const history = useHistory();
   const [orderPaymentMethod, setOrderPaymentMethod] = useState(undefined);
   const [observations, setObservations] = useState();
@@ -172,8 +181,8 @@ const Checkout: React.FC<CheckoutProps> = ({ cart, props }) => {
               await axios.put(base_url2, formData, configMulti);
             }
 
-            props.setMessage(response.data.info);
-            props.setMessage('¡Gracias por tu compra! Por favor revisa tu correo');
+            showSnackBar(response.data.info);
+            showSnackBar('¡Gracias por tu compra! Por favor revisa tu correo');
 
             const base_url3 = import.meta.env.VITE_BACKEND_URL + '/order/sendEmail';
             await axios.post(base_url3, input).then(async (response) => {
@@ -192,7 +201,7 @@ const Checkout: React.FC<CheckoutProps> = ({ cart, props }) => {
       setLoading(false);
     } else {
       props.setOpen(true);
-      props.setMessage('Por favor selecciona una forma de pago.');
+      showSnackBar('Por favor selecciona una forma de pago.');
     }
   };
 
@@ -212,8 +221,6 @@ const Checkout: React.FC<CheckoutProps> = ({ cart, props }) => {
             setValues={props.setValuesConsumerForm}
             values={props.valuesConsumerForm}
             buyState={cart}
-            setOpen={props.setOpen}
-            setMessage={props.setMessage}
             expanded={expanded}
             setExpanded={setExpanded}
           />
@@ -221,8 +228,8 @@ const Checkout: React.FC<CheckoutProps> = ({ cart, props }) => {
           <OrderForm
             valuesConsumer={props.valuesConsumerForm}
             values={props.valuesConsumerForm}
-            setValuesConsumer={props.setValues}
-            onCreateConsumer={props.onCreateConsumer}
+            setValuesConsumer={props.setValuesConsumerForm}
+            // onCreateConsumer={props.onCreateConsumer}
             buyState={cart}
             orderPaymentMethod={orderPaymentMethod}
             setOrderPaymentMethod={setOrderPaymentMethod}

@@ -19,7 +19,7 @@ export default function MainListItems(props) {
   const history = useHistory();
 
   const handleClick = (value) => {
-    history.push({ pathname: '/admin/' + value + '/read' });
+    history.push({ pathname: '/' + value + '/read' });
   };
 
   return (

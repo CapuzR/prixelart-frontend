@@ -64,7 +64,7 @@ export default function ReadShippingMethod(props) {
   const [snackBarError, setSnackBarError] = useState(false);
 
   const handleAction = (action) => {
-    history.push({ pathname: '/admin/shipping-method/' + action });
+    history.push({ pathname: '/shipping-method/' + action });
   };
 
   useEffect(() => {
@@ -120,7 +120,7 @@ export default function ReadShippingMethod(props) {
       setActive(true);
       setName('');
       setPrice('');
-      history.push({ pathname: '/admin/shipping-method/read' });
+      history.push({ pathname: '/shipping-method/read' });
       readMethods();
       setLoading(false);
     }
@@ -131,7 +131,7 @@ export default function ReadShippingMethod(props) {
     setName(shippingMethod.name);
     setPrice(shippingMethod.price);
     setActive(shippingMethod.active);
-    history.push('/admin/shipping-method/' + action + '/' + shippingMethod._id);
+    history.push('/shipping-method/' + action + '/' + shippingMethod._id);
   };
 
   const updateShippingMethod = async (e) => {
@@ -164,7 +164,7 @@ export default function ReadShippingMethod(props) {
         setActive(true);
         setName('');
         setPrice('');
-        history.push('/admin/shipping-method/read');
+        history.push('/shipping-method/read');
         readMethods();
         setLoading(false);
       }

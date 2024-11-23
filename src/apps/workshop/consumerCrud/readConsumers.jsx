@@ -88,7 +88,7 @@ export default function ReadConsumers(props) {
 
   const handleActive = (consumer, action) => {
     props.setConsumer(consumer);
-    history.push('/admin/consumer/' + action + '/' + consumer._id);
+    history.push('/consumer/' + action + '/' + consumer._id);
   };
 
   const deleteConsumer = (row) => {

@@ -84,13 +84,13 @@ function ConsumerForm(props) {
   const monthsOrder = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];
   const days = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
 
-  let ProdTimes = props.buyState?.map((item) => {
+  let ProdTimes = props.cart?.lines?.map((item) => {
     if (item.product && item.art && item.product.productionTime !== undefined) {
       return item.product.productionTime;
     }
   });
 
-  let orderedProdT = ProdTimes.sort(function (a, b) {
+  let orderedProdT = ProdTimes?.sort(function (a, b) {
     if (a.toLowerCase() > b.toLowerCase()) {
       return 1;
     }
@@ -100,7 +100,7 @@ function ConsumerForm(props) {
     return 0;
   });
 
-  let readyDate = new Date(today.setDate(today.getDate() + Number(orderedProdT[0])));
+  let readyDate = new Date(today.setDate(today.getDate() + Number(orderedProdT && orderedProdT[0])));
 
   if (readyDate.getDay() === 6) {
     readyDate = new Date(today.setDate(today.getDate() + 2));

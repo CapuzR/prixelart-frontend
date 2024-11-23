@@ -96,10 +96,14 @@ export default function Login() {
     } else {
       try {
         const base_url = import.meta.env.VITE_BACKEND_URL + '/login';
+        console.log("base_url", base_url);
         const response = await axios.post(base_url, {
           email: email.toLowerCase(),
           password,
-        });
+        },
+        { withCredentials: true }
+      );
+        console.log("response", response);
 
         if (response.data.error_info) {
           setErrorMessage(response.data.error_message);
@@ -138,7 +142,7 @@ export default function Login() {
 
   const redirectUser = (role, username) => {
     const rolePath = role === 'Organization' ? '/org=' : '/prixer=';
-    history.push({ pathname: `${rolePath}${username}` });
+    window.location.href = `${import.meta.env.VITE_FRONTEND_URL}${rolePath}${username}`;
   };
 
   const handleTermsAcceptance = () => {
@@ -150,6 +154,7 @@ export default function Login() {
   useEffect(() => {
     const base_url = import.meta.env.VITE_BACKEND_URL + '/art/random';
 
+    console.log("base_url", base_url);
     axios.get(base_url).then((response) => {
       if (response.data.arts) {
         response.data.arts.imageUrl && setArt(response.data.arts.largeThumbUrl);

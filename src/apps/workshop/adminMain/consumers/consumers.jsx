@@ -110,7 +110,7 @@ export default function Consumers(props) {
   const [consumerEdit, setConsumerEdit] = useState(true);
 
   const handleConsumerAction = (action) => {
-    history.push({ pathname: '/admin/consumer/' + action });
+    history.push({ pathname: '/consumer/' + action });
   };
 
   useEffect(() => {

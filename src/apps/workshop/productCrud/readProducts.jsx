@@ -152,27 +152,27 @@ export default function ReadProducts(props) {
     props.setProduct(product);
     localStorage.setItem('product', JSON.stringify(product));
     // setUpdateProduct(true);
-    history.push('/admin/product/' + action + '/' + product._id);
+    history.push('/product/' + action + '/' + product._id);
   };
 
   const handleActiveDiscount = (discount, action) => {
     props.setDiscount(discount);
     localStorage.setItem('discount', JSON.stringify(discount));
-    history.push('/admin/product/' + action + '/' + discount._id);
+    history.push('/product/' + action + '/' + discount._id);
     props.setActiveCrud('updateDiscount');
   };
 
   const handleActiveSurcharge = (surcharge, action) => {
     props.setSurcharge(surcharge);
     localStorage.setItem('surcharge', JSON.stringify(surcharge));
-    history.push('/admin/product/' + action + '/' + surcharge._id);
+    history.push('/product/' + action + '/' + surcharge._id);
     props.setActiveCrud('updateSurcharge');
   };
 
   const handleActiveCategory = (category, action) => {
     props.setCategory(category);
     localStorage.setItem('category', JSON.stringify(category));
-    history.push('/admin/product/' + action + '/' + category._id);
+    history.push('/product/' + action + '/' + category._id);
     props.setActiveCrud('updateCategory');
   };
   const deleteProduct = async (id) => {

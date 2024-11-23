@@ -131,7 +131,7 @@ export default function UpdateAdminRole(props) {
       } else {
         setErrorMessage('Actualización de rol de Administrador exitoso.');
         setSnackBarError(true);
-        history.push({ pathname: '/admin/user/read' });
+        history.push({ pathname: '/user/read' });
       }
     }
   };

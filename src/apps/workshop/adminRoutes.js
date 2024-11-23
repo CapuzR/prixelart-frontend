@@ -1,7 +1,7 @@
 import React from 'react';
 import { Route, Switch } from 'react-router-dom';
-import AdminLogin from 'apps/admin/adminLogin/adminLoginPage';
-import AdminMain from 'apps/admin/adminMain/adminMain';
+import AdminLogin from 'apps/adminLogin/adminLoginPage';
+import AdminMain from 'apps/adminMain/adminMain';
 
 const AdminRoutes = ({
   dollarValue,
@@ -27,11 +27,11 @@ const AdminRoutes = ({
 }) => {
   return (
     <Switch>
-      <Route path="/admin/inicio">
+      <Route path="/inicio">
         <AdminLogin setPermissions={setPermissions} />
       </Route>
 
-      <Route path="/admin/dashboard">
+      <Route path="/dashboard">
         <AdminMain
           dollarValue={dollarValue}
           setDollarValue={setDollarValue}
@@ -42,7 +42,7 @@ const AdminRoutes = ({
         />
       </Route>
 
-      <Route path="/admin/main">
+      <Route path="/main">
         <AdminMain
           buyState={buyState}
           setBuyState={setBuyState}
@@ -63,11 +63,11 @@ const AdminRoutes = ({
         />
       </Route>
 
-      <Route path="/admin/user/create">
+      <Route path="/user/create">
         <AdminMain dollarValue={dollarValue} permissions={permissions} />
       </Route>
 
-      <Route path="/admin/users/read">
+      <Route path="/users/read">
         <AdminMain
           dollarValue={dollarValue}
           setDollarValue={setDollarValue}
@@ -81,32 +81,32 @@ const AdminRoutes = ({
       <Route
         exact
         path={[
-          '/admin/user/update/:userId',
-          '/admin/order/read',
-          '/admin/product/read',
-          '/admin/shipping-method/read',
-          '/admin/prixer/read',
-          '/admin/product/update/:productId',
-          '/admin/consumer/update/:consumerId',
-          '/admin/payment-method/read',
-          '/admin/shipping-method/read',
-          '/admin/testimonials/read',
-          '/admin/product/createDiscount',
-          '/admin/product/updateDiscount/:discountId',
-          '/admin/product/createSurcharge',
-          '/admin/product/updateSurcharge/:surchargeId',
-          '/admin/product/createCategory',
-          '/admin/product/updateCategory/:categoryId',
+          '/user/update/:userId',
+          '/order/read',
+          '/product/read',
+          '/shipping-method/read',
+          '/prixer/read',
+          '/product/update/:productId',
+          '/consumer/update/:consumerId',
+          '/payment-method/read',
+          '/shipping-method/read',
+          '/testimonials/read',
+          '/product/createDiscount',
+          '/product/updateDiscount/:discountId',
+          '/product/createSurcharge',
+          '/product/updateSurcharge/:surchargeId',
+          '/product/createCategory',
+          '/product/updateCategory/:categoryId',
         ]}
       >
         <AdminMain permissions={permissions} />
       </Route>
 
-      <Route path="/admin/product/create">
+      <Route path="/product/create">
         <AdminMain dollarValue={dollarValue} permissions={permissions} />
       </Route>
 
-      <Route path="/admin/products/read">
+      <Route path="/products/read">
         <AdminMain
           dollarValue={dollarValue}
           setDollarValue={setDollarValue}
@@ -117,11 +117,11 @@ const AdminRoutes = ({
         />
       </Route>
 
-      <Route path="/admin/consumer/create">
+      <Route path="/consumer/create">
         <AdminMain dollarValue={dollarValue} permissions={permissions} />
       </Route>
 
-      <Route path="/admin/consumers/read">
+      <Route path="/consumers/read">
         <AdminMain
           dollarValue={dollarValue}
           setDollarValue={setDollarValue}

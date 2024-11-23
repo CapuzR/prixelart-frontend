@@ -39,6 +39,8 @@ import SaveIcon from '@material-ui/icons/Save';
 import Tooltip from '@material-ui/core/Tooltip';
 import validations from '../../consumer/checkout/validations';
 import axios from 'axios';
+import { useConversionRate, useSnackBar } from 'context/GlobalContext';
+import { useCart } from 'context/CartContext';
 
 function Copyright() {
   return (
@@ -172,6 +174,9 @@ export default function AdminMain(props) {
   const location = useLocation();
   const history = useHistory();
   const [openDollarView, setOpenDollarView] = useState(false);
+  const { showSnackBar } = useSnackBar();
+  const { conversionRate, setConversionRate } = useConversionRate();
+  const { cart } = useCart();
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -181,12 +186,9 @@ export default function AdminMain(props) {
   };
 
   useEffect(() => {
-    location.pathname.split('/').length === 7
-      ? setActive(location.pathname.split('/')[location.pathname.split('/').length - 5])
-      : location.pathname.split('/').length === 5
-        ? setActive(location.pathname.split('/')[location.pathname.split('/').length - 3])
-        : location.pathname.split('/').length === 4 &&
-          setActive(location.pathname.split('/')[location.pathname.split('/').length - 2]);
+    const pathSegments = location.pathname.split('/').filter(Boolean);
+    const rootSegment = pathSegments.length > 0 ? pathSegments[0] : '';
+    setActive(rootSegment);
   }, [location.pathname]);
 
   useEffect(() => {
@@ -254,12 +256,11 @@ export default function AdminMain(props) {
               {active === 'user' ? (
                 <AdminUser
                   permissions={props.permissions}
-                  // admins={props.admins}
                 />
               ) : active === 'dashboard' ? (
                 <Dashboard />
               ) : active === 'product' ? (
-                <Products permissions={props.permissions} dollarValue={props.dollarValue} />
+                <Products permissions={props.permissions} dollarValue={conversionRate} />
               ) : active === 'consumer' ? (
                 <Consumers permissions={props.permissions} />
               ) : active === 'movements' ? (
@@ -270,31 +271,14 @@ export default function AdminMain(props) {
                 <ShippingMethods permissions={props.permissions} />
               ) : active === 'order' ? (
                 <Orders
-                  dollarValue={props.dollarValue}
-                  sellers={props.sellers}
-                  admins={props.admins}
-                  buyState={props.buyState}
-                  setBuyState={props.setBuyState}
+                  dollarValue={conversionRate}
                   permissions={props.permissions}
-                  changeQuantity={props.changeQuantity}
-                  deleteItemInBuyState={props.deleteItemInBuyState}
-                  deleteProductInItem={props.deleteProductInItem}
-                  setSelectedArtToAssociate={props.setSelectedArtToAssociate}
-                  setSelectedProductToAssociate={props.setSelectedProductToAssociate}
-                  setValues={props.setValuesConsumerForm}
-                  values={props.valuesConsumerForm}
-                  addItemToBuyState={props.addItemToBuyState}
-                  AssociateProduct={props.AssociateProduct}
-                  valuesConsumer={props.valuesConsumerForm}
-                  setValuesConsumer={props.setValues}
                 />
               ) : active === 'prixer' ? (
                 <Prixers permissions={props.permissions} />
               ) : active === 'preferences' ? (
                 <Preferences
                   permissions={props.permissions}
-                  setSearchResult={props.setSearchResult}
-                  searchResult={props.searchResult}
                 />
               ) : active === 'testimonials' ? (
                 <Testimonials permissions={props.permissions} />
@@ -340,27 +324,27 @@ export default function AdminMain(props) {
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 <TextField
                   variant="outlined"
-                  value={props.dollarValue}
+                  value={conversionRate}
                   onChange={(e) => {
                     if (e.target.value < 0) {
-                      props.setDollarValue(0);
+                      setConversionRate(0);
                     } else {
-                      props.setDollarValue(e.target.value);
+                      setConversionRate(e.target.value);
                     }
                   }}
                   error={
-                    props.dollarValue !== undefined && !validations.isAValidPrice(props.dollarValue)
+                    conversionRate !== undefined && !validations.isAValidPrice(conversionRate)
                   }
                   type={'number'}
                 />
                 <Fab
-                  disabled={!validations.isAValidPrice(props.dollarValue)}
+                  disabled={!validations.isAValidPrice(conversionRate)}
                   color="primary"
                   size="small"
                   onClick={() => {
-                    props.updateDollarValue();
-                    props.setOpen(true);
-                    props.setMessage('Tasa del dólar actualizada satisfactoriamente.');
+                    setConversionRate();
+                    setOpenDollarView(true);
+                    showSnackBar('Tasa del dólar actualizada satisfactoriamente.');
                     handleClose();
                   }}
                   style={{ marginRight: 10, marginLeft: 10 }}

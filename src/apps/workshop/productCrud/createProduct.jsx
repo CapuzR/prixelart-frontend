@@ -260,7 +260,7 @@ export default function CreateProduct() {
             setToPublicPrice('');
             setFromPrixerPrice('');
             setToPrixerPrice('');
-            history.push('/admin/product/read');
+            history.push('/product/read');
           }
         }
       }

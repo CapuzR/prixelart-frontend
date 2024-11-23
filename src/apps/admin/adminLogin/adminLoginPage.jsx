@@ -98,7 +98,7 @@ export default function Login(props) {
         password: password,
       };
       axios
-        .post(base_url, data)
+        .post(base_url, data, { withCredentials: true })
         .then((response) => {
           if (response.data.error_info === 'error_pw') {
             setPassword('');
@@ -118,7 +118,7 @@ export default function Login(props) {
             localStorage.setItem('adminToken', JSON.stringify(token));
             localStorage.setItem('adminTokenV', response.data.adminToken);
             localStorage.setItem('adminTokenExpire', JSON.stringify(now.getTime() + 21600000));
-            history.push({ pathname: '/admin/order/read' });
+            history.push({ pathname: '/order/read' });
             props.setPermissions(token.permissions);
             // props.checkP();
             // props.loadAdmins();

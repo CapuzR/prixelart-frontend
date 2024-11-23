@@ -111,11 +111,11 @@ export default function Variants(props) {
     if (action === 'read') {
       setVariant('');
       history.push({
-        pathname: '/admin/product/' + props.product._id + '/variant/read',
+        pathname: '/product/' + props.product._id + '/variant/read',
       });
     } else {
       history.push({
-        pathname: '/admin/product/' + props.product._id + '/variant/create',
+        pathname: '/product/' + props.product._id + '/variant/create',
       });
     }
   };

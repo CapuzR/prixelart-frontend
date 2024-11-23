@@ -166,7 +166,7 @@ export default function CreateSurcharge() {
         setValue();
         setAppliedProducts([]);
         setAppliedUsers([]);
-        history.push('/admin/product/read');
+        history.push('/product/read');
       }
     }
   };

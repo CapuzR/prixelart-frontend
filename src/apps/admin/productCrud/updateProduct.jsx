@@ -353,7 +353,7 @@ export default function UpdateProduct(props) {
             setSnackBarError(true);
             setButtonState(false);
 
-            // history.push("/admin/product/read");
+            // history.push("/product/read");
           }
         }
       }

@@ -67,7 +67,7 @@ export default function CreatePaymentMethod(props) {
       setName('');
       setInstructions('');
       setPaymentData('');
-      history.push({ pathname: '/admin/payment-method/read' });
+      history.push({ pathname: '/payment-method/read' });
       setLoading(false);
     }
   };

@@ -242,7 +242,7 @@ export default function CreateVariant(props) {
           setSnackBarError(true);
           props.setVariant('');
         } else {
-          history.push('/admin/product/update/' + props.product._id);
+          history.push('/product/update/' + props.product._id);
           setSnackBarError(true);
           setErrorMessage('Actualización de variante exitoso.');
           setActive('');

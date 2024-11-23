@@ -111,7 +111,7 @@ export default function CreateAdminRole() {
       } else {
         setErrorMessage('Registro de Admin exitoso.');
         setSnackBarError(true);
-        history.push({ pathname: '/admin/user/read' });
+        history.push({ pathname: '/user/read' });
       }
     }
   };

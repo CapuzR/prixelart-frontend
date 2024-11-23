@@ -127,7 +127,7 @@ export default function UpAdmin(props) {
         setLastname('');
         setEmail('');
         setPhone('');
-        history.push({ pathname: '/admin/user/read' });
+        history.push({ pathname: '/user/read' });
       }
     }
   };

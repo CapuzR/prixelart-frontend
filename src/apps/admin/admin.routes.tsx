@@ -18,69 +18,80 @@ const AdminRoutes: React.FC<AdminRoutesProps> = ({
 }) => {
   return (
     <Switch>
-      <Route path="/admin/inicio">
-        <AdminLogin setPermissions={setPermissions} />
+      <Route path="/dashboard">
+        <AdminMain 
+        permissions={permissions}
+        valuesConsumerForm={valuesConsumerForm}
+        setValues={setValuesConsumerForm}
+         />
       </Route>
 
-      <Route path="/admin/dashboard">
-        <AdminMain permissions={permissions} />
-      </Route>
-
-      <Route path="/admin/main">
+      <Route path="/main">
         <AdminMain
           setValues={setValuesConsumerForm}
-          values={valuesConsumerForm}
+          valuesConsumerForm={valuesConsumerForm}
           permissions={permissions}
         />
       </Route>
 
-      <Route path="/admin/user/create">
+      <Route path="/user/create">
         <AdminMain permissions={permissions} />
       </Route>
 
-      <Route path="/admin/users/read">
+      <Route path="/users/read">
         <AdminMain permissions={permissions} />
       </Route>
 
       <Route
         exact
         path={[
-          '/admin/user/update/:userId',
-          '/admin/order/read',
-          '/admin/product/read',
-          '/admin/shipping-method/read',
-          '/admin/prixer/read',
-          '/admin/product/update/:productId',
-          '/admin/consumer/update/:consumerId',
-          '/admin/payment-method/read',
-          '/admin/shipping-method/read',
-          '/admin/testimonials/read',
-          '/admin/product/createDiscount',
-          '/admin/product/updateDiscount/:discountId',
-          '/admin/product/createSurcharge',
-          '/admin/product/updateSurcharge/:surchargeId',
-          '/admin/product/createCategory',
-          '/admin/product/updateCategory/:categoryId',
+          '/user/update/:userId',
+          '/order/read',
+          '/users/read',
+          '/user/read',
+          '/product/read',
+          '/consumer/read',
+          '/movements/read',
+          '/product/create',
+          '/preferences/read',
+          '/shipping-method/read',
+          '/prixer/read',
+          '/product/update/:productId',
+          '/consumer/update/:consumerId',
+          '/payment-method/read',
+          '/shipping-method/read',
+          '/testimonials/read',
+          '/product/createDiscount',
+          '/product/updateDiscount/:discountId',
+          '/product/createSurcharge',
+          '/product/updateSurcharge/:surchargeId',
+          '/product/createCategory',
+          '/product/updateCategory/:categoryId',
         ]}
       >
         <AdminMain permissions={permissions} />
       </Route>
 
-      <Route path="/admin/product/create">
+      <Route path="/product/create">
         <AdminMain permissions={permissions} />
       </Route>
 
-      <Route path="/admin/products/read">
+      <Route path="/products/read">
         <AdminMain permissions={permissions} />
       </Route>
 
-      <Route path="/admin/consumer/create">
+      <Route path="/consumer/create">
         <AdminMain permissions={permissions} />
       </Route>
 
-      <Route path="/admin/consumers/read">
+      <Route path="/consumers/read">
         <AdminMain permissions={permissions} />
       </Route>
+      
+      <Route>
+        <AdminLogin setPermissions={setPermissions} />
+      </Route>
+
     </Switch>
   );
 };

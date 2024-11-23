@@ -159,7 +159,7 @@ export default function Products(props) {
     localStorage.getItem('category') ? JSON.parse(localStorage.getItem('category')) : undefined
   );
   const handleProductAction = (action) => {
-    history.push({ pathname: '/admin/product/' + action });
+    history.push({ pathname: '/product/' + action });
   };
   useEffect(() => {
     location.pathname.split('/').length === 5

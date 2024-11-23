@@ -111,7 +111,7 @@ export default function CreateConsumer(props) {
         setNationalId('');
         setGender('');
         setLoading(false);
-        history.push({ pathname: '/admin/consumer/read' });
+        history.push({ pathname: '/consumer/read' });
       }
     }
   };

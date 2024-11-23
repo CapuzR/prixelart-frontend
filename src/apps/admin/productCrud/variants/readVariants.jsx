@@ -80,12 +80,12 @@ export default function ReadVariants(props) {
   const handleActive = (variant, action) => {
     props.setVariant(variant);
     action == 'create' &&
-      history.push('/admin/product' + '/' + props.product._id + '/variant/' + action);
+      history.push('/product' + '/' + props.product._id + '/variant/' + action);
     action == 'read' &&
-      history.push('/admin/product' + '/' + props.product._id + '/variant/' + action);
+      history.push('/product' + '/' + props.product._id + '/variant/' + action);
     action == 'update' &&
       history.push(
-        '/admin/product' + '/' + props.product._id + '/variant/' + variant._id + '/' + action
+        '/product' + '/' + props.product._id + '/variant/' + variant._id + '/' + action
       );
   };
 

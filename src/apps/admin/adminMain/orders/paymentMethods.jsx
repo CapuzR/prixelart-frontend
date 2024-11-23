@@ -109,7 +109,7 @@ export default function PaymentMethods(props) {
   const [paymentMethodEdit, setPaymentMethodEdit] = useState(true);
 
   const handlePaymentMethodAction = (action) => {
-    history.push({ pathname: '/admin/payment-method/' + action });
+    history.push({ pathname: '/payment-method/' + action });
   };
 
   useEffect(() => {

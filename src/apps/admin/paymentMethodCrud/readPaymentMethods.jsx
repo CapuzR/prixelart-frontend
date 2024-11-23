@@ -61,7 +61,7 @@ export default function ReadPaymentMethods(props) {
 
   const handleActive = (paymentMethod, action) => {
     props.setPaymentMethod(paymentMethod);
-    history.push('/admin/payment-method/' + action + '/' + paymentMethod._id);
+    history.push('/payment-method/' + action + '/' + paymentMethod._id);
   };
 
   const deleteMethod = async (id) => {

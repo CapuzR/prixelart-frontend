@@ -11,9 +11,6 @@ import PrixerStats from 'apps/artist/prixerProfile/prixerStats';
 const ArtistRoutes = ({}) => {
   return (
     <Switch>
-      <Route path="/iniciar">
-        <Login />
-      </Route>
 
       <Route path="/registrar/prixer">
         <PrixerRegistration />
@@ -35,6 +32,10 @@ const ArtistRoutes = ({}) => {
 
       <Route path="/:username/stats">
         <PrixerStats />
+      </Route>
+
+      <Route>
+        <Login />
       </Route>
     </Switch>
   );

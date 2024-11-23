@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 
-import CssBaseline from '@material-ui/core/CssBaseline';
-import Typography from '@material-ui/core/Typography';
+import CssBaseline from '@mui/material/CssBaseline';
+import Typography from '@mui/material/Typography';
 
-import useMediaQuery from '@material-ui/core/useMediaQuery';
-import { useTheme } from '@material-ui/core/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { useTheme } from '@mui/styles';
 import { useHistory } from 'react-router-dom';
 
 import FloatingAddButton from 'components/floatingAddButton/floatingAddButton';

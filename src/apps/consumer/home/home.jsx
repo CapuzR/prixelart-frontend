@@ -1,33 +1,32 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useTheme } from '@material-ui/core/styles';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
-import Carousel from 'react-material-ui-carousel';
-import Card from '@material-ui/core/Card';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
-import Container from '@material-ui/core/Container';
-import Link from '@material-ui/core/Link';
-import AppBar from 'components/appBar/appBar';
-import Paper from '@material-ui/core/Paper';
+import { useTheme } from '@mui/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import Card from '@mui/material/Card';
+import CssBaseline from '@mui/material/CssBaseline';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
+import { makeStyles } from '@mui/styles';
+import Container from '@mui/material/Container';
+import Link from '@mui/material/Link';
+import AppBar from '@components/appBar';
+import Paper from '@mui/material/Paper';
 
-import InstagramIcon from '@material-ui/icons/Instagram';
+import InstagramIcon from '@mui/icons-material/Instagram';
 import SimpleDialog from 'components/simpleDialog/simpleDialog';
 import FloatingAddButton from 'components/floatingAddButton/floatingAddButton';
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogActions from '@material-ui/core/DialogActions';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogActions from '@mui/material/DialogActions';
 import Img from 'react-cool-img';
 import { useHistory } from 'react-router-dom';
 
-import MaximizeIcon from '@material-ui/icons/Maximize';
-import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
-import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
+import MaximizeIcon from '@mui/icons-material/Maximize';
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 
 import CreateService from 'components/createService/createService';
 import ArtUploader from 'components/artUploader/artUploader';
@@ -394,7 +393,7 @@ export default function Home(props) {
                   component="h1"
                   variant="h1"
                   style={{
-                    fontSize: '1.7em',
+                    fontSize: '1.6em',
                     marginBottom: 0,
                   }}
                   gutterBottom

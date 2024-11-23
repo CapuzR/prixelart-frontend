@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 
 import MDEditor from '@uiw/react-md-editor';
 import Button from 'components/Button';
-import { Share as ShareIcon } from '@material-ui/icons';
+import { Share as ShareIcon } from '@mui/icons-material';
 import { generateWaProductMessage } from 'utils/utils';
 import Grid from '../../art/components/grid';
 import FlowStepper from 'components/FlowStepper/FlowStepper';
@@ -19,8 +19,8 @@ import {
   FormControl,
   Select,
   InputLabel,
-} from '@material-ui/core';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+} from '@mui/material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useHistory, useLocation } from 'react-router-dom';
 
 import { useConversionRate, useCurrency } from 'context/GlobalContext';

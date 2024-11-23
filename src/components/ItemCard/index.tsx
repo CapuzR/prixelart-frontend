@@ -1,6 +1,6 @@
 // import React, { useEffect, useState } from "react";
-// import DeleteIcon from "@material-ui/icons/Delete";
-// import FileCopyIcon from "@material-ui/icons/FileCopy";
+// import DeleteIcon from "@mui/icons-material/Delete";
+// import FileCopyIcon from "@mui/icons-material/FileCopy";
 // import styles from "./styles.module.scss";
 // import { useCart } from 'context/CartContext';
 // import { CartLine } from './interfaces';

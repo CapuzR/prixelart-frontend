@@ -1,6 +1,6 @@
 import React from 'react';
-import { Tooltip, IconButton, Typography, Button } from '@material-ui/core';
-import { Search } from '@material-ui/icons';
+import { Tooltip, IconButton, Typography, Button } from '@mui/material';
+import { Search } from '@mui/icons-material';
 
 export const ProductImageContainer = ({ i, image, size }) => {
   return (

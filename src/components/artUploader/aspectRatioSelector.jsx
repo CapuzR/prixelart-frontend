@@ -1,20 +1,20 @@
 import React, { useEffect } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@mui/styles';
 import { useState, useCallback } from 'react';
 import EasyCropper from './easyCropper';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
-import PhotoLibraryIcon from '@material-ui/icons/PhotoLibrary';
-import Paper from '@material-ui/core/Paper';
-import Grid from '@material-ui/core/Grid';
-import CheckCircleOutlineIcon from '@material-ui/icons/CheckCircleOutline';
-import Tooltip from '@material-ui/core/Tooltip';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
-import { Typography } from '@material-ui/core';
-import IconButton from '@material-ui/core/IconButton';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+import PhotoLibraryIcon from '@mui/icons-material/PhotoLibrary';
+import Paper from '@mui/material/Paper';
+import Grid from '@mui/material/Grid';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import Tooltip from '@mui/material/Tooltip';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
+import { Typography } from '@mui/material';
+import IconButton from '@mui/material/IconButton';
 import getCroppedImg from '../../utils/cropImage';
-import CropIcon from '@material-ui/icons/Crop';
+import CropIcon from '@mui/icons-material/Crop';
 
 const useStyles = makeStyles((theme) => ({
   iconTabs: {

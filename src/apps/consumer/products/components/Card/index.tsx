@@ -1,7 +1,7 @@
 import Button from 'components/Button';
-import Typography from '@material-ui/core/Typography';
-import { WhatsApp, AddShoppingCart } from '@material-ui/icons';
-// import AddShoppingCartIcon from "@material-ui/icons/AddShoppingCart"
+import Typography from '@mui/material/Typography';
+import { WhatsApp, AddShoppingCart } from '@mui/icons-material';
+// import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart"
 import { formatPriceForUI } from 'utils/formats';
 import { Slider } from 'components/Slider';
 import { Image } from 'components/Image';

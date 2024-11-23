@@ -1,25 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import { useTheme } from '@material-ui/core/styles';
+import { makeStyles } from '@mui/styles';
+import { useTheme } from '@mui/styles';
 import axios from 'axios';
 import { useHistory } from 'react-router-dom';
-import Paper from '@material-ui/core/Paper';
-import Button from '@material-ui/core/Button';
-import Backdrop from '@material-ui/core/Backdrop';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Typography from '@material-ui/core/Typography';
-import IconButton from '@material-ui/core/IconButton';
-import Grid from '@material-ui/core/Grid';
+import Paper from '@mui/material/Paper';
+import Button from '@mui/material/Button';
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
+import Typography from '@mui/material/Typography';
+import IconButton from '@mui/material/IconButton';
+import Grid from '@mui/material/Grid';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
-import EditIcon from '@material-ui/icons/Edit';
-import HighlightOffOutlinedIcon from '@material-ui/icons/HighlightOffOutlined';
-import Snackbar from '@material-ui/core/Snackbar';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import EditIcon from '@mui/icons-material/Edit';
+import HighlightOffOutlinedIcon from '@mui/icons-material/HighlightOffOutlined';
+import Snackbar from '@mui/material/Snackbar';
 import ReactQuill, { Quill } from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
-import Tooltip from '@material-ui/core/Tooltip';
+import Tooltip from '@mui/material/Tooltip';
 
 const useStyles = makeStyles((theme) => ({
   root: {

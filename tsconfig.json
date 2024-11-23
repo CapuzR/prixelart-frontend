@@ -2,30 +2,20 @@
   "compilerOptions": {
     "baseUrl": "src",
     "paths": {
-      "@components/*": ["components/*"],
-      "@utils/*": ["utils/*"],
-      "@services/*": ["services/*"],
-      "@art/*": ["consumer/art/*"],
-      "@cart/*": ["consumer/cart/*"],
-      "@checkout/*": ["consumer/checkout/*"],
-      "@flow/*": ["consumer/flow/*"],
-      "@home/*": ["consumer/home/*"],
-      "@prixerServices/*": ["consumer/prixerServices/*"],
-      "@products/*": ["consumer/products/*"],
-      "@testimonials/*": ["consumer/testimonials/*"],
-      "@ups404/*": ["consumer/ups404/*"]
+      "@*": ["*"]
     },
     "jsx": "react-jsx",
     "allowJs": true,
     "checkJs": false,
     "esModuleInterop": true,
-    "module": "ESNext",
+    "module": "esnext",
     "target": "ESNext",
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "outDir": "./dist",
-    "rootDir": "./src"
+    "rootDir": "./src",
+    "types": ["node", "react"]
   },
   "include": ["src"],
   "exclude": ["node_modules", "dist"]

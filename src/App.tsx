@@ -1,10 +1,10 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
-import AppBar from 'components/appBar/appBar';
+import AppBar from '@components/appBar';
 import Routes from './routes';
 import { GlobalProvider, useTheme } from 'context/GlobalContext';
 import ReactGA from 'react-ga';
-import Utility from 'components/Utility';
+import Utility from '@components/Utility';
 import { CartProvider } from 'context/CartContext';
 
 const ThemedApp: React.FC = () => {

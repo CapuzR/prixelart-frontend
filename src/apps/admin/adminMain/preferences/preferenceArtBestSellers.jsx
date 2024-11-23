@@ -1,14 +1,14 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import Backdrop from '@material-ui/core/Backdrop';
-import Paper from '@material-ui/core/Paper';
-import Grid from '@material-ui/core/Grid';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Button from '@material-ui/core/Button';
-import { makeStyles } from '@material-ui/core/styles';
-import Snackbar from '@material-ui/core/Snackbar';
-import { Typography, Checkbox } from '@material-ui/core';
+import Backdrop from '@mui/material/Backdrop';
+import Paper from '@mui/material/Paper';
+import Grid from '@mui/material/Grid';
+import CircularProgress from '@mui/material/CircularProgress';
+import Button from '@mui/material/Button';
+import { makeStyles } from '@mui/styles';
+import Snackbar from '@mui/material/Snackbar';
+import { Typography, Checkbox } from '@mui/material';
 import { VictoryChart, VictoryBar, VictoryAxis, VictoryLabel, VictoryTheme } from 'victory';
 import ArtGrid from '../../../consumer/art/components/grid';
 const useStyles = makeStyles((theme) => ({

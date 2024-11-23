@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { Grid, Paper, Button, Typography } from '@material-ui/core';
-import TextField from '@material-ui/core/TextField';
+import { Grid, Paper, Button, Typography } from '@mui/material';
+import TextField from '@mui/material/TextField';
 
 export function IconsForm({ icons, setIcons }) {
   const [data, setData] = React.useState({

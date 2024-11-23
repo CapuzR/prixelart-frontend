@@ -1,5 +1,5 @@
 import React from 'react';
-import { Alert } from '@material-ui/lab';
+import { Alert } from '@mui/lab';
 
 import { useCart } from 'context/CartContext';
 

@@ -1,28 +1,28 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@mui/styles';
 import { useHistory } from 'react-router-dom';
 
 import Title from '../Title';
 import axios from 'axios';
-import TextField from '@material-ui/core/TextField';
-import InputLabel from '@material-ui/core/InputLabel';
-import OutlinedInput from '@material-ui/core/OutlinedInput';
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
-import Button from '@material-ui/core/Button';
-import Grid from '@material-ui/core/Grid';
-import Snackbar from '@material-ui/core/Snackbar';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import { useTheme } from '@material-ui/core/styles';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
-import FormControl from '@material-ui/core/FormControl';
+import TextField from '@mui/material/TextField';
+import InputLabel from '@mui/material/InputLabel';
+import OutlinedInput from '@mui/material/OutlinedInput';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+import Button from '@mui/material/Button';
+import Grid from '@mui/material/Grid';
+import Snackbar from '@mui/material/Snackbar';
+import CircularProgress from '@mui/material/CircularProgress';
+import { useTheme } from '@mui/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import FormControl from '@mui/material/FormControl';
 import clsx from 'clsx';
 import validations from '../../../consumer/checkout/validations';
-import Checkbox from '@material-ui/core/Checkbox';
-import Backdrop from '@material-ui/core/Backdrop';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import { Typography } from '@material-ui/core';
+import Checkbox from '@mui/material/Checkbox';
+import Backdrop from '@mui/material/Backdrop';
+import InputAdornment from '@mui/material/InputAdornment';
+import { Typography } from '@mui/material';
 import { nanoid } from 'nanoid';
 
 const useStyles = makeStyles((theme) => ({

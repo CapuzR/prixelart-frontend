@@ -11,7 +11,7 @@ import {
   Button,
   TextField,
   Grid,
-} from '@material-ui/core';
+} from '@mui/material';
 
 export default function DialogWarning({}) {
   return (

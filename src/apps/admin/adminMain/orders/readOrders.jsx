@@ -1,25 +1,25 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { makeStyles } from '@material-ui/core/styles';
-import { TableCell, TableHead, TableRow, TableBody } from '@material-ui/core';
-import Table from '@material-ui/core/Table';
-import Button from '@material-ui/core/Button';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
-import FormControl from '@material-ui/core/FormControl';
-import InputLabel from '@material-ui/core/InputLabel';
-import Box from '@material-ui/core/Box';
-import Typography from '@material-ui/core/Typography';
-import TextField from '@material-ui/core/TextField';
-import SearchIcon from '@material-ui/icons/Search';
-import InputAdornment from '@material-ui/core/InputAdornment';
+import { makeStyles } from '@mui/styles';
+import { TableCell, TableHead, TableRow, TableBody } from '@mui/material';
+import Table from '@mui/material/Table';
+import Button from '@mui/material/Button';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import TextField from '@mui/material/TextField';
+import SearchIcon from '@mui/icons-material/Search';
+import InputAdornment from '@mui/material/InputAdornment';
 import moment from 'moment';
 import 'moment/locale/es';
-import { Backdrop } from '@material-ui/core';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import ArrowBack from '@material-ui/icons/ArrowBackIos';
-import ArrowForward from '@material-ui/icons/ArrowForwardIos';
-import IconButton from '@material-ui/core/IconButton';
+import { Backdrop } from '@mui/material';
+import CircularProgress from '@mui/material/CircularProgress';
+import ArrowBack from '@mui/icons-material/ArrowBackIos';
+import ArrowForward from '@mui/icons-material/ArrowForwardIos';
+import IconButton from '@mui/material/IconButton';
 
 const useStyles = makeStyles((theme) => ({
   formControl: {

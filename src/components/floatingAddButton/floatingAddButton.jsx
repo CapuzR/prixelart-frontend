@@ -1,10 +1,10 @@
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Fab from '@material-ui/core/Fab';
-import AddPhotoAlternateIcon from '@material-ui/icons/AddPhotoAlternate';
-import LocalActivityIcon from '@material-ui/icons/LocalActivity';
-import Tooltip from '@material-ui/core/Tooltip';
-import NotificationsIcon from '@material-ui/icons/Notifications';
+import { makeStyles } from '@mui/styles';
+import Fab from '@mui/material/Fab';
+import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
+import LocalActivityIcon from '@mui/icons-material/LocalActivity';
+import Tooltip from '@mui/material/Tooltip';
+import NotificationsIcon from '@mui/icons-material/Notifications';
 import { useHistory } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({

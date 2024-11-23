@@ -1,7 +1,7 @@
 import React from 'react';
 import Grid from 'components/Grid';
 import { useCart } from 'context/CartContext';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import Typography from 'components/Typography';
 import styles from './cartReview.module.scss';
 import { Item } from './interfaces';

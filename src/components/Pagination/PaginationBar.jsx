@@ -1,4 +1,4 @@
-import { Box, Button } from '@material-ui/core';
+import { Box, Button } from '@mui/material';
 
 export default function PaginationBar({ setPageNumber, pageNumber, itemsPerPage, maxLength }) {
   const noOfPages = Math.ceil(maxLength / itemsPerPage);

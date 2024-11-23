@@ -9,8 +9,8 @@ import {
   FormControl,
   Select,
   InputLabel,
-} from '@material-ui/core';
-import { Share as ShareIcon, ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
+} from '@mui/material';
+import { Share as ShareIcon, ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
 
 import Button from 'components/Button';
 

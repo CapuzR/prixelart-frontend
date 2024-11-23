@@ -2,8 +2,8 @@ import React from 'react';
 
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
-import { MenuItem, FormControl, Select, InputLabel } from '@material-ui/core';
-import { Share as ShareIcon } from '@material-ui/icons';
+import { MenuItem, FormControl, Select, InputLabel } from '@mui/material';
+import { Share as ShareIcon } from '@mui/icons-material';
 
 import Grid from '../../art/components/grid';
 import Button from 'components/Button';

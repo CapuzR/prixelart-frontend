@@ -1,11 +1,11 @@
 import { React, useState, useEffect } from 'react';
-import Grid from '@material-ui/core/Grid';
-import { Typography } from '@material-ui/core';
-import InstagramIcon from '@material-ui/icons/Instagram';
-import LanguageIcon from '@material-ui/icons/Language';
-import IconButton from '@material-ui/core/IconButton';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
-import { useTheme } from '@material-ui/core/styles';
+import Grid from '@mui/material/Grid';
+import { Typography } from '@mui/material';
+import InstagramIcon from '@mui/icons-material/Instagram';
+import LanguageIcon from '@mui/icons-material/Language';
+import IconButton from '@mui/material/IconButton';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { useTheme } from '@mui/styles';
 import ReactGA from 'react-ga';
 
 ReactGA.initialize('G-0RWP9B33D8');

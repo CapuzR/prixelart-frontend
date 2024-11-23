@@ -3,8 +3,8 @@ import styles from './styles.module.scss';
 import { Image } from 'components/Image';
 import AddImage from 'components/AddImage';
 import OverlayWithIcon from 'components/OverlayWithIcon';
-import AutorenewIcon from '@material-ui/icons/Autorenew';
-import DeleteIcon from '@material-ui/icons/Delete';
+import AutorenewIcon from '@mui/icons-material/Autorenew';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 export interface ItemPlaygroundProps {
   item: Item;

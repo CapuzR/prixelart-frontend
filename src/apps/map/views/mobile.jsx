@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Grid, Button, Typography } from '@material-ui/core';
+import { Grid, Button, Typography } from '@mui/material';
 
 import { Map } from '../components/map/map.jsx';
 import { IconCard } from '../components/map/card.jsx';

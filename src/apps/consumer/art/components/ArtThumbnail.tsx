@@ -2,11 +2,11 @@ import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 
-import { CardActionArea, Typography, IconButton, Tooltip } from '@material-ui/core';
+import { CardActionArea, Typography, IconButton, Tooltip } from '@mui/material';
 import Img from 'react-cool-img';
-import AddShoppingCartIcon from '@material-ui/icons/AddShoppingCart';
-import Star from '@material-ui/icons/StarRate';
-import StarOutline from '@material-ui/icons/StarOutline';
+import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
+import Star from '@mui/icons-material/StarRate';
+import StarOutline from '@mui/icons-material/StarOutline';
 import { Art } from '../interfaces';
 import { setVisibleArt } from '../api';
 import { addingToCart } from '../services';

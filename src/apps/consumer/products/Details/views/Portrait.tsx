@@ -14,8 +14,8 @@ import {
   FormControl,
   Select,
   InputLabel,
-} from '@material-ui/core';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+} from '@mui/material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 import { getFilteredOptions } from 'apps/consumer/products/services';
 

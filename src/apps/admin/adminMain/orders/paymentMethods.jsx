@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
-import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
+import Grid from '@mui/material/Grid';
+import Paper from '@mui/material/Paper';
 import clsx from 'clsx';
 
-import { makeStyles } from '@material-ui/core/styles';
-import Fab from '@material-ui/core/Fab';
-import AddIcon from '@material-ui/icons/Add';
-import ViewListIcon from '@material-ui/icons/ViewList';
+import { makeStyles } from '@mui/styles';
+import Fab from '@mui/material/Fab';
+import AddIcon from '@mui/icons-material/Add';
+import ViewListIcon from '@mui/icons-material/ViewList';
 import CreatePaymentMethod from '../../paymentMethodCrud/createPaymentMethod';
 import UpdatePaymentMethod from '../../paymentMethodCrud/updatePaymentMethod';
 // import DisablePaymentMethod from '../../paymentMethodCrud/disablePaymentMethod';

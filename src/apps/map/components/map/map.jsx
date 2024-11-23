@@ -1,6 +1,6 @@
 import React from 'react';
 import { Icon } from './icon.jsx';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import { useHistory, useLocation } from 'react-router-dom';
 
 export const Map = ({ icons, setSelectedIcon, setOpenSelected }) => {

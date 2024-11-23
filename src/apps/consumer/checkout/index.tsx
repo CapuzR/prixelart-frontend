@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import axios, { AxiosRequestConfig } from 'axios';
-import { Stepper, Step, StepLabel, Button } from '@material-ui/core';
+import { Stepper, Step, StepLabel, Button } from '@mui/material';
 import ConsumerForm from './ConsumerForm';
 import OrderForm from './OrderForm';
 import styles from './styles.module.scss';

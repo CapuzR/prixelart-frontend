@@ -140,14 +140,14 @@ export interface ItemCardProps {
   item: Item;
   direction?: 'row' | 'column';
   handleFlow: (type: 'producto' | 'arte') => void;
-  handleDeleteElement: (type: 'producto' | 'arte', item: Item) => void;
+  handleDeleteElement?: (type: 'producto' | 'arte', item: Item) => void;
 }
 
 export default function ItemCard({
   item,
   direction = 'row',
-  handleDeleteElement,
   handleFlow,
+  handleDeleteElement,
 }: ItemCardProps) {
   const { currency } = useCurrency();
   const { conversionRate } = useConversionRate();

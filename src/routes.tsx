@@ -44,8 +44,6 @@ const Routes = () => {
       hostname.includes('orgs') ?
         <OrgsRoutes /> :      
         <ConsumerRoutes
-          valuesConsumerForm={valuesConsumerForm}
-          setValuesConsumerForm={setValuesConsumerForm}
           permissions={permissions}
         />
     }

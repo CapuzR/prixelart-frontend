@@ -5,7 +5,7 @@ import ArtDetail from 'apps/consumer/art/components/Detail';
 import Home from 'apps/consumer/home/home';
 import Catalog from 'apps/consumer/art/catalog/views/Catalog';
 import Products from 'apps/consumer/products/Catalog';
-import ShoppingPage from '@apps/consumer/cart';
+import Cart from '@apps/consumer/cart';
 import Prixers from 'apps/consumer/prixers/prixersGrid';
 import OrgGrid from 'apps/consumer/components/orgGrid/orgGrid';
 import PrixersService from 'apps/consumer/prixerServices/prixerService';
@@ -16,14 +16,10 @@ import PrixerProfile from 'apps/artist/prixerProfile/prixerProfile';
 import SoloService from 'apps/artist/prixerProfile/fullscreenPhoto/fullscreenService';
 
 interface ConsumerRoutesProps {
-  valuesConsumerForm: string;
-  setValuesConsumerForm: (value: string) => void;
   permissions: any;
 }
 
-const ArtistRoutes: React.FC<ConsumerRoutesProps> = ({
-  valuesConsumerForm,
-  setValuesConsumerForm,
+const ConsumerRoutes: React.FC<ConsumerRoutesProps> = ({
   permissions,
 }) => {
   const [prixer, setPrixer] = useState<any>(null);
@@ -45,10 +41,7 @@ const ArtistRoutes: React.FC<ConsumerRoutesProps> = ({
         <OrgGrid setPrixer={setPrixer} prixer={prixer} />
       </Route>
       <Route path="/shopping">
-        <ShoppingPage
-          valuesConsumerForm={valuesConsumerForm}
-          setValuesConsumerForm={setValuesConsumerForm}
-        />
+        <Cart />
       </Route>
 
       <Route path="/servicios">
@@ -83,4 +76,4 @@ const ArtistRoutes: React.FC<ConsumerRoutesProps> = ({
   );
 };
 
-export default ArtistRoutes;
+export default ConsumerRoutes;

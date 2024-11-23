@@ -7,7 +7,7 @@ import { useCart } from 'context/CartContext';
 import ActionBar from './components/ActionBar';
 import Typography from 'components/Typography';
 import ItemCard from 'components/ItemCard';
-import { CartLine } from './interfaces';
+import { CartLine, Item } from '../interfaces';
 import { formatPriceForUI } from 'utils/formats';
 import { useConversionRate, useCurrency } from 'context/GlobalContext';
 import { queryCreator } from 'apps/consumer/flow/utils';
@@ -15,7 +15,7 @@ import { queryCreator } from 'apps/consumer/flow/utils';
 export interface LineCardProps {
   line: CartLine;
   direction?: 'row' | 'column';
-  handleDeleteElement?: (type: 'producto' | 'arte', line: CartLine) => void;
+  handleDeleteElement?: (type: 'producto' | 'arte', item: Item) => void;
 }
 
 export default function LineCard({ line, direction, handleDeleteElement }: LineCardProps) {

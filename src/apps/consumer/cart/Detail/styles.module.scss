@@ -3,7 +3,6 @@
   display: flex;
   overflow: hidden;
   align-content: space-between;
-  // width: 100%;
   height: auto;
   @include theme.paper(undefined, theme.$box-shadow-heavy, theme.$border-radius-xl, theme.$spacing-md);
   padding: 0;
@@ -36,7 +35,6 @@
   display: flex;
   flex-direction: column;
   flex: 0;
-  // padding: theme.$spacing-md;
   justify-content: space-between;
 }
 

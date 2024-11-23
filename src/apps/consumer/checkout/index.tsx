@@ -16,13 +16,11 @@ import { Cart } from 'apps/consumer/cart/interfaces';
 //item: { id: id, product: Product, art: Art, price: number }
 interface CheckoutProps {
   cart: Cart;
-  props: {
-    setValuesConsumerForm: (values: any) => void;
-    valuesConsumerForm: any;
-  };
+  valuesConsumerForm: any;
+  setValuesConsumerForm: (values: any) => void;
 }
 
-const Checkout: React.FC<CheckoutProps> = ({ cart, props }) => {
+const Checkout: React.FC<CheckoutProps> = ({ cart, valuesConsumerForm, setValuesConsumerForm }) => {
   const { currency } = useCurrency();
   const { conversionRate } = useConversionRate();
   const { showSnackBar } = useSnackBar();
@@ -45,7 +43,7 @@ const Checkout: React.FC<CheckoutProps> = ({ cart, props }) => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
   };
 
-  let shippingCost = Number(props.valuesConsumerForm?.shippingMethod?.price);
+  let shippingCost = Number(valuesConsumerForm?.shippingMethod?.price);
 
   const createOrder = async () => {
     if (orderPaymentMethod) {
@@ -76,17 +74,17 @@ const Checkout: React.FC<CheckoutProps> = ({ cart, props }) => {
         },
         prixerId: '',
         consumerType: 'Particular',
-        firstname: props.valuesConsumerForm?.name,
-        lastname: props.valuesConsumerForm?.lastName,
-        username: props.valuesConsumerForm?.username,
-        ci: props.valuesConsumerForm?.ci,
-        phone: props.valuesConsumerForm?.phone,
-        email: props.valuesConsumerForm?.email,
-        address: props.valuesConsumerForm?.address,
+        firstname: valuesConsumerForm?.name,
+        lastname: valuesConsumerForm?.lastName,
+        username: valuesConsumerForm?.username,
+        ci: valuesConsumerForm?.ci,
+        phone: valuesConsumerForm?.phone,
+        email: valuesConsumerForm?.email,
+        address: valuesConsumerForm?.address,
         billingAddress:
-          props.valuesConsumerForm?.billingAddress || props.valuesConsumerForm?.address,
+          valuesConsumerForm?.billingAddress || valuesConsumerForm?.address,
         shippingAddress:
-          props.valuesConsumerForm?.shippingAddress || props.valuesConsumerForm?.address,
+          valuesConsumerForm?.shippingAddress || valuesConsumerForm?.address,
       };
 
       const input = {
@@ -101,22 +99,22 @@ const Checkout: React.FC<CheckoutProps> = ({ cart, props }) => {
           address: consumerData.address,
         },
         shippingData: {
-          name: props.valuesConsumerForm?.shippingName,
-          lastname: props.valuesConsumerForm?.shippingLastName,
-          phone: props.valuesConsumerForm?.shippingPhone,
-          address: props.valuesConsumerForm?.shippingAddress,
-          shippingMethod: props.valuesConsumerForm?.shippingMethod,
-          shippingDate: props.valuesConsumerForm?.shippingDate,
+          name: valuesConsumerForm?.shippingName,
+          lastname: valuesConsumerForm?.shippingLastName,
+          phone: valuesConsumerForm?.shippingPhone,
+          address: valuesConsumerForm?.shippingAddress,
+          shippingMethod: valuesConsumerForm?.shippingMethod,
+          shippingDate: valuesConsumerForm?.shippingDate,
         },
         billingData: {
-          name: props.valuesConsumerForm?.billingShName,
-          lastname: props.valuesConsumerForm?.billingShLastName,
-          ci: props.valuesConsumerForm?.billingCi,
-          company: props.valuesConsumerForm?.billingCompany,
-          phone: props.valuesConsumerForm?.billingPhone,
-          address: props.valuesConsumerForm?.billingAddress,
+          name: valuesConsumerForm?.billingShName,
+          lastname: valuesConsumerForm?.billingShLastName,
+          ci: valuesConsumerForm?.billingCi,
+          company: valuesConsumerForm?.billingCompany,
+          phone: valuesConsumerForm?.billingPhone,
+          address: valuesConsumerForm?.billingAddress,
           orderPaymentMethod: orderPaymentMethod.name,
-          destinatary: props.valuesConsumerForm?.destinatary,
+          destinatary: valuesConsumerForm?.destinatary,
         },
         dollarValue: conversionRate,
         tax: taxv2,
@@ -195,7 +193,7 @@ const Checkout: React.FC<CheckoutProps> = ({ cart, props }) => {
           console.log(error.response);
         });
 
-      props.setValuesConsumerForm(undefined);
+      setValuesConsumerForm(undefined);
       history.push({ pathname: '/' });
       setLoading(false);
     } else {
@@ -207,7 +205,7 @@ const Checkout: React.FC<CheckoutProps> = ({ cart, props }) => {
     <div className={styles['checkout-root']}>
       <Stepper activeStep={activeStep}>
         {steps?.map((label) => (
-          <Step key={label} {...props}>
+          <Step key={label}>
             <StepLabel>{label}</StepLabel>
           </Step>
         ))}
@@ -216,18 +214,18 @@ const Checkout: React.FC<CheckoutProps> = ({ cart, props }) => {
       <div className={styles['form-container']}>
         {activeStep === 0 ? (
           <ConsumerForm
-            setValues={props.setValuesConsumerForm}
-            values={props.valuesConsumerForm}
+            setValues={setValuesConsumerForm}
+            values={valuesConsumerForm}
             buyState={cart}
             expanded={expanded}
             setExpanded={setExpanded}
           />
         ) : (
           <OrderForm
-            valuesConsumer={props.valuesConsumerForm}
-            values={props.valuesConsumerForm}
-            setValuesConsumer={props.setValuesConsumerForm}
-            // onCreateConsumer={props.onCreateConsumer}
+            valuesConsumer={valuesConsumerForm}
+            values={valuesConsumerForm}
+            setValuesConsumer={setValuesConsumerForm}
+            // onCreateConsumer={onCreateConsumer}
             buyState={cart}
             orderPaymentMethod={orderPaymentMethod}
             setOrderPaymentMethod={setOrderPaymentMethod}
@@ -251,18 +249,18 @@ const Checkout: React.FC<CheckoutProps> = ({ cart, props }) => {
           variant="contained"
           color="primary"
           disabled={
-            !props.valuesConsumerForm ||
-            !props.valuesConsumerForm.name ||
-            !props.valuesConsumerForm.lastName ||
-            !props.valuesConsumerForm.ci ||
-            !props.valuesConsumerForm.phone ||
-            !props.valuesConsumerForm.email ||
-            !props.valuesConsumerForm.address ||
-            !validations.isAValidEmail(props.valuesConsumerForm?.email) ||
-            !validations.isAValidCi(props.valuesConsumerForm?.ci) ||
-            !validations.isAValidName(props.valuesConsumerForm?.name) ||
-            !validations.isAValidName(props.valuesConsumerForm?.lastName) ||
-            !validations.isAValidPhoneNum(props.valuesConsumerForm?.phone)
+            !valuesConsumerForm ||
+            !valuesConsumerForm.name ||
+            !valuesConsumerForm.lastName ||
+            !valuesConsumerForm.ci ||
+            !valuesConsumerForm.phone ||
+            !valuesConsumerForm.email ||
+            !valuesConsumerForm.address ||
+            !validations.isAValidEmail(valuesConsumerForm?.email) ||
+            !validations.isAValidCi(valuesConsumerForm?.ci) ||
+            !validations.isAValidName(valuesConsumerForm?.name) ||
+            !validations.isAValidName(valuesConsumerForm?.lastName) ||
+            !validations.isAValidPhoneNum(valuesConsumerForm?.phone)
           }
           onClick={activeStep === steps.length - 1 ? createOrder : handleNext}
         >

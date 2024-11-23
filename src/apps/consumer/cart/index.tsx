@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Alert } from '@mui/lab';
 
 import { useCart } from 'context/CartContext';
@@ -9,14 +9,9 @@ import CartGrid from './Grid';
 
 import styles from './styles.module.scss';
 
-// Define the types for props if any additional ones are passed
-interface CartProps {
-  setValuesConsumerForm: (values: any) => void;
-  valuesConsumerForm: any;
-}
-
-const Cart: React.FC<CartProps> = (props) => {
+const Cart = () => {
   const { cart } = useCart();
+  const [valuesConsumerForm, setValuesConsumerForm] = useState<string>('');
 
   return (
     <div className={styles['main-container']}>
@@ -39,7 +34,8 @@ const Cart: React.FC<CartProps> = (props) => {
         <div className={styles['checkout-container']}>
           <Checkout
             cart={cart}
-            props={props}
+            valuesConsumerForm={valuesConsumerForm}
+            setValuesConsumerForm={setValuesConsumerForm}
           />
         </div>
       </div>

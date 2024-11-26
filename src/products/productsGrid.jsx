@@ -21,6 +21,7 @@ import Select from "@material-ui/core/Select"
 import MenuItem from "@material-ui/core/MenuItem"
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry"
 import IconButton from "@material-ui/core/IconButton"
+import Tooltip from "@material-ui/core/Tooltip"
 
 import { useHistory } from "react-router-dom"
 import Switch from "@material-ui/core/Switch"
@@ -28,6 +29,7 @@ import ReactGA from "react-ga"
 import world from "../images/world.svg"
 import worldBlack from "../images/world-black.svg"
 import vzla from "../images/vzla.svg"
+import label from "../images/label.svg"
 import { priceSelect } from "./services"
 import { useGlobalContext } from "../context/globalContext"
 import { ProductCarousel } from "../sharedComponents/productCarousel/productCarousel"
@@ -552,39 +554,54 @@ export default function ProductGrid(props) {
                       }
                       style={{ whiteSpace: "pre-wrap" }}
                     />
-                    {tile?.discount?.name !== undefined && (
+                    <div
+                      style={{
+                        display: "flex",
+                        marginTop: "1rem",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                      }}
+                    >
                       <Typography
                         gutterBottom
-                        style={{
-                          padding: 0,
-                          marginBotom: "0.8rem",
-                          fontSize: "1rem",
-                          backgroundColor: "#404e5c",
-                          width: "fit-content",
-                          padding: "4px 12px",
-                          borderRadius: 4,
-                          margin: "4px 0",
-                          color: "white",
-                          fontWeight: "bold"
-                        }}
+                        style={{ fontSize: 15, padding: 0, marginBottom: 0 }}
+                        variant="h5"
+                        component="h2"
                       >
-                        {`Descuento ${tile.discount.name} de ${
-                          tile.discount.type === "Monto" ? "$" : "%"
-                        }${tile.discount.value}`}
+                        {priceSelect(
+                          tile.priceRange,
+                          currency,
+                          props.dollarValue
+                        )}
                       </Typography>
-                    )}
-                    <Typography
-                      gutterBottom
-                      style={{ fontSize: 15, padding: 0, marginTop: "1rem" }}
-                      variant="h5"
-                      component="h2"
-                    >
-                      {priceSelect(
-                        tile.priceRange,
-                        currency,
-                        props.dollarValue
+                      {tile?.discount?.name !== undefined && (
+                        <Tooltip
+                          title={` Descuento ${tile.discount.name} de ${
+                            tile.discount.type === "Monto" ? "$" : "%"
+                          }${tile.discount.value}`}
+                        >
+                          <Typography
+                            gutterBottom
+                            style={{
+                              padding: "4px 12px 4px 30px",
+                              marginBotom: "0.8rem",
+                              fontSize: "1rem",
+                              background: `url(${label}) transparent 0 / 120% 220% no-repeat`,
+                              width: "fit-content",
+                              borderRadius: 4,
+                              margin: "4px 10px",
+                              color: "white",
+                              fontWeight: "bold",
+                            }}
+                          >
+                            {/* Descuento ${tile.discount.name} de  */}
+                            {`${tile.discount.type === "Monto" ? "$" : "%"}${
+                              tile.discount.value
+                            }`}
+                          </Typography>
+                        </Tooltip>
                       )}
-                    </Typography>
+                    </div>
                   </Grid>
                   <Grid
                     item

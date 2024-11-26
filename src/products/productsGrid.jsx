@@ -34,12 +34,6 @@ import { ProductCarousel } from "../sharedComponents/productCarousel/productCaro
 
 ReactGA.initialize("G-0RWP9B33D8")
 
-{
-  /* TO DO: Llevar CSS a su propio archivo? A mi me gusta más, debatir con War.
-  Yeah, es necesario llevar estilos a su propio scss file pero hay que desarmar MaterialUI o chocarán estilos.
-  
-  Tailwind y cualquier inline desordena el código imo. Hasta qué punto?*/
-}
 const useStyles = makeStyles((theme) => ({
   formControl: {
     margin: theme.spacing(1),
@@ -558,6 +552,27 @@ export default function ProductGrid(props) {
                       }
                       style={{ whiteSpace: "pre-wrap" }}
                     />
+                    {tile?.discount?.name !== undefined && (
+                      <Typography
+                        gutterBottom
+                        style={{
+                          padding: 0,
+                          marginBotom: "0.8rem",
+                          fontSize: "1rem",
+                          backgroundColor: "#404e5c",
+                          width: "fit-content",
+                          padding: "4px 12px",
+                          borderRadius: 4,
+                          margin: "4px 0",
+                          color: "white",
+                          fontWeight: "bold"
+                        }}
+                      >
+                        {`Descuento ${tile.discount.name} de ${
+                          tile.discount.type === "Monto" ? "$" : "%"
+                        }${tile.discount.value}`}
+                      </Typography>
+                    )}
                     <Typography
                       gutterBottom
                       style={{ fontSize: 15, padding: 0, marginTop: "1rem" }}

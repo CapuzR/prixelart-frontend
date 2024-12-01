@@ -18,7 +18,7 @@ import { useTheme } from '@mui/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import FormControl from '@mui/material/FormControl';
 import clsx from 'clsx';
-import validations from '../../../consumer/checkout/validations';
+import { isAValidName, isAValidCi, isAValidPhoneNum, isAValidEmail } from 'utils/validations';
 import Checkbox from '@mui/material/Checkbox';
 import Backdrop from '@mui/material/Backdrop';
 import InputAdornment from '@mui/material/InputAdornment';
@@ -254,7 +254,7 @@ export default function UpdateDiscount(props) {
                   onChange={(e) => {
                     setValue(e.target.value);
                   }}
-                  error={value !== undefined && !validations.isAValidPrice(value)}
+                  error={value !== undefined && !isAValidPrice(value)}
                 />
               ) : (
                 type === 'Porcentaje' && (
@@ -275,7 +275,7 @@ export default function UpdateDiscount(props) {
                     onChange={(e) => {
                       setValue(e.target.value);
                     }}
-                    error={value !== undefined && !validations.isAValidPrice(value)}
+                    error={value !== undefined && !isAValidPrice(value)}
                   />
                 )
               )}

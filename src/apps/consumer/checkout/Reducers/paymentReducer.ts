@@ -1,0 +1,31 @@
+import { PaymentDetails, CheckoutAction } from '../interfaces';
+
+export const paymentReducer = (
+  payment: PaymentDetails,
+  action: CheckoutAction
+): PaymentDetails => {
+  switch (action.type) {
+    case 'SET_PAYMENT_METHOD':
+      return {
+        ...payment,
+        method: Array.isArray(action.payload)
+          ? action.payload[0]
+          : action.payload, // Replace or add a single method
+      };
+
+    case 'REMOVE_PAYMENT_METHOD':
+      return {
+        ...payment,
+        method: undefined, // Clear the payment method when removed
+      };
+
+    case 'SET_PAYMENT_VOUCHER':
+      return {
+        ...payment,
+        voucher: action.payload,
+      };
+
+    default:
+      return payment;
+  }
+};

@@ -20,7 +20,7 @@ import FormControl from '@mui/material/FormControl';
 import Snackbar from '@mui/material/Snackbar';
 import { Backdrop } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
-import validations from '../../../consumer/checkout/validations';
+import { isAValidName, isAValidCi, isAValidPhoneNum, isAValidEmail } from 'utils/validations';
 import axios from 'axios';
 // import CircularProgress from '@mui/material/CircularProgress';
 // import Backdrop from '@mui/material/Backdrop';
@@ -334,7 +334,7 @@ export default function ReadShippingMethod(props) {
                               onChange={(e) => {
                                 setPrice(e.target.value);
                               }}
-                              error={price !== undefined && !validations.isAValidPrice(price)}
+                              error={price !== undefined && !isAValidPrice(price)}
                             />
                           </FormControl>
                         </Grid>
@@ -343,7 +343,7 @@ export default function ReadShippingMethod(props) {
                         variant="contained"
                         color="primary"
                         type="submit"
-                        disabled={!name || !price || !validations.isAValidPrice(price)}
+                        disabled={!name || !price || !isAValidPrice(price)}
                         style={{ marginTop: 20 }}
                       >
                         Crear
@@ -410,7 +410,7 @@ export default function ReadShippingMethod(props) {
                                 setPrice(e.target.value);
                               }}
                               // type={"Number"}
-                              error={price !== undefined && !validations.isAValidPrice(price)}
+                              error={price !== undefined && !isAValidPrice(price)}
                             />
                           </FormControl>
                         </Grid>
@@ -420,7 +420,7 @@ export default function ReadShippingMethod(props) {
                         color="primary"
                         type="submit"
                         style={{ marginTop: 20 }}
-                        disabled={!name || !price || !validations.isAValidPrice(price)}
+                        disabled={!name || !price || !isAValidPrice(price)}
                       >
                         Actualizar
                       </Button>

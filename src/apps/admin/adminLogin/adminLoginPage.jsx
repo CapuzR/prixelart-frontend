@@ -16,7 +16,7 @@ import axios from 'axios';
 import { useHistory } from 'react-router-dom';
 import { useState } from 'react';
 import Snackbar from '@mui/material/Snackbar';
-import { isAValidEmail, isAValidPassword, isAValidUsername } from 'utils/validations.js';
+import { isAValidEmail, isAValidPassword, isAValidUsername } from 'utils/validations';
 import jwt from 'jwt-decode';
 
 import clsx from 'clsx';

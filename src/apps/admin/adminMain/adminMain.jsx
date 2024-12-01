@@ -37,7 +37,7 @@ import Grid from '@mui/material/Grid';
 import TextField from '@mui/material/TextField';
 import SaveIcon from '@mui/icons-material/Save';
 import Tooltip from '@mui/material/Tooltip';
-import validations from '../../consumer/checkout/validations';
+import { isAValidName, isAValidCi, isAValidPhoneNum, isAValidEmail } from 'utils/validations';
 import axios from 'axios';
 import { useConversionRate, useSnackBar } from 'context/GlobalContext';
 import { useCart } from 'context/CartContext';
@@ -333,12 +333,12 @@ export default function AdminMain(props) {
                     }
                   }}
                   error={
-                    conversionRate !== undefined && !validations.isAValidPrice(conversionRate)
+                    conversionRate !== undefined && !isAValidPrice(conversionRate)
                   }
                   type={'number'}
                 />
                 <Fab
-                  disabled={!validations.isAValidPrice(conversionRate)}
+                  disabled={!isAValidPrice(conversionRate)}
                   color="primary"
                   size="small"
                   onClick={() => {

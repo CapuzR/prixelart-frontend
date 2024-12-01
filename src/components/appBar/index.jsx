@@ -228,7 +228,7 @@ export default function MenuAppBar() {
   };
 
   const openShoppingCart = () => {
-    history.push({ pathname: '/shopping' });
+    history.push({ pathname: '/carrito' });
   };
 
   const handleDrawerOpen = () => {

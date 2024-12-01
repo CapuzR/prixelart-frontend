@@ -37,7 +37,7 @@ import Grid from '@mui/material/Grid';
 import TextField from '@mui/material/TextField';
 import SaveIcon from '@mui/icons-material/Save';
 import Tooltip from '@mui/material/Tooltip';
-import validations from '../../consumer/checkout/validations';
+import { isAValidName, isAValidCi, isAValidPhoneNum, isAValidEmail } from 'utils/validations';
 import axios from 'axios';
 
 function Copyright() {
@@ -349,12 +349,12 @@ export default function AdminMain(props) {
                     }
                   }}
                   error={
-                    props.dollarValue !== undefined && !validations.isAValidPrice(props.dollarValue)
+                    props.dollarValue !== undefined && !isAValidPrice(props.dollarValue)
                   }
                   type={'number'}
                 />
                 <Fab
-                  disabled={!validations.isAValidPrice(props.dollarValue)}
+                  disabled={!isAValidPrice(props.dollarValue)}
                   color="primary"
                   size="small"
                   onClick={() => {

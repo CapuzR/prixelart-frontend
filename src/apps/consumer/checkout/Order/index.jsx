@@ -14,7 +14,6 @@ import Select from '@mui/material/Select';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 import Button from '@mui/material/Button';
-// import Tooltip from "@mui/material/Tooltip";
 import { Typography } from '@mui/material';
 import TextField from '@mui/material/TextField';
 import { useEffect, useState } from 'react';
@@ -22,14 +21,14 @@ import axios from 'axios';
 import InfoIcon from '@mui/icons-material/Info';
 import Tooltip from '@mui/material/Tooltip';
 import { format } from 'utils/utils.js';
-import { calculateTotalPrice } from '../cart/services.ts';
+import { calculateTotalPrice } from '../../cart/services.ts';
+import { useConversionRate, useCurrency, useSnackBar } from 'context/GlobalContext';
+
 import {
-  getPVP,
-  getPVM,
   getTotalUnitsPVP,
   getTotalUnitsPVM,
   UnitPriceForOrg,
-} from './pricesFunctions';
+} from '../pricesFunctions';
 
 const useStyles = makeStyles((theme) => ({
   gridInput: {
@@ -41,159 +40,30 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function OrderForm(props) {
+export default function OrderForm({ checkoutState, handleDispatch }) {
   const classes = useStyles();
+  const { currency } = useCurrency();
+  const { conversionRate } = useConversionRate();
   const theme = useTheme();
   const [paymentMethods, setPaymentMethods] = useState([]);
   const [previewVoucher, setPreviewVoucher] = useState();
-  // const isIphone = useMediaQuery(theme.breakpoints.down("xs"));
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [balance, setBalance] = useState(0);
   const [discountList, setDiscountList] = useState([]);
   const [sellers, setSellers] = useState([]);
   const prixer = JSON.parse(localStorage?.getItem('token'))?.username;
 
-  const getDiscounts = async () => {
-    const base_url = import.meta.env.VITE_BACKEND_URL + '/discount/read-allv2';
-    await axios
-      .post(base_url)
-      .then((response) => {
-        setDiscountList(response.data.discounts);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
+  // TODO : Debo obtener el saldo del prixer.
+  // TODO : Debo obtener los vendedores.
+  // TODO : Debo obtener los métodos de pago.
 
-  const updateBuyState = () => {
-    const totals = calculateTotalPrice(props.buyState);
-    props.setBuyState({ ...props.buyState, ...totals });
-  };
-
-  useEffect(() => {
-    if (props.buyState.length > 0) {
-      updateBuyState();
-    }
-  }, [props.buyState]);
-
-  useEffect(() => {
-    // getDiscounts();
-    getPaymentMethod();
-    getSellers();
-  }, []);
-
-  const checkOrgs = (art) => {
-    const org = props.orgs?.find((el) => el.username === art.prixerUsername);
-    return org;
-  };
-
-  const getBalance = async () => {
-    const url = import.meta.env.VITE_BACKEND_URL + '/account/readById';
-    const data = { _id: JSON.parse(localStorage.getItem('token'))?.account };
-    await axios.post(url, data).then((response) => setBalance(response.data.balance));
-  };
-
-  const getPaymentMethod = () => {
-    const base_url = import.meta.env.VITE_BACKEND_URL + '/payment-method/read-all-v2';
-    axios
-      .get(base_url)
-      .then((response) => {
-        if (localStorage?.getItem('token')) {
-          let prev = response.data;
-          prev.push({ name: 'Balance Prixer' });
-          setPaymentMethods(prev);
-        } else {
-          setPaymentMethods(response.data);
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
-  const getSellers = () => {
-    const base_url = import.meta.env.VITE_BACKEND_URL + '/admin/getSellers';
-    axios.get(base_url).then((response) => {
-      setSellers(response.data);
-    });
-  };
-
-  useEffect(() => {
-    if (
-      JSON.parse(localStorage.getItem('token')) &&
-      JSON.parse(localStorage.getItem('token')).username
-    ) {
-      getBalance();
-    }
-  }, []);
-
-  const onImageChange = async (e) => {
-    if (e.target.files && e.target.files[0]) {
-      props.setPaymentVoucher(e.target.files[0]);
-      setPreviewVoucher(URL.createObjectURL(e.target.files[0]));
-    }
-  };
-
-  const getTotalPrice = (state) => {
-    // const org = checkOrgs(item.art)
-    console.log('STATE', state);
-    if (
-      JSON.parse(localStorage?.getItem('token')) &&
-      JSON.parse(localStorage?.getItem('token'))?.username
-    ) {
-      return getTotalUnitsPVM(
-        state,
-        props.currency,
-        props.dollarValue,
-        discountList,
-        prixer
-      ).toLocaleString('de-DE', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      });
-    } else {
-      return getTotalUnitsPVP(
-        state,
-        props.currency,
-        props.dollarValue,
-        discountList
-      ).toLocaleString('de-DE', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      });
-    }
-  };
-
-  const getTotalCombinedItems = (state) => {
-    const totalNotCompleted = state.filter((item) => !item.art || !item.product);
-    return {
-      totalNotCompleted,
-    };
-  };
-  const getTotal = (x) => {
-    let n = [];
-    n.push(Number(getTotalPrice(props.buyState).replace(/[.]/gi, '').replace(/[,]/gi, '.')));
-    n.push(getIvaCost(props.buyState));
-
-    if (props.valuesConsumer.shippingMethod) {
-      if (props.currency) {
-        let prev = shippingCost * props.dollarValue;
-        {
-          n.push(prev);
-        }
-      } else {
-        n.push(shippingCost);
-      }
-    }
-    let total = n.reduce(function (a, b) {
-      return a + b;
-    });
-    return total.toLocaleString('de-DE', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    });
-  };
-
-  let shippingCost = Number(props.valuesConsumer.shippingMethod?.price.replace(/[$]/gi, ''));
+  //Voucher O.O
+  // const onImageChange = async (e) => {
+  //   if (e.target.files && e.target.files[0]) {
+  //     props.setPaymentVoucher(e.target.files[0]);
+  //     setPreviewVoucher(URL.createObjectURL(e.target.files[0]));
+  //   }
+  // };
 
   return (
     <>
@@ -214,7 +84,7 @@ export default function OrderForm(props) {
                 <div style={{ fontWeight: 'bold' }}>Items:</div>
                 <div>
                   <List component="div" disablePadding>
-                    {props.buyState?.map((item, index) => (
+                    {checkoutState.order.lines.map((item, index) => (
                       <>
                         {item.product && item.art && (
                           <>
@@ -255,7 +125,7 @@ export default function OrderForm(props) {
                                           >
                                             Monto:
                                             <br></br>
-                                            {props.currency ? ' Bs' : '$'}
+                                            {currency ? ' Bs' : '$'}
                                             {item.product.price * item.quantity}
                                           </div>
                                         </Grid>
@@ -266,7 +136,8 @@ export default function OrderForm(props) {
                               </List>
                             </Collapse>
                             <Divider />
-                            {getTotalCombinedItems(props.buyState).totalNotCompleted?.length >=
+                            {/* TODO : Tengo que ver porque no debería ser posible hacer checkout si faltan productos por definir. */}
+                            {/* {getTotalCombinedItems(props.buyState).totalNotCompleted?.length >=
                               1 && (
                               <Typography
                                 style={{
@@ -280,7 +151,7 @@ export default function OrderForm(props) {
                                     } productos por definir.`
                                   : `Falta 1 producto por definir.`}
                               </Typography>
-                            )}
+                            )} */}
                           </>
                         )}
                       </>
@@ -301,8 +172,8 @@ export default function OrderForm(props) {
                           <InputLabel htmlFor="outlined-age-simple">Método de pago</InputLabel>
                           <Select
                             input={<OutlinedInput />}
-                            value={props.orderPaymentMethod}
-                            onChange={(event) => props.setOrderPaymentMethod(event.target.value)}
+                            value={checkoutState.order.paymentMethod}
+                            onChange={(event) => handleDispatch('SET_ORDER_PAYMENT_METHOD', event.target.value)}
                           >
                             {paymentMethods &&
                               paymentMethods.map((m) => <MenuItem value={m}>{m.name}</MenuItem>)}
@@ -365,7 +236,7 @@ export default function OrderForm(props) {
                           flexDirection: 'column',
                         }}
                       >
-                        {props.orderPaymentMethod?.name === 'Balance Prixer' && (
+                        {checkoutState.order.paymentMethod?.name === 'Balance Prixer' && (
                           <div
                             style={{
                               backgroundColor: '#d33f49',
@@ -376,9 +247,9 @@ export default function OrderForm(props) {
                               paddingRight: 5,
                             }}
                           >
-                            {props.currency
+                            {currency
                               ? 'Saldo disponible: Bs' +
-                                (balance * props.dollarValue).toLocaleString('de-DE', {
+                                (balance * conversionRate).toLocaleString('de-DE', {
                                   minimumFractionDigits: 2,
                                   maximumFractionDigits: 2,
                                 })
@@ -390,32 +261,28 @@ export default function OrderForm(props) {
                           </div>
                         )}
                         <strong>
-                          {props.currency ? 'Subtotal: Bs' : 'Subtotal: $'}
-                          {props.buyState.subTotal}
+                          {`${currency === 'Bs' ? 'Subtotal: Bs' : 'Subtotal: $'}`}
+                          {checkoutState.order.subTotal}
                         </strong>
-                        <strong>
-                          {props.currency ? 'IVA: Bs' : 'IVA: $'}
-                          {props.buyState.IVA}
-                        </strong>
-                        {props.valuesConsumer.shippingMethod && props.currency ? (
-                          <strong>{`Envío: Bs${(shippingCost * props.dollarValue).toLocaleString(
-                            'de-DE',
-                            {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2,
-                            }
-                          )}`}</strong>
+                        {checkoutState.order.tax.length > 0 && checkoutState.order.tax.map((tax) => (
+                          <strong>
+                            {`IVA: ${tax.name}`}
+                            {tax.value}
+                          </strong>
+                        ))}
+                        {checkoutState.order.consumerDetails.shipping.method && currency == 'Bs' ? (
+                          <strong>{`Envío: Bs${priceToUI(checkoutState.order.shippingCost * conversionRate)}`}</strong>
                         ) : (
-                          props.valuesConsumer.shippingMethod && (
-                            <strong>{`Envío: $${shippingCost.toLocaleString('de-DE', {
+                          checkoutState.order.consumerDetails.shipping.method && (
+                            <strong>{`Envío: $${checkoutState.order.shippingCost.toLocaleString('de-DE', {
                               minimumFractionDigits: 2,
                               maximumFractionDigits: 2,
                             })}`}</strong>
                           )
                         )}
                         <strong>
-                          {props.currency ? 'Total: Bs' : 'Total: $'}
-                          {props.buyState.total}
+                          {`${currency === 'Bs' ? 'Total: Bs' : 'Total: $'}`}
+                          {checkoutState.order.total}
                         </strong>
                         <br />
                       </Grid>
@@ -455,8 +322,8 @@ export default function OrderForm(props) {
 
                           <Select
                             input={<OutlinedInput />}
-                            value={props.createdBy}
-                            onChange={(event) => props.setSeller(event.target.value)}
+                            value={checkoutState.seller}
+                            onChange={(event) => handleDispatch('SET_SELLER', event.target.value)}
                           >
                             <MenuItem value={undefined}></MenuItem>
                             {sellers && sellers.map((m) => <MenuItem value={m}>{m}</MenuItem>)}
@@ -477,8 +344,8 @@ export default function OrderForm(props) {
                         label="Observaciones"
                         fullWidth
                         className={classes.textField}
-                        value={props.observations}
-                        onChange={(e) => props.setObservations(e.target.value)}
+                        value={checkoutState.observations}
+                        onChange={(e) => handleDispatch('SET_OBSERVATIONS', e.target.value)}
                       />
                     </Grid>
                   </List>

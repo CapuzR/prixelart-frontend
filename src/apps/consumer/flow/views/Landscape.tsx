@@ -101,7 +101,7 @@ const Landscape: React.FC<LandscapeProps> = (props) => {
                         id={att.name}
                         name={att.name}
                         value={props.item?.product?.selection[att.name] || ''}
-                        onChange={props.handleSelection}
+                        onChange={(e) => props.handleSelection(e as unknown as React.ChangeEvent<{ name: string; value: number }>)}
                         label={att.name}
                       >
                         <MenuItem value="">

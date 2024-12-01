@@ -56,7 +56,7 @@ export default function CreateAdmin() {
 
   //Password
   const handlePasswordChange = (e) => {
-    if (validations.isAValidPassword(e.target.value)) {
+    if (isAValidPassword(e.target.value)) {
       setPassword(e.target.value);
       setPasswordError(false);
       setSnackBarError(false);

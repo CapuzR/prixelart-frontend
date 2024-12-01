@@ -141,7 +141,7 @@ export default function Login(props) {
   }, []);
 
   const handleEmailChange = (e) => {
-    if (validations.isAValidEmail(e.target.value)) {
+    if (isAValidEmail(e.target.value)) {
       setEmail(e.target.value);
       setEmailError(false);
       setSnackBarError(false);
@@ -155,7 +155,7 @@ export default function Login(props) {
 
   //Password
   const handlePasswordChange = (e) => {
-    if (validations.isAValidPassword(e.target.value)) {
+    if (isAValidPassword(e.target.value)) {
       setPassword(e.target.value);
       setPasswordError(false);
       setSnackBarError(false);

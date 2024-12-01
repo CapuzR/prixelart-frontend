@@ -105,7 +105,7 @@ const Details = () => {
       },
     }));
 
-    //TO DO: Refactor this. La tortura de los query params
+    //TODO : Refactor this. La tortura de los query params
     const searchParams = new URLSearchParams(window.location.search);
     product.selection &&
       product.selection !== undefined &&

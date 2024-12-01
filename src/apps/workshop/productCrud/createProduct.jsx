@@ -20,7 +20,7 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import FormControl from '@mui/material/FormControl';
 import clsx from 'clsx';
-import validations from '../../consumer/checkout/validations';
+import { isAValidName, isAValidCi, isAValidPhoneNum, isAValidEmail } from 'utils/validations';
 import HighlightOffOutlinedIcon from '@mui/icons-material/HighlightOffOutlined';
 import Checkbox from '@mui/material/Checkbox';
 import Backdrop from '@mui/material/Backdrop';
@@ -720,7 +720,7 @@ export default function CreateProduct() {
                   onChange={(e) => {
                     setCost(e.target.value);
                   }}
-                  error={cost !== undefined && !validations.isAValidPrice(cost)}
+                  error={cost !== undefined && !isAValidPrice(cost)}
                   InputProps={{
                     startAdornment: <InputAdornment position="start">$</InputAdornment>,
                   }}
@@ -752,7 +752,7 @@ export default function CreateProduct() {
                     setFromPublicPrice(e.target.value);
                   }}
                   error={
-                    fromPublicPrice !== undefined && !validations.isAValidPrice(fromPublicPrice)
+                    fromPublicPrice !== undefined && !isAValidPrice(fromPublicPrice)
                   }
                   InputProps={{
                     startAdornment: <InputAdornment position="start">$</InputAdornment>,
@@ -779,7 +779,7 @@ export default function CreateProduct() {
                   onChange={(e) => {
                     setToPublicPrice(e.target.value);
                   }}
-                  error={toPublicPrice !== undefined && !validations.isAValidPrice(toPublicPrice)}
+                  error={toPublicPrice !== undefined && !isAValidPrice(toPublicPrice)}
                   InputProps={{
                     startAdornment: <InputAdornment position="start">$</InputAdornment>,
                   }}
@@ -811,7 +811,7 @@ export default function CreateProduct() {
                     setFromPrixerPrice(e.target.value);
                   }}
                   error={
-                    fromPrixerPrice !== undefined && !validations.isAValidPrice(fromPrixerPrice)
+                    fromPrixerPrice !== undefined && !isAValidPrice(fromPrixerPrice)
                   }
                   InputProps={{
                     startAdornment: <InputAdornment position="start">$</InputAdornment>,
@@ -838,7 +838,7 @@ export default function CreateProduct() {
                   onChange={(e) => {
                     setToPrixerPrice(e.target.value);
                   }}
-                  error={toPrixerPrice !== undefined && !validations.isAValidPrice(toPrixerPrice)}
+                  error={toPrixerPrice !== undefined && !isAValidPrice(toPrixerPrice)}
                   InputProps={{
                     startAdornment: <InputAdornment position="start">$</InputAdornment>,
                   }}

@@ -19,7 +19,7 @@ import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
-import validations from './validations';
+import validations from '../validations';
 import InfoIcon from '@mui/icons-material/Info';
 import Tooltip from '@mui/material/Tooltip';
 import { useEffect } from 'react';
@@ -309,9 +309,9 @@ function ConsumerForm(props) {
                     value={props.values?.name ? props.values.name : ''}
                     onChange={(e) => props.setValues({ ...props.values, name: e.target.value })}
                     required
-                    error={!validations.isAValidName(props.values?.name)}
+                    error={!isAValidName(props.values?.name)}
                     helperText={
-                      !validations.isAValidName(props.values?.name) &&
+                      !isAValidName(props.values?.name) &&
                       props.values.name !== undefined &&
                       'Formato no válido.'
                     }
@@ -333,9 +333,9 @@ function ConsumerForm(props) {
                         lastName: e.target.value,
                       })
                     }
-                    error={!validations.isAValidName(props.values?.lastName)}
+                    error={!isAValidName(props.values?.lastName)}
                     helperText={
-                      !validations.isAValidName(props.values?.lastName) &&
+                      !isAValidName(props.values?.lastName) &&
                       props.values.lastName !== undefined &&
                       'Formato no válido.'
                     }
@@ -354,7 +354,7 @@ function ConsumerForm(props) {
                     onChange={(e) => props.setValues({ ...props.values, ci: e.target.value })}
                     required
                     error={
-                      props.values?.ci !== undefined && !validations.isAValidCi(props.values?.ci)
+                      props.values?.ci !== undefined && !isAValidCi(props.values?.ci)
                     }
                     margin="normal"
                     InputProps={{
@@ -364,7 +364,7 @@ function ConsumerForm(props) {
                           open={openTooltip}
                           onClose={(leaveDelay) => setOpenTooltip(false)}
                           title={
-                            !validations.isAValidCi(props.values?.ci) &&
+                            !isAValidCi(props.values?.ci) &&
                             props.values?.ci !== undefined
                               ? 'ej: V12345679 ó 12345678 \n' + 'Formato no válido.'
                               : 'ej: V12345679 ó 12345678'
@@ -394,7 +394,7 @@ function ConsumerForm(props) {
                     margin="normal"
                     error={
                       props.values?.phone !== undefined &&
-                      !validations.isAValidPhoneNum(props.values?.phone)
+                      !isAValidPhoneNum(props.values?.phone)
                     }
                     InputProps={{
                       startAdornment: (
@@ -408,7 +408,7 @@ function ConsumerForm(props) {
                           open={openTooltipPh}
                           onClose={(leaveDelay) => setOpenTooltipPh(false)}
                           title={
-                            !validations.isAValidPhoneNum(props.values?.phone) &&
+                            !isAValidPhoneNum(props.values?.phone) &&
                             props.values?.phone !== undefined ? (
                               <div>
                                 <div>ej: 584141234567 ó +584141234567 ó 04143201028</div>
@@ -433,7 +433,7 @@ function ConsumerForm(props) {
                     className={classes.textField}
                     value={props.values?.email ? props.values.email : ''}
                     helperText={
-                      !validations.isAValidEmail(props.values?.email) &&
+                      !isAValidEmail(props.values?.email) &&
                       props.values.email !== undefined &&
                       'Formato no válido.'
                     }
@@ -443,7 +443,7 @@ function ConsumerForm(props) {
                         email: e.target.value,
                       })
                     }
-                    error={!validations.isAValidEmail(props.values?.email)}
+                    error={!isAValidEmail(props.values?.email)}
                     required
                     margin="normal"
                     InputProps={{
@@ -536,7 +536,7 @@ function ConsumerForm(props) {
                         shippingName: e.target.value,
                       })
                     }
-                    error={!validations.isAValidName(props.values?.shippingName)}
+                    error={!isAValidName(props.values?.shippingName)}
                     required
                     margin="normal"
                   />
@@ -564,7 +564,7 @@ function ConsumerForm(props) {
                       })
                     }
                     margin="normal"
-                    error={!validations.isAValidName(props.values?.shippingLastName)}
+                    error={!isAValidName(props.values?.shippingLastName)}
                   />
                 </Grid>
                 <Grid item lg={4} md={4} sm={4} xs={12} className={classes.gridInput}>
@@ -593,7 +593,7 @@ function ConsumerForm(props) {
                     error={
                       props.values?.shippingPhone !== undefined &&
                       props.values?.shippingPhone !== '' &&
-                      !validations.isAValidPhoneNum(props.values?.shippingPhone)
+                      !isAValidPhoneNum(props.values?.shippingPhone)
                     }
                     InputProps={{
                       startAdornment: (
@@ -607,7 +607,7 @@ function ConsumerForm(props) {
                           open={openTooltipPh2}
                           onClose={(leaveDelay) => setOpenTooltipPh2(false)}
                           title={
-                            !validations.isAValidPhoneNum(props.values?.phone) &&
+                            !isAValidPhoneNum(props.values?.phone) &&
                             props.values?.phone !== undefined ? (
                               <div>
                                 <div>ej: 584141234567 ó +584141234567 ó 04143201028</div>
@@ -801,7 +801,7 @@ function ConsumerForm(props) {
                     }
                     required
                     margin="normal"
-                    error={!validations.isAValidName(props.values?.billingShName)}
+                    error={!isAValidName(props.values?.billingShName)}
                   />
                 </Grid>
                 <Grid item lg={4} md={4} sm={4} xs={12} className={classes.gridInput}>
@@ -831,7 +831,7 @@ function ConsumerForm(props) {
                       })
                     }
                     margin="normal"
-                    error={!validations.isAValidName(props.values?.billingShLastName)}
+                    error={!isAValidName(props.values?.billingShLastName)}
                   />
                 </Grid>
                 <Grid item lg={4} md={4} sm={4} xs={12} className={classes.gridInput}>
@@ -861,7 +861,7 @@ function ConsumerForm(props) {
                     }
                     required
                     error={
-                      props.values?.ci !== undefined && !validations.isAValidCi(props.values?.ci)
+                      props.values?.ci !== undefined && !isAValidCi(props.values?.ci)
                     }
                     margin="normal"
                     InputProps={{
@@ -871,7 +871,7 @@ function ConsumerForm(props) {
                           open={openTooltip2}
                           onClose={(leaveDelay) => setOpenTooltip2(false)}
                           title={
-                            !validations.isAValidCi(props.values?.ci) &&
+                            !isAValidCi(props.values?.ci) &&
                             props.values?.ci !== undefined
                               ? 'ej: V12345679 ó J000123456 \n' + 'Formato no válido.'
                               : 'ej: V12345679 ó J000123456'
@@ -900,7 +900,7 @@ function ConsumerForm(props) {
                     }
                     required
                     margin="normal"
-                    // error={!validations.isAValidName(props.values?.billingShName)}
+                    // error={!isAValidName(props.values?.billingShName)}
                   />
                 </Grid>
 
@@ -932,7 +932,7 @@ function ConsumerForm(props) {
                     required
                     margin="normal"
                     error={
-                      !validations.isAValidPhoneNum(props.values?.billingShPhone) &&
+                      !isAValidPhoneNum(props.values?.billingShPhone) &&
                       props.values?.billingShPhone !== undefined
                     }
                     InputProps={{
@@ -947,7 +947,7 @@ function ConsumerForm(props) {
                           open={openTooltipPh3}
                           onClose={(leaveDelay) => setOpenTooltipPh3(false)}
                           title={
-                            !validations.isAValidPhoneNum(props.values?.phone) &&
+                            !isAValidPhoneNum(props.values?.phone) &&
                             props.values?.phone !== undefined ? (
                               <div>
                                 <div>ej: 584141234567 ó +584141234567 ó 04143201028</div>

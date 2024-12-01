@@ -40,7 +40,7 @@ const ConsumerRoutes: React.FC<ConsumerRoutesProps> = ({
       <Route path="/organizaciones">
         <OrgGrid setPrixer={setPrixer} prixer={prixer} />
       </Route>
-      <Route path="/shopping">
+      <Route path="/carrito">
         <Cart />
       </Route>
 
@@ -48,12 +48,14 @@ const ConsumerRoutes: React.FC<ConsumerRoutesProps> = ({
         <PrixersService setPrixer={setPrixer} prixer={prixer} permissions={permissions} />
       </Route>
 
+      {/* TODO : Cambiar a /servicio/:serviceId */}
       <Route path="/service=:serviceId">
         <SoloService setPrixer={setPrixer} prixer={prixer} permissions={permissions} />
       </Route>
       <Route path="/testimonios">
         <TestimonialsGrid setPrixer={setPrixer} prixer={prixer} />
       </Route>
+      {/* TODO : Cambiar a /arte/:artId */}
       <Route exact path="/art=:artId" component={ArtDetail}>
         <ArtDetail prixer={prixer} fullArt={fullArt} permissions={permissions} />
       </Route>
@@ -63,6 +65,7 @@ const ConsumerRoutes: React.FC<ConsumerRoutesProps> = ({
       <Route path="/org=:username">
         <PrixerProfile setPrixer={setPrixer} setFullArt={setFullArt} permissions={permissions} />
       </Route>
+      {/* TODO : Cómo debería llamarse? Flujo? Selección? */}
       <Route path="/flow">
         <Flow />
       </Route>

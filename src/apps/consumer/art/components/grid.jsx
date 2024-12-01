@@ -207,7 +207,7 @@ export default function Grid(props) {
   const handleSearch = (queryValue, categories) => {
     setSearchValue(queryValue);
     setCategoryValue(categories);
-    //TO DO War: Se debe utilizar para ?s= si no hay más params, si hay otros se debe usar &s=, igual con cat, etc.
+    //TODO War: Se debe utilizar para ?s= si no hay más params, si hay otros se debe usar &s=, igual con cat, etc.
     // const finalPath= searchPhotos(queryValue, categories, history, props.prixerUsername, globalParams);
     // history.push({ pathname: finalPath })
   };

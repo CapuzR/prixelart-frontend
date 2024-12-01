@@ -5,7 +5,7 @@ import { useState } from 'react';
 import axios from 'axios';
 import { useHistory } from 'react-router-dom';
 
-import validations from '../../consumer/checkout/validations';
+import { isAValidName, isAValidCi, isAValidPhoneNum, isAValidEmail } from 'utils/validations';
 import Copyright from 'components/Copyright/copyright';
 
 //material-ui
@@ -166,11 +166,11 @@ export default function SignUp() {
   useEffect(() => {
     if (email && username && password && firstName && lastName) {
       if (
-        validations.isAValidEmail(email) &&
-        validations.isAValidUsername(username) &&
-        validations.isAValidPassword(password) &&
-        validations.isAValidName(firstName) &&
-        validations.isAValidName(lastName)
+        isAValidEmail(email) &&
+        isAValidUsername(username) &&
+        isAValidPassword(password) &&
+        isAValidName(firstName) &&
+        isAValidName(lastName)
       ) {
         setButtonState(false);
       } else {
@@ -182,7 +182,7 @@ export default function SignUp() {
   });
 
   const handleEmailChange = (e) => {
-    if (validations.isAValidEmail(e.target.value)) {
+    if (isAValidEmail(e.target.value)) {
       setEmail(e.target.value);
       setEmailError(false);
       setSnackBarError(false);
@@ -195,7 +195,7 @@ export default function SignUp() {
   };
 
   const handleFirstNameChange = (e) => {
-    if (validations.isAValidName(e.target.value)) {
+    if (isAValidName(e.target.value)) {
       setFirstName(e.target.value);
       setFirstNameError(false);
       setSnackBarError(false);
@@ -208,7 +208,7 @@ export default function SignUp() {
   };
 
   const handleLastNameChange = (e) => {
-    if (validations.isAValidName(e.target.value)) {
+    if (isAValidName(e.target.value)) {
       setLastName(e.target.value);
       setLastNameError(false);
       setSnackBarError(false);
@@ -220,7 +220,7 @@ export default function SignUp() {
     }
   };
   const handleUsernameChange = (e) => {
-    if (validations.isAValidUsername(e.target.value)) {
+    if (isAValidUsername(e.target.value)) {
       setUsername(e.target.value);
       setUsernameError(false);
       setSnackBarError(false);
@@ -239,7 +239,7 @@ export default function SignUp() {
   };
   //Password
   const handlePasswordChange = (e) => {
-    if (validations.isAValidPassword(e.target.value)) {
+    if (isAValidPassword(e.target.value)) {
       setPassword(e.target.value);
       setPasswordError(false);
       setSnackBarError(false);

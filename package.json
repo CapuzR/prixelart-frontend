@@ -26,6 +26,7 @@
     "react-dom": "^18.3.1",
     "react-easy-crop": "^3.3.3",
     "react-ga": "^3.3.1",
+    "react-hook-form": "^7.53.2",
     "react-quill": "^2.0.0",
     "react-responsive-masonry": "^2.1.6",
     "react-router-dom": "^5.2.0",

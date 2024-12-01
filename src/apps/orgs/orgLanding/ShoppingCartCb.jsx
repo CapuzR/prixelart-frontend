@@ -17,7 +17,7 @@ import { TextField } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import Snackbar from '@mui/material/Snackbar';
 import Paper from '@mui/material/Paper';
-import ConsumerForm from 'apps/consumer/checkout/ConsumerForm.jsx';
+import ConsumerForm from '../checkout/Consumer';
 import Stepper from '@mui/material/Stepper';
 import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';

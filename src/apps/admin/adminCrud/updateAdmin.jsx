@@ -22,7 +22,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import InputAdornment from '@mui/material/InputAdornment';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import { isAValidEmail, isAValidPassword, isAValidUsername } from 'utils/validations.js';
+import { isAValidEmail, isAValidPassword, isAValidUsername } from 'utils/validations';
 
 
 import clsx from 'clsx';

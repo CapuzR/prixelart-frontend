@@ -22,7 +22,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import { nanoid } from 'nanoid';
-import validations from '../../../consumer/checkout/validations';
+import { isAValidName, isAValidCi, isAValidPhoneNum, isAValidEmail } from 'utils/validations';
 import Paper from '@mui/material/Paper';
 import InputAdornment from '@mui/material/InputAdornment';
 
@@ -523,7 +523,7 @@ export default function CreateVariant(props) {
                 onChange={(e) => {
                   setCost(e.target.value);
                 }}
-                error={cost !== undefined && !validations.isAValidPrice(cost)}
+                error={cost !== undefined && !isAValidPrice(cost)}
                 InputProps={{
                   startAdornment: <InputAdornment position="start">$</InputAdornment>,
                 }}
@@ -542,7 +542,7 @@ export default function CreateVariant(props) {
                 onChange={(e) => {
                   setPublicPriceEq(e.target.value);
                 }}
-                error={publicPriceEq !== undefined && !validations.isAValidPrice(publicPriceEq)}
+                error={publicPriceEq !== undefined && !isAValidPrice(publicPriceEq)}
                 InputProps={{
                   startAdornment: <InputAdornment position="start">$</InputAdornment>,
                 }}
@@ -564,7 +564,7 @@ export default function CreateVariant(props) {
                 error={
                   prixerPriceEq !== undefined &&
                   prixerPriceEq !== '' &&
-                  !validations.isAValidPrice(prixerPriceEq)
+                  !isAValidPrice(prixerPriceEq)
                 }
                 InputProps={{
                   startAdornment: <InputAdornment position="start">$</InputAdornment>,

@@ -21,7 +21,7 @@ import Select from '@mui/material/Select';
 import { Switch, Typography } from '@mui/material';
 
 import clsx from 'clsx';
-import { isAValidEmail, isAValidPassword, isAValidUsername } from 'utils/validations.js';
+import { isAValidEmail, isAValidPassword, isAValidUsername } from 'utils/validations';
 
 
 const useStyles = makeStyles((theme) => ({

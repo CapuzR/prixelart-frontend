@@ -99,19 +99,31 @@ const Flow = () => {
             atts[att.name] = att.value;
           });
 
-        setItem({
-          sku: urlParams.itemId,
-          product: selectedProduct
-            ? {
-                ...selectedProduct,
-                id: urlParams.producto,
-                selection: atts || undefined,
-              }
-            : undefined,
-          art: selectedArt || undefined,
-          price: undefined,
-          discount: undefined,
-        });
+          setItem((prevItem) => ({
+        ...prevItem,
+        product: selectedProduct
+          ? {
+              ...selectedProduct,
+              id: urlParams.producto,
+              selection: atts || undefined,
+            }
+          : prevItem.product,
+        art: selectedArt || prevItem.art,
+      }));
+
+        // setItem({
+        //   sku: urlParams.itemId,
+        //   product: selectedProduct
+        //     ? {
+        //         ...selectedProduct,
+        //         id: urlParams.producto,
+        //         selection: atts || undefined,
+        //       }
+        //     : undefined,
+        //   art: selectedArt || undefined,
+        //   price: undefined,
+        //   discount: undefined,
+        // });
       } catch (error) {
         console.error('Error fetching product attributes:', error);
       } finally {
@@ -170,7 +182,7 @@ const Flow = () => {
   };
 
   const handleDeleteElement = (type: 'producto' | 'arte', item: Item) => {
-    // TO DO: Esto del selectionObject + QueryString + push debería agruparse de alguna manera...se utiliza mucho.
+    // TODO : Esto del selectionObject + QueryString + push debería agruparse de alguna manera...se utiliza mucho.
     const selectionAsObject: { [key: string]: string } = Array.isArray(item.product?.selection)
       ? item.product?.selection.reduce(
           (acc, item, index) => {
@@ -218,7 +230,7 @@ const Flow = () => {
         selection: newSelection,
       },
     }));
-
+    
     const selectionAsObject = Array.isArray(newSelection)
       ? newSelection.reduce(
           (acc, item, index) => {
@@ -233,7 +245,7 @@ const Flow = () => {
       Object.values(newSelection).length === item.product?.attributes?.length &&
       !item.art?.artId &&
       (openSection = 'arte');
-
+      
     const queryString = queryCreator(
       urlParams.lineId,
       item.sku,
@@ -243,6 +255,7 @@ const Flow = () => {
       openSection,
       '3'
     );
+
     history.push({ pathname: location.pathname, search: queryString });
   };
 
@@ -277,6 +290,7 @@ const Flow = () => {
 
   const handleFlow = (type: 'producto' | 'arte') => {
     const lineId = urlParams.lineId;
+    
     const selectionAsObject: { [key: string]: string } = Array.isArray(item.product?.selection)
       ? item.product?.selection.reduce(
           (acc, sel, index) => {
@@ -296,18 +310,23 @@ const Flow = () => {
       type,
       '1'
     );
-
     history.push({ pathname: '/flow', search: queryString });
   };
 
   const addInFlow = (updatedArt?: Art, updatedProduct?: Product) => {
-    const openSection: 'arte' | 'producto' = urlParams.openSection === 'arte' ? 'producto' : 'arte';
+    const newSectionOpened: 'arte' | 'producto' = urlParams.openSection === 'arte' ? 'producto' : 'arte';
+    console.log("openSection", newSectionOpened);
+    console.log("updatedArt", updatedArt);
+    console.log("updatedProduct", updatedProduct);
+
     setItem((prevItem) => ({
       ...prevItem,
       id: urlParams.itemId,
-      product: updatedProduct ? updatedProduct : undefined,
-      art: updatedArt ? updatedArt : undefined,
+      product: updatedProduct !== undefined ? updatedProduct : prevItem.product,
+      art: updatedArt !== undefined ? updatedArt : prevItem.art,
     }));
+
+    console.log("item.product?.selection", item.product?.selection);
 
     const selectionAsObject: { [key: string]: string } = Array.isArray(item.product?.selection)
       ? item.product?.selection.reduce(
@@ -319,15 +338,19 @@ const Flow = () => {
         )
       : item.product?.selection || {};
 
+    console.log("selectionAsObject", selectionAsObject);
+
     const queryString = queryCreator(
       urlParams.lineId,
       urlParams.itemId,
       updatedProduct?.id || item.product?.id,
       updatedArt?.artId || item.art?.artId,
       updatedProduct ? undefined : selectionAsObject,
-      !flowReady ? openSection : updatedArt ? 'arte' : 'producto',
+      !flowReady ? newSectionOpened : updatedArt ? 'arte' : 'producto',
       '3'
     );
+
+    console.log("queryString", queryString);
 
     history.push({ pathname: location.pathname, search: queryString });
     showSnackBar('¡Arte seleccionado! Puedes agregar el item al carrito');

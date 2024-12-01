@@ -31,7 +31,7 @@ import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import PropTypes from 'prop-types';
-import validations from '../../consumer/checkout/validations';
+import { isAValidName, isAValidCi, isAValidPhoneNum, isAValidEmail } from 'utils/validations';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import Paper from '@mui/material/Paper';
 import Mockup from './updateMockUp';
@@ -734,7 +734,7 @@ export default function UpdateProduct(props) {
                     onChange={(e) => {
                       setCost(e.target.value);
                     }}
-                    error={cost !== undefined && !validations.isAValidPrice(cost)}
+                    error={cost !== undefined && !isAValidPrice(cost)}
                     InputProps={{
                       startAdornment: <InputAdornment position="start">$</InputAdornment>,
                     }}
@@ -766,7 +766,7 @@ export default function UpdateProduct(props) {
                       setFromPublicPrice(e.target.value);
                     }}
                     error={
-                      fromPublicPrice !== undefined && !validations.isAValidPrice(fromPublicPrice)
+                      fromPublicPrice !== undefined && !isAValidPrice(fromPublicPrice)
                     }
                     InputProps={{
                       startAdornment: <InputAdornment position="start">$</InputAdornment>,
@@ -797,7 +797,7 @@ export default function UpdateProduct(props) {
                       toPublicPrice !== undefined &&
                       toPublicPrice !== '' &&
                       toPublicPrice !== null &&
-                      !validations.isAValidPrice(toPublicPrice)
+                      !isAValidPrice(toPublicPrice)
                     }
                     InputProps={{
                       startAdornment: <InputAdornment position="start">$</InputAdornment>,
@@ -832,7 +832,7 @@ export default function UpdateProduct(props) {
                       fromPrixerPrice !== undefined &&
                       fromPrixerPrice !== '' &&
                       fromPrixerPrice !== null &&
-                      !validations.isAValidPrice(fromPrixerPrice)
+                      !isAValidPrice(fromPrixerPrice)
                     }
                     InputProps={{
                       startAdornment: <InputAdornment position="start">$</InputAdornment>,
@@ -863,7 +863,7 @@ export default function UpdateProduct(props) {
                       toPrixerPrice !== undefined &&
                       toPrixerPrice !== '' &&
                       toPrixerPrice !== null &&
-                      !validations.isAValidPrice(toPrixerPrice)
+                      !isAValidPrice(toPrixerPrice)
                     }
                     InputProps={{
                       startAdornment: <InputAdornment position="start">$</InputAdornment>,

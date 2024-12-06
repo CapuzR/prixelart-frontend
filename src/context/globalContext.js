@@ -36,6 +36,7 @@ export const GlobalProvider = ({ children }) => {
     <GlobalContext.Provider
       value={{
         currency,
+        setCurrency,
         conversionRate,
         theme,
         toggleCurrency,

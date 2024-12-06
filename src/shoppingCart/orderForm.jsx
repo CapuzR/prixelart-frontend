@@ -1,33 +1,34 @@
-import { makeStyles, useTheme } from "@material-ui/core/styles";
-import Grid from "@material-ui/core/Grid";
-import AppBar from "@material-ui/core/AppBar";
-import Toolbar from "@material-ui/core/Toolbar";
-import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemText from "@material-ui/core/ListItemText";
-import Collapse from "@material-ui/core/Collapse";
-import Divider from "@material-ui/core/Divider";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
-import MenuItem from "@material-ui/core/MenuItem";
-import OutlinedInput from "@material-ui/core/OutlinedInput";
-import Select from "@material-ui/core/Select";
-import InputLabel from "@material-ui/core/InputLabel";
-import FormControl from "@material-ui/core/FormControl";
-import Button from "@material-ui/core/Button";
+import { makeStyles, useTheme } from "@material-ui/core/styles"
+import Grid from "@material-ui/core/Grid"
+import AppBar from "@material-ui/core/AppBar"
+import Toolbar from "@material-ui/core/Toolbar"
+import List from "@material-ui/core/List"
+import ListItem from "@material-ui/core/ListItem"
+import ListItemText from "@material-ui/core/ListItemText"
+import Collapse from "@material-ui/core/Collapse"
+import Divider from "@material-ui/core/Divider"
+import useMediaQuery from "@material-ui/core/useMediaQuery"
+import MenuItem from "@material-ui/core/MenuItem"
+import OutlinedInput from "@material-ui/core/OutlinedInput"
+import Select from "@material-ui/core/Select"
+import InputLabel from "@material-ui/core/InputLabel"
+import FormControl from "@material-ui/core/FormControl"
+import Button from "@material-ui/core/Button"
 // import Tooltip from "@material-ui/core/Tooltip";
-import { Typography } from "@material-ui/core";
-import TextField from "@material-ui/core/TextField";
-import { useEffect, useState } from "react";
-import axios from "axios";
-import InfoIcon from "@material-ui/icons/Info";
-import Tooltip from "@material-ui/core/Tooltip";
+import { Typography } from "@material-ui/core"
+import TextField from "@material-ui/core/TextField"
+import { useEffect, useState } from "react"
+import axios from "axios"
+import InfoIcon from "@material-ui/icons/Info"
+import Tooltip from "@material-ui/core/Tooltip"
 import {
   getPVP,
   getPVM,
   getTotalUnitsPVP,
   getTotalUnitsPVM,
-  UnitPriceForOrg
-} from "./pricesFunctions";
+  UnitPriceForOrg,
+} from "./pricesFunctions"
+import { useGlobalContext } from "../context/globalContext"
 
 const useStyles = makeStyles((theme) => ({
   gridInput: {
@@ -37,221 +38,231 @@ const useStyles = makeStyles((theme) => ({
   textField: {
     marginRight: "8px",
   },
-}));
+}))
 
 export default function OrderForm(props) {
-  const classes = useStyles();
-  const theme = useTheme();
-  const [paymentMethods, setPaymentMethods] = useState([]);
-  const [previewVoucher, setPreviewVoucher] = useState();
+  const classes = useStyles()
+  const theme = useTheme()
+  const [paymentMethods, setPaymentMethods] = useState([])
+  const [previewVoucher, setPreviewVoucher] = useState()
   // const isIphone = useMediaQuery(theme.breakpoints.down("xs"));
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
-  const [balance, setBalance] = useState(0);
-  const [discountList, setDiscountList] = useState([]);
-  const [sellers, setSellers] = useState([]);
-  const prixer = JSON.parse(localStorage?.getItem("token"))?.username;
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"))
+  const [balance, setBalance] = useState(0)
+  const [discountList, setDiscountList] = useState([])
+  const [sellers, setSellers] = useState([])
+  const prixer = JSON.parse(localStorage?.getItem("token"))?.username
+  const { currency, toggleCurrency, zone, toggleZone } = useGlobalContext()
 
   const getDiscounts = async () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + "/discount/read-allv2";
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/discount/read-allv2"
     await axios
       .post(base_url)
       .then((response) => {
-        setDiscountList(response.data.discounts);
+        setDiscountList(response.data.discounts)
       })
       .catch((error) => {
-        console.log(error);
-      });
-  };
+        console.log(error)
+      })
+  }
 
   useEffect(() => {
-    getDiscounts();
-    getPaymentMethod();
-    getSellers();
-  }, []);
+    getDiscounts()
+    getPaymentMethod()
+    getSellers()
+  }, [])
 
-      const checkOrgs = (art) => {
-    const org = props.orgs?.find((el) => el.username === art.prixerUsername);
-    return org;
-  };
+  const checkOrgs = (art) => {
+    const org = props.orgs?.find((el) => el.username === art.prixerUsername)
+    return org
+  }
 
   const getBalance = async () => {
-    const url = process.env.REACT_APP_BACKEND_URL + "/account/readById";
-    const data = { _id: JSON.parse(localStorage.getItem("token"))?.account };
+    const url = process.env.REACT_APP_BACKEND_URL + "/account/readById"
+    const data = { _id: JSON.parse(localStorage.getItem("token"))?.account }
     await axios
       .post(url, data)
-      .then((response) => setBalance(response.data.balance));
-  };
+      .then((response) => setBalance(response.data.balance))
+  }
 
   const getPaymentMethod = () => {
     const base_url =
-      process.env.REACT_APP_BACKEND_URL + "/payment-method/read-all-v2";
+      process.env.REACT_APP_BACKEND_URL + "/payment-method/read-all-v2"
     axios
       .get(base_url)
       .then((response) => {
         if (localStorage?.getItem("token")) {
-          let prev = response.data;
-          prev.push({ name: "Balance Prixer" });
-          setPaymentMethods(prev);
+          let prev = response.data
+          prev.push({ name: "Balance Prixer" })
+          setPaymentMethods(prev)
         } else {
-          setPaymentMethods(response.data);
+          setPaymentMethods(response.data)
         }
       })
       .catch((error) => {
-        console.log(error);
-      });
-  };
+        console.log(error)
+      })
+  }
   const getSellers = () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + "/admin/getSellers";
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/admin/getSellers"
     axios.get(base_url).then((response) => {
-      setSellers(response.data);
-    });
-  };
+      setSellers(response.data)
+    })
+  }
 
   useEffect(() => {
     if (
       JSON.parse(localStorage.getItem("token")) &&
       JSON.parse(localStorage.getItem("token")).username
     ) {
-      getBalance();
+      getBalance()
     }
-  }, []);
+  }, [])
 
   const onImageChange = async (e) => {
     if (e.target.files && e.target.files[0]) {
-      props.setPaymentVoucher(e.target.files[0]);
-      setPreviewVoucher(URL.createObjectURL(e.target.files[0]));
+      props.setPaymentVoucher(e.target.files[0])
+      setPreviewVoucher(URL.createObjectURL(e.target.files[0]))
     }
-  };
+  }
 
   const getTotalPrice = (state) => {
-        // const org = checkOrgs(item.art)
+    const org = checkOrgs(item.art)
+    const prixer = JSON.parse(localStorage?.getItem("token"))?.username
 
-    if (
+    if (org !== undefined) {
+      return UnitPriceForOrg(
+        item.product,
+        item.art,
+        prixer,
+        org,
+        "Particular"
+      ).toLocaleString("de-DE", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      })
+    } else if (
       JSON.parse(localStorage?.getItem("token")) &&
       JSON.parse(localStorage?.getItem("token"))?.username
     ) {
       return getTotalUnitsPVM(
         state,
-        props.currency,
+        currency,
         props.dollarValue,
         discountList,
         prixer
       ).toLocaleString("de-DE", {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
-      });
+      })
     } else {
       return getTotalUnitsPVP(
         state,
-        props.currency,
+        currency,
         props.dollarValue,
         discountList
       ).toLocaleString("de-DE", {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
-      });
+      })
     }
-  };
+  }
   const PriceSelect = (item) => {
-        const org = checkOrgs(item.art)
+    const org = checkOrgs(item.art)
     if (org !== undefined) {
-      return (UnitPriceForOrg(
-        item.product,
-        item.art,
-        prixer,
-         org,
-        "Particular"
-      )* (item.quantity || 1)).toLocaleString("de-DE", {
+      return (
+        UnitPriceForOrg(item.product, item.art, prixer, org, "Particular") *
+        (item.quantity || 1)
+      ).toLocaleString("de-DE", {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       })
-    }
-    else if (
+    } else if (
       JSON.parse(localStorage?.getItem("token")) &&
       JSON.parse(localStorage?.getItem("token"))?.username
     ) {
-      let modifiedItem = item;
-      modifiedItem.product.prixerPrice = item.product.priceRange;
+      let modifiedItem = item
+      modifiedItem.product.prixerPrice = item.product.priceRange
       return (
-        getPVM(item, props.currency, props.dollarValue, discountList, prixer) *
+        getPVM(item, currency, props.dollarValue, discountList, prixer) *
         item.quantity
       ).toLocaleString("de-DE", {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
-      });
+      })
     } else {
-      let modifiedItem = item;
-      modifiedItem.product.publicPrice = item.product.priceRange;
+      let modifiedItem = item
+      modifiedItem.product.publicPrice = item.product.priceRange
       return (
         Number(
-          getPVP(item, props.currency, props.dollarValue, discountList)
+          getPVP(item, currency, props.dollarValue, discountList)
           // .replace(/[,]/gi, ".")
         ) * item.quantity
       ).toLocaleString("de-DE", {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
-      });
+      })
     }
-  };
+  }
 
   const getTotalCombinedItems = (state) => {
-    const totalNotCompleted = state.filter(
-      (item) => !item.art || !item.product
-    );
+    const totalNotCompleted = state.filter((item) => !item.art || !item.product)
     return {
       totalNotCompleted,
-    };
-  };
+    }
+  }
 
   const getIvaCost = (state) => {
     if (
       typeof JSON.parse(localStorage?.getItem("token"))?.username === "string"
     ) {
-      return 0;
+      return 0
     } else {
       return (
         Number(
           getTotalPrice(state).replace(/[.]/gi, "").replace(/[,]/gi, ".")
         ) * 0.16
-      );
+      )
     }
-  };
+  }
 
   const getTotal = (x) => {
-    let n = [];
+    let n = []
     n.push(
       Number(
         getTotalPrice(props.buyState).replace(/[.]/gi, "").replace(/[,]/gi, ".")
       )
-    );
-    n.push(getIvaCost(props.buyState));
+    )
+    n.push(getIvaCost(props.buyState))
 
     if (props.valuesConsumer.shippingMethod) {
-      if (props.currency) {
-        let prev = shippingCost * props.dollarValue;
+      if (currency === "Bs") {
+        let prev = shippingCost * props.dollarValue
         {
-          n.push(prev);
+          n.push(prev)
         }
       } else {
-        n.push(shippingCost);
+        n.push(shippingCost)
       }
     }
     let total = n.reduce(function (a, b) {
-      return a + b;
-    });
+      return a + b
+    })
     return total.toLocaleString("de-DE", {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
-    });
-  };
+    })
+  }
 
   let shippingCost = Number(
     props.valuesConsumer.shippingMethod?.price.replace(/[$]/gi, "")
-  );
+  )
 
   return (
     <>
-      <form noValidate autoComplete="off">
+      <form
+        noValidate
+        autoComplete="off"
+      >
         <Grid container>
           <Grid
             item
@@ -261,7 +272,10 @@ export default function OrderForm(props) {
             xs={12}
             className={classes.gridInput}
           >
-            <AppBar position="static" style={{ borderRadius: 5 }}>
+            <AppBar
+              position="static"
+              style={{ borderRadius: 5 }}
+            >
               <Toolbar style={{ fontSize: 20, justifyContent: "center" }}>
                 Orden de compra
               </Toolbar>
@@ -276,7 +290,10 @@ export default function OrderForm(props) {
               <div style={{ width: "100%" }}>
                 <div style={{ fontWeight: "bold" }}>Items:</div>
                 <div>
-                  <List component="div" disablePadding>
+                  <List
+                    component="div"
+                    disablePadding
+                  >
                     {props.buyState?.map((item, index) => (
                       <>
                         {item.product && item.art && (
@@ -284,17 +301,28 @@ export default function OrderForm(props) {
                             <ListItem>
                               <ListItemText primary={`#${index + 1}`} />
                             </ListItem>
-                            <Collapse in={true} timeout="auto" unmountOnExit>
-                              <List component="div" disablePadding>
+                            <Collapse
+                              in={true}
+                              timeout="auto"
+                              unmountOnExit
+                            >
+                              <List
+                                component="div"
+                                disablePadding
+                              >
                                 <ListItem>
                                   <ListItemText
                                     inset
                                     style={{ marginLeft: 0, paddingLeft: 0 }}
                                     primary={
                                       <Grid container>
-                                        <Grid item xs={12} md={8}>
+                                        <Grid
+                                          item
+                                          xs={12}
+                                          md={8}
+                                        >
                                           Producto: {item.product.name}
-                                          <br/>
+                                          <br />
                                           Arte: {item.art.title}
                                         </Grid>
                                         <Grid
@@ -320,7 +348,7 @@ export default function OrderForm(props) {
                                           >
                                             Monto:
                                             <br></br>
-                                            {props.currency ? " Bs" : "$"}
+                                            {currency === "Bs" ? " Bs" : "$"}
                                             {PriceSelect(item)}
                                           </div>
                                         </Grid>
@@ -457,7 +485,7 @@ export default function OrderForm(props) {
                               paddingRight: 5,
                             }}
                           >
-                            {props.currency
+                            {currency === "Bs"
                               ? "Saldo disponible: Bs" +
                                 (balance * props.dollarValue).toLocaleString(
                                   "de-DE",
@@ -474,18 +502,18 @@ export default function OrderForm(props) {
                           </div>
                         )}
                         <strong>
-                          {props.currency ? "Subtotal: Bs" : "Subtotal: $"}
+                          {currency === "Bs" ? "Subtotal: Bs" : "Subtotal: $"}
                           {getTotalPrice(props.buyState)}
                         </strong>
                         <strong>
-                          {props.currency ? "IVA: Bs" : "IVA: $"}
+                          {currency === "Bs" ? "IVA: Bs" : "IVA: $"}
                           {getIvaCost(props.buyState).toLocaleString("de-DE", {
                             minimumFractionDigits: 2,
                             maximumFractionDigits: 2,
                           })}
                         </strong>
                         {props.valuesConsumer.shippingMethod &&
-                        props.currency ? (
+                        currency === "Bs" ? (
                           <strong>{`Envío: Bs${(
                             shippingCost * props.dollarValue
                           ).toLocaleString("de-DE", {
@@ -504,7 +532,7 @@ export default function OrderForm(props) {
                           )
                         )}
                         <strong>
-                          {props.currency ? "Total: Bs" : "Total: $"}
+                          {currency === "Bs" ? "Total: Bs" : "Total: $"}
                           {getTotal(props.buyState)}
                         </strong>
                         <br />
@@ -557,11 +585,7 @@ export default function OrderForm(props) {
                             <MenuItem value={undefined}></MenuItem>
                             {sellers &&
                               sellers.map((m) => (
-                                <MenuItem
-                                  value={m}
-                                >
-                                  {m}
-                                </MenuItem>
+                                <MenuItem value={m}>{m}</MenuItem>
                               ))}
                           </Select>
                         </FormControl>
@@ -592,5 +616,5 @@ export default function OrderForm(props) {
         </Grid>
       </form>
     </>
-  );
+  )
 }

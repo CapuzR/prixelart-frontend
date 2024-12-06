@@ -145,14 +145,13 @@ export default function ShoppingPage(props) {
   const [loading, setLoading] = useState(false)
   const steps = [`Tus datos`, `Orden de compra`]
   const [dollarValue, setDollarValue] = useState(1)
-  // const [currency, setCurrency] = useState(false)
   const [paymentVoucher, setPaymentVoucher] = useState()
   const [discountList, setDiscountList] = useState([])
   const [seller, setSeller] = useState()
   const [expanded, setExpanded] = useState(false)
   const [orgs, setOrgs] = useState([])
-  const { currency, toggleCurrency, zone, toggleZone } = useGlobalContext()
-
+  const { currency, toggleCurrency, setCurrency, zone, toggleZone } =
+    useGlobalContext()
   const getDiscounts = async () => {
     const base_url = process.env.REACT_APP_BACKEND_URL + "/discount/read-allv2"
     await axios
@@ -187,46 +186,45 @@ export default function ShoppingPage(props) {
     setActiveStep((prevActiveStep) => prevActiveStep - 1)
   }
 
-  const handleNext = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep + 1)
-  }
-
   let shippingCost = Number(props.valuesConsumerForm?.shippingMethod?.price)
 
-  const getTotalPrice = (state) => {
+  const getTotalPrice = (state, def) => {
+    let c = def === true ? "USD" : "Bs"
     if (
       JSON.parse(localStorage?.getItem("token")) &&
       JSON.parse(localStorage?.getItem("token"))?.username
     ) {
       return getTotalUnitsPVM(
         state,
-        currency,
+        c,
         dollarValue,
         discountList,
         JSON.parse(localStorage?.getItem("token"))?.username
       )
     } else {
-      return getTotalUnitsPVP(state, currency, dollarValue, discountList)
+      return getTotalUnitsPVP(state, c, dollarValue, discountList)
     }
   }
 
-  const getIvaCost = (state) => {
+  const getIvaCost = (state, def) => {
     if (
       typeof JSON.parse(localStorage?.getItem("token"))?.username === "string"
     ) {
       return 0
     } else {
-      return getTotalPrice(state) * 0.16
+      return getTotalPrice(state, def) * 0.16
     }
   }
 
-  const getTotal = (x) => {
+  const getTotal = (buyState, def) => {
+    let c = def === true ? "USD" : "Bs"
+
     let n = []
-    n.push(getTotalPrice(props.buyState))
-    n.push(getIvaCost(props.buyState))
+    n.push(getTotalPrice(buyState, def))
+    n.push(getIvaCost(buyState, def))
 
     if (props.valuesConsumerForm.shippingMethod) {
-      if (props.currency) {
+      if (c === "Bs") {
         let prev = shippingCost * props.dollarValue
         {
           n.push(prev)
@@ -238,6 +236,7 @@ export default function ShoppingPage(props) {
     let total = n.reduce(function (a, b) {
       return a + b
     })
+    console.log(total)
     return total
   }
 
@@ -247,9 +246,9 @@ export default function ShoppingPage(props) {
       props.setOpen(true)
 
       let orderLines = []
-      let taxv2 = getIvaCost(props.buyState)
-      let subtotalv2 = getTotalPrice(props.buyState)
-      let totalv2 = getTotal(props.buyState)
+      let taxv2 = getIvaCost(props.buyState, true)
+      let subtotalv2 = getTotalPrice(props.buyState, true)
+      let totalv2 = getTotal(props.buyState, true)
 
       props.buyState.map((s) => {
         s.product &&
@@ -267,10 +266,8 @@ export default function ShoppingPage(props) {
             ({ _id }) => _id === item.product.discount
           )
           if (
-            ((JSON.parse(localStorage.getItem("token")) &&
-              JSON.parse(localStorage.getItem("token")).username) ||
-              (JSON.parse(localStorage?.getItem("adminToken")) &&
-                JSON.parse(localStorage?.getItem("adminToken"))?.username)) &&
+            JSON.parse(localStorage.getItem("token")) &&
+            JSON.parse(localStorage.getItem("token")).username &&
             dis?.type === "Porcentaje"
           ) {
             item.product.finalPrice = Number(
@@ -284,10 +281,8 @@ export default function ShoppingPage(props) {
             )
             item.product.discount = dis.name + " %" + dis.value
           } else if (
-            ((JSON.parse(localStorage.getItem("token")) &&
-              JSON.parse(localStorage.getItem("token")).username) ||
-              (JSON.parse(localStorage?.getItem("adminToken")) &&
-                JSON.parse(localStorage?.getItem("adminToken"))?.username)) &&
+            JSON.parse(localStorage.getItem("token")) &&
+            JSON.parse(localStorage.getItem("token")).username &&
             dis?.type === "Monto"
           ) {
             item.product.finalPrice = Number(
@@ -318,10 +313,8 @@ export default function ShoppingPage(props) {
             item.product.discount = dis.name + " $" + dis.value
           }
         } else if (
-          (JSON.parse(localStorage.getItem("token")) &&
-            JSON.parse(localStorage.getItem("token")).username) ||
-          (JSON.parse(localStorage.getItem("adminToken")) &&
-            JSON.parse(localStorage.getItem("adminToken")).username)
+          JSON.parse(localStorage.getItem("token")) &&
+          JSON.parse(localStorage.getItem("token")).username
         ) {
           item.product.finalPrice =
             item.product.prixerEquation || item.product.prixerPrice.from
@@ -495,7 +488,8 @@ export default function ShoppingPage(props) {
   }, [])
 
   const changeCurrency = () => {
-    toggleCurrency()  }
+    toggleCurrency()
+  }
 
   const handleBuy = () => {
     document.getElementById("next")?.scrollIntoView({
@@ -504,6 +498,13 @@ export default function ShoppingPage(props) {
     })
   }
 
+  const flow = () => {
+    if (activeStep === steps.length - 1) {
+      setCurrency("USD"), createOrder()
+    } else {
+      setActiveStep((prevActiveStep) => prevActiveStep + 1)
+    }
+  }
   return (
     <>
       <Backdrop
@@ -611,7 +612,7 @@ export default function ShoppingPage(props) {
                 style={{
                   padding: "10px 10px 0px 10px",
                   width: "100%",
-                  marginTop: !isMobile && 12
+                  marginTop: !isMobile && 12,
                 }}
                 elevation={3}
               >
@@ -704,9 +705,7 @@ export default function ShoppingPage(props) {
                         props.valuesConsumerForm?.phone
                       )
                     }
-                    onClick={
-                      activeStep === steps.length - 1 ? createOrder : handleNext
-                    }
+                    onClick={flow}
                   >
                     {activeStep === steps.length - 1 ? "Ordenar" : "Siguiente"}
                   </Button>

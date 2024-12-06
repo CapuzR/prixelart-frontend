@@ -114,9 +114,9 @@ function ConsumerForm(props) {
 
   let ProdTimes = props.buyState?.map((item) => {
     if (item.product && item.art && zone && country) {
-      let selectedCountry = item.product.interProductionTime.find(
-        (obj) => obj[country] !== undefined
-      )?.[country].at(-1)
+      let selectedCountry = item.product.interProductionTime
+        .find((obj) => obj[country] !== undefined)
+        ?.[country].at(-1)
       if (props.values?.country === "Estados Unidos") {
         selectedCountry = item.product.interProductionTime.filter(
           (c) => c === "EEUU"
@@ -132,10 +132,12 @@ function ConsumerForm(props) {
       item.art &&
       item.product.productionTime !== undefined
     ) {
+      console.log(item.product.productionTime)
       return item.product.productionTime.toString()
     }
   })
-console.log(ProdTimes)
+
+  console.log(props.buyState)
   let orderedProdT = ProdTimes.sort(function (a, b) {
     if (a.toLowerCase() > b.toLowerCase()) {
       return 1

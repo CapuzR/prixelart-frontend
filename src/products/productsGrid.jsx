@@ -22,7 +22,12 @@ import MenuItem from "@material-ui/core/MenuItem"
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry"
 import IconButton from "@material-ui/core/IconButton"
 import Tooltip from "@material-ui/core/Tooltip"
-
+import InputAdornment from "@material-ui/core/InputAdornment"
+import useMediaQuery from "@material-ui/core/useMediaQuery"
+import { useTheme } from "@material-ui/core/styles"
+import TextField from "@material-ui/core/TextField"
+import Paper from "@material-ui/core/Paper"
+import SearchIcon from "@material-ui/icons/Search"
 import { useHistory } from "react-router-dom"
 import Switch from "@material-ui/core/Switch"
 import ReactGA from "react-ga"
@@ -33,6 +38,7 @@ import label from "../images/label.svg"
 import { priceSelect } from "./services"
 import { useGlobalContext } from "../context/globalContext"
 import { ProductCarousel } from "../sharedComponents/productCarousel/productCarousel"
+import SortIcon from "@material-ui/icons/Sort"
 
 ReactGA.initialize("G-0RWP9B33D8")
 
@@ -205,15 +211,19 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 export default function ProductGrid(props) {
+  const theme = useTheme()
+
   const classes = useStyles()
   const [tiles, setTiles] = useState([])
   const [maxLength, setMaxLength] = useState(0)
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
 
   const [order, setOrder] = useState("")
   const history = useHistory()
   const [currentPage, setCurrentPage] = useState(1)
   const [productsPerPage] = useState(10)
   const { currency, toggleCurrency, zone, toggleZone } = useGlobalContext()
+  const [searchQuery, setQuery] = useState("")
 
   const handleChange = (event) => {
     setOrder(event.target.value)
@@ -238,6 +248,7 @@ export default function ProductGrid(props) {
               : "name",
           initialPoint: (currentPage - 1) * productsPerPage,
           productsPerPage: productsPerPage,
+          query: searchQuery,
         },
       })
       .then(async (response) => {
@@ -284,7 +295,7 @@ export default function ProductGrid(props) {
     } else {
       getInter()
     }
-  }, [order, currentPage, productsPerPage, zone])
+  }, [order, currentPage, productsPerPage, zone, searchQuery])
 
   const handleNextPage = () => {
     setCurrentPage((prevPage) => prevPage + 1)
@@ -309,125 +320,154 @@ export default function ProductGrid(props) {
     })
   }
 
+  const handleQuery = (event) => {
+    setQuery(event.target.value)
+  }
+
   return (
     <>
-      <div
+      <Paper
         style={{
           display: "flex",
-          justifyContent: "end",
-          width: "80%",
+          width: isMobile ? "100%" : "80%",
           margin: "0 auto",
           marginTop: "2rem",
+          borderRadius: 20,
+          padding: isMobile ? 20 : "10px 20px",
+          alignItems: "center",
         }}
+        elevation={2}
       >
-        <div
+        <Grid
+          container
           style={{
-            display: "flex",
-            justifyContent: "center",
-            marginRight: "10px",
-            padding: "0px",
+            justifyContent: isMobile ? "space-between" : "center",
+            gap: 15,
           }}
         >
-          <IconButton
-            size="small"
-            onClick={handlePreviousPage}
-            disabled={currentPage === 1}
+          <Grid
+            item
+            sm={12}
+            md={3}
+            style={{ display: "flex", width: isMobile && "100%" }}
           >
-            <ArrowBackIosIcon />
-          </IconButton>
-          <Typography
-            variant="h6"
-            style={{
-              margin: "auto 1rem",
-              color: "#d33f49",
-              fontSize: "1.5rem",
-            }}
+            <TextField
+              style={{
+                height: "fit-content",
+                margin: "auto 0",
+                display: "flex",
+                width: isMobile && "100%"
+              }}
+              id="search-query"
+              label="Buscar"
+              variant="outlined"
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon />
+                  </InputAdornment>
+                ),
+              }}
+              onChange={handleQuery}
+              value={searchQuery}
+            />
+          </Grid>
+          <Grid
+            item
+            md={2}
+            sm={4}
           >
-            {currentPage}
-          </Typography>
-          <IconButton
-            size="small"
-            onClick={handleNextPage}
-            disabled={currentPage === Math.ceil(maxLength / productsPerPage)}
+            <FormControl className={classes.formControl}>
+              {!isMobile && (
+                <InputLabel
+                  style={{ marginLeft: 10 }}
+                  id="demo-simple-select-label"
+                >
+                  Ordenar
+                </InputLabel>
+              )}
+              <Select
+                startAdornment={
+                  <InputAdornment position="start">
+                    <SortIcon />
+                  </InputAdornment>
+                }
+                label="Ordenar"
+                variant="outlined"
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                value={order}
+                onChange={handleChange}
+              >
+                <MenuItem value={"A-Z"}>A-Z</MenuItem>
+                <MenuItem value={"Z-A"}>Z-A</MenuItem>
+                <MenuItem value={"lowerPrice"}>Menor precio</MenuItem>
+                <MenuItem value={"maxPrice"}>Mayor precio</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+          <Grid
+            style={{ display: "flex" }}
+            item
+            md={2}
           >
-            <ArrowForwardIosIcon />
-          </IconButton>
-        </div>
-        <FormControl className={classes.formControl}>
-          <InputLabel
-            style={{ marginLeft: 10 }}
-            id="demo-simple-select-label"
-          >
-            Ordenar
-          </InputLabel>
-          <Select
-            variant="outlined"
-            labelId="demo-simple-select-label"
-            id="demo-simple-select"
-            value={order}
-            onChange={handleChange}
-          >
-            <MenuItem value={"A-Z"}>A-Z</MenuItem>
-            <MenuItem value={"Z-A"}>Z-A</MenuItem>
-            <MenuItem value={"lowerPrice"}>Menor precio</MenuItem>
-            <MenuItem value={"maxPrice"}>Mayor precio</MenuItem>
-          </Select>
-        </FormControl>
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            alignItems: "center",
-            marginLeft: 10,
-          }}
-        >
-          <Switch
-            classes={{
-              root: classes.base,
-              switchBase: classes.switchBase,
-              thumb: currency !== "USD" ? classes.thumbTrue : classes.thumb,
-              track: classes.track,
-              checked: classes.checked,
-            }}
-            color="primary"
-            value={currency}
-            onChange={(e) => {
-              toggleCurrency()
-            }}
-            style={{ marginRight: "-5px" }}
-          />
-        </div>
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            alignItems: "center",
-            marginLeft: 10,
-          }}
-        >
-          <Switch
-            classes={{
-              root: classes.base,
-              switchBase: classes.switchBase,
-              thumb: zone === "VZLA" ? classes.thumbTrueZ : classes.thumbZ,
-              track: classes.trackZ,
-              checked: classes.checked,
-            }}
-            color="primary"
-            value={zone === "VZLA" ? true : false}
-            onChange={(e) => {
-              toggleZone()
-            }}
-            style={{ marginRight: "-5px" }}
-          />
-        </div>
-      </div>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                marginLeft: 10,
+              }}
+            >
+              <Switch
+                classes={{
+                  root: classes.base,
+                  switchBase: classes.switchBase,
+                  thumb: currency !== "USD" ? classes.thumbTrue : classes.thumb,
+                  track: classes.track,
+                  checked: classes.checked,
+                }}
+                color="primary"
+                value={currency}
+                onChange={(e) => {
+                  toggleCurrency()
+                }}
+                style={{ marginRight: "-5px" }}
+              />
+            </div>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                marginLeft: 10,
+              }}
+            >
+              <Switch
+                classes={{
+                  root: classes.base,
+                  switchBase: classes.switchBase,
+                  thumb: zone === "VZLA" ? classes.thumbTrueZ : classes.thumbZ,
+                  track: classes.trackZ,
+                  checked: classes.checked,
+                }}
+                color="primary"
+                value={zone === "VZLA" ? true : false}
+                onChange={(e) => {
+                  toggleZone()
+                }}
+                style={{ marginRight: "-5px" }}
+              />
+            </div>
+          </Grid>
+        </Grid>
+      </Paper>
       {tiles && tiles.length > 0 ? (
         <ResponsiveMasonry
           columnsCountBreakPoints={{ 350: 1, 750: 2, 1800: 3 }}
         >
           <Masonry
-            style={{ columnGap: "1.8rem", width: "80%", margin: "0 auto" }}
+            style={{ columnGap: "1.8rem", width: isMobile ? "100%" : "80%", margin: "0 auto" }}
           >
             {tiles.map((tile) => (
               <Card

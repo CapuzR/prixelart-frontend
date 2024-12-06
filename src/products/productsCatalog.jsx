@@ -95,7 +95,6 @@ export default function ProductsCatalog(props) {
 
   const [bestSellers, setBestSellers] = useState()
   const [selectedProduct, setSelectedProduct] = useState(undefined)
-  const prixerUsername = "all"
   const classes = useStyles()
   const history = useHistory()
   const [openServiceFormDialog, setOpenServiceFormDialog] = useState(false)
@@ -146,8 +145,6 @@ export default function ProductsCatalog(props) {
 
   return (
     <>
-      {/* <AppBar prixerUsername={prixerUsername} /> */}
-
       <Container
         component="main"
         className={classes.paper}
@@ -170,15 +167,15 @@ export default function ProductsCatalog(props) {
               flexDirection: "column",
               justifyContent: "center",
               position: "relative",
-              width: isDesktop ? "80%" : "96%",
+              width: isDesktop ? "80%" : "100%",
               height: isMobile ? 240 : "fit-content",
               marginTop: 20,
-              marginLeft: isDesktop ? "10%" : "2%",
-              borderRadius: isMobile ? 30 : 52,
+              marginLeft: isDesktop && "10%",
+              borderRadius: isMobile ? 16 : 52,
               backgroundColor: "gainsboro",
               padding: isMobile ? 10 : 30,
               paddingTop: isMobile ? 0 : 10,
-              paddingBottom: isDesktop && 30,
+              paddingBottom: 30,
             }}
             elevation={5}
           >

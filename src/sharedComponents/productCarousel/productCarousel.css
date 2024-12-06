@@ -53,8 +53,8 @@
     display: block !important; 
     color: white;
     border-radius: 50%; 
-    width: 40px;  
-    height: 40px;  
+    width: 20px;  
+    height: 20px;  
     z-index: 1000; 
     position: absolute;
     top: 50%; 
@@ -130,7 +130,7 @@
   /* Prueba */
 
   .slick-slider {
-    height: 100%; /* Slider should respect the height of the wrapper */
+    height: fit-content; /* Slider should respect the height of the wrapper */
     display: flex; /* Ensures that the content fills the available space */
     flex-direction: column; /* Stack content vertically */
   }
@@ -143,18 +143,17 @@
   }
   
   .slick-list {
-    height: 100% !important;
+    height: fit-content;
     flex-grow: 1;
     overflow: hidden;
   }
 
   .slick-slide {
-    height: 80% !important;
+    height: fit-content;
     display: flex;
     justify-content: center;
     align-items: center;
     align-items: center;
-    height: 80% !important;
     max-height: 100% !important;
   }
   

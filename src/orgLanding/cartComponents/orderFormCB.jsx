@@ -161,6 +161,7 @@ export default function OrderFormCB(props) {
       ? props.valuesConsumer?.shippingMethod?.price?.replace(/[$]/gi, "")
       : 0
   )
+
   const getShippingCost = () => {
     let selectedCountry = ShippingData.find(
       (item) => item.country === props.valuesConsumer?.country
@@ -231,8 +232,20 @@ export default function OrderFormCB(props) {
     }
   }
 
-  getShippingCost()
-  getTax()
+  useEffect(() => {
+    if (zone === "INTER") {
+      getShippingCost()
+      getTax()
+    } else {
+      shippingCost = Number(
+        props.valuesConsumer?.shippingMethod
+          ? props.valuesConsumer?.shippingMethod?.price?.replace(/[$]/gi, "")
+          : 0
+      )
+      tax = 0
+    }
+  }, [zone])
+
   return (
     <>
       <form

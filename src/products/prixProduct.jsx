@@ -30,6 +30,11 @@ import { useLocation } from "react-router-dom/cjs/react-router-dom.min.js"
 import { splitDescription } from "./services"
 import LoadingBackdrop from "../sharedComponents/loading/loading.jsx"
 import { useGlobalContext } from "../context/globalContext"
+import AddIcon from "@material-ui/icons/AddShoppingCart"
+import Stepper from "@material-ui/core/Stepper"
+import Step from "@material-ui/core/Step"
+import StepLabel from "@material-ui/core/StepLabel"
+import StepButton from "@material-ui/core/StepButton"
 
 import MDEditor from "@uiw/react-md-editor"
 import ReactGA from "react-ga"
@@ -62,6 +67,24 @@ export default function PrixProduct(props) {
   const { generalDescription, technicalSpecification } = splitDescription(
     product?.description
   )
+  const [activeStep, setActiveStep] = useState(0)
+  const steps = [
+    "Selecciona el producto",
+    "Selecciona el arte",
+    "Agrega al carrito",
+  ]
+
+  const handleNext = () => {
+    setActiveStep((prevActiveStep) => prevActiveStep + 1)
+  }
+
+  const handleBack = () => {
+    setActiveStep((prevActiveStep) => prevActiveStep - 1)
+  }
+
+  const handleStep = (step) => () => {
+    setActiveStep(step)
+  }
 
   const handleChange = (panel) => (isExpanded) => {
     setExpanded(isExpanded ? panel : false)
@@ -157,243 +180,502 @@ export default function PrixProduct(props) {
     }
   }
 
+
+
   return (
     <>
       <LoadingBackdrop open={loading} />
-
-      <div className="prix-product-container">
-        <div className="first-row">
-          <div className="first-row-title-container">
-            <div className="product-title">{product?.name}</div>
-          </div>
-          <div className="first-row-buttons-container">
-            <div className="button-wrapper">
-              <Button
-                variant="outlined"
-                className="share-button"
-                onClick={(e) => {
-                  window.open(utils.generateWaProductMessage(product), "_blank")
-                }}
-              >
-                <ShareIcon className="share-icon" /> Compartir
-              </Button>
+      {!isTab ? (
+        <div className="prix-product-container">
+          <div className="first-row">
+            <div className="first-row-title-container">
+              <div className="product-title">{product?.name}</div>
             </div>
-            <div className="button-wrapper">
-              <Button
-                className={
-                  selectedArt === undefined
-                    ? "add-button-disabled"
-                    : "add-button-enabled"
-                }
-                disabled={selectedArt === undefined}
-                onClick={addItemToBuyState}
-              >
-                Agregar al carrito
-              </Button>
-            </div>
-          </div>
-        </div>
-
-        <div className="main-content">
-          {/* Left Side - Carusel e Info */}
-          <div className="left-side">
-            {/* Carousel Container */}
-            <div className="carousel-wrapper">
-              <ProductCarousel
-                product={product}
-                selectedArt={selectedArt}
-                selectedItem={selectedItem}
-                type="withImages"
-              />
-            </div>
-            <div className="info-accordion-wrapper">
-              {/* First Accordion - General Description */}
-              <Accordion
-                expanded={expanded === "panel1"}
-                onChange={handleChange("panel1")}
-              >
-                <AccordionSummary
-                  expandIcon={<ExpandMoreIcon />}
-                  aria-controls="panel1a-content"
-                  id="panel1a-header"
+            <div className="first-row-buttons-container">
+              <div className="button-wrapper">
+                <Button
+                  variant="outlined"
+                  className="share-button"
+                  onClick={(e) => {
+                    window.open(
+                      utils.generateWaProductMessage(product),
+                      "_blank"
+                    )
+                  }}
                 >
-                  <Typography className="accordion-title">
-                    {" "}
-                    Descripción{" "}
-                  </Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                  <MDEditor.Markdown
-                    whiteSpace="pre-wrap"
-                    source={generalDescription || "No description available."}
-                    className="markdown-content"
-                  />
-                </AccordionDetails>
-              </Accordion>
-
-              {/* Second Accordion - Technical Specification */}
-              <Accordion
-                expanded={expanded === "panel2"}
-                onChange={handleChange("panel2")}
-              >
-                <AccordionSummary
-                  expandIcon={<ExpandMoreIcon />}
-                  aria-controls="panel2a-content"
-                  id="panel2a-header"
+                  <ShareIcon className="share-icon" /> Compartir
+                </Button>
+              </div>
+              <div className="button-wrapper">
+                <Button
+                  className={
+                    selectedArt === undefined
+                      ? "add-button-disabled"
+                      : "add-button-enabled"
+                  }
+                  disabled={selectedArt === undefined}
+                  onClick={addItemToBuyState}
                 >
-                  <Typography className="accordion-title">
-                    {" "}
-                    Especificación Técnica{" "}
-                  </Typography>
-                </AccordionSummary>
-                <AccordionDetails className="accordion-details">
-                  <MDEditor.Markdown
-                    whiteSpace="pre-wrap"
-                    source={
-                      technicalSpecification ||
-                      "No technical specifications available."
-                    }
-                    className="markdown-content"
-                  />
-                </AccordionDetails>
-              </Accordion>
-
-              {/* Third Accordion - Observations */}
-              <Accordion
-                expanded={expanded === "panel3"}
-                onChange={handleChange("panel3")}
-              >
-                <AccordionSummary
-                  expandIcon={<ExpandMoreIcon />}
-                  aria-controls="panel3a-content"
-                  id="panel3a-header"
-                >
-                  <Typography className="accordion-title">
-                    {" "}
-                    Observaciones{" "}
-                  </Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                  <MDEditor.Markdown
-                    whiteSpace="pre-wrap"
-                    source={
-                      product?.observations || "No observations available."
-                    }
-                    className="markdown-content"
-                  />
-                </AccordionDetails>
-              </Accordion>
-            </div>
-          </div>
-
-          {/* Right Side - Gallery */}
-          <div className="right-side">
-            <div className="right-side-top">
-              <h2>Selecciona:</h2>
-              <div
-                className={`attributes-container ${
-                  product?.attributes?.length > 1
-                    ? "space-between"
-                    : "flex-start"
-                }`}
-              >
-                {product?.attributes?.map((att, iAtt, attributesArr) => (
-                  <div
-                    key={iAtt}
-                    style={{ width: "45%" }}
-                  >
-                    <FormControl
-                      variant="outlined"
-                      style={{ width: "100%" }}
-                      xs={12}
-                      sm={12}
-                      md={12}
-                      lg={12}
-                    >
-                      <InputLabel id={att.name}>{att.name}</InputLabel>
-                      <Select
-                        labelId={att.name}
-                        id={att.name}
-                        value={product.selection?.[iAtt] || ""}
-                        onChange={(e) => {
-                          const newSelection = [...product.selection]
-                          newSelection[iAtt] = e.target.value
-                          setProduct((prevProduct) => ({
-                            ...prevProduct,
-                            selection: newSelection,
-                          }))
-                        }}
-                        label={att.name}
-                      >
-                        <MenuItem value="">
-                          <em>Select an option</em>
-                        </MenuItem>
-                        {(product?.selection?.every((s) => s === "") ||
-                          product?.selection.some((s) =>
-                            att.value.includes(s)
-                          )) &&
-                          att.value &&
-                          att.value.map((n) => {
-                            return (
-                              <MenuItem
-                                key={n}
-                                value={n}
-                              >
-                                {n}
-                              </MenuItem>
-                            )
-                          })}
-                        {product?.selection?.map((sel) => {
-                          return product?.variants?.map(
-                            (vari, iVar, varArr) => {
-                              const isValid = vari.attributes?.some(
-                                (a) => a.value === sel
-                              )
-                              if (isValid) {
-                                return vari.attributes?.map(
-                                  (variAtt, iVarAtt, varAttArr) => {
-                                    if (
-                                      variAtt.value !== sel &&
-                                      att.value.includes(variAtt.value)
-                                    ) {
-                                      return (
-                                        <MenuItem
-                                          key={variAtt.value}
-                                          value={variAtt.value}
-                                        >
-                                          {variAtt.value}
-                                        </MenuItem>
-                                      )
-                                    }
-                                  }
-                                )
-                              }
-                            }
-                          )
-                        })}
-                      </Select>
-                    </FormControl>
-                  </div>
-                ))}
+                  <AddIcon className="add-icon share-icon" />
+                  Agregar al carrito
+                </Button>
               </div>
             </div>
-            <div className="right-side-bottom">
-              <h2>Elige el arte:</h2>
-              <div className="art-selection-container">
-                <div className="art-grid-wrapper">
-                  <ArtsGrid
-                    setSelectedArt={addArt}
-                    setFullArt={props.setFullArt}
-                    fullArt={props.fullArt}
-                    setSearchResult={props.setSearchResult}
-                    searchResult={props.searchResult}
-                  />
+          </div>
+          <div className="main-content">
+            <div className="left-side">
+              <div className="carousel-wrapper">
+                <ProductCarousel
+                  product={product}
+                  selectedArt={selectedArt}
+                  selectedItem={selectedItem}
+                  type="withImages"
+                />
+              </div>
+              <div className="info-accordion-wrapper">
+                <Accordion
+                  expanded={expanded === "panel1"}
+                  onChange={handleChange("panel1")}
+                >
+                  <AccordionSummary
+                    expandIcon={<ExpandMoreIcon />}
+                    aria-controls="panel1a-content"
+                    id="panel1a-header"
+                  >
+                    <Typography className="accordion-title">
+                      Descripción
+                    </Typography>
+                  </AccordionSummary>
+                  <AccordionDetails>
+                    <MDEditor.Markdown
+                      whiteSpace="pre-wrap"
+                      source={generalDescription || "No description available."}
+                      className="markdown-content"
+                    />
+                  </AccordionDetails>
+                </Accordion>
+                <Accordion
+                  expanded={expanded === "panel2"}
+                  onChange={handleChange("panel2")}
+                >
+                  <AccordionSummary
+                    expandIcon={<ExpandMoreIcon />}
+                    aria-controls="panel2a-content"
+                    id="panel2a-header"
+                  >
+                    <Typography className="accordion-title">
+                      {" "}
+                      Especificación Técnica{" "}
+                    </Typography>
+                  </AccordionSummary>
+                  <AccordionDetails className="accordion-details">
+                    <MDEditor.Markdown
+                      whiteSpace="pre-wrap"
+                      source={
+                        technicalSpecification ||
+                        "No technical specifications available."
+                      }
+                      className="markdown-content"
+                    />
+                  </AccordionDetails>
+                </Accordion>
+                <Accordion
+                  expanded={expanded === "panel3"}
+                  onChange={handleChange("panel3")}
+                >
+                  <AccordionSummary
+                    expandIcon={<ExpandMoreIcon />}
+                    aria-controls="panel3a-content"
+                    id="panel3a-header"
+                  >
+                    <Typography className="accordion-title">
+                      Observaciones
+                    </Typography>
+                  </AccordionSummary>
+                  <AccordionDetails>
+                    <MDEditor.Markdown
+                      whiteSpace="pre-wrap"
+                      source={
+                        product?.observations || "No observations available."
+                      }
+                      className="markdown-content"
+                    />
+                  </AccordionDetails>
+                </Accordion>
+              </div>
+            </div>
+            <div className="right-side">
+              <div className="right-side-top">
+                <h2>Selecciona:</h2>
+                <div
+                  className={`attributes-container ${
+                    product?.attributes?.length > 1
+                      ? "space-between"
+                      : "flex-start"
+                  }`}
+                >
+                  {product?.attributes?.map((att, iAtt, attributesArr) => (
+                    <div
+                      key={iAtt}
+                      style={{ width: "45%" }}
+                    >
+                      <FormControl
+                        variant="outlined"
+                        style={{ width: "100%" }}
+                        xs={12}
+                        sm={12}
+                        md={12}
+                        lg={12}
+                      >
+                        <InputLabel id={att.name}>{att.name}</InputLabel>
+                        <Select
+                          labelId={att.name}
+                          id={att.name}
+                          value={product.selection?.[iAtt] || ""}
+                          onChange={(e) => {
+                            const newSelection = [...product.selection]
+                            newSelection[iAtt] = e.target.value
+                            setProduct((prevProduct) => ({
+                              ...prevProduct,
+                              selection: newSelection,
+                            }))
+                          }}
+                          label={att.name}
+                        >
+                          <MenuItem value="">
+                            <em>Select an option</em>
+                          </MenuItem>
+                          {(product?.selection?.every((s) => s === "") ||
+                            product?.selection.some((s) =>
+                              att.value.includes(s)
+                            )) &&
+                            att.value &&
+                            att.value.map((n) => {
+                              return (
+                                <MenuItem
+                                  key={n}
+                                  value={n}
+                                >
+                                  {n}
+                                </MenuItem>
+                              )
+                            })}
+                          {product?.selection?.map((sel) => {
+                            return product?.variants?.map(
+                              (vari, iVar, varArr) => {
+                                const isValid = vari.attributes?.some(
+                                  (a) => a.value === sel
+                                )
+                                if (isValid) {
+                                  return vari.attributes?.map(
+                                    (variAtt, iVarAtt, varAttArr) => {
+                                      if (
+                                        variAtt.value !== sel &&
+                                        att.value.includes(variAtt.value)
+                                      ) {
+                                        return (
+                                          <MenuItem
+                                            key={variAtt.value}
+                                            value={variAtt.value}
+                                          >
+                                            {variAtt.value}
+                                          </MenuItem>
+                                        )
+                                      }
+                                    }
+                                  )
+                                }
+                              }
+                            )
+                          })}
+                        </Select>
+                      </FormControl>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="right-side-bottom">
+                <h2>Elige el arte:</h2>
+                <div className="art-selection-container">
+                  <div className="art-grid-wrapper">
+                    <ArtsGrid
+                      setSelectedArt={addArt}
+                      setFullArt={props.setFullArt}
+                      fullArt={props.fullArt}
+                      setSearchResult={props.setSearchResult}
+                      searchResult={props.searchResult}
+                    />
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      ) : (
+        <div className="prix-product-container">
+          <div className="first-row">
+            <div className="first-row-title-container">
+              <div className="product-title">{product?.name}</div>
+            </div>
+            <div className="first-row-buttons-container">
+              <div className="button-wrapper">
+                <Button
+                  variant="outlined"
+                  className="share-button"
+                  onClick={(e) => {
+                    window.open(
+                      utils.generateWaProductMessage(product),
+                      "_blank"
+                    )
+                  }}
+                >
+                  <ShareIcon className="share-icon" />
+                  {!isTab && "Compartir"}
+                </Button>
+              </div>
+              <div className="button-wrapper">
+                <Button
+                  className={
+                    selectedArt === undefined
+                      ? "add-button-disabled"
+                      : "add-button-enabled"
+                  }
+                  disabled={selectedArt === undefined}
+                  onClick={addItemToBuyState}
+                >
+                  <AddIcon className="add-icon share-icon" />
+                  {!isTab && "Agregar al carrito"}
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          <div className="main-content">
+            <Stepper
+              activeStep={activeStep}
+              alternativeLabel
+              nonLinear
+              className="stepper"
+            >
+              {steps.map((label, index) => (
+                <Step key={label}>
+                  <StepButton onClick={handleStep(index)}>{label}</StepButton>
+                </Step>
+              ))}
+            </Stepper>
+            <div>
+              {activeStep === 0 ? (
+                <div className="left-side">
+                <div className="carousel-wrapper">
+                  <ProductCarousel
+                    product={product}
+                    selectedArt={selectedArt}
+                    selectedItem={selectedItem}
+                    type="withImages"
+                  />
+                </div>
+                {product?.attributes?.length > 0 && (
+                  <div className="right-side-top">
+                    <h2>Selecciona:</h2>
+                    <div
+                      className={`attributes-container ${
+                        product?.attributes?.length > 1
+                          ? "space-between"
+                          : "flex-start"
+                      }`}
+                    >
+                      {product?.attributes?.map((att, iAtt, attributesArr) => (
+                        <div
+                          key={iAtt}
+                          style={{ width: "45%" }}
+                        >
+                          <FormControl
+                            variant="outlined"
+                            style={{ width: "100%" }}
+                            xs={12}
+                            sm={12}
+                            md={12}
+                            lg={12}
+                          >
+                            <InputLabel id={att.name}>{att.name}</InputLabel>
+                            <Select
+                              labelId={att.name}
+                              id={att.name}
+                              value={product.selection?.[iAtt] || ""}
+                              onChange={(e) => {
+                                const newSelection = [...product.selection]
+                                newSelection[iAtt] = e.target.value
+                                setProduct((prevProduct) => ({
+                                  ...prevProduct,
+                                  selection: newSelection,
+                                }))
+                              }}
+                              label={att.name}
+                            >
+                              <MenuItem value="">
+                                <em>Select an option</em>
+                              </MenuItem>
+                              {(product?.selection?.every((s) => s === "") ||
+                                product?.selection.some((s) =>
+                                  att.value.includes(s)
+                                )) &&
+                                att.value &&
+                                att.value.map((n) => {
+                                  return (
+                                    <MenuItem
+                                      key={n}
+                                      value={n}
+                                    >
+                                      {n}
+                                    </MenuItem>
+                                  )
+                                })}
+                              {product?.selection?.map((sel) => {
+                                return product?.variants?.map(
+                                  (vari, iVar, varArr) => {
+                                    const isValid = vari.attributes?.some(
+                                      (a) => a.value === sel
+                                    )
+                                    if (isValid) {
+                                      return vari.attributes?.map(
+                                        (variAtt, iVarAtt, varAttArr) => {
+                                          if (
+                                            variAtt.value !== sel &&
+                                            att.value.includes(variAtt.value)
+                                          ) {
+                                            return (
+                                              <MenuItem
+                                                key={variAtt.value}
+                                                value={variAtt.value}
+                                              >
+                                                {variAtt.value}
+                                              </MenuItem>
+                                            )
+                                          }
+                                        }
+                                      )
+                                    }
+                                  }
+                                )
+                              })}
+                            </Select>
+                          </FormControl>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                <div className="info-accordion-wrapper">
+                  <Accordion
+                    expanded={expanded === "panel1"}
+                    onChange={handleChange("panel1")}
+                  >
+                    <AccordionSummary
+                      expandIcon={<ExpandMoreIcon />}
+                      aria-controls="panel1a-content"
+                      id="panel1a-header"
+                    >
+                      <Typography className="accordion-title">
+                        Descripción
+                      </Typography>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                      <MDEditor.Markdown
+                        whiteSpace="pre-wrap"
+                        source={generalDescription || "No description available."}
+                        className="markdown-content"
+                      />
+                    </AccordionDetails>
+                  </Accordion>
+                  <Accordion
+                    expanded={expanded === "panel2"}
+                    onChange={handleChange("panel2")}
+                  >
+                    <AccordionSummary
+                      expandIcon={<ExpandMoreIcon />}
+                      aria-controls="panel2a-content"
+                      id="panel2a-header"
+                    >
+                      <Typography className="accordion-title">
+                        {" "}
+                        Especificación Técnica{" "}
+                      </Typography>
+                    </AccordionSummary>
+                    <AccordionDetails className="accordion-details">
+                      <MDEditor.Markdown
+                        whiteSpace="pre-wrap"
+                        source={
+                          technicalSpecification ||
+                          "No technical specifications available."
+                        }
+                        className="markdown-content"
+                      />
+                    </AccordionDetails>
+                  </Accordion>
+                  <Accordion
+                    expanded={expanded === "panel3"}
+                    onChange={handleChange("panel3")}
+                  >
+                    <AccordionSummary
+                      expandIcon={<ExpandMoreIcon />}
+                      aria-controls="panel3a-content"
+                      id="panel3a-header"
+                    >
+                      <Typography className="accordion-title">
+                        {" "}
+                        Observaciones{" "}
+                      </Typography>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                      <MDEditor.Markdown
+                        whiteSpace="pre-wrap"
+                        source={
+                          product?.observations || "No observations available."
+                        }
+                        className="markdown-content"
+                      />
+                    </AccordionDetails>
+                  </Accordion>
+                </div>
+              </div>
+              ) : (
+                <div className="right-side">
+                <div className="right-side-bottom">
+                  <h2>Elige el arte:</h2>
+                  <div className="art-selection-container">
+                    <div className="art-grid-wrapper">
+                      <ArtsGrid
+                        setSelectedArt={addArt}
+                        setFullArt={props.setFullArt}
+                        fullArt={props.fullArt}
+                        setSearchResult={props.setSearchResult}
+                        searchResult={props.searchResult}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+              )}
+              <div>
+                <Button
+                  disabled={activeStep === 0}
+                  onClick={handleBack}
+                  className="backButton"
+                >
+                  Anterior
+                </Button>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={handleNext}
+                >
+                  {activeStep === steps.length - 1 ? "Agregar" : "Siguiente"}
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       <Snackbar
         open={open}

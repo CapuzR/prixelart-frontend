@@ -86,17 +86,17 @@ export default function CartReview(props) {
   }, [])
 
   const checkOrgs = (art) => {
-  //   const org = props.orgs?.find((el) => el.username === art?.prixerUsername)
-  //   return org
-  // }
+    const org = props.orgs?.find((el) => el.username === art?.prixerUsername)
+    return org
+  }
 
-  // const PriceSelect = (item) => {
-  //   const org = checkOrgs(item.art)
-  //   const prixer = JSON.parse(localStorage?.getItem("token"))?.username
+  const PriceSelect = (item) => {
+    const org = checkOrgs(item.art)
+    const prixer = JSON.parse(localStorage?.getItem("token"))?.username
 
-  //   if (org !== undefined) {
-  //     return UnitPriceForOrg(item.product, item.art, prixer, org, "Particular")
-  //   } else 
+    if (org !== undefined) {
+      return UnitPriceForOrg(item.product, item.art, prixer, org, "Particular")
+    } else 
     if (
       JSON.parse(localStorage?.getItem("token")) &&
       JSON.parse(localStorage?.getItem("token"))?.username

@@ -140,8 +140,9 @@
     height: 100%; /* Make sure the track respects the slider’s height */
     display: flex; /* Align slides within the track */
     justify-content: center;
-    align-items: flex-start; /* Vertically center the slide content */
+    align-items: flex-start;
   }
+  
   
   .slick-list {
     height: fit-content;

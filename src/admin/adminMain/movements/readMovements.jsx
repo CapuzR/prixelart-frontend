@@ -13,7 +13,7 @@ import clsx from "clsx";
 import FormControl from "@material-ui/core/FormControl";
 import Snackbar from "@material-ui/core/Snackbar";
 import { Backdrop, Button } from "@material-ui/core";
-import CircularProgress from "@material-ui/core/CircularProgress"
+import CircularProgress from "@material-ui/core/CircularProgress";
 import axios from "axios";
 import InputLabel from "@material-ui/core/InputLabel";
 import Select from "@material-ui/core/Select";
@@ -148,28 +148,32 @@ export default function ReadMovements(props) {
   const getUsername = (fullname) => {
     const name = fullname?.split(" ");
     let selected;
+
     if (name && name?.length === 2) {
       selected = orgs.find(
-        (p) => p?.firstName === name[0] && p?.lastName === name[1]
-      );
-      if (selected === undefined) {
-        selected = prixers?.find(
-          (p) => p?.firstName === name[0] && p?.lastName === name[1]
-        );
-      }
-      console.log(selected);
-    } else if (name && name?.length === 3) {
-      selected = orgs.find(
-        (p) => p.firstName === name[0] && p.lastName === name[1] + " " + name[2]
+        (p) => p?.firstName === name[0].trim() && p?.lastName === name[1].trim()
       );
       if (selected === undefined) {
         selected = prixers?.find(
           (p) =>
-            p.firstName === name[0] && p.lastName === name[1] + " " + name[2]
+            p?.firstName === name[0].trim() && p?.lastName === name[1].trim()
+        );
+      }
+    } else if (name && name?.length === 3) {
+      selected = orgs.find(
+        (p) =>
+          p.firstName === name[0].trim() &&
+          p.lastName === name[1].trim() + " " + name[2].trim()
+      );
+      if (selected === undefined) {
+        selected = prixers?.find(
+          (p) =>
+            p.firstName === name[0].trim() &&
+            p.lastName === name[1].trim() + " " + name[2].trim()
         );
       }
     }
-    console.log(selected);
+
     setSelectedPrixer(selected?.username);
     return selected;
   };
@@ -213,17 +217,25 @@ export default function ReadMovements(props) {
 
   const deleteMov = async (mov) => {
     setLoading(true);
-    const URI =
-      process.env.REACT_APP_BACKEND_URL + "/movement/delete/" + mov._id;
-    const body = {
-      adminToken: localStorage.getItem("adminTokenV"),
-      movement: mov._id,
-      user: getUsername(mov.destinatary).username,
-    };
-    await axios.put(URI, body, { withCredentials: true });
-    setErrorMessage("Movimiento eliminado exitosamente.");
-    setSnackBarError(true);
-    readMovements();
+
+    const nick = getUsername(mov.destinatary)?.username;
+
+    if (nick !== undefined) {
+      const URI =
+        process.env.REACT_APP_BACKEND_URL + "/movement/delete/" + mov._id;
+      const body = {
+        adminToken: localStorage.getItem("adminTokenV"),
+        movement: mov._id,
+        user: nick,
+      };
+      await axios.put(URI, body, { withCredentials: true });
+      setErrorMessage("Movimiento eliminado exitosamente.");
+      setSnackBarError(true);
+      readMovements();
+    } else {
+      setErrorMessage("Usuario no encontrado.");
+      setSnackBarError(true);
+    }
     setLoading(false);
   };
 
@@ -485,6 +497,7 @@ export default function ReadMovements(props) {
         autoHideDuration={5000}
         message={errorMessage}
         className={classes.snackbar}
-      />    </React.Fragment>
+      />{" "}
+    </React.Fragment>
   );
 }

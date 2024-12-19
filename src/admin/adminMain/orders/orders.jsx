@@ -372,7 +372,7 @@ export default function Orders(props) {
           (order.basicData?.firstname || order.basicData?.name) +
           " " +
           order.basicData?.lastname,
-        typeConsumer: order?.consumerData.consumerType || searchConsumerType(order.basicData),
+        typeConsumer: order?.consumerData?.consumerType || searchConsumerType(order.basicData),
         shippingDate: "",
         // Certificado
         prixer: "",
@@ -594,25 +594,25 @@ export default function Orders(props) {
             : Number(p?.cporg)
         if (
           order.consumerData &&
-          order.consumerData.consumerType === "DAs" &&
+          order.consumerData?.consumerType === "DAs" &&
           ORGS.agreement.considerations["da"] > 0
         ) {
           co = co - (co / 100) * ORGS.agreement.considerations["da"]
         } else if (
           order.consumerData &&
-          order.consumerData.consumerType === "Corporativo" &&
+          order.consumerData?.consumerType === "Corporativo" &&
           ORGS.agreement.considerations["corporativo"] > 0
         ) {
           co = co - (co / 100) * ORGS.agreement.considerations["corporativo"]
         } else if (
           order.consumerData &&
-          order.consumerData.consumerType === "Prixer" &&
+          order.consumerData?.consumerType === "Prixer" &&
           ORGS.agreement.considerations["prixer"] > 0
         ) {
           co = co - (co / 100) * ORGS.agreement.considerations["prixer"]
         } else if (
           order.consumerData &&
-          order.consumerData.consumerType === "Artista" &&
+          order.consumerData?.consumerType === "Artista" &&
           ORGS.agreement.considerations["artista"] > 0
         ) {
           co = co - (co / 100) * ORGS.agreement.considerations["artista"]

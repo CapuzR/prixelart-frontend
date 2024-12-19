@@ -149,30 +149,19 @@ export default function ReadMovements(props) {
     const name = fullname?.split(" ");
     let selected;
 
-    if (name && name?.length === 2) {
+    const [firstName, ...rest] = name;
+
+    const lastName = rest.join(" ");
+
       selected = orgs.find(
-        (p) => p?.firstName === name[0].trim() && p?.lastName === name[1].trim()
+        (p) => p?.firstName.trim() === firstName.trim() && p?.lastName.trim() === lastName.trim()
       );
       if (selected === undefined) {
         selected = prixers?.find(
           (p) =>
-            p?.firstName === name[0].trim() && p?.lastName === name[1].trim()
+            p?.firstName.trim() === firstName.trim() && p?.lastName.trim() === lastName.trim()
         );
       }
-    } else if (name && name?.length === 3) {
-      selected = orgs.find(
-        (p) =>
-          p.firstName === name[0].trim() &&
-          p.lastName === name[1].trim() + " " + name[2].trim()
-      );
-      if (selected === undefined) {
-        selected = prixers?.find(
-          (p) =>
-            p.firstName === name[0].trim() &&
-            p.lastName === name[1].trim() + " " + name[2].trim()
-        );
-      }
-    }
 
     setSelectedPrixer(selected?.username);
     return selected;

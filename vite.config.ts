@@ -11,6 +11,9 @@ export default defineConfig(async () => {
         '@': '/src',
       },
     },
+    optimizeDeps: {
+      include: ['date-fns'],
+    },
     css: {
       preprocessorOptions: {
         scss: {

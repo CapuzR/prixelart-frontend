@@ -5,11 +5,15 @@ export interface CheckoutState {
   activeStep: number;
   loading: boolean;
   order: Order;
-  shippingMethods?: ShippingMethod[];
-  sellers?: string[];
-  paymentMethods?: PaymentMethod[];
+  dataLists: DataLists;
   expandedSection?: string | false;
 }
+
+export interface DataLists {
+  shippingMethods: ShippingMethod[];
+  paymentMethods: PaymentMethod[];
+  sellers: string[];
+};
 
 export interface Order {
   id: string;
@@ -172,3 +176,64 @@ export type CheckoutAction =
   | { type: 'SET_CONSUMER_ADDRESS'; payload: BasicAddress }
   | { type: 'SET_CONSUMER_PAYMENT_METHODS'; payload: ConsumerDetails['paymentMethods'] }
   | { type: 'OTHER_ACTIONS'; payload?: any };
+
+  
+// Type for the errorCheck function used in form fields
+export type FormFieldErrorCheck = (value: any, data?: any) => boolean;
+
+export type OnConditionChangeHandler = (
+  conditionValue: any,
+  helpers: {
+    getValues: (path?: string) => any;
+    setValue: (path: string, value: any) => void;
+  }
+) => {
+  disabled?: boolean;
+  value?: any;
+};
+
+export interface FormFieldConfig {
+  label: string;
+  errorCheck?: FormFieldErrorCheck;
+  helperText?: string;
+  width?: number;
+  adornment?: React.ReactNode;
+  multiline?: boolean;
+  minRows?: number;
+  required?: boolean;
+  type?: string; // e.g., 'dropdown', 'date'
+  options?: string[];
+  actionType?: CheckoutAction['type'];
+  renderKey?: string;
+  dataKey?: string;
+  tooltip?: string;
+  [key: string]: any;
+  
+  conditionedBy?: string;
+  onConditionChange?: OnConditionChangeHandler;
+}
+
+export interface CheckboxConfig {
+  label: string;
+  type: string;
+  activeFields: string[];
+  checked?: boolean;
+}
+
+export interface FormSectionConfig {
+  title: string;
+  fieldsTitle?: string;
+  fields: { [fieldKey: string]: FormFieldConfig };
+  actionType?: CheckoutAction['type'];
+  additionalFieldsPosition?: string;
+  additional?: { [fieldKey: string]: FormFieldConfig };
+  checkboxes?: CheckboxConfig[];
+  defaultCheckbox?: string;
+  headerLabel?: string;
+  headerValue?: string[];
+  [key: string]: any;
+}
+
+export interface FormConfig {
+  [sectionKey: string]: FormSectionConfig;
+}

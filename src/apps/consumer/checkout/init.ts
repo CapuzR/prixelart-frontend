@@ -128,9 +128,11 @@ export const initializeCheckoutState = (cart: Cart): CheckoutState => {
       totalWithoutTax: subTotal,
       total: subTotal,
     },
-    shippingMethods: parsedState?.shippingMethods || [],
-    sellers: parsedState?.sellers || [],
-    paymentMethods: parsedState?.paymentMethods || [],
+    dataLists: {
+      shippingMethods: parsedState?.dataLists?.shippingMethods || [],
+      paymentMethods: parsedState?.dataLists?.paymentMethods || [],
+      sellers: parsedState?.dataLists?.sellers || [],
+    },
     expandedSection: parsedState?.expandedSection || 'basic',
   };
 

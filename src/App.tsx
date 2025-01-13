@@ -6,6 +6,8 @@ import { GlobalProvider, useTheme } from 'context/GlobalContext';
 import ReactGA from 'react-ga';
 import Utility from '@components/Utility';
 import { CartProvider } from 'context/CartContext';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 
 const ThemedApp: React.FC = () => {
   const { theme } = useTheme();
@@ -32,9 +34,11 @@ const App: React.FC = () => {
   return (
     <GlobalProvider>
       <CartProvider>
-        <Router>
-          <ThemedApp />
-        </Router>
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+          <Router>
+            <ThemedApp />
+          </Router>
+        </LocalizationProvider>
       </CartProvider>
     </GlobalProvider>
   );

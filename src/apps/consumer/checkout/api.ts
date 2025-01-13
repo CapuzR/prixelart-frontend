@@ -19,7 +19,7 @@ import {
  */
 export const fetchConsumer = async (
   token: string
-): Promise<ConsumerDetails | { basic: BasicInfo } | null> => {
+): Promise<ConsumerDetails | null> => {
   if (!token) return null;
 
   const email = JSON.parse(token).email;
@@ -33,12 +33,12 @@ export const fetchConsumer = async (
     }
 
     // Fetch prixer details as a fallback
-    const username = JSON.parse(token).username;
-    const prixerResponse = await axios.post(`${baseUrl}/prixer/read`, { username });
-    if (prixerResponse.data) {
-      const parsedPrixer: BasicInfo = parsePrixerDetails(prixerResponse.data);
-      return { basic: parsedPrixer };
-    }
+    // const username = JSON.parse(token).username;
+    // const prixerResponse = await axios.post(`${baseUrl}/prixer/read`, { username });
+    // if (prixerResponse.data) {
+    //   const parsedPrixer: BasicInfo = parsePrixerDetails(prixerResponse.data);
+    //   return { basic: parsedPrixer };
+    // }
 
     return null;
   } catch (error) {

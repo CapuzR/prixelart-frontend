@@ -72,7 +72,7 @@ export const validateConsumerDetails = (
 };
 
 
-export const calculateEstimatedDeliveryDate = (lines: any[]): string => {
+export const calculateEstimatedDeliveryDate = (lines: any[]): Date => {
   const today = new Date();
   const monthsOrder = [
     "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12",
@@ -93,6 +93,6 @@ export const calculateEstimatedDeliveryDate = (lines: any[]): string => {
   } else if (readyDate.getDay() === 0) {
     readyDate = new Date(today.setDate(today.getDate() + 1));
   }
-
-  return `${readyDate.getFullYear()}-${monthsOrder[readyDate.getMonth()]}-${readyDate.getDate()}`;
+  return readyDate;
+  // return `${readyDate.getFullYear()}-${monthsOrder[readyDate.getMonth()]}-${readyDate.getDate()}`;
 };

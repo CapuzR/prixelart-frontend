@@ -5,55 +5,12 @@ import LocalPhoneIcon from '@mui/icons-material/LocalPhone';
 import EmailIcon from '@mui/icons-material/Email';
 import HomeIcon from '@mui/icons-material/Home';
 import BusinessIcon from '@mui/icons-material/Business';
-import { CheckoutState, CheckoutAction } from '../interfaces';
+import { FormConfig } from '../interfaces';
+import { DataLists } from '../interfaces';
 
-// Type for the errorCheck function used in form fields
-type FormFieldErrorCheck = (value: any, data?: any) => boolean;
+import { createMirrorHandler } from './helpers';
 
-interface FormFieldConfig {
-  label: string;
-  errorCheck?: FormFieldErrorCheck;
-  helperText?: string;
-  width?: number;
-  adornment?: React.ReactNode;
-  multiline?: boolean;
-  minRows?: number;
-  required?: boolean;
-  type?: string; // e.g., 'dropdown', 'date'
-  options?: string[];
-  actionType?: CheckoutAction['type'];
-  renderKey?: string;
-  dataKey?: string;
-  tooltip?: string;
-  [key: string]: any; // To allow additional properties if needed
-}
-
-interface CheckboxConfig {
-  label: string;
-  type: string;
-  activeFields: string[];
-  checked?: boolean;
-}
-
-interface FormSectionConfig {
-  title: string;
-  fieldsTitle?: string;
-  fields: { [fieldKey: string]: FormFieldConfig };
-  actionType?: CheckoutAction['type'];
-  additionalFieldsPosition?: string;
-  additional?: { [fieldKey: string]: FormFieldConfig };
-  checkboxes?: CheckboxConfig[];
-  defaultCheckbox?: string;
-  headerLabel?: string;
-  headerValue?: string[];
-  [key: string]: any;
-}
-
-interface FormConfig {
-  [sectionKey: string]: FormSectionConfig;
-}
-
-export function getFormConfig(checkoutState: CheckoutState): FormConfig {
+export function getFormConfig({ paymentMethods, shippingMethods, sellers }: DataLists): FormConfig {
   const formConfig: FormConfig = {
     basic: {
       title: "Datos Básicos",
@@ -134,16 +91,6 @@ export function getFormConfig(checkoutState: CheckoutState): FormConfig {
           helperText: "Formato no válido.",
           width: 4,
         },
-        // address: {
-        //   label: "Dirección",
-        //   errorCheck: (value) => value?.length >= 20,
-        //   helperText: "Incluir todos los detalles posibles, incluidas referencias.",
-        //   multiline: true,
-        //   minRows: 3,
-        //   adornment: <HomeIcon color="secondary" />,
-        //   width: 12,
-        //   actionType: "SET_CONSUMER_ADDRESS",
-        //   },
       },
       actionType: "SET_CONSUMER_BASIC",
     },
@@ -151,47 +98,110 @@ export function getFormConfig(checkoutState: CheckoutState): FormConfig {
       title: "Datos de Envío",
       fieldsTitle: "Dirección de Envío",
       fields: {
+        shippingEqualsBasic: {
+          label: "Igual a datos básicos",
+          type: "checkbox",
+          defaultValue: true,
+          width: 12,
+        },
         name: {
           label: "Nombre",
           errorCheck: (value) => value?.length >= 2,
           helperText: "Formato no válido.",
           width: 4,
+          conditionedBy: "shipping.shippingEqualsBasic",
+          onConditionChange: createMirrorHandler("shipping.name", "basic.name"),
         },
         lastName: {
           label: "Apellido",
           errorCheck: (value) => value?.length >= 2,
           helperText: "Formato no válido.",
           width: 4,
+          conditionedBy: "shipping.shippingEqualsBasic",
+          onConditionChange: createMirrorHandler("shipping.lastName", "basic.lastName"),
         },
         email: {
           label: "Correo",
           errorCheck: (value) => /\S+@\S+\.\S+/.test(value),
           helperText: "Formato no válido.",
           adornment: <EmailIcon color="secondary" />,
+          conditionedBy: "shipping.shippingEqualsBasic",
+          onConditionChange: createMirrorHandler("shipping.email", "basic.email"),
         },
         phone: {
           label: "Teléfono",
           errorCheck: (value) => /^[0-9]{10,14}$/.test(value),
           helperText: "ej: 584141234567 ó +584141234567 ó 04143201028",
           adornment: <LocalPhoneIcon color="secondary" />,
+          conditionedBy: "shipping.shippingEqualsBasic",
+          onConditionChange: createMirrorHandler("shipping.phone", "basic.phone"),
         },
-        address: {
-          label: "Dirección de Envío",
+        line1: {
+          label: "Dirección (Linea 1)",
           errorCheck: (value) => value?.length >= 20,
           helperText: "Incluir todos los detalles posibles, incluidas referencias.",
-          multiline: true,
           minRows: 3,
           adornment: <HomeIcon color="secondary" />,
           width: 12,
+          conditionedBy: "shipping.shippingEqualsBasic",
+          onConditionChange: createMirrorHandler("shipping.line1", "basic.line1"),
         },
-      },
-      additional: {
+        line2: {
+          label: "Dirección (Linea 2)",
+          errorCheck: (value) => value?.length >= 20,
+          helperText: "Incluir todos los detalles posibles, incluidas referencias.",
+          minRows: 3,
+          adornment: <HomeIcon color="secondary" />,
+          width: 12,
+          conditionedBy: "shipping.shippingEqualsBasic",
+          onConditionChange: createMirrorHandler("shipping.line2", "basic.line2"),
+        },
+        city: {
+          label: "Ciudad",
+          errorCheck: (value) => value?.length >= 2,
+          helperText: "Formato no válido.",
+          width: 4,
+          conditionedBy: "shipping.shippingEqualsBasic",
+          onConditionChange: createMirrorHandler("shipping.city", "basic.city"),
+        },
+        state: {
+          label: "Estado",
+          errorCheck: (value) => value?.length >= 2,
+          helperText: "Formato no válido.",
+          width: 4,
+          conditionedBy: "shipping.shippingEqualsBasic",
+          onConditionChange: createMirrorHandler("shipping.state", "basic.state"),
+        },
+        country: {
+          label: "País",
+          errorCheck: (value) => value?.length >= 2,
+          helperText: "Formato no válido.",
+          width: 4,
+          conditionedBy: "shipping.shippingEqualsBasic",
+          onConditionChange: createMirrorHandler("shipping.country", "basic.country"),
+        },
+        zipCode: {
+          label: "Código Postal",
+          errorCheck: (value) => /^\d{5}$/.test(value),
+          helperText: "Formato no válido.",
+          width: 4,
+          conditionedBy: "shipping.shippingEqualsBasic",
+          onConditionChange: createMirrorHandler("shipping.zipCode", "basic.zipCode"),
+        },
+        reference: {
+          label: "Referencia",
+          errorCheck: (value) => value?.length >= 2,
+          helperText: "Formato no válido.",
+          width: 4,
+          conditionedBy: "shipping.shippingEqualsBasic",
+          onConditionChange: createMirrorHandler("shipping.reference", "basic.reference"),
+        },
         ShippingMethod: {
           label: "Método de Entrega",
           type: "dropdown",
           errorCheck: (value) => value?.length >= 2,
           helperText: "Formato no válido.",
-          options: checkoutState.shippingMethods?.map((method) => method.name) || [],
+          options: shippingMethods?.map((method) => method.name) || [],
           actionType: "SET_SHIPPING_DETAILS",
           renderKey: "shipping", 
           dataKey: "shipping", 
@@ -206,7 +216,6 @@ export function getFormConfig(checkoutState: CheckoutState): FormConfig {
           dataKey: "shipping", 
         },
       },
-      checkboxes: [{ label: "Igual a datos básicos", type: "shippingEqualsBasic", activeFields: ["ShippingMethod", "date"], checked: true }],
       actionType: "SET_SHIPPING_DETAILS",
       defaultCheckbox: "shippingEqualsBasic",
       headerLabel: "Enviado a:",
@@ -217,66 +226,128 @@ export function getFormConfig(checkoutState: CheckoutState): FormConfig {
       title: "Datos de Facturación",
       fieldsTitle: "Dirección de Facturación",
       fields: {
+        billingEqualsBasic: {
+          label: "Igual a datos básicos",
+          type: "checkbox",
+          defaultValue: true,
+          width: 12,
+        },
         name: {
           label: "Nombre",
           errorCheck: (value) => value?.length >= 2,
           helperText: "Formato no válido.",
+          conditionedBy: "billing.billingEqualsBasic",
+          onConditionChange: createMirrorHandler("billing.name", "basic.name"),
         },
         lastName: {
           label: "Apellido",
           errorCheck: (value) => value?.length >= 2,
           helperText: "Formato no válido.",
+          conditionedBy: "billing.billingEqualsBasic",
+          onConditionChange: createMirrorHandler("billing.lastName", "basic.lastName"),
         },
         companyName: {
           label: "Razón Social",
           helperText: "Formato no válido.",
           required: false,
         },
-        ci: {
+        id: {
           label: "Cédula o RIF",
           errorCheck: (value, data) => {
             return data && data.companyName ? /^J-\d{8}-\d$/.test(value) : /^(?:[VEJ]-?)?\d{7,8}$/.test(value);
           },
           helperText:
             "Debe ser 12345678, V-12345679, E-12345679, o exactamente J-00012345-6 si es persona jurídica.",
+          conditionedBy: "billing.billingEqualsBasic",
+          onConditionChange: createMirrorHandler("billing.id", "basic.id"),
         },
         email: {
           label: "Correo",
           errorCheck: (value) => /\S+@\S+\.\S+/.test(value),
           helperText: "Formato no válido.",
           adornment: <EmailIcon color="secondary" />,
+          conditionedBy: "billing.billingEqualsBasic",
+          onConditionChange: createMirrorHandler("billing.email", "basic.email"),
         },
         phone: {
           label: "Teléfono",
           errorCheck: (value) => /^[0-9]{10,14}$/.test(value),
           helperText: "ej: 584141234567 ó +584141234567 ó 04143201028",
           adornment: <LocalPhoneIcon color="secondary" />,
+          conditionedBy: "billing.billingEqualsBasic",
+          onConditionChange: createMirrorHandler("billing.phone", "basic.phone"),
         },
-        address: {
-          label: "Dirección de Facturación",
-          errorCheck: (value) => value?.length >= 5,
-          multiline: true,
+        line1: {
+          label: "Dirección (Linea 1)",
+          errorCheck: (value) => value?.length >= 20,
+          helperText: "Incluir todos los detalles posibles, incluidas referencias.",
           minRows: 3,
-          adornment: <BusinessIcon />,
+          adornment: <HomeIcon color="secondary" />,
           width: 12,
+          conditionedBy: "billing.billingEqualsBasic",
+          onConditionChange: createMirrorHandler("billing.line1", "basic.line1"),
         },
-      },
-      additionalFieldsPosition: "start",
-      additional: {
+        line2: {
+          label: "Dirección (Linea 2)",
+          errorCheck: (value) => value?.length >= 20,
+          helperText: "Incluir todos los detalles posibles, incluidas referencias.",
+          minRows: 3,
+          adornment: <HomeIcon color="secondary" />,
+          width: 12,
+          conditionedBy: "billing.billingEqualsBasic",
+          onConditionChange: createMirrorHandler("billing.line2", "basic.line2"),
+        },
+        city: {
+          label: "Ciudad",
+          errorCheck: (value) => value?.length >= 2,
+          helperText: "Formato no válido.",
+          width: 4,
+          conditionedBy: "billing.billingEqualsBasic",
+          onConditionChange: createMirrorHandler("billing.city", "basic.city"),
+        },
+        state: {
+          label: "Estado",
+          errorCheck: (value) => value?.length >= 2,
+          helperText: "Formato no válido.",
+          width: 4,
+          conditionedBy: "billing.billingEqualsBasic",
+          onConditionChange: createMirrorHandler("billing.state", "basic.state"),
+        },
+        country: {
+          label: "País",
+          errorCheck: (value) => value?.length >= 2,
+          helperText: "Formato no válido.",
+          width: 4,
+          conditionedBy: "billing.billingEqualsBasic",
+          onConditionChange: createMirrorHandler("billing.country", "basic.country"),
+        },
+        zipCode: {
+          label: "Código Postal",
+          errorCheck: (value) => /^\d{4}$/.test(value),
+          helperText: "Formato no válido.",
+          width: 4,
+          conditionedBy: "billing.billingEqualsBasic",
+          onConditionChange: createMirrorHandler("billing.zipCode", "basic.zipCode"),
+        },
+        reference: {
+          label: "Referencia",
+          errorCheck: (value) => value?.length >= 2,
+          helperText: "Formato no válido.",
+          width: 4,
+          conditionedBy: "billing.billingEqualsBasic",
+          onConditionChange: createMirrorHandler("billing.reference", "basic.reference"),
+        },
         paymentMethod: {
           label: "Método de Pago",
           type: "dropdown",
           errorCheck: (value) => value?.length >= 2,
           helperText: "Formato no válido.",
-          options: checkoutState.paymentMethods?.map((method) => method.name) || [],
+          options: paymentMethods?.map((method) => method.name) || [],
           actionType: "SET_PAYMENT_METHOD",
           renderKey: "billing", 
           dataKey: "billing",
         },
       },
-      checkboxes: [
-        { label: "Igual a datos básicos", type: "billingEqualsBasic", activeFields: ["paymentMethod"], checked: true },
-      ],
       actionType: "SET_BILLING_DETAILS",
       defaultCheckbox: "billingEqualsBasic",
       headerLabel: "Facturado con:",
@@ -293,15 +364,12 @@ export function getFormConfig(checkoutState: CheckoutState): FormConfig {
           minRows: 3,
           required: false,
         },
-      },
-      additionalFieldsPosition: "start",
-      additional: {
         seller: {
           label: "Vendedor",
           type: "dropdown",
           errorCheck: (value) => value?.length >= 2,
           helperText: "Formato no válido.",
-          options: checkoutState.sellers || [],
+          options: sellers || [],
           actionType: "SET_SELLER",
           tooltip: "¿Alguno de nuestros asesores te ayudó en el proceso de compra?",
           required: false,

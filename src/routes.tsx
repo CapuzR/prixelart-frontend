@@ -47,11 +47,6 @@ const Routes = () => {
           permissions={permissions}
         />
     }
-
-
-      
-
-
     </>
   );
 };

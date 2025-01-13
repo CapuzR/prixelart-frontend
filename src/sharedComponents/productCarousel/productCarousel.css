@@ -33,6 +33,7 @@
     justify-content: center;
     align-items: center;
     padding: 10px 0;
+    bottom: -80px
   }
   
   .custom-dots-images li {
@@ -53,8 +54,8 @@
     display: block !important; 
     color: white;
     border-radius: 50%; 
-    width: 40px;  
-    height: 40px;  
+    width: 20px;  
+    height: 20px;  
     z-index: 1000; 
     position: absolute;
     top: 50%; 
@@ -77,7 +78,7 @@
   .slick-dots {
     width: 100%;
     display: flex !important;
-    margin-bottom: 26px;
+    margin-bottom: 0;
     justify-content: center;
   }
 
@@ -130,7 +131,7 @@
   /* Prueba */
 
   .slick-slider {
-    height: 100%; /* Slider should respect the height of the wrapper */
+    height: fit-content; /* Slider should respect the height of the wrapper */
     display: flex; /* Ensures that the content fills the available space */
     flex-direction: column; /* Stack content vertically */
   }
@@ -139,22 +140,22 @@
     height: 100%; /* Make sure the track respects the slider’s height */
     display: flex; /* Align slides within the track */
     justify-content: center;
-    align-items: flex-start; /* Vertically center the slide content */
+    align-items: flex-start;
   }
   
+  
   .slick-list {
-    height: 80% !important;
+    height: fit-content;
     flex-grow: 1;
     overflow: hidden;
   }
 
   .slick-slide {
-    height: 80% !important;
+    height: fit-content;
     display: flex;
     justify-content: center;
     align-items: center;
     align-items: center;
-    height: 80% !important;
     max-height: 100% !important;
   }
   

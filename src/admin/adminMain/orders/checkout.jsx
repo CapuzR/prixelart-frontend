@@ -374,8 +374,7 @@ export default function Checkout(props) {
       })
     } else {
       return (
-        getPVP(item, currency, props.dollarValue, discountList) *
-        item.quantity
+        getPVP(item, currency, props.dollarValue, discountList) * item.quantity
       ).toLocaleString("de-DE", {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
@@ -441,35 +440,50 @@ export default function Checkout(props) {
     "12",
   ]
 
-  let ProdTimes = props.buyState?.map((item) => {
-    if (item.product && item.art && item.product.productionTime !== undefined) {
-      return item.product.productionTime
-    }
-  })
+  let ProdTimes =
+    props.buyState && props.buyState.length > 0
+      ? props.buyState?.map((item) => {
+          if (
+            item.product &&
+            item.art &&
+            item.product.productionTime !== undefined
+          ) {
+            return item.product.productionTime
+          }
+        })
+      : 0
 
-  let orderedProdT = ProdTimes.sort(function (a, b) {
-    if (a.toLowerCase() > b.toLowerCase()) {
-      return 1
-    }
-    if (a.toLowerCase() < b.toLowerCase()) {
-      return -1
-    }
-    return 0
-  })
+  let orderedProdT =
+    props.buyState &&
+    props.buyState.length > 0 &&
+    ProdTimes.sort(function (a, b) {
+      if (a.toLowerCase() > b.toLowerCase()) {
+        return 1
+      }
+      if (a.toLowerCase() < b.toLowerCase()) {
+        return -1
+      }
+      return 0
+    })
 
-  let readyDate = new Date(
-    today.setDate(today.getDate() + Number(orderedProdT[0]))
-  )
+  let readyDate =
+    props.buyState &&
+    props.buyState.length > 0 &&
+    new Date(today.setDate(today.getDate() + Number(orderedProdT[0])))
+
   const stringReadyDate =
+    props.buyState &&
+    props.buyState.length > 0 &&
     readyDate.getFullYear() +
-    "-" +
-    monthsOrder[readyDate.getMonth()] +
-    "-" +
-    readyDate.getDate()
+      "-" +
+      monthsOrder[readyDate.getMonth()] +
+      "-" +
+      readyDate.getDate()
 
   useEffect(() => {
     if (
-      props?.buyState[0] &&
+      props?.buyState &&
+      props?.buyState.length > 0 &&
       props?.buyState[0].art &&
       props?.shippingData?.shippingDate === undefined
     ) {
@@ -558,7 +572,7 @@ export default function Checkout(props) {
             component="div"
             disablePadding
           >
-            {props.buyState.length > 0 ? (
+            {props.buyState && props.buyState.length > 0 ? (
               props.buyState?.map((item, index) => (
                 <>
                   {item.product && item.art && (
@@ -781,23 +795,27 @@ export default function Checkout(props) {
             ) : (
               <Typography>No has seleccionado nada aún.</Typography>
             )}
-            {getTotalCombinedItems(props.buyState).totalNotCompleted?.length >=
-              1 && (
-              <Typography
-                style={{
-                  fontSize: "11px",
-                  // color: "primary",
-                }}
-              >
-                {getTotalCombinedItems(props.buyState).totalNotCompleted
-                  ?.length > 1
-                  ? `Faltan ${
-                      getTotalCombinedItems(props.buyState).totalNotCompleted
-                        .length
-                    } productos por definir.`
-                  : `Falta 1 producto por definir.`}
-              </Typography>
-            )}
+            {props.buyState &&
+              props.buyState.length > 0 &&
+              getTotalCombinedItems(props.buyState).totalNotCompleted?.length >=
+                1 && (
+                <Typography
+                  style={{
+                    fontSize: "11px",
+                    // color: "primary",
+                  }}
+                >
+                  {props.buyState &&
+                  props.buyState.length > 0 &&
+                  getTotalCombinedItems(props.buyState).totalNotCompleted
+                    ?.length > 1
+                    ? `Faltan ${
+                        getTotalCombinedItems(props.buyState).totalNotCompleted
+                          .length
+                      } productos por definir.`
+                    : `Falta 1 producto por definir.`}
+                </Typography>
+              )}
             <div
               style={{
                 display: "flex",
@@ -813,7 +831,7 @@ export default function Checkout(props) {
                 style={{ paddingLeft: 0 }}
               >
                 <FormControl
-                  disabled={props.buyState.length == 0}
+                  disabled={props?.buyState?.length == 0}
                   className={classes.formControl}
                   style={{ minWidth: 200, marginTop: 25 }}
                   fullWidth
@@ -871,7 +889,7 @@ export default function Checkout(props) {
                   flexDirection: "column",
                 }}
               >
-                {props.buyState.length > 0 && (
+                {props?.buyState?.length > 0 && (
                   <>
                     <strong>
                       Subtotal:
@@ -930,7 +948,7 @@ export default function Checkout(props) {
         }}
       >
         <Button
-          disabled={props.loadingOrder || props.buyState.length == 0}
+          disabled={props.loadingOrder || props?.buyState?.length == 0}
           variant="contained"
           color={"primary"}
           onClick={props.createOrder}

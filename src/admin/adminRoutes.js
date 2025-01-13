@@ -24,6 +24,7 @@ const AdminRoutes = ({
   setPermissions,
   setSearchResult,
   searchResult,
+  addItemToBuyState,
 }) => {
   return (
     <Switch>
@@ -60,12 +61,19 @@ const AdminRoutes = ({
           permissions={permissions}
           setSearchResult={setSearchResult}
           searchResult={searchResult}
+          addItemToBuyState={addItemToBuyState}
+          dollarValue={dollarValue}
+          setDollarValue={setDollarValue}
+          updateDollarValue={updateDollarValue}
+
         />
       </Route>
 
       <Route path="/admin/user/create">
         <AdminMain
           dollarValue={dollarValue}
+          setDollarValue={setDollarValue}
+          updateDollarValue={updateDollarValue}
           permissions={permissions}
         />
       </Route>
@@ -91,6 +99,7 @@ const AdminRoutes = ({
           "/admin/prixer/read",
           "/admin/product/update/:productId",
           "/admin/consumer/update/:consumerId",
+          "/admin/consumer/read",
           "/admin/payment-method/read",
           "/admin/shipping-method/read",
           "/admin/testimonials/read",
@@ -99,15 +108,49 @@ const AdminRoutes = ({
           "/admin/product/createSurcharge",
           "/admin/product/updateSurcharge/:surchargeId",
           "/admin/product/createCategory",
-          "/admin/product/updateCategory/:categoryId"
+          "/admin/product/updateCategory/:categoryId",
+          "/admin/product/:productId/variant/read",
+          "/admin/product/:productId/variant/create",
+          "/admin/product/:productId/variant/:variantId/update",
+          "/admin/movements/read",
+          "/admin/payment-method/create",
+          "/admin/shipping-method/create",
+          "/admin/shipping-method/update/:id",
+          "/admin/payment-method/update/:id",
+          "/admin/user/read",
+          "/admin/preferences/read"
         ]}
       >
-        <AdminMain permissions={permissions} />
+        <AdminMain
+          permissions={permissions}
+          buyState={buyState}
+          setBuyState={setBuyState}
+          deleteItemInBuyState={deleteItemInBuyState}
+          deleteProductInItem={deleteProductInItem}
+          setSelectedArtToAssociate={setSelectedArtToAssociate}
+          setSelectedProductToAssociate={setSelectedProductToAssociate}
+          setValues={setValuesConsumerForm}
+          values={valuesConsumerForm}
+          AssociateProduct={AssociateProduct}
+          changeQuantity={changeQuantity}
+          setOpen={setOpen}
+          setMessage={setMessage}
+          sellers={sellers}
+          setSearchResult={setSearchResult}
+          searchResult={searchResult}
+          addItemToBuyState={addItemToBuyState}
+          dollarValue={dollarValue}
+          setDollarValue={setDollarValue}
+          updateDollarValue={updateDollarValue}
+
+        />
       </Route>
 
       <Route path="/admin/product/create">
         <AdminMain
           dollarValue={dollarValue}
+          setDollarValue={setDollarValue}
+          updateDollarValue={updateDollarValue}
           permissions={permissions}
         />
       </Route>
@@ -126,6 +169,8 @@ const AdminRoutes = ({
       <Route path="/admin/consumer/create">
         <AdminMain
           dollarValue={dollarValue}
+          setDollarValue={setDollarValue}
+          updateDollarValue={updateDollarValue}
           permissions={permissions}
         />
       </Route>

@@ -1,42 +1,48 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import AppBar from "@material-ui/core/AppBar";
-import Toolbar from "@material-ui/core/Toolbar";
-import Button from "@material-ui/core/Button";
-import Tabs from "@material-ui/core/Tabs";
-import Tab from "@material-ui/core/Tab";
-import { makeStyles, withStyles } from "@material-ui/core/styles";
-import { useHistory } from "react-router-dom";
-import Badge from "@material-ui/core/Badge";
-import CB_isologo from "./assets/CB_isologo_black.svg";
-import ShoppingCartOutlined from "@material-ui/icons/ShoppingCartOutlined";
-import Grid from "@material-ui/core/Grid";
-import Typography from "@material-ui/core/Typography";
-import IconButton from "@material-ui/core/IconButton";
-import { TextField } from "@material-ui/core";
-import DeleteIcon from "@material-ui/icons/Delete";
-import Snackbar from "@material-ui/core/Snackbar";
-import Paper from "@material-ui/core/Paper";
-import ConsumerForm from "../shoppingCart/consumerForm";
-import Stepper from "@material-ui/core/Stepper";
-import Step from "@material-ui/core/Step";
-import StepLabel from "@material-ui/core/StepLabel";
-import StepIcon from "@material-ui/core/StepIcon";
-import OrderFormCB from "./cartComponents/orderFormCB";
-import { Backdrop } from "@material-ui/core";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import { nanoid } from "nanoid";
-import Modal from "@material-ui/core/Modal";
-import CheckIcon from "@material-ui/icons/Check";
-import isotipo from "./assets/isotipo.svg";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
-import { useTheme } from "@material-ui/core/styles";
-import Menu from "@material-ui/core/Menu";
-import MenuIcon from "@material-ui/icons/Menu";
-import MenuItem from "@material-ui/core/MenuItem";
-import ReactGA from "react-ga";
+import React, { useState, useEffect } from "react"
+import axios from "axios"
+import AppBar from "@material-ui/core/AppBar"
+import Toolbar from "@material-ui/core/Toolbar"
+import Button from "@material-ui/core/Button"
+import Tabs from "@material-ui/core/Tabs"
+import Tab from "@material-ui/core/Tab"
+import { makeStyles, withStyles } from "@material-ui/core/styles"
+import { useHistory } from "react-router-dom"
+import Badge from "@material-ui/core/Badge"
+import CB_isologo from "./assets/CB_isologo_black.svg"
+import ShoppingCartOutlined from "@material-ui/icons/ShoppingCartOutlined"
+import Grid from "@material-ui/core/Grid"
+import Typography from "@material-ui/core/Typography"
+import IconButton from "@material-ui/core/IconButton"
+import { TextField } from "@material-ui/core"
+import DeleteIcon from "@material-ui/icons/Delete"
+import Snackbar from "@material-ui/core/Snackbar"
+import Paper from "@material-ui/core/Paper"
+import ConsumerForm from "../shoppingCart/consumerForm"
+import Stepper from "@material-ui/core/Stepper"
+import Step from "@material-ui/core/Step"
+import StepLabel from "@material-ui/core/StepLabel"
+import StepIcon from "@material-ui/core/StepIcon"
+import OrderFormCB from "./cartComponents/orderFormCB"
+import { Backdrop } from "@material-ui/core"
+import CircularProgress from "@material-ui/core/CircularProgress"
+import { nanoid } from "nanoid"
+import Modal from "@material-ui/core/Modal"
+import CheckIcon from "@material-ui/icons/Check"
+import isotipo from "./assets/isotipo.svg"
+import useMediaQuery from "@material-ui/core/useMediaQuery"
+import { useTheme } from "@material-ui/core/styles"
+import Menu from "@material-ui/core/Menu"
+import MenuIcon from "@material-ui/icons/Menu"
+import MenuItem from "@material-ui/core/MenuItem"
+import ReactGA from "react-ga"
+import { useGlobalContext } from "../context/globalContext"
+import ShippingData from "../shoppingCart/shippingData.json"
+import world from "../images/world-black.svg"
+import worldBlack from "../images/world-black.svg"
+import vzla from "../images/vzla.svg"
+import Switch from "@material-ui/core/Switch"
 
-ReactGA.initialize("G-0RWP9B33D8");
+ReactGA.initialize("G-0RWP9B33D8")
 
 const useStyles = makeStyles((theme) => ({
   typography: { fontFamily: "Lastik" },
@@ -128,139 +134,281 @@ const useStyles = makeStyles((theme) => ({
   modal: {
     overflow: "visible !important",
   },
-}));
+  base: {
+    width: "100px",
+    height: "37px",
+    padding: "0px",
+    margin: "16px",
+    marginLeft: "0px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  switchBase: {
+    color: "white",
+    padding: "1px",
+    "&$checked": {
+      "& + $track": {
+        backgroundColor: "white",
+      },
+    },
+  },
+  thumbZ: {
+    color: "white",
+    width: "30px",
+    height: "30px",
+    margin: "2px",
+    marginLeft: "3px",
+    backgroundSize: "20px 20px",
+    backgroundRepeat: "no-repeat",
+    backgroundPosition: "center",
+    backgroundImage: `url(${vzla})`,
+  },
+  thumbFalseZ: {
+    color: "white",
+    width: "30px",
+    height: "30px",
+    margin: "2px",
+    marginLeft: "3px",
+    backgroundSize: "20px 20px",
+    backgroundRepeat: "no-repeat",
+    backgroundPosition: "center",
+    backgroundImage: `url(${world})`,
+  },
+  trackZ: {
+    borderRadius: "20px",
+    backgroundColor: "silver !important",
+    opacity: "1 !important",
+    position: "relative",
+    display: "flex",
+    alignItems: "center",
+    padding: "0 10px",
+  },
+  labelText: {
+    color: "#333",
+    fontSize: "14px",
+    fontWeight: "bold",
+    marginLeft: "10px",
+  },
+  checked: {
+    color: "#d33f49 !important",
+    transform: "translateX(61px) !important",
+    padding: "1px",
+  },
+  backdrop: {
+    zIndex: theme.zIndex.drawer + 1,
+    color: theme.palette.primary.main,
+  },
+}))
 
 export default function ShoppingCartCB() {
-  const classes = useStyles();
-  const history = useHistory();
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("xs"));
-  const isTab = useMediaQuery(theme.breakpoints.down("sm"));
-  const [anchorEl, setAnchorEl] = useState(null);
-  const openMenu = Boolean(anchorEl);
-  const [expanded, setExpanded] = useState(false);
+  const classes = useStyles()
+  const history = useHistory()
+  const theme = useTheme()
+  const isMobile = useMediaQuery(theme.breakpoints.down("xs"))
+  const isTab = useMediaQuery(theme.breakpoints.down("sm"))
+  const [anchorEl, setAnchorEl] = useState(null)
+  const openMenu = Boolean(anchorEl)
+  const [expanded, setExpanded] = useState(false)
 
-  const [loading, setLoading] = useState(false);
-  const [open, setOpen] = useState(false);
-  const [message, setMessage] = useState("");
-  const [openModal, setOpenModal] = useState(false);
-  const [values, setValues] = useState("");
-  const [activeStep, setActiveStep] = useState(0);
-  const [orderPaymentMethod, setOrderPaymentMethod] = useState(undefined);
-  const [observations, setObservations] = useState();
-  const [paymentVoucher, setPaymentVoucher] = useState();
-  const [dollarValue, setDollarValue] = useState(1);
-  const [currency, setCurrency] = useState(false);
-  const [seller, setSeller] = useState();
-  const [subtotal, setSubtotal] = useState(0);
-  const [total, setTotal] = useState(0);
-  const [warning, setWarning] = useState(false);
-  let shippingCost = Number(values?.shippingMethod?.price);
-
+  const [loading, setLoading] = useState(false)
+  const [open, setOpen] = useState(false)
+  const [message, setMessage] = useState("")
+  const [openModal, setOpenModal] = useState(false)
+  const [values, setValues] = useState("")
+  const [activeStep, setActiveStep] = useState(0)
+  const [orderPaymentMethod, setOrderPaymentMethod] = useState(undefined)
+  const [observations, setObservations] = useState()
+  const [paymentVoucher, setPaymentVoucher] = useState()
+  const [dollarValue, setDollarValue] = useState(1)
+  const [currency, setCurrency] = useState(false)
+  const [seller, setSeller] = useState()
+  const [subtotal, setSubtotal] = useState(0)
+  const [total, setTotal] = useState(0)
+  const [warning, setWarning] = useState(false)
+  const { toggleCurrency, zone, toggleZone } = useGlobalContext()
   const [buyState, setBuyState] = useState(
     localStorage.getItem("CBbuyState")
       ? JSON.parse(localStorage.getItem("CBbuyState"))
       : []
-  );
+  )
   const [cartLength, setCartLength] = useState(
     localStorage.getItem("CBbuyState")
       ? JSON.parse(localStorage.getItem("CBbuyState")).length
       : 0
-  );
+  )
+
+  let tax = 0
+  let shippingCost = Number(values?.shippingMethod?.price)
 
   const readDollarValue = async () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + "/dollarValue/read";
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/dollarValue/read"
     await axios.get(base_url).then((response) => {
-      setDollarValue(response.data.dollarValue);
-    });
-  };
+      setDollarValue(response.data.dollarValue)
+    })
+  }
+
+  const checkInter = () => {
+    buyState.some((item) => item.finalPrice === item.interPrice)
+  }
 
   useEffect(() => {
-    readDollarValue();
-  }, []);
+    readDollarValue()
+    if (checkInter() && zone === "VZLA") {
+      toggleZone()
+    }
+  }, [])
 
   const StyledBadge = withStyles((theme) => ({
     badge: {
       backgroundColor: "#FF9934",
       color: "black",
     },
-  }))(Badge);
+  }))(Badge)
 
   const CustomStepIcon = ({ active }) => {
-    const classes = useStyles();
+    const classes = useStyles()
 
     return (
       <StepIcon
         icon={active ? <div className={classes.stepIcon}>✔️</div> : null}
       />
-    );
-  };
+    )
+  }
 
   const handleMenu = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
+    setAnchorEl(event.currentTarget)
+  }
 
   const handleCloseMenu = () => {
-    setAnchorEl(null);
-  };
+    setAnchorEl(null)
+  }
 
   const handleMain = () => {
-    history.push({ pathname: "/chiguirebipolar" });
-  };
+    history.push({ pathname: "/chiguirebipolar" })
+  }
 
   const scrollToSection = (selector) => {
-    const section = document.querySelector(selector);
+    const section = document.querySelector(selector)
     if (section) {
-      section.scrollIntoView({ behavior: "smooth" });
+      section.scrollIntoView({ behavior: "smooth" })
     }
-  };
+  }
 
   const handleToProduct = () => {
-    handleMain();
+    handleMain()
     setTimeout(() => {
-      scrollToSection("#productos");
-    }, 500);
-  };
+      scrollToSection("#productos")
+    }, 500)
+  }
 
   const handleToPrixelart = () => {
-    handleMain();
+    handleMain()
     setTimeout(() => {
-      scrollToSection("#prixelart");
-    }, 1200);
-  };
+      scrollToSection("#prixelart")
+    }, 1200)
+  }
 
   const deleteItemInBuyState = (index) => {
-    const newState = [...buyState];
-    newState.splice(index, 1);
-    setBuyState(newState);
-    localStorage.setItem("CBbuyState", JSON.stringify(newState));
-    setOpen(true);
-    setMessage("Item eliminado correctamente");
-    setCartLength((prevLength) => prevLength - 1);
-  };
+    const newState = [...buyState]
+    newState.splice(index, 1)
+    setBuyState(newState)
+    localStorage.setItem("CBbuyState", JSON.stringify(newState))
+    setOpen(true)
+    setMessage("Item eliminado correctamente")
+    setCartLength((prevLength) => prevLength - 1)
+  }
 
   const changeQuantity = (type, index) => {
-    const newState = [...buyState];
+    const newState = [...buyState]
     if (type === "+1") {
-      newState[index].quantity++;
+      newState[index].quantity++
     } else if (type === "-1" && newState[index].quantity > 1) {
-      newState[index].quantity--;
+      newState[index].quantity--
     }
-    setBuyState(newState);
-    localStorage.setItem("CBbuyState", JSON.stringify(newState));
-  };
+    setBuyState(newState)
+    localStorage.setItem("CBbuyState", JSON.stringify(newState))
+  }
 
   const finish = () => {
-    handleMain();
-    handleClose();
-  };
+    handleMain()
+    handleClose()
+  }
+
   const handleClose = () => {
-    setOpenModal(false);
-    setValues(undefined);
-    localStorage.removeItem("CBbuyState");
-    setBuyState([]);
-    setLoading(false);
-  };
+    setOpenModal(false)
+    setValues(undefined)
+    localStorage.removeItem("CBbuyState")
+    setBuyState([])
+    setLoading(false)
+  }
+
+  const getShippingCost = () => {
+    let selectedCountry = ShippingData.find(
+      (item) => item.country === values?.country
+    )
+
+    const isTshirt = buyState.filter((item) => item.product.name === "Franela")
+    const isCup = buyState.filter(
+      (item) => item.product.name === "Taza de Peltre"
+    )
+
+    let cost = [0]
+
+    const countTshirts =
+      isTshirt.reduce((sum, item) => sum + item.quantity, 0) - 1
+    const countCups = isCup.reduce((sum, item) => sum + item.quantity, 0) - 1
+
+    if (isTshirt.length > 0) {
+      cost.push(selectedCountry?.shirtCost)
+      if (countTshirts > 0) {
+        cost.push(countTshirts * selectedCountry?.shirtExtra)
+      }
+    }
+
+    if (isCup.length > 0) {
+      cost.push(selectedCountry?.cupCost)
+      if (countCups > 0) {
+        cost.push(countCups * selectedCountry?.cupExtra)
+      }
+    }
+
+    if (zone === "INTER") {
+      shippingCost = cost.reduce(function (a, b) {
+        return a + b
+      })
+    }
+  }
+
+  const getTax = () => {
+    let selectedCountry = ShippingData.find(
+      (item) => item.country === values?.country
+    )
+
+    const isTshirt = buyState.filter((item) => item.product.name === "Franela")
+    const isCup = buyState.filter(
+      (item) => item.product.name === "Taza de Peltre"
+    )
+
+    const countTshirts = isTshirt.reduce((sum, item) => sum + item.quantity, 0)
+    const countCups = isCup.reduce((sum, item) => sum + item.quantity, 0)
+
+    let tx = [0]
+
+    if (isTshirt) {
+      tx.push(countTshirts * selectedCountry?.shirtTax)
+    } else if (isCup) {
+      tx.push(countCups * selectedCountry?.cupTax)
+    }
+    if (zone === "INTER") {
+      tax = tx.reduce(function (a, b) {
+        return a + b
+      })
+    }
+  }
+
+  getShippingCost()
+  getTax()
 
   const createOrder = async () => {
     if (
@@ -271,8 +419,8 @@ export default function ShoppingCartCB() {
       values?.email &&
       values?.phone
     ) {
-      setLoading(true);
-      setOpen(true);
+      setLoading(true)
+      setOpen(true)
 
       const consumerData = {
         active: true,
@@ -290,7 +438,7 @@ export default function ShoppingCartCB() {
         address: values.address,
         billingAddress: values.billingAddress || values.address,
         shippingAddress: values.shippingAddress || values.address,
-      };
+      }
       const input = {
         orderId: nanoid(8),
         requests: buyState,
@@ -309,6 +457,9 @@ export default function ShoppingCartCB() {
           address: values.shippingAddress,
           shippingMethod: values.shippingMethod,
           shippingDate: values.shippingDate,
+          country: values?.country,
+          city: values?.city,
+          zip: values?.zip,
         },
         billingData: {
           name: values.billingShName,
@@ -320,7 +471,7 @@ export default function ShoppingCartCB() {
           orderPaymentMethod: orderPaymentMethod.name,
         },
         dollarValue: dollarValue,
-        tax: 0,
+        tax: tax,
         subtotal: subtotal,
         shippingCost: shippingCost,
         total: total,
@@ -334,12 +485,12 @@ export default function ShoppingCartCB() {
         status: "Por producir",
         observations: observations,
         payStatus: "Pendiente",
-      };
+      }
 
       let data = {
         consumerData,
         input,
-      };
+      }
       if (orderPaymentMethod.name === "Balance Prixer") {
         const movement = {
           _id: nanoid(),
@@ -350,11 +501,11 @@ export default function ShoppingCartCB() {
           description: `Pago de la orden #${input.orderId}`,
           type: "Retiro",
           value: total,
-        };
-        data.movement = movement;
+        }
+        data.movement = movement
       }
 
-      const base_url = process.env.REACT_APP_BACKEND_URL + "/order/createv2";
+      const base_url = process.env.REACT_APP_BACKEND_URL + "/order/createv2"
       const create = await axios
         .post(base_url, data, {
           "Content-Type": "multipart/form-data",
@@ -362,46 +513,46 @@ export default function ShoppingCartCB() {
         .then(async (response) => {
           if (response.status === 200) {
             if (paymentVoucher !== undefined) {
-              const formData = new FormData();
-              formData.append("paymentVoucher", paymentVoucher);
-              let ID = input.orderId;
+              const formData = new FormData()
+              formData.append("paymentVoucher", paymentVoucher)
+              let ID = input.orderId
               const base_url2 =
-                process.env.REACT_APP_BACKEND_URL + "/order/addVoucher/" + ID;
+                process.env.REACT_APP_BACKEND_URL + "/order/addVoucher/" + ID
               await axios.put(base_url2, formData, {
                 "Content-Type": "multipart/form-data",
-              });
+              })
             }
             ReactGA.event({
               category: "shoppingCart",
               action: "ordenar",
               label: "crear_pedido_CB",
-            });
+            })
 
-            setOpenModal(true);
+            setOpenModal(true)
             const base_url3 =
-              process.env.REACT_APP_BACKEND_URL + "/order/sendEmail";
+              process.env.REACT_APP_BACKEND_URL + "/order/sendEmail"
             await axios.post(base_url3, input).then(async (response) => {
               if (response.data.success === false) {
-                await axios.post(base_url3, input);
-              } else return;
-            });
+                await axios.post(base_url3, input)
+              } else return
+            })
           }
         })
         .catch((error) => {
-          console.log(error.response);
-        });
+          console.log(error.response)
+        })
     } else if (orderPaymentMethod === undefined) {
-      setOpen(true);
-      setMessage("Por favor selecciona una forma de pago.");
+      setOpen(true)
+      setMessage("Por favor selecciona una forma de pago.")
     } else {
-      setOpen(true);
-      setMessage("Por favor completa los datos básicos.");
+      setOpen(true)
+      setMessage("Por favor completa los datos básicos.")
 
-      setActiveStep(0);
-      setExpanded("basic");
-      setWarning(true);
+      setActiveStep(0)
+      setExpanded("basic")
+      setWarning(true)
     }
-  };
+  }
 
   function getStepContent(step) {
     switch (step) {
@@ -438,7 +589,7 @@ export default function ShoppingCartCB() {
               Siguiente
             </Button>
           </div>
-        );
+        )
       case 1:
         return (
           <div>
@@ -492,17 +643,27 @@ export default function ShoppingCartCB() {
               Ordenar
             </Button>
           </div>
-        );
+        )
     }
   }
 
   const handleCart = () => {
-    history.push({ pathname: "/chiguirebipolar/carrito" });
-  };
+    history.push({ pathname: "/chiguirebipolar/carrito" })
+  }
 
+  const setZone = () => {
+    setLoading(true)
+    toggleZone()
+    setTimeout(() => {
+      setLoading(false)
+    }, 500)
+  }
   return (
     <>
-      <Backdrop className={classes.backdrop} open={loading}>
+      <Backdrop
+        className={classes.backdrop}
+        open={loading}
+      >
         <CircularProgress />
       </Backdrop>
 
@@ -511,6 +672,7 @@ export default function ShoppingCartCB() {
         elevation={0}
         style={{
           backgroundColor: "white",
+          minHeight: 70,
         }}
       >
         <Toolbar
@@ -530,7 +692,10 @@ export default function ShoppingCartCB() {
 
           {isTab ? (
             <>
-              <IconButton onClick={handleMenu} size="medium">
+              <IconButton
+                onClick={handleMenu}
+                size="medium"
+              >
                 <StyledBadge badgeContent={cartLength}>
                   <MenuIcon />
                 </StyledBadge>
@@ -594,243 +759,366 @@ export default function ShoppingCartCB() {
         </Toolbar>
       </AppBar>
 
-      <Grid
-        container
-        style={{
-          marginTop: isTab ? 80 : 115,
-          marginLeft: isTab ? 10 : 40,
-          paddingRight: isTab ? 10 : 40,
-        }}
-      >
+      {buyState && buyState.length > 0 ? (
         <Grid
-          item
-          sm={12}
-          md={7}
-          style={{ marginRight: isTab && 10, width: "100%" }}
+          container
+          style={{
+            marginTop: isTab ? 80 : 115,
+            marginLeft: isTab ? 10 : 40,
+            paddingRight: isTab ? 10 : 40,
+          }}
         >
-          <Typography
-            className={classes.typography}
+          <Grid
+            item
+            sm={12}
             style={{
-              fontSize: isTab ? 22 : 30,
-              width: "100%",
-              marginBottom: 30,
+              marginRight: isTab && "0.7rem",
+              display: "flex",
+              justifyContent: "space-between",
+              flexDirection: isTab && "column",
+              width: isTab && "100%",
             }}
           >
-            Carrito de compras
-          </Typography>
-
-          {buyState &&
-            buyState.length > 0 &&
-            buyState.map((item, index) => (
-              <Grid
-                container
-                style={{
-                  boxShadow: "0px 1px 8px rgba(0, 0, 0, 0.2)",
-                  borderRadius: 30,
-                  backgroundColor: "#FAFAFA",
-                  padding: 10,
-                  marginBottom: 20,
+            <Typography
+              className={classes.typography}
+              style={{
+                fontSize: 30,
+                width: isTab ? "auto" : "100%",
+                marginBottom: 30,
+                alignSelf: isTab && "center",
+              }}
+            >
+              Carrito de compras
+            </Typography>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                backgroundColor: "rgb(120, 155, 236)",
+                width: !isTab ? "40%" : "90%",
+                borderRadius: 25,
+                margin: "0 auto 20px",
+                maxWidth: 350,
+                marginRight: 20,
+              }}
+            >
+              <Switch
+                classes={{
+                  root: classes.base,
+                  switchBase: classes.switchBase,
+                  thumb: zone === "VZLA" ? classes.thumbZ : classes.thumbFalseZ,
+                  track: classes.trackZ,
+                  checked: classes.checked,
                 }}
+                value={zone === "VZLA"}
+                onChange={() => setZone()}
+                style={{ color: "rgb(0, 97, 52)" }}
               >
-                <Grid item xs={11} sm={6} style={{ display: "flex" }}>
-                  <img
-                    src={item?.art?.images[0]?.img}
-                    alt="Item de Chiguire Bipolar"
-                    style={{
-                      width: isMobile ? 88 : 181,
-                      height: isMobile ? 76 : 180,
-                      borderRadius: 15,
-                      marginRight: 10,
-                    }}
-                  />
-                  <div
-                    style={{
-                      width: isMobile ? "100% " : isTab ? 240 : 181,
-                      display: "flex",
-                      flexDirection: "column",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <Typography
-                      className={classes.typography}
-                      style={{ fontSize: isMobile ? 16 : 20, fontWeight: 600 }}
-                    >
-                      {item?.product?.name} {item.art.title}
-                    </Typography>
-                    <Typography
-                      className={classes.typography}
-                      style={{ fontSize: isMobile ? 12 : 14 }}
-                    >
-                      {item?.product?.selection}
-                    </Typography>
-                    {isMobile && (
-                      <>
-                        <Typography
-                          className={classes.typography}
-                          style={{
-                            fontSize: isMobile ? 16 : 18,
-                            fontWeight: 600,
-                          }}
-                        >
-                          $
-                          {item?.product?.finalPrice?.toLocaleString("de-DE", {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                          })}
-                        </Typography>
-                        <div style={{ display: "flex", alignItems: "center" }}>
-                          <IconButton
-                            style={{
-                              width: 30,
-                              height: 32,
-                              textAlign: "center",
-                              marginRight: 10,
-                            }}
-                            onClick={() => changeQuantity("+1", index)}
-                          >
-                            +
-                          </IconButton>
-                          <TextField
-                            disabled
-                            variant="outlined"
-                            value={item.quantity}
-                            className={classes.inputRoot}
-                            InputProps={{
-                              classes: {
-                                input: classes.inputRoot,
-                              },
-                            }}
-                          />
-                          <IconButton
-                            style={{
-                              width: isMobile ? 18 : 30,
-                              height: isMobile ? 19 : 32,
-                              textAlign: "center",
-                              marginRight: !isTab && 10,
-                            }}
-                            onClick={() => changeQuantity("-1", index)}
-                          >
-                            -
-                          </IconButton>
-                        </div>
-                      </>
-                    )}
-                  </div>
-                </Grid>
-                {!isMobile && (
+                <span className={classes.labelText}>
+                  {zone === "VZLA" ? "Nacional" : "Internacionales"}
+                </span>
+              </Switch>
+              <Typography
+                style={{
+                  alignContent: "center",
+                  color: "white",
+                  fontWeight: "normal",
+                  fontFamily: "Lastik",
+                  width: "50%",
+                }}
+                variant="h5"
+              >
+                {zone === "VZLA" ? "Nacionales" : "Internacionales"}
+              </Typography>
+            </div>
+          </Grid>
+          <Grid
+            item
+            sm={12}
+            md={7}
+            style={{ marginRight: isTab && 10, width: "100%" }}
+          >
+            {buyState &&
+              buyState.length > 0 &&
+              buyState.map((item, index) => (
+                <Grid
+                  container
+                  style={{
+                    boxShadow: "0px 1px 8px rgba(0, 0, 0, 0.2)",
+                    borderRadius: 30,
+                    backgroundColor: "#FAFAFA",
+                    padding: 10,
+                    marginBottom: 20,
+                  }}
+                >
                   <Grid
                     item
-                    xs={5}
-                    style={{
-                      display: "flex",
-                      alignContent: "center",
-                      justifyContent: "space-evenly",
-                    }}
+                    xs={11}
+                    sm={6}
+                    style={{ display: "flex" }}
                   >
-                    <div style={{ display: "flex", alignItems: "center" }}>
-                      <IconButton
-                        style={{
-                          width: 30,
-                          height: 32,
-                          textAlign: "center",
-                          marginRight: 10,
-                        }}
-                        onClick={() => changeQuantity("+1", index)}
-                      >
-                        +
-                      </IconButton>
-                      <TextField
-                        disabled
-                        variant="outlined"
-                        value={item.quantity}
-                        className={classes.inputRoot}
-                        InputProps={{
-                          classes: {
-                            input: classes.inputRoot,
-                          },
-                        }}
-                      />
-                      <IconButton
-                        style={{
-                          width: 30,
-                          height: 32,
-                          textAlign: "center",
-                          marginRight: 10,
-                        }}
-                        onClick={() => changeQuantity("-1", index)}
-                      >
-                        -
-                      </IconButton>
-                    </div>
-                    <div style={{ display: "flex", alignItems: "center" }}>
+                    <img
+                      src={item?.art?.images[0]?.img}
+                      alt="Item de Chiguire Bipolar"
+                      style={{
+                        width: isMobile ? 88 : 181,
+                        height: isMobile ? 76 : 180,
+                        borderRadius: 15,
+                        marginRight: 10,
+                      }}
+                    />
+                    <div
+                      style={{
+                        width: isMobile ? "100% " : isTab ? 240 : 181,
+                        display: "flex",
+                        flexDirection: "column",
+                        justifyContent: "center",
+                      }}
+                    >
                       <Typography
                         className={classes.typography}
-                        style={{ fontSize: 18, fontWeight: 600 }}
+                        style={{
+                          fontSize: isMobile ? 16 : 20,
+                          fontWeight: 600,
+                        }}
                       >
-                        $
-                        {item?.product?.finalPrice?.toLocaleString("de-DE", {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                        })}
+                        {item?.product?.name} {item.art.title}
                       </Typography>
+                      <Typography
+                        className={classes.typography}
+                        style={{ fontSize: isMobile ? 12 : 14 }}
+                      >
+                        {item?.product?.selection}
+                      </Typography>
+                      {isMobile && (
+                        <>
+                          <Typography
+                            className={classes.typography}
+                            style={{
+                              fontSize: isMobile ? 16 : 18,
+                              fontWeight: 600,
+                            }}
+                          >
+                            $
+                            {zone === "INTER"
+                              ? item.product?.interPrice?.toLocaleString(
+                                  "de-DE",
+                                  {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2,
+                                  }
+                                )
+                              : item?.product?.finalPrice?.toLocaleString(
+                                  "de-DE",
+                                  {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2,
+                                  }
+                                )}
+                          </Typography>
+                          <div
+                            style={{ display: "flex", alignItems: "center" }}
+                          >
+                            <IconButton
+                              style={{
+                                width: 30,
+                                height: 32,
+                                textAlign: "center",
+                                marginRight: 10,
+                              }}
+                              onClick={() => changeQuantity("+1", index)}
+                            >
+                              +
+                            </IconButton>
+                            <TextField
+                              disabled
+                              variant="outlined"
+                              value={item.quantity}
+                              className={classes.inputRoot}
+                              InputProps={{
+                                classes: {
+                                  input: classes.inputRoot,
+                                },
+                              }}
+                            />
+                            <IconButton
+                              style={{
+                                width: isMobile ? 18 : 30,
+                                height: isMobile ? 19 : 32,
+                                textAlign: "center",
+                                marginRight: !isTab && 10,
+                              }}
+                              onClick={() => changeQuantity("-1", index)}
+                            >
+                              -
+                            </IconButton>
+                          </div>
+                        </>
+                      )}
                     </div>
                   </Grid>
-                )}
-                <Grid
-                  item
-                  xs={1}
-                  style={{ display: "flex", alignItems: "center" }}
-                >
-                  <IconButton
-                    style={{
-                      width: isMobile ? 18 : 30,
-                      height: isMobile ? 19 : 32,
-                      textAlign: "center",
-                      marginRight: 10,
-                    }}
-                    onClick={() => deleteItemInBuyState(index)}
+                  {!isMobile && (
+                    <Grid
+                      item
+                      xs={5}
+                      style={{
+                        display: "flex",
+                        alignContent: "center",
+                        justifyContent: "space-evenly",
+                      }}
+                    >
+                      <div style={{ display: "flex", alignItems: "center" }}>
+                        <IconButton
+                          style={{
+                            width: 30,
+                            height: 32,
+                            textAlign: "center",
+                            marginRight: 10,
+                          }}
+                          onClick={() => changeQuantity("+1", index)}
+                        >
+                          +
+                        </IconButton>
+                        <TextField
+                          disabled
+                          variant="outlined"
+                          value={item.quantity}
+                          className={classes.inputRoot}
+                          InputProps={{
+                            classes: {
+                              input: classes.inputRoot,
+                            },
+                          }}
+                        />
+                        <IconButton
+                          style={{
+                            width: 30,
+                            height: 32,
+                            textAlign: "center",
+                            marginRight: 10,
+                          }}
+                          onClick={() => changeQuantity("-1", index)}
+                        >
+                          -
+                        </IconButton>
+                      </div>
+                      <div style={{ display: "flex", alignItems: "center" }}>
+                        <Typography
+                          className={classes.typography}
+                          style={{ fontSize: 18, fontWeight: 600 }}
+                        >
+                          $
+                          {zone === "INTER"
+                            ? item?.product?.interPrice?.toLocaleString(
+                                "de-DE",
+                                {
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 2,
+                                }
+                              )
+                            : item?.product?.finalPrice?.toLocaleString(
+                                "de-DE",
+                                {
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 2,
+                                }
+                              )}
+                        </Typography>
+                      </div>
+                    </Grid>
+                  )}
+                  <Grid
+                    item
+                    xs={1}
+                    style={{ display: "flex", alignItems: "center" }}
                   >
-                    <DeleteIcon />
-                  </IconButton>
+                    <IconButton
+                      style={{
+                        width: isMobile ? 18 : 30,
+                        height: isMobile ? 19 : 32,
+                        textAlign: "center",
+                        marginRight: 10,
+                      }}
+                      onClick={() => deleteItemInBuyState(index)}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </Grid>
                 </Grid>
-              </Grid>
-            ))}
-        </Grid>
+              ))}
+          </Grid>
 
-        <Grid
-          item
-          sm={12}
-          md={5}
-          style={{ padding: !isTab && 20, marginRight: isTab && 10 }}
-        >
-          <Paper
-            elevation={4}
+          <Grid
+            item
+            sm={12}
+            md={5}
+            style={{ padding: !isTab && 20, marginRight: isTab && 10 }}
+          >
+            <Paper
+              elevation={4}
+              style={{
+                width: "100%",
+                padding: 20,
+                borderRadius: 30,
+              }}
+            >
+              <Stepper activeStep={activeStep}>
+                {["Tus datos", "Orden de compra"].map((label, index) => {
+                  const stepProps = {}
+                  const labelProps = {
+                    StepIconComponent: CustomStepIcon,
+                  }
+
+                  return (
+                    <Step
+                      key={label}
+                      {...stepProps}
+                    >
+                      <StepLabel {...labelProps}>{label}</StepLabel>
+                    </Step>
+                  )
+                })}
+              </Stepper>
+              <div className={classes.instructions}>
+                {getStepContent(activeStep)}
+              </div>
+            </Paper>
+          </Grid>
+        </Grid>
+      ) : (
+        <div>
+          <div style={{ margin: "120px 10px 40px 10px" }}>
+            <Typography
+              variant={"h6"}
+              align={"Center"}
+              justify={"center"}
+              style={{ fontFamily: "Lastik" }}
+            >
+              Actualmente no tienes ningun producto dentro del carrito de
+              compra.
+            </Typography>
+          </div>
+          <div
             style={{
-              width: "100%",
-              padding: 20,
-              borderRadius: 30,
+              display: "flex",
+              justifyContent: "center",
+              marginTop: 20,
             }}
           >
-            <Stepper activeStep={activeStep}>
-              {["Tus datos", "Orden de compra"].map((label, index) => {
-                const stepProps = {};
-                const labelProps = {
-                  StepIconComponent: CustomStepIcon,
-                };
-
-                return (
-                  <Step key={label} {...stepProps}>
-                    <StepLabel {...labelProps}>{label}</StepLabel>
-                  </Step>
-                );
-              })}
-            </Stepper>
-            <div className={classes.instructions}>
-              {getStepContent(activeStep)}
-            </div>
-          </Paper>
-        </Grid>
-      </Grid>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => {
+                history.push({
+                  pathname: "/chiguirebipolar",
+                })
+              }}
+            >
+              Elegir Producto
+            </Button>
+          </div>
+        </div>
+      )}
 
       <Snackbar
         open={open}
@@ -839,7 +1127,11 @@ export default function ShoppingCartCB() {
         onClose={() => setOpen(false)}
       />
 
-      <Modal open={openModal} onClose={handleClose} className={classes.modal}>
+      <Modal
+        open={openModal}
+        onClose={handleClose}
+        className={classes.modal}
+      >
         <Grid
           container
           className={classes.paper2}
@@ -918,7 +1210,10 @@ export default function ShoppingCartCB() {
               marginBottom: 50,
             }}
           >
-            <Typography className={classes.typography} style={{ fontSize: 16 }}>
+            <Typography
+              className={classes.typography}
+              style={{ fontSize: 16 }}
+            >
               Te enviaremos un correo con todos los detalles
             </Typography>
           </Grid>
@@ -938,5 +1233,5 @@ export default function ShoppingCartCB() {
         </Grid>
       </Modal>
     </>
-  );
+  )
 }

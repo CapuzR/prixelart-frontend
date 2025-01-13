@@ -1,22 +1,23 @@
-import React from "react";
-import { useEffect, useState } from "react";
-import { useHistory } from "react-router-dom";
-import Link from "@material-ui/core/Link";
-import { makeStyles } from "@material-ui/core/styles";
-import Table from "@material-ui/core/Table";
-import TableBody from "@material-ui/core/TableBody";
-import TableCell from "@material-ui/core/TableCell";
-import TableHead from "@material-ui/core/TableHead";
-import TableRow from "@material-ui/core/TableRow";
-import Title from "../../adminMain/Title";
-import axios from "axios";
-import DeleteIcon from "@material-ui/icons/Delete";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import Backdrop from "@material-ui/core/Backdrop";
-import Checkbox from "@material-ui/core/Checkbox";
-import EditIcon from "@material-ui/icons/Edit";
-import Fab from "@material-ui/core/Fab";
-import Snackbar from "@material-ui/core/Snackbar";
+import React from "react"
+import { useEffect, useState } from "react"
+import { useHistory } from "react-router-dom"
+import Link from "@material-ui/core/Link"
+import { makeStyles } from "@material-ui/core/styles"
+import Table from "@material-ui/core/Table"
+import TableBody from "@material-ui/core/TableBody"
+import TableCell from "@material-ui/core/TableCell"
+import TableHead from "@material-ui/core/TableHead"
+import TableRow from "@material-ui/core/TableRow"
+import Title from "../../adminMain/Title"
+import axios from "axios"
+import DeleteIcon from "@material-ui/icons/Delete"
+import CircularProgress from "@material-ui/core/CircularProgress"
+import Backdrop from "@material-ui/core/Backdrop"
+import Checkbox from "@material-ui/core/Checkbox"
+import EditIcon from "@material-ui/icons/Edit"
+import Fab from "@material-ui/core/Fab"
+import Snackbar from "@material-ui/core/Snackbar"
+import worldBlack from "../../../images/world-black.svg"
 
 const useStyles = makeStyles((theme) => ({
   seeMore: {
@@ -36,22 +37,22 @@ const useStyles = makeStyles((theme) => ({
       width: "25ch",
     },
   },
-}));
+}))
 
 export default function ReadVariants(props) {
-  const classes = useStyles();
-  const history = useHistory();
-  const [rows, setRows] = useState();
-  const [loading, setLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState();
-  const [snackBarError, setSnackBarError] = useState(false);
+  const classes = useStyles()
+  const history = useHistory()
+  const [rows, setRows] = useState()
+  const [loading, setLoading] = useState(false)
+  const [errorMessage, setErrorMessage] = useState()
+  const [snackBarError, setSnackBarError] = useState(false)
 
   useEffect(() => {
-    readVariants();
-  }, []);
+    readVariants()
+  }, [])
 
   const readVariants = async () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + "/product/read";
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/product/read"
 
     await axios
       .post(
@@ -67,29 +68,29 @@ export default function ReadVariants(props) {
             b
           ) {
             if (isNaN(a.name) || isNaN(b.name)) {
-              return a.name.localeCompare(b.name);
+              return a.name.localeCompare(b.name)
             } else {
-              return a.name - b.name;
+              return a.name - b.name
             }
-          });
-          setRows(variants);
+          })
+          setRows(variants)
         }
       })
       .catch((error) => {
-        console.log(error);
-      });
-  };
+        console.log(error)
+      })
+  }
 
   const handleActive = (variant, action) => {
-    props.setVariant(variant);
+    props.setVariant(variant)
     action == "create" &&
       history.push(
         "/admin/product" + "/" + props.product._id + "/variant/" + action
-      );
+      )
     action == "read" &&
       history.push(
         "/admin/product" + "/" + props.product._id + "/variant/" + action
-      );
+      )
     action == "update" &&
       history.push(
         "/admin/product" +
@@ -99,14 +100,14 @@ export default function ReadVariants(props) {
           variant._id +
           "/" +
           action
-      );
-  };
+      )
+  }
 
   const deleteVariant = async (v) => {
-    setLoading(true);
+    setLoading(true)
     const base_url =
-      process.env.REACT_APP_BACKEND_URL + "/product/deleteVariant";
-    const id = props.product._id;
+      process.env.REACT_APP_BACKEND_URL + "/product/deleteVariant"
+    const id = props.product._id
 
     const deleteVar = await axios.put(
       base_url,
@@ -116,28 +117,34 @@ export default function ReadVariants(props) {
         adminToken: localStorage.getItem("adminTokenV"),
       },
       { withCredentials: true }
-    );
+    )
     if (deleteVar?.data.success === true) {
-      readVariants();
+      readVariants()
     }
 
-    setSnackBarError(true);
-    setErrorMessage("Variante eliminada exitosamente.");
-    setLoading(false);
-  };
+    setSnackBarError(true)
+    setErrorMessage("Variante eliminada exitosamente.")
+    setLoading(false)
+  }
 
   const onCloseSnackbar = () => {
-    setSnackBarError(false);
-  };
+    setSnackBarError(false)
+  }
 
   return (
     <React.Fragment>
       {
-        <Backdrop className={classes.backdrop} open={loading}>
+        <Backdrop
+          className={classes.backdrop}
+          open={loading}
+        >
           <CircularProgress color="inherit" />
         </Backdrop>
       }
-      <Table size="small" style={{ overflow: "auto" }}>
+      <Table
+        size="small"
+        style={{ overflow: "auto" }}
+      >
         <TableHead>
           <TableRow>
             <TableCell align="center"></TableCell>
@@ -175,7 +182,7 @@ export default function ReadVariants(props) {
                       style={{ width: 35, height: 35 }}
                       aria-label="edit"
                       onClick={(e) => {
-                        handleActive(row, "update");
+                        handleActive(row, "update")
                       }}
                     >
                       <EditIcon />
@@ -194,9 +201,28 @@ export default function ReadVariants(props) {
                       />
                     )}
                   </TableCell>
-                  <TableCell align="center">
-                    {row.name}
-                    {row.attributes[1]?.value && " " + row.attributes[1]?.value}
+                  <TableCell
+                    align="center"
+                    style={{ alignItems: "center" }}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      {row.name}
+
+                      {row.attributes[1]?.value &&
+                        " " + row.attributes[1]?.value}
+                      {row.inter && (
+                        <img
+                          src={worldBlack}
+                          style={{ width: 20, height: "auto", marginLeft: 10 }}
+                        />
+                      )}
+                    </div>
                   </TableCell>
                   <TableCell align="center">
                     <Checkbox
@@ -219,8 +245,8 @@ export default function ReadVariants(props) {
                       style={{ width: 35, height: 35 }}
                       aria-label="Delete"
                       onClick={(e) => {
-                        e.preventDefault();
-                        deleteVariant(row._id);
+                        e.preventDefault()
+                        deleteVariant(row._id)
                         // readVariants();
                         // rows.splice(1, i);
                       }}
@@ -239,8 +265,8 @@ export default function ReadVariants(props) {
                       style={{ width: 35, height: 35 }}
                       aria-label="Delete"
                       onClick={(e) => {
-                        e.preventDefault();
-                        deleteVariant(i);
+                        e.preventDefault()
+                        deleteVariant(i)
                         // readOrders();
                         // rows.splice(1, i);
                       }}
@@ -261,5 +287,5 @@ export default function ReadVariants(props) {
         className={classes.snackbar}
       />
     </React.Fragment>
-  );
+  )
 }

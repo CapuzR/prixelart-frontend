@@ -230,7 +230,7 @@ export default function Grid(props) {
     } else {
       readGallery(filters)
     }
-  }, [searchValue, categoryValue, pageNumber])
+  }, [searchValue, categoryValue, props.artSaved])
 
   const handleFullImage = async (e, tile) => {
     if (onAdmin) {

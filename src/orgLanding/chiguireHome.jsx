@@ -206,7 +206,7 @@ export default function ChiguireHome() {
       <AppBar
         position="fixed"
         elevation={0}
-        style={{ backgroundColor: "#006134", zIndex: 10000 }}
+        style={{ backgroundColor: "#006134", zIndex: 10000, minHeight: 70 }}
       >
         <Toolbar
           style={{

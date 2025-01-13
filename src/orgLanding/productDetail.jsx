@@ -28,6 +28,8 @@ import Menu from "@material-ui/core/Menu"
 import MenuIcon from "@material-ui/icons/Menu"
 import MDEditor from "@uiw/react-md-editor"
 import ReactGA from "react-ga"
+import { useGlobalContext } from "../context/globalContext"
+
 ReactGA.initialize("G-0RWP9B33D8")
 
 const useStyles = makeStyles((theme) => ({
@@ -64,6 +66,7 @@ export default function ProductDetail(props) {
   const isTab = useMediaQuery(theme.breakpoints.down("sm"))
   const [anchorEl, setAnchorEl] = useState(null)
   const openMenu = Boolean(anchorEl)
+  const { currency, toggleCurrency, zone, toggleZone } = useGlobalContext()
 
   const [open, setOpen] = useState(false)
   const [message, setMessage] = useState("")
@@ -150,6 +153,9 @@ export default function ProductDetail(props) {
           item.product.item === input.product.item &&
           item.product.selection === selection
       )
+      if (zone === "INTER") {
+        prod.inter = true
+      }
 
       if (!prevItem) {
         newState.push({
@@ -269,6 +275,7 @@ export default function ProductDetail(props) {
         style={{
           zIndex: 10000,
           backgroundColor: "white",
+          minHeight: 70,
         }}
       >
         <Toolbar
@@ -395,7 +402,7 @@ export default function ProductDetail(props) {
             justifyContent: "center",
             position: "relative",
             width: "50%",
-            height: 420,
+            height: 580,
           }}
         >
           <Slider
@@ -486,16 +493,31 @@ export default function ProductDetail(props) {
               {selectedItem?.product.description}
             </Typography>
           )}
-          <Typography
-            className={classes.typography}
-            style={{ fontSize: 24, fontWeight: 600, color: "#00A650" }}
-          >
-            $
-            {selectedItem?.product.finalPrice?.toLocaleString("de-DE", {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            })}
-          </Typography>
+          {selectedItem?.product.available === true ? (
+            <Typography
+              className={classes.typography}
+              style={{ fontSize: 24, fontWeight: 600, color: "#00A650" }}
+            >
+              $
+              {zone === "INTER"
+                ? `${selectedItem?.product.interPrice?.toLocaleString("de-DE", {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}`
+                : `${selectedItem?.product.finalPrice?.toLocaleString("de-DE", {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}`}
+            </Typography>
+          ) : (
+            <Typography
+              className={classes.typography}
+              style={{ fontSize: 24, marginTop: 20, marginBottom: 10 }}
+              color="primary"
+            >
+              Producto agotado
+            </Typography>
+          )}
           <Grid
             container
             style={{ display: "flex", justifyContent: "space-between" }}
@@ -591,6 +613,7 @@ export default function ProductDetail(props) {
                 </Typography>
                 <div>
                   <Radio
+                    disabled={selectedItem?.product.available === false}
                     checked={selectedColor === "Negro"}
                     onChange={handleColor}
                     value="Negro"
@@ -599,6 +622,7 @@ export default function ProductDetail(props) {
                     }}
                   />
                   <Radio
+                    disabled={selectedItem?.product.available === false}
                     checked={selectedColor === "Azul"}
                     onChange={handleColor}
                     value="Azul"
@@ -607,6 +631,7 @@ export default function ProductDetail(props) {
                     }}
                   />
                   <Radio
+                    disabled={selectedItem?.product.available === false}
                     checked={selectedColor === "Verde"}
                     onChange={handleColor}
                     value="Verde"
@@ -618,21 +643,23 @@ export default function ProductDetail(props) {
               </Grid>
             )}
           </Grid>
-          <Button
-            className={classes.typography}
-            style={{
-              textTransform: "none",
-              width: "100%",
-              backgroundColor: "#F4DF46",
-              borderRadius: 10,
-              fontSize: 18,
-              marginTop: 20,
-              marginBottom: 20,
-            }}
-            onClick={() => addItemToBuyState(selectedItem)}
-          >
-            Comprar ahora
-          </Button>
+          {selectedItem?.product.available === true && (
+            <Button
+              className={classes.typography}
+              style={{
+                textTransform: "none",
+                width: "100%",
+                backgroundColor: "#F4DF46",
+                borderRadius: 10,
+                fontSize: 18,
+                marginTop: 20,
+                marginBottom: 20,
+              }}
+              onClick={() => addItemToBuyState(selectedItem)}
+            >
+              Comprar ahora
+            </Button>
+          )}
           {selectedItem?.product?.offer !== undefined && (
             <Typography
               className={classes.typography}
@@ -657,6 +684,11 @@ export default function ProductDetail(props) {
                 className={classes.typography}
               />
             </div>
+          )}{" "}
+          {zone !== "INTER" && (
+            <Typography className={classes.typography}>
+              {`Tiempo de producción estimado: ${selectedItem?.product.productionTime} días.`}
+            </Typography>
           )}
         </Grid>
       </Grid>

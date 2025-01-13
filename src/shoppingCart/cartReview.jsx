@@ -93,10 +93,11 @@ export default function CartReview(props) {
   const PriceSelect = (item) => {
     const org = checkOrgs(item.art)
     const prixer = JSON.parse(localStorage?.getItem("token"))?.username
-    // Falta hacer funcionar los precios de ORG para Particulares
+
     if (org !== undefined) {
       return UnitPriceForOrg(item.product, item.art, prixer, org, "Particular")
-    } else if (
+    } else 
+    if (
       JSON.parse(localStorage?.getItem("token")) &&
       JSON.parse(localStorage?.getItem("token"))?.username
     ) {
@@ -602,6 +603,7 @@ export default function CartReview(props) {
     props.setMessage("Item duplicado correctamente.")
     props.setOpen(true)
   }
+  
   return (
     <>
       <Grid
@@ -612,7 +614,6 @@ export default function CartReview(props) {
           justifyContent: "space-between",
         }}
       >
-        {console.log("buyState", buyState)}
         <h1
           style={{
             marginBottom: isMobile ? 40 : 20,

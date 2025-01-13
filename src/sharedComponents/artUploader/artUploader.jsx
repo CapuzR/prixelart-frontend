@@ -364,7 +364,10 @@ export default function ArtUploader(props) {
   //     return [croppedArt.length - sum, false];
   //   }
   // };
-
+  const closeAd = () => {
+    setSnackBarError(false)
+    setSnackBarAction(false)
+  }
   const handleSubmit = async () => {
     try {
       if (title && description && category && tags) {
@@ -545,11 +548,12 @@ export default function ArtUploader(props) {
     if (data.data.success) {
       props.setOpenArtFormDialog(false)
       setBackdrop(false)
-      window.location.reload()
+      props.setArtSaved(true)
     } else {
       setErrorMessage(
         "Por favor vuelve a intentarlo, puede que exista algún inconveniente de conexión. Si aún no lo has hecho por favor inicia sesión."
       )
+      setBackdrop(false)
       setSnackBarError(true)
     }
   }
@@ -1101,10 +1105,7 @@ export default function ArtUploader(props) {
             message={errorMessage}
             className={classes.snackbar}
             action={snackBarAction}
-            onClose={() => {
-              setSnackBarError(false)
-              setSnackBarAction(false)
-            }}
+            onClose={closeAd}
           />
         </Container>
       </Dialog>

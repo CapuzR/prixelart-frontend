@@ -1,23 +1,23 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-import Grid from "@material-ui/core/Grid";
-import Checkbox from "@material-ui/core/Checkbox";
-import { makeStyles } from "@material-ui/core/styles";
-import Title from "../Title";
-import MenuItem from "@material-ui/core/MenuItem";
-import Select from "@material-ui/core/Select";
-import FormControl from "@material-ui/core/FormControl";
-import InputLabel from "@material-ui/core/InputLabel";
-import TextField from "@material-ui/core/TextField";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import InputAdornment from "@material-ui/core/InputAdornment";
-import LocalPhoneIcon from "@material-ui/icons/LocalPhone";
-import EmailIcon from "@material-ui/icons/Email";
-import HomeIcon from "@material-ui/icons/Home";
-import BusinessIcon from "@material-ui/icons/Business";
-import Autocomplete from "@material-ui/lab/Autocomplete";
-import { Typography } from "@material-ui/core";
-const drawerWidth = 240;
+import React, { useEffect, useState } from "react"
+import axios from "axios"
+import Grid from "@material-ui/core/Grid"
+import Checkbox from "@material-ui/core/Checkbox"
+import { makeStyles } from "@material-ui/core/styles"
+import Title from "../Title"
+import MenuItem from "@material-ui/core/MenuItem"
+import Select from "@material-ui/core/Select"
+import FormControl from "@material-ui/core/FormControl"
+import InputLabel from "@material-ui/core/InputLabel"
+import TextField from "@material-ui/core/TextField"
+import FormControlLabel from "@material-ui/core/FormControlLabel"
+import InputAdornment from "@material-ui/core/InputAdornment"
+import LocalPhoneIcon from "@material-ui/icons/LocalPhone"
+import EmailIcon from "@material-ui/icons/Email"
+import HomeIcon from "@material-ui/icons/Home"
+import BusinessIcon from "@material-ui/icons/Business"
+import Autocomplete from "@material-ui/lab/Autocomplete"
+import { Typography } from "@material-ui/core"
+const drawerWidth = 240
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -218,22 +218,22 @@ const useStyles = makeStyles((theme) => ({
       width: "25ch",
     },
   },
-}));
+}))
 
 export default function ConsumerData(props) {
-  const classes = useStyles();
+  const classes = useStyles()
 
-  const [loading, setLoading] = useState(true);
-  const [shippingDataCheck, setShippingDataCheck] = useState(true);
-  const [shippingList, setShippingList] = useState();
-  const [billingDataCheck, setBillingDataCheck] = useState(true);
-  const [billingShDataCheck, setBillingShDataCheck] = useState(false);
-  const [consumers, setConsumers] = useState([]);
-  const [prixers, setPrixers] = useState([]);
-  const [options, setOptions] = useState([]);
-  const [open, setOpen] = React.useState(false);
-  const anchorRef = React.useRef(null);
-  let today = new Date();
+  const [loading, setLoading] = useState(true)
+  const [shippingDataCheck, setShippingDataCheck] = useState(true)
+  const [shippingList, setShippingList] = useState()
+  const [billingDataCheck, setBillingDataCheck] = useState(true)
+  const [billingShDataCheck, setBillingShDataCheck] = useState(false)
+  const [consumers, setConsumers] = useState([])
+  const [prixers, setPrixers] = useState([])
+  const [options, setOptions] = useState([])
+  const [open, setOpen] = React.useState(false)
+  const anchorRef = React.useRef(null)
+  let today = new Date()
   const months = [
     "Enero",
     "Febrero",
@@ -247,7 +247,7 @@ export default function ConsumerData(props) {
     "Octubre",
     "Noviembre",
     "Diciembre",
-  ];
+  ]
   const monthsOrder = [
     "01",
     "02",
@@ -261,7 +261,7 @@ export default function ConsumerData(props) {
     "10",
     "11",
     "12",
-  ];
+  ]
   const days = [
     "domingo",
     "lunes",
@@ -270,81 +270,93 @@ export default function ConsumerData(props) {
     "jueves",
     "viernes",
     "sábado",
-  ];
+  ]
 
-  let ProdTimes = props.buyState.map((item) => {
-    if (item.product && item.art && item.product.productionTime !== undefined) {
-      return item.product.productionTime;
-    }
-  });
+  let ProdTimes =
+    props.buyState && props.buyState.length > 0
+      ? props?.buyState.map((item) => {
+          if (
+            item.product &&
+            item.art &&
+            item.product.productionTime !== undefined
+          ) {
+            return item.product.productionTime
+          }
+        })
+      : 0
 
-  let orderedProdT = ProdTimes.sort(function (a, b) {
-    if (a.toLowerCase() > b.toLowerCase()) {
-      return 1;
-    }
-    if (a.toLowerCase() < b.toLowerCase()) {
-      return -1;
-    }
-    return 0;
-  });
+  let orderedProdT =
+    props.buyState &&
+    props.buyState.length > 0 &&
+    ProdTimes?.sort(function (a, b) {
+      if (a.toLowerCase() > b.toLowerCase()) {
+        return 1
+      }
+      if (a.toLowerCase() < b.toLowerCase()) {
+        return -1
+      }
+      return 0
+    })
 
-  let readyDate = new Date(
-    today.setDate(today.getDate() + Number(orderedProdT[0]))
-  );
+  let readyDate =
+    props.buyState &&
+    props.buyState.length > 0 &&
+    new Date(today.setDate(today.getDate() + Number(orderedProdT[0])))
 
   const stringReadyDate =
+    props.buyState &&
+    props.buyState.length > 0 &&
     readyDate.getFullYear() +
-    "-" +
-    monthsOrder[readyDate.getMonth()] +
-    "-" +
-    readyDate.getDate();
+      "-" +
+      monthsOrder[readyDate.getMonth()] +
+      "-" +
+      readyDate.getDate()
 
   const getShippingMethods = () => {
     const base_url =
-      process.env.REACT_APP_BACKEND_URL + "/shipping-method/read-all-v2";
+      process.env.REACT_APP_BACKEND_URL + "/shipping-method/read-all-v2"
     axios
       .get(base_url)
       .then((response) => {
-        setShippingList(response.data);
+        setShippingList(response.data)
       })
       .catch((error) => {
-        console.log(error);
-      });
-  };
+        console.log(error)
+      })
+  }
 
   const getConsumers = () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + "/consumer/read-all";
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/consumer/read-all"
     axios
       .post(base_url)
       .then((response) => {
-        setConsumers(response.data);
-        props.setConsumer(response.data);
+        setConsumers(response.data)
+        props.setConsumers(response.data)
       })
       .catch((error) => {
-        console.log(error);
-      });
-  };
+        console.log(error)
+      })
+  }
 
   const getPrixers = async () => {
-    const base_url =
-      process.env.REACT_APP_BACKEND_URL + "/prixer/read-all-full";
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/prixer/read-all-full"
     await axios
       .get(base_url)
       .then((response) => {
-        setPrixers(response.data.prixers);
+        setPrixers(response.data.prixers)
       })
       .catch((error) => {
-        console.log(error);
-      });
-  };
-  
+        console.log(error)
+      })
+  }
+
   useEffect(() => {
-    setLoading(true);
-    getShippingMethods();
-    getConsumers();
-    getPrixers();
-    setLoading(false);
-  }, []);
+    setLoading(true)
+    getShippingMethods()
+    getConsumers()
+    getPrixers()
+    setLoading(false)
+  }, [])
 
   const handleShippingDataCheck = () => {
     if (shippingDataCheck) {
@@ -354,7 +366,7 @@ export default function ConsumerData(props) {
         shippingLastName: "",
         shippingPhone: "",
         shippingAddress: "",
-      });
+      })
     } else {
       props.setValues({
         ...props.shippingData,
@@ -362,70 +374,70 @@ export default function ConsumerData(props) {
         shippingLastName: props.values.lastName,
         shippingPhone: props.values.phone,
         shippingAddress: props.values.address,
-      });
+      })
     }
 
-    setShippingDataCheck(!shippingDataCheck);
-  };
+    setShippingDataCheck(!shippingDataCheck)
+  }
 
   useEffect(() => {
-    let updatedv2 = [];
+    let updatedv2 = []
     const updated = consumers?.filter((consumer) =>
       consumer.firstname
         ?.toLowerCase()
         .includes(props?.basicData?.name?.toLowerCase())
-    );
+    )
     updated.map((p) => {
-      updatedv2.push(p.firstname + ", " + p.lastname);
-    });
+      updatedv2.push(p.firstname + ", " + p.lastname)
+    })
 
     const updatedv3 = prixers?.filter((prixer) =>
       prixer?.firstName
         ?.toLowerCase()
         .includes(props?.basicData?.name?.toLowerCase())
-    );
+    )
 
     updatedv3.map((p) => {
       if (updatedv2.includes(p.firstName + ", " + p.lastName)) {
-        return;
+        return
       } else {
-        updatedv2.push(p.firstName + ", " + p.lastName);
+        updatedv2.push(p.firstName + ", " + p.lastName)
       }
-    });
+    })
 
-    setOptions(updatedv2);
-  }, [props?.basicData?.name]);
+    setOptions(updatedv2)
+  }, [props?.basicData?.name])
 
   const handleInputChange = (event, value, reason) => {
     if (reason === "clear") {
-      props.setSelectedPrixer(undefined);
-      props.setSelectedConsumer(undefined);
-      props.setConsumerType("Particular");
-      props.setBasicData(undefined);
+      props.setSelectedPrixer(undefined)
+      props.setSelectedConsumer(undefined)
+      props.setConsumerType("Particular")
+      props.setBasicData(undefined)
     } else if (event?.type === "change") {
       props.setBasicData({
         ...props.basicData,
         name: value,
-      });
+      })
     } else if (event?.type === "click") {
-      const valuev2 = value.split(",");
+      const valuev2 = value.split(",")
       let prixer = prixers.find(
         (prixer) =>
           prixer?.firstName === valuev2[0] &&
           prixer?.lastName === valuev2[1]?.trim()
-      );
+      )
       let selected = consumers.find(
         (consumer) =>
           consumer.firstname === valuev2[0] &&
           consumer.lastname === valuev2[1]?.trim()
-      );
+      )
       if (selected) {
-        props.setSelectedConsumer(selected);
-        props.setConsumerType(selected.consumerType);
+        props.setSelectedConsumer(selected)
+        props.setConsumerType(selected.consumerType)
 
         if (selected.consumerType === "Prixer") {
-          props.setSelectedPrixer(prixer);
-          props.setConsumerType("Prixer");
+          props.setSelectedPrixer(prixer)
+          props.setConsumerType("Prixer")
         }
         props.setBasicData({
           ...props.basicData,
@@ -435,10 +447,10 @@ export default function ConsumerData(props) {
           email: selected?.email,
           address: selected?.address,
           ci: selected?.ci,
-        });
+        })
       }
       if (prixer) {
-        props.setSelectedPrixer(prixer);
+        props.setSelectedPrixer(prixer)
         props.setBasicData({
           ...props.basicData,
           name: valuev2[0],
@@ -447,26 +459,39 @@ export default function ConsumerData(props) {
           email: prixer?.email,
           address: prixer?.address,
           ci: prixer?.ci,
-        });
-        props.setConsumerType("Prixer");
+        })
+        props.setConsumerType("Prixer")
       } else if (prixer === undefined && selected.username) {
         prixer = prixers.find(
           (prixer) => prixer?.username === selected.username
-        );
-        props.setSelectedPrixer(prixer);
+        )
+        props.setSelectedPrixer(prixer)
       }
     }
-  };
+  }
 
   return (
     <>
-      <Grid container spacing={2}>
-        <Grid container style={{ marginTop: 20 }}>
+      <Grid
+        container
+        spacing={2}
+      >
+        <Grid
+          container
+          style={{ marginTop: 20 }}
+        >
           <Title>Información del cliente</Title>
           {loading && <Typography>Cargando clientes </Typography>}
         </Grid>
         <Grid container>
-          <Grid item lg={4} md={4} sm={4} xs={12} className={classes.gridInput}>
+          <Grid
+            item
+            lg={4}
+            md={4}
+            sm={4}
+            xs={12}
+            className={classes.gridInput}
+          >
             <Autocomplete
               freeSolo
               loading={loading}
@@ -495,7 +520,14 @@ export default function ConsumerData(props) {
               )}
             />
           </Grid>
-          <Grid item lg={4} md={4} sm={4} xs={12} className={classes.gridInput}>
+          <Grid
+            item
+            lg={4}
+            md={4}
+            sm={4}
+            xs={12}
+            className={classes.gridInput}
+          >
             <TextField
               variant="outlined"
               id="standard-name"
@@ -513,7 +545,14 @@ export default function ConsumerData(props) {
             />
           </Grid>
 
-          <Grid item lg={4} md={4} sm={4} xs={12} className={classes.gridInput}>
+          <Grid
+            item
+            lg={4}
+            md={4}
+            sm={4}
+            xs={12}
+            className={classes.gridInput}
+          >
             <TextField
               variant="outlined"
               id="standard-name"
@@ -531,7 +570,14 @@ export default function ConsumerData(props) {
               margin="normal"
             />
           </Grid>
-          <Grid item lg={4} md={4} sm={4} xs={12} className={classes.gridInput}>
+          <Grid
+            item
+            lg={4}
+            md={4}
+            sm={4}
+            xs={12}
+            className={classes.gridInput}
+          >
             <TextField
               variant="outlined"
               id="standard-name"
@@ -557,7 +603,14 @@ export default function ConsumerData(props) {
               }}
             />
           </Grid>
-          <Grid item lg={4} md={4} sm={4} xs={12} className={classes.gridInput}>
+          <Grid
+            item
+            lg={4}
+            md={4}
+            sm={4}
+            xs={12}
+            className={classes.gridInput}
+          >
             <TextField
               variant="outlined"
               id="standard-name"
@@ -582,7 +635,14 @@ export default function ConsumerData(props) {
               }}
             />
           </Grid>
-          <Grid item lg={4} md={4} sm={4} xs={12} className={classes.gridInput}>
+          <Grid
+            item
+            lg={4}
+            md={4}
+            sm={4}
+            xs={12}
+            className={classes.gridInput}
+          >
             <FormControl
               style={{ minWidth: "100%", marginTop: 15 }}
               variant="outlined"
@@ -593,7 +653,7 @@ export default function ConsumerData(props) {
                 className={classes.textField}
                 value={props.consumerType}
                 onChange={(e) => {
-                  props.setConsumerType(e.target.value);
+                  props.setConsumerType(e.target.value)
                 }}
               >
                 <MenuItem value="">
@@ -601,7 +661,10 @@ export default function ConsumerData(props) {
                 </MenuItem>
                 {["Particular", "DAs", "Corporativo", "Prixer", "Artista"].map(
                   (n) => (
-                    <MenuItem key={n} value={n}>
+                    <MenuItem
+                      key={n}
+                      value={n}
+                    >
                       {n}
                     </MenuItem>
                   )
@@ -646,25 +709,44 @@ export default function ConsumerData(props) {
         </Grid>
       </Grid>
 
-      <Grid container spacing={2}>
-        <Grid container style={{ marginTop: 20 }}>
+      <Grid
+        container
+        spacing={2}
+      >
+        <Grid
+          container
+          style={{ marginTop: 20 }}
+        >
           <Title>Datos de entrega</Title>
         </Grid>
         <Grid container>
-          <Grid item lg={12} md={12} sm={12} xs={12}>
+          <Grid
+            item
+            lg={12}
+            md={12}
+            sm={12}
+            xs={12}
+          >
             <FormControlLabel
               control={
                 <Checkbox
                   checked={shippingDataCheck}
                   onChange={() => {
-                    handleShippingDataCheck();
+                    handleShippingDataCheck()
                   }}
                 />
               }
               label="Igual a Datos básicos"
             />
           </Grid>
-          <Grid item lg={4} md={4} sm={4} xs={12} className={classes.gridInput}>
+          <Grid
+            item
+            lg={4}
+            md={4}
+            sm={4}
+            xs={12}
+            className={classes.gridInput}
+          >
             <TextField
               variant="outlined"
               id="standard-name"
@@ -688,7 +770,14 @@ export default function ConsumerData(props) {
               margin="normal"
             />
           </Grid>
-          <Grid item lg={4} md={4} sm={4} xs={12} className={classes.gridInput}>
+          <Grid
+            item
+            lg={4}
+            md={4}
+            sm={4}
+            xs={12}
+            className={classes.gridInput}
+          >
             <TextField
               variant="outlined"
               id="standard-name"
@@ -712,7 +801,14 @@ export default function ConsumerData(props) {
               margin="normal"
             />
           </Grid>
-          <Grid item lg={4} md={4} sm={4} xs={12} className={classes.gridInput}>
+          <Grid
+            item
+            lg={4}
+            md={4}
+            sm={4}
+            xs={12}
+            className={classes.gridInput}
+          >
             <TextField
               variant="outlined"
               id="standard-name"
@@ -739,7 +835,7 @@ export default function ConsumerData(props) {
                 props.setShippingData({
                   ...props.shippingData,
                   phone: e.target.value,
-                });
+                })
               }}
               margin="normal"
               InputProps={{
@@ -800,7 +896,10 @@ export default function ConsumerData(props) {
             xs={12}
             className={classes.gridInput}
           >
-            <FormControl style={{ minWidth: "100%" }} variant="outlined">
+            <FormControl
+              style={{ minWidth: "100%" }}
+              variant="outlined"
+            >
               <InputLabel>Método de entrega</InputLabel>
               <Select
                 id="shippingMethod"
@@ -811,16 +910,22 @@ export default function ConsumerData(props) {
                   props.setShippingData({
                     ...props.shippingData,
                     shippingMethod: e.target.value,
-                  });
-                  props.setShippingMethod(e.target.value);
+                  })
+                  props.setShippingMethod(e.target.value)
                 }}
               >
-                <MenuItem value="" key={"vacío"}>
+                <MenuItem
+                  value=""
+                  key={"vacío"}
+                >
                   <em></em>
                 </MenuItem>
                 {shippingList &&
                   shippingList.map((n) => (
-                    <MenuItem key={n.name} value={n}>
+                    <MenuItem
+                      key={n.name}
+                      value={n}
+                    >
                       {n.name}
                     </MenuItem>
                   ))}
@@ -835,7 +940,10 @@ export default function ConsumerData(props) {
             xs={12}
             className={classes.gridInput}
           >
-            <FormControl style={{ minWidth: "100%" }} variant="outlined">
+            <FormControl
+              style={{ minWidth: "100%" }}
+              variant="outlined"
+            >
               <TextField
                 style={{
                   width: "100%",
@@ -857,43 +965,57 @@ export default function ConsumerData(props) {
                   props.setShippingData({
                     ...props.shippingData,
                     shippingDate: e.target.value,
-                  });
+                  })
                 }}
               />
             </FormControl>
           </Grid>
-          {props.buyState.length > 0 && readyDate !== "Invalid Date" && (
-            <Grid>
-              <div style={{ marginTop: 10, marginLeft: 10 }}>
-                {"El pedido estará listo el día " +
-                  days[readyDate.getDay()] +
-                  " " +
-                  readyDate.getDate() +
-                  " de " +
-                  months[readyDate.getMonth()] +
-                  "."}
-              </div>
-            </Grid>
-          )}
+          {props.buyState &&
+            props.buyState.length > 0 &&
+            readyDate !== "Invalid Date" && (
+              <Grid>
+                <div style={{ marginTop: 10, marginLeft: 10 }}>
+                  {"El pedido estará listo el día " +
+                    days[readyDate.getDay()] +
+                    " " +
+                    readyDate.getDate() +
+                    " de " +
+                    months[readyDate.getMonth()] +
+                    "."}
+                </div>
+              </Grid>
+            )}
         </Grid>
       </Grid>
 
-      <Grid container spacing={2}>
-        <Grid container style={{ marginTop: 20 }}>
+      <Grid
+        container
+        spacing={2}
+      >
+        <Grid
+          container
+          style={{ marginTop: 20 }}
+        >
           <Title>Datos de facturación</Title>
         </Grid>
         <Grid container>
-          <Grid item lg={12} md={12} sm={12} xs={12}>
+          <Grid
+            item
+            lg={12}
+            md={12}
+            sm={12}
+            xs={12}
+          >
             <FormControlLabel
               control={
                 <Checkbox
                   checked={billingDataCheck}
                   onChange={(e) => {
                     if (billingShDataCheck) {
-                      setBillingDataCheck(!billingDataCheck);
-                      setBillingShDataCheck(!billingShDataCheck);
+                      setBillingDataCheck(!billingDataCheck)
+                      setBillingShDataCheck(!billingShDataCheck)
                     } else {
-                      setBillingDataCheck(!billingDataCheck);
+                      setBillingDataCheck(!billingDataCheck)
                     }
                   }}
                 />
@@ -906,10 +1028,10 @@ export default function ConsumerData(props) {
                   checked={billingShDataCheck}
                   onChange={(e) => {
                     if (billingDataCheck) {
-                      setBillingShDataCheck(!billingShDataCheck);
-                      setBillingDataCheck(!billingDataCheck);
+                      setBillingShDataCheck(!billingShDataCheck)
+                      setBillingDataCheck(!billingDataCheck)
                     } else {
-                      setBillingShDataCheck(!billingShDataCheck);
+                      setBillingShDataCheck(!billingShDataCheck)
                     }
                   }}
                 />
@@ -917,7 +1039,14 @@ export default function ConsumerData(props) {
               label="Igual a Datos de entrega"
             />
           </Grid>
-          <Grid item lg={4} md={4} sm={4} xs={12} className={classes.gridInput}>
+          <Grid
+            item
+            lg={4}
+            md={4}
+            sm={4}
+            xs={12}
+            className={classes.gridInput}
+          >
             <TextField
               variant="outlined"
               id="standard-name"
@@ -945,7 +1074,14 @@ export default function ConsumerData(props) {
               margin="normal"
             />
           </Grid>
-          <Grid item lg={4} md={4} sm={4} xs={12} className={classes.gridInput}>
+          <Grid
+            item
+            lg={4}
+            md={4}
+            sm={4}
+            xs={12}
+            className={classes.gridInput}
+          >
             <TextField
               variant="outlined"
               id="standard-name"
@@ -973,7 +1109,14 @@ export default function ConsumerData(props) {
               margin="normal"
             />
           </Grid>
-          <Grid item lg={4} md={4} sm={4} xs={12} className={classes.gridInput}>
+          <Grid
+            item
+            lg={4}
+            md={4}
+            sm={4}
+            xs={12}
+            className={classes.gridInput}
+          >
             <TextField
               variant="outlined"
               id="standard-name"
@@ -1009,7 +1152,14 @@ export default function ConsumerData(props) {
               }}
             />
           </Grid>
-          <Grid item lg={8} md={8} sm={8} xs={12} className={classes.gridInput}>
+          <Grid
+            item
+            lg={8}
+            md={8}
+            sm={8}
+            xs={12}
+            className={classes.gridInput}
+          >
             <TextField
               variant="outlined"
               id="standard-name"
@@ -1028,7 +1178,14 @@ export default function ConsumerData(props) {
               margin="normal"
             />
           </Grid>
-          <Grid item lg={4} md={4} sm={4} xs={12} className={classes.gridInput}>
+          <Grid
+            item
+            lg={4}
+            md={4}
+            sm={4}
+            xs={12}
+            className={classes.gridInput}
+          >
             <TextField
               variant="outlined"
               id="standard-name"
@@ -1100,5 +1257,5 @@ export default function ConsumerData(props) {
         </Grid>
       </Grid>
     </>
-  );
+  )
 }

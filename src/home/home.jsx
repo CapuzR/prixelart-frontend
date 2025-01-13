@@ -473,6 +473,7 @@ export default function Home(props) {
                   backgroundColor: "gainsboro",
                   marginBottom: "1.8rem",
                   padding: "1.2rem",
+                  gap: "1rem",
                 }}
                 elevation={5}
               >
@@ -488,7 +489,6 @@ export default function Home(props) {
                     justifyItems: "center",
                     padding: "1.5rem 1.5625rem 1.5rem 0px",
                     paddingRight: isMobile ? "0.9375rem" : "1.5625rem",
-                    marginBottom: "1.2rem",
                     backgroundColor: "#404e5c",
                     alignItems: "end",
                     borderRadius:
@@ -547,13 +547,9 @@ export default function Home(props) {
                       justifyContent: "center",
                       position: "relative",
                       width: "100%",
-                      height:
-                        (isDesktop && 290) ||
-                        (isMobile && 190) ||
-                        (isTab && 235),
+                      height: "fit-content",
                       marginLeft: isMobile && 10,
-                      padding: isMobile ? 0 : "0px 30px 0px 30px",
-                      marginTop: "-10px",
+                      padding: isMobile ? 0 : "0px 30px 16px 30px",
                     }}
                   >
                     <Slider {...settings}>

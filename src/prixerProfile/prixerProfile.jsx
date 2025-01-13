@@ -1,35 +1,35 @@
-import React, { useEffect } from "react";
-import { useParams } from "react-router-dom";
-import axios from "axios";
+import React, { useEffect } from "react"
+import { useParams } from "react-router-dom"
+import axios from "axios"
 
-import AppBar from "../sharedComponents/appBar/appBar";
-import FloatingAddButton from "../sharedComponents/floatingAddButton/floatingAddButton";
-import CreateService from "../sharedComponents/createService/createService";
-import UserData from "./userData/userData";
-import PrixerOptions from "./prixerOptions/prixerOptions";
-import ArtsGrid from "./grid/grid";
-import Container from "@material-ui/core/Container";
-import CssBaseline from "@material-ui/core/CssBaseline";
-import Grid from "@material-ui/core/Grid";
-import { makeStyles } from "@material-ui/core/styles";
-import { useState } from "react";
-import ArtUploader from "../sharedComponents/artUploader/artUploader";
-import ServiceGrid from "./grid/serviceGrid";
-import Modal from "@material-ui/core/Modal";
-import Button from "@material-ui/core/Button";
-import MDEditor from "@uiw/react-md-editor";
-import Dialog from "@material-ui/core/Dialog";
-import Typography from "@material-ui/core/Typography";
-import { useHistory } from "react-router-dom";
-import CartReview from "../shoppingCart/cartReview";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
-import { useTheme } from "@material-ui/core/styles";
-import DialogActions from "@material-ui/core/DialogActions";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogContentText from "@material-ui/core/DialogContentText";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import Img from "react-cool-img";
-import Biography from "./grid/biography";
+import AppBar from "../sharedComponents/appBar/appBar"
+import FloatingAddButton from "../sharedComponents/floatingAddButton/floatingAddButton"
+import CreateService from "../sharedComponents/createService/createService"
+import UserData from "./userData/userData"
+import PrixerOptions from "./prixerOptions/prixerOptions"
+import ArtsGrid from "./grid/grid"
+import Container from "@material-ui/core/Container"
+import CssBaseline from "@material-ui/core/CssBaseline"
+import Grid from "@material-ui/core/Grid"
+import { makeStyles } from "@material-ui/core/styles"
+import { useState } from "react"
+import ArtUploader from "../sharedComponents/artUploader/artUploader"
+import ServiceGrid from "./grid/serviceGrid"
+import Modal from "@material-ui/core/Modal"
+import Button from "@material-ui/core/Button"
+import MDEditor from "@uiw/react-md-editor"
+import Dialog from "@material-ui/core/Dialog"
+import Typography from "@material-ui/core/Typography"
+import { useHistory } from "react-router-dom"
+import CartReview from "../shoppingCart/cartReview"
+import useMediaQuery from "@material-ui/core/useMediaQuery"
+import { useTheme } from "@material-ui/core/styles"
+import DialogActions from "@material-ui/core/DialogActions"
+import DialogContent from "@material-ui/core/DialogContent"
+import DialogContentText from "@material-ui/core/DialogContentText"
+import DialogTitle from "@material-ui/core/DialogTitle"
+import Img from "react-cool-img"
+import Biography from "./grid/biography"
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -66,29 +66,30 @@ const useStyles = makeStyles((theme) => ({
     transform: "translate(-50%, -50%)",
     textAlign: "justify",
   },
-}));
+}))
 
 export default function PrixerProfile(props) {
-  const classes = useStyles();
-  const history = useHistory();
-  const theme = useTheme();
-  const globalParams = new URLSearchParams(window.location.pathname);
-  const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
-  const isDeskTop = useMediaQuery(theme.breakpoints.up("sm"));
+  const classes = useStyles()
+  const history = useHistory()
+  const theme = useTheme()
+  const globalParams = new URLSearchParams(window.location.pathname)
+  const isDesktop = useMediaQuery(theme.breakpoints.up("md"))
+  const isDeskTop = useMediaQuery(theme.breakpoints.up("sm"))
   const username = window.location.pathname.includes("org")
     ? globalParams.get("/org")
-    : globalParams.get("/prixer");
-  const [openArtFormDialog, setOpenArtFormDialog] = useState(false);
-  const [openServiceFormDialog, setOpenServiceFormDialog] = useState(false);
-  const [openShoppingCart, setOpenShoppingCart] = useState(false);
-  const [selectedArt, setSelectedArt] = useState(undefined);
-  const [feed, setFeed] = useState("Artes");
-  const [createdService, setCreatedService] = useState(false);
+    : globalParams.get("/prixer")
+  const [openArtFormDialog, setOpenArtFormDialog] = useState(false)
+  const [openServiceFormDialog, setOpenServiceFormDialog] = useState(false)
+  const [openShoppingCart, setOpenShoppingCart] = useState(false)
+  const [selectedArt, setSelectedArt] = useState(undefined)
+  const [feed, setFeed] = useState("Artes")
+  const [createdService, setCreatedService] = useState(false)
+  const [artSaved, setArtSaved] = useState(false)
 
   const showPrixerGrid = () => {
     switch (feed) {
       case "Settings":
-        return <div></div>;
+        return <div></div>
 
       case "Artes":
         return (
@@ -101,8 +102,9 @@ export default function PrixerProfile(props) {
             setPrixer={props.setPrixer}
             setFullArt={props.setFullArt}
             setSearchResult={props.setSearchResult}
+            artSaved={artSaved}
           />
-        );
+        )
 
       case "Servicios":
         return (
@@ -112,19 +114,27 @@ export default function PrixerProfile(props) {
             setCreatedService={setCreatedService}
             permissions={props.permissions}
           />
-        );
+        )
 
       case "Bio":
-        return <Biography prixerUsername={username} />;
+        return <Biography prixerUsername={username} />
     }
-  };
+  }
   return (
-    <Container component="main" maxWidth="xl" className={classes.paper}>
+    <Container
+      component="main"
+      maxWidth="xl"
+      className={classes.paper}
+    >
       <CssBaseline />
       {/* <Grid>
         <AppBar prixerUsername={username} />
       </Grid> */}
-      <UserData prixerUsername={username} feed={feed} setFeed={setFeed} />
+      <UserData
+        prixerUsername={username}
+        feed={feed}
+        setFeed={setFeed}
+      />
       {feed !== "Settings" && (
         <PrixerOptions
           prixerUsername={username}
@@ -138,6 +148,7 @@ export default function PrixerProfile(props) {
         <ArtUploader
           openArtFormDialog={openArtFormDialog}
           setOpenArtFormDialog={setOpenArtFormDialog}
+          setArtSaved={setArtSaved}
         />
       )}
 
@@ -231,7 +242,7 @@ export default function PrixerProfile(props) {
                         </div>
                       )}
                     </div>
-                  );
+                  )
                 })
               ) : (
                 <strong>
@@ -247,8 +258,8 @@ export default function PrixerProfile(props) {
           <Button
             onClick={() => {
               !props.selectedProductToAssociate?.previous &&
-                props.setSelectedProductToAssociate(undefined);
-              props.setIsOpenAssociateProduct(false);
+                props.setSelectedProductToAssociate(undefined)
+              props.setIsOpenAssociateProduct(false)
             }}
             color="primary"
           >
@@ -263,10 +274,10 @@ export default function PrixerProfile(props) {
                     index: props.selectedProductToAssociate.index,
                     item: selectedArt,
                     type: "art",
-                  });
-                  props.setSelectedProductToAssociate(undefined);
-                  setSelectedArt(undefined);
-                  props.setIsOpenAssociateProduct(false);
+                  })
+                  props.setSelectedProductToAssociate(undefined)
+                  setSelectedArt(undefined)
+                  props.setIsOpenAssociateProduct(false)
                 }}
                 color="primary"
               >
@@ -279,10 +290,10 @@ export default function PrixerProfile(props) {
                 props.addItemToBuyState({
                   type: "art",
                   item: selectedArt,
-                });
+                })
 
-                setSelectedArt(undefined);
-                history.push({ pathname: "/productos" });
+                setSelectedArt(undefined)
+                history.push({ pathname: "/productos" })
               }}
               color="primary"
             >
@@ -320,7 +331,11 @@ export default function PrixerProfile(props) {
           </div>
         ) : (
           <div style={{ margin: "90px 10px 40px 10px" }}>
-            <Typography variant={"h6"} align={"Center"} justify={"center"}>
+            <Typography
+              variant={"h6"}
+              align={"Center"}
+              justify={"center"}
+            >
               Actualmente no tienes ningun producto dentro del carrito de
               compra.
             </Typography>
@@ -335,7 +350,7 @@ export default function PrixerProfile(props) {
         >
           <Button
             onClick={() => {
-              setOpenShoppingCart(false);
+              setOpenShoppingCart(false)
             }}
             color="primary"
           >
@@ -344,7 +359,7 @@ export default function PrixerProfile(props) {
           {props.buyState?.length > 0 && (
             <Button
               onClick={() => {
-                history.push({ pathname: "/shopping" });
+                history.push({ pathname: "/shopping" })
               }}
               color="primary"
             >
@@ -354,5 +369,5 @@ export default function PrixerProfile(props) {
         </div>
       </Dialog>
     </Container>
-  );
+  )
 }

@@ -13,19 +13,19 @@ export const ProductImageContainer = ({ i, image, size }) => {
                 position: "relative",
                 display: "flex",
                 flexDirection: "column",
-                height: "auto",
+                // height: "auto",
                 backgroundColor: "transparent",
                 padding: 0,
                 margin: 0,
-                height: "50%",
+                height: "100%",
             }}
         >
             <div
                 style={{
                     position: "relative",
                     // marginTop: 5,
-                    width: size,
-                    height: size,
+                    width: "100%",
+                    height: "100%",
                     flexGrow: 1,
                     backgroundImage: `url(${image})`,
                     backgroundColor: "transparent",

@@ -1,42 +1,47 @@
-import React, { useState, useEffect } from "react"
-import { makeStyles } from "@material-ui/core/styles"
-import Carousel from "react-material-ui-carousel"
-import Card from "@material-ui/core/Card"
-import CardActions from "@material-ui/core/CardActions"
-import CardContent from "@material-ui/core/CardContent"
-import CardMedia from "@material-ui/core/CardMedia"
-import Button from "@material-ui/core/Button"
-import Typography from "@material-ui/core/Typography"
-import WhatsAppIcon from "@material-ui/icons/WhatsApp"
-import utils from "../utils/utils"
-import axios from "axios"
-import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos"
-import ArrowForwardIosIcon from "@material-ui/icons/ArrowForwardIos"
-import MaximizeIcon from "@material-ui/icons/Maximize"
-import MDEditor from "@uiw/react-md-editor"
-import Grid from "@material-ui/core/Grid"
-import InputLabel from "@material-ui/core/InputLabel"
-import FormControl from "@material-ui/core/FormControl"
-import Select from "@material-ui/core/Select"
-import MenuItem from "@material-ui/core/MenuItem"
-import Masonry, { ResponsiveMasonry } from "react-responsive-masonry"
+import React, { useState, useEffect } from "react";
+import { makeStyles } from "@material-ui/core/styles";
+import Carousel from "react-material-ui-carousel";
+import Card from "@material-ui/core/Card";
+import CardActions from "@material-ui/core/CardActions";
+import CardContent from "@material-ui/core/CardContent";
+import CardMedia from "@material-ui/core/CardMedia";
+import Button from "@material-ui/core/Button";
+import Typography from "@material-ui/core/Typography";
+import WhatsAppIcon from "@material-ui/icons/WhatsApp";
+import utils from "../utils/utils";
+import axios from "axios";
+import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
+import ArrowForwardIosIcon from "@material-ui/icons/ArrowForwardIos";
+import MaximizeIcon from "@material-ui/icons/Maximize";
+import MDEditor from "@uiw/react-md-editor";
+import Grid from "@material-ui/core/Grid";
+import InputLabel from "@material-ui/core/InputLabel";
+import FormControl from "@material-ui/core/FormControl";
+import Select from "@material-ui/core/Select";
+import MenuItem from "@material-ui/core/MenuItem";
+import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
+import IconButton from "@material-ui/core/IconButton";
+import Tooltip from "@material-ui/core/Tooltip";
+import InputAdornment from "@material-ui/core/InputAdornment";
+import useMediaQuery from "@material-ui/core/useMediaQuery";
+import { useTheme } from "@material-ui/core/styles";
+import TextField from "@material-ui/core/TextField";
+import Paper from "@material-ui/core/Paper";
+import SearchIcon from "@material-ui/icons/Search";
+import { useHistory } from "react-router-dom";
+import Switch from "@material-ui/core/Switch";
+import ReactGA from "react-ga";
+import world from "../images/world.svg";
+import worldBlack from "../images/world-black.svg";
+import vzla from "../images/vzla.svg";
+import label from "../images/label.svg";
+import { priceSelect } from "./services";
+import { useGlobalContext } from "../context/globalContext";
+import { ProductCarousel } from "../sharedComponents/productCarousel/productCarousel";
+import SortIcon from "@material-ui/icons/Sort";
 
-import { useHistory } from "react-router-dom"
-import Switch from "@material-ui/core/Switch"
-import ReactGA from "react-ga"
-import world from "../images/world.svg"
-import worldBlack from "../images/world-black.svg"
-import vzla from "../images/vzla.svg"
-import { priceSelect } from "./services"
-import { useGlobalContext } from "../context/globalContext"
-import { ProductCarousel } from "../sharedComponents/productCarousel/productCarousel"
+ReactGA.initialize("G-0RWP9B33D8");
 
-ReactGA.initialize("G-0RWP9B33D8")
-
-{
-  /* TO DO: Llevar CSS a su propio archivo? A mi me gusta más, debatir con War.
-  Tailwind y cualquier inline desordena el código imo. Hasta qué punto?*/
-}
 const useStyles = makeStyles((theme) => ({
   formControl: {
     margin: theme.spacing(1),
@@ -203,28 +208,60 @@ const useStyles = makeStyles((theme) => ({
     transform:
       "perspective(130px) rotateX(2deg) skew(2deg, 8.7deg) translateX(1px) rotateY(14deg)",
   },
-}))
+}));
 
 export default function ProductGrid(props) {
-  const classes = useStyles()
-  const [tiles, setTiles] = useState([])
-  const [maxLength, setMaxLength] = useState(0)
+  const theme = useTheme();
 
-  const [order, setOrder] = useState("")
-  const history = useHistory()
-  const [currentPage, setCurrentPage] = useState(1)
-  const [productsPerPage] = useState(10)
-  const { currency } = useGlobalContext()
-  const [zone, setZone] = useState(
-    localStorage.getItem("zone")
-      ? JSON.parse(localStorage.getItem("zone"))
-      : "base"
-  )
+  const classes = useStyles();
+  const [tiles, setTiles] = useState([]);
+  const [maxLength, setMaxLength] = useState(0);
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
+  const [order, setOrder] = useState("");
+  const history = useHistory();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [productsPerPage] = useState(10);
+  const { currency, toggleCurrency, zone, toggleZone } = useGlobalContext();
+  const [searchQuery, setQuery] = useState("");
+
   const handleChange = (event) => {
-    setOrder(event.target.value)
-  }
-  const getNationalProducts = () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + "/product/read-all-v2"
+    setOrder(event.target.value);
+  };
+
+  const getProducts = () => {
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/product/read-all-v2";
+    axios
+      .get(base_url, {
+        params: {
+          orderType:
+            order === "A-Z" || order === "lowerPrice"
+              ? "asc"
+              : order === ""
+              ? ""
+              : "desc",
+          sortBy:
+            order === "lowerPrice" || order === "maxPrice"
+              ? "priceRange"
+              : order === ""
+              ? ""
+              : "name",
+          initialPoint: (currentPage - 1) * productsPerPage,
+          productsPerPage: productsPerPage,
+          query: searchQuery,
+        },
+      })
+      .then(async (response) => {
+        let productsAttTemp1 = response.data.products;
+        let maxLength = response.data.maxLength;
+        setMaxLength(maxLength);
+        setTiles(productsAttTemp1);
+      });
+  };
+
+  const getInter = () => {
+    const base_url =
+      process.env.REACT_APP_BACKEND_URL + "/product/read-international";
     axios
       .get(base_url, {
         params: {
@@ -245,211 +282,190 @@ export default function ProductGrid(props) {
         },
       })
       .then(async (response) => {
-        let productsAttTemp1 = response.data.products
-        let maxLength = response.data.maxLength
-        setMaxLength(maxLength)
-        setTiles(productsAttTemp1)
-      })
-  }
-  
-  const getInternational = () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + "/product/read-international"
-    axios
-      .get(base_url, {
-        params: {
-          orderType:
-            order === "A-Z" || order === "lowerPrice"
-              ? "asc"
-              : order === ""
-              ? ""
-              : "desc",
-          sortBy:
-            order === "lowerPrice" || order === "maxPrice"
-              ? "priceRange"
-              : order === ""
-              ? ""
-              : "name",
-          initialPoint: (currentPage - 1) * productsPerPage,
-          productsPerPage: productsPerPage,
-        },
-      })
-      .then(async (response) => {
-        let productsAttTemp1 = response.data.products
-        let maxLength = response.data.maxLength
-        setMaxLength(maxLength)
-        setTiles(productsAttTemp1)
-      })
-  }
+        let productsAttTemp1 = response.data.products;
+        let maxLength = response.data.maxLength;
+        setMaxLength(maxLength);
+        setTiles(productsAttTemp1);
+      });
+  };
 
   useEffect(() => {
-    if (zone) {
-      getNationalProducts()
+    if (zone === "VZLA") {
+      getProducts();
     } else {
-      getInternational()
+      getInter();
     }
-  }, [order, currentPage, productsPerPage, zone])
-  console.log(zone)
+  }, [order, currentPage, productsPerPage, zone, searchQuery]);
+
   const handleNextPage = () => {
-    setCurrentPage((prevPage) => prevPage + 1)
-  }
+    setCurrentPage((prevPage) => prevPage + 1);
+  };
 
   const handlePreviousPage = () => {
     if (currentPage > 1) {
       setCurrentPage((prevPage) => prevPage - 1)
     }
-  }
+  };
 
   const viewDetails = (product) => {
     history.push({
       pathname: "/",
       search: "?producto=" + product.id,
       state: { product: product },
-    })
+    });
     ReactGA.event({
       category: "Productos",
       action: "Ver_mas",
       label: product.name,
-    })
-  }
+    });
+  };
 
-  const changeZone = () => {
-    setZone(!zone)
-  }
+  const handleQuery = (event) => {
+    setQuery(event.target.value);
+  };
 
   return (
     <>
-      <div
+      <Paper
         style={{
           display: "flex",
-          justifyContent: "end",
-          width: "80%",
+          width: isMobile ? "100%" : "80%",
           margin: "0 auto",
           marginTop: "2rem",
+          borderRadius: 20,
+          padding: isMobile ? 20 : "10px 20px",
+          alignItems: "center",
         }}
+        elevation={2}
       >
-        <div
+        <Grid
+          container
           style={{
-            display: "flex",
-            justifyContent: "center",
-            marginRight: "10px",
-            padding: "0px",
+            justifyContent: isMobile ? "space-between" : "center",
+            gap: 15,
           }}
         >
-          <Button
-            onClick={handlePreviousPage}
-            disabled={currentPage === 1}
-            size="small"
-            style={{
-              minWidth: "auto",
-              padding: "2px",
-              marginRight: "0.2rem",
-              transform: "scale(0.75)",
-            }}
+          <Grid
+            item
+            sm={12}
+            md={3}
+            style={{ display: "flex", width: isMobile && "100%" }}
           >
-            &lt;
-          </Button>
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <Typography
-              variant="h6"
+            <TextField
               style={{
-                margin: "0 0.2rem",
-                color: "#d33f49",
-                textAlign: "center",
-                transform: "scale(0.75)",
+                height: "fit-content",
+                margin: "auto 0",
+                display: "flex",
+                width: isMobile && "100%",
+              }}
+              id="search-query"
+              label="Buscar"
+              variant="outlined"
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon />
+                  </InputAdornment>
+                ),
+              }}
+              onChange={handleQuery}
+              value={searchQuery}
+            />
+          </Grid>
+          <Grid item md={2} sm={4}>
+            <FormControl className={classes.formControl}>
+              {!isMobile && (
+                <InputLabel
+                  style={{ marginLeft: 10 }}
+                  id="demo-simple-select-label"
+                >
+                  Ordenar
+                </InputLabel>
+              )}
+              <Select
+                startAdornment={
+                  <InputAdornment position="start">
+                    <SortIcon />
+                  </InputAdornment>
+                }
+                label="Ordenar"
+                variant="outlined"
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                value={order}
+                onChange={handleChange}
+              >
+                <MenuItem value={"A-Z"}>A-Z</MenuItem>
+                <MenuItem value={"Z-A"}>Z-A</MenuItem>
+                <MenuItem value={"lowerPrice"}>Menor precio</MenuItem>
+                <MenuItem value={"maxPrice"}>Mayor precio</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+          <Grid style={{ display: "flex" }} item md={2}>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                marginLeft: 10,
               }}
             >
-              {currentPage}
-            </Typography>
-          </div>
-          <Button
-            onClick={handleNextPage}
-            disabled={currentPage === Math.ceil(maxLength / productsPerPage)}
-            size="small"
+              <Switch
+                classes={{
+                  root: classes.base,
+                  switchBase: classes.switchBase,
+                  thumb: currency !== "USD" ? classes.thumbTrue : classes.thumb,
+                  track: classes.track,
+                  checked: classes.checked,
+                }}
+                color="primary"
+                value={currency}
+                onChange={(e) => {
+                  toggleCurrency();
+                }}
+                style={{ marginRight: "-5px" }}
+              />
+            </div>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                marginLeft: 10,
+              }}
+            >
+              <Switch
+                classes={{
+                  root: classes.base,
+                  switchBase: classes.switchBase,
+                  thumb: zone === "VZLA" ? classes.thumbTrueZ : classes.thumbZ,
+                  track: classes.trackZ,
+                  checked: classes.checked,
+                }}
+                color="primary"
+                value={zone === "VZLA" ? true : false}
+                onChange={(e) => {
+                  toggleZone();
+                }}
+                style={{ marginRight: "-5px" }}
+              />
+            </div>
+          </Grid>
+        </Grid>
+      </Paper>
+      {tiles && tiles.length > 0 ? (
+        <ResponsiveMasonry
+          columnsCountBreakPoints={{ 350: 1, 750: 2, 1800: 3 }}
+        >
+          <Masonry
             style={{
-              minWidth: "auto",
-              padding: "2px",
-              marginLeft: "0.2rem",
-              transform: "scale(0.75)",
+              columnGap: "1.8rem",
+              width: isMobile ? "100%" : "80%",
+              margin: "0 auto",
             }}
           >
-            &gt;
-          </Button>
-        </div>
-        <FormControl className={classes.formControl}>
-          <InputLabel
-            style={{ marginLeft: 10 }}
-            id="demo-simple-select-label"
-          >
-            Ordenar
-          </InputLabel>
-          <Select
-            variant="outlined"
-            labelId="demo-simple-select-label"
-            id="demo-simple-select"
-            value={order}
-            onChange={handleChange}
-          >
-            <MenuItem value={"A-Z"}>A-Z</MenuItem>
-            <MenuItem value={"Z-A"}>Z-A</MenuItem>
-            <MenuItem value={"lowerPrice"}>Menor precio</MenuItem>
-            <MenuItem value={"maxPrice"}>Mayor precio</MenuItem>
-          </Select>
-        </FormControl>
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            alignItems: "center",
-            marginLeft: 10,
-          }}
-        >
-          <Switch
-            classes={{
-              root: classes.base,
-              switchBase: classes.switchBase,
-              thumb: currency ? classes.thumbTrue : classes.thumb,
-              track: classes.track,
-              checked: classes.checked,
-            }}
-            color="primary"
-            value={currency}
-            // onChange={(e) => {
-            //   changeCurrency(e)
-            // }}
-            style={{ marginRight: "-5px" }}
-          />
-        </div>
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            alignItems: "center",
-            marginLeft: 10,
-          }}
-        >
-          <Switch
-            classes={{
-              root: classes.base,
-              switchBase: classes.switchBase,
-              thumb: zone ? classes.thumbTrueZ : classes.thumbZ,
-              track: classes.trackZ,
-              checked: classes.checked,
-            }}
-            color="primary"
-            value={zone}
-            onChange={(e) => {
-              changeZone(e)
-            }}
-            style={{ marginRight: "-5px" }}
-          />
-        </div>
-      </div>
-      <ResponsiveMasonry columnsCountBreakPoints={{ 350: 1, 750: 2, 1800: 3 }}>
-        <Masonry
-          style={{ columnGap: "1.8rem", width: "80%", margin: "0 auto" }}
-        >
-          {tiles && tiles.length > 0 ? (
-            tiles.map((tile) => (
+            {tiles.map((tile) => (
               <Card
                 className={classes.root}
                 id={tile.name}
@@ -460,14 +476,19 @@ export default function ProductGrid(props) {
                   boxShadow:
                     tile.name === props.pointedProduct &&
                     " 0 0 10px 3px #d33f49",
+                  flexDirection: isMobile && "column",
                 }}
               >
-                {/* <CardMedia style={{ width: "110%", maxWidth: "14.68rem" }}>
-                  {/* TO DO: Mover carrousel de foto producto a su propio componente, para reusar
+                {/* <CardMedia style={{ width: "110%", maxWidth: "14.68rem" }}> */}
+                {/* TO DO: Mover carrousel de foto producto a su propio componente, para reusar
                   en prixProducts. */}
-                {/* <div style={{ width: "150px", height: "150px", padding: 0 }}>
-                </CardMedia> */}
-                <div style={{ width: "150px", height: "150px", padding: 0 }}>
+                <div
+                  style={{
+                    width: isMobile ? "100%" : "150px",
+                    height: isMobile ? "auto" : "150px",
+                    padding: 0,
+                  }}
+                >
                   <ProductCarousel
                     product={tile}
                     selectedArt={undefined}
@@ -476,6 +497,77 @@ export default function ProductGrid(props) {
                     size="138px"
                   />
                 </div>
+
+                {/* <Carousel
+                    autoPlay={false}
+                    stopAutoPlayOnHover={true}
+                    animation="slide"
+                    duration={500}
+                    fullHeightHover={true}
+                    IndicatorIcon={<MaximizeIcon />}
+                    NextIcon={<ArrowForwardIosIcon />}
+                    PrevIcon={<ArrowBackIosIcon />}
+                    activeIndicatorIconButtonProps={{
+                      style: {
+                        color: "#d33f49",
+                      },
+                    }}
+                    navButtonsProps={{
+                      style: {
+                        backgroundColor: "rgba(0, 0, 0, 0)",
+                        color: "#d33f49",
+                        width: "98%",
+                        height: "100vh",
+                        marginTop: "-50vh",
+                        borderRadius: "0",
+                        marginLeft: "1px",
+                      },
+                    }}
+                    indicatorContainerProps={{
+                      style: {
+                        position: "absolute",
+                        marginTop: "-17px",
+                      },
+                    }}
+                  >
+                  {
+                    tile.sources &&
+                    tile.sources.images && 
+                    tile.sources.images[0] !== undefined ? (
+                      tile.sources.images?.map((img, i) =>
+                        img.url !== null && img.type === "images" ? (
+                          <img
+                            key={i}
+                            src={img.url?.replace(/[,]/gi, "") || tile.thumbUrl}
+                            className={classes.img}
+                            alt="product.png"
+                            style={{ borderRadius: 30 }}
+                          />
+                        ) : (
+                          img.type === "video" &&
+                          img.url !== null && (
+                            <span
+                              key={"video"}
+                              style={{ width: "100%", borderRadius: 30 }}
+                              dangerouslySetInnerHTML={{
+                                __html: img.url,
+                              }}
+                            />
+                          )
+                        )
+                      )
+                    ) : (
+                      <img
+                        src={tile.thumbUrl}
+                        className={classes.img}
+                        alt="*"
+                        style={{ borderRadius: 30 }}
+                      />
+                    )
+                    }
+                  </Carousel> */}
+                {/* </CardMedia> */}
+
                 <CardContent
                   data-color-mode="light"
                   style={{
@@ -505,18 +597,54 @@ export default function ProductGrid(props) {
                       }
                       style={{ whiteSpace: "pre-wrap" }}
                     />
-                    <Typography
-                      gutterBottom
-                      style={{ fontSize: 15, padding: 0, marginTop: "1rem" }}
-                      variant="h5"
-                      component="h2"
+                    <div
+                      style={{
+                        display: "flex",
+                        marginTop: "1rem",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                      }}
                     >
-                      {priceSelect(
-                        tile.priceRange,
-                        currency,
-                        props.dollarValue
+                      <Typography
+                        gutterBottom
+                        style={{ fontSize: 15, padding: 0, marginBottom: 0 }}
+                        variant="h5"
+                        component="h2"
+                      >
+                        {priceSelect(
+                          tile.priceRange,
+                          currency,
+                          props.dollarValue
+                        )}
+                      </Typography>
+                      {tile?.discount?.name !== undefined && (
+                        <Tooltip
+                          title={` Descuento ${tile.discount.name} de ${
+                            tile.discount.type === "Monto" ? "$" : "%"
+                          }${tile.discount.value}`}
+                        >
+                          <Typography
+                            gutterBottom
+                            style={{
+                              padding: "4px 12px 4px 30px",
+                              marginBotom: "0.8rem",
+                              fontSize: "1rem",
+                              background: `url(${label}) transparent 0 / 120% 220% no-repeat`,
+                              width: "fit-content",
+                              borderRadius: 4,
+                              margin: "4px 10px",
+                              color: "white",
+                              fontWeight: "bold",
+                            }}
+                          >
+                            {/* Descuento ${tile.discount.name} de  */}
+                            {`${tile.discount.type === "Monto" ? "$" : "%"}${
+                              tile.discount.value
+                            }`}
+                          </Typography>
+                        </Tooltip>
                       )}
-                    </Typography>
+                    </div>
                   </Grid>
                   <Grid
                     item
@@ -537,7 +665,7 @@ export default function ProductGrid(props) {
                       }}
                       color="white"
                       onClick={(e) => {
-                        viewDetails(tile)
+                        viewDetails(tile);
                       }}
                     >
                       Detalles
@@ -550,7 +678,7 @@ export default function ProductGrid(props) {
                           window.open(
                             utils.generateWaProductMessage(tile),
                             "_blank"
-                          )
+                          );
                         }}
                       >
                         <WhatsAppIcon /> Info
@@ -559,14 +687,21 @@ export default function ProductGrid(props) {
                   </Grid>
                 </CardContent>
               </Card>
-            ))
-          ) : (
-            <h1>Pronto encontrarás los productos ideales para ti.</h1>
-          )}
-        </Masonry>
-      </ResponsiveMasonry>
-      {/* TO DO: Mover Paginación a su propio componente para poder utilizar en todo el website:
-      galeria, productos, mini galería, órdenes, etc. */}
+            ))}
+          </Masonry>
+        </ResponsiveMasonry>
+      ) : (
+        <Typography
+          color="secondary"
+          variant="h3"
+          style={{ textAlign: "center", margin: "40px auto" }}
+          textAlign="center"
+        >
+          {zone !== "VZLA"
+            ? "Próximamente tendremos productos para distribución internacional."
+            : "Pronto encontrarás los productos ideales para ti."}
+        </Typography>
+      )}
       <div
         style={{
           display: "flex",
@@ -575,25 +710,22 @@ export default function ProductGrid(props) {
           marginBottom: "50px",
         }}
       >
-        <Button
-          onClick={handlePreviousPage}
-          disabled={currentPage === 1}
-        >
-          &lt;
-        </Button>
+        <IconButton onClick={handlePreviousPage} disabled={currentPage === 1}>
+          <ArrowBackIosIcon />
+        </IconButton>
         <Typography
           variant="h6"
-          style={{ margin: "0 1rem", color: "#d33f49" }}
+          style={{ margin: "auto 1rem", color: "#d33f49", fontSize: "1.5rem" }}
         >
           {currentPage}
         </Typography>
-        <Button
+        <IconButton
           onClick={handleNextPage}
           disabled={currentPage === Math.ceil(maxLength / productsPerPage)}
         >
-          &gt;
-        </Button>
+          <ArrowForwardIosIcon />
+        </IconButton>
       </div>
     </>
-  )
+  );
 }

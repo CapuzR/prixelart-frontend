@@ -41,7 +41,7 @@ const UnitPrice = (
   if (product.finalPrice) {
     final = product.finalPrice
   }
-  if (currency) {
+  if (currency === "Bs") {
     final = final * dollarValue
   }
   console.log(final)
@@ -61,14 +61,6 @@ const UnitPriceSug = (
   org,
   consumerType
 ) => {
-  // console.log(product, " producto")
-  // console.log(art, " art")
-  // console.log(currency, " currency")
-  // console.log(dollarValue, " dollarValue")
-  // console.log(discountList, " discountList")
-  // console.log(prixer, " prixer(?)")
-  // console.log(org, " org")
-  // console.log(consumerType, " consumerType")
   let { price, base } = 0
   let dis = discountList?.filter((dis) => dis._id === product.discount)[0]
   if (product.publicEquation === 0) {
@@ -130,7 +122,7 @@ const UnitPriceSug = (
       }
     }
     // Incluir recargo si es a PrixelartPrefit
-    if (currency) {
+    if (currency === "Bs") {
       price = price * (dollarValue || 1)
     }
     return price.toLocaleString("de-DE", {
@@ -142,7 +134,10 @@ const UnitPriceSug = (
 
 const UnitPriceForOrg = (product, art, prixer, org, consumerType) => {
   let { base, price } = 0
-  if (org !== undefined && org?.agreement.base === "pvprixer") {
+  if (
+    org !== undefined &&
+    org?.agreement.base === "pvprixer"
+  ) {
     base =
       product.prixerEquation !== "" && product.prixerEquation !== undefined
         ? Number(
@@ -153,7 +148,10 @@ const UnitPriceForOrg = (product, art, prixer, org, consumerType) => {
             product.prixerPrice.from.replace(/[,]/gi, ".") -
               product.prixerPrice.from.replace(/[,]/gi, ".") / 10
           )
-  } else if (org !== undefined && org?.agreement.base === "pvm") {
+  } else if (
+    org !== undefined &&
+    org?.agreement.base === "pvm" 
+  ) {
     base =
       product.prixerEquation !== "" && product.prixerEquation !== undefined
         ? Number(product.prixerEquation.replace(/[,]/gi, "."))
@@ -165,7 +163,7 @@ const UnitPriceForOrg = (product, art, prixer, org, consumerType) => {
         : Number(product.publicPrice.from.replace(/[,]/gi, "."))
   }
   const applied = org?.agreement.appliedProducts.find(
-    (el) => el.id === product._id
+    (el) => el.id === product.id
   )
   const varApplied = applied.variants?.find((v) =>
     v.name.includes(product.selection)
@@ -209,7 +207,7 @@ const getVariantPrice = (product, art) => {
   }
 
   // Incluir recargo si es a PrixelartPrefit
-  if (currency) {
+  if (currency === "Bs") {
     price = price * dollarValue
   }
   return price.toLocaleString("de-DE", {
@@ -371,7 +369,7 @@ const getComissionv2 = (
     console.log("fucked up")
     return 0
   } else {
-    if (currency) {
+    if (currency === "Bs") {
       return total * dollarValue
     } else return total
   }
@@ -403,7 +401,7 @@ const getPVPtext = (product, currency, dollarValue, discountList) => {
     typeof product?.discount === "string" &&
     product.publicEquation !== undefined &&
     product?.publicEquation !== "" &&
-    currency
+    currency === "Bs"
   ) {
     let dis = discountList?.filter((dis) => dis._id === product?.discount)[0]
     return (
@@ -511,7 +509,7 @@ const getPVPtext = (product, currency, dollarValue, discountList) => {
     typeof product?.discount === "string" &&
     typeof product.publicPrice.to === "string" &&
     product.publicPrice.to.length > 0 &&
-    currency
+    currency === "Bs"
   ) {
     let dis = discountList?.filter((dis) => dis._id === product?.discount)[0]
     return (
@@ -656,7 +654,7 @@ const getPVPtext = (product, currency, dollarValue, discountList) => {
   } else if (
     product?.discount !== undefined &&
     typeof product?.discount === "string" &&
-    currency
+    currency === "Bs"
   ) {
     let dis = discountList?.filter((dis) => dis._id === product?.discount)[0]
     return (
@@ -763,7 +761,7 @@ const getPVPtext = (product, currency, dollarValue, discountList) => {
         )}
       </>
     )
-  } else if (product?.publicEquation !== "" && currency) {
+  } else if (product?.publicEquation !== "" && currency === "Bs") {
     return (
       "PVP: Bs" +
       Number(pubEq * dollar).toLocaleString("de-DE", {
@@ -786,7 +784,7 @@ const getPVPtext = (product, currency, dollarValue, discountList) => {
     product?.attributes &&
     product?.attributes.length > 0 &&
     product.publicPrice.to !== product.publicPrice.from &&
-    currency
+    currency === "Bs"
   ) {
     return (
       "PVP: Bs" +
@@ -817,7 +815,7 @@ const getPVPtext = (product, currency, dollarValue, discountList) => {
         maximumFractionDigits: 2,
       })
     )
-  } else if (currency) {
+  } else if (currency === "Bs") {
     return (
       "PVP: Bs" +
       Number(pubFr * dollar).toLocaleString("de-DE", {
@@ -877,7 +875,7 @@ const getPVMtext = (product, currency, dollarValue, discountList) => {
   } else if (
     product.attributes.length > 0 &&
     product.prixerPrice.to !== product.prixerPrice.from &&
-    currency
+    currency === "Bs"
   ) {
     return (
       "PVM: Bs" +
@@ -907,7 +905,7 @@ const getPVMtext = (product, currency, dollarValue, discountList) => {
         maximumFractionDigits: 2,
       })
     )
-  } else if (currency) {
+  } else if (currency === "Bs") {
     {
       return (
         "PVM: Bs" +
@@ -930,7 +928,6 @@ const getPVMtext = (product, currency, dollarValue, discountList) => {
 
 const getPVP = (item, currency, dollarValue, discountList) => {
   let { base, prev, final } = 0
-  console.log("ITEM", item);
   let dis = discountList?.filter((dis) => dis._id === item.product?.discount)[0]
   let pubEq =
     typeof item.product.publicEquation === "number"
@@ -959,7 +956,7 @@ const getPVP = (item, currency, dollarValue, discountList) => {
       }
     }
   }
-  if (currency) {
+  if (currency === "Bs") {
     return Number(final * dollarValue)
   } else return final
 }
@@ -995,7 +992,7 @@ const getPVM = (item, currency, dollarValue, discountList, prixer) => {
   //     final = prev - dis.value;
   //   }
   // }
-  if (currency) {
+  if (currency === "Bs") {
     return final * dollarValue
   } else return final
 }
@@ -1052,7 +1049,7 @@ const getTotalUnitsPVP = (state, currency, dollarValue, discountList) => {
     return a + b
   })
   console.log(total)
-  if (currency) {
+  if (currency === "Bs") {
     return total * dollarValue
   } else return total
 }
@@ -1122,7 +1119,7 @@ const getTotalUnitsPVM = (
   })
   console.log(total)
 
-  if (currency) {
+  if (currency === "Bs") {
     return total * dollarValue
   } else return total
 }

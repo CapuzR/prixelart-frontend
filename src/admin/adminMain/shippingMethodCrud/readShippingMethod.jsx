@@ -1,39 +1,39 @@
-import React, { useEffect, useState } from "react";
-import { useHistory, useLocation } from "react-router-dom";
+import React, { useEffect, useState } from "react"
+import { useHistory, useLocation } from "react-router-dom"
 // import Link from '@material-ui/core/Link';
 // import { makeStyles } from '@material-ui/core/styles';
-import Table from "@material-ui/core/Table";
-import TableBody from "@material-ui/core/TableBody";
-import TableCell from "@material-ui/core/TableCell";
-import TableHead from "@material-ui/core/TableHead";
-import TableRow from "@material-ui/core/TableRow";
-import Title from "../Title";
-import Grid from "@material-ui/core/Grid";
-import Paper from "@material-ui/core/Paper";
-import { makeStyles } from "@material-ui/core/styles";
-import clsx from "clsx";
-import AddIcon from "@material-ui/icons/Add";
-import ViewListIcon from "@material-ui/icons/ViewList";
-import TextField from "@material-ui/core/TextField";
-import Button from "@material-ui/core/Button";
-import FormControl from "@material-ui/core/FormControl";
-import Snackbar from "@material-ui/core/Snackbar";
-import { Backdrop } from "@material-ui/core";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import validations from "../../../shoppingCart/validations";
-import axios from "axios";
+import Table from "@material-ui/core/Table"
+import TableBody from "@material-ui/core/TableBody"
+import TableCell from "@material-ui/core/TableCell"
+import TableHead from "@material-ui/core/TableHead"
+import TableRow from "@material-ui/core/TableRow"
+import Title from "../Title"
+import Grid from "@material-ui/core/Grid"
+import Paper from "@material-ui/core/Paper"
+import { makeStyles } from "@material-ui/core/styles"
+import clsx from "clsx"
+import AddIcon from "@material-ui/icons/Add"
+import ViewListIcon from "@material-ui/icons/ViewList"
+import TextField from "@material-ui/core/TextField"
+import Button from "@material-ui/core/Button"
+import FormControl from "@material-ui/core/FormControl"
+import Snackbar from "@material-ui/core/Snackbar"
+import { Backdrop } from "@material-ui/core"
+import CircularProgress from "@material-ui/core/CircularProgress"
+import validations from "../../../shoppingCart/validations"
+import axios from "axios"
 // import CircularProgress from '@material-ui/core/CircularProgress';
 // import Backdrop from '@material-ui/core/Backdrop';
-import Checkbox from "@material-ui/core/Checkbox";
-import EditIcon from "@material-ui/icons/Edit";
-import DeleteIcon from "@material-ui/icons/Delete";
+import Checkbox from "@material-ui/core/Checkbox"
+import EditIcon from "@material-ui/icons/Edit"
+import DeleteIcon from "@material-ui/icons/Delete"
 
-import Fab from "@material-ui/core/Fab";
+import Fab from "@material-ui/core/Fab"
 // import Button from '@material-ui/core/Button';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
-    padding: theme.spacing(2),
+    padding: theme.spacing(4),
     display: "flex",
     overflow: "none",
     flexDirection: "column",
@@ -42,30 +42,30 @@ const useStyles = makeStyles((theme) => ({
     height: "auto",
     overflow: "none",
   },
-}));
+}))
 
 export default function ReadShippingMethod(props) {
-  const history = useHistory();
-  const location = useLocation();
+  const history = useHistory()
+  const location = useLocation()
 
-  const classes = useStyles();
-  const [activeCrud, setActiveCrud] = useState("read");
+  const classes = useStyles()
+  const [activeCrud, setActiveCrud] = useState("read")
 
-  const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
-  const [rows, setRows] = useState();
-  const [loading, setLoading] = useState(false);
-  const [active, setActive] = useState(true);
-  const [name, setName] = useState();
-  const [price, setPrice] = useState();
-  const [shippingMethod, setShippingMethod] = useState();
-
+  const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight)
+  const [rows, setRows] = useState()
+  const [loading, setLoading] = useState(false)
+  const [active, setActive] = useState(true)
+  const [name, setName] = useState()
+  const [price, setPrice] = useState()
+  const [shippingMethod, setShippingMethod] = useState()
+  const [inter, setInter] = useState(false)
   //Error states.
-  const [errorMessage, setErrorMessage] = useState();
-  const [snackBarError, setSnackBarError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState()
+  const [snackBarError, setSnackBarError] = useState(false)
 
   const handleAction = (action) => {
-    history.push({ pathname: "/admin/shipping-method/" + action });
-  };
+    history.push({ pathname: "/admin/shipping-method/" + action })
+  }
 
   useEffect(() => {
     location.pathname.split("/").length === 5
@@ -75,12 +75,12 @@ export default function ReadShippingMethod(props) {
       : location.pathname.split("/").length === 4 &&
         setActiveCrud(
           location.pathname.split("/")[location.pathname.split("/").length - 1]
-        );
-  }, [location.pathname]);
+        )
+  }, [location.pathname])
 
   const readMethods = () => {
     const base_url =
-      process.env.REACT_APP_BACKEND_URL + "/shipping-method/read-all";
+      process.env.REACT_APP_BACKEND_URL + "/shipping-method/read-all"
     axios
       .post(
         base_url,
@@ -88,107 +88,109 @@ export default function ReadShippingMethod(props) {
         { withCredentials: true }
       )
       .then((response) => {
-        setRows(response.data.shippingMethods);
+        setRows(response.data.shippingMethods)
       })
       .catch((error) => {
-        console.log(error);
-      });
-  };
+        console.log(error)
+      })
+  }
 
   useEffect(() => {
-    readMethods();
-  }, []);
+    readMethods()
+  }, [])
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
+    e.preventDefault()
+    setLoading(true)
 
     const data = {
       active: active,
+      inter: inter,
       name: name,
       createdOn: new Date(),
       createdBy: JSON.parse(localStorage.getItem("adminToken")),
       price: price,
       adminToken: localStorage.getItem("adminTokenV"),
-    };
+    }
     const base_url =
-      process.env.REACT_APP_BACKEND_URL + "/shipping-method/create";
+      process.env.REACT_APP_BACKEND_URL + "/shipping-method/create"
     const response = await axios.post(base_url, data, {
       withCredentials: true,
-    });
+    })
     if (response.data.success === false) {
-      setLoading(false);
-      setErrorMessage(response.data.message);
-      setSnackBarError(true);
+      setLoading(false)
+      setErrorMessage(response.data.message)
+      setSnackBarError(true)
     } else {
-      setErrorMessage("Registro del método de envío exitoso.");
-      setSnackBarError(true);
-      setActive(true);
-      setName("");
-      setPrice("");
-      history.push({ pathname: "/admin/shipping-method/read" });
-      readMethods();
-      setLoading(false);
+      setErrorMessage("Registro del método de envío exitoso.")
+      setSnackBarError(true)
+      setActive(true)
+      setName("")
+      setPrice("")
+      history.push({ pathname: "/admin/shipping-method/read" })
+      readMethods()
+      setLoading(false)
     }
-  };
+  }
 
   const handleActive = (shippingMethod, action) => {
-    setShippingMethod(shippingMethod);
-    setName(shippingMethod.name);
-    setPrice(shippingMethod.price);
-    setActive(shippingMethod.active);
-    history.push("/admin/shipping-method/" + action + "/" + shippingMethod._id);
-  };
+    setShippingMethod(shippingMethod)
+    setName(shippingMethod.name)
+    setPrice(shippingMethod.price)
+    setActive(shippingMethod.active)
+    history.push("/admin/shipping-method/" + action + "/" + shippingMethod._id)
+  }
 
   const updateShippingMethod = async (e) => {
-    e.preventDefault();
+    e.preventDefault()
     if (!name || !price) {
-      setErrorMessage("Por favor completa todos los campos requeridos.");
-      setSnackBarError(true);
+      setErrorMessage("Por favor completa todos los campos requeridos.")
+      setSnackBarError(true)
     } else {
-      setLoading(true);
+      setLoading(true)
 
       const data = {
         id: shippingMethod._id,
         active: active,
+        inter: inter,
         name: name,
         price: price.replace(/[,]/gi, "."),
         adminToken: localStorage.getItem("adminTokenV"),
-      };
+      }
 
       const base_url =
-        process.env.REACT_APP_BACKEND_URL + "/shipping-method/update";
+        process.env.REACT_APP_BACKEND_URL + "/shipping-method/update"
       const response = await axios.put(base_url, data, {
         withCredentials: true,
-      });
+      })
       if (response.data.success === false) {
-        setLoading(false);
-        setErrorMessage(response.data.message);
-        setSnackBarError(true);
+        setLoading(false)
+        setErrorMessage(response.data.message)
+        setSnackBarError(true)
       } else {
-        setErrorMessage("Actualización de método de envío exitosa.");
-        setSnackBarError(true);
-        setActive(true);
-        setName("");
-        setPrice("");
-        history.push("/admin/shipping-method/read");
-        readMethods();
-        setLoading(false);
+        setErrorMessage("Actualización de método de envío exitosa.")
+        setSnackBarError(true)
+        setActive(true)
+        setName("")
+        setPrice("")
+        history.push("/admin/shipping-method/read")
+        readMethods()
+        setLoading(false)
       }
     }
-  };
+  }
   const deleteMethod = async (id) => {
-    setLoading(true);
+    setLoading(true)
 
     const URI =
-      process.env.REACT_APP_BACKEND_URL + "/shipping-method/delete/" + id;
-    const body = { adminToken: localStorage.getItem("adminTokenV") };
-    await axios.put(URI, body, { withCredentials: true });
-    setErrorMessage("Método de envío eliminado exitosamente.");
-    setSnackBarError(true);
-    readMethods();
-    setLoading(false);
-  };
+      process.env.REACT_APP_BACKEND_URL + "/shipping-method/delete/" + id
+    const body = { adminToken: localStorage.getItem("adminTokenV") }
+    await axios.put(URI, body, { withCredentials: true })
+    setErrorMessage("Método de envío eliminado exitosamente.")
+    setSnackBarError(true)
+    readMethods()
+    setLoading(false)
+  }
   return (
     <React.Fragment>
       <Backdrop
@@ -205,7 +207,7 @@ export default function ReadShippingMethod(props) {
             aria-label="edit"
             style={{ marginRight: 10 }}
             onClick={() => {
-              handleAction("read");
+              handleAction("read")
             }}
           >
             <ViewListIcon />
@@ -215,7 +217,7 @@ export default function ReadShippingMethod(props) {
               color="primary"
               aria-label="add"
               onClick={() => {
-                handleAction("create");
+                handleAction("create")
               }}
             >
               <AddIcon />
@@ -223,8 +225,16 @@ export default function ReadShippingMethod(props) {
           )}
         </div>
 
-        <Grid container spacing={3}>
-          <Grid item xs={12} md={12} lg={12}>
+        <Grid
+          container
+          spacing={3}
+        >
+          <Grid
+            item
+            xs={12}
+            md={12}
+            lg={12}
+          >
             <Paper className={fixedHeightPaper}>
               {activeCrud === "read" ? (
                 <>
@@ -234,6 +244,7 @@ export default function ReadShippingMethod(props) {
                       <TableRow>
                         <TableCell />
                         <TableCell align="center">Activo</TableCell>
+                        <TableCell align="center">Internacional</TableCell>
                         <TableCell align="center">Nombre</TableCell>
                         <TableCell align="center">Costo</TableCell>
                         <TableCell />
@@ -243,7 +254,7 @@ export default function ReadShippingMethod(props) {
                       {rows &&
                         rows.map((row) => (
                           <TableRow key={row._id}>
-                            <TableCell>
+                            <TableCell align="center">
                               {props.permissions?.createShippingMethod && (
                                 <Fab
                                   color="default"
@@ -254,17 +265,24 @@ export default function ReadShippingMethod(props) {
                                   }}
                                   aria-label="edit"
                                   onClick={(e) => {
-                                    handleActive(row, "update");
+                                    handleActive(row, "update")
                                   }}
                                 >
                                   <EditIcon />
                                 </Fab>
                               )}
                             </TableCell>
-                            <TableCell>
+                            <TableCell align="center">
                               <Checkbox
                                 disabled
                                 checked={row.active}
+                                color="primary"
+                              />
+                            </TableCell>
+                            <TableCell align="center">
+                              <Checkbox
+                                disabled
+                                checked={row.inter}
                                 color="primary"
                               />
                             </TableCell>
@@ -281,8 +299,8 @@ export default function ReadShippingMethod(props) {
                                   }}
                                   aria-label="edit"
                                   onClick={(e) => {
-                                    e.preventDefault();
-                                    deleteMethod(row._id);
+                                    e.preventDefault()
+                                    deleteMethod(row._id)
                                   }}
                                 >
                                   <DeleteIcon />
@@ -296,52 +314,97 @@ export default function ReadShippingMethod(props) {
                 </>
               ) : activeCrud === "create" ? (
                 <>
-                  {" "}
                   <Title>Agregar método de envío</Title>
                   <form
                     className={classes.form}
                     noValidate
                     onSubmit={handleSubmit}
                   >
-                    <Grid container spacing={2}>
-                      <Grid container spacing={2}>
-                        <Grid item xs={12}>
-                          <Grid container xs={6}>
-                            <Grid item xs={12}>
-                              <Checkbox
-                                checked={active}
-                                color="primary"
-                                inputProps={{
-                                  "aria-label": "secondary checkbox",
-                                }}
-                                onChange={() => {
-                                  setActive(!active);
-                                }}
-                              />
-                              Habilitado
-                            </Grid>
+                    <Grid
+                      container
+                      spacing={2}
+                      style={{ justifyContent: "center" }}
+                    >
+                      <Grid
+                        container
+                        spacing={3}
+                        style={{ padding: 32 }}
+                      >
+                        <Grid
+                          container
+                          xs={12}
+                          md={3}
+                          style={{ alignContent: "center" }}
+                        >
+                          <Grid
+                            item
+                            xs={12}
+                            md={6}
+                          >
+                            <Checkbox
+                              checked={active}
+                              color="primary"
+                              inputProps={{
+                                "aria-label": "secondary checkbox",
+                              }}
+                              onChange={() => {
+                                setActive(!active)
+                              }}
+                            />
+                            Habilitado
+                          </Grid>
+                          <Grid
+                            item
+                            xs={12}
+                            md={6}
+                          >
+                            <Checkbox
+                              checked={inter}
+                              color="primary"
+                              inputProps={{
+                                "aria-label": "secondary checkbox",
+                              }}
+                              onChange={() => {
+                                setInter(!inter)
+                              }}
+                            />
+                            Internacional
                           </Grid>
                         </Grid>
-                        <Grid item xs={12} sm={5}>
+                        <Grid
+                          item
+                          xs={12}
+                        >
                           <TextField
                             variant="outlined"
                             required
-                            fullWidth
+                            style={{
+                              minWidth: 320,
+                              width: "50%",
+                              maxWidth: 550,
+                            }}
                             display="inline"
                             label="Nombre"
                             value={name}
                             onChange={(e) => {
-                              setName(e.target.value);
+                              setName(e.target.value)
                             }}
                           />
                         </Grid>
 
-                        <Grid item xs={12} md={5}>
+                        <Grid
+                          item
+                          xs={12}
+                        >
                           <FormControl
                             className={clsx(classes.margin, classes.textField)}
                             variant="outlined"
                             xs={6}
-                            fullWidth={true}
+                            style={{
+                              minWidth: 320,
+                              width: "50%",
+                              maxWidth: 550,
+                            }}
                             required
                           >
                             <TextField
@@ -352,7 +415,7 @@ export default function ReadShippingMethod(props) {
                               label="Precio aproximado"
                               value={price}
                               onChange={(e) => {
-                                setPrice(e.target.value);
+                                setPrice(e.target.value)
                               }}
                               error={
                                 price !== undefined &&
@@ -384,26 +447,61 @@ export default function ReadShippingMethod(props) {
                     noValidate
                     onSubmit={updateShippingMethod}
                   >
-                    <Grid container spacing={2}>
-                      <Grid container spacing={2}>
-                        <Grid item xs={12}>
-                          <Grid container xs={6}>
-                            <Grid item xs={12}>
-                              <Checkbox
-                                checked={active}
-                                color="primary"
-                                inputProps={{
-                                  "aria-label": "secondary checkbox",
-                                }}
-                                onChange={() => {
-                                  setActive(!active);
-                                }}
-                              />
-                              Habilitado
-                            </Grid>
+                    <Grid
+                      container
+                      spacing={2}
+                      style={{ justifyContent: "center" }}
+                    >
+                      <Grid
+                        container
+                        spacing={3}
+                        style={{ padding: 32 }}
+                      >
+                        <Grid
+                          container
+                          xs={12}
+                          md={3}
+                          style={{ alignContent: "center" }}
+                        >
+                          <Grid
+                            item
+                            xs={12}
+                            md={6}
+                          >
+                            <Checkbox
+                              checked={active}
+                              color="primary"
+                              inputProps={{
+                                "aria-label": "secondary checkbox",
+                              }}
+                              onChange={() => {
+                                setActive(!active)
+                              }}
+                            />
+                            Habilitado
+                          </Grid>
+                          <Grid
+                            item
+                            xs={12}
+                            md={6}
+                          >
+                            <Checkbox
+                              checked={inter}
+                              color="primary"
+                              inputProps={{
+                                "aria-label": "secondary checkbox",
+                              }}
+                              onChange={() => {
+                                setInter(!inter)
+                              }}
+                            />
+                            Internacional
                           </Grid>
                         </Grid>
-                        <Grid item xs={12} md={5}>
+                        <Grid
+                          item
+                          xs={12}
+                        >
                           <FormControl
                             variant="outlined"
                             xs={12}
@@ -414,18 +512,18 @@ export default function ReadShippingMethod(props) {
                               required
                               fullWidth
                               display="inline"
-                              //   id="name"
                               label="Nombre"
-                              //   name="name"
-                              //   autoComplete="name"
                               value={name}
                               onChange={(e) => {
-                                setName(e.target.value);
+                                setName(e.target.value)
                               }}
                             />
                           </FormControl>
                         </Grid>
-                        <Grid item xs={12} md={5}>
+                        <Grid
+                          item
+                          xs={12}
+                        >
                           <FormControl
                             className={clsx(classes.margin, classes.textField)}
                             variant="outlined"
@@ -440,9 +538,8 @@ export default function ReadShippingMethod(props) {
                               label="Costo"
                               value={price}
                               onChange={(e) => {
-                                setPrice(e.target.value);
+                                setPrice(e.target.value)
                               }}
-                              // type={"Number"}
                               error={
                                 price !== undefined &&
                                 !validations.isAValidPrice(price)
@@ -477,5 +574,5 @@ export default function ReadShippingMethod(props) {
         className={classes.snackbar}
       />
     </React.Fragment>
-  );
+  )
 }

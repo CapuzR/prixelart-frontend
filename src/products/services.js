@@ -82,8 +82,8 @@ export const priceSelect = (item, currency, dollar) => {
   const format = (num) => Math.round(num * 100) / 100;
 
   return currency === "Bs"
-    ? `Bs. ${format(from * dollarValue)} - ${format(to * dollarValue)}`
-    : `$ ${toggleDecimalSeparator(from)} - ${toggleDecimalSeparator(to)}`;
+    ? `Bs. ${format(from * dollarValue)} - Bs. ${format(to * dollarValue)}`
+    : `$ ${toggleDecimalSeparator(from)} - $ ${toggleDecimalSeparator(to)}`;
 };
 
 export const setSecondProductAtts = async (

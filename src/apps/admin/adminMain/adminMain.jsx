@@ -1,56 +1,61 @@
-import React, { useEffect, useState } from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
-import clsx from 'clsx';
-import { makeStyles } from '@mui/styles';
-import CssBaseline from '@mui/material/CssBaseline';
-import Drawer from '@mui/material/Drawer';
-import Box from '@mui/material/Box';
-import AppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import List from '@mui/material/List';
-import Typography from '@mui/material/Typography';
-import Divider from '@mui/material/Divider';
-import IconButton from '@mui/material/IconButton';
-import Badge from '@mui/material/Badge';
-import Container from '@mui/material/Container';
-import Link from '@mui/material/Link';
-import MenuIcon from '@mui/icons-material/Menu';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import NotificationsIcon from '@mui/icons-material/Notifications';
-import MainListItems from './listItems';
-import Dashboard from './dashboard/dashboard';
-import AdminUser from './adminUser/adminUser';
-import Products from './products/products';
-import Consumers from './consumers/consumers';
-import PaymentMethods from './orders/paymentMethods';
-import Orders from './orders/orders';
-import Preferences from './preferences/Preferences';
-import Testimonials from '../TestimonialsCrud/Testimonials';
-import Prixers from './prixers/prixers';
-import ShippingMethods from './shippingMethodCrud/readShippingMethod';
-import Movements from './movements/readMovements';
-import Fab from '@mui/material/Fab';
-import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
-import Modal from '@mui/material/Modal';
-import CloseIcon from '@mui/icons-material/Close';
-import Grid from '@mui/material/Grid';
-import TextField from '@mui/material/TextField';
-import SaveIcon from '@mui/icons-material/Save';
-import Tooltip from '@mui/material/Tooltip';
-import { isAValidName, isAValidCi, isAValidPhoneNum, isAValidEmail } from 'utils/validations';
-import axios from 'axios';
-import { useConversionRate, useSnackBar } from 'context/GlobalContext';
-import { useCart } from 'context/CartContext';
+import React, { useEffect, useState } from "react";
+import { useHistory, useLocation } from "react-router-dom";
+import clsx from "clsx";
+import { makeStyles } from "@mui/styles";
+import CssBaseline from "@mui/material/CssBaseline";
+import Drawer from "@mui/material/Drawer";
+import Box from "@mui/material/Box";
+import AppBar from "@mui/material/AppBar";
+import Toolbar from "@mui/material/Toolbar";
+import List from "@mui/material/List";
+import Typography from "@mui/material/Typography";
+import Divider from "@mui/material/Divider";
+import IconButton from "@mui/material/IconButton";
+import Badge from "@mui/material/Badge";
+import Container from "@mui/material/Container";
+import Link from "@mui/material/Link";
+import MenuIcon from "@mui/icons-material/Menu";
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import NotificationsIcon from "@mui/icons-material/Notifications";
+import MainListItems from "./listItems";
+import Dashboard from "./dashboard/dashboard";
+import AdminUser from "./adminUser/adminUser";
+import Products from "./products/products";
+import Consumers from "./consumers/consumers";
+import PaymentMethods from "./orders/paymentMethods";
+import Orders from "./orders/orders";
+import Preferences from "./preferences/Preferences";
+import Testimonials from "../TestimonialsCrud/Testimonials";
+import Prixers from "./prixers/prixers";
+import ShippingMethods from "./shippingMethodCrud/readShippingMethod";
+import Movements from "./movements/readMovements";
+import Fab from "@mui/material/Fab";
+import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
+import Modal from "@mui/material/Modal";
+import CloseIcon from "@mui/icons-material/Close";
+import Grid from "@mui/material/Grid";
+import TextField from "@mui/material/TextField";
+import SaveIcon from "@mui/icons-material/Save";
+import Tooltip from "@mui/material/Tooltip";
+import {
+  isAValidName,
+  isAValidCi,
+  isAValidPhoneNum,
+  isAValidEmail,
+} from "utils/validations";
+import axios from "axios";
+import { useConversionRate, useSnackBar } from "context/GlobalContext";
+import { useCart } from "context/CartContext";
 
 function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
-      {'Copyright © '}
+      {"Copyright © "}
       <Link color="inherit" href="https://prixelart.com/">
         Prixelart C.A.
-      </Link>{' '}
+      </Link>{" "}
       {new Date().getFullYear()}
-      {'.'}
+      {"."}
     </Typography>
   );
 }
@@ -61,49 +66,49 @@ const useStyles = makeStyles((theme) => ({
   floatingButton: {
     margin: theme.spacing(1),
     marginRight: 10,
-    top: 'auto',
+    top: "auto",
     bottom: 20,
-    left: 'auto',
-    paddingRight: '5',
-    position: 'fixed',
+    left: "auto",
+    paddingRight: "5",
+    position: "fixed",
     backgroundColor: theme.palette.primary.main,
   },
   paper2: {
-    position: 'fixed',
+    position: "fixed",
     right: 1,
-    top: 'auto',
+    top: "auto",
     bottom: 10,
-    left: 'auto',
+    left: "auto",
     width: 310,
-    backgroundColor: 'white',
+    backgroundColor: "white",
     boxShadow: theme.shadows[2],
-    padding: '16px 32px 24px',
-    transform: 'translate(-50%, -50%)',
-    textAlign: 'justify',
+    padding: "16px 32px 24px",
+    transform: "translate(-50%, -50%)",
+    textAlign: "justify",
     minWidth: 320,
     borderRadius: 10,
-    marginTop: '12px',
-    display: 'flex',
-    flexDirection: 'row',
+    marginTop: "12px",
+    display: "flex",
+    flexDirection: "row",
   },
   root: {
-    display: 'flex',
-    backgroundColor: 'rgba(102, 102, 102, 0.1)',
+    display: "flex",
+    backgroundColor: "rgba(102, 102, 102, 0.1)",
   },
   toolbar: {
     paddingRight: 24,
   },
   toolbarIcon: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    padding: '0 8px',
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "flex-end",
+    padding: "0 8px",
     ...theme.mixins.toolbar,
   },
   appBar: {
-    minHeight: '70px',
+    minHeight: "70px",
     zIndex: theme.zIndex.drawer + 1,
-    transition: theme.transitions.create(['width', 'margin'], {
+    transition: theme.transitions.create(["width", "margin"], {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
     }),
@@ -111,7 +116,7 @@ const useStyles = makeStyles((theme) => ({
   appBarShift: {
     marginLeft: drawerWidth,
     width: `calc(100% - ${drawerWidth}px)`,
-    transition: theme.transitions.create(['width', 'margin'], {
+    transition: theme.transitions.create(["width", "margin"], {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.enteringScreen,
     }),
@@ -120,27 +125,27 @@ const useStyles = makeStyles((theme) => ({
     marginRight: 36,
   },
   menuButtonHidden: {
-    display: 'none',
+    display: "none",
   },
   title: {
     flexGrow: 1,
   },
   drawerPaper: {
-    position: 'relative',
-    whiteSpace: 'nowrap',
+    position: "relative",
+    whiteSpace: "nowrap",
     width: 240,
-    transition: theme.transitions.create('width', {
+    transition: theme.transitions.create("width", {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.enteringScreen,
     }),
   },
   drawerPaperClose: {
-    overflowX: 'hidden',
+    overflowX: "hidden",
     width: theme.spacing(7),
-    [theme.breakpoints.up('sm')]: {
+    [theme.breakpoints.up("sm")]: {
       width: theme.spacing(9),
     },
-    transition: theme.transitions.create('width', {
+    transition: theme.transitions.create("width", {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
     }),
@@ -148,8 +153,8 @@ const useStyles = makeStyles((theme) => ({
   appBarSpacer: theme.mixins.toolbar,
   content: {
     flexGrow: 1,
-    height: 'auto',
-    overflow: 'auto',
+    height: "auto",
+    overflow: "auto",
   },
   container: {
     paddingTop: theme.spacing(4),
@@ -157,10 +162,10 @@ const useStyles = makeStyles((theme) => ({
   },
   paper: {
     padding: theme.spacing(2),
-    display: 'flex',
-    overflow: 'auto',
-    flexDirection: 'column',
-    height: '700px',
+    display: "flex",
+    overflow: "auto",
+    flexDirection: "column",
+    height: "700px",
   },
   fixedHeight: {
     height: 500,
@@ -170,14 +175,14 @@ const useStyles = makeStyles((theme) => ({
 export default function AdminMain(props) {
   const classes = useStyles();
   const [open, setOpen] = useState(false);
-  const [active, setActive] = useState('user');
+  const [active, setActive] = useState("user");
   const location = useLocation();
   const history = useHistory();
   const [openDollarView, setOpenDollarView] = useState(false);
   const { showSnackBar } = useSnackBar();
   const { conversionRate, setConversionRate } = useConversionRate();
   const { cart } = useCart();
-
+  // console.log(active);
   const handleDrawerOpen = () => {
     setOpen(true);
   };
@@ -186,8 +191,9 @@ export default function AdminMain(props) {
   };
 
   useEffect(() => {
-    const pathSegments = location.pathname.split('/').filter(Boolean);
-    const rootSegment = pathSegments.length > 0 ? pathSegments[0] : '';
+    const pathSegments = location.pathname.split("/").filter(Boolean);
+    const rootSegment = pathSegments.length > 0 ? pathSegments[1] : "";
+    console.log(pathSegments);
     setActive(rootSegment);
   }, [location.pathname]);
 
@@ -205,17 +211,23 @@ export default function AdminMain(props) {
 
   return (
     <div className={classes.root}>
-      {JSON.parse(localStorage.getItem('adminToken')) ? (
+      {JSON.parse(localStorage.getItem("adminToken")) ? (
         <>
           <CssBaseline />
-          <AppBar position="fixed" className={clsx(classes.appBar, open && classes.appBarShift)}>
+          <AppBar
+            position="fixed"
+            className={clsx(classes.appBar, open && classes.appBarShift)}
+          >
             <Toolbar className={classes.toolbar}>
               <IconButton
                 edge="start"
                 color="inherit"
                 aria-label="open drawer"
                 onClick={handleDrawerOpen}
-                className={clsx(classes.menuButton, open && classes.menuButtonHidden)}
+                className={clsx(
+                  classes.menuButton,
+                  open && classes.menuButtonHidden
+                )}
               >
                 <MenuIcon />
               </IconButton>
@@ -238,7 +250,10 @@ export default function AdminMain(props) {
           <Drawer
             variant="permanent"
             classes={{
-              paper: clsx(classes.drawerPaper, !open && classes.drawerPaperClose),
+              paper: clsx(
+                classes.drawerPaper,
+                !open && classes.drawerPaperClose
+              ),
             }}
             open={open}
           >
@@ -248,39 +263,45 @@ export default function AdminMain(props) {
               </IconButton>
             </div>
             <Divider />
-            <List>{<MainListItems active={active} permissions={props.permissions} />}</List>
+            <List>
+              {
+                <MainListItems
+                  active={active}
+                  permissions={props.permissions}
+                />
+              }
+            </List>
           </Drawer>
           <main className={classes.content}>
             <div className={classes.appBarSpacer} />
             <Container maxWidth="lg" className={classes.container}>
-              {active === 'user' ? (
-                <AdminUser
-                  permissions={props.permissions}
-                />
-              ) : active === 'dashboard' ? (
+              {active === "user" ? (
+                <AdminUser permissions={props.permissions} />
+              ) : active === "dashboard" ? (
                 <Dashboard />
-              ) : active === 'product' ? (
-                <Products permissions={props.permissions} dollarValue={conversionRate} />
-              ) : active === 'consumer' ? (
+              ) : active === "product" ? (
+                <Products
+                  permissions={props.permissions}
+                  dollarValue={conversionRate}
+                />
+              ) : active === "consumer" ? (
                 <Consumers permissions={props.permissions} />
-              ) : active === 'movements' ? (
+              ) : active === "movements" ? (
                 <Movements permissions={props.permissions} />
-              ) : active === 'payment-method' ? (
+              ) : active === "payment-method" ? (
                 <PaymentMethods permissions={props.permissions} />
-              ) : active === 'shipping-method' ? (
+              ) : active === "shipping-method" ? (
                 <ShippingMethods permissions={props.permissions} />
-              ) : active === 'order' ? (
+              ) : active === "order" ? (
                 <Orders
                   dollarValue={conversionRate}
                   permissions={props.permissions}
                 />
-              ) : active === 'prixer' ? (
+              ) : active === "prixer" ? (
                 <Prixers permissions={props.permissions} />
-              ) : active === 'preferences' ? (
-                <Preferences
-                  permissions={props.permissions}
-                />
-              ) : active === 'testimonials' ? (
+              ) : active === "preferences" ? (
+                <Preferences permissions={props.permissions} />
+              ) : active === "testimonials" ? (
                 <Testimonials permissions={props.permissions} />
               ) : (
                 <p>POONG</p>
@@ -308,12 +329,12 @@ export default function AdminMain(props) {
               <Grid
                 item
                 style={{
-                  width: '100%',
-                  display: 'flex',
-                  justifyContent: 'flex-end',
+                  width: "100%",
+                  display: "flex",
+                  justifyContent: "flex-end",
                 }}
               >
-                <div style={{ display: 'flex', alignItems: 'center' }}>
+                <div style={{ display: "flex", alignItems: "center" }}>
                   <Typography color="primary">Tasa de cambio BCV</Typography>
 
                   <IconButton onClick={handleClose}>
@@ -321,7 +342,7 @@ export default function AdminMain(props) {
                   </IconButton>
                 </div>
               </Grid>
-              <div style={{ display: 'flex', alignItems: 'center' }}>
+              {/* <div style={{ display: "flex", alignItems: "center" }}>
                 <TextField
                   variant="outlined"
                   value={conversionRate}
@@ -333,9 +354,10 @@ export default function AdminMain(props) {
                     }
                   }}
                   error={
-                    conversionRate !== undefined && !isAValidPrice(conversionRate)
+                    conversionRate !== undefined &&
+                    !isAValidPrice(conversionRate)
                   }
-                  type={'number'}
+                  type={"number"}
                 />
                 <Fab
                   disabled={!isAValidPrice(conversionRate)}
@@ -344,19 +366,21 @@ export default function AdminMain(props) {
                   onClick={() => {
                     setConversionRate();
                     setOpenDollarView(true);
-                    showSnackBar('Tasa del dólar actualizada satisfactoriamente.');
+                    showSnackBar(
+                      "Tasa del dólar actualizada satisfactoriamente."
+                    );
                     handleClose();
                   }}
                   style={{ marginRight: 10, marginLeft: 10 }}
                 >
                   <SaveIcon />
                 </Fab>
-              </div>
+              </div> */}
             </Grid>
           </Modal>
         </>
       ) : (
-        history.push({ pathname: '/' })
+        history.push({ pathname: "/" })
       )}
     </div>
   );

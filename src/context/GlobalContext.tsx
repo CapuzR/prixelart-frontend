@@ -1,9 +1,15 @@
-import React, { createContext, useState, useContext, useMemo, ReactNode } from 'react';
-import { fetchConversionRateFromAPI } from './api';
+import React, {
+  createContext,
+  useState,
+  useContext,
+  useMemo,
+  ReactNode,
+} from "react";
+import { fetchConversionRateFromAPI } from "./api";
 
 // Define the shape of the context
 interface GlobalContextType {
-  currency: 'Bs' | 'USD';
+  currency: "Bs" | "USD";
   conversionRate: number;
   theme: string;
   toggleCurrency: () => void;
@@ -32,17 +38,17 @@ interface GlobalProviderProps {
 
 // Global Provider component
 export const GlobalProvider: React.FC<GlobalProviderProps> = ({ children }) => {
-  const [currency, setCurrency] = useState<'Bs' | 'USD'>('USD');
+  const [currency, setCurrency] = useState<"Bs" | "USD">("USD");
   const [conversionRate, setConversionRate] = useState<number>(() => {
-    const storedRate = localStorage.getItem('conversionRate');
+    const storedRate = localStorage.getItem("conversionRate");
     return storedRate ? parseFloat(storedRate) : 1;
   });
-  const [theme, setTheme] = useState<string>('light');
+  const [theme, setTheme] = useState<string>("light");
   const [loadingRate, setLoadingRate] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [snackbarOpen, setSnackbarOpen] = useState<boolean>(false);
-  const [snackbarMessage, setSnackbarMessage] = useState<string>('');
+  const [snackbarMessage, setSnackbarMessage] = useState<string>("");
   const [backdropOpen, setBackdropOpen] = useState<boolean>(false); // New state for the backdrop
 
   // Function to fetch the conversion rate
@@ -51,7 +57,7 @@ export const GlobalProvider: React.FC<GlobalProviderProps> = ({ children }) => {
       setLoadingRate(true);
       const newRate = await fetchConversionRateFromAPI();
       setConversionRate(newRate);
-      localStorage.setItem('conversionRate', newRate.toString());
+      localStorage.setItem("conversionRate", newRate.toString());
       setLoadingRate(false);
     } catch (err) {
       setError((err as Error).message);
@@ -60,13 +66,13 @@ export const GlobalProvider: React.FC<GlobalProviderProps> = ({ children }) => {
   };
 
   const toggleCurrency = () => {
-    if (currency === 'USD') {
+    if (currency === "USD") {
       if (conversionRate === 1) {
         fetchConversionRate();
       }
-      setCurrency('Bs');
+      setCurrency("Bs");
     } else {
-      setCurrency('USD');
+      setCurrency("USD");
     }
   };
 
@@ -75,11 +81,11 @@ export const GlobalProvider: React.FC<GlobalProviderProps> = ({ children }) => {
   };
 
   const toggleTheme = () => {
-    setTheme((prevTheme) => (prevTheme === 'light' ? 'dark' : 'light'));
+    setTheme((prevTheme) => (prevTheme === "light" ? "dark" : "light"));
   };
 
   const showSnackBar = (message: string) => {
-    console.log('Snackbar triggered with message: ', message);
+    console.log("Snackbar triggered with message: ", message);
     setSnackbarMessage(message);
     setSnackbarOpen(true);
   };
@@ -130,14 +136,16 @@ export const GlobalProvider: React.FC<GlobalProviderProps> = ({ children }) => {
     ]
   );
 
-  return <GlobalContext.Provider value={value}>{children}</GlobalContext.Provider>;
+  return (
+    <GlobalContext.Provider value={value}>{children}</GlobalContext.Provider>
+  );
 };
 
 // Custom hooks to access parts of the global context
 export const useCurrency = () => {
   const context = useContext(GlobalContext);
   if (!context) {
-    throw new Error('useCurrency must be used within a GlobalProvider');
+    throw new Error("useCurrency must be used within a GlobalProvider");
   }
   return { currency: context.currency, toggleCurrency: context.toggleCurrency };
 };
@@ -145,7 +153,7 @@ export const useCurrency = () => {
 export const useTheme = () => {
   const context = useContext(GlobalContext);
   if (!context) {
-    throw new Error('useTheme must be used within a GlobalProvider');
+    throw new Error("useTheme must be used within a GlobalProvider");
   }
   return { theme: context.theme, toggleTheme: context.toggleTheme };
 };
@@ -153,7 +161,7 @@ export const useTheme = () => {
 export const useConversionRate = () => {
   const context = useContext(GlobalContext);
   if (!context) {
-    throw new Error('useConversionRate must be used within a GlobalProvider');
+    throw new Error("useConversionRate must be used within a GlobalProvider");
   }
   return {
     conversionRate: context.conversionRate,
@@ -165,7 +173,7 @@ export const useConversionRate = () => {
 export const useLoading = () => {
   const context = useContext(GlobalContext);
   if (!context) {
-    throw new Error('useLoading must be used within a GlobalProvider');
+    throw new Error("useLoading must be used within a GlobalProvider");
   }
   return { loading: context.loading, setLoading: context.setLoading };
 };
@@ -173,7 +181,7 @@ export const useLoading = () => {
 export const useSnackBar = () => {
   const context = useContext(GlobalContext);
   if (!context) {
-    throw new Error('useSnackBar must be used within a GlobalProvider');
+    throw new Error("useSnackBar must be used within a GlobalProvider");
   }
   return {
     snackbarOpen: context.snackbarOpen,
@@ -186,7 +194,7 @@ export const useSnackBar = () => {
 export const useBackdrop = () => {
   const context = useContext(GlobalContext);
   if (!context) {
-    throw new Error('useBackdrop must be used within a GlobalProvider');
+    throw new Error("useBackdrop must be used within a GlobalProvider");
   }
   return {
     backdropOpen: context.backdropOpen,

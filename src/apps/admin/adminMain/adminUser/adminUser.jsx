@@ -111,7 +111,6 @@ export default function AdminUsers(props) {
   const [admin, setAdmin] = useState();
   const [admins, setAdmins] = useState();
   const globalParams = window.location.pathname;
-
   const loadAdmins = async () => {
     const base_url = import.meta.env.VITE_BACKEND_URL + '/admin/read-all';
     try {

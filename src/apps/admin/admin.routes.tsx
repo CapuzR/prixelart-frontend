@@ -1,7 +1,8 @@
-import React from 'react';
-import { Route, Switch } from 'react-router-dom';
-import AdminLogin from 'apps/admin/adminLogin/adminLoginPage';
-import AdminMain from 'apps/admin/adminMain/adminMain';
+import React from "react";
+import { Switch, Route, useRouteMatch } from "react-router-dom";
+import AdminLogin from "@apps/admin/adminLogin/adminLogin";
+import AdminMain from "apps/admin/adminMain/adminMain";
+import { useLocation, useParams } from "react-router";
 
 interface AdminRoutesProps {
   setPermissions: (permissions: any) => void;
@@ -16,17 +17,24 @@ const AdminRoutes: React.FC<AdminRoutesProps> = ({
   permissions,
   setPermissions,
 }) => {
+  const { path } = useRouteMatch();
+  let location = useLocation();
+  const section = location.pathname.split("/")[1];
+  const hostname = window.location;
+  console.log(path);
+  console.log(section);
+  console.log(hostname);
   return (
     <Switch>
       <Route path="/dashboard">
-        <AdminMain 
-        permissions={permissions}
-        valuesConsumerForm={valuesConsumerForm}
-        setValues={setValuesConsumerForm}
-         />
+        <AdminMain
+          permissions={permissions}
+          valuesConsumerForm={valuesConsumerForm}
+          setValues={setValuesConsumerForm}
+        />
       </Route>
 
-      <Route path="/main">
+      <Route exact path="/admin/main">
         <AdminMain
           setValues={setValuesConsumerForm}
           valuesConsumerForm={valuesConsumerForm}
@@ -45,28 +53,28 @@ const AdminRoutes: React.FC<AdminRoutesProps> = ({
       <Route
         exact
         path={[
-          '/user/update/:userId',
-          '/order/read',
-          '/users/read',
-          '/user/read',
-          '/product/read',
-          '/consumer/read',
-          '/movements/read',
-          '/product/create',
-          '/preferences/read',
-          '/shipping-method/read',
-          '/prixer/read',
-          '/product/update/:productId',
-          '/consumer/update/:consumerId',
-          '/payment-method/read',
-          '/shipping-method/read',
-          '/testimonials/read',
-          '/product/createDiscount',
-          '/product/updateDiscount/:discountId',
-          '/product/createSurcharge',
-          '/product/updateSurcharge/:surchargeId',
-          '/product/createCategory',
-          '/product/updateCategory/:categoryId',
+          "/user/update/:userId",
+          "/admin/order/read",
+          "/users/read",
+          "/user/read",
+          "/product/read",
+          "/consumer/read",
+          "/movements/read",
+          "/product/create",
+          "/preferences/read",
+          "/shipping-method/read",
+          "/prixer/read",
+          "/product/update/:productId",
+          "/consumer/update/:consumerId",
+          "/payment-method/read",
+          "/shipping-method/read",
+          "/testimonials/read",
+          "/product/createDiscount",
+          "/product/updateDiscount/:discountId",
+          "/product/createSurcharge",
+          "/product/updateSurcharge/:surchargeId",
+          "/product/createCategory",
+          "/product/updateCategory/:categoryId",
         ]}
       >
         <AdminMain permissions={permissions} />
@@ -87,11 +95,10 @@ const AdminRoutes: React.FC<AdminRoutesProps> = ({
       <Route path="/consumers/read">
         <AdminMain permissions={permissions} />
       </Route>
-      
-      <Route>
+
+      <Route exact path="/admin/inicio">
         <AdminLogin setPermissions={setPermissions} />
       </Route>
-
     </Switch>
   );
 };

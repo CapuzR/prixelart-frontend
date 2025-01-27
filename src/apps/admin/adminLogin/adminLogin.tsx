@@ -87,8 +87,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 export default function Login({ setPermissions }) {
   const classes = useStyles();
-  const theme = useTheme();
-
+  const theme = useTheme<Theme>();
   const { showSnackBar } = useSnackBar();
   const isMobile = useMediaQuery("(max-width:480px)");
   const isTab = useMediaQuery("(max-width: 900px)");
@@ -168,7 +167,7 @@ export default function Login({ setPermissions }) {
         style={{ backgroundImage: "url(" + art + ")" }}
         sx={{
           width: isTab && "100%",
-          height: isTab && "40vh",
+          height: isTab ? "40vh" : "100%",
         }}
       />
       <Grid2 size={{ xs: 12, lg: 5 }}>

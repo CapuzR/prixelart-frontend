@@ -94,13 +94,15 @@ const Flow = () => {
           'lineId',
         ]);
 
+
         selectedAttributes &&
           selectedAttributes.map((att) => {
             atts[att.name] = att.value;
           });
 
-          setItem((prevItem) => ({
+        setItem((prevItem) => ({
         ...prevItem,
+        sku: urlParams.itemId,
         product: selectedProduct
           ? {
               ...selectedProduct,
@@ -165,7 +167,6 @@ const Flow = () => {
       const hasPermission = checkPermissions(product, selectedArt);
       if (hasPermission) {
         setFlowReady(true);
-        if (!backdropOpen) showBackdrop();
       } else {
         setFlowReady(false);
       }
@@ -315,9 +316,6 @@ const Flow = () => {
 
   const addInFlow = (updatedArt?: Art, updatedProduct?: Product) => {
     const newSectionOpened: 'arte' | 'producto' = urlParams.openSection === 'arte' ? 'producto' : 'arte';
-    console.log("openSection", newSectionOpened);
-    console.log("updatedArt", updatedArt);
-    console.log("updatedProduct", updatedProduct);
 
     setItem((prevItem) => ({
       ...prevItem,
@@ -325,8 +323,6 @@ const Flow = () => {
       product: updatedProduct !== undefined ? updatedProduct : prevItem.product,
       art: updatedArt !== undefined ? updatedArt : prevItem.art,
     }));
-
-    console.log("item.product?.selection", item.product?.selection);
 
     const selectionAsObject: { [key: string]: string } = Array.isArray(item.product?.selection)
       ? item.product?.selection.reduce(
@@ -338,8 +334,6 @@ const Flow = () => {
         )
       : item.product?.selection || {};
 
-    console.log("selectionAsObject", selectionAsObject);
-
     const queryString = queryCreator(
       urlParams.lineId,
       urlParams.itemId,
@@ -349,8 +343,6 @@ const Flow = () => {
       !flowReady ? newSectionOpened : updatedArt ? 'arte' : 'producto',
       '3'
     );
-
-    console.log("queryString", queryString);
 
     history.push({ pathname: location.pathname, search: queryString });
     showSnackBar('¡Arte seleccionado! Puedes agregar el item al carrito');

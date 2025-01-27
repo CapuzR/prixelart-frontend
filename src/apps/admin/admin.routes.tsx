@@ -36,18 +36,26 @@ const AdminRoutes: React.FC<AdminRoutesProps> = ({
 
       <Route exact path="/admin/main">
         <AdminMain
-          setValues={setValuesConsumerForm}
-          valuesConsumerForm={valuesConsumerForm}
           permissions={permissions}
+          valuesConsumerForm={valuesConsumerForm}
+          setValues={setValuesConsumerForm}
         />
       </Route>
 
       <Route path="/user/create">
-        <AdminMain permissions={permissions} />
+        <AdminMain
+          permissions={permissions}
+          valuesConsumerForm={valuesConsumerForm}
+          setValues={setValuesConsumerForm}
+        />
       </Route>
 
       <Route path="/users/read">
-        <AdminMain permissions={permissions} />
+        <AdminMain
+          permissions={permissions}
+          valuesConsumerForm={valuesConsumerForm}
+          setValues={setValuesConsumerForm}
+        />
       </Route>
 
       <Route
@@ -77,23 +85,43 @@ const AdminRoutes: React.FC<AdminRoutesProps> = ({
           "/product/updateCategory/:categoryId",
         ]}
       >
-        <AdminMain permissions={permissions} />
+        <AdminMain
+          permissions={permissions}
+          valuesConsumerForm={valuesConsumerForm}
+          setValues={setValuesConsumerForm}
+        />
       </Route>
 
       <Route path="/product/create">
-        <AdminMain permissions={permissions} />
+        <AdminMain
+          permissions={permissions}
+          valuesConsumerForm={valuesConsumerForm}
+          setValues={setValuesConsumerForm}
+        />
       </Route>
 
       <Route path="/products/read">
-        <AdminMain permissions={permissions} />
+        <AdminMain
+          permissions={permissions}
+          valuesConsumerForm={valuesConsumerForm}
+          setValues={setValuesConsumerForm}
+        />
       </Route>
 
       <Route path="/consumer/create">
-        <AdminMain permissions={permissions} />
+        <AdminMain
+          permissions={permissions}
+          valuesConsumerForm={valuesConsumerForm}
+          setValues={setValuesConsumerForm}
+        />
       </Route>
 
       <Route path="/consumers/read">
-        <AdminMain permissions={permissions} />
+        <AdminMain
+          permissions={permissions}
+          valuesConsumerForm={valuesConsumerForm}
+          setValues={setValuesConsumerForm}
+        />
       </Route>
 
       <Route exact path="/admin/inicio">

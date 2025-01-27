@@ -38,6 +38,7 @@
     "recharts": "^2.8.0",
     "sass": "^1.80.6",
     "slick-carousel": "^1.8.1",
+    "tss-react": "^4.9.15",
     "victory": "^36.6.11",
     "vite": "^5.4.11"
   },

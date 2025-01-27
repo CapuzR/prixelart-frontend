@@ -53,3 +53,8 @@ export const handlePasswordChange = (
 export const handleClickShowPassword = (setShowPassword, showPassword) => {
   setShowPassword(!showPassword);
 };
+
+export const forgotPassword = () => {
+  history.push({ pathname: "/olvido-contraseña" });
+  // Pendiente por crear
+}

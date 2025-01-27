@@ -55,7 +55,7 @@ const AdminRoutes: React.FC<AdminRoutesProps> = ({
         path={[
           "/user/update/:userId",
           "/admin/order/read",
-          "/users/read",
+          "/admin/user/read",
           "/user/read",
           "/product/read",
           "/consumer/read",

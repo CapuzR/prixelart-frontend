@@ -45,14 +45,13 @@ import {
   handleEmailChange,
   handlePasswordChange,
   handleClickShowPassword,
+  forgotPassword,
 } from "./service";
 import { getRandomArt, login } from "./api";
 import { Art } from "../../../types/art.types";
 import { AdminToken } from "../../../types/admin.types";
 import { useSnackBar } from "context/GlobalContext";
 import jwtDecode from "jwt-decode";
-
-const now = new Date();
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -101,24 +100,13 @@ export default function Login({ setPermissions }) {
     if (!email || !password) {
       showSnackBar("Por favor completa todos los campos requeridos.");
     } else {
-      const data = {
-        email: email.toLowerCase(),
-        password: password,
-      };
-      const process = await login(data);
-      if (process.error_info !== null && process.success === false) {
-        showSnackBar(process.error_info);
+      const { log, permissions } = await login(email, password);
+      if (log.error_info !== null && log.success === false) {
+        showSnackBar(log.error_info);
       } else {
-        showSnackBar('Inicio de sesión completado.');
+        showSnackBar("Inicio de sesión completado.");
         setPassword("");
-        const token = jwtDecode<AdminToken>(process.adminToken);
-        localStorage.setItem("adminToken", JSON.stringify(token));
-        localStorage.setItem("adminTokenV", process.adminToken);
-        localStorage.setItem(
-          "adminTokenExpire",
-          JSON.stringify(now.getTime() + 21600000)
-        );
-        setPermissions(token.permissions);
+        setPermissions(permissions);
         history.push({ pathname: "/admin/order/read" });
       }
     }
@@ -247,13 +235,7 @@ export default function Login({ setPermissions }) {
                   Inicia sesión
                 </Button>
                 <Grid2>
-                  <Link
-                    href="#"
-                    onClick={() => {
-                      history.push({ pathname: "/olvido-contraseña" });
-                    }}
-                    variant="body2"
-                  >
+                  <Link href="#" onClick={forgotPassword} variant="body2">
                     {"¿Olvidaste tu contraseña? Recupérala"}
                   </Link>
                 </Grid2>

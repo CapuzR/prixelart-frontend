@@ -23,9 +23,9 @@ import {
   InputLabel,
   InputAdornment,
   FormControl,
+  useMediaQuery,
 } from "@mui/material";
-
-import { makeStyles } from "@mui/styles";
+import { makeStyles, useTheme } from "@mui/styles";
 import { Theme } from "@mui/material/styles";
 
 import {
@@ -87,8 +87,11 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 export default function Login({ setPermissions }) {
   const classes = useStyles();
-  const { showSnackBar } = useSnackBar();
+  const theme = useTheme();
 
+  const { showSnackBar } = useSnackBar();
+  const isMobile = useMediaQuery("(max-width:480px)");
+  const isTab = useMediaQuery("(max-width: 900px)");
   const history = useHistory();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -150,19 +153,29 @@ export default function Login({ setPermissions }) {
   };
 
   return (
-    <Grid2 container className={classes.root}>
+    <Grid2
+      container
+      className={classes.root}
+      sx={{ marginTop: isMobile && "60px" }}
+    >
       <CssBaseline />
       <Grid2
         size={{
           xs: 12,
-          sm: 4,
-          md: 7,
+          lg: 7,
         }}
         className={classes.image}
         style={{ backgroundImage: "url(" + art + ")" }}
+        sx={{
+          width: isTab && "100%",
+          height: isTab && "40vh",
+        }}
       />
-      <Grid2 size={{ xs: 12, sm: 8, md: 5 }}>
-        <div className={classes.paper}>
+      <Grid2 size={{ xs: 12, lg: 5 }}>
+        <div
+          className={classes.paper}
+          style={{ marginTop: isTab ? "32px" : "100px" }}
+        >
           <Avatar className={classes.avatar}>
             <LockOutlinedIcon />
           </Avatar>
@@ -188,7 +201,7 @@ export default function Login({ setPermissions }) {
                   alignContent: "center",
                 }}
               >
-                <Grid2 size={{ xs: 12, sm: 12, md: 6 }}>
+                <Grid2 size={{ xs: 12, sm: 12, md: 12, lg: 6 }} sx={{}}>
                   <FormControl variant="outlined" style={{ width: "100%" }}>
                     <InputLabel htmlFor="email">Correo electrónico</InputLabel>
                     <OutlinedInput
@@ -200,7 +213,7 @@ export default function Login({ setPermissions }) {
                     />
                   </FormControl>
                 </Grid2>
-                <Grid2 size={{ xs: 12, sm: 12, md: 6 }}>
+                <Grid2 size={{ xs: 12, sm: 12, md: 12, lg: 6 }}>
                   <FormControl variant="outlined" style={{ width: "100%" }}>
                     <InputLabel htmlFor="outlined-adornment-password">
                       Contraseña

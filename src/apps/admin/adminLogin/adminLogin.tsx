@@ -2,21 +2,15 @@
 //Llevar el Password a un componente propio.
 
 // Bibliotecas externas
-import React, { useEffect, useState, FormEvent } from "react";
+import { useEffect, useState, FormEvent } from "react";
 import { useHistory } from "react-router-dom";
-import axios from "axios";
-import jwt from "jwt-decode";
-import clsx from "clsx";
 
 import {
   Avatar,
   Button,
   CssBaseline,
   Link,
-  Paper,
-  Box,
   Grid2,
-  Snackbar,
   Typography,
   IconButton,
   OutlinedInput,
@@ -34,24 +28,13 @@ import {
   VisibilityOff,
 } from "@mui/icons-material";
 
-import {
-  isAValidEmail,
-  isAValidPassword,
-  isAValidUsername,
-} from "utils/validations";
+import { isAValidEmail, isAValidPassword } from "utils/validations";
 
 import Copyright from "@components/Copyright/copyright";
-import {
-  handleEmailChange,
-  handlePasswordChange,
-  handleClickShowPassword,
-  forgotPassword,
-} from "./service";
+import { forgotPassword } from "./service";
 import { getRandomArt, login } from "./api";
 import { Art } from "../../../types/art.types";
-import { AdminToken } from "../../../types/admin.types";
 import { useSnackBar } from "context/GlobalContext";
-import jwtDecode from "jwt-decode";
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {

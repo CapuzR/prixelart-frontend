@@ -26,7 +26,7 @@ const AdminRoutes: React.FC<AdminRoutesProps> = ({
   console.log(hostname);
   return (
     <Switch>
-      <Route path="/dashboard">
+      <Route path="/admin/dashboard">
         <AdminMain
           permissions={permissions}
           valuesConsumerForm={valuesConsumerForm}
@@ -42,7 +42,7 @@ const AdminRoutes: React.FC<AdminRoutesProps> = ({
         />
       </Route>
 
-      <Route path="/user/create">
+      <Route path="/admin/user/create">
         <AdminMain
           permissions={permissions}
           valuesConsumerForm={valuesConsumerForm}
@@ -50,7 +50,7 @@ const AdminRoutes: React.FC<AdminRoutesProps> = ({
         />
       </Route>
 
-      <Route path="/users/read">
+      <Route path="/admin/users/read">
         <AdminMain
           permissions={permissions}
           valuesConsumerForm={valuesConsumerForm}
@@ -61,28 +61,28 @@ const AdminRoutes: React.FC<AdminRoutesProps> = ({
       <Route
         exact
         path={[
-          "/user/update/:userId",
+          "/admin/user/update/:userId",
           "/admin/order/read",
           "/admin/user/read",
-          "/user/read",
-          "/product/read",
-          "/consumer/read",
-          "/movements/read",
-          "/product/create",
-          "/preferences/read",
-          "/shipping-method/read",
-          "/prixer/read",
-          "/product/update/:productId",
-          "/consumer/update/:consumerId",
-          "/payment-method/read",
-          "/shipping-method/read",
-          "/testimonials/read",
-          "/product/createDiscount",
-          "/product/updateDiscount/:discountId",
-          "/product/createSurcharge",
-          "/product/updateSurcharge/:surchargeId",
-          "/product/createCategory",
-          "/product/updateCategory/:categoryId",
+          "/admin/user/update",
+          "/admin/product/read",
+          "/admin/consumer/read",
+          "/admin/movements/read",
+          "/admin/product/create",
+          "/admin/preferences/read",
+          "/admin/shipping-method/read",
+          "/admin/prixer/read",
+          "/admin/product/update/:productId",
+          "/admin/consumer/update/:consumerId",
+          "/admin/payment-method/read",
+          "/admin/shipping-method/read",
+          "/admin/testimonials/read",
+          "/admin/product/createDiscount",
+          "/admin/product/updateDiscount/:discountId",
+          "/admin/product/createSurcharge",
+          "/admin/product/updateSurcharge/:surchargeId",
+          "/admin/product/createCategory",
+          "/admin/product/updateCategory/:categoryId",
         ]}
       >
         <AdminMain
@@ -92,7 +92,7 @@ const AdminRoutes: React.FC<AdminRoutesProps> = ({
         />
       </Route>
 
-      <Route path="/product/create">
+      <Route path="/admin/product/create">
         <AdminMain
           permissions={permissions}
           valuesConsumerForm={valuesConsumerForm}
@@ -100,7 +100,7 @@ const AdminRoutes: React.FC<AdminRoutesProps> = ({
         />
       </Route>
 
-      <Route path="/products/read">
+      <Route path="/admin/products/read">
         <AdminMain
           permissions={permissions}
           valuesConsumerForm={valuesConsumerForm}
@@ -108,7 +108,7 @@ const AdminRoutes: React.FC<AdminRoutesProps> = ({
         />
       </Route>
 
-      <Route path="/consumer/create">
+      <Route path="/admin/consumer/create">
         <AdminMain
           permissions={permissions}
           valuesConsumerForm={valuesConsumerForm}
@@ -116,7 +116,7 @@ const AdminRoutes: React.FC<AdminRoutesProps> = ({
         />
       </Route>
 
-      <Route path="/consumers/read">
+      <Route path="/admin/consumers/read">
         <AdminMain
           permissions={permissions}
           valuesConsumerForm={valuesConsumerForm}

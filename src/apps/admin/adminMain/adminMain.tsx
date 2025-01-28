@@ -253,7 +253,6 @@ export default function AdminMain({
   const location = useLocation();
   const history = useHistory();
   const [openDollarView, setOpenDollarView] = useState(false);
-  const { showSnackBar } = useSnackBar();
   // const { conversionRate, setConversionRate } = useConversionRate();
   const { cart } = useCart();
   // console.log(active);

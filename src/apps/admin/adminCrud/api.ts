@@ -1,13 +1,20 @@
 import axios from "axios";
+import { AdminRole, Admin } from "../../../types/admin.types";
 
-export const loadRoles = async () => {
+export const createRoles = async () => {
   const base_url = import.meta.env.VITE_BACKEND_URL + "/admin/read-roles";
   try {
-    const response = await axios.post(
-      base_url,
-      { adminToken: localStorage.getItem("adminTokenV") },
-      { withCredentials: true }
-    );
+    const response = await axios.post(base_url, { withCredentials: true });
+    return response.data;
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+export const getRoles = async () => {
+  const base_url = import.meta.env.VITE_BACKEND_URL + "/admin/read-roles";
+  try {
+    const response = await axios.post(base_url, { withCredentials: true });
     return response.data;
   } catch (e) {
     console.log(e);
@@ -27,15 +34,24 @@ export const createAdmin = async (data: object) => {
   }
 };
 
+export const updateAdmin = async (admin: Partial<Admin>) => {
+  const base_url =
+    import.meta.env.VITE_BACKEND_URL + "/admin/update/" + admin._id;
+  try {
+    const response = await axios.put(base_url, admin, {
+      withCredentials: true,
+    });
+    return response.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 export const deleteAdmin = async (username: string) => {
   const base_url =
     import.meta.env.VITE_BACKEND_URL + "/admin/delete/" + username;
   try {
-    const response = await axios.put(
-      base_url,
-      { adminToken: localStorage.getItem("adminTokenV") },
-      { withCredentials: true }
-    );
+    const response = await axios.put(base_url, { withCredentials: true });
     return { data: response.data, status: response.status };
   } catch (e) {
     console.log(e);
@@ -45,11 +61,7 @@ export const deleteAdmin = async (username: string) => {
 export const deleteAdminRole = async (id: string) => {
   const base_url = import.meta.env.VITE_BACKEND_URL + "/adminRole/delete/" + id;
   try {
-    const response = await axios.put(
-      base_url,
-      { adminToken: localStorage.getItem("adminTokenV") },
-      { withCredentials: true }
-    );
+    const response = await axios.put(base_url, { withCredentials: true });
     return { data: response.data, status: response.status };
   } catch (e) {
     console.log(e);

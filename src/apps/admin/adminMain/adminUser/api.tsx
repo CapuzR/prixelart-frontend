@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const loadAdmins = async () => {
+export const getAdmins = async () => {
   const base_url = import.meta.env.VITE_BACKEND_URL + "/admin/read-all";
   try {
     const response = await axios.post(
@@ -14,7 +14,7 @@ export const loadAdmins = async () => {
   }
 };
 
-export const loadRoles = async () => {
+export const getRoles = async () => {
   const base_url = import.meta.env.VITE_BACKEND_URL + "/admin/read-roles";
   try {
     const response = await axios.post(

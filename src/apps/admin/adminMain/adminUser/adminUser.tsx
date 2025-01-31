@@ -17,7 +17,9 @@ import UpdateAdmin from "../../adminCrud/updateAdmin";
 import CreateAdminRole from "../../adminCrud/createAdminRole";
 import UpdateAdminRole from "../../adminCrud/updateAdminRole";
 
-import { loadAdmins } from "./api";
+import { getAdmins } from "./api";
+
+import { Admin } from "./../../../../types/admin.types";
 
 import { useSnackBar, useLoading } from "context/GlobalContext";
 
@@ -116,9 +118,9 @@ export default function AdminUsers({ permissions }) {
   const fixedHeightPaper = cx(classes.paper);
   const [activeCrud, setActiveCrud] = useState("read");
   const [page, setPage] = useState(0);
-  const [admin, setAdmin] = useState();
+  const [admin, setAdmin] = useState<Partial<Admin>>();
   const [admins, setAdmins] = useState();
-  const globalParams = window.location.pathname;
+  // const globalParams = window.location.pathname;
   const { showSnackBar } = useSnackBar();
   const { setLoading } = useLoading();
 
@@ -129,8 +131,8 @@ export default function AdminUsers({ permissions }) {
   const loadAdmin = async () => {
     setLoading(true);
     try {
-      const admins = await loadAdmins();
-        setAdmins(admins);
+      const admins = await getAdmins();
+      setAdmins(admins);
     } catch (error) {
       showSnackBar(
         "Error obteniendo lista de administradores, por favor inténtelo de nuevo."
@@ -162,6 +164,25 @@ export default function AdminUsers({ permissions }) {
           location.pathname.split("/")[location.pathname.split("/").length - 1]
         );
   }, [location.pathname]);
+
+  const updateAdminProperty = (property: any, value: string) => {
+    if (property === "all") {
+      setAdmin({
+        username: "",
+        firstname: "",
+        lastname: "",
+        email: "",
+        phone: "",
+        area: "",
+        isSeller: false,
+      });
+    } else {
+      setAdmin((prevAdmin) => ({
+        ...prevAdmin,
+        [property]: value,
+      }));
+    }
+  };
 
   function Callback(childData) {
     setPage(childData);
@@ -209,10 +230,13 @@ export default function AdminUsers({ permissions }) {
                 permissions={permissions}
                 admins={admins}
                 loadAdmin={loadAdmin}
-
               />
             ) : activeCrud === "update" ? (
-              <UpdateAdmin admin={admin} />
+              <UpdateAdmin
+                admin={admin}
+                updateAdminProperty={updateAdminProperty}
+                loadAdmin={loadAdmin}
+              />
             ) : activeCrud === "createRole" ? (
               <CreateAdminRole />
             ) : activeCrud === "updateRole" ? (

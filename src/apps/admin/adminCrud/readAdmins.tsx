@@ -19,11 +19,11 @@ import { useHistory } from "react-router-dom";
 
 import UpdateAdmin from "./updateAdmin";
 
-import { loadRoles, deleteAdmin, deleteAdminRole } from "./api";
+import { getRoles, deleteAdmin, deleteAdminRole } from "./api";
 
 import { useSnackBar, useLoading } from "context/GlobalContext";
 import { Admin, AdminRole } from "../../../types/admin.types";
-import { loadAdmins } from "../adminMain/adminUser/api";
+// import { getAdmins } from "../adminMain/adminUser/api";
 
 export default function ReadAdmins({
   handleCallback,
@@ -51,23 +51,23 @@ export default function ReadAdmins({
     ""
   ];
 
-  useEffect(() => {
-    const getRoles = async () => {
-      setLoading(true);
-      try {
-        const roles = await loadRoles();
-        if (globalParams === "/admin/user/read") {
-          setRoles(roles);
-        }
-      } catch (error) {
-        showSnackBar(
-          "Error obteniendo lista de roles, por favor inténtelo de nuevo."
-        );
-        console.error("Error obteniendo listado de roles:", error);
+  const loadRoles = async () => {
+    setLoading(true);
+    try {
+      const roles = await getRoles();
+      if (globalParams === "/admin/user/read") {
+        setRoles(roles);
       }
-    };
+    } catch (error) {
+      showSnackBar(
+        "Error obteniendo lista de roles, por favor inténtelo de nuevo."
+      );
+      console.error("Error obteniendo listado de roles:", error);
+    }
+  };
 
-    getRoles();
+  useEffect(() => {
+    loadRoles();
   }, []);
 
   const deleteMethod = async (username: string) => {
@@ -481,7 +481,7 @@ export default function ReadAdmins({
           No tienes permiso para entrar a esta área.
         </Typography>
       )}
-      {up && <UpdateAdmin admin={up} />}
+      {/* {up && <UpdateAdmin admin={up} />} */}
       {handleCallback(value)}
     </React.Fragment>
   );

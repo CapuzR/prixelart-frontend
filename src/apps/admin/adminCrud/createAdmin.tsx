@@ -1,16 +1,10 @@
 import React, { useEffect, useState } from "react";
 
-import axios from "axios";
-import clsx from "clsx";
-
 import { makeStyles } from "tss-react/mui";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import Grid2 from "@mui/material/Grid2";
-import Snackbar from "@mui/material/Snackbar";
-import CircularProgress from "@mui/material/CircularProgress";
 import IconButton from "@mui/material/IconButton";
-import OutlinedInput from "@mui/material/OutlinedInput";
 import InputLabel from "@mui/material/InputLabel";
 import InputAdornment from "@mui/material/InputAdornment";
 import FormControl from "@mui/material/FormControl";
@@ -21,7 +15,7 @@ import { Switch, Typography } from "@mui/material";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 
-import { useHistory, useLocation } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 
 import Title from "../adminMain/Title";
 import {
@@ -31,12 +25,12 @@ import {
 } from "utils/validations";
 
 import { useSnackBar, useLoading } from "context/GlobalContext";
-import { loadRoles } from "../adminMain/adminUser/api";
+import { getRoles } from "../adminMain/adminUser/api";
 import { createAdmin } from "./api";
 import { disabled } from "./services";
 import { AdminRole } from "../../../types/admin.types";
 
-export default function CreateAdmin({loadAdmin}) {
+export default function CreateAdmin({ loadAdmin }) {
   // const classes = useStyles();
   const history = useHistory();
   const { showSnackBar } = useSnackBar();
@@ -69,21 +63,21 @@ export default function CreateAdmin({loadAdmin}) {
     setShowPassword(!showPassword);
   };
 
-  useEffect(() => {
-    const getRoles = async () => {
-      try {
-        const roles = await loadRoles();
-        setRoles(roles);
-      } catch (error) {
-        showSnackBar(
-          "Error obteniendo lista de roles, por favor inténtelo de nuevo."
-        );
-        console.error("Error obteniendo lista de roles:", error);
-      }
-    };
+  const loadRoles = async () => {
+    try {
+      const roles = await getRoles();
+      setRoles(roles);
+    } catch (error) {
+      showSnackBar(
+        "Error obteniendo lista de roles, por favor inténtelo de nuevo."
+      );
+      console.error("Error obteniendo lista de roles:", error);
+    }
+  };
 
+  useEffect(() => {
     setLoading(true);
-    getRoles();
+    loadRoles();
   }, []);
 
   const handleSubmit = async (e) => {
@@ -114,7 +108,6 @@ export default function CreateAdmin({loadAdmin}) {
       };
 
       const admin = await createAdmin(data);
-      console.log(admin)
       if (!admin) {
         console.error("La respuesta de createAdmin es undefined");
       } else if (admin.success === false) {
@@ -142,6 +135,7 @@ export default function CreateAdmin({loadAdmin}) {
   const setDisabled = () => {
     setButtonState(disabled());
   };
+
   return (
     <React.Fragment>
       <Title>Crear Administrador</Title>

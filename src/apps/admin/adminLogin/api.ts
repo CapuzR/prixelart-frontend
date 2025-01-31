@@ -13,7 +13,7 @@ export const getRandomArt = async () => {
   const base_url = import.meta.env.VITE_BACKEND_URL + "/art/random";
   try {
     const response = await axios.get(base_url);
-    return response?.data?.arts?.largeThumbUrl;
+    return response?.data?.art?.largeThumbUrl;
   } catch (error) {
     console.error("Error fetching art details:", error);
     throw error;

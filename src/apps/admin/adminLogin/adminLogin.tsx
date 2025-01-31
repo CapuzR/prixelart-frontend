@@ -38,7 +38,7 @@ import { useSnackBar } from "context/GlobalContext";
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
-    marginTop: "64px",
+    marginTop: "64px !important",
     height: "calc(100vh - 64px)",
   },
   image: {

@@ -130,9 +130,7 @@ export default function AdminUsers({ permissions }) {
     setLoading(true);
     try {
       const admins = await loadAdmins();
-      if (globalParams === "/admin/user/read") {
         setAdmins(admins);
-      }
     } catch (error) {
       showSnackBar(
         "Error obteniendo lista de administradores, por favor inténtelo de nuevo."
@@ -202,7 +200,7 @@ export default function AdminUsers({ permissions }) {
         <Grid2 size={{ xs: 12, md: 12, lg: 12 }}>
           <Paper className={fixedHeightPaper}>
             {activeCrud === "create" ? (
-              <CreateAdmin />
+              <CreateAdmin loadAdmin={loadAdmin} />
             ) : activeCrud === "read" ? (
               <ReadAdmins
                 handleCallback={Callback}

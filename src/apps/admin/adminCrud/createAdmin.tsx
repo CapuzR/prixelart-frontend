@@ -36,7 +36,7 @@ import { createAdmin } from "./api";
 import { disabled } from "./services";
 import { AdminRole } from "../../../types/admin.types";
 
-export default function CreateAdmin() {
+export default function CreateAdmin({loadAdmin}) {
   // const classes = useStyles();
   const history = useHistory();
   const { showSnackBar } = useSnackBar();
@@ -89,12 +89,12 @@ export default function CreateAdmin() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (
-      !username &&
-      !area &&
-      !firstname &&
-      !lastname &&
-      !phone &&
-      !email &&
+      !username ||
+      !area ||
+      !firstname ||
+      !lastname ||
+      !phone ||
+      !email ||
       !password
     ) {
       showSnackBar("Por favor completa todos los campos requeridos.");
@@ -114,13 +114,15 @@ export default function CreateAdmin() {
       };
 
       const admin = await createAdmin(data);
-      console.log(admin);
-      if (admin.success === false) {
+      console.log(admin)
+      if (!admin) {
+        console.error("La respuesta de createAdmin es undefined");
+      } else if (admin.success === false) {
         setLoading(false);
         setButtonState(false);
         showSnackBar(admin.message);
-      } else {
-        showSnackBar("Registro de Admin exitoso.");
+      } else if (admin.success === true) {
+        showSnackBar(`Registro de Admin ${admin.newAdmin.username} exitoso.`);
         setUsername("");
         setFirstname("");
         setLastname("");
@@ -128,6 +130,7 @@ export default function CreateAdmin() {
         setPhone("");
         setPassword("");
         history.push({ pathname: "/admin/user/read" });
+        loadAdmin();
       }
     }
   };
@@ -137,9 +140,8 @@ export default function CreateAdmin() {
   };
 
   const setDisabled = () => {
-setButtonState(disabled())
-
-  }
+    setButtonState(disabled());
+  };
   return (
     <React.Fragment>
       <Title>Crear Administrador</Title>

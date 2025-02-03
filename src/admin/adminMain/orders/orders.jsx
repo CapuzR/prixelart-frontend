@@ -574,11 +574,11 @@ export default function Orders(props) {
       const prixer = await consumersFiltered.find(
         (con) =>
           con.firstname
-            ?.toLowerCase()
-            .includes(props?.basicData?.name?.toLowerCase()) &&
+            ?.toLowerCase().trim()
+            .includes(props?.basicData?.name?.toLowerCase().trim()) &&
           con.lastname
-            ?.toLowerCase()
-            .includes(props?.basicData?.lastname?.toLowerCase())
+            ?.toLowerCase().trim()
+            .includes(props?.basicData?.lastname?.toLowerCase().trim())
       )
 
       if (ORGS !== undefined) {

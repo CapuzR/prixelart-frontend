@@ -74,6 +74,7 @@ export default function UpdateAdmin({ admin, updateAdminProperty, loadAdmin }) {
 
   const loadRoles = async () => {
     try {
+      setLoading(true);
       const roles = await getRoles();
       setRoles(roles);
     } catch (error) {
@@ -85,7 +86,6 @@ export default function UpdateAdmin({ admin, updateAdminProperty, loadAdmin }) {
   };
 
   useEffect(() => {
-    setLoading(true);
     loadRoles();
   }, []);
 
@@ -132,6 +132,7 @@ export default function UpdateAdmin({ admin, updateAdminProperty, loadAdmin }) {
   };
 
   const changeFromAdminPassword = async () => {
+    // Esta función debe eliminarse!
     const data = {
       id: admin._id,
       newPassword: password,
@@ -161,7 +162,6 @@ export default function UpdateAdmin({ admin, updateAdminProperty, loadAdmin }) {
       showSnackBar(
         "Disculpa, tu contraseña debe tener entre 8 y 15 caracteres, incluyendo al menos: una minúscula, una mayúscula, un número y un caracter especial."
       );
-      // setSnackBarError(true);
     }
   };
 

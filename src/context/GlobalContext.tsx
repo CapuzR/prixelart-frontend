@@ -86,8 +86,8 @@ export const GlobalProvider: React.FC<GlobalProviderProps> = ({ children }) => {
 
   const showSnackBar = (message: string) => {
     console.log("Snackbar triggered with message: ", message);
-    setSnackbarMessage(message);
     setSnackbarOpen(true);
+    setSnackbarMessage(message);
   };
 
   const closeSnackBar = () => {

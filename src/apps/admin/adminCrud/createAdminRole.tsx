@@ -1,29 +1,21 @@
-import React from 'react';
-import { useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import React, { useState } from "react";
 
-import { makeStyles } from '@mui/styles';
-import Title from '../adminMain/Title';
-import axios from 'axios';
-import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
-import Grid from '@mui/material/Grid';
-import Snackbar from '@mui/material/Snackbar';
-import CircularProgress from '@mui/material/CircularProgress';
-import FormControl from '@mui/material/FormControl';
-import { Switch, Typography } from '@mui/material';
-import clsx from 'clsx';
+import axios from "axios";
 
-const useStyles = makeStyles((theme) => ({
-  seeMore: {
-    marginTop: theme.spacing(3),
-  },
-}));
+import Title from "../adminMain/Title";
+import TextField from "@mui/material/TextField";
+import Button from "@mui/material/Button";
+import Grid2 from "@mui/material/Grid2";
+import FormControl from "@mui/material/FormControl";
+import { Switch, Typography } from "@mui/material";
+
+import { useHistory } from "react-router-dom";
+import { useSnackBar, useLoading } from "context/GlobalContext";
 
 export default function CreateAdminRole() {
-  const classes = useStyles();
+  // const classes = useStyles();
   const history = useHistory();
-  const [area, setArea] = useState();
+  const [area, setArea] = useState<string>();
   const [detailOrder, setDetailOrder] = useState(false);
   const [detailPay, setDetailPay] = useState(false);
   const [orderStatus, setOrderStatus] = useState(false);
@@ -52,19 +44,15 @@ export default function CreateAdminRole() {
   const [modifyBestSellers, setModifyBestSellers] = useState(false);
   const [modifyArtBestSellers, setModifyArtBestSellers] = useState(false);
 
-  const [loading, setLoading] = useState(false);
   const [buttonState, setButtonState] = useState(false);
 
-  //Error states.
-  const [errorMessage, setErrorMessage] = useState();
-  const [snackBarError, setSnackBarError] = useState(false);
+  const { showSnackBar } = useSnackBar();
+  const { setLoading } = useLoading();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!area) {
-      setErrorMessage('Por favor indica el área');
-      setSnackBarError(true);
-      e.preventDefault();
+      showSnackBar("Por favor indica el área");
     } else {
       setLoading(true);
       setButtonState(true);
@@ -97,24 +85,23 @@ export default function CreateAdminRole() {
         artBan: artBan,
         modifyBestSellers: modifyBestSellers,
         modifyArtBestSellers: modifyArtBestSellers,
-        adminToken: localStorage.getItem('adminTokenV'),
+        adminToken: localStorage.getItem("adminTokenV"),
       };
-      const base_url = import.meta.env.VITE_BACKEND_URL + '/adminRole/create';
+      const base_url = import.meta.env.VITE_BACKEND_URL + "/adminRole/create";
       const response = await axios.post(base_url, data, {
         withCredentials: true,
       });
       if (response.data.success === false) {
         setLoading(false);
         setButtonState(false);
-        setErrorMessage(response.data.message);
-        setSnackBarError(true);
+        showSnackBar(response.data.message);
       } else {
-        setErrorMessage('Registro de Admin exitoso.');
-        setSnackBarError(true);
-        history.push({ pathname: '/user/read' });
+        showSnackBar("Registro de Admin exitoso.");
+        history.push({ pathname: "/user/read" });
       }
     }
   };
+
   const handleChangeDetailOrder = () => {
     setDetailOrder(!detailOrder);
   };
@@ -225,58 +212,51 @@ export default function CreateAdminRole() {
 
   return (
     <React.Fragment>
-      {loading && (
-        <div class={classes.loading}>
-          <CircularProgress />
-        </div>
-      )}
       <Title>Crear Rol de Administrador</Title>
-      <form className={classes.form} noValidate onSubmit={handleSubmit}>
-        <Grid container spacing={2}>
-          <Grid item xs={12}>
-            <FormControl
-              className={clsx(classes.margin, classes.textField)}
+      <form noValidate onSubmit={handleSubmit}>
+        <Grid2 size={{ xs: 12, md: 6 }}>
+          <FormControl
+            variant="outlined"
+            style={{ width: "100%", margin: "20px 0px" }}
+          >
+            <TextField
               variant="outlined"
-              style={{ width: '40%', marginRight: '20px', marginLeft: '20px' }}
-            >
-              <TextField
-                variant="outlined"
-                required
-                // fullWidth
-                label="Área"
-                value={area}
-                onChange={(e) => {
-                  setArea(e.target.value);
-                }}
-              />
-            </FormControl>
-          </Grid>
-          <Grid
-            item
-            xs={12}
-            md={5}
-            style={{
-              border: '2px',
-              borderStyle: 'solid',
-              borderColor: 'silver',
-              borderRadius: '10px',
-              marginRight: '20px',
-              marginLeft: '20px',
+              required
+              // fullWidth
+              label="Área"
+              value={area}
+              onChange={(e) => {
+                setArea(e.target.value);
+              }}
+            />
+          </FormControl>
+        </Grid2>
+        <Grid2 container spacing={2}>
+          <Grid2
+            size={{
+              xs: 12,
+              md: 6,
+            }}
+            sx={{
+              border: "2px",
+              borderStyle: "solid",
+              borderColor: "silver",
+              borderRadius: "10px",
+              padding: "10px"
             }}
           >
-            <Typography varaint="p" color="secondary" style={{ marginLeft: '20px' }}>
+            <Typography color="secondary" style={{ marginLeft: "20px" }}>
               Órdenes
             </Typography>
             <div>
               <FormControl
-                className={clsx(classes.margin, classes.textField)}
                 variant="outlined"
                 style={{
-                  width: '90%',
-                  display: 'flex',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
+                  width: "100%",
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
                 }}
               >
                 <Typography>Permiso para crear orden de compra</Typography>
@@ -290,14 +270,13 @@ export default function CreateAdminRole() {
             </div>
             <div>
               <FormControl
-                className={clsx(classes.margin, classes.textField)}
                 variant="outlined"
                 style={{
-                  width: '90%',
-                  display: 'flex',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
+                  width: "100%",
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
                 }}
               >
                 <Typography>Permiso para ver detalles de la orden</Typography>
@@ -311,14 +290,13 @@ export default function CreateAdminRole() {
             </div>
             <div>
               <FormControl
-                className={clsx(classes.margin, classes.textField)}
                 variant="outlined"
                 style={{
-                  width: '90%',
-                  display: 'flex',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
+                  width: "100%",
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
                 }}
               >
                 <Typography>Permiso para modificar status de pago</Typography>
@@ -332,17 +310,18 @@ export default function CreateAdminRole() {
             </div>
             <div>
               <FormControl
-                className={clsx(classes.margin, classes.textField)}
                 variant="outlined"
                 style={{
-                  width: '90%',
-                  display: 'flex',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
+                  width: "100%",
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
                 }}
               >
-                <Typography>Permiso para modificar status de orden de compra</Typography>
+                <Typography>
+                  Permiso para modificar status de orden de compra
+                </Typography>
                 <Switch
                   checked={orderStatus}
                   onChange={handleChangeOrderStatus}
@@ -351,33 +330,33 @@ export default function CreateAdminRole() {
                 />
               </FormControl>
             </div>
-          </Grid>
-          <Grid
-            item
-            xs={12}
-            md={5}
-            style={{
-              border: '2px',
-              borderStyle: 'solid',
-              borderColor: 'silver',
-              borderRadius: '10px',
-              marginRight: '20px',
-              marginLeft: '20px',
+          </Grid2>
+          <Grid2
+            size={{
+              xs: 12,
+              md: 6,
+            }}
+            sx={{
+              border: "2px",
+              borderStyle: "solid",
+              borderColor: "silver",
+              borderRadius: "10px",
+              padding: "10px"
+
             }}
           >
-            <Typography varaint="p" color="secondary" style={{ marginLeft: '20px' }}>
+            <Typography color="secondary" style={{ marginLeft: "20px" }}>
               Productos
             </Typography>
             <div>
               <FormControl
-                className={clsx(classes.margin, classes.textField)}
                 variant="outlined"
                 style={{
-                  width: '90%',
-                  display: 'flex',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
+                  width: "100%",
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
                 }}
               >
                 <Typography>Permiso para crear y editar productos</Typography>
@@ -391,14 +370,13 @@ export default function CreateAdminRole() {
             </div>
             <div>
               <FormControl
-                className={clsx(classes.margin, classes.textField)}
                 variant="outlined"
                 style={{
-                  width: '90%',
-                  display: 'flex',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
+                  width: "100%",
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
                 }}
               >
                 <Typography>Permiso para eliminar productos</Typography>
@@ -412,14 +390,13 @@ export default function CreateAdminRole() {
             </div>
             <div>
               <FormControl
-                className={clsx(classes.margin, classes.textField)}
                 variant="outlined"
                 style={{
-                  width: '90%',
-                  display: 'flex',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
+                  width: "100%",
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
                 }}
               >
                 <Typography>Permiso para crear descuentos</Typography>
@@ -433,14 +410,13 @@ export default function CreateAdminRole() {
             </div>
             <div>
               <FormControl
-                className={clsx(classes.margin, classes.textField)}
                 variant="outlined"
                 style={{
-                  width: '90%',
-                  display: 'flex',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
+                  width: "100%",
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
                 }}
               >
                 <Typography>Permiso para eliminar descuentos</Typography>
@@ -452,34 +428,33 @@ export default function CreateAdminRole() {
                 />
               </FormControl>
             </div>
-          </Grid>
-          <Grid
-            item
-            xs={12}
-            md={5}
+          </Grid2>
+          <Grid2
+            size={{
+              xs: 12,
+              md: 6,
+            }}
             style={{
-              border: '2px',
-              borderStyle: 'solid',
-              borderColor: 'silver',
-              borderRadius: '10px',
-              marginRight: '20px',
-              marginLeft: '20px',
-              marginTop: '20px',
+              border: "2px",
+              borderStyle: "solid",
+              borderColor: "silver",
+              borderRadius: "10px",
+              padding: "10px",
+              marginTop: "20px",
             }}
           >
-            <Typography varaint="p" color="secondary" style={{ marginLeft: '20px' }}>
+            <Typography color="secondary" style={{ marginLeft: "20px" }}>
               Preferencias
             </Typography>
             <div>
               <FormControl
-                className={clsx(classes.margin, classes.textField)}
                 variant="outlined"
                 style={{
-                  width: '90%',
-                  display: 'flex',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
+                  width: "100%",
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
                 }}
               >
                 <Typography>Permiso para actualizar valor del dolar</Typography>
@@ -493,14 +468,13 @@ export default function CreateAdminRole() {
             </div>
             <div>
               <FormControl
-                className={clsx(classes.margin, classes.textField)}
                 variant="outlined"
                 style={{
-                  width: '90%',
-                  display: 'flex',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
+                  width: "100%",
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
                 }}
               >
                 <Typography>Permiso para modificar banners</Typography>
@@ -514,17 +488,18 @@ export default function CreateAdminRole() {
             </div>
             <div>
               <FormControl
-                className={clsx(classes.margin, classes.textField)}
                 variant="outlined"
                 style={{
-                  width: '90%',
-                  display: 'flex',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
+                  width: "100%",
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
                 }}
               >
-                <Typography>Permiso para modificar productos más vendidos</Typography>
+                <Typography>
+                  Permiso para modificar productos más vendidos
+                </Typography>
                 <Switch
                   checked={modifyBestSellers}
                   onChange={handleChangeModifyBestSellers}
@@ -535,17 +510,18 @@ export default function CreateAdminRole() {
             </div>
             <div>
               <FormControl
-                className={clsx(classes.margin, classes.textField)}
                 variant="outlined"
                 style={{
-                  width: '90%',
-                  display: 'flex',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
+                  width: "100%",
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
                 }}
               >
-                <Typography>Permiso para modificar artes más vendidos</Typography>
+                <Typography>
+                  Permiso para modificar artes más vendidos
+                </Typography>
                 <Switch
                   checked={modifyArtBestSellers}
                   onChange={handleChangeModifyArtBestSellers}
@@ -556,17 +532,18 @@ export default function CreateAdminRole() {
             </div>
             <div>
               <FormControl
-                className={clsx(classes.margin, classes.textField)}
                 variant="outlined"
                 style={{
-                  width: '90%',
-                  display: 'flex',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
+                  width: "100%",
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
                 }}
               >
-                <Typography>Permiso para modificar términos y condiciones</Typography>
+                <Typography>
+                  Permiso para modificar términos y condiciones
+                </Typography>
                 <Switch
                   checked={modifyTermsAndCo}
                   onChange={handleChangeModifyTermsAndCo}
@@ -575,34 +552,33 @@ export default function CreateAdminRole() {
                 />
               </FormControl>
             </div>
-          </Grid>
-          <Grid
-            item
-            xs={12}
-            md={5}
+          </Grid2>
+          <Grid2
+            size={{
+              xs: 12,
+              md: 6,
+            }}
             style={{
-              border: '2px',
-              borderStyle: 'solid',
-              borderColor: 'silver',
-              borderRadius: '10px',
-              marginRight: '20px',
-              marginLeft: '20px',
-              marginTop: '20px',
+              border: "2px",
+              borderStyle: "solid",
+              borderColor: "silver",
+              borderRadius: "10px",
+              padding: "10px",
+              marginTop: "20px",
             }}
           >
-            <Typography varaint="p" color="secondary" style={{ marginLeft: '20px' }}>
+            <Typography color="secondary" style={{ marginLeft: "20px" }}>
               Prixers
             </Typography>
             <div>
               <FormControl
-                className={clsx(classes.margin, classes.textField)}
                 variant="outlined"
                 style={{
-                  width: '90%',
-                  display: 'flex',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
+                  width: "100%",
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
                 }}
               >
                 <Typography>Permiso para banear Prixer </Typography>
@@ -616,17 +592,18 @@ export default function CreateAdminRole() {
             </div>
             <div>
               <FormControl
-                className={clsx(classes.margin, classes.textField)}
                 variant="outlined"
                 style={{
-                  width: '90%',
-                  display: 'flex',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
+                  width: "100%",
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
                 }}
               >
-                <Typography>Permiso para modificar balance de Prixer</Typography>
+                <Typography>
+                  Permiso para modificar balance de Prixer
+                </Typography>
                 <Switch
                   checked={setPrixerBalance}
                   onChange={handleChangeSetPrixerBalance}
@@ -637,14 +614,13 @@ export default function CreateAdminRole() {
             </div>
             <div>
               <FormControl
-                className={clsx(classes.margin, classes.textField)}
                 variant="outlined"
                 style={{
-                  width: '90%',
-                  display: 'flex',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
+                  width: "100%",
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
                 }}
               >
                 <Typography>Permiso para leer movimientos</Typography>
@@ -658,14 +634,13 @@ export default function CreateAdminRole() {
             </div>
             <div>
               <FormControl
-                className={clsx(classes.margin, classes.textField)}
                 variant="outlined"
                 style={{
-                  width: '90%',
-                  display: 'flex',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
+                  width: "100%",
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
                 }}
               >
                 <Typography>Permiso para banear artes</Typography>
@@ -677,37 +652,38 @@ export default function CreateAdminRole() {
                 />
               </FormControl>
             </div>
-          </Grid>
-          <Grid
-            item
-            xs={12}
-            md={5}
+          </Grid2>
+          <Grid2
+            size={{
+              xs: 12,
+              md: 6,
+            }}
             style={{
-              border: '2px',
-              borderStyle: 'solid',
-              borderColor: 'silver',
-              borderRadius: '10px',
-              marginRight: '20px',
-              marginLeft: '20px',
-              marginTop: '20px',
+              border: "2px",
+              borderStyle: "solid",
+              borderColor: "silver",
+              borderRadius: "10px",
+              padding: "10px",
+              marginTop: "20px",
             }}
           >
-            <Typography varaint="p" color="secondary" style={{ marginLeft: '20px' }}>
+            <Typography color="secondary" style={{ marginLeft: "20px" }}>
               Métodos de Pago
             </Typography>
             <div>
               <FormControl
-                className={clsx(classes.margin, classes.textField)}
                 variant="outlined"
                 style={{
-                  width: '90%',
-                  display: 'flex',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
+                  width: "100%",
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
                 }}
               >
-                <Typography>Permiso para crear y modificar métodos de pago</Typography>
+                <Typography>
+                  Permiso para crear y modificar métodos de pago
+                </Typography>
                 <Switch
                   checked={createPaymentMethod}
                   onChange={handleChangeCreatePaymentMethod}
@@ -718,14 +694,13 @@ export default function CreateAdminRole() {
             </div>
             <div>
               <FormControl
-                className={clsx(classes.margin, classes.textField)}
                 variant="outlined"
                 style={{
-                  width: '90%',
-                  display: 'flex',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
+                  width: "100%",
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
                 }}
               >
                 <Typography>Permiso para eliminar métodos de pago</Typography>
@@ -737,37 +712,38 @@ export default function CreateAdminRole() {
                 />
               </FormControl>
             </div>
-          </Grid>
-          <Grid
-            item
-            xs={12}
-            md={5}
+          </Grid2>
+          <Grid2
+            size={{
+              xs: 12,
+              md: 6,
+            }}
             style={{
-              border: '2px',
-              borderStyle: 'solid',
-              borderColor: 'silver',
-              borderRadius: '10px',
-              marginRight: '20px',
-              marginLeft: '20px',
-              marginTop: '20px',
+              border: "2px",
+              borderStyle: "solid",
+              borderColor: "silver",
+              borderRadius: "10px",
+              padding: "10px",
+              marginTop: "20px",
             }}
           >
-            <Typography varaint="p" color="secondary" style={{ marginLeft: '20px' }}>
+            <Typography color="secondary" style={{ marginLeft: "20px" }}>
               Métodos de Envío
             </Typography>
             <div>
               <FormControl
-                className={clsx(classes.margin, classes.textField)}
                 variant="outlined"
                 style={{
-                  width: '90%',
-                  display: 'flex',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
+                  width: "100%",
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
                 }}
               >
-                <Typography>Permiso para crear y modificar métodos de envío</Typography>
+                <Typography>
+                  Permiso para crear y modificar métodos de envío
+                </Typography>
                 <Switch
                   checked={createShippingMethod}
                   onChange={handleChangeCreateShippingMethod}
@@ -778,14 +754,13 @@ export default function CreateAdminRole() {
             </div>
             <div>
               <FormControl
-                className={clsx(classes.margin, classes.textField)}
                 variant="outlined"
                 style={{
-                  width: '90%',
-                  display: 'flex',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
+                  width: "100%",
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
                 }}
               >
                 <Typography>Permiso para eliminar métodos de pago</Typography>
@@ -797,39 +772,37 @@ export default function CreateAdminRole() {
                 />
               </FormControl>
             </div>
-          </Grid>
-
-          <Grid
-            item
-            xs={12}
-            md={5}
+          </Grid2>
+          <Grid2
+            size={{
+              xs: 12,
+              md: 6,
+            }}
             style={{
-              border: '2px',
-              borderStyle: 'solid',
-              borderColor: 'silver',
-              borderRadius: '10px',
-              marginRight: '20px',
-              marginLeft: '20px',
-              marginTop: '20px',
+              border: "2px",
+              borderStyle: "solid",
+              borderColor: "silver",
+              borderRadius: "10px",
+              padding: "10px",
+              marginTop: "20px",
             }}
           >
-            <Typography varaint="p" color="secondary" style={{ marginLeft: '20px' }}>
+            <Typography color="secondary" style={{ marginLeft: "20px" }}>
               Testimonios
             </Typography>
             <div>
               <FormControl
-                className={clsx(classes.margin, classes.textField)}
                 variant="outlined"
                 style={{
-                  width: '90%',
-                  display: 'flex',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
+                  width: "100%",
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
                 }}
               >
                 <Typography>
-                  Permiso para crear, modificar, mostrar y ordenar testimonios{' '}
+                  Permiso para crear, modificar, mostrar y ordenar testimonios{" "}
                 </Typography>
                 <Switch
                   checked={createTestimonial}
@@ -839,14 +812,13 @@ export default function CreateAdminRole() {
                 />
               </FormControl>
               <FormControl
-                className={clsx(classes.margin, classes.textField)}
                 variant="outlined"
                 style={{
-                  width: '90%',
-                  display: 'flex',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
+                  width: "100%",
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
                 }}
               >
                 <Typography>Permiso para eliminar testimonios </Typography>
@@ -858,37 +830,38 @@ export default function CreateAdminRole() {
                 />
               </FormControl>
             </div>
-          </Grid>
-          <Grid
-            item
-            xs={12}
-            md={5}
+          </Grid2>
+          <Grid2
+            size={{
+              xs: 12,
+              md: 6,
+            }}
             style={{
-              border: '2px',
-              borderStyle: 'solid',
-              borderColor: 'silver',
-              borderRadius: '10px',
-              marginRight: '20px',
-              marginLeft: '20px',
-              marginTop: '20px',
+              border: "2px",
+              borderStyle: "solid",
+              borderColor: "silver",
+              borderRadius: "10px",
+              padding: "10px",
+              marginTop: "20px",
             }}
           >
-            <Typography varaint="p" color="secondary" style={{ marginLeft: '20px' }}>
-              Usuarios{' '}
+            <Typography color="secondary" style={{ marginLeft: "20px" }}>
+              Usuarios{" "}
             </Typography>
             <div>
               <FormControl
-                className={clsx(classes.margin, classes.textField)}
                 variant="outlined"
                 style={{
-                  width: '90%',
-                  display: 'flex',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
+                  width: "100%",
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
                 }}
               >
-                <Typography>Permiso para crear, modificar y eliminar Admins </Typography>
+                <Typography>
+                  Permiso para crear, modificar y eliminar Admins{" "}
+                </Typography>
                 <Switch
                   checked={modifyAdmins}
                   onChange={handleChangeModifyAdmins}
@@ -897,37 +870,38 @@ export default function CreateAdminRole() {
                 />
               </FormControl>
             </div>
-          </Grid>
-          <Grid
-            item
-            xs={12}
-            md={5}
+          </Grid2>
+          <Grid2
+            size={{
+              xs: 12,
+              md: 6,
+            }}
             style={{
-              border: '2px',
-              borderStyle: 'solid',
-              borderColor: 'silver',
-              borderRadius: '10px',
-              marginRight: '20px',
-              marginLeft: '20px',
-              marginTop: '20px',
+              border: "2px",
+              borderStyle: "solid",
+              borderColor: "silver",
+              borderRadius: "10px",
+              padding: "10px",
+              marginTop: "20px",
             }}
           >
-            <Typography varaint="p" color="secondary" style={{ marginLeft: '20px' }}>
+            <Typography color="secondary" style={{ marginLeft: "20px" }}>
               Clientes frecuentes
             </Typography>
             <div>
               <FormControl
-                className={clsx(classes.margin, classes.textField)}
                 variant="outlined"
                 style={{
-                  width: '90%',
-                  display: 'flex',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
+                  width: "100%",
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
                 }}
               >
-                <Typography>Permiso para crear y modificar clientes frecuentes</Typography>
+                <Typography>
+                  Permiso para crear y modificar clientes frecuentes
+                </Typography>
                 <Switch
                   checked={createConsumer}
                   onChange={handleChangeCreateConsumer}
@@ -936,14 +910,13 @@ export default function CreateAdminRole() {
                 />
               </FormControl>
               <FormControl
-                className={clsx(classes.margin, classes.textField)}
                 variant="outlined"
                 style={{
-                  width: '90%',
-                  display: 'flex',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
+                  width: "100%",
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
                 }}
               >
                 <Typography>Permiso para leer clientes frecuentes</Typography>
@@ -955,17 +928,18 @@ export default function CreateAdminRole() {
                 />
               </FormControl>
               <FormControl
-                className={clsx(classes.margin, classes.textField)}
                 variant="outlined"
                 style={{
-                  width: '90%',
-                  display: 'flex',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
+                  width: "100%",
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
                 }}
               >
-                <Typography>Permiso para eliminar clientes frecuentes</Typography>
+                <Typography>
+                  Permiso para eliminar clientes frecuentes
+                </Typography>
                 <Switch
                   checked={deleteConsumer}
                   onChange={handleChangeDeleteConsumer}
@@ -974,20 +948,24 @@ export default function CreateAdminRole() {
                 />
               </FormControl>
             </div>
-          </Grid>
-          <Grid item xs={12} style={{ display: 'flex', justifyContent: 'center' }}>
-            <Button variant="contained" color="primary" type="submit" disabled={buttonState}>
+          </Grid2>
+          <Grid2
+            size={{
+              xs: 12,
+            }}
+            style={{ display: "flex", justifyContent: "center" }}
+          >
+            <Button
+              variant="contained"
+              color="primary"
+              type="submit"
+              disabled={buttonState}
+            >
               Crear
             </Button>
-          </Grid>
-        </Grid>
+          </Grid2>
+        </Grid2>
       </form>
-      <Snackbar
-        open={snackBarError}
-        autoHideDuration={1000}
-        message={errorMessage}
-        className={classes.snackbar}
-      />
     </React.Fragment>
   );
 }

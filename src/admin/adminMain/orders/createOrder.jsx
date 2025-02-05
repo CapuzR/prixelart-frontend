@@ -359,36 +359,36 @@ export default function CreateOrder(props) {
     const base_url3 = process.env.REACT_APP_BACKEND_URL + "/order/sendEmail"
 
     await axios.post(base_url, input).then(async (response) => {
-      if (response.data.res.success) {
-        for (const item of props.buyState) {
-          // if (item.product.autoCertified === true) {
-          //   let art = item.art
-          //   let last = 0
-          //   const matches = props.buyState.filter(
-          //     (a) => a.art.artId === art.artId
-          //   )
-          //   const sequences = matches.map(
-          //     (item) => item.art.certificate.sequence
-          //   )
-          //   last = Math.max(...sequences)
-            
-          //   const URI =
-          //     process.env.REACT_APP_BACKEND_URL + "/art/rank/" + art.artId
-          //   art.points = parseInt(art.points)
-          //   const certificate = {
-          //     code: art.certificate.code,
-          //     serial: item.art.certificate.serial,
-          //     sequence: last,
-          //   }
-          //   art.certificate = certificate
-          //   await axios.put(
-          //     URI,
-          //     art,
-          //     { headers: { adminToken: localStorage.getItem("adminTokenV") } },
-          //     { withCredentials: true }
-          //   )
-          // }
-        }
+      if (response.data.order.res.success) {
+        // for (const item of props.buyState) {
+        // if (item.product.autoCertified === true) {
+        //   let art = item.art
+        //   let last = 0
+        //   const matches = props.buyState.filter(
+        //     (a) => a.art.artId === art.artId
+        //   )
+        //   const sequences = matches.map(
+        //     (item) => item.art.certificate.sequence
+        //   )
+        //   last = Math.max(...sequences)
+
+        //   const URI =
+        //     process.env.REACT_APP_BACKEND_URL + "/art/rank/" + art.artId
+        //   art.points = parseInt(art.points)
+        //   const certificate = {
+        //     code: art.certificate.code,
+        //     serial: item.art.certificate.serial,
+        //     sequence: last,
+        //   }
+        //   art.certificate = certificate
+        //   await axios.put(
+        //     URI,
+        //     art,
+        //     { headers: { adminToken: localStorage.getItem("adminTokenV") } },
+        //     { withCredentials: true }
+        //   )
+        // }
+        // }
         if (basicData?.email && basicData?.email.length > 8) {
           await axios.post(base_url3, input).then(async (response) => {
             props.setErrorMessage(response.data.info)
@@ -484,10 +484,7 @@ export default function CreateOrder(props) {
           alignItems: "center",
         }}
       >
-        <Typography
-          variant={"h5"}
-          color={"primary"}
-        >
+        <Typography variant={"h5"} color={"primary"}>
           Creación de orden
         </Typography>
 
@@ -495,17 +492,10 @@ export default function CreateOrder(props) {
           <CloseIcon />
         </IconButton>
       </Grid>
-      <Stepper
-        activeStep={activeStep}
-        nonLinear
-        style={{ width: "100%" }}
-      >
+      <Stepper activeStep={activeStep} nonLinear style={{ width: "100%" }}>
         {steps.map((label, index) => {
           return (
-            <Step
-              key={label}
-              {...props}
-            >
+            <Step key={label} {...props}>
               <StepButton onClick={handleStep(index)}>{label}</StepButton>
             </Step>
           )
@@ -538,7 +528,6 @@ export default function CreateOrder(props) {
             setConsumerType={setConsumerType}
             consumerType={consumerType}
             setConsumers={props.setConsumers}
-
           />
         )}
         {activeStep === 1 && (

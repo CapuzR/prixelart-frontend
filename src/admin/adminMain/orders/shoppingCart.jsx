@@ -705,10 +705,7 @@ export default function ShoppingCart(props) {
   }
 
   return (
-    <Grid
-      container
-      style={{ display: "flex", justifyContent: "center" }}
-    >
+    <Grid container style={{ display: "flex", justifyContent: "center" }}>
       {props.buyState &&
         props.buyState.length > 0 &&
         props.buyState.map((buy, index) => {
@@ -739,10 +736,7 @@ export default function ShoppingCart(props) {
                 }}
                 elevation={3}
               >
-                <Grid
-                  item
-                  xs={5}
-                >
+                <Grid item xs={5}>
                   <div
                     style={{
                       display: "flex",
@@ -806,123 +800,130 @@ export default function ShoppingCart(props) {
                             })}
                         </Select>
                       </FormControl>
-                      {buy.product?.variants.length > 0 && (
-                        <FormControl
-                          className={classes.formControl}
-                          style={{ minWidth: 200 }}
-                        >
-                          <InputLabel style={{ paddingLeft: 15 }}>
-                            {buy.product?.attributes[0]?.name}
-                          </InputLabel>
-                          <Select
-                            id={"variant " + index}
-                            variant="outlined"
-                            value={
-                              props.buyState[index].product?.selection?.name ||
-                              props.buyState[index].product?.selection
-                            }
-                            onChange={(e) => {
-                              handleVariantProduct(
-                                e.target.value,
-                                index,
-                                props.buyState[index]
-                              )
-                            }}
+                      {buy.product?.variants &&
+                        buy.product?.variants?.length > 0 && (
+                          <FormControl
+                            className={classes.formControl}
+                            style={{ minWidth: 200 }}
                           >
-                            {buy.product.hasSpecialVar && (
-                              <MenuItem value={custom.name}>
-                                {custom.name}
-                              </MenuItem>
-                            )}
-                            {productList
-                              .find(
-                                (product) => product.name === buy.product.name
-                              )
-                              ?.variants.map((a) => {
-                                if (a.active === true)
-                                  return (
-                                    <MenuItem
-                                      value={
-                                        a.attributes[1] !== undefined
+                            <InputLabel style={{ paddingLeft: 15 }}>
+                              {buy.product?.attributes[0]?.name}
+                            </InputLabel>
+                            <Select
+                              id={"variant " + index}
+                              variant="outlined"
+                              value={
+                                props.buyState[index].product?.selection
+                                  ?.name ||
+                                props.buyState[index].product?.selection
+                              }
+                              onChange={(e) => {
+                                handleVariantProduct(
+                                  e.target.value,
+                                  index,
+                                  props.buyState[index]
+                                )
+                              }}
+                            >
+                              {buy.product.hasSpecialVar && (
+                                <MenuItem value={custom.name}>
+                                  {custom.name}
+                                </MenuItem>
+                              )}
+                              {productList
+                                .find(
+                                  (product) => product.name === buy.product.name
+                                )
+                                ?.variants.map((a) => {
+                                  if (a.active === true)
+                                    return (
+                                      <MenuItem
+                                        value={
+                                          a.attributes[1] !== undefined
+                                            ? a.name +
+                                              " " +
+                                              a.attributes[1].value
+                                            : a.name
+                                        }
+                                      >
+                                        {/* {a.name} */}
+                                        {a.attributes[1] !== undefined
                                           ? a.name + " " + a.attributes[1].value
-                                          : a.name
-                                      }
-                                    >
-                                      {/* {a.name} */}
-                                      {a.attributes[1] !== undefined
-                                        ? a.name + " " + a.attributes[1].value
-                                        : a.name}
-                                    </MenuItem>
-                                  )
-                              })}
-                          </Select>
-                          {(buy.product?.selection?.name === "Personalizado" ||
-                            buy.product.selection === "Personalizado") && (
-                            <div style={{ display: "flex", marginTop: "-5px" }}>
-                              <TextField
-                                variant="outlined"
-                                label="Ancho"
-                                className={classes.textField}
-                                style={{ width: 100, marginRight: 10 }}
-                                defaultValue={
-                                  buy.product.selection.attributes &&
-                                  buy.product?.selection?.attributes[0]?.value
-                                    ? buy.product?.selection?.attributes[0]?.value?.split(
-                                        "x"
-                                      )[0]
-                                    : 0
-                                }
-                                onChange={(e) =>
-                                  modifyVariant(
-                                    buy.product,
-                                    index,
-                                    "width",
-                                    e.target.value
-                                  )
-                                }
-                                InputProps={{
-                                  endAdornment: (
-                                    <InputAdornment position="end">
-                                      cm
-                                    </InputAdornment>
-                                  ),
-                                }}
-                                margin="normal"
-                              />
-                              <TextField
-                                variant="outlined"
-                                label="Alto"
-                                className={classes.textField}
-                                style={{ width: 100 }}
-                                onChange={(e) =>
-                                  modifyVariant(
-                                    buy.product,
-                                    index,
-                                    "height",
-                                    e.target.value
-                                  )
-                                }
-                                defaultValue={
-                                  buy.product.selection.attributes &&
-                                  buy.product?.selection?.attributes[0]?.value
-                                    ? buy.product?.selection?.attributes[0]?.value
-                                        ?.split("x")[1]
-                                        .slice(0, -2)
-                                    : 0
-                                }
-                                InputProps={{
-                                  endAdornment: (
-                                    <InputAdornment position="end">
-                                      cm
-                                    </InputAdornment>
-                                  ),
-                                }}
-                                margin="normal"
-                              />
-                            </div>
-                          )}
-                        </FormControl>
-                      )}
+                                          : a.name}
+                                      </MenuItem>
+                                    )
+                                })}
+                            </Select>
+                            {(buy.product?.selection?.name ===
+                              "Personalizado" ||
+                              buy.product.selection === "Personalizado") && (
+                              <div
+                                style={{ display: "flex", marginTop: "-5px" }}
+                              >
+                                <TextField
+                                  variant="outlined"
+                                  label="Ancho"
+                                  className={classes.textField}
+                                  style={{ width: 100, marginRight: 10 }}
+                                  defaultValue={
+                                    buy.product.selection.attributes &&
+                                    buy.product?.selection?.attributes[0]?.value
+                                      ? buy.product?.selection?.attributes[0]?.value?.split(
+                                          "x"
+                                        )[0]
+                                      : 0
+                                  }
+                                  onChange={(e) =>
+                                    modifyVariant(
+                                      buy.product,
+                                      index,
+                                      "width",
+                                      e.target.value
+                                    )
+                                  }
+                                  InputProps={{
+                                    endAdornment: (
+                                      <InputAdornment position="end">
+                                        cm
+                                      </InputAdornment>
+                                    ),
+                                  }}
+                                  margin="normal"
+                                />
+                                <TextField
+                                  variant="outlined"
+                                  label="Alto"
+                                  className={classes.textField}
+                                  style={{ width: 100 }}
+                                  onChange={(e) =>
+                                    modifyVariant(
+                                      buy.product,
+                                      index,
+                                      "height",
+                                      e.target.value
+                                    )
+                                  }
+                                  defaultValue={
+                                    buy.product.selection.attributes &&
+                                    buy.product?.selection?.attributes[0]?.value
+                                      ? buy.product?.selection?.attributes[0]?.value
+                                          ?.split("x")[1]
+                                          .slice(0, -2)
+                                      : 0
+                                  }
+                                  InputProps={{
+                                    endAdornment: (
+                                      <InputAdornment position="end">
+                                        cm
+                                      </InputAdornment>
+                                    ),
+                                  }}
+                                  margin="normal"
+                                />
+                              </div>
+                            )}
+                          </FormControl>
+                        )}
 
                       {props?.selectedPrixer?.username === undefined &&
                         props.discountList !== undefined &&
@@ -978,11 +979,7 @@ export default function ShoppingCart(props) {
                     </div>
                   </div>
                 </Grid>
-                <Grid
-                  item
-                  xs={6}
-                  style={{ display: "flex" }}
-                >
+                <Grid item xs={6} style={{ display: "flex" }}>
                   <div
                     style={{
                       backgroundColor: "#eeeeee",

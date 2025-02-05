@@ -421,16 +421,31 @@ export default function ConsumerData(props) {
       })
     } else if (event?.type === "click") {
       const valuev2 = value.split(",")
+
+      const normalizedValue = value.trim().toLowerCase()
+
       let prixer = prixers.find(
         (prixer) =>
           prixer?.firstName === valuev2[0] &&
           prixer?.lastName === valuev2[1]?.trim()
       )
-      let selected = consumers.find(
-        (consumer) =>
-          consumer.firstname === valuev2[0] &&
-          consumer.lastname === valuev2[1]?.trim()
-      )
+
+      // let selected = consumers.find(
+      //   (consumer) =>
+      //     consumer.firstname.includes(valuev2[0]) &&
+      //     consumer.lastname.includes(valuev2[1]?.trim())
+      // );
+      const selected = consumers.find((prixer) => {
+        let fullName
+        if (prixer?.lastname?.length > 1) {
+          fullName = `${prixer.firstname}, ${prixer.lastname}`
+            .trim()
+            .toLowerCase()
+        } else {
+          fullName = `${prixer.firstname}, `.trim().toLowerCase()
+        }
+        return fullName === normalizedValue
+      })
       if (selected) {
         props.setSelectedConsumer(selected)
         props.setConsumerType(selected.consumerType)
@@ -461,9 +476,12 @@ export default function ConsumerData(props) {
           ci: prixer?.ci,
         })
         props.setConsumerType("Prixer")
-      } else if (prixer === undefined && selected.username) {
+      } else if (
+        (prixer === undefined || prixer === null) &&
+        selected?.username
+      ) {
         prixer = prixers.find(
-          (prixer) => prixer?.username === selected.username
+          (prixer) => prixer?.username === selected?.username
         )
         props.setSelectedPrixer(prixer)
       }
@@ -472,26 +490,13 @@ export default function ConsumerData(props) {
 
   return (
     <>
-      <Grid
-        container
-        spacing={2}
-      >
-        <Grid
-          container
-          style={{ marginTop: 20 }}
-        >
+      <Grid container spacing={2}>
+        <Grid container style={{ marginTop: 20 }}>
           <Title>Información del cliente</Title>
           {loading && <Typography>Cargando clientes </Typography>}
         </Grid>
         <Grid container>
-          <Grid
-            item
-            lg={4}
-            md={4}
-            sm={4}
-            xs={12}
-            className={classes.gridInput}
-          >
+          <Grid item lg={4} md={4} sm={4} xs={12} className={classes.gridInput}>
             <Autocomplete
               freeSolo
               loading={loading}
@@ -520,14 +525,7 @@ export default function ConsumerData(props) {
               )}
             />
           </Grid>
-          <Grid
-            item
-            lg={4}
-            md={4}
-            sm={4}
-            xs={12}
-            className={classes.gridInput}
-          >
+          <Grid item lg={4} md={4} sm={4} xs={12} className={classes.gridInput}>
             <TextField
               variant="outlined"
               id="standard-name"
@@ -545,14 +543,7 @@ export default function ConsumerData(props) {
             />
           </Grid>
 
-          <Grid
-            item
-            lg={4}
-            md={4}
-            sm={4}
-            xs={12}
-            className={classes.gridInput}
-          >
+          <Grid item lg={4} md={4} sm={4} xs={12} className={classes.gridInput}>
             <TextField
               variant="outlined"
               id="standard-name"
@@ -570,14 +561,7 @@ export default function ConsumerData(props) {
               margin="normal"
             />
           </Grid>
-          <Grid
-            item
-            lg={4}
-            md={4}
-            sm={4}
-            xs={12}
-            className={classes.gridInput}
-          >
+          <Grid item lg={4} md={4} sm={4} xs={12} className={classes.gridInput}>
             <TextField
               variant="outlined"
               id="standard-name"
@@ -603,14 +587,7 @@ export default function ConsumerData(props) {
               }}
             />
           </Grid>
-          <Grid
-            item
-            lg={4}
-            md={4}
-            sm={4}
-            xs={12}
-            className={classes.gridInput}
-          >
+          <Grid item lg={4} md={4} sm={4} xs={12} className={classes.gridInput}>
             <TextField
               variant="outlined"
               id="standard-name"
@@ -635,14 +612,7 @@ export default function ConsumerData(props) {
               }}
             />
           </Grid>
-          <Grid
-            item
-            lg={4}
-            md={4}
-            sm={4}
-            xs={12}
-            className={classes.gridInput}
-          >
+          <Grid item lg={4} md={4} sm={4} xs={12} className={classes.gridInput}>
             <FormControl
               style={{ minWidth: "100%", marginTop: 15 }}
               variant="outlined"
@@ -661,10 +631,7 @@ export default function ConsumerData(props) {
                 </MenuItem>
                 {["Particular", "DAs", "Corporativo", "Prixer", "Artista"].map(
                   (n) => (
-                    <MenuItem
-                      key={n}
-                      value={n}
-                    >
+                    <MenuItem key={n} value={n}>
                       {n}
                     </MenuItem>
                   )
@@ -709,24 +676,12 @@ export default function ConsumerData(props) {
         </Grid>
       </Grid>
 
-      <Grid
-        container
-        spacing={2}
-      >
-        <Grid
-          container
-          style={{ marginTop: 20 }}
-        >
+      <Grid container spacing={2}>
+        <Grid container style={{ marginTop: 20 }}>
           <Title>Datos de entrega</Title>
         </Grid>
         <Grid container>
-          <Grid
-            item
-            lg={12}
-            md={12}
-            sm={12}
-            xs={12}
-          >
+          <Grid item lg={12} md={12} sm={12} xs={12}>
             <FormControlLabel
               control={
                 <Checkbox
@@ -739,14 +694,7 @@ export default function ConsumerData(props) {
               label="Igual a Datos básicos"
             />
           </Grid>
-          <Grid
-            item
-            lg={4}
-            md={4}
-            sm={4}
-            xs={12}
-            className={classes.gridInput}
-          >
+          <Grid item lg={4} md={4} sm={4} xs={12} className={classes.gridInput}>
             <TextField
               variant="outlined"
               id="standard-name"
@@ -770,14 +718,7 @@ export default function ConsumerData(props) {
               margin="normal"
             />
           </Grid>
-          <Grid
-            item
-            lg={4}
-            md={4}
-            sm={4}
-            xs={12}
-            className={classes.gridInput}
-          >
+          <Grid item lg={4} md={4} sm={4} xs={12} className={classes.gridInput}>
             <TextField
               variant="outlined"
               id="standard-name"
@@ -801,14 +742,7 @@ export default function ConsumerData(props) {
               margin="normal"
             />
           </Grid>
-          <Grid
-            item
-            lg={4}
-            md={4}
-            sm={4}
-            xs={12}
-            className={classes.gridInput}
-          >
+          <Grid item lg={4} md={4} sm={4} xs={12} className={classes.gridInput}>
             <TextField
               variant="outlined"
               id="standard-name"
@@ -896,10 +830,7 @@ export default function ConsumerData(props) {
             xs={12}
             className={classes.gridInput}
           >
-            <FormControl
-              style={{ minWidth: "100%" }}
-              variant="outlined"
-            >
+            <FormControl style={{ minWidth: "100%" }} variant="outlined">
               <InputLabel>Método de entrega</InputLabel>
               <Select
                 id="shippingMethod"
@@ -914,18 +845,12 @@ export default function ConsumerData(props) {
                   props.setShippingMethod(e.target.value)
                 }}
               >
-                <MenuItem
-                  value=""
-                  key={"vacío"}
-                >
+                <MenuItem value="" key={"vacío"}>
                   <em></em>
                 </MenuItem>
                 {shippingList &&
                   shippingList.map((n) => (
-                    <MenuItem
-                      key={n.name}
-                      value={n}
-                    >
+                    <MenuItem key={n.name} value={n}>
                       {n.name}
                     </MenuItem>
                   ))}
@@ -940,10 +865,7 @@ export default function ConsumerData(props) {
             xs={12}
             className={classes.gridInput}
           >
-            <FormControl
-              style={{ minWidth: "100%" }}
-              variant="outlined"
-            >
+            <FormControl style={{ minWidth: "100%" }} variant="outlined">
               <TextField
                 style={{
                   width: "100%",
@@ -988,24 +910,12 @@ export default function ConsumerData(props) {
         </Grid>
       </Grid>
 
-      <Grid
-        container
-        spacing={2}
-      >
-        <Grid
-          container
-          style={{ marginTop: 20 }}
-        >
+      <Grid container spacing={2}>
+        <Grid container style={{ marginTop: 20 }}>
           <Title>Datos de facturación</Title>
         </Grid>
         <Grid container>
-          <Grid
-            item
-            lg={12}
-            md={12}
-            sm={12}
-            xs={12}
-          >
+          <Grid item lg={12} md={12} sm={12} xs={12}>
             <FormControlLabel
               control={
                 <Checkbox
@@ -1039,14 +949,7 @@ export default function ConsumerData(props) {
               label="Igual a Datos de entrega"
             />
           </Grid>
-          <Grid
-            item
-            lg={4}
-            md={4}
-            sm={4}
-            xs={12}
-            className={classes.gridInput}
-          >
+          <Grid item lg={4} md={4} sm={4} xs={12} className={classes.gridInput}>
             <TextField
               variant="outlined"
               id="standard-name"
@@ -1074,14 +977,7 @@ export default function ConsumerData(props) {
               margin="normal"
             />
           </Grid>
-          <Grid
-            item
-            lg={4}
-            md={4}
-            sm={4}
-            xs={12}
-            className={classes.gridInput}
-          >
+          <Grid item lg={4} md={4} sm={4} xs={12} className={classes.gridInput}>
             <TextField
               variant="outlined"
               id="standard-name"
@@ -1109,14 +1005,7 @@ export default function ConsumerData(props) {
               margin="normal"
             />
           </Grid>
-          <Grid
-            item
-            lg={4}
-            md={4}
-            sm={4}
-            xs={12}
-            className={classes.gridInput}
-          >
+          <Grid item lg={4} md={4} sm={4} xs={12} className={classes.gridInput}>
             <TextField
               variant="outlined"
               id="standard-name"
@@ -1152,14 +1041,7 @@ export default function ConsumerData(props) {
               }}
             />
           </Grid>
-          <Grid
-            item
-            lg={8}
-            md={8}
-            sm={8}
-            xs={12}
-            className={classes.gridInput}
-          >
+          <Grid item lg={8} md={8} sm={8} xs={12} className={classes.gridInput}>
             <TextField
               variant="outlined"
               id="standard-name"
@@ -1178,14 +1060,7 @@ export default function ConsumerData(props) {
               margin="normal"
             />
           </Grid>
-          <Grid
-            item
-            lg={4}
-            md={4}
-            sm={4}
-            xs={12}
-            className={classes.gridInput}
-          >
+          <Grid item lg={4} md={4} sm={4} xs={12} className={classes.gridInput}>
             <TextField
               variant="outlined"
               id="standard-name"

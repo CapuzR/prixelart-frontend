@@ -80,8 +80,8 @@ export default function CreateAdmin({ loadAdmin }) {
     loadRoles();
   }, []);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
     if (
       !username ||
       !area ||

@@ -1,29 +1,29 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState } from "react"
 
-import { Theme } from "@mui/material/styles";
-import { makeStyles } from "tss-react/mui";
-import Grid2 from "@mui/material/Grid2";
-import Paper from "@mui/material/Paper";
-import Fab from "@mui/material/Fab";
+import { Theme } from "@mui/material/styles"
+import { makeStyles } from "tss-react/mui"
+import Grid2 from "@mui/material/Grid2"
+import Paper from "@mui/material/Paper"
+import Fab from "@mui/material/Fab"
 
-import AddIcon from "@mui/icons-material/Add";
-import ViewListIcon from "@mui/icons-material/ViewList";
+import AddIcon from "@mui/icons-material/Add"
+import ViewListIcon from "@mui/icons-material/ViewList"
 
-import { useHistory, useLocation } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom"
 
-import CreateAdmin from "../../adminCrud/createAdmin";
-import ReadAdmins from "../../adminCrud/readAdmins";
-import UpdateAdmin from "../../adminCrud/updateAdmin";
-import CreateAdminRole from "../../adminCrud/createAdminRole";
-import UpdateAdminRole from "../../adminCrud/updateAdminRole";
+import CreateAdmin from "../../adminCrud/createAdmin"
+import ReadAdmins from "../../adminCrud/readAdmins"
+import UpdateAdmin from "../../adminCrud/updateAdmin"
+import CreateAdminRole from "../../adminCrud/createAdminRole"
+import UpdateAdminRole from "../../adminCrud/updateAdminRole"
 
-import { getAdmins } from "./api";
+import { getAdmins } from "./api"
 
-import { Admin } from "./../../../../types/admin.types";
+import { Admin } from "./../../../../types/admin.types"
 
-import { useSnackBar, useLoading } from "context/GlobalContext";
+import { useSnackBar, useLoading } from "context/GlobalContext"
 
-const drawerWidth = 240;
+const drawerWidth = 240
 
 const useStyles = makeStyles()((theme: Theme) => {
   return {
@@ -108,51 +108,51 @@ const useStyles = makeStyles()((theme: Theme) => {
       right: 0,
       position: "absolute",
     },
-  };
-});
+  }
+})
 
 export default function AdminUsers({ permissions }) {
-  const { classes, cx } = useStyles();
-  const location = useLocation();
-  const history = useHistory();
-  const fixedHeightPaper = cx(classes.paper);
-  const [activeCrud, setActiveCrud] = useState("read");
-  const [page, setPage] = useState(0);
-  const [admin, setAdmin] = useState<Partial<Admin>>();
-  const [admins, setAdmins] = useState();
+  const { classes, cx } = useStyles()
+  const location = useLocation()
+  const history = useHistory()
+  const fixedHeightPaper = cx(classes.paper)
+  const [activeCrud, setActiveCrud] = useState("read")
+  const [page, setPage] = useState(0)
+  const [admin, setAdmin] = useState<Partial<Admin>>()
+  const [admins, setAdmins] = useState()
   // const globalParams = window.location.pathname;
-  const { showSnackBar } = useSnackBar();
-  const { setLoading } = useLoading();
+  const { showSnackBar } = useSnackBar()
+  const { setLoading } = useLoading()
 
   useEffect(() => {
-    loadAdmin();
-  }, []);
+    loadAdmin()
+  }, [])
 
   const loadAdmin = async () => {
-    setLoading(true);
+    setLoading(true)
     try {
-      const admins = await getAdmins();
-      setAdmins(admins);
+      const admins = await getAdmins()
+      setAdmins(admins)
     } catch (error) {
       showSnackBar(
         "Error obteniendo lista de administradores, por favor inténtelo de nuevo."
-      );
-      console.error("Error obteniendo listado de administradores:", error);
+      )
+      console.error("Error obteniendo listado de administradores:", error)
     }
-  };
+  }
 
   const handleUserAction = (action: string) => {
     if (action === "create" && page === 0) {
-      setActiveCrud("create");
-      history.push("/admin/user/" + action);
+      setActiveCrud("create")
+      history.push("/admin/user/" + action)
     } else if (action === "create" && page === 1) {
-      setActiveCrud("createRole");
+      setActiveCrud("createRole")
       // history.push("/admin/user/createRole");
     } else {
-      history.push("/admin/user/" + action);
-      setActiveCrud(action);
+      history.push("/admin/user/" + action)
+      setActiveCrud(action)
     }
-  };
+  }
 
   useEffect(() => {
     location.pathname.split("/").length === 5
@@ -162,8 +162,8 @@ export default function AdminUsers({ permissions }) {
       : location.pathname.split("/").length === 4 &&
         setActiveCrud(
           location.pathname.split("/")[location.pathname.split("/").length - 1]
-        );
-  }, [location.pathname]);
+        )
+  }, [location.pathname])
 
   const updateAdminProperty = (property: any, value: string) => {
     if (property === "all") {
@@ -175,21 +175,21 @@ export default function AdminUsers({ permissions }) {
         phone: "",
         area: "",
         isSeller: false,
-      });
+      })
     } else {
       setAdmin((prevAdmin) => ({
         ...prevAdmin,
         [property]: value,
-      }));
+      }))
     }
-  };
+  }
 
   function Callback(childData) {
-    setPage(childData);
+    setPage(childData)
   }
 
   function Callback2(childData) {
-    setAdmin(childData);
+    setAdmin(childData)
   }
 
   return (
@@ -200,7 +200,7 @@ export default function AdminUsers({ permissions }) {
             color="default"
             aria-label="edit"
             onClick={() => {
-              handleUserAction("read");
+              handleUserAction("read")
             }}
             style={{ right: 10 }}
           >
@@ -210,7 +210,7 @@ export default function AdminUsers({ permissions }) {
             color="primary"
             aria-label="add"
             onClick={() => {
-              handleUserAction("create");
+              handleUserAction("create")
             }}
           >
             <AddIcon />
@@ -238,9 +238,9 @@ export default function AdminUsers({ permissions }) {
                 loadAdmin={loadAdmin}
               />
             ) : activeCrud === "createRole" ? (
-              <CreateAdminRole />
+              <CreateAdminRole  setActiveCrud={setActiveCrud} />
             ) : activeCrud === "updateRole" ? (
-              <UpdateAdminRole admin={admin} />
+              <UpdateAdminRole admin={admin} setActiveCrud={setActiveCrud} />
             ) : (
               <></>
               // <DisableAdmin />
@@ -249,5 +249,5 @@ export default function AdminUsers({ permissions }) {
         </Grid2>
       </Grid2>
     </div>
-  );
+  )
 }

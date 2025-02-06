@@ -32,9 +32,10 @@ export default function Table2({
     setLoading(true);
     try {
       const del = await deleteAdminRole(id);
+
       if (del.status === 200) {
         showSnackBar(
-          `Rol de administrador ${del.data.username} eliminado con éxito`
+          `Rol de administrador ${del.data.area} eliminado con éxito`
         );
       }
       loadRoles();

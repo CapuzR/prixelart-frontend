@@ -65,6 +65,7 @@ const AdminRoutes: React.FC<AdminRoutesProps> = ({
           "/admin/order/read",
           "/admin/user/read",
           "/admin/user/update",
+          "/admin/user/updateRole",
           "/admin/product/read",
           "/admin/consumer/read",
           "/admin/movements/read",

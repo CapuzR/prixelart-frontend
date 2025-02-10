@@ -78,6 +78,8 @@ const AdminRoutes: React.FC<AdminRoutesProps> = ({
           "/admin/product/update/:productId",
           "/admin/consumer/update/:consumerId",
           "/admin/payment-method/read",
+          "/admin/payment-method/create",
+          "/admin/payment-method/update/:id",
           "/admin/testimonials/read",
           "/admin/product/createDiscount",
           "/admin/product/updateDiscount/:discountId",

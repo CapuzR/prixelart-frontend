@@ -49,10 +49,10 @@ export default function UpdateShippingMethod({
         createdBy: shippingMethod.createdBy,
       }
 
-      const response = await updateMethod(data)
-      if (response?.data?.success === false) {
+      const updatedMethod = await updateMethod(data)
+      if (updatedMethod?.success === false) {
         setLoading(false)
-        showSnackBar(response?.data?.message)
+        showSnackBar(updatedMethod?.message)
       } else {
         showSnackBar("Actualización de método de envío exitosa.")
         setActive(true)

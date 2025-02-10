@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react"
 
 // Importaciones de terceros
-import { useHistory, useLocation } from "react-router-dom"
+import { useLocation } from "react-router-dom"
 
 // Importaciones de Material-UI
 import { Theme } from "@mui/material/styles"
@@ -12,7 +12,6 @@ import Paper from "@mui/material/Paper"
 
 // Importaciones locales
 import ShippingTable from "./shippingTable"
-import { useSnackBar, useLoading } from "context/GlobalContext"
 import { ShippingMethod } from "../../../../types/shippingMethod.types"
 import CreateShippingMethod from "./form-1"
 import UpdateShippingMethod from "./updateShMethod"
@@ -33,7 +32,6 @@ const useStyles = makeStyles()((theme: Theme) => {
 })
 
 export default function ReadShippingMethod({ permissions }) {
-  const history = useHistory()
   const location = useLocation()
 
   const { classes, cx } = useStyles()
@@ -44,13 +42,6 @@ export default function ReadShippingMethod({ permissions }) {
   const [name, setName] = useState<string>()
   const [price, setPrice] = useState<string>()
   const [shippingMethod, setShippingMethod] = useState<ShippingMethod>()
-
-  const { showSnackBar } = useSnackBar()
-  const { setLoading } = useLoading()
-
-  const handleAction = (action: string) => {
-    history.push({ pathname: "/admin/shipping-method/" + action })
-  }
 
   useEffect(() => {
     location.pathname.split("/").length === 5

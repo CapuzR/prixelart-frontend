@@ -38,7 +38,7 @@ export default function PaymentMethods({ permissions }) {
   const [paymentMethodEdit, setPaymentMethodEdit] = useState(true)
 
   const handlePaymentMethodAction = (action: string) => {
-    history.push({ pathname: "/payment-method/" + action })
+    history.push({ pathname: "/admin/payment-method/" + action })
   }
 
   useEffect(() => {
@@ -54,33 +54,8 @@ export default function PaymentMethods({ permissions }) {
 
   return (
     <div style={{ position: "relative" }}>
-      {/* {paymentMethodEdit && (
-        <div style={{ position: "absolute", right: 10, marginTop: 15 }}>
-          <Fab
-            color="default"
-            aria-label="edit"
-            style={{ marginRight: 10 }}
-            onClick={() => {
-              handlePaymentMethodAction("read")
-            }}
-          >
-            <ViewListIcon />
-          </Fab>
-          {props.permissions?.createPaymentMethod && (
-            <Fab
-              color="primary"
-              aria-label="add"
-              onClick={() => {
-                handlePaymentMethodAction("create")
-              }}
-            >
-              <AddIcon />
-            </Fab>
-          )}
-        </div>
-      )} */}
       <Grid2 container spacing={3}>
-        <Grid2 sx={{ xs: 12 }}>
+        <Grid2 size={{ xs: 12 }}>
           <Paper className={fixedHeightPaper}>
             {activeCrud === "create" ? (
               <CreatePaymentMethod />
@@ -94,7 +69,6 @@ export default function PaymentMethods({ permissions }) {
                 <div>
                   <UpdatePaymentMethod
                     paymentMethod={paymentMethod}
-                    setPaymentMethodEdit={setPaymentMethodEdit}
                   />
                 </div>
               )

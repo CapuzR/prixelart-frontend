@@ -38,7 +38,7 @@ export default function Table1({
   }, [elements])
 
   return (
-    <Table size="small">
+    <Table size="medium">
       <TableHead>
         <TableRow>
           {headers.map((head: string, i: number) => (
@@ -67,7 +67,7 @@ export default function Table1({
                 }
               })}
               {permissions?.modifyAdmins && (
-                <TableCell align="center">
+                <TableCell align="center" sx={{minWidth: 150}}>
                   <IconButton
                     sx={{
                       width: 35,

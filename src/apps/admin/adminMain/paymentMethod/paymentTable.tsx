@@ -11,7 +11,7 @@ import Table1 from "@components/Table"
 
 import { PaymentMethod } from "../../../../types/paymentMethod.types"
 import { useSnackBar, useLoading } from "context/GlobalContext"
-import { getMethods, deleteMethod } from "../shippingMethod/api"
+import { getMethods, deleteMethod } from "./api"
 
 export default function PaymentTable({ permissions, setPaymentMethod }) {
   const history = useHistory()
@@ -41,17 +41,17 @@ export default function PaymentTable({ permissions, setPaymentMethod }) {
 
   const handleActive = (paymentMethod: PaymentMethod) => {
     setPaymentMethod(paymentMethod)
-    history.push("/payment-method/update/" + paymentMethod._id)
+    history.push("/admin/payment-method/update/" + paymentMethod._id)
   }
 
   const handleAction = (action: string) => {
-    history.push({ pathname: "/admin/shipping-method/" + action })
+    history.push({ pathname: "/admin/payment-method/" + action })
   }
 
-  const deleteShippingMethod = async (paymentMethod: PaymentMethod) => {
+  const deletePaymentMethod = async (paymentMethod: PaymentMethod) => {
     setLoading(true)
     const response = await deleteMethod(paymentMethod._id)
-    showSnackBar("Método de envío eliminado exitosamente.")
+    showSnackBar(`Método de pago ${paymentMethod.name} eliminado exitosamente.`)
     readMethods()
   }
 
@@ -92,7 +92,7 @@ export default function PaymentTable({ permissions, setPaymentMethod }) {
         properties={properties}
         permissions={permissions}
         updateFunction={handleActive}
-        deleteFunction={deleteShippingMethod}
+        deleteFunction={deletePaymentMethod}
       />
     </React.Fragment>
   )

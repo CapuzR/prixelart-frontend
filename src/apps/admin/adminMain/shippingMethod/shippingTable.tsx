@@ -12,7 +12,6 @@ import Table1 from "@components/Table/index"
 import { ShippingMethod } from "../../../../types/shippingMethod.types"
 import { useSnackBar, useLoading } from "context/GlobalContext"
 import { getMethods, deleteMethod } from "./api"
-import { ObjectId } from "mongodb"
 
 export default function ShippingTable({
   permissions,

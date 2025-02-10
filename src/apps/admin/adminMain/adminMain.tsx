@@ -37,11 +37,11 @@ import Dashboard from "./dashboard/dashboard";
 import MainListItems from "./listItems";
 import Movements from "./movements/readMovements";
 import Orders from "./orders/orders";
-import PaymentMethods from "./orders/paymentMethods";
+import PaymentMethods from "./paymentMethod/paymentMethodCrud";
 import Preferences from "./preferences/Preferences";
 import Prixers from "./prixers/prixers";
 import Products from "./products/products";
-import ShippingMethods from "./shippingMethodCrud/readShippingMethod";
+import ShippingMethods from "./shippingMethod/shippingMethodCrud";
 import Testimonials from "../TestimonialsCrud/Testimonials";
 import Copyright from "@components/Copyright/copyright";
 

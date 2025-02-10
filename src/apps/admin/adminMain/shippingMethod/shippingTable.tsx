@@ -1,0 +1,108 @@
+import { useEffect, useState } from "react"
+import { useHistory } from "react-router-dom"
+
+import IconButton from "@mui/material/IconButton"
+
+import AddIcon from "@mui/icons-material/Add"
+import ViewListIcon from "@mui/icons-material/ViewList"
+
+import Title from "../Title"
+import Table1 from "@components/Table/index"
+
+import { ShippingMethod } from "../../../../types/shippingMethod.types"
+import { useSnackBar, useLoading } from "context/GlobalContext"
+import { getMethods, deleteMethod } from "./api"
+import { ObjectId } from "mongodb"
+
+export default function ShippingTable({
+  permissions,
+  setShippingMethod,
+  setName,
+  setPrice,
+  setActive,
+}) {
+  const history = useHistory()
+  const { showSnackBar } = useSnackBar()
+  const { setLoading } = useLoading()
+  const [rows, setRows] = useState<ShippingMethod[]>()
+
+  const headers = ["Activo", "Nombre", "Costo", ""]
+  const properties = ["active", "name", "price"]
+
+  const readMethods = async () => {
+    setLoading(true)
+    try {
+      const methods = await getMethods()
+      setRows(methods)
+    } catch (error) {
+      showSnackBar(
+        "Error obteniendo lista de administradores, por favor inténtelo de nuevo."
+      )
+      console.error("Error obteniendo listado de administradores:", error)
+    }
+  }
+
+  useEffect(() => {
+    readMethods()
+  }, [])
+
+  const handleActive = (shippingMethod: ShippingMethod) => {
+    setShippingMethod(shippingMethod)
+    setName(shippingMethod.name)
+    setPrice(shippingMethod.price)
+    setActive(shippingMethod.active)
+    history.push("/admin/shipping-method/update/" + shippingMethod._id)
+  }
+
+  const deleteShippingMethod = async (shippingMethod: ShippingMethod) => {
+    setLoading(true)
+    const response = await deleteMethod(shippingMethod._id)
+    showSnackBar(response.shippingMethodForDelete)
+    readMethods()
+  }
+
+  const handleAction = (action: string) => {
+    history.push({ pathname: "/admin/shipping-method/" + action })
+  }
+
+  return (
+    <>
+      <div
+        style={{ display: "flex", justifyContent: "space-between", margin: 20 }}
+      >
+        <Title>Métodos de entrega</Title>
+        <div style={{ display: "flex", gap: 20 }}>
+          <IconButton
+            color="default"
+            aria-label="edit"
+            style={{ marginRight: 10 }}
+            onClick={() => {
+              handleAction("read")
+            }}
+          >
+            <ViewListIcon />
+          </IconButton>
+          {permissions?.createShippingMethod && (
+            <IconButton
+              color="primary"
+              aria-label="add"
+              onClick={() => {
+                handleAction("create")
+              }}
+            >
+              <AddIcon />
+            </IconButton>
+          )}
+        </div>
+      </div>
+      <Table1
+        headers={headers}
+        elements={rows}
+        properties={properties}
+        permissions={permissions}
+        updateFunction={handleActive}
+        deleteFunction={deleteShippingMethod}
+      />
+    </>
+  )
+}

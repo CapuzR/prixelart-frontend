@@ -5,6 +5,7 @@ import { makeStyles } from "tss-react/mui"
 import Grid2 from "@mui/material/Grid2"
 import Paper from "@mui/material/Paper"
 import Fab from "@mui/material/Fab"
+import IconButton from "@mui/material/IconButton"
 
 import AddIcon from "@mui/icons-material/Add"
 import ViewListIcon from "@mui/icons-material/ViewList"
@@ -12,7 +13,7 @@ import ViewListIcon from "@mui/icons-material/ViewList"
 import { useHistory, useLocation } from "react-router-dom"
 
 import CreateAdmin from "../../adminCrud/createAdmin"
-import ReadAdmins from "../../adminCrud/readAdmins"
+import ReadAdmins from "../../adminCrud/adminCrud"
 import UpdateAdmin from "../../adminCrud/updateAdmin"
 import CreateAdminRole from "../../adminCrud/createAdminRole"
 import UpdateAdminRole from "../../adminCrud/updateAdminRole"
@@ -194,7 +195,7 @@ export default function AdminUsers({ permissions }) {
 
   return (
     <div style={{ position: "relative" }}>
-      {permissions?.modifyAdmins && (
+      {/* {permissions?.modifyAdmins && (
         <div style={{ position: "absolute", right: 10, top: 10 }}>
           <Fab
             color="default"
@@ -216,7 +217,7 @@ export default function AdminUsers({ permissions }) {
             <AddIcon />
           </Fab>
         </div>
-      )}
+      )} */}
       <Grid2 container spacing={4}>
         <Grid2 size={{ xs: 12, md: 12, lg: 12 }}>
           <Paper className={fixedHeightPaper}>
@@ -230,6 +231,7 @@ export default function AdminUsers({ permissions }) {
                 permissions={permissions}
                 admins={admins}
                 loadAdmin={loadAdmin}
+                handleUserAction={handleUserAction}
               />
             ) : activeCrud === "update" ? (
               <UpdateAdmin

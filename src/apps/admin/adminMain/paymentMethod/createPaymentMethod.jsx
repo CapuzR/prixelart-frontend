@@ -1,7 +1,7 @@
 import React from 'react';
 import { useState } from 'react';
 import { makeStyles } from '@mui/styles';
-import Title from '../adminMain/Title';
+import Title from '../Title';
 import axios from 'axios';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';

@@ -1,23 +1,7 @@
 import React, { useEffect, useState } from "react"
-
-import TextField from "@mui/material/TextField"
-import Button from "@mui/material/Button"
-import Grid2 from "@mui/material/Grid2"
-import IconButton from "@mui/material/IconButton"
-import InputLabel from "@mui/material/InputLabel"
-import InputAdornment from "@mui/material/InputAdornment"
-import FormControl from "@mui/material/FormControl"
-import MenuItem from "@mui/material/MenuItem"
-import Select from "@mui/material/Select"
-import { Switch, Typography } from "@mui/material"
-
-import Visibility from "@mui/icons-material/Visibility"
-import VisibilityOff from "@mui/icons-material/VisibilityOff"
-
 import { useHistory } from "react-router-dom"
 
 import Title from "../../adminMain/Title"
-import { isAValidPassword } from "utils/validations"
 
 import { useSnackBar, useLoading } from "context/GlobalContext"
 import { getRoles, createAdmin } from "../api"

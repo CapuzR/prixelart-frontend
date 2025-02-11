@@ -1,152 +1,228 @@
-import React, { useEffect, useState } from "react"
-import Tabs from "@mui/material/Tabs"
-import Tab from "@mui/material/Tab"
-import Typography from "@mui/material/Typography"
-import Box from "@mui/material/Box"
-import IconButton from "@mui/material/IconButton"
+import { useEffect, useState } from "react"
 
-import { getRoles } from "./api"
+import { Theme } from "@mui/material/styles"
+import { makeStyles } from "tss-react/mui"
+import Grid2 from "@mui/material/Grid2"
+import Paper from "@mui/material/Paper"
+
+import { useHistory, useLocation } from "react-router-dom"
+
+import CreateAdmin from "./components/createAdmin"
+import ReadAdmins from "./adminTabs"
+import UpdateAdmin from "./components/updateAdmin"
+import CreateAdminRole from "./components/createAdminRole"
+import UpdateAdminRole from "./components/updateAdminRole"
+
+import { getAdmins } from "./api"
+
+import { Admin } from "../../../types/admin.types"
+
 import { useSnackBar, useLoading } from "context/GlobalContext"
-import { AdminRole } from "../../../types/admin.types"
-import AdminTable from "./adminTable"
-import Table2 from "./table-2"
-import AddIcon from "@mui/icons-material/Add"
-import ViewListIcon from "@mui/icons-material/ViewList"
+import { AdminFormProvider } from "@context/AdminFormContext"
 
-export default function ReadAdmins({
-  handleCallback,
-  setActiveCrud,
-  handleCallback2,
-  permissions,
-  admins,
-  loadAdmin,
-  handleUserAction
-}) {
-  const [roles, setRoles] = useState<AdminRole[]>([])
-  const [value, setValue] = useState(0)
-  const globalParams = window.location.pathname
+const drawerWidth = 240
+
+const useStyles = makeStyles()((theme: Theme) => {
+  return {
+    root: {
+      display: "grid",
+      gridTemplateColumn: "4",
+    },
+    toolbar: {
+      paddingRight: 24, // keep right padding when drawer closed
+    },
+    toolbarIcon: {
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "flex-end",
+      padding: "0 8px",
+      ...theme.mixins.toolbar,
+    },
+    appBar: {
+      zIndex: theme.zIndex.drawer + 1,
+      transition: theme.transitions.create(["width", "margin"], {
+        easing: theme.transitions.easing.sharp,
+        duration: theme.transitions.duration.leavingScreen,
+      }),
+    },
+    appBarShift: {
+      marginLeft: drawerWidth,
+      width: `calc(100% - ${drawerWidth}px)`,
+      transition: theme.transitions.create(["width", "margin"], {
+        easing: theme.transitions.easing.sharp,
+        duration: theme.transitions.duration.enteringScreen,
+      }),
+    },
+    menuButton: {
+      marginRight: 36,
+    },
+    menuButtonHidden: {
+      display: "none",
+    },
+    title: {
+      flexGrow: 1,
+    },
+    drawerPaper: {
+      position: "relative",
+      whiteSpace: "nowrap",
+      width: drawerWidth,
+      transition: theme.transitions.create("width", {
+        easing: theme.transitions.easing.sharp,
+        duration: theme.transitions.duration.enteringScreen,
+      }),
+    },
+    drawerPaperClose: {
+      overflowX: "hidden",
+      transition: theme.transitions.create("width", {
+        easing: theme.transitions.easing.sharp,
+        duration: theme.transitions.duration.leavingScreen,
+      }),
+      width: theme.spacing(7),
+      [theme.breakpoints.up("sm")]: {
+        width: theme.spacing(9),
+      },
+    },
+    appBarSpacer: theme.mixins.toolbar,
+    content: {
+      flexGrow: 1,
+      height: "100vh",
+      overflow: "auto",
+    },
+    container: {
+      paddingTop: theme.spacing(4),
+      paddingBottom: theme.spacing(4),
+    },
+    paper: {
+      padding: theme.spacing(5),
+      display: "flex",
+      overflow: "auto",
+      flexDirection: "column",
+    },
+    fixedHeight: {
+      height: 700,
+    },
+    fab: {
+      right: 0,
+      position: "absolute",
+    },
+  }
+})
+
+export default function AdminCrud({ permissions }) {
+  const { classes, cx } = useStyles()
+  const location = useLocation()
+  const history = useHistory()
+  const fixedHeightPaper = cx(classes.paper)
+  const [activeCrud, setActiveCrud] = useState("read")
+  const [page, setPage] = useState(0)
+  const [admin, setAdmin] = useState<Partial<Admin>>()
+  const [admins, setAdmins] = useState()
+  // const globalParams = window.location.pathname;
   const { showSnackBar } = useSnackBar()
   const { setLoading } = useLoading()
 
-  const loadRoles = async () => {
+  useEffect(() => {
+    loadAdmin()
+  }, [])
+
+  const loadAdmin = async () => {
     setLoading(true)
     try {
-      const roles = await getRoles()
-      if (globalParams === "/admin/user/read") {
-        setRoles(roles)
-      }
+      const admins = await getAdmins()
+      setAdmins(admins)
     } catch (error) {
       showSnackBar(
-        "Error obteniendo lista de roles, por favor inténtelo de nuevo."
+        "Error obteniendo lista de administradores, por favor inténtelo de nuevo."
       )
-      console.error("Error obteniendo listado de roles:", error)
+      console.error("Error obteniendo listado de administradores:", error)
+    }
+  }
+
+  const handleUserAction = (action: string) => {
+    if (action === "create" && page === 0) {
+      setActiveCrud("create")
+      history.push("/admin/user/" + action)
+    } else if (action === "create" && page === 1) {
+      setActiveCrud("createRole")
+    } else {
+      history.push("/admin/user/" + action)
+      setActiveCrud(action)
     }
   }
 
   useEffect(() => {
-    loadRoles()
-  }, [])
+    location.pathname.split("/").length === 5
+      ? setActiveCrud(
+          location.pathname.split("/")[location.pathname.split("/").length - 2]
+        )
+      : location.pathname.split("/").length === 4 &&
+        setActiveCrud(
+          location.pathname.split("/")[location.pathname.split("/").length - 1]
+        )
+  }, [location.pathname])
 
-  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
-    setValue(newValue)
-  }
-
-  interface TabPanelProps {
-    children?: React.ReactNode
-    index: number
-    value: number
-  }
-
-  function TabPanel(props: TabPanelProps) {
-    const { children, value, index, ...other } = props
-
-    return (
-      <div
-        role="tabpanel"
-        hidden={value !== index}
-        id={`simple-tabpanel-${index}`}
-        aria-labelledby={`simple-tab-${index}`}
-        {...other}
-      >
-        {value === index && (
-          <Box sx={{ p: 3 }}>
-            <Typography>{children}</Typography>
-          </Box>
-        )}
-      </div>
-    )
-  }
-
-  function a11yProps(index: number) {
-    return {
-      id: `simple-tab-${index}`,
-      "aria-controls": `simple-tabpanel-${index}`,
+  const updateAdminProperty = (property: any, value: string) => {
+    if (property === "all") {
+      setAdmin({
+        username: "",
+        firstname: "",
+        lastname: "",
+        email: "",
+        phone: "",
+        area: "",
+        isSeller: false,
+      })
+    } else {
+      setAdmin((prevAdmin) => ({
+        ...prevAdmin,
+        [property]: value,
+      }))
     }
   }
 
+  function Callback(childData) {
+    setPage(childData)
+  }
+
+  function Callback2(childData) {
+    setAdmin(childData)
+  }
+
   return (
-    <React.Fragment>
-      {permissions?.modifyAdmins ? (
-        <>
-          <Tabs value={value} onChange={handleChange}>
-            <Tab
-              label="Administradores"
-              {...a11yProps(0)}
-            />
-            <Tab label="Roles" {...a11yProps(1)} />
-            {permissions?.modifyAdmins && (
-              <div style={{ marginLeft: "auto" }}>
-                <IconButton
-                  aria-label="edit"
-                  onClick={() => {
-                    handleUserAction("read")
-                  }}
-                  style={{ right: 10 }}
-                >
-                  <ViewListIcon />
-                </IconButton>
-                <IconButton
-                  color="primary"
-                  aria-label="add"
-                  onClick={() => {
-                    handleUserAction("create")
-                  }}
-                >
-                  <AddIcon />
-                </IconButton>
-              </div>
-            )}
-          </Tabs>
-          <TabPanel value={value} index={0}>
-            <AdminTable
-              admins={admins}
-              permissions={permissions}
-              handleCallback2={handleCallback2}
-              loadAdmin={loadAdmin}
-            />
-          </TabPanel>
-          <TabPanel value={value} index={1}>
-            <Table2
-              roles={roles}
-              permissions={permissions}
-              loadRoles={loadRoles}
-              handleCallback2={handleCallback2}
-              setActiveCrud={setActiveCrud}
-            />
-          </TabPanel>
-        </>
-      ) : (
-        <Typography
-          variant="h3"
-          color="secondary"
-          align="center"
-          style={{ paddingTop: 30, marginTop: 60, marginBottom: 80 }}
-        >
-          No tienes permiso para entrar a esta área.
-        </Typography>
-      )}
-      {/* {up && <UpdateAdmin admin={up} />} */}
-      {handleCallback(value)}
-    </React.Fragment>
+    <div style={{ position: "relative" }}>
+      <Grid2 container spacing={4}>
+        <Grid2 size={{ xs: 12, md: 12, lg: 12 }}>
+          <Paper className={fixedHeightPaper}>
+            <AdminFormProvider>
+              {activeCrud === "create" ? (
+                <CreateAdmin loadAdmin={loadAdmin} />
+              ) : activeCrud === "read" ? (
+                <ReadAdmins
+                  handleCallback={Callback}
+                  setActiveCrud={setActiveCrud}
+                  handleCallback2={Callback2}
+                  permissions={permissions}
+                  admins={admins}
+                  loadAdmin={loadAdmin}
+                  handleUserAction={handleUserAction}
+                />
+              ) : activeCrud === "update" ? (
+                <UpdateAdmin
+                  admin={admin}
+                  updateAdminProperty={updateAdminProperty}
+                  loadAdmin={loadAdmin}
+                />
+              ) : activeCrud === "createRole" ? (
+                <CreateAdminRole setActiveCrud={setActiveCrud} />
+              ) : activeCrud === "updateRole" ? (
+                <UpdateAdminRole admin={admin} setActiveCrud={setActiveCrud} />
+              ) : (
+                <></>
+              )}
+            </AdminFormProvider>
+          </Paper>
+        </Grid2>
+      </Grid2>
+    </div>
   )
 }

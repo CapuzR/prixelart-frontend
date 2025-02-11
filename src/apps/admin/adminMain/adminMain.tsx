@@ -31,7 +31,7 @@ import { useCart } from "context/CartContext";
 import { useConversionRate, useSnackBar } from "context/GlobalContext";
 import { makeStyles } from 'tss-react/mui';
 
-import AdminUser from "./adminUser/adminUser";
+import AdminUser from "../adminCrud/adminCrud";
 import Consumers from "./consumers/consumers";
 import Dashboard from "./dashboard/dashboard";
 import MainListItems from "./listItems";

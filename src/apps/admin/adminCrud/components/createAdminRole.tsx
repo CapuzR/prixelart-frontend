@@ -1,94 +1,51 @@
 import React, { useState } from "react"
 
-import Title from "../adminMain/Title"
-import axios from "axios"
+import Title from "../../adminMain/Title"
 import TextField from "@mui/material/TextField"
 import Button from "@mui/material/Button"
 import Grid2 from "@mui/material/Grid2"
-import Snackbar from "@mui/material/Snackbar"
-import CircularProgress from "@mui/material/CircularProgress"
 import FormControl from "@mui/material/FormControl"
 import { Switch, Typography } from "@mui/material"
 
 import { useHistory } from "react-router-dom"
 import { useSnackBar, useLoading } from "context/GlobalContext"
 
-import { updateRole } from "./api"
+import { createRole } from "../api"
 
-export default function UpdateAdminRole({ admin, setActiveCrud }) {
+export default function CreateAdminRole({ setActiveCrud }) {
+  // const classes = useStyles();
   const history = useHistory()
-  const [area, setArea] = useState(admin.area)
-  const [detailOrder, setDetailOrder] = useState(admin.detailOrder || false)
-  const [detailPay, setDetailPay] = useState(admin.detailOrder || false)
-  const [orderStatus, setOrderStatus] = useState(admin.orderStatus || false)
-  const [createOrder, setCreateOrder] = useState(admin.createOrder || false)
-  const [createProduct, setCreateProduct] = useState(
-    admin.createProduct || false
-  )
-  const [deleteProduct, setDeleteProduct] = useState(
-    admin.deleteProduct || false
-  )
-  const [createDiscount, setCreateDiscount] = useState(
-    admin.createDiscount || false
-  )
-  const [deleteDiscount, setDeleteDiscount] = useState(
-    admin.deleteDiscount || false
-  )
-  const [modifyDollar, setModifyDollar] = useState(admin.modifyDollar || false)
-  const [modifyBanners, setModifyBanners] = useState(
-    admin.modifyBanners || false
-  )
-  const [modifyTermsAndCo, setModifyTermsAndCo] = useState(
-    admin.modifyTermsAndCo || false
-  )
-  const [createPaymentMethod, setCreatePaymentMethod] = useState(
-    admin.createPaymentMethod || false
-  )
-  const [deletePaymentMethod, setDeletePaymentMethod] = useState(
-    admin.deletePaymentMethod || false
-  )
-  const [createShippingMethod, setCreateShippingMethod] = useState(
-    admin.createShippingMethod || false
-  )
-  const [deleteShippingMethod, setDeleteShippingMethod] = useState(
-    admin.deleteShippingMethod || false
-  )
-  const [prixerBan, setPrixerBan] = useState(admin.prixerBan || false)
-  const [createTestimonial, setCreateTestimonial] = useState(
-    admin.createTestimonial || false
-  )
-  const [deleteTestimonial, setDeleteTestimonial] = useState(
-    admin.deleteTestimonial || false
-  )
-
-  const [modifyAdmins, setModifyAdmins] = useState(admin.modifyAdmins || false)
-
-  const [setPrixerBalance, setSetPrixerBalance] = useState(
-    admin.setPrixerBalance || false
-  )
-
-  const [readMovements, setReadMovements] = useState(
-    admin.readMovements || false
-  )
-
-  const [createConsumer, setCreateConsumer] = useState(
-    admin.createConsumer || false
-  )
-  const [readConsumers, setReadConsumers] = useState(
-    admin.readConsumers || false
-  )
-  const [deleteConsumer, setDeleteConsumer] = useState(
-    admin.deleteConsumer || false
-  )
-  const [artBan, setArtBan] = useState(admin.artBan || false)
-  const [modifyBestSellers, setModifyBestSellers] = useState(
-    admin.modifyBestSellers || false
-  )
-  const [modifyArtBestSellers, setModifyArtBestSellers] = useState(
-    admin.modifyArtBestSellers || false
-  )
+  const [area, setArea] = useState<string>()
+  const [detailOrder, setDetailOrder] = useState(false)
+  const [detailPay, setDetailPay] = useState(false)
+  const [orderStatus, setOrderStatus] = useState(false)
+  const [createOrder, setCreateOrder] = useState(false)
+  const [createProduct, setCreateProduct] = useState(false)
+  const [deleteProduct, setDeleteProduct] = useState(false)
+  const [createDiscount, setCreateDiscount] = useState(false)
+  const [deleteDiscount, setDeleteDiscount] = useState(false)
+  const [modifyBanners, setModifyBanners] = useState(false)
+  const [modifyDollar, setModifyDollar] = useState(false)
+  const [modifyTermsAndCo, setModifyTermsAndCo] = useState(false)
+  const [createPaymentMethod, setCreatePaymentMethod] = useState(false)
+  const [deletePaymentMethod, setDeletePaymentMethod] = useState(false)
+  const [createShippingMethod, setCreateShippingMethod] = useState(false)
+  const [deleteShippingMethod, setDeleteShippingMethod] = useState(false)
+  const [prixerBan, setPrixerBan] = useState(false)
+  const [createTestimonial, setCreateTestimonial] = useState(false)
+  const [deleteTestimonial, setDeleteTestimonial] = useState(false)
+  const [modifyAdmins, setModifyAdmins] = useState(false)
+  const [setPrixerBalance, setSetPrixerBalance] = useState(false)
+  const [readMovements, setReadMovements] = useState(false)
+  const [createConsumer, setCreateConsumer] = useState(false)
+  const [readConsumers, setReadConsumers] = useState(false)
+  const [deleteConsumer, setDeleteConsumer] = useState(false)
+  const [artBan, setArtBan] = useState(false)
+  const [modifyBestSellers, setModifyBestSellers] = useState(false)
+  const [modifyArtBestSellers, setModifyArtBestSellers] = useState(false)
 
   const [buttonState, setButtonState] = useState(false)
+
   const { showSnackBar } = useSnackBar()
   const { setLoading } = useLoading()
 
@@ -99,9 +56,7 @@ export default function UpdateAdminRole({ admin, setActiveCrud }) {
     } else {
       setLoading(true)
       setButtonState(true)
-
       const data = {
-        _id: admin._id,
         area: area,
         detailOrder: detailOrder,
         detailPay: detailPay,
@@ -130,17 +85,19 @@ export default function UpdateAdminRole({ admin, setActiveCrud }) {
         artBan: artBan,
         modifyBestSellers: modifyBestSellers,
         modifyArtBestSellers: modifyArtBestSellers,
-        adminToken: localStorage.getItem("adminTokenV"),
       }
 
-      const updatedRole = await updateRole(data)
-      if (updatedRole.success === false) {
+      const newRole = await createRole(data)
+      if (!newRole) {
+        console.error("La respuesta de createRole es undefined")
+      } else if (newRole.success === false) {
         setLoading(false)
         setButtonState(false)
-        showSnackBar(updatedRole.message)
+        showSnackBar(newRole)
       } else {
-        showSnackBar(`Actualización de Rol de ${data.area} exitoso.`)
+        showSnackBar(`Registro de Rol ${newRole.newRole.area} exitoso.`)
         history.push({ pathname: "/admin/user/read" })
+        setActiveCrud("read")
       }
     }
   }
@@ -160,6 +117,7 @@ export default function UpdateAdminRole({ admin, setActiveCrud }) {
   const handleChangeCreateOrder = () => {
     setCreateOrder(!createOrder)
   }
+
   const handleChangeCreateProduct = () => {
     setCreateProduct(!createProduct)
   }
@@ -254,7 +212,7 @@ export default function UpdateAdminRole({ admin, setActiveCrud }) {
 
   return (
     <React.Fragment>
-      <Title>Actualizar Rol de Administrador</Title>
+      <Title>Crear Rol de Administrador</Title>
       <form noValidate onSubmit={handleSubmit}>
         <Grid2 size={{ xs: 12, md: 6 }}>
           <FormControl
@@ -264,6 +222,7 @@ export default function UpdateAdminRole({ admin, setActiveCrud }) {
             <TextField
               variant="outlined"
               required
+              // fullWidth
               label="Área"
               value={area}
               onChange={(e) => {
@@ -1001,7 +960,7 @@ export default function UpdateAdminRole({ admin, setActiveCrud }) {
               type="submit"
               disabled={buttonState}
             >
-              Actualizar
+              Crear
             </Button>
           </Grid2>
         </Grid2>

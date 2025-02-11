@@ -24,15 +24,15 @@ import VisibilityOff from "@mui/icons-material/VisibilityOff";
 
 import { useHistory } from "react-router-dom";
 
-import Title from "../adminMain/Title";
+import Title from "../../adminMain/Title";
 import {
   isAValidEmail,
   isAValidPassword,
   isAValidUsername,
 } from "utils/validations";
 import { useSnackBar, useLoading } from "context/GlobalContext";
-import { AdminRole, Admin } from "../../../types/admin.types";
-import { getRoles, updateAdmin } from "./api";
+import { AdminRole, Admin } from "../../../../types/admin.types";
+import { getRoles, updateAdmin } from "../api";
 
 const useStyles = makeStyles()((theme: Theme) => {
   return {

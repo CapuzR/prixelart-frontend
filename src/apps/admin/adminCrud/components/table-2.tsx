@@ -12,9 +12,9 @@ import Typography from "@mui/material/Typography";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 
-import { AdminRole } from "../../../types/admin.types";
+import { AdminRole } from "../../../../types/admin.types";
 import { useSnackBar, useLoading } from "context/GlobalContext";
-import { getRoles, deleteAdmin, deleteAdminRole } from "./api";
+import { getRoles, deleteAdmin, deleteAdminRole } from "../api";
 
 export default function Table2({
   roles,

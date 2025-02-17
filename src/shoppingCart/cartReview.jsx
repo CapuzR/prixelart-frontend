@@ -64,11 +64,7 @@ export default function CartReview(props) {
   const [base64Image1, setBase64Image1] = useState(null)
   const [base64Image2, setBase64Image2] = useState(null)
   const [imageUrl, setImageUrl] = useState(null)
-  const [buyState, setBuyState] = useState(
-    localStorage.getItem("buyState")
-      ? JSON.parse(localStorage.getItem("buyState"))
-      : []
-  )
+
   const getDiscounts = async () => {
     const base_url = process.env.REACT_APP_BACKEND_URL + "/discount/read-allv2"
     await axios
@@ -96,13 +92,12 @@ export default function CartReview(props) {
 
     if (org !== undefined) {
       return UnitPriceForOrg(item.product, item.art, prixer, org, "Particular")
-    } else 
-    if (
+    } else if (
       JSON.parse(localStorage?.getItem("token")) &&
       JSON.parse(localStorage?.getItem("token"))?.username
     ) {
-      let modifiedItem = item;
-      modifiedItem.product.prixerPrice = item.product.priceRange;
+      let modifiedItem = item
+      modifiedItem.product.prixerPrice = item.product.priceRange
       return getPVM(
         modifiedItem,
         props.currency,
@@ -111,9 +106,14 @@ export default function CartReview(props) {
         prixer
       )
     } else {
-      let modifiedItem = item;
-      modifiedItem.product.publicPrice = item.product.priceRange;
-      return getPVP(modifiedItem, props.currency, props.dollarValue, discountList)
+      let modifiedItem = item
+      modifiedItem.product.publicPrice = item.product.priceRange
+      return getPVP(
+        modifiedItem,
+        props.currency,
+        props.dollarValue,
+        discountList
+      )
     }
   }
 
@@ -121,8 +121,8 @@ export default function CartReview(props) {
     // Obtener el canvas del componente WarpImage
     const warpCanvas = warpImageRef.current.getCanvas()
     if (!warpCanvas) {
-      console.error("WarpCanvas no está disponible");
-      return;
+      console.error("WarpCanvas no está disponible")
+      return
     }
     // Combinar el canvas con la otra imagen
     const mockupDiv = mockupRef.current
@@ -229,17 +229,11 @@ export default function CartReview(props) {
             }}
           >
             <Tooltip title="Nuestro equipo se encargará de que se vea perfecto para ti.">
-              <IconButton
-                size="small"
-                color="gainsboro"
-              >
+              <IconButton size="small" color="gainsboro">
                 <Info />
               </IconButton>
             </Tooltip>
-            <Typography
-              color="secondary"
-              variant="p"
-            >
+            <Typography color="secondary" variant="p">
               Imagen referencial
             </Typography>
           </div>
@@ -482,10 +476,7 @@ export default function CartReview(props) {
                 history.push({ pathname: "/productos" })
               }}
             >
-              <AddIcon
-                style={{ fontSize: 80 }}
-                color="primary"
-              />
+              <AddIcon style={{ fontSize: 80 }} color="primary" />
             </IconButton>
           </div>
         </>
@@ -575,10 +566,7 @@ export default function CartReview(props) {
                 history.push({ pathname: "/galeria" })
               }}
             >
-              <AddIcon
-                style={{ fontSize: 80 }}
-                color="primary"
-              />
+              <AddIcon style={{ fontSize: 80 }} color="primary" />
             </IconButton>
           </div>
         </>
@@ -587,7 +575,7 @@ export default function CartReview(props) {
   }
 
   const deleteItemInBuyState = (i) => {
-    const newState = [...buyState]
+    const newState = [...props.buyState]
     const filterState = newState.filter((buy, index) => index !== i)
     setBuyState(filterState)
     localStorage.setItem("buyState", JSON.stringify(filterState))
@@ -603,7 +591,7 @@ export default function CartReview(props) {
     props.setMessage("Item duplicado correctamente.")
     props.setOpen(true)
   }
-  
+
   return (
     <>
       <Grid
@@ -640,7 +628,7 @@ export default function CartReview(props) {
           </Button>
         )} */}
       </Grid>
-      {buyState.map((buy, index) => {
+      {props.buyState.map((buy, index) => {
         return (
           <Grid
             key={index}
@@ -912,11 +900,8 @@ export default function CartReview(props) {
                           alignItems: "center",
                         }}
                       >
-                        <Typography
-                          variant="p"
-                          color="secondary"
-                        >
-                          <strong>Cantidad: </strong>{" "}
+                        <Typography variant="p" color="secondary">
+                          <strong>Cantidad: </strong>
                         </Typography>
                         <input
                           style={{

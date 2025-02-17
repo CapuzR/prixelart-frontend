@@ -134,10 +134,7 @@ const UnitPriceSug = (
 
 const UnitPriceForOrg = (product, art, prixer, org, consumerType) => {
   let { base, price } = 0
-  if (
-    org !== undefined &&
-    org?.agreement.base === "pvprixer"
-  ) {
+  if (org !== undefined && org?.agreement.base === "pvprixer") {
     base =
       product.prixerEquation !== "" && product.prixerEquation !== undefined
         ? Number(
@@ -148,10 +145,7 @@ const UnitPriceForOrg = (product, art, prixer, org, consumerType) => {
             product.prixerPrice.from.replace(/[,]/gi, ".") -
               product.prixerPrice.from.replace(/[,]/gi, ".") / 10
           )
-  } else if (
-    org !== undefined &&
-    org?.agreement.base === "pvm" 
-  ) {
+  } else if (org !== undefined && org?.agreement.base === "pvm") {
     base =
       product.prixerEquation !== "" && product.prixerEquation !== undefined
         ? Number(product.prixerEquation.replace(/[,]/gi, "."))
@@ -926,6 +920,11 @@ const getPVMtext = (product, currency, dollarValue, discountList) => {
   }
 }
 
+const checkOrgs = (art, orgs) => {
+  const org = orgs?.find((el) => el.username === art.prixerUsername)
+  return org
+}
+
 const getPVP = (item, currency, dollarValue, discountList) => {
   let { base, prev, final } = 0
   let dis = discountList?.filter((dis) => dis._id === item.product?.discount)[0]
@@ -997,58 +996,75 @@ const getPVM = (item, currency, dollarValue, discountList, prixer) => {
   } else return final
 }
 
-const getTotalUnitsPVP = (state, currency, dollarValue, discountList) => {
+const getTotalUnitsPVP = (state, currency, dollarValue, discountList, orgs) => {
   let prices = [0]
   state.map((item) => {
-    let pubEq =
-      typeof item.product.publicEquation === "number"
-        ? item.product.publicEquation
-        : Number(item.product.publicEquation?.replace(/[,]/gi, "."))
-    let pubFr =
-      typeof item.product.publicPrice.from === "number"
-        ? item.product.publicPrice.from
-        : Number(item.product.publicPrice.from?.replace(/[,]/gi, "."))
+    const org = checkOrgs(item.art, orgs)
+    const prixer = JSON.parse(localStorage?.getItem("token"))?.username
 
-    if (item.product && item.art && typeof item.product.discount === "string") {
-      let dis = discountList?.find(({ _id }) => _id === item.product.discount)
-      if (dis?.type === "Porcentaje") {
-        const base = pubEq || pubFr
-        let prev = base - base / 10
-        prev = prev / (1 - item.art.comission / 100)
+    if (org !== undefined) {
+      let final = UnitPriceForOrg(
+        item.product,
+        item.art,
+        prixer,
+        org,
+        "Particular"
+      )
+      prices.push(final * (item.quantity || 1))
+    } else {
+      let pubEq =
+        typeof item.product.publicEquation === "number"
+          ? item.product.publicEquation
+          : Number(item.product.publicEquation?.replace(/[,]/gi, "."))
+      let pubFr =
+        typeof item.product.publicPrice.from === "number"
+          ? item.product.publicPrice.from
+          : Number(item.product.publicPrice.from?.replace(/[,]/gi, "."))
 
-        let final = prev - (base / 100) * dis.value
-        if (item.product.finalPrice !== undefined) {
-          final = item.product.finalPrice
+      if (
+        item.product &&
+        item.art &&
+        typeof item.product.discount === "string"
+      ) {
+        let dis = discountList?.find(({ _id }) => _id === item.product.discount)
+        if (dis?.type === "Porcentaje") {
+          const base = pubEq || pubFr
+          let prev = base - base / 10
+          prev = prev / (1 - item.art.comission / 100)
+
+          let final = prev - (base / 100) * dis.value
+          if (item.product.finalPrice !== undefined) {
+            final = item.product.finalPrice
+          }
+          prices.push(Number(final) * (item.quantity || 1))
+        } else if (dis?.type === "Monto") {
+          const base = pubEq || pubFr
+          let prev = base - base / 10
+          prev = prev / (1 - item.art.comission / 100)
+
+          let final = prev - dis.value
+          if (item.product.finalPrice !== undefined) {
+            final = item.product.finalPrice
+          }
+          prices.push(final * (item.quantity || 1))
         }
-        prices.push(Number(final) * (item.quantity || 1))
-      } else if (dis?.type === "Monto") {
-        const base = pubEq || pubFr
-        let prev = base - base / 10
-        prev = prev / (1 - item.art.comission / 100)
-
-        let final = prev - dis.value
-        if (item.product.finalPrice !== undefined) {
+      } else if (item.product && item.art) {
+        const base = pubEq ? pubEq : pubFr
+        let final = base - base / 10
+        final = final / (1 - item.art.comission / 100)
+        if (
+          item.product.finalPrice !== undefined &&
+          item.product.finalPrice !== null
+        ) {
           final = item.product.finalPrice
         }
         prices.push(final * (item.quantity || 1))
       }
-    } else if (item.product && item.art) {
-      const base = pubEq ? pubEq : pubFr
-      let final = base - base / 10
-      final = final / (1 - item.art.comission / 100)
-      if (
-        item.product.finalPrice !== undefined &&
-        item.product.finalPrice !== null
-      ) {
-        final = item.product.finalPrice
-      }
-      prices.push(final * (item.quantity || 1))
     }
   })
   let total = prices?.reduce(function (a, b) {
     return a + b
   })
-  console.log(total)
   if (currency === "Bs") {
     return total * dollarValue
   } else return total
@@ -1059,65 +1075,79 @@ const getTotalUnitsPVM = (
   currency,
   dollarValue,
   discountList,
-  prixer
+  prixer,
+  orgs
 ) => {
   let prices = []
   state.map((item) => {
-    let prxEq =
-      typeof item.product.prixerEquation === "number"
-        ? item.product.prixerEquation
-        : Number(item.product.prixerEquation?.replace(/[,]/gi, "."))
-    let prxFr =
-      typeof item.product.prixerPrice.from === "number"
-        ? item.product.prixerPrice.from
-        : Number(item.product.prixerPrice.from?.replace(/[,]/gi, "."))
-    // if (item.product && item.art && typeof item.product.discount === "string") {
-    //   let dis = discountList?.filter(
-    //     (dis) => dis._id === item.product.discount
-    //   )[0];
-    //   if (dis?.type === "Porcentaje") {
-    //     const base = Number(
-    //       item.product?.prixerEquation?.replace(/[,]/gi, ".") ||
-    //         item.product?.prixerPrice?.from?.replace(/[,]/gi, ".")
-    //     );
-    //     let prev = base - base / 10;
-    //     prev = prev / (1 - item.art.comission / 100);
+    const org = checkOrgs(item.art, orgs)
+    const prixer = JSON.parse(localStorage?.getItem("token"))?.username
 
-    //     let final = prev - (base / 100) * dis.value;
-
-    //     prices.push(final * (item.quantity || 1));
-    //   } else if (dis?.type === "Monto") {
-    //     const base = Number(
-    //       item.product?.prixerEquation?.replace(/[,]/gi, ".") ||
-    //         item.product?.prixerPrice?.from?.replace(/[,]/gi, ".")
-    //     );
-
-    //     let prev = base - base / 10;
-    //     prev = prev / (1 - item.art.comission / 100);
-
-    //     let final = prev - dis.value;
-
-    //     prices.push(final * (item.quantity || 1));
-    //   }
-    // } else
-    if (item.product && item.art) {
-      const base = prxEq ? prxEq : prxFr
-      let final = (base - base / 10) / (1 - item.art.comission / 100)
-      if (item.product.finalPrice !== undefined) {
-        final = item.product.finalPrice
-      } else if (
-        item.art.prixerUsername !== prixer &&
-        item.art.owner !== prixer
-      ) {
-        final = final / (1 - item.art.comission / 100)
-      }
+    if (org !== undefined) {
+      let final = UnitPriceForOrg(
+        item.product,
+        item.art,
+        prixer,
+        org,
+        "Particular"
+      )
       prices.push(final * (item.quantity || 1))
+    } else {
+      let prxEq =
+        typeof item.product.prixerEquation === "number"
+          ? item.product.prixerEquation
+          : Number(item.product.prixerEquation?.replace(/[,]/gi, "."))
+      let prxFr =
+        typeof item.product.prixerPrice.from === "number"
+          ? item.product.prixerPrice.from
+          : Number(item.product.prixerPrice.from?.replace(/[,]/gi, "."))
+      // if (item.product && item.art && typeof item.product.discount === "string") {
+      //   let dis = discountList?.filter(
+      //     (dis) => dis._id === item.product.discount
+      //   )[0];
+      //   if (dis?.type === "Porcentaje") {
+      //     const base = Number(
+      //       item.product?.prixerEquation?.replace(/[,]/gi, ".") ||
+      //         item.product?.prixerPrice?.from?.replace(/[,]/gi, ".")
+      //     );
+      //     let prev = base - base / 10;
+      //     prev = prev / (1 - item.art.comission / 100);
+
+      //     let final = prev - (base / 100) * dis.value;
+
+      //     prices.push(final * (item.quantity || 1));
+      //   } else if (dis?.type === "Monto") {
+      //     const base = Number(
+      //       item.product?.prixerEquation?.replace(/[,]/gi, ".") ||
+      //         item.product?.prixerPrice?.from?.replace(/[,]/gi, ".")
+      //     );
+
+      //     let prev = base - base / 10;
+      //     prev = prev / (1 - item.art.comission / 100);
+
+      //     let final = prev - dis.value;
+
+      //     prices.push(final * (item.quantity || 1));
+      //   }
+      // } else
+      if (item.product && item.art) {
+        const base = prxEq ? prxEq : prxFr
+        let final = (base - base / 10) / (1 - item.art.comission / 100)
+        if (item.product.finalPrice !== undefined) {
+          final = item.product.finalPrice
+        } else if (
+          item.art.prixerUsername !== prixer &&
+          item.art.owner !== prixer
+        ) {
+          final = final / (1 - item.art.comission / 100)
+        }
+        prices.push(final * (item.quantity || 1))
+      }
     }
   })
   let total = prices?.reduce(function (a, b) {
     return a + b
   })
-  console.log(total)
 
   if (currency === "Bs") {
     return total * dollarValue

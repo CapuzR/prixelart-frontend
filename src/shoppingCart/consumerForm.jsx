@@ -132,12 +132,10 @@ function ConsumerForm(props) {
       item.art &&
       item.product.productionTime !== undefined
     ) {
-      console.log(item.product.productionTime)
       return item.product.productionTime.toString()
     }
   })
 
-  console.log(props.buyState)
   let orderedProdT = ProdTimes.sort(function (a, b) {
     if (a.toLowerCase() > b.toLowerCase()) {
       return 1

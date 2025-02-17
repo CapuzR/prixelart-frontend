@@ -1,43 +1,43 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
+import React, { useEffect, useState } from "react"
+import axios from "axios"
 
-import "./App.css";
-import Login from "./login/loginPage";
-import Register from "./register/userRegistration";
-import PrixerRegistration from "./register/prixerRegistration";
-import PrixerProfile from "./prixerProfile/prixerProfile";
-import FullscreenPhoto from "./prixerProfile/fullscreenPhoto/fullscreenPhoto";
-import Home from "./home/home";
-import { Switch, Route } from "react-router-dom";
-import Gallery from "./gallery/gallery";
-import Products from "./products/productsCatalog";
-import ShoppingPage from "./shoppingCart/shoppingPage";
-import expire from "./utils/expire";
-import { makeStyles } from "@material-ui/core/styles";
-import Prixers from "./prixers/prixersGrid";
-import PasswordChange from "./prixerProfile/passwordChange/passwordChange";
-import ForgotPassword from "./prixerProfile/passwordReset/forgotPassword";
-import ResetPassword from "./prixerProfile/passwordReset/passwordReset";
-import PrixerStats from "../src/prixerProfile/prixerStats";
-import Snackbar from "@material-ui/core/Snackbar";
-import Modal from "@material-ui/core/Modal";
-import Button from "@material-ui/core/Button";
-import MDEditor from "@uiw/react-md-editor";
-import PrixersService from "./prixerServices/prixerService";
-import SoloService from "./prixerProfile/fullscreenPhoto/fullscreenService";
-import TestimonialsGrid from "./testimonials/testimonialsGrid";
-import Map from "./map/index";
-import OrgGrid from "./sharedComponents/prixerGrid/orgGrid";
-import { getComission } from "./shoppingCart/pricesFunctions";
-import ChiguireHome from "./orgLanding/chiguireHome";
-import ProductDetail from "./orgLanding/productDetail";
-import ShoppingCartCB from "./orgLanding/shoppingCartCB";
-import PrixPoduct from "./products/prixProduct";
-import ReactGA from "react-ga";
-import AdminRoutes from "./admin/adminRoutes.js";
+import "./App.css"
+import Login from "./login/loginPage"
+import Register from "./register/userRegistration"
+import PrixerRegistration from "./register/prixerRegistration"
+import PrixerProfile from "./prixerProfile/prixerProfile"
+import FullscreenPhoto from "./prixerProfile/fullscreenPhoto/fullscreenPhoto"
+import Home from "./home/home"
+import { Switch, Route } from "react-router-dom"
+import Gallery from "./gallery/gallery"
+import Products from "./products/productsCatalog"
+import ShoppingPage from "./shoppingCart/shoppingPage"
+import expire from "./utils/expire"
+import { makeStyles } from "@material-ui/core/styles"
+import Prixers from "./prixers/prixersGrid"
+import PasswordChange from "./prixerProfile/passwordChange/passwordChange"
+import ForgotPassword from "./prixerProfile/passwordReset/forgotPassword"
+import ResetPassword from "./prixerProfile/passwordReset/passwordReset"
+import PrixerStats from "../src/prixerProfile/prixerStats"
+import Snackbar from "@material-ui/core/Snackbar"
+import Modal from "@material-ui/core/Modal"
+import Button from "@material-ui/core/Button"
+import MDEditor from "@uiw/react-md-editor"
+import PrixersService from "./prixerServices/prixerService"
+import SoloService from "./prixerProfile/fullscreenPhoto/fullscreenService"
+import TestimonialsGrid from "./testimonials/testimonialsGrid"
+import Map from "./map/index"
+import OrgGrid from "./sharedComponents/prixerGrid/orgGrid"
+import { getComission } from "./shoppingCart/pricesFunctions"
+import ChiguireHome from "./orgLanding/chiguireHome"
+import ProductDetail from "./orgLanding/productDetail"
+import ShoppingCartCB from "./orgLanding/shoppingCartCB"
+import PrixPoduct from "./products/prixProduct"
+import ReactGA from "react-ga"
+import AdminRoutes from "./admin/adminRoutes.js"
 
-ReactGA.initialize("G-0RWP9B33D8");
-ReactGA.pageview(window.location);
+ReactGA.initialize("G-0RWP9B33D8")
+ReactGA.pageview(window.location)
 
 const useStyles = makeStyles((theme) => ({
   paper2: {
@@ -56,87 +56,87 @@ const useStyles = makeStyles((theme) => ({
   submit: {
     margin: theme.spacing(3, 0, 2),
   },
-}));
+}))
 
 function Routes() {
-  const classes = useStyles();
-  const globalParams = window.location.pathname;
+  const classes = useStyles()
+  const globalParams = window.location.pathname
 
   const [buyState, setBuyState] = useState(
     localStorage.getItem("buyState")
       ? JSON.parse(localStorage.getItem("buyState"))
       : []
-  );
-  const [isOpenAssociateArt, setIsOpenAssociateArt] = useState(false);
-  const [isOpenAssociateProduct, setIsOpenAssociateProduct] = useState(false);
+  )
+  const [isOpenAssociateArt, setIsOpenAssociateArt] = useState(false)
+  const [isOpenAssociateProduct, setIsOpenAssociateProduct] = useState(false)
   const [selectedArtToAssociate, setSelectedArtToAssociate] =
-    useState(undefined);
+    useState(undefined)
   const [selectedProductToAssociate, setSelectedProductToAssociate] =
-    useState(undefined);
-  const [valuesConsumerForm, setValuesConsumerForm] = useState("");
-  const [prixer, setPrixer] = useState(null);
-  const [fullArt, setFullArt] = useState(null);
-  const [open, setOpen] = useState(false);
-  const [message, setMessage] = useState("");
-  const [searchResult, setSearchResult] = useState([]);
-  const [sellers, setSellers] = useState();
-  const [pointedProduct, setPointedProduct] = useState();
-  const [dollarValue, setDollarValue] = useState("1");
-  const [termsAgreeVar, setTermsAgreeVar] = useState(true);
-  const [value, setValue] = useState();
-  const [discountList, setDiscountList] = useState([]);
-  const [surchargeList, setSurchargeList] = useState([]);
-  const [orgs, setOrgs] = useState([]);
+    useState(undefined)
+  const [valuesConsumerForm, setValuesConsumerForm] = useState("")
+  const [prixer, setPrixer] = useState(null)
+  const [fullArt, setFullArt] = useState(null)
+  const [open, setOpen] = useState(false)
+  const [message, setMessage] = useState("")
+  const [searchResult, setSearchResult] = useState([])
+  const [sellers, setSellers] = useState()
+  const [pointedProduct, setPointedProduct] = useState()
+  const [dollarValue, setDollarValue] = useState("1")
+  const [termsAgreeVar, setTermsAgreeVar] = useState(true)
+  const [value, setValue] = useState()
+  const [discountList, setDiscountList] = useState([])
+  const [surchargeList, setSurchargeList] = useState([])
+  const [orgs, setOrgs] = useState([])
 
   const [permissions, setPermissions] = useState(
     JSON.parse(localStorage.getItem("adminToken"))?.permissions
-  );
+  )
 
   document.addEventListener("contextmenu", (event) => {
-    event.preventDefault();
-  });
+    event.preventDefault()
+  })
 
   const onCloseModal = () => {
-    setTermsAgreeVar(true);
-  };
+    setTermsAgreeVar(true)
+  }
 
   const readDollarValue = async () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + "/dollarValue/read";
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/dollarValue/read"
     await axios.get(base_url).then((response) => {
       if (response.data.dollarValue !== undefined) {
-        setDollarValue(response.data.dollarValue);
-      } else return;
-    });
-  };
+        setDollarValue(response.data.dollarValue)
+      } else return
+    })
+  }
 
   const getDiscounts = async () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + "/discount/read-allv2";
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/discount/read-allv2"
     await axios
       .post(base_url, { adminToken: localStorage.getItem("adminTokenV") })
       .then((response) => {
-        setDiscountList(response.data.discounts);
+        setDiscountList(response.data.discounts)
       })
       .catch((error) => {
-        console.log(error);
-      });
-  };
+        console.log(error)
+      })
+  }
   const getSurcharges = async () => {
     const base_url =
-      process.env.REACT_APP_BACKEND_URL + "/surcharge/read-active";
+      process.env.REACT_APP_BACKEND_URL + "/surcharge/read-active"
     await axios
       .get(base_url)
       .then((response) => {
-        setSurchargeList(response.data.surcharges);
+        setSurchargeList(response.data.surcharges)
       })
       .catch((error) => {
-        console.log(error);
-      });
-  };
+        console.log(error)
+      })
+  }
 
   useEffect(() => {
-    readDollarValue();
+    readDollarValue()
     // checkP()
-  }, []);
+  }, [])
 
   // useEffect(() => {
   //   if (localStorage.getItem("adminTokenV")) {
@@ -146,187 +146,184 @@ function Routes() {
 
   useEffect(() => {
     if (localStorage.getItem("token")) {
-      expire("token", "tokenExpire");
+      expire("token", "tokenExpire")
     } else if (localStorage.getItem("adminToken")) {
-      expire("adminToken", "adminTokenExpire");
+      expire("adminToken", "adminTokenExpire")
     }
-  }, []);
+  }, [])
 
   useEffect(() => {
     if (JSON.parse(localStorage.getItem("token"))) {
-      TermsAgreeModal();
+      TermsAgreeModal()
     }
-  }, []);
+  }, [])
 
   useEffect(() => {
     if (globalParams === "/shopping") {
-      getDiscounts();
-      getSurcharges();
-      getORGs();
+      getDiscounts()
+      getSurcharges()
+      getORGs()
     }
-  }, []);
+  }, [])
 
   const getORGs = async () => {
     const base_url =
-      process.env.REACT_APP_BACKEND_URL + "/organization/read-all-full";
+      process.env.REACT_APP_BACKEND_URL + "/organization/read-all-full"
     await axios
       .get(base_url)
       .then((response) => {
-        setOrgs(response.data.organizations);
+        setOrgs(response.data.organizations)
       })
       .catch((error) => {
-        console.log(error);
-      });
-  };
+        console.log(error)
+      })
+  }
 
   const TermsAgreeModal = () => {
-    const GetId = JSON.parse(localStorage.getItem("token")).username;
-    const base_url = process.env.REACT_APP_BACKEND_URL + "/prixer/get/" + GetId;
+    const GetId = JSON.parse(localStorage.getItem("token")).username
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/prixer/get/" + GetId
     axios.get(base_url).then((response) => {
-      setTermsAgreeVar(response.data.termsAgree);
-      getTerms();
-    });
-  };
+      setTermsAgreeVar(response.data.termsAgree)
+      getTerms()
+    })
+  }
 
   const getTerms = async () => {
     const base_url =
-      process.env.REACT_APP_BACKEND_URL + "/termsAndConditions/read";
+      process.env.REACT_APP_BACKEND_URL + "/termsAndConditions/read"
     await axios
       .get(base_url)
       .then((response) => {
-        setValue(response.data.terms.termsAndConditions);
+        setValue(response.data.terms.termsAndConditions)
       })
       .catch((error) => {
-        console.log(error);
-      });
-  };
+        console.log(error)
+      })
+  }
 
   const handleSubmit = async (e, Id) => {
-    e.preventDefault();
+    e.preventDefault()
     const base_url =
-      process.env.REACT_APP_BACKEND_URL + "/prixer/update-terms/" + Id;
+      process.env.REACT_APP_BACKEND_URL + "/prixer/update-terms/" + Id
     const response = await axios.put(
       base_url,
       { termsAgree: true },
       {
         "Content-Type": "multipart/form-data",
       }
-    );
+    )
     if (response.data.success) {
-      setTermsAgreeVar(true);
+      setTermsAgreeVar(true)
     }
-  };
+  }
 
   const updateDollarValue = () => {
-    const base_url = process.env.REACT_APP_BACKEND_URL + "/dollarValue/update";
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/dollarValue/update"
     const body = {
       adminToken: localStorage.getItem("adminTokenV"),
       dollarValue: dollarValue,
-    };
-    axios.post(base_url, body);
-  };
+    }
+    axios.post(base_url, body)
+  }
 
   function addItemToBuyState(input) {
-    const newState = [...buyState];
+    const newState = [...buyState]
     if (input.type === "product") {
       newState.push({
         art: undefined,
         product: input.item,
         quantity: 1,
-      });
+      })
     } else if (input.type === "art") {
       newState.push({
         art: input.item,
         product: undefined,
         quantity: 1,
-      });
+      })
     }
-    setBuyState(newState);
-    setIsOpenAssociateArt(false);
-    setIsOpenAssociateProduct(false);
-    localStorage.setItem("buyState", JSON.stringify(newState));
-    setOpen(true);
+    setBuyState(newState)
+    setIsOpenAssociateArt(false)
+    setIsOpenAssociateProduct(false)
+    localStorage.setItem("buyState", JSON.stringify(newState))
+    setOpen(true)
     setMessage(
       input.type === "product"
         ? "Producto agregado al carrito correctamente, selecciona un arte que desees asociar."
         : "Arte agregado al carrito correctamente, selecciona un producto que desees asociar."
-    );
+    )
   }
 
   const AssociateProduct = (input) => {
-    let newState = JSON.parse(localStorage.getItem("buyState"));
+    let newState = JSON.parse(localStorage.getItem("buyState"))
     if (input.type === "product") {
-      newState[input.index].product = input.item;
-      newState[input.index].quantity = 1;
+      newState[input.index].product = input.item
+      newState[input.index].quantity = 1
     } else if (input.type === "art") {
-      newState[input.index].art = input.item;
+      newState[input.index].art = input.item
     }
-    setBuyState(newState);
-    localStorage.setItem("buyState", JSON.stringify(newState));
-    setOpen(true);
+    setBuyState(newState)
+    localStorage.setItem("buyState", JSON.stringify(newState))
+    setOpen(true)
     setMessage(
       input.type === "product"
         ? "Producto asociado correctamente."
         : "Arte asociado correctamente."
-    );
-  };
+    )
+  }
 
   const checkOrgs = (art) => {
-    const org = orgs?.find((el) => el.username === art.owner);
-    return org;
-  };
+    const org = orgs?.find((el) => el.username === art.owner)
+    return org
+  }
 
   function changeQuantity(input) {
-    const newState = [...buyState];
-    if (input.quantity) {
-      newState[input.index].product.comission = getComission(
-        newState[input.index].product,
-        newState[input.index].art,
-        false,
-        1,
-        discountList,
-        input.quantity,
-        input.prixer,
-        surchargeList,
-        checkOrgs(newState[input.index].art),
-        input.consumerType
-      );
-      newState[input.index].quantity = input.quantity;
-      setBuyState(newState);
-    }
-    setBuyState(newState);
-    localStorage.setItem("buyState", JSON.stringify(newState));
+    const newState = [...buyState]
+    newState[input.index].product.comission = getComission(
+      input.product,
+      input.art,
+      false,
+      1,
+      discountList,
+      input.quantity,
+      input.prixer,
+      surchargeList,
+      checkOrgs(input.art),
+      input.consumerType
+    )
+    newState[input.index].quantity = Number(input.quantity)
+    setBuyState(newState)
+    localStorage.setItem("buyState", JSON.stringify(newState))
   }
 
   function deleteItemInBuyState(input) {
-    const newState = [...buyState];
-    const filterState = newState.filter((buy, index) => index !== input.id);
-    setBuyState(filterState);
-    localStorage.setItem("buyState", JSON.stringify(filterState));
-    setOpen(true);
-    setMessage("Item eliminado correctamente");
+    const newState = [...buyState]
+    const filterState = newState.filter((buy, index) => index !== input.id)
+    setBuyState(filterState)
+    localStorage.setItem("buyState", JSON.stringify(filterState))
+    setOpen(true)
+    setMessage("Item eliminado correctamente")
   }
 
   function deleteProductInItem(input) {
-    const newState = [...buyState];
-    const item = newState.findIndex((buy, index) => index === input.id);
+    const newState = [...buyState]
+    const item = newState.findIndex((buy, index) => index === input.id)
     if (input.type === "product") {
-      newState[item].product = undefined;
+      newState[item].product = undefined
     } else {
-      newState[item].art = undefined;
+      newState[item].art = undefined
     }
     const filterState = newState.filter(
       (item) => item.art !== undefined || item.product !== undefined
-    );
-    setBuyState(filterState);
+    )
+    setBuyState(filterState)
     if (
       newState[item].product == undefined &&
       newState[item].art == undefined
     ) {
-      const filter = newState.filter((buy, index) => index !== input.id);
-      localStorage.setItem("buyState", JSON.stringify(filter));
+      const filter = newState.filter((buy, index) => index !== input.id)
+      localStorage.setItem("buyState", JSON.stringify(filter))
     } else {
-      localStorage.setItem("buyState", JSON.stringify(buyState));
+      localStorage.setItem("buyState", JSON.stringify(buyState))
     }
   }
 
@@ -562,8 +559,8 @@ function Routes() {
         <Route
           path="/"
           render={(props) => {
-            const params = new URLSearchParams(props.location.search);
-            const prod = params.get("producto");
+            const params = new URLSearchParams(props.location.search)
+            const prod = params.get("producto")
 
             if (prod) {
               return (
@@ -585,7 +582,7 @@ function Routes() {
                   buyState={buyState}
                   setBuyState={setBuyState}
                 />
-              );
+              )
             } else {
               return (
                 <Home
@@ -614,7 +611,7 @@ function Routes() {
                   pointedProduct={pointedProduct}
                   permissions={permissions}
                 />
-              );
+              )
             }
           }}
         />
@@ -661,7 +658,7 @@ function Routes() {
                 handleSubmit(
                   e,
                   JSON.parse(localStorage.getItem("token")).username
-                );
+                )
               }}
               type="submit"
               variant="contained"
@@ -681,7 +678,7 @@ function Routes() {
         onClose={() => setOpen(false)}
       />
     </>
-  );
+  )
 }
 
-export default Routes;
+export default Routes

@@ -1,7 +1,7 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
 import { makeStyles } from '@mui/styles';
-import Title from '../adminMain/Title';
+import Title from '../Title';
 import axios from 'axios';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
@@ -11,18 +11,19 @@ import CircularProgress from '@mui/material/CircularProgress';
 import FormControl from '@mui/material/FormControl';
 import clsx from 'clsx';
 import Checkbox from '@mui/material/Checkbox';
-import { useHistory } from 'react-router-dom';
 import Backdrop from '@mui/material/Backdrop';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import InputLabel from '@mui/material/InputLabel';
+import { useHistory } from 'react-router-dom';
+
+import { nanoid } from 'nanoid';
 
 const useStyles = makeStyles((theme) => ({
   seeMore: {
     marginTop: theme.spacing(3),
   },
   form: {
-    height: 'auto',
     padding: '15px',
   },
   backdrop: {
@@ -31,29 +32,28 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function UpdateConsumer(props) {
+export default function CreateConsumer(props) {
   const classes = useStyles();
   const history = useHistory();
-  const [active, setActive] = useState(Boolean(props.consumer?.active));
-  const [consumerType, setConsumerType] = useState(props.consumer.consumerType);
-  const [consumerFirstname, setConsumerFirstname] = useState(props.consumer.firstname);
-  const [consumerLastname, setConsumerLastname] = useState(props.consumer.lastname);
-  const [username, setUsername] = useState(props.consumer?.username);
-  const [phone, setPhone] = useState(props.consumer.phone);
-  const [email, setEmail] = useState(props.consumer.email);
-  const [billingAddress, setBillingAddress] = useState(props.consumer.billingAddress);
-  const [shippingAddress, setShippingAddress] = useState(props.consumer.shippingAddress);
-  const [instagram, setInstagram] = useState(props.consumer.instagram);
-  const [birthdate, setBirthdate] = useState(props.consumer.birthdate || '');
-  const [nationalIdType, setNationalIdType] = useState(props.consumer.nationalIdType);
-  const [CI, setCi] = useState(props.consumer.ci);
-  const [gender, setGender] = useState(props.consumer.gender);
-  const [prixers, setPrixers] = useState();
-  const [selectedPrixer, setSelectedPrixer] = useState();
 
+  const [active, setActive] = useState(false);
+  const [consumerType, setConsumerType] = useState('Particular');
+  const [consumerFirstname, setConsumerFirstname] = useState('');
+  const [consumerLastname, setConsumerLastname] = useState('');
+  const [username, setUsername] = useState('');
+  const [phone, setPhone] = useState('');
+  const [email, setEmail] = useState('');
+  const [billingAddress, setBillingAddress] = useState('');
+  const [shippingAddress, setShippingAddress] = useState('');
+  const [instagram, setInstagram] = useState('');
+  const [birthdate, setBirthdate] = useState('');
+  const [nationalIdType, setNationalIdType] = useState('V');
+  const [nationalId, setNationalId] = useState('');
+  const [gender, setGender] = useState('');
   const [loading, setLoading] = useState(false);
   const [buttonState, setButtonState] = useState(false);
-
+  const [prixers, setPrixers] = useState();
+  const [selectedPrixer, setSelectedPrixer] = useState();
   //Error states.
   const [errorMessage, setErrorMessage] = useState();
   const [snackBarError, setSnackBarError] = useState(false);
@@ -69,6 +69,7 @@ export default function UpdateConsumer(props) {
       setButtonState(true);
 
       const data = {
+        _id: nanoid(8),
         active: active,
         consumerType: consumerType,
         firstname: consumerFirstname,
@@ -81,12 +82,12 @@ export default function UpdateConsumer(props) {
         instagram: instagram,
         birthdate: birthdate,
         nationalIdType: nationalIdType,
-        ci: CI,
+        nationalId: nationalId,
         gender: gender,
-        _id: props.consumer._id,
+        contactedBy: JSON.parse(localStorage.getItem('adminToken')),
       };
 
-      const base_url = import.meta.env.VITE_BACKEND_URL + '/consumer/update';
+      const base_url = import.meta.env.VITE_BACKEND_URL + '/consumer/create';
       const response = await axios.post(base_url, data);
       if (response.data.success === false) {
         setLoading(false);
@@ -94,9 +95,23 @@ export default function UpdateConsumer(props) {
         setErrorMessage(response.data.message);
         setSnackBarError(true);
       } else {
-        setErrorMessage('Actualización de consumidor exitosa.');
+        setErrorMessage('Registro de consumidor exitoso.');
         setSnackBarError(true);
-        history.push('/consumer/read');
+        setActive('');
+        setConsumerType('');
+        setConsumerFirstname('');
+        setConsumerLastname('');
+        setUsername('');
+        setPhone('');
+        setEmail('');
+        setShippingAddress('');
+        setInstagram('');
+        setBirthdate('');
+        setNationalIdType('');
+        setNationalId('');
+        setGender('');
+        setLoading(false);
+        history.push({ pathname: '/consumer/read' });
       }
     }
   };
@@ -146,14 +161,14 @@ export default function UpdateConsumer(props) {
                     color="primary"
                     inputProps={{ 'aria-label': 'secondary checkbox' }}
                     onChange={() => {
-                      active ? setActive(false) : setActive(true);
+                      setActive(!active);
                     }}
-                  />{' '}
+                  />
                   Habilitado
                 </Grid>
               </Grid>
             </Grid>
-            <Grid item xs={12} sm={2}>
+            <Grid item md>
               <FormControl variant="outlined" fullWidth={true}>
                 <InputLabel required id="consumerTypeLabel">
                   Tipo de consumidor
@@ -163,6 +178,7 @@ export default function UpdateConsumer(props) {
                   id="consumerType"
                   variant="outlined"
                   value={consumerType}
+                  defaultValue="Particular"
                   onChange={(e) => setConsumerType(e.target.value)}
                   label="consumerType"
                 >
@@ -243,14 +259,11 @@ export default function UpdateConsumer(props) {
                     <MenuItem value="">
                       <em></em>
                     </MenuItem>
-                    {prixers?.map(
-                      (n) =>
-                        n !== null && (
-                          <MenuItem key={n?.username} value={n?.username}>
-                            {n.username}
-                          </MenuItem>
-                        )
-                    )}
+                    {prixers.map((n) => (
+                      <MenuItem key={n.username} value={n.username}>
+                        {n.username}
+                      </MenuItem>
+                    ))}
                   </Select>
                 </FormControl>
               </Grid>
@@ -314,9 +327,8 @@ export default function UpdateConsumer(props) {
               >
                 <TextField
                   variant="outlined"
-                  required
                   fullWidth
-                  minRows={2}
+                  rows={2}
                   id="email"
                   label="Correo electrónico"
                   name="email"
@@ -337,46 +349,25 @@ export default function UpdateConsumer(props) {
               >
                 <TextField
                   variant="outlined"
-                  required
                   fullWidth
                   type="date"
                   InputLabelProps={{
                     shrink: true,
                   }}
-                  defaultValue="2016-07-06"
-                  minRows={2}
+                  format="dd-MM-yyyy"
+                  defaultValue="06-07-2016"
+                  rows={2}
                   id="birthdate"
                   label="Fecha de nacimiento"
                   name="birthdate"
                   autoComplete="birthdate"
-                  //Las fechas no deben manejarse así.
-                  value={birthdate.split('T')[0]}
+                  value={birthdate}
                   onChange={(e) => {
-                    setBirthdate(e.target.value);
+                    new Date(setBirthdate(e.target.value));
                   }}
                 />
               </FormControl>
             </Grid>
-            {/* <Grid item xs={3} sm={2} md={2}>
-              <FormControl variant="outlined">
-                <Select
-                  labelId="nationalIdType"
-                  id="nationalIdType"
-                  value={nationalIdType}
-                  onChange={(e) => setNationalIdType(e.target.value)}
-                  label="nationalIdType"
-                >
-                  <MenuItem value="">
-                    <em></em>
-                  </MenuItem>
-                  {["J", "V", "E"].map((n) => (
-                    <MenuItem key={n} value={n}>
-                      {n}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid> */}
             <Grid item xs={12} md={4}>
               <FormControl
                 className={clsx(classes.margin, classes.textField)}
@@ -386,16 +377,14 @@ export default function UpdateConsumer(props) {
               >
                 <TextField
                   variant="outlined"
-                  required
                   fullWidth
                   minRows={2}
-                  id="CI"
+                  // id="nationalId"
                   label="Cédula o RIF"
-                  name="CI"
-                  autoComplete="CI"
-                  value={CI}
+                  // name="nationalId"
+                  value={nationalId}
                   onChange={(e) => {
-                    setCi(e.target.value);
+                    setNationalId(e.target.value);
                   }}
                 />
               </FormControl>
@@ -410,7 +399,6 @@ export default function UpdateConsumer(props) {
               >
                 <TextField
                   variant="outlined"
-                  required
                   fullWidth
                   id="instagram"
                   label="Instagram"
@@ -430,14 +418,13 @@ export default function UpdateConsumer(props) {
           <Grid container spacing={2}>
             <Grid item xs={12} md={6}>
               <FormControl
-                className={clsx(classes.margin, classes.textField)}
+                // className={clsx(classes.margin, classes.textField)}
                 variant="outlined"
                 xs={12}
                 fullWidth={true}
               >
                 <TextField
                   variant="outlined"
-                  required
                   multiline
                   fullWidth
                   id="billingAddress"
@@ -453,14 +440,13 @@ export default function UpdateConsumer(props) {
             </Grid>
             <Grid item xs={12} md={6}>
               <FormControl
-                className={clsx(classes.margin, classes.textField)}
+                // className={clsx(classes.margin, classes.textField)}
                 variant="outlined"
                 xs={12}
                 fullWidth={true}
               >
                 <TextField
                   variant="outlined"
-                  required
                   multiline
                   fullWidth
                   id="shippingAddress"
@@ -482,7 +468,7 @@ export default function UpdateConsumer(props) {
             disabled={buttonState}
             style={{ marginTop: 20 }}
           >
-            Actualizar
+            Crear
           </Button>
         </Grid>
       </form>

@@ -1,156 +1,113 @@
-import React from 'react';
-import { useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Title from '../adminMain/Title';
-import axios from 'axios';
-import Checkbox from '@mui/material/Checkbox';
-import EditIcon from '@mui/icons-material/Edit';
-import Fab from '@mui/material/Fab';
-import { Typography } from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
-import Grid from '@mui/material/Grid';
-import { Snackbar } from '@mui/material';
-import CircularProgress from '@mui/material/CircularProgress';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import { makeStyles } from '@mui/styles';
-import Backdrop from '@mui/material/Backdrop';
-import TextField from '@mui/material/TextField';
-import SearchIcon from '@mui/icons-material/Search';
-import InputAdornment from '@mui/material/InputAdornment';
+import React from "react"
+import { useEffect, useState } from "react"
+import { useHistory } from "react-router-dom"
+import Table from "@mui/material/Table"
+import TableBody from "@mui/material/TableBody"
+import TableCell from "@mui/material/TableCell"
+import TableHead from "@mui/material/TableHead"
+import TableRow from "@mui/material/TableRow"
+import Title from "../Title"
+import axios from "axios"
+import Checkbox from "@mui/material/Checkbox"
+import EditIcon from "@mui/icons-material/Edit"
+import Fab from "@mui/material/Fab"
+import { Typography } from "@mui/material"
+import DeleteIcon from "@mui/icons-material/Delete"
+import Grid2 from "@mui/material/Grid2"
+import Box from "@mui/material/Box"
+import Button from "@mui/material/Button"
+import TextField from "@mui/material/TextField"
+import SearchIcon from "@mui/icons-material/Search"
+import InputAdornment from "@mui/material/InputAdornment"
 
-const useStyles = makeStyles((theme) => ({
-  paper: {
-    padding: theme.spacing(2),
-    display: 'flex',
-    overflow: 'none',
-    flexDirection: 'column',
-    marginLeft: 30,
-  },
-  fixedHeight: {
-    height: 'auto',
-    overflow: 'none',
-  },
-  formControl: {
-    margin: theme.spacing(1),
-    minWidth: 120,
-  },
-  backdrop: {
-    zIndex: theme.zIndex.drawer + 1,
-    color: theme.palette.primary.main,
-  },
-}));
+import { useSnackBar, useLoading } from "context/GlobalContext"
+import { Consumer } from "../../../../types/consumer.types"
+import { deleteConsumer, getConsumers } from "./api"
 
-export default function ReadConsumers(props) {
-  const history = useHistory();
-  const classes = useStyles();
-  const [rows, setRows] = useState();
-  const [filter, setFilter] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState();
-  const [snackbar, setSnackbar] = useState(false);
-  const [totalConsumers, setTotalConsumers] = useState(rows?.length);
-  const [itemsPerPage, setItemPerPage] = useState(20);
-  const noOfPages = Math.ceil(totalConsumers / itemsPerPage);
-  const [pageNumber, setPageNumber] = useState(1);
-  const itemsToSkip = (pageNumber - 1) * itemsPerPage;
-  const [rowsv2, setRowsv2] = useState([]);
+export default function ConsumersTable({ permissions, setConsumer }) {
+  const history = useHistory()
+  const { showSnackBar } = useSnackBar()
+  const { setLoading } = useLoading()
 
-  const readConsumers = () => {
-    setLoading(true);
-    const base_url = import.meta.env.VITE_BACKEND_URL + '/consumer/read-all';
-    axios
-      .post(base_url, { adminToken: localStorage.getItem('adminTokenV') })
-      .then((response) => {
-        if (response.data.success === false) {
-          setSnackbar(true);
-          setMessage(response.data.error_message);
-        } else {
-          setRows(response.data);
-          setRowsv2(response?.data?.slice(itemsToSkip, itemsPerPage + itemsToSkip));
-          setTotalConsumers(response.data.length);
-          setLoading(false);
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
+  const [rows, setRows] = useState<Consumer[]>([])
+  const [filter, setFilter] = useState<string>("")
+  const [totalConsumers, setTotalConsumers] = useState(rows?.length)
+  const [itemsPerPage, setItemPerPage] = useState(20)
+  const noOfPages = Math.ceil(totalConsumers / itemsPerPage)
+  const [pageNumber, setPageNumber] = useState(1)
+  const itemsToSkip = (pageNumber - 1) * itemsPerPage
+  const [rowsv2, setRowsv2] = useState<Consumer[]>([])
+
+  const readConsumers = async () => {
+    setLoading(true)
+    try {
+      const consumers = await getConsumers()
+      setRows(consumers)
+      setRowsv2(consumers?.slice(itemsToSkip, itemsPerPage + itemsToSkip))
+      setTotalConsumers(consumers.length)
+    } catch (error) {
+      showSnackBar(
+        "Error obteniendo lista de clientes, por favor recarga la ventana."
+      )
+      console.error("Error obteniendo listado de clientes:", error)
+    }
+  }
 
   useEffect(() => {
-    readConsumers();
-  }, []);
+    readConsumers()
+  }, [])
 
-  const handleActive = (consumer, action) => {
-    props.setConsumer(consumer);
-    history.push('/consumer/' + action + '/' + consumer._id);
-  };
+  const handleActive = (consumer: Consumer, action: string) => {
+    setConsumer(consumer)
+    history.push("/consumer/" + action + "/" + consumer._id)
+  }
 
-  const deleteConsumer = (row) => {
-    setLoading(true);
-    const base_url = import.meta.env.VITE_BACKEND_URL + '/consumer/delete/' + row._id;
-    axios
-      .put(base_url, {
-        adminToken: localStorage.getItem('adminTokenV'),
-        consumer: row,
-      })
-      .then((response) => {
-        setSnackbar(true);
-        setMessage('Cliente eliminado con éxito');
-        readConsumers();
-      });
-    setLoading(false);
-  };
-
-  const closeAd = () => {
-    setSnackbar(false);
-  };
+  const deleteClient = async (row: Consumer) => {
+    setLoading(true)
+    const response = await deleteConsumer(row._id)
+    showSnackBar(
+      `Cliente ${row.firstname} ${row.lastname} eliminado exitosamente.`
+    )
+    readConsumers()
+  }
 
   const changeFilter = (e) => {
-    setLoading(true);
-    let f = e.target.value.toLowerCase();
+    setLoading(true)
+    let f = e.target.value.toLowerCase()
 
-    setFilter(e.target.value);
-    if (typeof f === 'string' && f.length > 0) {
-      let filtered = rows.filter((row) => row.firstname.toLowerCase().includes(f));
-      setRowsv2(filtered);
-      setTotalConsumers(filtered.length);
-      setItemPerPage(filtered.length);
+    setFilter(e.target.value)
+    if (typeof f === "string" && f.length > 0) {
+      let filtered = rows.filter((row) =>
+        row.firstname.toLowerCase().includes(f)
+      )
+      setRowsv2(filtered)
+      setTotalConsumers(filtered.length)
+      setItemPerPage(filtered.length)
     } else {
-      setRowsv2(rows?.slice(itemsToSkip, itemsPerPage + itemsToSkip)); // setRowsv2(rowsLimited);
-      setTotalConsumers(rows?.length);
-      setItemPerPage(20);
+      setRowsv2(rows?.slice(itemsToSkip, itemsPerPage + itemsToSkip)) // setRowsv2(rowsLimited);
+      setTotalConsumers(rows?.length)
+      setItemPerPage(20)
     }
-    setLoading(false);
-  };
+  }
   useEffect(() => {
-    setRowsv2(rows?.slice(itemsToSkip, itemsPerPage + itemsToSkip));
-  }, [pageNumber]);
+    setRowsv2(rows?.slice(itemsToSkip, itemsPerPage + itemsToSkip))
+  }, [pageNumber])
 
   const changePage = (i) => {
-    setPageNumber(i);
-  };
+    setPageNumber(i)
+  }
 
   return (
     <React.Fragment>
-      <Backdrop className={classes.backdrop} open={loading} transitionDuration={1000}>
-        <CircularProgress />
-      </Backdrop>
-
-      {props?.permissions?.readConsumers ? (
+      {permissions?.readConsumers ? (
         <>
           <Title>Clientes frecuentes</Title>
-          <Grid>
+          <Grid2>
             <TextField
               variant="outlined"
               value={filter}
               onChange={(e) => {
-                changeFilter(e);
+                changeFilter(e)
               }}
               style={{ padding: 0 }}
               InputProps={{
@@ -161,7 +118,7 @@ export default function ReadConsumers(props) {
                 ),
               }}
             />
-          </Grid>
+          </Grid2>
           <>
             <Table size="small">
               <TableHead>
@@ -186,18 +143,22 @@ export default function ReadConsumers(props) {
                             disabled
                             checked={row.active}
                             color="primary"
-                            inputProps={{ 'aria-label': 'secondary checkbox' }}
+                            inputProps={{ "aria-label": "secondary checkbox" }}
                           />
                         </TableCell>
                         <TableCell align="center">{row.firstname}</TableCell>
                         <TableCell align="center">{row.lastname}</TableCell>
-                        <TableCell align="center">{row?.consumerType}</TableCell>
+                        <TableCell align="center">
+                          {row?.consumerType}
+                        </TableCell>
                         <TableCell align="center">{row.phone}</TableCell>
                         <TableCell align="center">{row.email}</TableCell>
-                        <TableCell align="center">{row.shippingAddress}</TableCell>
                         <TableCell align="center">
-                          <Grid style={{ display: 'flex' }}>
-                            {props?.permissions?.createConsumer && (
+                          {row.shippingAddress}
+                        </TableCell>
+                        <TableCell align="center">
+                          <Grid2 style={{ display: "flex" }}>
+                            {permissions?.createConsumer && (
                               <Fab
                                 color="default"
                                 style={{
@@ -207,13 +168,13 @@ export default function ReadConsumers(props) {
                                 }}
                                 aria-label="edit"
                                 onClick={(e) => {
-                                  handleActive(row, 'update');
+                                  handleActive(row, "update")
                                 }}
                               >
                                 <EditIcon />
                               </Fab>
                             )}
-                            {props?.permissions?.deleteConsumer && (
+                            {permissions?.deleteConsumer && (
                               <Fab
                                 color="default"
                                 style={{
@@ -221,20 +182,25 @@ export default function ReadConsumers(props) {
                                   height: 35,
                                 }}
                                 onClick={() => {
-                                  deleteConsumer(row);
+                                  deleteClient(row)
                                 }}
                               >
                                 <DeleteIcon />
                               </Fab>
                             )}
-                          </Grid>
+                          </Grid2>
                         </TableCell>
                       </TableRow>
                     </>
                   ))
                 ) : (
-                  <Typography style={{ margin: 20 }} align="center" color="secondary">
-                    No hay clientes que coincidan con tu criterio de búsqueda, intenta de nuevo.
+                  <Typography
+                    style={{ margin: 20 }}
+                    align="center"
+                    color="secondary"
+                  >
+                    No hay clientes que coincidan con tu criterio de búsqueda,
+                    intenta de nuevo.
                   </Typography>
                 )}
               </TableBody>
@@ -242,8 +208,8 @@ export default function ReadConsumers(props) {
 
             <Box
               style={{
-                display: 'flex',
-                alignSelf: 'center',
+                display: "flex",
+                alignSelf: "center",
                 paddingTop: 5,
                 marginBottom: 4,
               }}
@@ -252,7 +218,7 @@ export default function ReadConsumers(props) {
                 <Button
                   style={{ minWidth: 30, marginRight: 5 }}
                   onClick={() => {
-                    setPageNumber(1);
+                    setPageNumber(1)
                   }}
                 >
                   {1}
@@ -261,9 +227,9 @@ export default function ReadConsumers(props) {
               {pageNumber - 3 > 0 && (
                 <div
                   style={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
                     marginRight: 5,
                   }}
                 >
@@ -274,7 +240,7 @@ export default function ReadConsumers(props) {
                 <Button
                   style={{ minWidth: 30, marginRight: 5 }}
                   onClick={() => {
-                    setPageNumber(pageNumber - 2);
+                    setPageNumber(pageNumber - 2)
                   }}
                 >
                   {pageNumber - 2}
@@ -284,7 +250,7 @@ export default function ReadConsumers(props) {
                 <Button
                   style={{ minWidth: 30, marginRight: 5 }}
                   onClick={() => {
-                    setPageNumber(pageNumber - 1);
+                    setPageNumber(pageNumber - 1)
                   }}
                 >
                   {pageNumber - 1}
@@ -292,12 +258,12 @@ export default function ReadConsumers(props) {
               )}
               <div
                 style={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
                   width: 80,
                   marginRight: 5,
-                  backgroundColor: 'rgb(238, 238, 238)',
+                  backgroundColor: "rgb(238, 238, 238)",
                   borderRadius: 4,
                 }}
               >
@@ -307,7 +273,7 @@ export default function ReadConsumers(props) {
                 <Button
                   style={{ minWidth: 30, marginRight: 5 }}
                   onClick={() => {
-                    changePage(pageNumber + 1);
+                    changePage(pageNumber + 1)
                   }}
                 >
                   {pageNumber + 1}
@@ -318,7 +284,7 @@ export default function ReadConsumers(props) {
                 <Button
                   style={{ minWidth: 30, marginRight: 5 }}
                   onClick={() => {
-                    setPageNumber(pageNumber + 2);
+                    setPageNumber(pageNumber + 2)
                   }}
                 >
                   {pageNumber + 2}
@@ -327,9 +293,9 @@ export default function ReadConsumers(props) {
               {pageNumber + 3 <= noOfPages && (
                 <div
                   style={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
                     marginRight: 5,
                   }}
                 >
@@ -340,7 +306,7 @@ export default function ReadConsumers(props) {
                 <Button
                   style={{ minWidth: 30, marginRight: 5 }}
                   onClick={() => {
-                    setPageNumber(noOfPages);
+                    setPageNumber(noOfPages)
                   }}
                 >
                   {noOfPages}
@@ -359,8 +325,6 @@ export default function ReadConsumers(props) {
           No tienes permiso para entrar a esta área.
         </Typography>
       )}
-
-      <Snackbar open={snackbar} autoHideDuration={6000} message={message} onClose={closeAd} />
     </React.Fragment>
-  );
+  )
 }

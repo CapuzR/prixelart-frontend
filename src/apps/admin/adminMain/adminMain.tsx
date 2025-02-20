@@ -32,7 +32,7 @@ import { useConversionRate, useSnackBar } from "context/GlobalContext";
 import { makeStyles } from 'tss-react/mui';
 
 import AdminUser from "../adminCrud/adminCrud";
-import Consumers from "./consumers/consumers";
+import Consumers from "./consumers/consumersCrud";
 import Dashboard from "./dashboard/dashboard";
 import MainListItems from "./listItems";
 import Movements from "./movements/movementsCrud";

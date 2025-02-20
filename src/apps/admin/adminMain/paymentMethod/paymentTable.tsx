@@ -29,7 +29,7 @@ export default function PaymentTable({ permissions, setPaymentMethod }) {
       setRows(methods)
     } catch (error) {
       showSnackBar(
-        "Error obteniendo lista de métodos de pago, por favor inténtelo de nuevo."
+        "Error obteniendo lista de métodos de pago, por favor recarga la ventana."
       )
       console.error("Error obteniendo listado de métodos de pago:", error)
     }

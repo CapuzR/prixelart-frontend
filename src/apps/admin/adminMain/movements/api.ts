@@ -9,7 +9,6 @@ export const getMovements = async () => {
     return response.data.movements
   } catch (e) {
     console.log(e)
-    // showSnackBar(e)
   }
 }
 

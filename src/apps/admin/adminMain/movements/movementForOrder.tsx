@@ -8,20 +8,17 @@ import CloseIcon from "@mui/icons-material/Close"
 import Img from "react-cool-img"
 import useMediaQuery from "@mui/material/useMediaQuery"
 import { useTheme } from "@mui/material/styles"
-import axios from "axios"
 
 import { useSnackBar, useLoading } from "@context/GlobalContext"
 
 import { getDiscounts } from "./api"
+import { getOrder } from "../orders/api"
 import { Discount } from "../../../../types/discount.types"
 import { Order } from "../../../../types/order.types"
-import { Item } from "../../../../types/item.types"
-
-const drawerWidth = 240
+import { finalPrice, unitPrice } from "./service"
 
 export default function MovOrder({ orderId, type, handleClose }) {
   const theme = useTheme()
-  const { showSnackBar } = useSnackBar()
   const { setLoading } = useLoading()
 
   const [order, setOrder] = useState<Order>()
@@ -31,8 +28,16 @@ export default function MovOrder({ orderId, type, handleClose }) {
   const readDiscounts = async () => {
     try {
       const discounts = await getDiscounts()
-      console.log(discounts)
       setDiscountList(discounts)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const consultOrder = async () => {
+    try {
+      const order = await getOrder(orderId)
+      setOrder(order)
     } catch (error) {
       console.log(error)
     }
@@ -41,85 +46,11 @@ export default function MovOrder({ orderId, type, handleClose }) {
   useEffect(() => {
     setLoading(true)
     readDiscounts()
+    consultOrder()
   }, [])
 
-  useEffect(() => {
-    setLoading(true)
-    const url = import.meta.env.VITE_BACKEND_URL + "/order/read"
-    axios
-      .post(url, {
-        order: orderId,
-      })
-      .then((res) => {
-        setOrder(res.data)
-      })
-  }, [])
-
-  const finalPrice = (item) => {
-    let unitPrice
-    let discount = discountList.find((dis) => dis._id === item.product.discount)
-    if (item.product.finalPrice !== undefined) {
-      unitPrice = Number(item.product.finalPrice * item.quantity)
-      return unitPrice
-    } else if (typeof item.product.discount === "string") {
-      unitPrice = item.product?.publicEquation
-        ? Number(item.product?.publicEquation)
-        : Number(item.product.publicPrice.from)
-
-      if (discount?.type === "Porcentaje") {
-        let op = Number(
-          (unitPrice - (unitPrice / 100) * discount.value) * item.quantity
-        )
-        unitPrice = op
-        return unitPrice
-      } else if (discount?.type === "Monto") {
-        let op = Number((unitPrice - discount.value) * item.quantity)
-        unitPrice = op
-        return unitPrice
-      }
-    } else {
-      unitPrice = item.product?.publicEquation
-        ? item.product?.publicEquation
-        : item.product.publicPrice.from
-
-      let op = Number(unitPrice * item.quantity)
-      unitPrice = op
-      return unitPrice
-    }
-  }
-
-  const unitPrice = (item) => {
-    let unitPrice: string | number
-    let discount = discountList.find((dis) => dis._id === item.product.discount)
-    if (item.product.finalPrice !== undefined) {
-      unitPrice = item.product.finalPrice
-      return unitPrice
-    } else if (typeof item.product.discount === "string") {
-      unitPrice = item.product?.publicEquation
-        ? Number(item.product?.publicEquation)
-        : Number(item.product.publicPrice.from)
-
-      if (discount?.type === "Porcentaje") {
-        let op = Number(unitPrice - (unitPrice / 100) * discount.value)
-        unitPrice = op
-        return unitPrice
-      } else if (discount?.type === "Monto") {
-        let op = Number(unitPrice - discount.value)
-        unitPrice = op
-        return unitPrice
-      }
-    } else {
-      unitPrice = item.product?.publicEquation
-        ? item.product?.publicEquation
-        : item.product.publicPrice.from
-
-      let op = Number(unitPrice)
-      unitPrice = op
-      return unitPrice
-    }
-  }
-  const getDis = (discount) => {
-    const s = discountList.find((dis) => dis._id === discount)?.name
+  const getDis = (discount: string) => {
+    const s = discountList.find((dis) => dis._id === discount)
     return s
   }
 
@@ -128,7 +59,7 @@ export default function MovOrder({ orderId, type, handleClose }) {
       handleClose()
     } else return
   }
-  
+
   document.addEventListener("keydown", handleKeyDown)
 
   return (
@@ -295,7 +226,7 @@ export default function MovOrder({ orderId, type, handleClose }) {
                       </Typography>
                       <div>
                         {"Precio unitario: $" +
-                          unitPrice(item).toLocaleString("de-DE", {
+                          unitPrice(item, discountList).toLocaleString("de-DE", {
                             minimumFractionDigits: 2,
                             maximumFractionDigits: 2,
                           })}
@@ -309,7 +240,7 @@ export default function MovOrder({ orderId, type, handleClose }) {
                       <div>{"Cantidad: " + item?.quantity}</div>
                       <div>
                         {"Precio final: $" +
-                          finalPrice(item).toLocaleString("de-DE", {
+                          finalPrice(item, discountList).toLocaleString("de-DE", {
                             minimumFractionDigits: 2,
                             maximumFractionDigits: 2,
                           })}
@@ -448,7 +379,7 @@ export default function MovOrder({ orderId, type, handleClose }) {
                           <div>{"Cantidad: " + item.quantity}</div>
                           <div>
                             {"Precio unitario: $" +
-                              unitPrice(item).toLocaleString("de-DE", {
+                              unitPrice(item, discountList).toLocaleString("de-DE", {
                                 minimumFractionDigits: 2,
                                 maximumFractionDigits: 2,
                               })}

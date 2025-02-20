@@ -2,7 +2,6 @@ export interface Discount {
     _id: string;
     name: string;
     description?: string;
-
     active: boolean;
     type: string;
     value: number;

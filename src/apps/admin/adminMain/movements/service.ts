@@ -29,7 +29,7 @@ export const getPrixersNames = (list: Movement[]) => {
   return prix
 }
 
-export const getUsername = (fullname: string, orgs, prixers) => {
+export const getUsername = (fullname: string, orgs, prixers: Prixer[]) => {
   const name = fullname?.split(" ")
   let selected: Partial<Prixer>
   if (name && name?.length === 2) {
@@ -55,4 +55,69 @@ export const getUsername = (fullname: string, orgs, prixers) => {
   console.log(selected)
 //   setSelectedPrixer(selected?.username)
   return selected?.username
+}
+
+export const finalPrice = (item, discountList) => {
+  let unitPrice: number
+  let discount = discountList.find((dis) => dis._id === item.product.discount)
+
+  if (item.product.finalPrice !== undefined) {
+    unitPrice = Number(item.product.finalPrice * item.quantity)
+    return unitPrice
+  } else if (typeof item.product.discount === "string") {
+    unitPrice = item.product?.publicEquation
+      ? Number(item.product?.publicEquation)
+      : Number(item.product.publicPrice.from)
+
+    if (discount?.type === "Porcentaje") {
+      let op = Number(
+        (unitPrice - (unitPrice / 100) * discount.value) * item.quantity
+      )
+      unitPrice = op
+      return unitPrice
+    } else if (discount?.type === "Monto") {
+      let op = Number((unitPrice - discount.value) * item.quantity)
+      unitPrice = op
+      return unitPrice
+    }
+  } else {
+    unitPrice = item.product?.publicEquation
+      ? item.product?.publicEquation
+      : item.product.publicPrice.from
+
+    let op = Number(unitPrice * item.quantity)
+    unitPrice = op
+    return unitPrice
+  }
+}
+
+export const unitPrice = (item, discountList) => {
+  let unitPrice: string | number
+  let discount = discountList.find((dis) => dis._id === item.product.discount)
+  if (item.product.finalPrice !== undefined) {
+    unitPrice = item.product.finalPrice
+    return unitPrice
+  } else if (typeof item.product.discount === "string") {
+    unitPrice = item.product?.publicEquation
+      ? Number(item.product?.publicEquation)
+      : Number(item.product.publicPrice.from)
+
+    if (discount?.type === "Porcentaje") {
+      let op = Number(unitPrice - (unitPrice / 100) * discount.value)
+      unitPrice = op
+      return unitPrice
+    } else if (discount?.type === "Monto") {
+      let op = Number(unitPrice - discount.value)
+      unitPrice = op
+      return unitPrice
+    }
+  } else {
+    unitPrice = item.product?.publicEquation
+      ? item.product?.publicEquation
+      : item.product.publicPrice.from
+
+    let op = Number(unitPrice)
+    unitPrice = op
+    return unitPrice
+  }
 }

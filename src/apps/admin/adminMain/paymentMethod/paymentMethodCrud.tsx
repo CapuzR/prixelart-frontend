@@ -1,14 +1,11 @@
-import React, { useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 
-import { useHistory, useLocation } from "react-router-dom"
+import { useLocation } from "react-router-dom"
 import Grid2 from "@mui/material/Grid2"
 import Paper from "@mui/material/Paper"
 
 import { Theme } from "@mui/material/styles"
 import { makeStyles } from "tss-react/mui"
-import Fab from "@mui/material/Fab"
-import AddIcon from "@mui/icons-material/Add"
-import ViewListIcon from "@mui/icons-material/ViewList"
 import CreatePaymentMethod from "./createPaymentMethod"
 import UpdatePaymentMethod from "./updatePaymentMethod"
 import PaymentTable from "./paymentTable"
@@ -30,16 +27,10 @@ const useStyles = makeStyles()((theme: Theme) => {
 
 export default function PaymentMethods({ permissions }) {
   const { classes, cx } = useStyles()
-  const history = useHistory()
   const location = useLocation()
   const fixedHeightPaper = cx(classes.paper, classes.fixedHeight)
   const [activeCrud, setActiveCrud] = useState("read")
   const [paymentMethod, setPaymentMethod] = useState()
-  const [paymentMethodEdit, setPaymentMethodEdit] = useState(true)
-
-  const handlePaymentMethodAction = (action: string) => {
-    history.push({ pathname: "/admin/payment-method/" + action })
-  }
 
   useEffect(() => {
     location.pathname.split("/").length === 5
@@ -67,9 +58,7 @@ export default function PaymentMethods({ permissions }) {
             ) : (
               activeCrud == "update" && (
                 <div>
-                  <UpdatePaymentMethod
-                    paymentMethod={paymentMethod}
-                  />
+                  <UpdatePaymentMethod paymentMethod={paymentMethod} />
                 </div>
               )
             )}

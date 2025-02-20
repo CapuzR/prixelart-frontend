@@ -1,5 +1,4 @@
 import { Permissions} from "./permissions.types"
-import { ObjectId } from "mongodb";
 
 export interface AdminToken {
     username: string;
@@ -9,7 +8,7 @@ export interface AdminToken {
     phone: string;
     email: string;
     permissions: Permissions;
-    id: ObjectId;
+    id: string;
     time: Date;
 }
 

@@ -7,4 +7,5 @@ export interface Item {
   product: PickedProduct | undefined;
   price: number | undefined;
   discount: number | undefined;
+  quantity: number;
 }

@@ -1,3 +1,4 @@
+import { Discount } from "./discount.types";
 
 export interface PickedProduct
   extends Pick<
@@ -14,6 +15,9 @@ export interface PickedProduct
     | 'mockUp'
     | 'priceRange'
     | 'variants'
+    | 'discount'
+    | 'modifyPrice'
+    | 'comission'
   > {}
 
 export interface Product {
@@ -21,8 +25,11 @@ export interface Product {
   name: string;
   price: number;
   description: string;
+  discount: string;
   attributes: Attribute[];
-  selection: Selection[] | undefined;
+  selection: Selection[] | object[] | string | undefined;
+  modifyPrice: number;
+  comission: number;
   variants: Array<Variant>;
   priceRange: PriceRange;
   observations: string;
@@ -50,6 +57,7 @@ export interface VariantAttribute {
 export interface Selection {
   name: string;
   value: string;
+  attributes: object[];
 }
 
 interface PriceRange {

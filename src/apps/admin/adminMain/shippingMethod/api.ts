@@ -1,6 +1,5 @@
 import axios from "axios"
 import { ShippingMethod } from "../../../../types/shippingMethod.types"
-import { ObjectId } from "mongodb"
 
 export const getMethods = async () => {
   const base_url =
@@ -37,7 +36,7 @@ export const updateMethod = async (data: ShippingMethod) => {
   }
 }
 
-export const deleteMethod = async (id: ObjectId) => {
+export const deleteMethod = async (id: string) => {
   const URI = import.meta.env.VITE_BACKEND_URL + "/shipping-method/delete/" + id
   try {
     const response = await axios.delete(URI, { withCredentials: true })

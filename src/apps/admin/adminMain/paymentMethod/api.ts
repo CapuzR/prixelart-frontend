@@ -1,5 +1,4 @@
 import axios from "axios"
-import { ObjectId } from "mongodb"
 import { PaymentMethod } from "../../../../types/paymentMethod.types"
 
 export const createMethod = async (data: Partial<PaymentMethod>) => {
@@ -32,7 +31,7 @@ export const updateMethod = async (data: PaymentMethod) => {
   }
 }
 
-export const deleteMethod = async (id: ObjectId) => {
+export const deleteMethod = async (id: string) => {
   const URI = import.meta.env.VITE_BACKEND_URL + "/payment-method/delete/" + id
   try {
     const response = await axios.delete(URI, { withCredentials: true })

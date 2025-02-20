@@ -1,4 +1,3 @@
-import { ObjectId } from "mongodb";
 
 export interface ShippingMethod {
     active: boolean;
@@ -6,5 +5,5 @@ export interface ShippingMethod {
     createdOn: Date;
     createdBy: string;
     price: string;
-    _id: ObjectId;
+    _id: string;
 }

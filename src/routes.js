@@ -501,7 +501,7 @@ function Routes() {
           <PrixerStats />
         </Route>
 
-        <Route path="/prixer=:username">
+        <Route path="/prixer=:username" >
           <PrixerProfile
             buyState={buyState}
             deleteItemInBuyState={deleteItemInBuyState}
@@ -524,6 +524,29 @@ function Routes() {
           />
         </Route>
 
+        <Route path="/:username">
+        <PrixerProfile
+            buyState={buyState}
+            deleteItemInBuyState={deleteItemInBuyState}
+            addItemToBuyState={addItemToBuyState}
+            isOpenAssociateProduct={isOpenAssociateProduct}
+            setIsOpenAssociateProduct={setIsOpenAssociateProduct}
+            setSelectedProductToAssociate={setSelectedProductToAssociate}
+            selectedProductToAssociate={selectedProductToAssociate}
+            AssociateProduct={AssociateProduct}
+            setBuyState={setBuyState}
+            deleteProductInItem={deleteProductInItem}
+            setSelectedArtToAssociate={setSelectedArtToAssociate}
+            changeQuantity={changeQuantity}
+            setOpen={setOpen}
+            setMessage={setMessage}
+            setPrixer={setPrixer}
+            setFullArt={setFullArt}
+            setSearchResult={setSearchResult}
+            permissions={permissions}
+          />
+        </Route>
+        
         <Route path="/org=:username">
           <PrixerProfile
             buyState={buyState}

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react"
+import React, { useState, useEffect } from "react"
 import { useParams } from "react-router-dom"
 import axios from "axios"
 
@@ -12,7 +12,6 @@ import Container from "@material-ui/core/Container"
 import CssBaseline from "@material-ui/core/CssBaseline"
 import Grid from "@material-ui/core/Grid"
 import { makeStyles } from "@material-ui/core/styles"
-import { useState } from "react"
 import ArtUploader from "../sharedComponents/artUploader/artUploader"
 import ServiceGrid from "./grid/serviceGrid"
 import Modal from "@material-ui/core/Modal"
@@ -77,7 +76,9 @@ export default function PrixerProfile(props) {
   const isDeskTop = useMediaQuery(theme.breakpoints.up("sm"))
   const username = window.location.pathname.includes("org")
     ? globalParams.get("/org")
-    : globalParams.get("/prixer")
+    : window.location.pathname.includes("prixer")
+    ? globalParams.get("/prixer")
+    : window.location.pathname.slice(1)
   const [openArtFormDialog, setOpenArtFormDialog] = useState(false)
   const [openServiceFormDialog, setOpenServiceFormDialog] = useState(false)
   const [openShoppingCart, setOpenShoppingCart] = useState(false)
@@ -85,6 +86,26 @@ export default function PrixerProfile(props) {
   const [feed, setFeed] = useState("Artes")
   const [createdService, setCreatedService] = useState(false)
   const [artSaved, setArtSaved] = useState(false)
+  console.log(window.location.pathname.slice(1))
+  // const [username, setUsername] = useState(undefined)
+
+  // const getUsername = () => {
+  //   console.log(window.location.pathname)
+  //   if (window.location.pathname.includes("org")) {
+  //     setUsername(globalParams.get("/org"))
+  //   } else if (window.location.pathname.includes("prixer")) {
+  //     setUsername(globalParams.get("/prixer"))
+  //   }
+  //   console.log(globalParams.get("/prixer"))
+
+  //   //   ? globalParams.get("/org")
+  //   //   : globalParams.get("/prixer")
+  // }
+
+  // useEffect(() => {
+  //   getUsername()
+  // }, [])
+  // console.log(username)
 
   const showPrixerGrid = () => {
     switch (feed) {
@@ -120,21 +141,14 @@ export default function PrixerProfile(props) {
         return <Biography prixerUsername={username} />
     }
   }
+
   return (
-    <Container
-      component="main"
-      maxWidth="xl"
-      className={classes.paper}
-    >
+    <Container component="main" maxWidth="xl" className={classes.paper}>
       <CssBaseline />
       {/* <Grid>
         <AppBar prixerUsername={username} />
       </Grid> */}
-      <UserData
-        prixerUsername={username}
-        feed={feed}
-        setFeed={setFeed}
-      />
+      <UserData prixerUsername={username} feed={feed} setFeed={setFeed} />
       {feed !== "Settings" && (
         <PrixerOptions
           prixerUsername={username}
@@ -331,11 +345,7 @@ export default function PrixerProfile(props) {
           </div>
         ) : (
           <div style={{ margin: "90px 10px 40px 10px" }}>
-            <Typography
-              variant={"h6"}
-              align={"Center"}
-              justify={"center"}
-            >
+            <Typography variant={"h6"} align={"Center"} justify={"center"}>
               Actualmente no tienes ningun producto dentro del carrito de
               compra.
             </Typography>

@@ -14,6 +14,11 @@ import ProductDetails from "apps/consumer/products/Details/Details";
 import Flow from "apps/consumer/flow/Flow";
 import PrixerProfile from "apps/artist/prixerProfile/prixerProfile";
 import SoloService from "apps/artist/prixerProfile/fullscreenPhoto/fullscreenService";
+import Register from "apps/artist/register/userRegistration"
+import PrixerRegistration from "apps/artist/register/prixerRegistration"
+import Login from "apps/artist/login/loginPage"
+import PasswordChange from "apps/artist/prixerProfile/passwordChange/passwordChange"
+import ForgotPassword from "apps/artist/prixerProfile/passwordReset/forgotPassword"
 
 interface ConsumerRoutesProps {
   permissions: any;
@@ -98,6 +103,27 @@ const ConsumerRoutes: React.FC<ConsumerRoutesProps> = ({ permissions }) => {
 
       <Route path="/producto/:id">
         <ProductDetails />
+      </Route>
+
+
+      <Route exact path="/iniciar">
+        <Login />
+      </Route>
+
+      <Route path="/registrar/prixer">
+        <PrixerRegistration />
+      </Route>
+
+      <Route path="/registrar">
+        <Register />
+      </Route>
+
+      <Route path="/cambio-contraseña">
+        <PasswordChange />
+      </Route>
+
+      <Route path="/olvido-contraseña">
+        <ForgotPassword />
       </Route>
 
       <Route path="/" component={Home} />

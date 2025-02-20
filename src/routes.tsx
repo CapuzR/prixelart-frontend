@@ -41,8 +41,8 @@ const Routes = () => {
           permissions={permissions}
           setPermissions={setPermissions}
         />
-      ) : hostname.includes("prixer") ? (
-        <ArtistRoutes />
+      // ) : section.includes("prixer") ? (
+      //   <ArtistRoutes />
       ) : hostname.includes("wip") ? (
         <MapRoutes />
       ) : hostname.includes("orgs") ? (

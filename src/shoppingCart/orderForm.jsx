@@ -126,21 +126,7 @@ export default function OrderForm(props) {
   }
 
   const getTotalPrice = (state) => {
-    const org = checkOrgs(item.art)
-    const prixer = JSON.parse(localStorage?.getItem("token"))?.username
-
-    if (org !== undefined) {
-      return UnitPriceForOrg(
-        item.product,
-        item.art,
-        prixer,
-        org,
-        "Particular"
-      ).toLocaleString("de-DE", {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      })
-    } else if (
+     if (
       JSON.parse(localStorage?.getItem("token")) &&
       JSON.parse(localStorage?.getItem("token"))?.username
     ) {
@@ -149,7 +135,8 @@ export default function OrderForm(props) {
         currency,
         props.dollarValue,
         discountList,
-        prixer
+        prixer,
+        props.orgs
       ).toLocaleString("de-DE", {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
@@ -159,7 +146,8 @@ export default function OrderForm(props) {
         state,
         currency,
         props.dollarValue,
-        discountList
+        discountList,
+        props.orgs
       ).toLocaleString("de-DE", {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
@@ -183,7 +171,7 @@ export default function OrderForm(props) {
       let modifiedItem = item
       modifiedItem.product.prixerPrice = item.product.priceRange
       return (
-        getPVM(item, currency, props.dollarValue, discountList, prixer) *
+        getPVM(item, currency, props.dollarValue, discountList, prixer, props.orgs) *
         item.quantity
       ).toLocaleString("de-DE", {
         minimumFractionDigits: 2,

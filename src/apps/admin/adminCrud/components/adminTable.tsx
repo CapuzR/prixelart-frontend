@@ -1,4 +1,5 @@
 import { useHistory } from "react-router-dom"
+import { useEffect, useState } from "react"
 
 import Table from "@mui/material/Table"
 import TableBody from "@mui/material/TableBody"
@@ -24,6 +25,9 @@ export default function AdminTable({
   const history = useHistory()
   const { setLoading } = useLoading()
   const { showSnackBar } = useSnackBar()
+  const [pageNumber, setPageNumber] = useState(1)
+  const [itemsPerPage, setItemPerPage] = useState(20)
+  const [totalElements, setTotalElements] = useState(admins?.length)
 
   const headers = [
     "Nombre",
@@ -73,6 +77,10 @@ export default function AdminTable({
       permissions={permissions}
       updateFunction={handleActive}
       deleteFunction={deleteMethod}
+      setPageNumber={setPageNumber}
+      pageNumber={pageNumber}
+      itemsPerPage={itemsPerPage}
+      maxLength={totalElements}
     />
   )
 }

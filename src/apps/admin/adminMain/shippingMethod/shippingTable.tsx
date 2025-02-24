@@ -24,7 +24,9 @@ export default function ShippingTable({
   const { showSnackBar } = useSnackBar()
   const { setLoading } = useLoading()
   const [rows, setRows] = useState<ShippingMethod[]>()
-
+  const [totalElements, setTotalElements] = useState(rows?.length)
+  const [itemsPerPage, setItemPerPage] = useState(20)
+  const [pageNumber, setPageNumber] = useState(1)
   const headers = ["Activo", "Nombre", "Costo", ""]
   const properties = ["active", "name", "price"]
 
@@ -101,6 +103,10 @@ export default function ShippingTable({
         permissions={permissions}
         updateFunction={handleActive}
         deleteFunction={deleteShippingMethod}
+        setPageNumber={setPageNumber}
+        pageNumber={pageNumber}
+        itemsPerPage={itemsPerPage}
+        maxLength={totalElements}
       />
     </>
   )

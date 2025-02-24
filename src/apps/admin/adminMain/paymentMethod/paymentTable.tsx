@@ -15,9 +15,13 @@ import { getMethods, deleteMethod } from "./api"
 
 export default function PaymentTable({ permissions, setPaymentMethod }) {
   const history = useHistory()
-  const [rows, setRows] = useState()
+  const [rows, setRows] = useState([])
   const { showSnackBar } = useSnackBar()
   const { setLoading } = useLoading()
+
+  const [totalElements, setTotalElements] = useState(rows?.length)
+  const [itemsPerPage, setItemPerPage] = useState(20)
+  const [pageNumber, setPageNumber] = useState(1)
 
   const headers = ["Activo", "Nombre", "Datos de pago", "Instrucciones", ""]
   const properties = ["active", "name", "paymentData", "instructions"]
@@ -93,6 +97,11 @@ export default function PaymentTable({ permissions, setPaymentMethod }) {
         permissions={permissions}
         updateFunction={handleActive}
         deleteFunction={deletePaymentMethod}
+        setPageNumber={setPageNumber}
+        pageNumber={pageNumber}
+        itemsPerPage={itemsPerPage}
+        maxLength={totalElements}
+
       />
     </React.Fragment>
   )

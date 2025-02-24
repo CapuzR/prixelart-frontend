@@ -9,6 +9,7 @@ import Checkbox from "@mui/material/Checkbox"
 import IconButton from "@mui/material/IconButton"
 import EditIcon from "@mui/icons-material/Edit"
 import DeleteIcon from "@mui/icons-material/Delete"
+import PaginationBar from "@components/Pagination/PaginationBar"
 
 export default function Table1({
   headers,
@@ -17,15 +18,22 @@ export default function Table1({
   permissions,
   updateFunction,
   deleteFunction,
+  setPageNumber,
+  pageNumber,
+  itemsPerPage,
+  maxLength,
 }) {
   const [dots, setDots] = useState<any[]>()
 
   const filterAndOrder = () => {
-    return elements?.map((obj: any) => {
+    const itemsToSkip = (pageNumber - 1) * itemsPerPage
+
+    let elements2 = elements?.slice(itemsToSkip, itemsPerPage + itemsToSkip)
+    return elements2?.map((obj: any) => {
       let xo = {}
 
       properties.forEach((prop: string) => {
-        xo[prop] = obj[prop] || "" // Si la propiedad no existe, asigna ""
+        xo[prop] = obj[prop] || ""
       })
 
       return xo
@@ -35,7 +43,7 @@ export default function Table1({
   useEffect(() => {
     const neat = filterAndOrder()
     setDots(neat)
-  }, [elements])
+  }, [elements, pageNumber])
 
   return (
     <Table size="medium">
@@ -66,15 +74,16 @@ export default function Table1({
                   return <TableCell align="center">{value}</TableCell>
                 }
               })}
+              {/* Especificar el permiso según el área correspondiente !!! */}
               {permissions?.modifyAdmins && (
-                <TableCell align="center" sx={{minWidth: 150}}>
+                <TableCell align="center" sx={{ minWidth: 150 }}>
                   <IconButton
                     sx={{
                       width: 35,
                       height: 35,
                       marginRight: "16px !important",
                       "&:hover": {
-                        color: "DarkSlateGray", // Cambia el color al hacer hover
+                        color: "DarkSlateGray",
                       },
                     }}
                     onClick={(e) => {
@@ -104,6 +113,12 @@ export default function Table1({
             </TableRow>
           ))}
       </TableBody>
+      <PaginationBar
+        setPageNumber={setPageNumber}
+        pageNumber={pageNumber}
+        itemsPerPage={itemsPerPage}
+        maxLength={maxLength}
+      />
     </Table>
   )
 }

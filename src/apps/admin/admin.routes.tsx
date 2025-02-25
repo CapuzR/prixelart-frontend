@@ -1,7 +1,7 @@
 import React from "react";
 import { Switch, Route, useRouteMatch } from "react-router-dom";
-import AdminLogin from "@apps/admin/adminLogin/adminLogin";
-import AdminMain from "apps/admin/adminMain/adminMain";
+import AdminLogin from "@apps/admin/login/adminLogin";
+import AdminMain from "@apps/admin/App";
 import { useLocation, useParams } from "react-router";
 
 interface AdminRoutesProps {
@@ -18,9 +18,11 @@ const AdminRoutes: React.FC<AdminRoutesProps> = ({
   setPermissions,
 }) => {
   const { path } = useRouteMatch();
+  
   let location = useLocation();
   const section = location.pathname.split("/")[1];
   const hostname = window.location;
+
   console.log(path);
   console.log(section);
   console.log(hostname);
@@ -42,7 +44,7 @@ const AdminRoutes: React.FC<AdminRoutesProps> = ({
         />
       </Route>
 
-      <Route path="/admin/user/create">
+      <Route path="/admin/admin/create">
         <AdminMain
           permissions={permissions}
           valuesConsumerForm={valuesConsumerForm}
@@ -50,7 +52,7 @@ const AdminRoutes: React.FC<AdminRoutesProps> = ({
         />
       </Route>
 
-      <Route path="/admin/users/read">
+      <Route path="/admin/admins/read">
         <AdminMain
           permissions={permissions}
           valuesConsumerForm={valuesConsumerForm}
@@ -61,11 +63,11 @@ const AdminRoutes: React.FC<AdminRoutesProps> = ({
       <Route
         exact
         path={[
-          "/admin/user/update/:userId",
+          "/admin/admin/update/:adminId",
           "/admin/order/read",
-          "/admin/user/read",
-          "/admin/user/update",
-          "/admin/user/updateRole",
+          "/admin/admin/read",
+          "/admin/admin/update",
+          "/admin/admin/updateRole",
           "/admin/product/read",
           "/admin/consumer/read",
           "/admin/movements/read",

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Grid } from '@mui/material';
-import WarpImage from '../../apps/admin/productCrud/warpImage.js';
+import WarpImage from '../../apps/admin/sections/productCrud/warpImage.jsx';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';

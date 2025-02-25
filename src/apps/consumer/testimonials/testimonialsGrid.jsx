@@ -8,7 +8,7 @@ import { useState } from 'react';
 import Typography from '@mui/material/Typography';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/styles';
-import TestimonialsFeed from '../../admin/TestimonialsCrud/TestimonialsFeed';
+import TestimonialsFeed from '../../admin/sections/testimonials/TestimonialsFeed';
 
 const useStyles = makeStyles((theme) => ({
   paper: {

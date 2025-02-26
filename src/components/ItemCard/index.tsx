@@ -24,7 +24,6 @@ export default function ItemCard({
   const { conversionRate } = useConversionRate();
 
   const getUnitPrice = () => {
-    console.log('ItemCard - getUnitPrice - item: ', item);
     return item.price
       ? formatPriceForUI(item.price, currency, conversionRate)
       : formatPriceForUI(

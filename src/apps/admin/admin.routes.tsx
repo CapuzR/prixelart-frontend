@@ -1,7 +1,8 @@
-import React from 'react';
-import { Route, Switch } from 'react-router-dom';
-import AdminLogin from 'apps/admin/adminLogin/adminLoginPage';
-import AdminMain from 'apps/admin/adminMain/adminMain';
+import React from "react";
+import { Switch, Route, useRouteMatch } from "react-router-dom";
+import AdminLogin from "@apps/admin/adminLogin/adminLogin";
+import AdminMain from "apps/admin/adminMain/adminMain";
+import { useLocation, useParams } from "react-router";
 
 interface AdminRoutesProps {
   setPermissions: (permissions: any) => void;
@@ -16,82 +17,116 @@ const AdminRoutes: React.FC<AdminRoutesProps> = ({
   permissions,
   setPermissions,
 }) => {
+  const { path } = useRouteMatch();
+  let location = useLocation();
+  const section = location.pathname.split("/")[1];
+  const hostname = window.location;
+  console.log(path);
+  console.log(section);
+  console.log(hostname);
   return (
     <Switch>
-      <Route path="/dashboard">
-        <AdminMain 
-        permissions={permissions}
-        valuesConsumerForm={valuesConsumerForm}
-        setValues={setValuesConsumerForm}
-         />
-      </Route>
-
-      <Route path="/main">
+      <Route path="/admin/dashboard">
         <AdminMain
-          setValues={setValuesConsumerForm}
-          valuesConsumerForm={valuesConsumerForm}
           permissions={permissions}
+          valuesConsumerForm={valuesConsumerForm}
+          setValues={setValuesConsumerForm}
         />
       </Route>
 
-      <Route path="/user/create">
-        <AdminMain permissions={permissions} />
+      <Route exact path="/admin/main">
+        <AdminMain
+          permissions={permissions}
+          valuesConsumerForm={valuesConsumerForm}
+          setValues={setValuesConsumerForm}
+        />
       </Route>
 
-      <Route path="/users/read">
-        <AdminMain permissions={permissions} />
+      <Route path="/admin/user/create">
+        <AdminMain
+          permissions={permissions}
+          valuesConsumerForm={valuesConsumerForm}
+          setValues={setValuesConsumerForm}
+        />
+      </Route>
+
+      <Route path="/admin/users/read">
+        <AdminMain
+          permissions={permissions}
+          valuesConsumerForm={valuesConsumerForm}
+          setValues={setValuesConsumerForm}
+        />
       </Route>
 
       <Route
         exact
         path={[
-          '/user/update/:userId',
-          '/order/read',
-          '/users/read',
-          '/user/read',
-          '/product/read',
-          '/consumer/read',
-          '/movements/read',
-          '/product/create',
-          '/preferences/read',
-          '/shipping-method/read',
-          '/prixer/read',
-          '/product/update/:productId',
-          '/consumer/update/:consumerId',
-          '/payment-method/read',
-          '/shipping-method/read',
-          '/testimonials/read',
-          '/product/createDiscount',
-          '/product/updateDiscount/:discountId',
-          '/product/createSurcharge',
-          '/product/updateSurcharge/:surchargeId',
-          '/product/createCategory',
-          '/product/updateCategory/:categoryId',
+          "/admin/user/update/:userId",
+          "/admin/order/read",
+          "/admin/user/read",
+          "/admin/user/update",
+          "/admin/product/read",
+          "/admin/consumer/read",
+          "/admin/movements/read",
+          "/admin/product/create",
+          "/admin/preferences/read",
+          "/admin/shipping-method/read",
+          "/admin/prixer/read",
+          "/admin/product/update/:productId",
+          "/admin/consumer/update/:consumerId",
+          "/admin/payment-method/read",
+          "/admin/shipping-method/read",
+          "/admin/testimonials/read",
+          "/admin/product/createDiscount",
+          "/admin/product/updateDiscount/:discountId",
+          "/admin/product/createSurcharge",
+          "/admin/product/updateSurcharge/:surchargeId",
+          "/admin/product/createCategory",
+          "/admin/product/updateCategory/:categoryId",
         ]}
       >
-        <AdminMain permissions={permissions} />
+        <AdminMain
+          permissions={permissions}
+          valuesConsumerForm={valuesConsumerForm}
+          setValues={setValuesConsumerForm}
+        />
       </Route>
 
-      <Route path="/product/create">
-        <AdminMain permissions={permissions} />
+      <Route path="/admin/product/create">
+        <AdminMain
+          permissions={permissions}
+          valuesConsumerForm={valuesConsumerForm}
+          setValues={setValuesConsumerForm}
+        />
       </Route>
 
-      <Route path="/products/read">
-        <AdminMain permissions={permissions} />
+      <Route path="/admin/products/read">
+        <AdminMain
+          permissions={permissions}
+          valuesConsumerForm={valuesConsumerForm}
+          setValues={setValuesConsumerForm}
+        />
       </Route>
 
-      <Route path="/consumer/create">
-        <AdminMain permissions={permissions} />
+      <Route path="/admin/consumer/create">
+        <AdminMain
+          permissions={permissions}
+          valuesConsumerForm={valuesConsumerForm}
+          setValues={setValuesConsumerForm}
+        />
       </Route>
 
-      <Route path="/consumers/read">
-        <AdminMain permissions={permissions} />
+      <Route path="/admin/consumers/read">
+        <AdminMain
+          permissions={permissions}
+          valuesConsumerForm={valuesConsumerForm}
+          setValues={setValuesConsumerForm}
+        />
       </Route>
-      
-      <Route>
+
+      <Route exact path="/admin/inicio">
         <AdminLogin setPermissions={setPermissions} />
       </Route>
-
     </Switch>
   );
 };

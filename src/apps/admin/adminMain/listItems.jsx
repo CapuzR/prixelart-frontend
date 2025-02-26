@@ -1,25 +1,29 @@
 import React from 'react';
+
+import { useHistory } from 'react-router-dom';
+
+import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
+import AssignmentIcon from '@mui/icons-material/Assignment';
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import InsertEmoticon from '@mui/icons-material/InsertEmoticon';
+import LocalMallIcon from '@mui/icons-material/LocalMall';
+import LocalShippingIcon from '@mui/icons-material/LocalShipping';
+import PaletteIcon from '@mui/icons-material/Palette';
+import PaymentIcon from '@mui/icons-material/Payment';
+import PeopleIcon from '@mui/icons-material/People';
+import ReceiptIcon from '@mui/icons-material/Receipt';
+import WebAssetIcon from '@mui/icons-material/WebAsset';
+
+import Divider from '@mui/material/Divider';
 import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import DashboardIcon from '@mui/icons-material/Dashboard';
-import PeopleIcon from '@mui/icons-material/People';
-import AssignmentIcon from '@mui/icons-material/Assignment';
-import Divider from '@mui/material/Divider';
-import { useHistory } from 'react-router-dom';
-import PaletteIcon from '@mui/icons-material/Palette';
-import LocalMallIcon from '@mui/icons-material/LocalMall';
-import PaymentIcon from '@mui/icons-material/Payment';
-import ReceiptIcon from '@mui/icons-material/Receipt';
-import WebAssetIcon from '@mui/icons-material/WebAsset';
-import { InsertEmoticon } from '@mui/icons-material';
-import LocalShippingIcon from '@mui/icons-material/LocalShipping';
-import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
+
 export default function MainListItems(props) {
   const history = useHistory();
 
   const handleClick = (value) => {
-    history.push({ pathname: '/' + value + '/read' });
+    history.push({ pathname: '/admin/' + value + '/read' });
   };
 
   return (

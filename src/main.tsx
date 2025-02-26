@@ -7,6 +7,10 @@ import theme from './theme';
 import App from './App';
 import axios from 'axios';
 
+import { createRoot } from 'react-dom/client';
+const container = document.getElementById('root');
+const root = createRoot(container);
+
 axios.defaults.withCredentials = true;
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);

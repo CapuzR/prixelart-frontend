@@ -40,7 +40,7 @@ import Orders from "./sections/orders/orders";
 import PaymentMethods from "./sections/paymentMethod";
 import Preferences from "./sections/preferences/Preferences";
 import Prixers from "./sections/prixers";
-import Products from "./sections/products/products";
+import Products from "./sections/products";
 import ShippingMethods from "./sections/shippingMethods";
 import Testimonials from "./sections/testimonials/Testimonials";
 import Copyright from "@components/Copyright/copyright";
@@ -341,7 +341,7 @@ export default function AdminMain({
           </Drawer>
           <main className={classes.content}>
             <Container maxWidth="xl" className={classes.container}>
-              {active === "admin" ? (
+              {active === "admins" ? (
                 <AdminUser permissions={permissions} />
               ) : active === "dashboard" ? (
                 <Dashboard />

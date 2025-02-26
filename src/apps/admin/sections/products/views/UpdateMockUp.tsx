@@ -24,7 +24,7 @@ import IconButton from '@mui/material/IconButton';
 
 import DeleteIcon from '@mui/icons-material/Delete';
 
-import WarpImage from './warpImage';
+import WarpImage from '../components/WarpImage';
 
 const useStyles = makeStyles((theme) => ({
   seeMore: {

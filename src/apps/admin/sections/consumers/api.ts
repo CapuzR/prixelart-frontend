@@ -12,6 +12,16 @@ export const getConsumers = async () => {
   }
 }
 
+export const getPrixers = async () => {
+  const base_url = import.meta.env.VITE_BACKEND_URL + "/consumer/read-prixers"
+
+  try {
+    const response = await axios.get(base_url)
+    return response.data
+  } catch (error) {
+    console.log(error)
+  }
+}
 export const deleteConsumer = async (id: string) => {
   const base_url = import.meta.env.VITE_BACKEND_URL + "/consumer/delete/" + id
   try {

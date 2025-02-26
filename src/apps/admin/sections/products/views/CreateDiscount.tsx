@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { makeStyles } from '@mui/styles';
 import { useHistory } from 'react-router-dom';
 
-import Title from '../../components/Title';
+import Title from '../../../components/Title';
 import axios from 'axios';
 import TextField from '@mui/material/TextField';
 import InputLabel from '@mui/material/InputLabel';

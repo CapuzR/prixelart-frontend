@@ -1,6 +1,8 @@
-import { React, useState } from 'react';
-import { makeStyles } from '@mui/styles';
-import Grid from '@mui/material/Grid';
+import { useState } from 'react';
+import { Theme } from "@mui/material/styles"
+import { makeStyles } from "tss-react/mui"
+
+import Grid2 from '@mui/material/Grid2';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
@@ -8,8 +10,8 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
 
-const useStyles = makeStyles((theme) => ({
-  paper1: {
+const useStyles = makeStyles()((theme: Theme) => {
+  return {  paper1: {
     position: 'absolute',
     width: '80%',
     maxHeight: '90%',
@@ -26,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     flexDirection: 'row',
   },
-}));
+}});
 
 export default function PrixerInfo({ handleClose, selectedPrixer, selectedConsumer }) {
   const classes = useStyles();
@@ -55,7 +57,7 @@ export default function PrixerInfo({ handleClose, selectedPrixer, selectedConsum
   }
 
   return (
-    <Grid container className={classes.paper1}>
+    <Grid2 container className={classes.paper1}>
       <div
         style={{
           display: 'flex',
@@ -78,7 +80,7 @@ export default function PrixerInfo({ handleClose, selectedPrixer, selectedConsum
         <Tab style={{ textTransform: 'none' }} label="Historial" />
       </Tabs>
       <TabPanel value={value1} index={0}>
-        <Grid
+        <Grid2
           container
           style={{
             display: 'flex',
@@ -112,11 +114,11 @@ export default function PrixerInfo({ handleClose, selectedPrixer, selectedConsum
               </>
             )}
           </Typography>
-        </Grid>
+        </Grid2>
       </TabPanel>
 
       <TabPanel value={value1} index={1}>
-        <Grid
+        <Grid2
           container
           style={{
             display: 'flex',
@@ -140,8 +142,8 @@ export default function PrixerInfo({ handleClose, selectedPrixer, selectedConsum
               {selectedConsumer?.nationalId}{' '}
             </Typography>
           )}
-        </Grid>
+        </Grid2>
       </TabPanel>
-    </Grid>
+    </Grid2>
   );
 }

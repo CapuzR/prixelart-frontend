@@ -15,21 +15,20 @@ import Modal from '@mui/material/Modal';
 import Button from '@mui/material/Button';
 import MDEditor from '@uiw/react-md-editor';
 
-import CreateProduct from '../productCrud/createProduct';
-import UpdateProduct from '../productCrud/updateProduct';
+import CreateProduct from './views/Create';
+import UpdateProduct from './views/Update';
 // import DisableProduct from "../../productCrud/disableProduct";
-import ReadProducts from '../productCrud/readProducts';
-import CreateDiscount from './createDiscount';
-import UpdateDiscount from './updateDiscount';
+import ReadProducts from './views/Table';
+import CreateDiscount from './views/CreateDiscount';
+import UpdateDiscount from './views/UpdateDiscount';
 import ListAltIcon from '@mui/icons-material/ListAlt';
 import PublishIcon from '@mui/icons-material/Publish';
 import Tooltip from '@mui/material/Tooltip';
-import CreateSurcharge from './createSurcharge';
-import UpdateSurcharge from './updateSurcharge';
-import CreateCategory from './createCategory';
-import UpdateCategory from './updateCategory';
+import CreateSurcharge from './views/CreateSurcharge';
+import UpdateSurcharge from './views/UpdateSurcharge';
+import CreateCategory from './views/CreateCategory';
+import UpdateCategory from './views/UpdateCategory';
 import ExcelJS from 'exceljs';
-
 
 const drawerWidth = 240;
 
@@ -150,18 +149,23 @@ export default function Products(props) {
   const [product, setProduct] = useState(
     localStorage.getItem('product') ? JSON.parse(localStorage.getItem('product')) : undefined
   );
+  
   const [discount, setDiscount] = useState(
     localStorage.getItem('discount') ? JSON.parse(localStorage.getItem('discount')) : undefined
   );
+
   const [surcharge, setSurcharge] = useState(
     localStorage.getItem('surcharge') ? JSON.parse(localStorage.getItem('surcharge')) : undefined
   );
+
   const [category, setCategory] = useState(
     localStorage.getItem('category') ? JSON.parse(localStorage.getItem('category')) : undefined
   );
+
   const handleProductAction = (action) => {
     history.push({ pathname: '/product/' + action });
   };
+
   useEffect(() => {
     const pathSegments = location.pathname.split('/').filter(Boolean);
     const rootSegment = pathSegments.length > 0 ? pathSegments[1] : '';

@@ -1,7 +1,7 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
 import { makeStyles } from '@mui/styles';
-import Title from '../../components/Title';
+import Title from '@apps/admin/components/Title';
 import axios from 'axios';
 import InputLabel from '@mui/material/InputLabel';
 import TextField from '@mui/material/TextField';
@@ -24,7 +24,7 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import HighlightOffOutlinedIcon from '@mui/icons-material/HighlightOffOutlined';
 import EditIcon from '@mui/icons-material/Edit';
 import MDEditor from '@uiw/react-md-editor';
-import Variants from '../products/variants';
+import Variants from './VariantsIndex';
 import Backdrop from '@mui/material/Backdrop';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';

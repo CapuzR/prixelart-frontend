@@ -149,7 +149,7 @@ export default function MainListItems(props) {
             button
             selected={props.active === 'user'}
             onClick={(e) => {
-              handleClick('user');
+              handleClick('admins');
             }}
           >
             <ListItemIcon>

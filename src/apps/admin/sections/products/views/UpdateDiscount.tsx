@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { makeStyles } from '@mui/styles';
 import { useHistory } from 'react-router-dom';
 
-import Title from '../../components/Title';
+import Title from '../../../components/Title';
 import axios from 'axios';
 import TextField from '@mui/material/TextField';
 import InputLabel from '@mui/material/InputLabel';
@@ -23,15 +23,6 @@ import Checkbox from '@mui/material/Checkbox';
 import Backdrop from '@mui/material/Backdrop';
 import InputAdornment from '@mui/material/InputAdornment';
 import { Typography } from '@mui/material';
-import { nanoid } from 'nanoid';
-import Accordion from '@mui/material/Accordion';
-import AccordionSummary from '@mui/material/AccordionSummary';
-import AccordionDetails from '@mui/material/AccordionDetails';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import Divider from '@mui/material/Divider';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import HighlightOffOutlinedIcon from '@mui/icons-material/HighlightOffOutlined';
-import IconButton from '@mui/material/IconButton';
 
 const useStyles = makeStyles((theme) => ({
   seeMore: {
@@ -74,29 +65,22 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function UpdateCategory(props) {
+export default function UpdateDiscount(props) {
   const classes = useStyles();
   const theme = useTheme();
   const history = useHistory();
 
-  const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
-  const [active, setActive] = useState(props.category.active);
-  const [name, setName] = useState(props.category.name);
-  const [appliedProducts, setAppliedProducts] = useState([]);
+  // const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
+  const [active, setActive] = useState(props.discount.active);
+  const [name, setName] = useState(props.discount.name || undefined);
+  const [description, setDescription] = useState(props.discount.description || undefined);
+  const [type, setType] = useState(props.discount.type || undefined);
+  const [value, setValue] = useState(props.discount.value || undefined);
+  const [appliedProducts, setAppliedProducts] = useState(props.discount.appliedProducts || []);
   const [loading, setLoading] = useState(false);
   const [buttonState, setButtonState] = useState(false);
   const [products, setProducts] = useState();
-  const [loadIcon, setLoadIcon] = useState({
-    icon: [],
-    filename: '',
-  });
-  const [loadImage, setLoadImage] = useState({
-    image: [],
-    filename: '',
-  });
-  const [image, setImage] = useState();
-  const [icon, setIcon] = useState();
-
+  const discountTypes = ['Porcentaje', 'Monto'];
   //Error states.
   const [errorMessage, setErrorMessage] = useState();
   const [snackBarError, setSnackBarError] = useState(false);
@@ -104,19 +88,23 @@ export default function UpdateCategory(props) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!name) {
+    if (!name && !description && !type && !value) {
       setErrorMessage('Por favor completa todos los campos requeridos.');
       setSnackBarError(true);
     } else {
       setLoading(true);
       setButtonState(true);
       const data = {
+        _id: props.discount._id,
         name: name,
         active: active,
-        // appliedProducts: appliedProducts,
+        description: description,
+        type: type,
+        value: value,
+        appliedProducts: appliedProducts,
+        adminToken: localStorage.getItem('adminTokenV'),
       };
-      const base_url =
-        import.meta.env.VITE_BACKEND_URL + '/product/update-category/' + props.category._id;
+      const base_url = import.meta.env.VITE_BACKEND_URL + '/discount/update';
       const response = await axios.put(base_url, data);
       if (response.data.success === false) {
         setLoading(false);
@@ -124,10 +112,13 @@ export default function UpdateCategory(props) {
         setErrorMessage(response.data.message);
         setSnackBarError(true);
       } else {
-        setErrorMessage('¡Categoría actualizada exitosamente!');
+        setErrorMessage('Actualización de descuento exitoso.');
         setSnackBarError(true);
         setActive(false);
         setName();
+        setDescription();
+        setType();
+        setValue('');
         setAppliedProducts([]);
         history.push('/product/read');
       }
@@ -155,30 +146,8 @@ export default function UpdateCategory(props) {
   useEffect(() => {
     getProducts();
   }, []);
-
-  const convertToBase64 = (blob) => {
-    return new Promise((resolve) => {
-      var reader = new FileReader();
-      reader.onload = function () {
-        resolve(reader.result);
-      };
-      reader.readAsDataURL(blob);
-    });
-  };
-
-  const loadImg = async (e, type) => {
-    e.preventDefault();
-
-    const file = e.target.files[0];
-    const resizedString = await convertToBase64(file);
-
-    if (type === 'icon') {
-      setLoadIcon({ loader: resizedString, filename: file.name });
-    } else {
-      setLoadImage({ loader: resizedString, filename: file.name });
-    }
-  };
-
+  console.log(active);
+  console.log(value);
   return (
     <React.Fragment>
       {
@@ -186,29 +155,32 @@ export default function UpdateCategory(props) {
           <CircularProgress />
         </Backdrop>
       }
-      <Title>Actualizar Categoría</Title>
+      <Title>Actualizar Descuento</Title>
       <form
-        style={{
-          height: 'auto',
-        }}
+        className={classes.form}
         encType="multipart/form-data"
         noValidate
         onSubmit={handleSubmit}
       >
-        <Grid>
-          <Checkbox
-            checked={active}
-            color="primary"
-            inputProps={{ 'aria-label': 'secondary checkbox' }}
-            onChange={() => {
-              active ? setActive(false) : setActive(true);
-            }}
-          />
-          Habilitado
-        </Grid>
-        <Grid container style={{ display: 'flex', marginTop: 10, marginBottom: 20 }}>
-          <Grid md={4}>
-            <FormControl className={classes.margin} variant="outlined" fullWidth={true}>
+        <Grid container spacing={2}>
+          <Grid item xs={12}>
+            <Checkbox
+              checked={active}
+              color="primary"
+              inputProps={{ 'aria-label': 'secondary checkbox' }}
+              onChange={() => {
+                setActive(!active);
+              }}
+            />
+            Habilitado
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <FormControl
+              className={clsx(classes.margin, classes.textField)}
+              variant="outlined"
+              xs={12}
+              fullWidth={true}
+            >
               <TextField
                 variant="outlined"
                 required
@@ -221,94 +193,97 @@ export default function UpdateCategory(props) {
               />
             </FormControl>
           </Grid>
-          <Grid
-            md={4}
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-            }}
-          >
-            {icon !== undefined && (
-              <div
-                style={{
-                  width: '180px',
+          <Grid item xs={12} md={6}>
+            <FormControl
+              className={clsx(classes.margin, classes.textField)}
+              variant="outlined"
+              xs={12}
+              fullWidth={true}
+            >
+              <TextField
+                variant="outlined"
+                required
+                fullWidth
+                multiline
+                minRows={5}
+                label="Descripción"
+                value={description}
+                onChange={(e) => {
+                  setDescription(e.target.value);
+                }}
+              />
+            </FormControl>
+          </Grid>
+          <Grid item xs={12} md={3} style={{ marginTop: '-75px' }}>
+            <FormControl
+              className={clsx(classes.margin, classes.textField)}
+              variant="outlined"
+              xs={12}
+              fullWidth={true}
+            >
+              <InputLabel>Tipo</InputLabel>
+              <Select
+                input={<OutlinedInput />}
+                value={type}
+                onChange={(e) => {
+                  setType(e.target.value);
                 }}
               >
-                <div
-                  style={{
-                    textAlign: 'right',
+                {discountTypes &&
+                  discountTypes.map((type) => <MenuItem value={type}>{type}</MenuItem>)}
+              </Select>
+            </FormControl>
+          </Grid>
+          <Grid item xs={12} md={3} style={{ marginTop: '-75px', width: '50%' }}>
+            <FormControl
+              className={clsx(classes.margin, classes.textField)}
+              variant="outlined"
+              xs={12}
+              fullWidth={true}
+            >
+              {type === 'Monto' ? (
+                <TextField
+                  variant="outlined"
+                  required
+                  fullWidth
+                  label="Valor"
+                  InputProps={{
+                    startAdornment: <InputAdornment position="start">$</InputAdornment>,
                   }}
-                >
-                  <IconButton
-                    variant="text"
-                    className={classes.buttonImgLoader}
-                    style={{ color: '#d33f49' }}
-                    onClick={() => {
-                      setIcon();
-                    }}
-                  >
-                    <HighlightOffOutlinedIcon />
-                  </IconButton>
-                </div>
-
-                <img
-                  style={{
-                    width: '100%',
-                    // height: "200px",
-                    objectFit: 'contain',
+                  value={value}
+                  onChange={(e) => {
+                    setValue(e.target.value);
                   }}
-                  src={img}
-                  alt="+"
+                  error={value !== undefined && !isAValidPrice(value)}
                 />
-              </div>
-            )}
-            <Button
-              variant="contained"
-              component="label"
-              style={{ textTransform: 'none', width: 'fit-content' }}
-            >
-              Subir ícono
-              <input
-                name="categoryIcon"
-                type="file"
-                accept="image/*"
-                hidden
-                onChange={(a) => {
-                  loadImg(a, 'icon');
-                }}
-              />
-            </Button>
+              ) : (
+                type === 'Porcentaje' && (
+                  <TextField
+                    variant="outlined"
+                    required
+                    fullWidth
+                    type="number"
+                    InputProps={{
+                      startAdornment: <InputAdornment position="start">%</InputAdornment>,
+                      inputProps: { min: 1, max: 100 },
+                    }}
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    label="Valor"
+                    value={value}
+                    onChange={(e) => {
+                      setValue(e.target.value);
+                    }}
+                    error={value !== undefined && !isAValidPrice(value)}
+                  />
+                )
+              )}
+            </FormControl>
           </Grid>
-          <Grid
-            md={4}
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-            }}
-          >
-            <Button
-              variant="contained"
-              component="label"
-              style={{ textTransform: 'none', width: 'fit-content' }}
-            >
-              Subir imagen
-              <input
-                name="categoryImg"
-                type="file"
-                accept="image/*"
-                hidden
-                onChange={(a) => {
-                  loadImg(a, 'img');
-                }}
-              />
-            </Button>
+          <Grid item xs={12}>
+            <Typography color="primary">Aplicado a:</Typography>
           </Grid>
-        </Grid>
-        <Divider light variant="fullWidth" />
-
-        <Grid container spacing={2} style={{ marginTop: 20 }}>
           <Grid item xs={12}>
             <Checkbox
               checked={appliedProducts.length === products?.length}
@@ -347,6 +322,7 @@ export default function UpdateCategory(props) {
               </Grid>
             ))}
         </Grid>
+        <Grid container spacing={2}></Grid>
         <Button
           variant="contained"
           color="primary"

@@ -1,118 +1,43 @@
 import { useState, useEffect } from "react"
-import axios from "axios"
-import { makeStyles } from "tss-react/mui"
 import Paper from "@mui/material/Paper"
-import Grid2 from "@mui/material/Grid2"
 import Box from "@mui/material/Box"
-import Switch from "@mui/material/Switch"
 import Typography from "@mui/material/Typography"
-import Card from "@mui/material/Card"
-import CardContent from "@mui/material/CardContent"
-import CardMedia from "@mui/material/CardMedia"
-import Button from "@mui/material/Button"
 import Modal from "@mui/material/Modal"
-import IconButton from "@mui/material/IconButton"
-import CloseIcon from "@mui/icons-material/Close"
-import DehazeIcon from "@mui/icons-material/Dehaze"
+import { useTheme } from "@mui/material/styles"
 
 import Tabs from "@mui/material/Tabs"
 import Tab from "@mui/material/Tab"
-import MoreVertIcon from "@mui/icons-material/MoreVert"
-import CreateWallet from "./createWallet"
-import CreateMovement from "./createMovement"
-import MovementRecord from "./movementRecord"
-import PrixerInfo from "./prixerInfo"
-import OrgCommission from "./orgCommission"
+import CreateWallet from "./components/CreateWallet"
+import CreateMovement from "./components/CreateMovement"
+import MovementRecord from "./components/MovementRecord"
+import PrixerInfo from "./components/Info"
+import OrgCommission from "./components/OrgCommission"
 import RemovePrixer from "./destroyPrixer"
-import { useTheme } from "@mui/material/styles"
-import useMediaQuery from "@mui/material/useMediaQuery"
 
-const useStyles = makeStyles()((theme: Theme) => {
-  return {
-    cardMedia: {
-      paddingTop: "81.25%",
-      borderRadius: "50%",
-      margin: "28px",
-    },
-    card: {
-      height: "100%",
-      display: "flex",
-      flexDirection: "column",
-    },
-    cardContent: {
-      marginTop: -10,
-      display: "flex",
-      justifyContent: "center",
-      flexDirection: "column",
-      height: "100%",
-    },
-    paper1: {
-      position: "absolute",
-      width: "80%",
-      maxHeight: "90%",
-      overflowY: "auto",
-      backgroundColor: "white",
-      boxShadow: theme.shadows[2],
-      padding: "16px 32px 24px",
-      top: "50%",
-      left: "50%",
-      transform: "translate(-50%, -50%)",
-      textAlign: "justify",
-      minWidth: 320,
-      borderRadius: 10,
-      display: "flex",
-      flexDirection: "row",
-    },
-    paper2: {
-      position: "fixed",
-      right: "30%",
-      top: "38%",
-      bottom: "37%",
-      left: "40%",
-      width: 300,
-      backgroundColor: "white",
-      boxShadow: theme.shadows[2],
-      padding: "16px 32px 24px",
-      textAlign: "justify",
-      minWidth: 320,
-      borderRadius: 10,
-      display: "flex",
-      flexDirection: "row",
-    },
-    paper3: {
-      position: "fixed",
-      right: "40%",
-      top: "38%",
-      bottom: "37%",
-      left: "22%",
-      width: 800,
-      backgroundColor: "white",
-      boxShadow: theme.shadows[2],
-      padding: "16px 32px 24px",
-      textAlign: "justify",
-      minWidth: 320,
-      borderRadius: 10,
-      display: "flex",
-      flexDirection: "row",
-    },
-    root: {
-      flexGrow: 1,
-      backgroundColor: theme.palette.background.paper,
-    },
-  }
-})
+import {
+  getAllPrixers,
+  getAllOrgs,
+  getAccounts,
+  updateToOrg,
+  updateToPrixer,
+  updateVisibility,
+} from "./api"
+import { getPrixers } from "../consumers/api"
+import PrixersGrid from "./components/PrixersGrid"
+import { Account } from "../../../../types/account.types"
+import { useSnackBar, useLoading } from "context/GlobalContext"
+import OrgsGrid from "./components/OrgsGrid"
 
 export default function PrixersCrud({ permissions }) {
   const theme = useTheme()
 
-  const classes = useStyles()
   const [value, setValue] = useState(0)
+  const { showSnackBar } = useSnackBar()
+  const { setLoading } = useLoading()
 
-  const [loading, setLoading] = useState(false)
   const [tiles, setTiles] = useState([])
   const [consumers, setConsumers] = useState([])
-  const [org, setOrg] = useState([])
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
+  const [orgs, setOrgs] = useState([])
   const [state, setState] = useState({
     checkedA: true,
   })
@@ -125,9 +50,6 @@ export default function PrixersCrud({ permissions }) {
   const [type, setType] = useState<string>()
   const [date, setDate] = useState(new Date())
   const [accounts, setAccounts] = useState<Account[]>()
-  // Crear el tipo de Account
-  const [message, setMessage] = useState()
-  const [open, setOpen] = useState(false)
   const [anchorEl, setAnchorEl] = useState(null)
   const [openInfo, setOpenInfo] = useState(false)
   const [openComission, setOpenComission] = useState(false)
@@ -139,17 +61,8 @@ export default function PrixersCrud({ permissions }) {
 
   const readPrixers = async () => {
     try {
-      const base_url =
-        import.meta.env.VITE_BACKEND_URL + "/prixer/read-all-full"
-
-      const response = await axios.get(base_url)
-      let prev = response.data.prixers
-      prev.map((prix) => {
-        if (prix !== null) {
-          return prix
-        }
-      })
-      setTiles(prev)
+      const response = await getAllPrixers()
+      setTiles(response)
     } catch (error) {
       console.log(error)
     }
@@ -157,13 +70,8 @@ export default function PrixersCrud({ permissions }) {
 
   const readConsumers = async () => {
     try {
-      const base_url =
-        import.meta.env.VITE_BACKEND_URL + "/consumer/read-prixers"
-
-      const response = await axios.post(base_url, {
-        adminToken: localStorage.getItem("adminTokenV"),
-      })
-      setConsumers(response.data)
+      const response = await getPrixers()
+      setConsumers(response)
     } catch (error) {
       console.log(error)
     }
@@ -171,35 +79,30 @@ export default function PrixersCrud({ permissions }) {
 
   const readOrg = async () => {
     try {
-      const base_url =
-        import.meta.env.VITE_BACKEND_URL + "/organization/read-all-full"
-
-      const response = await axios.get(base_url)
-      setOrg(response.data.organizations)
+      const response = await getAllOrgs()
+      setOrgs(response)
     } catch (error) {
       console.log(error)
     }
   }
 
   const getBalance = async () => {
-    const base_url = import.meta.env.VITE_BACKEND_URL + "/account/readAll"
-    await axios
-      .post(base_url, {
-        adminToken: localStorage.getItem("adminTokenV"),
-      })
-      .then((res) => {
-        setAccounts(res.data.accounts)
-      })
+    try {
+      const response = await getAccounts()
+      setAccounts(response)
+    } catch (error) {
+      console.log(error)
+    }
   }
 
-  const routine = async () => {
+  const routine = () => {
     setLoading(true)
     readPrixers()
     readOrg()
     readConsumers()
     getBalance()
-    setLoading(false)
   }
+
   useEffect(() => {
     routine()
   }, [])
@@ -213,19 +116,19 @@ export default function PrixersCrud({ permissions }) {
     setLoading(true)
     setState({ ...state, [e.target.name]: e.target.checked })
 
-    const base_url =
-      import.meta.env.VITE_BACKEND_URL +
-      "/prixer/update-home/" +
-      prixer.prixerId
     const body = {
       status:
         e.target.value === "false" || e.target.value === "" ? true : false,
-      adminToken: localStorage.getItem("adminTokenV"),
       account: prixer?.account,
+      id: prixer.prixerid,
     }
-    await axios.put(base_url, body)
-    await readPrixers()
-    setLoading(false)
+    // Simplificar esto
+    const response = await updateVisibility(body)
+    if (response.success) {
+      // Personalizar a true o false
+      showSnackBar(`Visibilidad de usuario ${prixer.username} cambiada.`)
+      await readPrixers()
+    }
   }
 
   const handleClose = () => {
@@ -235,9 +138,9 @@ export default function PrixersCrud({ permissions }) {
     setOpenList(false)
     setBalance(0)
     setOpenInfo(false)
-    setSelectedPrixer()
-    setSelectedConsumer()
-    setDate()
+    setSelectedPrixer(undefined)
+    setSelectedConsumer(undefined)
+    setDate(undefined)
     setAnchorEl(null)
     setOpenDestroy(false)
   }
@@ -260,48 +163,27 @@ export default function PrixersCrud({ permissions }) {
     )
   }
 
-  const TurnIntoOrg = async (event, user) => {
-    const url = import.meta.env.VITE_BACKEND_URL + "/turn-to-association"
-    const data = { username: user }
-    const call = await axios.post(url, data)
-    if (call.data.success) {
-      setOpen(true)
-      setMessage("Rol modificado a Organización.")
+  const TurnIntoOrg = async (event, user: string) => {
+    const response = await updateToOrg(user)
+    if (response.success) {
+      showSnackBar("Rol modificado a Organización.")
       let prev = tiles.filter((tile) => tile.username !== user)
       setTiles(prev)
     }
   }
 
-  const TurnIntoPrixer = async (event, user) => {
-    const url = import.meta.env.VITE_BACKEND_URL + "/turn-to-prixer"
-    const data = { username: user }
-    const call = await axios.post(url, data)
-    if (call.data.success) {
-      setOpen(true)
-      setMessage("Rol modificado a Prixer.")
-      let prev = org.filter((o) => o.username !== user)
+  const TurnIntoPrixer = async (event, user: string) => {
+    const response = await updateToPrixer(user)
+    if (response.success) {
+      showSnackBar("Rol modificado a Prixer.")
+      let prev = orgs.filter((o) => o.username !== user)
       if (prev[0] === null) {
-        setOrg([])
+        setOrgs([])
       } else {
-        setOrg(prev)
+        setOrgs(prev)
       }
     }
   }
-
-  // const addrole = async () => {
-  //   const url = import.meta.env.VITE_BACKEND_URL + "/prixers/addRole";
-
-  //   await axios.put(url);
-  //   setOpen(true);
-  //   setMessage("Rol de Prixer agregado a todos los usuarios.");
-  // };
-
-  // function handleKeyDown(event) {
-  //   if (event.key === "*") {
-  //     addrole();
-  //   } else return;
-  // }
-  // document.addEventListener("keydown", handleKeyDown);
 
   return (
     <div>
@@ -316,672 +198,47 @@ export default function PrixersCrud({ permissions }) {
           <Tab label="Prixers" />
           <Tab label="Organizaciones" />
         </Tabs>
-        
-        <TabPanel value={value} index={0}>
-          <Grid2
-            container
-            spacing={2}
-            style={{
-              padding: isMobile ? "0px" : "18px",
-              display: "flex",
-              textAlign: "start",
-            }}
-          >
-            {tiles?.length > 0 ? (
-              tiles.map((tile) =>
-                tile === selectedPrixer ? (
-                  <Grid2 size={{ xs: 6, sm: 6, md: 3 }}>
-                    <Card
-                      key={tile?.prixerId}
-                      sx={{
-                        height: "100%",
-                        display: "flex",
-                        flexDirection: "column",
-                      }}
-                    >
-                      <div
-                        style={{
-                          width: "100%",
-                          display: "flex",
-                          justifyContent: "end",
-                          marginBottom: "-25px",
-                        }}
-                      >
-                        <IconButton
-                          aria-controls="simple-menu"
-                          aria-haspopup="true"
-                          onClick={(e) => {
-                            setSelectedPrixer(undefined)
-                          }}
-                        >
-                          <CloseIcon />
-                        </IconButton>
-                      </div>
 
-                      <CardContent
-                        sx={{
-                          marginTop: -10,
-                          display: "flex",
-                          justifyContent: "center",
-                          flexDirection: "column",
-                          height: "100%",
-                        }}
-                      >
-                        <Typography gutterBottom variant="h5" component="h2">
-                          {tile?.firstName} {tile?.lastName}
-                        </Typography>
-                        {permissions?.readConsumers && (
-                          <Button
-                            style={{
-                              backgroundColor: "#e5e7e9",
-                              textTransform: "none",
-                            }}
-                            onClick={() => {
-                              setOpenInfo(true)
-                              consumers.map((cons) => {
-                                if (cons.prixerId === tile.prixerId) {
-                                  setSelectedConsumer(cons)
-                                }
-                              })
-                            }}
-                          >
-                            Ver información
-                          </Button>
-                        )}
-                        {permissions?.setPrixerBalance && (
-                          <Box
-                            style={{
-                              display: "flex",
-                              justifyContent: "space-between",
-                            }}
-                          >
-                            <Typography
-                              color="secondary"
-                              style={{ display: "flex", alignItems: "center" }}
-                            >
-                              Cambiar a Organización
-                            </Typography>
-                            <Switch
-                              color="primary"
-                              onChange={(event) =>
-                                TurnIntoOrg(event, tile?.username)
-                              }
-                              name="checkedA"
-                              inputProps={{
-                                "aria-label": "secondary checkbox",
-                              }}
-                            />
-                          </Box>
-                        )}
-                        {permissions?.prixerBan && (
-                          <Box
-                            style={{
-                              display: "flex",
-                              flexDirection: "column",
-                              height: "100%",
-                              justifyContent: "space-between",
-                            }}
-                          >
-                            <Box
-                              style={{
-                                display: "flex",
-                                justifyContent: "space-between",
-                              }}
-                            >
-                              <Typography
-                                color="secondary"
-                                style={{
-                                  display: "flex",
-                                  alignItems: "center",
-                                }}
-                              >
-                                Visible
-                              </Typography>
-                              <Switch
-                                checked={tile?.status}
-                                color="primary"
-                                onChange={(event) =>
-                                  // handleChange(event, tile?.state) ||
-                                  ChangeVisibility(event, tile)
-                                }
-                                name="checkedA"
-                                value={tile?.status}
-                                inputProps={{
-                                  "aria-label": "secondary checkbox",
-                                }}
-                              />
-                            </Box>
-                            <Box
-                              style={{
-                                display: "flex",
-                                justifyContent: "center",
-                              }}
-                            >
-                              <Button
-                                onClick={(e) => {
-                                  setSelectedPrixer(tile)
-                                  setOpenDestroy(true)
-                                }}
-                                style={{
-                                  backgroundColor: "rgb(229, 231, 233)",
-                                  textTransform: "none",
-                                }}
-                              >
-                                Eliminar Prixer
-                              </Button>
-                            </Box>
-                          </Box>
-                        )}
-                      </CardContent>
-                    </Card>
-                  </Grid2>
-                ) : (
-                  <Grid2 size={{ xs: 6, sm: 6, md: 3 }}>
-                    <Card
-                      key={tile?._id}
-                      sx={{
-                        height: "100%",
-                        display: "flex",
-                        flexDirection: "column",
-                      }}
-                    >
-                      <div
-                        style={{
-                          width: "100%",
-                          display: "flex",
-                          justifyContent: "end",
-                          marginBottom: "-50px",
-                        }}
-                      >
-                        <IconButton
-                          aria-controls="simple-menu"
-                          aria-haspopup="true"
-                          onClick={(e) => {
-                            setSelectedPrixer(tile)
-                          }}
-                        >
-                          <MoreVertIcon />
-                        </IconButton>
-                      </div>
-                      <CardMedia
-                        component="img"
-                        alt={tile?.title}
-                        height="100"
-                        width="100"
-                        image={tile?.avatar || "/PrixLogo.png"}
-                        sx={{
-                          paddingTop: "81.25%",
-                          borderRadius: "50%",
-                          margin: "28px",
-                        }}
-                        title={tile?.title}
-                        style={{
-                          opacity: tile?.status === true ? "100%" : "50%",
-                        }}
-                      />
-                      <CardContent
-                        sx={{
-                          marginTop: -10,
-                          display: "flex",
-                          justifyContent: "center",
-                          flexDirection: "column",
-                          height: "100%",
-                        }}
-                      >
-                        <Typography gutterBottom variant="h5">
-                          {tile?.firstName} {tile?.lastName}
-                        </Typography>
-                        <Typography gutterBottom style={{ fontSize: 16 }}>
-                          {tile?.username} -
-                          {tile?.specialty ||
-                            tile?.specialtyArt?.map(
-                              (specialty, index) =>
-                                specialty !== "" &&
-                                (tile?.specialtyArt?.length === index + 1
-                                  ? specialty
-                                  : `${specialty}, `)
-                            )}
-                        </Typography>
-                      </CardContent>
-                      {tile?.account !== undefined &&
-                      permissions?.setPrixerBalance ? (
-                        <div
-                          style={{
-                            borderStyle: "solid",
-                            borderWidth: "thin",
-                            borderRadius: "10px",
-                            borderColor: "#e5e7e9",
-                            margin: "5px",
-                            paddingBottom: "5px",
-                          }}
-                        >
-                          <Typography variant="h6" align="center">
-                            Balance $
-                            {accounts &&
-                              accounts
-                                ?.find((acc) => acc._id === tile?.account)
-                                ?.balance.toLocaleString("de-DE", {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 2,
-                                })}
-                          </Typography>
-                          <div
-                            style={{
-                              display: "flex",
-                              justifyContent: "space-evenly",
-                            }}
-                          >
-                            <Button
-                              onClick={(e) => {
-                                setSelectedPrixer(tile)
-                                setType("Depósito")
-                                setOpenNewMovement(true)
-                              }}
-                              style={{
-                                width: "40%",
-                                backgroundColor: "#e5e7e9",
-                                textTransform: "none",
-                              }}
-                            >
-                              Depósito
-                            </Button>
-                            <Button
-                              onClick={(e) => {
-                                setSelectedPrixer(tile)
-                                setType("Retiro")
-                                setOpenNewMovement(true)
-                              }}
-                              style={{
-                                width: "40%",
-                                backgroundColor: "#e5e7e9",
-                                textTransform: "none",
-                              }}
-                            >
-                              Retiro
-                            </Button>
-                          </div>
-                          <div
-                            style={{
-                              width: "100%",
-                              display: "flex",
-                              justifyContent: "center",
-                              marginTop: 5,
-                            }}
-                          >
-                            <Button
-                              style={{ textTransform: "none" }}
-                              onClick={() => {
-                                setSelectedPrixer(tile)
-                                setOpenList(true)
-                              }}
-                            >
-                              <DehazeIcon />
-                              Detalles
-                            </Button>
-                          </div>
-                        </div>
-                      ) : (
-                        permissions?.setPrixerBalance && (
-                          <Button
-                            variant="contained"
-                            color="primary"
-                            style={{
-                              width: 160,
-                              alignSelf: "center",
-                              fontWeight: "bold",
-                            }}
-                            onClick={(e) => {
-                              setSelectedPrixer(tile)
-                              setOpenNewBalance(true)
-                            }}
-                          >
-                            Crear Cartera
-                          </Button>
-                        )
-                      )}
-                    </Card>
-                  </Grid2>
-                )
-              )
-            ) : (
-              <Typography
-                variant="h6"
-                color="secondary"
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  marginTop: 20,
-                  marginBottom: 20,
-                }}
-              >
-                No se han cargado los Prixers aún.
-              </Typography>
-            )}
-          </Grid2>
+        <TabPanel value={value} index={0}>
+          <PrixersGrid
+            tiles={tiles}
+            selectedPrixer={selectedPrixer}
+            setSelectedPrixer={setSelectedPrixer}
+            permissions={permissions}
+            consumers={consumers}
+            setSelectedConsumer={setSelectedConsumer}
+            TurnIntoOrg={TurnIntoOrg}
+            ChangeVisibility={ChangeVisibility}
+            setOpenDestroy={setOpenDestroy}
+            accounts={accounts}
+            setType={setType}
+            setOpenNewMovement={setOpenNewMovement}
+            setOpenList={setOpenList}
+            setOpenNewBalance={setOpenNewBalance}
+            setOpenInfo={setOpenInfo}
+          />
         </TabPanel>
 
         <TabPanel value={value} index={1}>
-          <Grid2
-            container
-            spacing={2}
-            style={{
-              padding: isMobile ? "0px" : "18px",
-              display: "flex",
-              textAlign: "start",
-            }}
-          >
-            {org && org.length > 0 ? (
-              org.map((tile) =>
-                tile === selectedPrixer ? (
-                  <Grid2 size={{ xs: 6, sm: 6, md: 3 }}>
-                    <Card
-                      key={tile?._id}
-                      sx={{
-                        height: "100%",
-                        display: "flex",
-                        flexDirection: "column",
-                      }}
-                    >
-                      <div
-                        style={{
-                          width: "100%",
-                          display: "flex",
-                          justifyContent: "end",
-                          marginBottom: "-25px",
-                        }}
-                      >
-                        <IconButton
-                          aria-controls="simple-menu"
-                          aria-haspopup="true"
-                          onClick={(e) => {
-                            setSelectedPrixer(undefined)
-                          }}
-                        >
-                          <CloseIcon />
-                        </IconButton>
-                      </div>
-
-                      <CardContent
-                        sx={{
-                          marginTop: -10,
-                          display: "flex",
-                          justifyContent: "center",
-                          flexDirection: "column",
-                          height: "100%",
-                        }}
-                      >
-                        <Typography gutterBottom variant="h5" component="h2">
-                          {tile?.firstName} {tile?.lastName}
-                        </Typography>
-                        {permissions?.readConsumers && (
-                          <Button
-                            style={{
-                              backgroundColor: "#e5e7e9",
-                              textTransform: "none",
-                            }}
-                            onClick={() => {
-                              setOpenInfo(true)
-                              consumers?.map((cons) => {
-                                if (cons.prixerId === tile.prixerId) {
-                                  setSelectedConsumer(cons)
-                                }
-                              })
-                            }}
-                          >
-                            Ver información
-                          </Button>
-                        )}
-                        {permissions?.setPrixerBalance && (
-                          <Box
-                            style={{
-                              display: "flex",
-                              justifyContent: "end",
-                            }}
-                          >
-                            <Typography
-                              color="secondary"
-                              style={{ display: "flex", alignItems: "center" }}
-                            >
-                              Cambiar a Prixer
-                            </Typography>
-                            <Switch
-                              color="primary"
-                              onChange={(event) =>
-                                TurnIntoPrixer(event, tile?.username)
-                              }
-                              name="checkedA"
-                              inputProps={{
-                                "aria-label": "secondary checkbox",
-                              }}
-                            />
-                          </Box>
-                        )}
-                        {permissions?.prixerBan && (
-                          <Box
-                            style={{
-                              display: "flex",
-                              justifyContent: "end",
-                            }}
-                          >
-                            <Typography
-                              color="secondary"
-                              style={{ display: "flex", alignItems: "center" }}
-                            >
-                              Visible
-                            </Typography>
-                            <Switch
-                              checked={tile?.status}
-                              color="primary"
-                              onChange={(event) =>
-                                // handleChange(event, tile?.state) ||
-                                ChangeVisibility(event, tile)
-                              }
-                              name="checkedA"
-                              value={tile?.status}
-                              inputProps={{
-                                "aria-label": "secondary checkbox",
-                              }}
-                            />
-                          </Box>
-                        )}
-                        <Button
-                          style={{
-                            backgroundColor: "#e5e7e9",
-                            textTransform: "none",
-                          }}
-                          onClick={() => {
-                            setOpenComission(true)
-                          }}
-                        >
-                          Definir comisión
-                        </Button>
-                      </CardContent>
-                    </Card>
-                  </Grid2>
-                ) : (
-                  <Grid2 size={{ xs: 6, sm: 6, md: 3 }}>
-                    <Card
-                      key={tile?._id}
-                      sx={{
-                        height: "100%",
-                        display: "flex",
-                        flexDirection: "column",
-                      }}
-                    >
-                      <div
-                        style={{
-                          width: "100%",
-                          display: "flex",
-                          justifyContent: "end",
-                          marginBottom: "-50px",
-                        }}
-                      >
-                        <IconButton
-                          aria-controls="simple-menu"
-                          aria-haspopup="true"
-                          onClick={(e) => {
-                            setSelectedPrixer(tile)
-                          }}
-                        >
-                          <MoreVertIcon />
-                        </IconButton>
-                      </div>
-                      <CardMedia
-                        component="img"
-                        alt={tile?.title}
-                        height="100"
-                        width="100"
-                        image={tile?.avatar || "/PrixLogo.png"}
-                        sx={{
-                          paddingTop: "81.25%",
-                          borderRadius: "50%",
-                          margin: "28px",
-                        }}
-                        title={tile?.title}
-                      />
-                      <CardContent
-                        sx={{
-                          marginTop: -10,
-                          display: "flex",
-                          justifyContent: "center",
-                          flexDirection: "column",
-                          height: "100%",
-                        }}
-                      >
-                        <Typography gutterBottom variant="h5" component="h2">
-                          {tile?.firstName} {tile?.lastName}
-                        </Typography>
-                        <Typography
-                          gutterBottom
-                          variant="h6"
-                          component="h6"
-                          style={{ fontSize: 16 }}
-                        >
-                          {tile?.username} -
-                          {tile?.specialty ||
-                            tile?.specialtyArt?.map(
-                              (specialty: string, index: number) =>
-                                specialty !== "" &&
-                                (tile?.specialtyArt?.length === index + 1
-                                  ? specialty
-                                  : `${specialty}, `)
-                            )}
-                        </Typography>
-                      </CardContent>
-                      {tile?.account !== undefined &&
-                      permissions?.setPrixerBalance ? (
-                        <div
-                          style={{
-                            borderStyle: "solid",
-                            borderWidth: "thin",
-                            borderRadius: "10px",
-                            borderColor: "#e5e7e9",
-                            margin: "5px",
-                            paddingBottom: "5px",
-                          }}
-                        >
-                          <Typography variant="h6" align="center">
-                            Balance $
-                            {accounts &&
-                              accounts
-                                ?.find((acc) => acc._id === tile?.account)
-                                ?.balance.toLocaleString("de-DE", {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 2,
-                                })}
-                          </Typography>
-                          <div
-                            style={{
-                              display: "flex",
-                              justifyContent: "space-evenly",
-                            }}
-                          >
-                            <Button
-                              onClick={(e) => {
-                                setSelectedPrixer(tile)
-                                setType("Depósito")
-                                setOpenNewMovement(true)
-                              }}
-                              style={{
-                                width: "40%",
-                                backgroundColor: "#e5e7e9",
-                              }}
-                            >
-                              Depósito
-                            </Button>
-                            <Button
-                              onClick={(e) => {
-                                setSelectedPrixer(tile)
-                                setType("Retiro")
-                                setOpenNewMovement(true)
-                              }}
-                              style={{
-                                width: "40%",
-                                backgroundColor: "#e5e7e9",
-                              }}
-                            >
-                              Retiro
-                            </Button>
-                          </div>
-                          <div
-                            style={{
-                              width: "100%",
-                              display: "flex",
-                              justifyContent: "center",
-                              textTransform: "lowercase",
-                              marginTop: 5,
-                            }}
-                          >
-                            <Button
-                              onClick={() => {
-                                setSelectedPrixer(tile)
-                                setOpenList(true)
-                              }}
-                            >
-                              <DehazeIcon />
-                              Detalles
-                            </Button>
-                          </div>
-                        </div>
-                      ) : (
-                        permissions?.setPrixerBalance && (
-                          <Button
-                            variant="contained"
-                            color="primary"
-                            style={{
-                              width: 160,
-                              alignSelf: "center",
-                              fontWeight: "bold",
-                            }}
-                            onClick={(e) => {
-                              setSelectedPrixer(tile)
-                              setOpenNewBalance(true)
-                            }}
-                          >
-                            Crear Cartera
-                          </Button>
-                        )
-                      )}
-                    </Card>
-                  </Grid2>
-                )
-              )
-            ) : (
-              <Typography
-                variant="h6"
-                color="secondary"
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  marginTop: 20,
-                  marginBottom: 20,
-                  width: "100%",
-                }}
-              >
-                No tenemos asociaciones registradas por ahora.
-              </Typography>
-            )}
-          </Grid2>
+          <OrgsGrid
+            orgs={orgs}
+            selectedPrixer={selectedPrixer}
+            setSelectedPrixer={setSelectedPrixer}
+            permissions={permissions}
+            consumers={consumers}
+            setSelectedConsumer={setSelectedConsumer}
+            TurnIntoOrg={TurnIntoOrg}
+            ChangeVisibility={ChangeVisibility}
+            setOpenDestroy={setOpenDestroy}
+            accounts={accounts}
+            setType={setType}
+            setOpenNewMovement={setOpenNewMovement}
+            setOpenList={setOpenList}
+            setOpenNewBalance={setOpenNewBalance}
+            setOpenInfo={setOpenInfo}
+            TurnIntoPrixer={TurnIntoPrixer}
+            setOpenComission={setOpenComission}
+          />
         </TabPanel>
       </Paper>
 
@@ -990,8 +247,7 @@ export default function PrixersCrud({ permissions }) {
           selectedPrixer={selectedPrixer}
           balance={balance}
           date={date}
-          setOpen={setOpen}
-          setMessage={setMessage}
+          showSnackBar={showSnackBar}
           handleClose={handleClose}
           setBalance={setBalance}
           readPrixers={readPrixers}
@@ -1009,8 +265,7 @@ export default function PrixersCrud({ permissions }) {
           balance={balance}
           setBalance={setBalance}
           type={type}
-          setOpen={setOpen}
-          setMessage={setMessage}
+          showSnackBar={showSnackBar}
           readPrixers={readPrixers}
           readOrg={readOrg}
           getBalance={getBalance}
@@ -1037,8 +292,6 @@ export default function PrixersCrud({ permissions }) {
           selectedPrixer={selectedPrixer}
           handleClose={handleClose}
           setOpenComission={setOpenComission}
-          setOpen={setOpen}
-          setMessage={setMessage}
           readOrg={readOrg}
         />
       </Modal>
@@ -1048,8 +301,7 @@ export default function PrixersCrud({ permissions }) {
           selectedPrixer={selectedPrixer}
           selectedConsumer={selectedConsumer}
           routine={routine}
-          setOpen={setOpen}
-          setMessage={setMessage}
+          showSnackBar={showSnackBar}
           handleClose={handleClose}
         />
       </Modal>

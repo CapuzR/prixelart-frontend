@@ -63,10 +63,10 @@ const AdminRoutes: React.FC<AdminRoutesProps> = ({
       <Route
         exact
         path={[
-          "/admin/admin/update/:adminId",
+          "/admin/admins/update/:adminId",
           "/admin/order/read",
-          "/admin/admin/read",
-          "/admin/admin/update",
+          "/admin/admins/read",
+          "/admin/admins/update",
           "/admin/admin/updateRole",
           "/admin/product/read",
           "/admin/consumer/read",

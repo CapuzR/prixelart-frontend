@@ -17,7 +17,7 @@ import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import Img from 'react-cool-img';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import WarpImage from '../productCrud/warpImage';
+import WarpImage from '../products/components/WarpImage';
 
 import { getPVP, getPVM } from '../../../consumer/checkout/pricesFunctions.jsx';
 // import moment from 'moment';

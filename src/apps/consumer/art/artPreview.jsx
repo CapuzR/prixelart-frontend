@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Img from 'react-cool-img';
 
-import WarpImage from '../../admin/sections/productCrud/warpImage';
+import WarpImage from '../../admin/sections/products/components/WarpImage';
 
 export default function ArtPreview({
   buy,

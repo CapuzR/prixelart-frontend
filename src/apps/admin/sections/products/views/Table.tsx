@@ -22,6 +22,7 @@ import { Backdrop } from '@mui/material';
 import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
 import UpdateProductV2 from './updateProductv2';
+
 const useStyles = makeStyles((theme) => ({
   loading: {
     display: 'flex',
@@ -37,7 +38,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function ReadProducts(props) {
+export default function ProductTable(props) {
   const history = useHistory();
   const classes = useStyles();
   const [rows, setRows] = useState();

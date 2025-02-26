@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { makeStyles } from '@mui/styles';
 import { useHistory } from 'react-router-dom';
 
-import Title from '../../components/Title';
+import Title from '@apps/admin/components/Title';
 import axios from 'axios';
 import TextField from '@mui/material/TextField';
 import InputLabel from '@mui/material/InputLabel';
@@ -70,38 +70,33 @@ const useStyles = makeStyles((theme) => ({
     cursor: 'pointer',
     padding: '5px',
   },
-  margin: {
-    marginBottom: 10,
-  },
 }));
 
-export default function UpdateSurcharge(props) {
+export default function CreateSurcharge() {
   const classes = useStyles();
   const theme = useTheme();
   const history = useHistory();
 
-  // const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
-  const [active, setActive] = useState(props.surcharge.active);
-  const [name, setName] = useState(props.surcharge.name || undefined);
-  const [description, setDescription] = useState(props.surcharge.description || undefined);
-  const [type, setType] = useState(props.surcharge.type || undefined);
-  const [value, setValue] = useState(props.surcharge.value || undefined);
-  const [appliedProducts, setAppliedProducts] = useState(props.surcharge.appliedProducts || []);
-  const [appliedUsers, setAppliedUsers] = useState(props.surcharge.appliedUsers || []);
+  const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
+  const [active, setActive] = useState(true);
+  const [name, setName] = useState();
+  const [description, setDescription] = useState();
+  const [type, setType] = useState('Porcentaje');
+  const [value, setValue] = useState(0);
+  const [appliedProducts, setAppliedProducts] = useState([]);
+  const [appliedUsers, setAppliedUsers] = useState([]);
+  const [appliedPercentage, setAppliedPercentage] = useState('ownerComission');
+  const [owners, setOwners] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [buttonState, setButtonState] = useState(false);
+  const [products, setProducts] = useState();
+  const discountTypes = ['Porcentaje', 'Monto'];
   const [considerations, setConsiderations] = useState({
     artista: { type: type, value: value },
     corporativo: { type: type, value: value },
     da: { type: type, value: value },
     prixer: { type: type, value: value },
   });
-
-  const [appliedPercentage, setAppliedPercentage] = useState('ownerComission');
-  const [owners, setOwners] = useState(props.surcharge.owners || []);
-  const [loading, setLoading] = useState(false);
-  const [buttonState, setButtonState] = useState(false);
-  const [products, setProducts] = useState();
-  const discountTypes = ['Porcentaje', 'Monto'];
-
   //Error states.
   const [errorMessage, setErrorMessage] = useState();
   const [snackBarError, setSnackBarError] = useState(false);
@@ -135,7 +130,7 @@ export default function UpdateSurcharge(props) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!name && !type && !value && !appliedPercentage) {
+    if (!name && !type && !value && !!appliedPercentage) {
       setErrorMessage('Por favor completa todos los campos requeridos.');
       setSnackBarError(true);
     } else {
@@ -143,27 +138,26 @@ export default function UpdateSurcharge(props) {
       setButtonState(true);
       const data = {
         surchargeId: nanoid(6),
-        _id: props.surcharge._id,
         name: name,
         active: active,
         description: description,
         type: type,
-        value: value,
+        value: value.replace(/[,]/gi, '.'),
         appliedProducts: appliedProducts,
         appliedUsers: appliedUsers,
         appliedPercentage: appliedPercentage,
         considerations: considerations,
         adminToken: localStorage.getItem('adminTokenV'),
       };
-      const base_url = import.meta.env.VITE_BACKEND_URL + '/surcharge/update';
-      const response = await axios.put(base_url, data);
+      const base_url = import.meta.env.VITE_BACKEND_URL + '/surcharge/create';
+      const response = await axios.post(base_url, data);
       if (response.data.success === false) {
         setLoading(false);
         setButtonState(false);
         setErrorMessage(response.data.message);
         setSnackBarError(true);
       } else {
-        setErrorMessage('Actualización de recargo exitoso.');
+        setErrorMessage('Creación de recargo exitoso.');
         setSnackBarError(true);
         setActive(false);
         setName();
@@ -171,6 +165,7 @@ export default function UpdateSurcharge(props) {
         setType();
         setValue();
         setAppliedProducts([]);
+        setAppliedUsers([]);
         history.push('/product/read');
       }
     }
@@ -228,7 +223,7 @@ export default function UpdateSurcharge(props) {
           <CircularProgress />
         </Backdrop>
       }
-      <Title>Editar Recargo</Title>
+      <Title>Crear Recargo</Title>
       <form
         style={{
           height: 'auto',
@@ -283,6 +278,7 @@ export default function UpdateSurcharge(props) {
                     discountTypes.map((type) => <MenuItem value={type}>{type}</MenuItem>)}
                 </Select>
               </FormControl>
+
               <FormControl style={{ width: '50%' }} variant="outlined" xs={12} fullWidth={true}>
                 {type === 'Monto' ? (
                   <TextField
@@ -642,6 +638,7 @@ export default function UpdateSurcharge(props) {
               </AccordionDetails>
             </Accordion>
           </Grid>
+
           <Grid container style={{ width: '50%' }}>
             <Grid item xs={12}>
               <FormControl
@@ -664,7 +661,7 @@ export default function UpdateSurcharge(props) {
               </FormControl>
             </Grid>
             <Grid item xs={12} style={{ marginTop: 10 }}>
-              <FormControl variant="outlined" xs={12} fullWidth={true}>
+              <FormControl variant="outlined" fullWidth={true}>
                 <InputLabel>Prixer / Owner:</InputLabel>
                 <Select
                   fullWidth={true}
@@ -727,7 +724,7 @@ export default function UpdateSurcharge(props) {
           disabled={buttonState}
           style={{ marginTop: 20 }}
         >
-          Actualizar
+          Crear
         </Button>
       </form>
 

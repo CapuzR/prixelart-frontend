@@ -50,7 +50,7 @@ export default function CreatePaymentMethod() {
 
   return (
     <React.Fragment>
-      <Title>Agregar método de pago</Title>
+      <Title title={'Agregar método de pago'}/>
       <form style={{ padding: 15 }} noValidate onSubmit={handleSubmit}>
         <Grid2 container spacing={2}>
           <Grid2 size={{ xs: 12 }}>

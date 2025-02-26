@@ -1,4 +1,5 @@
 export interface Prixer {
+  _id: string
   firstName: string
   lastName: string
   email: string
@@ -18,4 +19,5 @@ export interface Prixer {
   termsAgree: boolean
   bio: object
   prixerId: string
+  account: string
 }

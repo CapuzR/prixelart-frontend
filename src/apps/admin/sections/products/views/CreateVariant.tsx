@@ -36,7 +36,9 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function CreateVariant(props) {
+export default function 
+
+CreateVariant(props) {
   const classes = useStyles();
   const [active, setActive] = useState((props.variant && props.variant.active) || false);
   const [attributes, setAttributes] = useState((props.variant && props.variant.attributes) || []);

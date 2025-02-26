@@ -8,10 +8,10 @@ import { makeStyles } from '@mui/styles';
 import Fab from '@mui/material/Fab';
 import AddIcon from '@mui/icons-material/Add';
 import ViewListIcon from '@mui/icons-material/ViewList';
-import CreateVariant from '../productCrud/variants/createVariant';
+import CreateVariant from './CreateVariant';
 // import UpdateVariant from '../../productCrud/variants/updateVariant';
 // import DisableVariant from '../../productCrud/variants/disableVariant';
-import ReadVariant from '../productCrud/variants/readVariants';
+import ReadVariant from './ReadVariants';
 
 const drawerWidth = 240;
 

@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { makeStyles } from '@mui/styles';
 import { useHistory } from 'react-router-dom';
 
-import Title from '../../components/Title';
+import Title from '@apps/admin/components/Title';
 import axios from 'axios';
 import TextField from '@mui/material/TextField';
 import InputLabel from '@mui/material/InputLabel';
@@ -74,14 +74,14 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function CreateCategory() {
+export default function UpdateCategory(props) {
   const classes = useStyles();
   const theme = useTheme();
   const history = useHistory();
 
   const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
-  const [active, setActive] = useState(true);
-  const [name, setName] = useState();
+  const [active, setActive] = useState(props.category.active);
+  const [name, setName] = useState(props.category.name);
   const [appliedProducts, setAppliedProducts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [buttonState, setButtonState] = useState(false);
@@ -115,15 +115,16 @@ export default function CreateCategory() {
         active: active,
         // appliedProducts: appliedProducts,
       };
-      const base_url = import.meta.env.VITE_BACKEND_URL + '/product/create-category';
-      const response = await axios.post(base_url, data);
+      const base_url =
+        import.meta.env.VITE_BACKEND_URL + '/product/update-category/' + props.category._id;
+      const response = await axios.put(base_url, data);
       if (response.data.success === false) {
         setLoading(false);
         setButtonState(false);
         setErrorMessage(response.data.message);
         setSnackBarError(true);
       } else {
-        setErrorMessage('¡Categoría creada exitosamente!');
+        setErrorMessage('¡Categoría actualizada exitosamente!');
         setSnackBarError(true);
         setActive(false);
         setName();
@@ -185,7 +186,7 @@ export default function CreateCategory() {
           <CircularProgress />
         </Backdrop>
       }
-      <Title>Crear Categoría</Title>
+      <Title>Actualizar Categoría</Title>
       <form
         style={{
           height: 'auto',
@@ -353,7 +354,7 @@ export default function CreateCategory() {
           disabled={buttonState}
           style={{ marginTop: 20 }}
         >
-          Crear
+          Actualizar
         </Button>
       </form>
 

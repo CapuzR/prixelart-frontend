@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useReducer, useCallback } from 'react';
 import { Stepper, Step, StepLabel, Button, Typography, Box, Container, Grid } from '@mui/material';
 import Form from './Form';
+import Order from './Order';
 import { Cart, CheckoutState, DataLists } from './interfaces';
 import { initializeCheckoutState } from './init';
 import { useForm, FormProvider } from 'react-hook-form';
@@ -16,11 +17,13 @@ const Checkout: React.FC<CheckoutProps> = ({ cart }) => {
     defaultValues: initializeCheckoutState(cart),
     mode: "onChange",
   });
-
+  
   const [ dataLists, setDataLists ] = useState<DataLists>(
     methods.getValues().dataLists || {
       shippingMethods: [],
       paymentMethods: [],
+      countries: [],
+      states: [],
       sellers: [],
     });
 
@@ -59,12 +62,17 @@ const Checkout: React.FC<CheckoutProps> = ({ cart }) => {
 
       {/* Form Content */}
       <Box sx={{ mt: 4, mb: 4 }}>
-        {activeStep === 0 && (
-          
-        <FormProvider {...methods}>
-          <Form dataLists={dataLists} setDataLists={setDataLists} />
-        </FormProvider>
-        )}
+        {
+          activeStep === 0 ? (
+          <FormProvider {...methods}>
+            <Form dataLists={dataLists} setDataLists={setDataLists} />
+          </FormProvider>
+          ) : 
+          activeStep === 1 ? (
+            <Order checkoutState={methods.getValues()} />
+          ) : 
+          (<div></div>)
+        }
       </Box>
 
       {/* Buttons */}

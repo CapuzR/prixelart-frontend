@@ -1,3 +1,5 @@
+import countries from '@data/countries.json';
+
 import {
   CheckoutState,
   Cart,
@@ -53,11 +55,14 @@ export const initializeCheckoutState = (cart: Cart): CheckoutState => {
   const { subTotal, totalUnits, totalDiscount } = calculateOrderTotals();
 
   // Default consumer details
+  //Where's CI, Address, city, etc?
   const defaultConsumerDetails: BasicInfo = {
     name: '',
+    id: '',
     lastName: '',
     email: '',
     phone: '',
+    shortAddress: '',
   };
 
   // Default shipping details
@@ -66,6 +71,7 @@ export const initializeCheckoutState = (cart: Cart): CheckoutState => {
       recepient: defaultConsumerDetails,
       address: {
         line1: '',
+        line2: '',
         city: '',
         state: '',
         country: '',
@@ -81,12 +87,13 @@ export const initializeCheckoutState = (cart: Cart): CheckoutState => {
 
   // Default billing details
   const defaultBillingDetails: BillingDetails = {
-    method: '',
+    method: undefined,
     billTo: defaultConsumerDetails,
     address: {
       recepient: defaultConsumerDetails,
       address: {
         line1: '',
+        line2: '',
         city: '',
         state: '',
         country: '',
@@ -110,6 +117,7 @@ export const initializeCheckoutState = (cart: Cart): CheckoutState => {
         basic: defaultConsumerDetails,
         selectedAddress: {
           line1: '',
+          line2: '',
           city: '',
           state: '', 
           country: ''
@@ -118,6 +126,8 @@ export const initializeCheckoutState = (cart: Cart): CheckoutState => {
         paymentMethods: [],
       },
       payment: parsedState?.order?.payment || undefined,
+      seller: parsedState?.order?.seller || '',
+      observations: parsedState?.order?.observations || '',
       shipping: parsedState?.order?.shipping || defaultShippingDetails,
       billing: parsedState?.order?.billing || defaultBillingDetails,
       totalUnits,
@@ -131,6 +141,10 @@ export const initializeCheckoutState = (cart: Cart): CheckoutState => {
     dataLists: {
       shippingMethods: parsedState?.dataLists?.shippingMethods || [],
       paymentMethods: parsedState?.dataLists?.paymentMethods || [],
+      countries: countries.filter((country) => country.active),
+      states: countries
+      .filter((country) => country.active)
+      .flatMap((country) => country.states.map((state) => state.name)),
       sellers: parsedState?.dataLists?.sellers || [],
     },
     expandedSection: parsedState?.expandedSection || 'basic',

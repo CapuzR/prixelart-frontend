@@ -12,6 +12,23 @@ export interface CheckoutState {
 export interface DataLists {
   shippingMethods: ShippingMethod[];
   paymentMethods: PaymentMethod[];
+  countries: {
+    code2: string;
+    code3: string;
+    name: string;
+    capital: string;
+    region: string;
+    active?: boolean;
+    subregion: string;
+    states: {
+      code: string;
+      name: string;
+      subdivision: any;
+    }[]
+  }[];
+  states: string[];
+  billingStates?: string[];
+  shippingStates?: string[];
   sellers: string[];
 };
 
@@ -91,6 +108,7 @@ export interface BasicInfo {
   lastName: string;
   email?: string;
   phone: string;
+  shortAddress?: string;
 }
 
 export interface PaymentMethod {
@@ -209,7 +227,7 @@ export interface FormFieldConfig {
   tooltip?: string;
   [key: string]: any;
   
-  conditionedBy?: string;
+  conditionedBy?: string | string[];
   onConditionChange?: OnConditionChangeHandler;
 }
 

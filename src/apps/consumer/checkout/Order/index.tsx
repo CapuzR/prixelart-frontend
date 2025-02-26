@@ -14,21 +14,20 @@ import Select from '@mui/material/Select';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 import Button from '@mui/material/Button';
-import { Typography } from '@mui/material';
+import { Theme, Typography } from '@mui/material';
 import TextField from '@mui/material/TextField';
 import { useEffect, useState } from 'react';
-import axios from 'axios';
-import InfoIcon from '@mui/icons-material/Info';
 import Tooltip from '@mui/material/Tooltip';
-import { format } from 'utils/utils.js';
-import { calculateTotalPrice } from '../../cart/services.ts';
+// import { format } from 'utils/utils.js';
+import { calculateTotalPrice } from '../../cart/services.js';
 import { useConversionRate, useCurrency, useSnackBar } from 'context/GlobalContext';
 
 import {
   getTotalUnitsPVP,
   getTotalUnitsPVM,
   UnitPriceForOrg,
-} from '../pricesFunctions';
+} from '../pricesFunctions.jsx';
+import { CheckoutState } from '../interfaces.js';
 
 const useStyles = makeStyles((theme) => ({
   gridInput: {
@@ -40,19 +39,24 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function OrderForm({ checkoutState, handleDispatch }) {
+interface OrderSummaryProps {
+  checkoutState: CheckoutState;
+  // methods: any; // Replace with the correct type for react-hook-form methods
+}
+
+const Order: React.FC<OrderSummaryProps> = ({ checkoutState }) => {
   const classes = useStyles();
   const { currency } = useCurrency();
   const { conversionRate } = useConversionRate();
-  const theme = useTheme();
+  const theme = useTheme<Theme>();
   const [paymentMethods, setPaymentMethods] = useState([]);
   const [previewVoucher, setPreviewVoucher] = useState();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [balance, setBalance] = useState(0);
   const [discountList, setDiscountList] = useState([]);
-  const [sellers, setSellers] = useState([]);
   const prixer = JSON.parse(localStorage?.getItem('token'))?.username;
 
+  console.log('checkoutState', checkoutState);
   // TODO : Debo obtener el saldo del prixer.
   // TODO : Debo obtener los vendedores.
   // TODO : Debo obtener los métodos de pago.
@@ -66,7 +70,7 @@ export default function OrderForm({ checkoutState, handleDispatch }) {
   // };
 
   return (
-    <>
+    <div style={{ width: '700px' }}>
       <form noValidate autoComplete="off">
         <Grid container>
           <Grid item lg={12} md={12} sm={12} xs={12} className={classes.gridInput}>
@@ -84,9 +88,9 @@ export default function OrderForm({ checkoutState, handleDispatch }) {
                 <div style={{ fontWeight: 'bold' }}>Items:</div>
                 <div>
                   <List component="div" disablePadding>
-                    {checkoutState.order.lines.map((item, index) => (
+                    {checkoutState.order.lines.map((line, index) => (
                       <>
-                        {item.product && item.art && (
+                        {line.item.product && line.item.art && (
                           <>
                             <ListItem>
                               <ListItemText primary={`#${index + 1}`} />
@@ -100,9 +104,9 @@ export default function OrderForm({ checkoutState, handleDispatch }) {
                                     primary={
                                       <Grid container>
                                         <Grid item xs={12} md={8}>
-                                          Producto: {item.product.name}
+                                          Producto: {line.item.product.name}
                                           <br />
-                                          Arte: {item.art.title}
+                                          Arte: {line.item.art.title}
                                         </Grid>
                                         <Grid
                                           item
@@ -115,7 +119,7 @@ export default function OrderForm({ checkoutState, handleDispatch }) {
                                         >
                                           <div>
                                             Cantidad:
-                                            <br></br> {item.quantity || 1}
+                                            <br></br> {line.quantity || 1}
                                           </div>
                                           <div
                                             style={{
@@ -126,7 +130,7 @@ export default function OrderForm({ checkoutState, handleDispatch }) {
                                             Monto:
                                             <br></br>
                                             {currency ? ' Bs' : '$'}
-                                            {item.product.price * item.quantity}
+                                            {line.item.product.price * line.quantity}
                                           </div>
                                         </Grid>
                                       </Grid>
@@ -162,7 +166,7 @@ export default function OrderForm({ checkoutState, handleDispatch }) {
                         justifyContent: 'space-between',
                       }}
                     >
-                      <Grid item lg={6} md={6} sm={6} xs={6} style={{ paddingLeft: 0 }}>
+                      {/* <Grid item lg={6} md={6} sm={6} xs={6} style={{ paddingLeft: 0 }}>
                         <FormControl
                           variant="outlined"
                           fullWidth
@@ -172,13 +176,13 @@ export default function OrderForm({ checkoutState, handleDispatch }) {
                           <InputLabel htmlFor="outlined-age-simple">Método de pago</InputLabel>
                           <Select
                             input={<OutlinedInput />}
-                            value={checkoutState.order.paymentMethod}
-                            onChange={(event) => handleDispatch('SET_ORDER_PAYMENT_METHOD', event.target.value)}
+                            value={checkoutState.order.billing.method}
+                            // onChange={(event) => handleDispatch('SET_ORDER_PAYMENT_METHOD', event.target.value)}
                           >
                             {paymentMethods &&
                               paymentMethods.map((m) => <MenuItem value={m}>{m.name}</MenuItem>)}
                           </Select>
-                        </FormControl>
+                        </FormControl> */}
                         {/* {props.orderPaymentMethod && (
                           <>
                             <div
@@ -221,7 +225,7 @@ export default function OrderForm({ checkoutState, handleDispatch }) {
                             </div>
                           </>
                         )} */}
-                      </Grid>
+                      {/* </Grid> */}
                       <Grid
                         item
                         lg={6}
@@ -236,7 +240,7 @@ export default function OrderForm({ checkoutState, handleDispatch }) {
                           flexDirection: 'column',
                         }}
                       >
-                        {checkoutState.order.paymentMethod?.name === 'Balance Prixer' && (
+                        {checkoutState.order.billing?.method === 'Balance Prixer' && (
                           <div
                             style={{
                               backgroundColor: '#d33f49',
@@ -270,10 +274,12 @@ export default function OrderForm({ checkoutState, handleDispatch }) {
                             {tax.value}
                           </strong>
                         ))}
-                        {checkoutState.order.consumerDetails.shipping.method && currency == 'Bs' ? (
-                          <strong>{`Envío: Bs${priceToUI(checkoutState.order.shippingCost * conversionRate)}`}</strong>
+                        {checkoutState.order.shipping.method && currency == 'Bs' ? (
+                          <div></div>
+                          //Esto lo reemplacé y no sé por cuál función...
+                          // <strong>{`Envío: Bs${priceToUI(checkoutState.order.shippingCost * conversionRate)}`}</strong>
                         ) : (
-                          checkoutState.order.consumerDetails.shipping.method && (
+                          checkoutState.order.shipping.method && (
                             <strong>{`Envío: $${checkoutState.order.shippingCost.toLocaleString('de-DE', {
                               minimumFractionDigits: 2,
                               maximumFractionDigits: 2,
@@ -295,58 +301,6 @@ export default function OrderForm({ checkoutState, handleDispatch }) {
                       xs={12}
                       style={{ paddingLeft: 0, marginTop: 30 }}
                     >
-                      <div
-                        style={{
-                          width: '100%',
-                          display: 'flex',
-                          marginTop: 25,
-                          alignItems: 'center',
-                        }}
-                      >
-                        <Tooltip
-                          // onClick={(e) => setOpenTooltip(!openTooltip)}
-                          // open={openTooltip}
-                          // onClose={(leaveDelay) => setOpenTooltip(false)}
-                          title={'¿Alguno de nuestros asesores te ayudó en el proceso de compra?'}
-                          style={{ marginLeft: 5, marginRight: 20 }}
-                        >
-                          <InfoIcon color="secondary" />
-                        </Tooltip>
-                        <FormControl
-                          variant="outlined"
-                          fullWidth
-                          // style={{  }}
-                          required
-                        >
-                          <InputLabel htmlFor="outlined-age-simple">Asesor</InputLabel>
-
-                          <Select
-                            input={<OutlinedInput />}
-                            value={checkoutState.seller}
-                            onChange={(event) => handleDispatch('SET_SELLER', event.target.value)}
-                          >
-                            <MenuItem value={undefined}></MenuItem>
-                            {sellers && sellers.map((m) => <MenuItem value={m}>{m}</MenuItem>)}
-                          </Select>
-                        </FormControl>
-                      </div>
-                    </Grid>
-                    <Grid
-                      item
-                      lg={12}
-                      md={12}
-                      sm={12}
-                      xs={12}
-                      style={{ paddingLeft: 0, marginTop: 30 }}
-                    >
-                      <TextField
-                        variant="outlined"
-                        label="Observaciones"
-                        fullWidth
-                        className={classes.textField}
-                        value={checkoutState.observations}
-                        onChange={(e) => handleDispatch('SET_OBSERVATIONS', e.target.value)}
-                      />
                     </Grid>
                   </List>
                 </div>
@@ -355,6 +309,8 @@ export default function OrderForm({ checkoutState, handleDispatch }) {
           </Grid>
         </Grid>
       </form>
-    </>
+    </div>
   );
 }
+
+export default Order;

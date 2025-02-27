@@ -3,7 +3,7 @@ import { Discount } from "./discount.types";
 export interface PickedProduct
   extends Pick<
     Product,
-    | 'id'
+    | '_id'
     | 'name'
     | 'price'
     | 'sources'
@@ -21,7 +21,7 @@ export interface PickedProduct
   > {}
 
 export interface Product {
-  id: string;
+  _id: string;
   name: string;
   price: number;
   description: string;
@@ -31,7 +31,7 @@ export interface Product {
   modifyPrice: number;
   comission: number;
   variants: Array<Variant>;
-  priceRange: PriceRange;
+  priceRange: PriceRange | Equation;
   observations: string;
   thumbUrl: string;
   sources: {
@@ -63,6 +63,10 @@ export interface Selection {
 interface PriceRange {
   from: number;
   to: number;
+}
+
+interface Equation {
+  equation: number
 }
 
 interface Attribute {

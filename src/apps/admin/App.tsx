@@ -1,163 +1,163 @@
-import React, { useEffect, useState } from "react";
-import { useHistory, useLocation } from "react-router-dom";
+import React, { useEffect, useState } from "react"
+import { useHistory, useLocation } from "react-router-dom"
 
-import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import CloseIcon from "@mui/icons-material/Close";
-import MenuIcon from "@mui/icons-material/Menu";
-import NotificationsIcon from "@mui/icons-material/Notifications";
-import SaveIcon from "@mui/icons-material/Save";
+import AttachMoneyIcon from "@mui/icons-material/AttachMoney"
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft"
+import ChevronRightIcon from "@mui/icons-material/ChevronRight"
+import CloseIcon from "@mui/icons-material/Close"
+import MenuIcon from "@mui/icons-material/Menu"
+import NotificationsIcon from "@mui/icons-material/Notifications"
+import SaveIcon from "@mui/icons-material/Save"
 
-import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
-import Badge from "@mui/material/Badge";
-import Box from "@mui/material/Box";
-import Container from "@mui/material/Container";
-import CssBaseline from "@mui/material/CssBaseline";
-import Divider from "@mui/material/Divider";
-import MuiDrawer from '@mui/material/Drawer';
+import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar"
+import Badge from "@mui/material/Badge"
+import Box from "@mui/material/Box"
+import Container from "@mui/material/Container"
+import CssBaseline from "@mui/material/CssBaseline"
+import Divider from "@mui/material/Divider"
+import MuiDrawer from "@mui/material/Drawer"
 // import Drawer from "@mui/material/Drawer";
-import Fab from "@mui/material/Fab";
-import Grid2 from "@mui/material/Grid2";
-import IconButton from "@mui/material/IconButton";
-import List from "@mui/material/List";
-import Modal from "@mui/material/Modal";
-import Toolbar from "@mui/material/Toolbar";
-import Tooltip from "@mui/material/Tooltip";
-import Typography from "@mui/material/Typography";
+import Fab from "@mui/material/Fab"
+import Grid2 from "@mui/material/Grid2"
+import IconButton from "@mui/material/IconButton"
+import List from "@mui/material/List"
+import Modal from "@mui/material/Modal"
+import Toolbar from "@mui/material/Toolbar"
+import Tooltip from "@mui/material/Tooltip"
+import Typography from "@mui/material/Typography"
 
-import { styled, useTheme, Theme, CSSObject } from "@mui/material/styles";
-import { useCart } from "context/CartContext";
-import { useConversionRate, useSnackBar } from "context/GlobalContext";
-import { makeStyles } from 'tss-react/mui';
+import { styled, useTheme, Theme, CSSObject } from "@mui/material/styles"
+import { useCart } from "context/CartContext"
+import { useConversionRate, useSnackBar } from "context/GlobalContext"
+import { makeStyles } from "tss-react/mui"
 
-import AdminUser from "./sections/admins";
-import Consumers from "./sections/consumers";
-import Dashboard from "./sections/dashboard/dashboard";
-import MainListItems from "./components/SideBar";
-import Movements from "./sections/movements";
-import Orders from "./sections/orders/orders";
-import PaymentMethods from "./sections/paymentMethod";
-import Preferences from "./sections/preferences/Preferences";
-import Prixers from "./sections/prixers";
-import Products from "./sections/products";
-import ShippingMethods from "./sections/shippingMethods";
-import Testimonials from "./sections/testimonials/Testimonials";
-import Copyright from "@components/Copyright/copyright";
+import AdminUser from "./sections/admins"
+import Consumers from "./sections/consumers"
+import Dashboard from "./sections/dashboard/dashboard"
+import MainListItems from "./components/SideBar"
+import Movements from "./sections/movements"
+import Orders from "./sections/orders/orders"
+import PaymentMethods from "./sections/paymentMethod"
+import Preferences from "./sections/preferences/Preferences"
+import Prixers from "./sections/prixers"
+import Products from "./sections/products"
+import ShippingMethods from "./sections/shippingMethods"
+import Testimonials from "./sections/testimonials/Testimonials"
+import Copyright from "@components/Copyright/copyright"
 
-const drawerWidth = 219;
+const drawerWidth = 219
 
 const useStyles = makeStyles()((theme: Theme) => {
   return {
-  floatingButton: {
-    margin: theme.spacing(1),
-    marginRight: 10,
-    top: "auto",
-    bottom: 20,
-    left: "auto",
-    paddingRight: "5",
-    position: "fixed",
-    backgroundColor: theme.palette.primary.main,
-  },
-  paper2: {
-    position: "fixed",
-    right: 1,
-    top: "auto",
-    bottom: 10,
-    left: "auto",
-    width: 310,
-    backgroundColor: "white",
-    boxShadow: theme.shadows[2],
-    padding: "16px 32px 24px",
-    transform: "translate(-50%, -50%)",
-    textAlign: "justify",
-    minWidth: 320,
-    borderRadius: 10,
-    marginTop: "12px",
-    display: "flex",
-    flexDirection: "row",
-  },
-  root: {
-    display: "flex",
-    backgroundColor: "rgba(102, 102, 102, 0.1)",
-  },
-  toolbar: {
-    paddingRight: 24,
-  },
-  toolbarIcon: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "flex-end",
-    padding: "0 8px",
-    ...theme.mixins.toolbar,
-  },
-  appBar: {
-    minHeight: "70px",
-    zIndex: theme.zIndex.drawer + 1,
-    transition: theme.transitions.create(["width", "margin"], {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
-    }),
-  },
-  appBarShift: {
-    marginLeft: drawerWidth,
-    width: `calc(100% - ${drawerWidth}px)`,
-    transition: theme.transitions.create(["width", "margin"], {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-  },
-  menuButton: {
-    marginRight: 36,
-  },
-  menuButtonHidden: {
-    display: "none",
-  },
-  title: {
-    flexGrow: 1,
-  },
-  drawerPaper: {
-    position: "relative",
-    whiteSpace: "nowrap",
-    width: 240,
-    transition: theme.transitions.create("width", {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-  },
-  drawerPaperClose: {
-    overflowX: "hidden",
-    width: theme.spacing(7),
-    [theme.breakpoints.up("sm")]: {
-      width: theme.spacing(9),
+    floatingButton: {
+      margin: theme.spacing(1),
+      marginRight: 10,
+      top: "auto",
+      bottom: 20,
+      left: "auto",
+      paddingRight: "5",
+      position: "fixed",
+      backgroundColor: theme.palette.primary.main,
     },
-    transition: theme.transitions.create("width", {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
-    }),
-  },
-  appBarSpacer: theme.mixins.toolbar,
-  content: {
-    flexGrow: 1,
-    height: "auto",
-    overflow: "auto",
-  },
-  container: {
-    paddingTop: theme.spacing(4),
-    paddingBottom: theme.spacing(4),
-  },
-  paper: {
-    padding: theme.spacing(2),
-    display: "flex",
-    overflow: "auto",
-    flexDirection: "column",
-    height: "700px",
-  },
-  fixedHeight: {
-    height: 500,
-  },
-}
-});
+    paper2: {
+      position: "fixed",
+      right: 1,
+      top: "auto",
+      bottom: 10,
+      left: "auto",
+      width: 310,
+      backgroundColor: "white",
+      boxShadow: theme.shadows[2],
+      padding: "16px 32px 24px",
+      transform: "translate(-50%, -50%)",
+      textAlign: "justify",
+      minWidth: 320,
+      borderRadius: 10,
+      marginTop: "12px",
+      display: "flex",
+      flexDirection: "row",
+    },
+    root: {
+      display: "flex",
+      backgroundColor: "rgba(102, 102, 102, 0.1)",
+    },
+    toolbar: {
+      paddingRight: 24,
+    },
+    toolbarIcon: {
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "flex-end",
+      padding: "0 8px",
+      ...theme.mixins.toolbar,
+    },
+    appBar: {
+      minHeight: "70px",
+      zIndex: theme.zIndex.drawer + 1,
+      transition: theme.transitions.create(["width", "margin"], {
+        easing: theme.transitions.easing.sharp,
+        duration: theme.transitions.duration.leavingScreen,
+      }),
+    },
+    appBarShift: {
+      marginLeft: drawerWidth,
+      width: `calc(100% - ${drawerWidth}px)`,
+      transition: theme.transitions.create(["width", "margin"], {
+        easing: theme.transitions.easing.sharp,
+        duration: theme.transitions.duration.enteringScreen,
+      }),
+    },
+    menuButton: {
+      marginRight: 36,
+    },
+    menuButtonHidden: {
+      display: "none",
+    },
+    title: {
+      flexGrow: 1,
+    },
+    drawerPaper: {
+      position: "relative",
+      whiteSpace: "nowrap",
+      width: 240,
+      transition: theme.transitions.create("width", {
+        easing: theme.transitions.easing.sharp,
+        duration: theme.transitions.duration.enteringScreen,
+      }),
+    },
+    drawerPaperClose: {
+      overflowX: "hidden",
+      width: theme.spacing(7),
+      [theme.breakpoints.up("sm")]: {
+        width: theme.spacing(9),
+      },
+      transition: theme.transitions.create("width", {
+        easing: theme.transitions.easing.sharp,
+        duration: theme.transitions.duration.leavingScreen,
+      }),
+    },
+    appBarSpacer: theme.mixins.toolbar,
+    content: {
+      flexGrow: 1,
+      height: "auto",
+      overflow: "auto",
+    },
+    container: {
+      paddingTop: theme.spacing(4),
+      paddingBottom: theme.spacing(4),
+    },
+    paper: {
+      padding: theme.spacing(2),
+      display: "flex",
+      overflow: "auto",
+      flexDirection: "column",
+      height: "700px",
+    },
+    fixedHeight: {
+      height: 500,
+    },
+  }
+})
 
 const openedMixin = (theme: Theme): CSSObject => ({
   width: drawerWidth,
@@ -166,7 +166,7 @@ const openedMixin = (theme: Theme): CSSObject => ({
     duration: theme.transitions.duration.enteringScreen,
   }),
   overflowX: "hidden",
-});
+})
 
 const closedMixin = (theme: Theme): CSSObject => ({
   transition: theme.transitions.create("width", {
@@ -178,10 +178,10 @@ const closedMixin = (theme: Theme): CSSObject => ({
   [theme.breakpoints.up("sm")]: {
     width: `calc(${theme.spacing(8)} + 1px)`,
   },
-});
+})
 
 interface AppBarProps extends MuiAppBarProps {
-  open?: boolean;
+  open?: boolean
 }
 
 const AppBar = styled(MuiAppBar, {
@@ -205,32 +205,32 @@ const AppBar = styled(MuiAppBar, {
       },
     },
   ],
-}));
+}))
 
-const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(
-  ({ theme }) => ({
-    width: drawerWidth,
-    flexShrink: 0,
-    whiteSpace: 'nowrap',
-    boxSizing: 'border-box',
-    variants: [
-      {
-        props: ({ open }) => open,
-        style: {
-          ...openedMixin(theme),
-          '& .MuiDrawer-paper': openedMixin(theme),
-        },
+const Drawer = styled(MuiDrawer, {
+  shouldForwardProp: (prop) => prop !== "open",
+})(({ theme }) => ({
+  width: drawerWidth,
+  flexShrink: 0,
+  whiteSpace: "nowrap",
+  boxSizing: "border-box",
+  variants: [
+    {
+      props: ({ open }) => open,
+      style: {
+        ...openedMixin(theme),
+        "& .MuiDrawer-paper": openedMixin(theme),
       },
-      {
-        props: ({ open }) => !open,
-        style: {
-          ...closedMixin(theme),
-          '& .MuiDrawer-paper': closedMixin(theme),
-        },
+    },
+    {
+      props: ({ open }) => !open,
+      style: {
+        ...closedMixin(theme),
+        "& .MuiDrawer-paper": closedMixin(theme),
       },
-    ],
-  }),
-);
+    },
+  ],
+}))
 
 const DrawerHeader = styled("div")(({ theme }) => ({
   display: "flex",
@@ -239,48 +239,48 @@ const DrawerHeader = styled("div")(({ theme }) => ({
   padding: theme.spacing(0, 1),
   // necessary for content to be below app bar
   ...theme.mixins.toolbar,
-}));
+}))
 
 export default function AdminMain({
   permissions,
   valuesConsumerForm,
   setValues,
 }) {
-  const theme = useTheme<Theme>();
-  const { classes, cx } = useStyles();
-     const [open, setOpen] = useState(false);
-  const [active, setActive] = useState("admin");
-  const location = useLocation();
-  const history = useHistory();
-  const [openDollarView, setOpenDollarView] = useState(false);
+  const theme = useTheme<Theme>()
+  const { classes, cx } = useStyles()
+  const [open, setOpen] = useState(false)
+  const [active, setActive] = useState("admin")
+  const location = useLocation()
+  const history = useHistory()
+  const [openDollarView, setOpenDollarView] = useState(false)
   // const { conversionRate, setConversionRate } = useConversionRate();
-  const { cart } = useCart();
+  const { cart } = useCart()
   // console.log(active);
   const handleDrawerOpen = () => {
-    setOpen(true);
-  };
+    setOpen(true)
+  }
   const handleDrawerClose = () => {
-    setOpen(false);
-  };
+    setOpen(false)
+  }
 
   useEffect(() => {
-    const pathSegments = location.pathname.split("/").filter(Boolean);
-    const rootSegment = pathSegments.length > 0 ? pathSegments[1] : "";
-    console.log(pathSegments);
-    setActive(rootSegment);
-  }, [location.pathname]);
+    const pathSegments = location.pathname.split("/").filter(Boolean)
+    const rootSegment = pathSegments.length > 0 ? pathSegments[1] : ""
+    console.log(pathSegments)
+    setActive(rootSegment)
+  }, [location.pathname])
 
   useEffect(() => {
-    setOpen(false);
-  }, [active]);
+    setOpen(false)
+  }, [active])
 
   const dollarView = () => {
-    setOpenDollarView(true);
-  };
+    setOpenDollarView(true)
+  }
 
   const handleClose = () => {
-    setOpenDollarView(false);
-  };
+    setOpenDollarView(false)
+  }
 
   return (
     <div className={classes.root}>
@@ -321,10 +321,7 @@ export default function AdminMain({
               </IconButton>
             </Toolbar>
           </AppBar>
-          <Drawer
-            variant="permanent"
-            open={open}
-          >
+          <Drawer variant="permanent" open={open}>
             <DrawerHeader>
               <IconButton onClick={handleDrawerClose}>
                 {theme.direction === "rtl" ? (
@@ -346,10 +343,7 @@ export default function AdminMain({
               ) : active === "dashboard" ? (
                 <Dashboard />
               ) : active === "product" ? (
-                <Products
-                  permissions={permissions}
-                  // dollarValue={conversionRate}
-                />
+                <Products permissions={permissions} />
               ) : active === "consumer" ? (
                 <Consumers permissions={permissions} />
               ) : active === "movements" ? (
@@ -359,10 +353,7 @@ export default function AdminMain({
               ) : active === "shipping-method" ? (
                 <ShippingMethods permissions={permissions} />
               ) : active === "order" ? (
-                <Orders
-                  // dollarValue={conversionRate}
-                  permissions={permissions}
-                />
+                <Orders permissions={permissions} />
               ) : active === "prixer" ? (
                 <Prixers permissions={permissions} />
               ) : active === "preferences" ? (
@@ -377,7 +368,7 @@ export default function AdminMain({
               </Box>
             </Container>
           </main>
-          
+
           {permissions?.modifyDollar && (
             <Tooltip title="Actualizar tasa" style={{ height: 40, width: 40 }}>
               <Fab
@@ -449,5 +440,5 @@ export default function AdminMain({
         history.push({ pathname: "/" })
       )}
     </div>
-  );
+  )
 }

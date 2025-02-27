@@ -148,7 +148,7 @@ export default function MovementsTable({ openDetails, permissions }) {
   return (
     <>
       <div style={{ display: "flex", justifyContent: "start", margin: 20 }}>
-        <Title>Movimientos</Title>
+        <Title title={"Movimientos"} />
       </div>
       <Table size="small">
         <TableHead>

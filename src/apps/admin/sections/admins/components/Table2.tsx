@@ -28,6 +28,7 @@ export default function Table2({
   const { setLoading } = useLoading();
   const history = useHistory();
 
+  console.log(roles)
   const deleteRole = async (id: string) => {
     setLoading(true);
     try {

@@ -27,7 +27,7 @@ export const createRole = async (data: Partial<AdminRole>) => {
 export const getRoles = async () => {
   const base_url = import.meta.env.VITE_BACKEND_URL + "/admin/read-roles"
   try {
-    const response = await axios.post(base_url, { withCredentials: true })
+    const response = await axios.get(base_url, { withCredentials: true })
     return response.data
   } catch (e) {
     console.log(e)

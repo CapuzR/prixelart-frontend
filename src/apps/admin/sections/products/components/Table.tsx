@@ -2,9 +2,6 @@ import React from "react"
 import { useEffect, useState } from "react"
 import { useHistory } from "react-router-dom"
 
-import { Theme } from "@mui/material/styles"
-import { makeStyles } from "tss-react/mui"
-
 import Tabs from "@mui/material/Tabs"
 import Tab from "@mui/material/Tab"
 import axios from "axios"
@@ -28,23 +25,6 @@ import CategoriesTable from "./CategoriesTable"
 import DiscountsTable from "./DiscountsTable"
 import SurchargesTable from "./SurchargesTable"
 
-const useStyles = makeStyles()((theme: Theme) => {
-  return {
-    loading: {
-      display: "flex",
-      "& > * + *": {
-        marginLeft: theme.spacing(2),
-      },
-      marginLeft: "50vw",
-      marginTop: "50vh",
-    },
-    backdrop: {
-      zIndex: theme.zIndex.drawer + 1,
-      color: theme.palette.primary.main,
-    },
-  }
-})
-
 export default function Table({
   handleCallback,
   setProduct,
@@ -54,12 +34,10 @@ export default function Table({
   surcharge,
   category,
   setCategory,
-  permissions,
   setActiveCrud,
   getProducts,
 }) {
   const history = useHistory()
-  const classes = useStyles()
   const { showSnackBar } = useSnackBar()
   const { setLoading } = useLoading()
 
@@ -203,7 +181,6 @@ export default function Table({
         {rows?.length > 0 ? (
           <ProductsTable
             rows={rows}
-            permissions={permissions}
             handleActive={handleActive}
             discountList={discountList}
             deleteElement={deleteElement}
@@ -223,7 +200,6 @@ export default function Table({
         {categories?.length > 0 ? (
           <CategoriesTable
             categories={categories}
-            permissions={permissions}
             handleActive={handleActive}
             deleteElement={deleteElement}
           />
@@ -240,7 +216,6 @@ export default function Table({
       <TabPanel value={value} index={2}>
         {discountList ? (
           <DiscountsTable
-            permissions={permissions}
             discountList={discountList}
             handleActive={handleActive}
             deleteElement={deleteElement}
@@ -258,7 +233,6 @@ export default function Table({
       <TabPanel value={value} index={3}>
         {surchargeList?.length > 0 ? (
           <SurchargesTable
-            permissions={permissions}
             handleActive={handleActive}
             deleteElement={deleteElement}
             surchargeList={surchargeList}
@@ -278,7 +252,6 @@ export default function Table({
         <UpdateProductV2
           product={product}
           setProduct={setProduct}
-          permissions={permissions}
           handleClose={handleClose}
         />
       </Modal>

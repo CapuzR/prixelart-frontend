@@ -98,7 +98,7 @@ const useStyles = makeStyles()((theme: Theme) => {
   }
 })
 
-export default function AdminCrud({ permissions }) {
+export default function AdminCrud() {
   const { classes, cx } = useStyles()
   const location = useLocation()
   const history = useHistory()
@@ -131,11 +131,11 @@ export default function AdminCrud({ permissions }) {
   const handleUserAction = (action: string) => {
     if (action === "create" && page === 0) {
       setActiveCrud("create")
-      history.push("/admin/user/" + action)
+      history.push("/admin/admins/" + action)
     } else if (action === "create" && page === 1) {
       setActiveCrud("createRole")
     } else {
-      history.push("/admin/user/" + action)
+      history.push("/admin/admins/" + action)
       setActiveCrud(action)
     }
   }
@@ -191,7 +191,6 @@ export default function AdminCrud({ permissions }) {
                   handleCallback={Callback}
                   setActiveCrud={setActiveCrud}
                   handleCallback2={Callback2}
-                  permissions={permissions}
                   admins={admins}
                   loadAdmin={loadAdmin}
                   handleUserAction={handleUserAction}

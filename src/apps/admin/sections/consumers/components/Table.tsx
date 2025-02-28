@@ -11,14 +11,15 @@ import IconButton from "@mui/material/IconButton"
 import AddIcon from "@mui/icons-material/Add"
 
 import Table1 from "@components/Table"
-import { useSnackBar, useLoading } from "context/GlobalContext"
+import { useSnackBar, useLoading, getPermissions } from "context/GlobalContext"
 import { Consumer } from "../../../../../types/consumer.types"
 import { deleteConsumer, getConsumers } from "../api"
 
-export default function ConsumersTable({ permissions, setConsumer }) {
+export default function ConsumersTable({ setConsumer }) {
   const history = useHistory()
   const { showSnackBar } = useSnackBar()
   const { setLoading } = useLoading()
+  const permissions = getPermissions()
 
   const [original, setOriginal] = useState<Consumer[]>([])
   const [rows, setRows] = useState<Consumer[]>([])
@@ -146,7 +147,6 @@ export default function ConsumersTable({ permissions, setConsumer }) {
             headers={headers}
             elements={rows}
             properties={properties}
-            permissions={permissions}
             updateFunction={handleUpdate}
             deleteFunction={deleteClient}
             setPageNumber={setPageNumber}

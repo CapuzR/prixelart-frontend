@@ -28,13 +28,18 @@ import Typography from "@mui/material/Typography"
 
 import { styled, useTheme, Theme, CSSObject } from "@mui/material/styles"
 import { useCart } from "context/CartContext"
-import { useConversionRate, useSnackBar } from "context/GlobalContext"
+import {
+  useConversionRate,
+  useSnackBar,
+  getPermissions,
+} from "context/GlobalContext"
+
 import { makeStyles } from "tss-react/mui"
 
-import AdminUser from "./sections/admins"
+import Admin from "./sections/admins"
 import Consumers from "./sections/consumers"
 import Dashboard from "./sections/dashboard/dashboard"
-import MainListItems from "./components/SideBar"
+import SideBar from "./components/SideBar"
 import Movements from "./sections/movements"
 import Orders from "./sections/orders/orders"
 import PaymentMethods from "./sections/paymentMethod"
@@ -45,7 +50,7 @@ import ShippingMethods from "./sections/shippingMethods"
 import Testimonials from "./sections/testimonials/Testimonials"
 import Copyright from "@components/Copyright/copyright"
 
-const drawerWidth = 219
+const drawerWidth = 240
 
 const useStyles = makeStyles()((theme: Theme) => {
   return {
@@ -176,7 +181,7 @@ const closedMixin = (theme: Theme): CSSObject => ({
   overflowX: "hidden",
   width: `calc(${theme.spacing(7)} + 1px)`,
   [theme.breakpoints.up("sm")]: {
-    width: `calc(${theme.spacing(8)} + 1px)`,
+    width: `calc(${theme.spacing(10)} + 1px)`,
   },
 })
 
@@ -241,11 +246,7 @@ const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
 }))
 
-export default function AdminMain({
-  permissions,
-  valuesConsumerForm,
-  setValues,
-}) {
+export default function AdminMain({ valuesConsumerForm, setValues }) {
   const theme = useTheme<Theme>()
   const { classes, cx } = useStyles()
   const [open, setOpen] = useState(false)
@@ -253,9 +254,11 @@ export default function AdminMain({
   const location = useLocation()
   const history = useHistory()
   const [openDollarView, setOpenDollarView] = useState(false)
+  const permissions = getPermissions()
+
   // const { conversionRate, setConversionRate } = useConversionRate();
   const { cart } = useCart()
-  // console.log(active);
+
   const handleDrawerOpen = () => {
     setOpen(true)
   }
@@ -266,7 +269,6 @@ export default function AdminMain({
   useEffect(() => {
     const pathSegments = location.pathname.split("/").filter(Boolean)
     const rootSegment = pathSegments.length > 0 ? pathSegments[1] : ""
-    console.log(pathSegments)
     setActive(rootSegment)
   }, [location.pathname])
 
@@ -332,34 +334,34 @@ export default function AdminMain({
               </IconButton>
             </DrawerHeader>
             <Divider />
-            <List>
-              {<MainListItems active={active} permissions={permissions} />}
+            <List component="nav">
+              <SideBar active={active} />
             </List>
           </Drawer>
           <main className={classes.content}>
             <Container maxWidth="xl" className={classes.container}>
               {active === "admins" ? (
-                <AdminUser permissions={permissions} />
+                <Admin />
               ) : active === "dashboard" ? (
                 <Dashboard />
               ) : active === "product" ? (
-                <Products permissions={permissions} />
+                <Products />
               ) : active === "consumer" ? (
-                <Consumers permissions={permissions} />
+                <Consumers />
               ) : active === "movements" ? (
-                <Movements permissions={permissions} />
+                <Movements />
               ) : active === "payment-method" ? (
-                <PaymentMethods permissions={permissions} />
+                <PaymentMethods />
               ) : active === "shipping-method" ? (
-                <ShippingMethods permissions={permissions} />
+                <ShippingMethods />
               ) : active === "order" ? (
-                <Orders permissions={permissions} />
+                <Orders />
               ) : active === "prixer" ? (
-                <Prixers permissions={permissions} />
+                <Prixers />
               ) : active === "preferences" ? (
-                <Preferences permissions={permissions} />
+                <Preferences />
               ) : active === "testimonials" ? (
-                <Testimonials permissions={permissions} />
+                <Testimonials />
               ) : (
                 <p>POONG</p>
               )}

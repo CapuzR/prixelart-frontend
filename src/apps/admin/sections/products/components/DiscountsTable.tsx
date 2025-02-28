@@ -9,13 +9,15 @@ import DeleteIcon from "@mui/icons-material/Delete"
 import Fab from "@mui/material/Fab"
 import Typography from "@mui/material/Typography"
 import Paper from "@mui/material/Paper"
+import { getPermissions } from "@context/GlobalContext"
 
 export default function DiscountsTable({
-  permissions,
   handleActive,
   discountList,
   deleteElement,
 }) {
+  const permissions = getPermissions()
+
   return (
     <Table size="small">
       <TableHead>

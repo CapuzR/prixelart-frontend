@@ -16,9 +16,6 @@ const Routes = () => {
   const hostname = window.location.hostname;
   console.log(location);
   console.log(section)
-  const [permissions, setPermissions] = useState<any>(
-    JSON.parse(localStorage.getItem("adminToken") || "{}")?.permissions
-  );
 
   document.addEventListener("contextmenu", (event) => {
     event.preventDefault();
@@ -38,8 +35,6 @@ const Routes = () => {
         <AdminRoutes
           valuesConsumerForm={valuesConsumerForm}
           setValuesConsumerForm={setValuesConsumerForm}
-          permissions={permissions}
-          setPermissions={setPermissions}
         />
       // ) : section.includes("prixer") ? (
       //   <ArtistRoutes />
@@ -48,7 +43,7 @@ const Routes = () => {
       ) : hostname.includes("orgs") ? (
         <OrgsRoutes />
       ) : (
-        <ConsumerRoutes permissions={permissions} />
+        <ConsumerRoutes />
       )}
     </>
   );

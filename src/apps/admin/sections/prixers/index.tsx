@@ -25,15 +25,16 @@ import {
 import { getPrixers } from "../consumers/api"
 import PrixersGrid from "./components/PrixersGrid"
 import { Account } from "../../../../types/account.types"
-import { useSnackBar, useLoading } from "context/GlobalContext"
+import { useSnackBar, useLoading, getPermissions } from "context/GlobalContext"
 import OrgsGrid from "./components/OrgsGrid"
 
-export default function PrixersCrud({ permissions }) {
+export default function PrixersCrud() {
   const theme = useTheme()
 
   const [value, setValue] = useState(0)
   const { showSnackBar } = useSnackBar()
   const { setLoading } = useLoading()
+  const permissions = getPermissions()
 
   const [tiles, setTiles] = useState([])
   const [consumers, setConsumers] = useState([])

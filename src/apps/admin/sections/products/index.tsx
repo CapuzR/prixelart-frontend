@@ -131,7 +131,7 @@ const useStyles = makeStyles()((theme: Theme) => {
   }
 })
 
-export default function Products({ permissions }) {
+export default function Products() {
   const { classes, cx } = useStyles()
   const history = useHistory()
   const location = useLocation()
@@ -521,7 +521,6 @@ export default function Products({ permissions }) {
                 surcharge={surcharge}
                 category={category}
                 setCategory={setCategory}
-                permissions={permissions}
                 setActiveCrud={setActiveCrud}
                 getProducts={getProducts}
               />

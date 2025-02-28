@@ -31,7 +31,7 @@ const useStyles = makeStyles()((theme: Theme) => {
   }
 })
 
-export default function ReadShippingMethod({ permissions }) {
+export default function ReadShippingMethod() {
   const location = useLocation()
 
   const { classes, cx } = useStyles()
@@ -64,7 +64,6 @@ export default function ReadShippingMethod({ permissions }) {
             <Paper className={fixedHeightPaper}>
               {activeCrud === "read" ? (
                 <ShippingTable
-                  permissions={permissions}
                   setShippingMethod={setShippingMethod}
                   setName={setName}
                   setPrice={setPrice}

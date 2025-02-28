@@ -8,7 +8,7 @@ import UpdateConsumer from "./views/Update"
 import ConsumersTable from "./components/Table"
 import { ConsumerFormProvider } from "@context/ConsumerFormContext"
 
-export default function Consumers({ permissions }) {
+export default function Consumers() {
   const history = useHistory()
   const location = useLocation()
   const [activeCrud, setActiveCrud] = useState("read")
@@ -44,7 +44,6 @@ export default function Consumers({ permissions }) {
               ) : activeCrud === "read" ? (
                 <ConsumersTable
                   setConsumer={setConsumer}
-                  permissions={permissions}
                 />
               ) : (
                 activeCrud == "update" && (

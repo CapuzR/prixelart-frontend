@@ -7,13 +7,15 @@ import Checkbox from "@mui/material/Checkbox"
 import EditIcon from "@mui/icons-material/Edit"
 import DeleteIcon from "@mui/icons-material/Delete"
 import Fab from "@mui/material/Fab"
+import { getPermissions } from "@context/GlobalContext"
 
 export default function CategoriesTable({
   categories,
-  permissions,
   handleActive,
   deleteElement,
 }) {
+  const permissions = getPermissions()
+
   return (
     <Table size="small">
       <TableHead>

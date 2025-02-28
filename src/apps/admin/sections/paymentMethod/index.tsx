@@ -25,7 +25,7 @@ const useStyles = makeStyles()((theme: Theme) => {
   }
 })
 
-export default function PaymentMethods({ permissions }) {
+export default function PaymentMethods() {
   const { classes, cx } = useStyles()
   const location = useLocation()
   const fixedHeightPaper = cx(classes.paper, classes.fixedHeight)
@@ -51,10 +51,7 @@ export default function PaymentMethods({ permissions }) {
             {activeCrud === "create" ? (
               <CreatePaymentMethod />
             ) : activeCrud === "read" ? (
-              <PaymentTable
-                setPaymentMethod={setPaymentMethod}
-                permissions={permissions}
-              />
+              <PaymentTable setPaymentMethod={setPaymentMethod} />
             ) : (
               activeCrud == "update" && (
                 <div>

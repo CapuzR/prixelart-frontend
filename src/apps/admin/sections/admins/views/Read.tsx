@@ -12,16 +12,17 @@ import AdminTable from "../components/AdminTable"
 import Table2 from "../components/Table2"
 import AddIcon from "@mui/icons-material/Add"
 import ViewListIcon from "@mui/icons-material/ViewList"
+import { getPermissions } from "@context/GlobalContext"
 
 export default function ReadAdmins({
   handleCallback,
   setActiveCrud,
   handleCallback2,
-  permissions,
   admins,
   loadAdmin,
-  handleUserAction
+  handleUserAction,
 }) {
+  const permissions = getPermissions()
   const [roles, setRoles] = useState<AdminRole[]>([])
   const [value, setValue] = useState(0)
   const globalParams = window.location.pathname
@@ -32,7 +33,7 @@ export default function ReadAdmins({
     setLoading(true)
     try {
       const roles = await getRoles()
-      if (globalParams === "/admin/user/read") {
+      if (globalParams === "/admin/admins/read") {
         setRoles(roles)
       }
     } catch (error) {
@@ -89,14 +90,11 @@ export default function ReadAdmins({
       {permissions?.modifyAdmins ? (
         <>
           <Tabs value={value} onChange={handleChange}>
-            <Tab
-              label="Administradores"
-              {...a11yProps(0)}
-            />
+            <Tab label="Administradores" {...a11yProps(0)} />
             <Tab label="Roles" {...a11yProps(1)} />
             {permissions?.modifyAdmins && (
               <div style={{ marginLeft: "auto" }}>
-                <IconButton
+                {/* <IconButton
                   aria-label="edit"
                   onClick={() => {
                     handleUserAction("read")
@@ -104,7 +102,7 @@ export default function ReadAdmins({
                   style={{ right: 10 }}
                 >
                   <ViewListIcon />
-                </IconButton>
+                </IconButton> */}
                 <IconButton
                   color="primary"
                   aria-label="add"
@@ -125,7 +123,7 @@ export default function ReadAdmins({
               loadAdmin={loadAdmin}
             />
           </TabPanel>
-          
+
           <TabPanel value={value} index={1}>
             <Table2
               roles={roles}

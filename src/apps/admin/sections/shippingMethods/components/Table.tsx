@@ -10,11 +10,10 @@ import Title from "../../../components/Title"
 import Table1 from "@components/Table/index"
 
 import { ShippingMethod } from "../../../../../types/shippingMethod.types"
-import { useSnackBar, useLoading } from "context/GlobalContext"
+import { useSnackBar, useLoading, getPermissions } from "context/GlobalContext"
 import { getMethods, deleteMethod } from "../api"
 
 export default function ShippingTable({
-  permissions,
   setShippingMethod,
   setName,
   setPrice,
@@ -23,6 +22,8 @@ export default function ShippingTable({
   const history = useHistory()
   const { showSnackBar } = useSnackBar()
   const { setLoading } = useLoading()
+  const permissions = getPermissions()
+
   const [rows, setRows] = useState<ShippingMethod[]>()
   const [totalElements, setTotalElements] = useState(rows?.length)
   const [itemsPerPage, setItemPerPage] = useState(20)
@@ -71,7 +72,7 @@ export default function ShippingTable({
       <div
         style={{ display: "flex", justifyContent: "space-between", margin: 20 }}
       >
-        <Title>Métodos de entrega</Title>
+        <Title title={"Métodos de entrega"} />
         <div style={{ display: "flex", gap: 20 }}>
           <IconButton
             color="default"
@@ -100,7 +101,6 @@ export default function ShippingTable({
         headers={headers}
         elements={rows}
         properties={properties}
-        permissions={permissions}
         updateFunction={handleActive}
         deleteFunction={deleteShippingMethod}
         setPageNumber={setPageNumber}

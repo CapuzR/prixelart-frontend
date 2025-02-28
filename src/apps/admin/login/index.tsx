@@ -2,8 +2,8 @@
 //Llevar el Password a un componente propio.
 
 // Bibliotecas externas
-import { useEffect, useState, FormEvent } from "react";
-import { useHistory } from "react-router-dom";
+import { useEffect, useState, FormEvent } from "react"
+import { useHistory } from "react-router-dom"
 
 import {
   Avatar,
@@ -18,23 +18,23 @@ import {
   InputAdornment,
   FormControl,
   useMediaQuery,
-} from "@mui/material";
-import { makeStyles, useTheme } from "@mui/styles";
-import { Theme } from "@mui/material/styles";
+} from "@mui/material"
+import { makeStyles, useTheme } from "@mui/styles"
+import { Theme } from "@mui/material/styles"
 
 import {
   LockOutlined as LockOutlinedIcon,
   Visibility,
   VisibilityOff,
-} from "@mui/icons-material";
+} from "@mui/icons-material"
 
-import { isAValidEmail, isAValidPassword } from "utils/validations";
+import { isAValidEmail, isAValidPassword } from "utils/validations"
 
-import Copyright from "@components/Copyright/copyright";
-import { forgotPassword } from "./service";
-import { getRandomArt, login } from "./api";
-import { Art } from "../../../types/art.types";
-import { useSnackBar } from "context/GlobalContext";
+import Copyright from "@components/Copyright/copyright"
+import { forgotPassword } from "./service"
+import { getRandomArt, login } from "./api"
+import { Art } from "../../../types/art.types"
+import { useSnackBar, updatePermissions } from "context/GlobalContext"
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -66,73 +66,75 @@ const useStyles = makeStyles((theme: Theme) => ({
   submit: {
     margin: theme.spacing(3, 0, 2),
   },
-}));
+}))
 
-export default function Login({ setPermissions }) {
-  const classes = useStyles();
-  const theme = useTheme<Theme>();
-  const { showSnackBar } = useSnackBar();
-  const isMobile = useMediaQuery("(max-width:480px)");
-  const isTab = useMediaQuery("(max-width: 900px)");
-  const history = useHistory();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [art, setArt] = useState<Art | undefined>(undefined);
+export default function Login() {
+  const classes = useStyles()
+  const theme = useTheme<Theme>()
+  const { showSnackBar } = useSnackBar()
+  const isMobile = useMediaQuery("(max-width:480px)")
+  const isTab = useMediaQuery("(max-width: 900px)")
+  const history = useHistory()
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [showPassword, setShowPassword] = useState(false)
+  const [art, setArt] = useState<Art | undefined>(undefined)
+  const { setPermissions } = updatePermissions()
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+    e.preventDefault()
     if (!email || !password) {
-      showSnackBar("Por favor completa todos los campos requeridos.");
+      showSnackBar("Por favor completa todos los campos requeridos.")
     } else {
-      const { log, permissions } = await login(email, password);
+      const { log, permissions } = await login(email, password)
+      setPermissions(permissions)
       if (log.error_info !== null && log.success === false) {
-        showSnackBar(log.error_info);
+        showSnackBar(log.error_info)
       } else {
-        showSnackBar("Inicio de sesión completado.");
-        setPassword("");
-        setPermissions(permissions);
-        history.push({ pathname: "/admin/order/read" });
+        showSnackBar("Inicio de sesión completado.")
+        setPassword("")
+        // setPermissions(permissions);
+        history.push({ pathname: "/admin/order/read" })
       }
     }
-  };
+  }
 
   useEffect(() => {
     const fetchArt = async () => {
       try {
-        const randomArt = await getRandomArt();
-        setArt(randomArt);
+        const randomArt = await getRandomArt()
+        setArt(randomArt)
       } catch (error) {
-        console.error("Error obteniendo arte aleatorio:", error);
+        console.error("Error obteniendo arte aleatorio:", error)
       }
-    };
+    }
 
-    fetchArt();
-  }, []);
+    fetchArt()
+  }, [])
 
   const handleEmailChange = (e) => {
     if (isAValidEmail(e.target.value)) {
-      setEmail(e.target.value);
+      setEmail(e.target.value)
     } else {
-      setEmail(e.target.value);
-      showSnackBar("Por favor introduce un correo electrónico válido.");
+      setEmail(e.target.value)
+      showSnackBar("Por favor introduce un correo electrónico válido.")
     }
-  };
+  }
 
   const handlePasswordChange = (e) => {
     if (isAValidPassword(e.target.value)) {
-      setPassword(e.target.value);
+      setPassword(e.target.value)
     } else {
-      setPassword(e.target.value);
+      setPassword(e.target.value)
       showSnackBar(
         "Disculpa, tu contraseña debe tener entre 8 y 15 caracteres, incluyendo al menos: una minúscula, una mayúscula, un número y un caracter especial."
-      );
+      )
     }
-  };
+  }
 
   const handleClickShowPassword = () => {
-    setShowPassword(!showPassword);
-  };
+    setShowPassword(!showPassword)
+  }
 
   return (
     <Grid2
@@ -246,5 +248,5 @@ export default function Login({ setPermissions }) {
         </div>
       </Grid2>
     </Grid2>
-  );
+  )
 }

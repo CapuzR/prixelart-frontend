@@ -20,12 +20,12 @@ export default function AdminTable({
   const [totalElements, setTotalElements] = useState(admins?.length)
 
   const headers = [
-    "Nombre",
-    "Apellido",
-    "Área",
-    "Correo",
-    "Usuario",
-    "Teléfono",
+    { title: "Nombre", type: "string" },
+    { title: "Apellido", type: "string" },
+    { title: "Área", type: "string" },
+    { title: "Correo", type: "string" },
+    { title: "Usuario", type: "string" },
+    { title: "Teléfono", type: "string" },
     "",
   ]
 

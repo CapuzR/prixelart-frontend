@@ -1,36 +1,31 @@
-import React from "react";
-import { Switch, Route, useRouteMatch } from "react-router-dom";
-import AdminLogin from "@apps/admin/login/adminLogin";
-import AdminMain from "@apps/admin/App";
-import { useLocation, useParams } from "react-router";
+import React from "react"
+import { Switch, Route, useRouteMatch } from "react-router-dom"
+import AdminLogin from "@apps/admin/login"
+import AdminMain from "@apps/admin/App"
+import { useLocation, useParams } from "react-router"
 
 interface AdminRoutesProps {
-  setPermissions: (permissions: any) => void;
-  setValuesConsumerForm: (value: string) => void;
-  valuesConsumerForm: string;
-  permissions: any;
+  setValuesConsumerForm: (value: string) => void
+  valuesConsumerForm: string
 }
 
 const AdminRoutes: React.FC<AdminRoutesProps> = ({
   setValuesConsumerForm,
   valuesConsumerForm,
-  permissions,
-  setPermissions,
 }) => {
-  const { path } = useRouteMatch();
-  
-  let location = useLocation();
-  const section = location.pathname.split("/")[1];
-  const hostname = window.location;
+  const { path } = useRouteMatch()
 
-  console.log(path);
-  console.log(section);
-  console.log(hostname);
+  let location = useLocation()
+  const section = location.pathname.split("/")[1]
+  const hostname = window.location
+
+  console.log(path)
+  console.log(section)
+  console.log(hostname)
   return (
     <Switch>
       <Route path="/admin/dashboard">
         <AdminMain
-          permissions={permissions}
           valuesConsumerForm={valuesConsumerForm}
           setValues={setValuesConsumerForm}
         />
@@ -38,15 +33,13 @@ const AdminRoutes: React.FC<AdminRoutesProps> = ({
 
       <Route exact path="/admin/main">
         <AdminMain
-          permissions={permissions}
           valuesConsumerForm={valuesConsumerForm}
           setValues={setValuesConsumerForm}
         />
       </Route>
 
-      <Route path="/admin/admin/create">
+      <Route path="/admin/admins/create">
         <AdminMain
-          permissions={permissions}
           valuesConsumerForm={valuesConsumerForm}
           setValues={setValuesConsumerForm}
         />
@@ -54,7 +47,6 @@ const AdminRoutes: React.FC<AdminRoutesProps> = ({
 
       <Route path="/admin/admins/read">
         <AdminMain
-          permissions={permissions}
           valuesConsumerForm={valuesConsumerForm}
           setValues={setValuesConsumerForm}
         />
@@ -67,7 +59,7 @@ const AdminRoutes: React.FC<AdminRoutesProps> = ({
           "/admin/order/read",
           "/admin/admins/read",
           "/admin/admins/update",
-          "/admin/admin/updateRole",
+          "/admin/admins/updateRole",
           "/admin/product/read",
           "/admin/consumer/read",
           "/admin/movements/read",
@@ -92,7 +84,6 @@ const AdminRoutes: React.FC<AdminRoutesProps> = ({
         ]}
       >
         <AdminMain
-          permissions={permissions}
           valuesConsumerForm={valuesConsumerForm}
           setValues={setValuesConsumerForm}
         />
@@ -100,7 +91,6 @@ const AdminRoutes: React.FC<AdminRoutesProps> = ({
 
       <Route path="/admin/product/create">
         <AdminMain
-          permissions={permissions}
           valuesConsumerForm={valuesConsumerForm}
           setValues={setValuesConsumerForm}
         />
@@ -108,7 +98,6 @@ const AdminRoutes: React.FC<AdminRoutesProps> = ({
 
       <Route path="/admin/products/read">
         <AdminMain
-          permissions={permissions}
           valuesConsumerForm={valuesConsumerForm}
           setValues={setValuesConsumerForm}
         />
@@ -116,7 +105,6 @@ const AdminRoutes: React.FC<AdminRoutesProps> = ({
 
       <Route path="/admin/consumer/create">
         <AdminMain
-          permissions={permissions}
           valuesConsumerForm={valuesConsumerForm}
           setValues={setValuesConsumerForm}
         />
@@ -124,17 +112,16 @@ const AdminRoutes: React.FC<AdminRoutesProps> = ({
 
       <Route path="/admin/consumers/read">
         <AdminMain
-          permissions={permissions}
           valuesConsumerForm={valuesConsumerForm}
           setValues={setValuesConsumerForm}
         />
       </Route>
 
       <Route exact path="/admin/inicio">
-        <AdminLogin setPermissions={setPermissions} />
+        <AdminLogin />
       </Route>
     </Switch>
-  );
-};
+  )
+}
 
-export default AdminRoutes;
+export default AdminRoutes

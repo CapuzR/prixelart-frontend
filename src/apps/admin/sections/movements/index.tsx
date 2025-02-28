@@ -11,6 +11,7 @@ import Modal from "@mui/material/Modal"
 
 import MovementsTable from "./components/Table"
 import { Movement } from "../../../../types/movement.types"
+import { getPermissions } from "@context/GlobalContext"
 
 const useStyles = makeStyles()((theme: Theme) => {
   return {
@@ -36,8 +37,9 @@ const useStyles = makeStyles()((theme: Theme) => {
   }
 })
 
-export default function Movements({ permissions }) {
+export default function Movements() {
   const { classes, cx } = useStyles()
+  const permissions = getPermissions()
 
   const fixedHeightPaper = cx(classes.paper, classes.fixedHeight)
   const [openOrderDetails, setOpenOrderDetails] = useState<boolean>(false)

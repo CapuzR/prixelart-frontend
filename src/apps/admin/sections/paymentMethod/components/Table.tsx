@@ -10,14 +10,15 @@ import Title from "../../../components/Title"
 import Table1 from "@components/Table"
 
 import { PaymentMethod } from "../../../../../types/paymentMethod.types"
-import { useSnackBar, useLoading } from "context/GlobalContext"
+import { useSnackBar, useLoading, getPermissions } from "context/GlobalContext"
 import { getMethods, deleteMethod } from "../api"
 
-export default function PaymentTable({ permissions, setPaymentMethod }) {
+export default function PaymentTable({ setPaymentMethod }) {
   const history = useHistory()
   const [rows, setRows] = useState([])
   const { showSnackBar } = useSnackBar()
   const { setLoading } = useLoading()
+  const permissions = getPermissions()
 
   const [totalElements, setTotalElements] = useState(rows?.length)
   const [itemsPerPage, setItemPerPage] = useState(20)
@@ -64,7 +65,7 @@ export default function PaymentTable({ permissions, setPaymentMethod }) {
       <div
         style={{ display: "flex", justifyContent: "space-between", margin: 20 }}
       >
-        <Title>Métodos de pago</Title>
+        <Title title={"Métodos de pago"} />
         <div style={{ display: "flex", gap: 20 }}>
           <IconButton
             color="default"
@@ -94,14 +95,12 @@ export default function PaymentTable({ permissions, setPaymentMethod }) {
         headers={headers}
         elements={rows}
         properties={properties}
-        permissions={permissions}
         updateFunction={handleActive}
         deleteFunction={deletePaymentMethod}
         setPageNumber={setPageNumber}
         pageNumber={pageNumber}
         itemsPerPage={itemsPerPage}
         maxLength={totalElements}
-
       />
     </React.Fragment>
   )

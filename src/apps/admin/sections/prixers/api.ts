@@ -103,3 +103,13 @@ export const createMovement = async (data) => {
     console.log(error)
   }
 }
+
+export const deletePrixer = async (data) => {
+  const base_url = import.meta.env.VITE_BACKEND_URL + "/prixers/destroyPrixer"
+  try {
+    const response = await axios.put(base_url, data)
+    return response
+  } catch (error) {
+    console.log(error)
+  }
+}

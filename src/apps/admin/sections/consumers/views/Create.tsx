@@ -1,97 +1,58 @@
 import React, { useEffect, useState } from "react"
 
 import Title from "@apps/admin/components/Title"
-import TextField from "@mui/material/TextField"
-import Button from "@mui/material/Button"
 import Grid2 from "@mui/material/Grid2"
-import FormControl from "@mui/material/FormControl"
-import Checkbox from "@mui/material/Checkbox"
-import MenuItem from "@mui/material/MenuItem"
-import Select from "@mui/material/Select"
-import InputLabel from "@mui/material/InputLabel"
 import { useHistory } from "react-router-dom"
 import IconButton from "@mui/material/IconButton"
 import ViewListIcon from "@mui/icons-material/ViewList"
-import { nanoid } from "nanoid"
 
 import { getAllPrixers } from "../../prixers/api"
 import { useSnackBar, useLoading } from "@context/GlobalContext"
 
 import { Prixer } from "../../../../../types/prixer.types"
+
 import { createConsumer } from "../api"
 import ConsumerForm from "../components/Form"
+import { useConsumerForm } from "@context/ConsumerFormContext"
 
-export default function CreateConsumer() {
+export default function Create() {
   const history = useHistory()
   const { showSnackBar } = useSnackBar()
   const { setLoading } = useLoading()
+  const { state, dispatch } = useConsumerForm()
 
-  const [active, setActive] = useState(true)
-  const [consumerType, setConsumerType] = useState("Particular")
-  const [consumerFirstname, setConsumerFirstname] = useState("")
-  const [consumerLastname, setConsumerLastname] = useState("")
-  const [username, setUsername] = useState("")
-  const [phone, setPhone] = useState("")
-  const [email, setEmail] = useState("")
-  const [billingAddress, setBillingAddress] = useState("")
-  const [shippingAddress, setShippingAddress] = useState("")
-  const [instagram, setInstagram] = useState("")
-  const [birthdate, setBirthdate] = useState<string>("")
-  const [nationalIdType, setNationalIdType] = useState("V")
-  const [nationalId, setNationalId] = useState("")
-  const [gender, setGender] = useState("")
   const [prixers, setPrixers] = useState<Prixer[]>([])
-  const [selectedPrixer, setSelectedPrixer] = useState<Prixer | undefined>()
+
+  const admin = `${JSON.parse(localStorage.getItem("adminToken")).firstname} ${JSON.parse(localStorage.getItem("adminToken")).lastname}`
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    if (!consumerFirstname && !consumerLastname && !consumerType) {
+    if (!state.firstname && !state.lastname && !state.consumerType) {
       showSnackBar("Por favor completa todos los campos requeridos.")
       e.preventDefault()
     } else {
       setLoading(true)
 
-      const data = {
-        _id: nanoid(8).toString(),
-        active: active,
-        consumerType: consumerType,
-        firstname: consumerFirstname,
-        lastname: consumerLastname,
-        username: username,
-        phone: phone,
-        email: email,
-        billingAddress: billingAddress,
-        shippingAddress: shippingAddress,
-        instagram: instagram,
-        birthdate: new Date(birthdate),
-        nationalIdType: nationalIdType,
-        nationalId: nationalId,
-        gender: gender,
-        contactedBy: JSON.parse(localStorage.getItem("adminToken")),
-      }
+      let data = state
+      data.contactedBy = admin
+      delete data._id
 
       const response = await createConsumer(data)
       if (response.data.success === false) {
         showSnackBar(response.data.message)
       } else {
         showSnackBar("Registro de consumidor exitoso.")
-        setActive(false)
-        setConsumerType("Particular")
-        setConsumerFirstname("")
-        setConsumerLastname("")
-        setUsername("")
-        setPhone("")
-        setEmail("")
-        setShippingAddress("")
-        setInstagram("")
-        setBirthdate("")
-        setNationalIdType("")
-        setNationalId("V")
-        setGender("")
+        resetState()
         history.push({ pathname: "/admin/consumer/read" })
       }
     }
   }
+
+    const resetState = () => {
+      dispatch({
+        type: "RESET_FORM"
+      })
+    }
 
   const readPrixers = async () => {
     try {
@@ -110,16 +71,7 @@ export default function CreateConsumer() {
   useEffect(() => {
     readPrixers()
   }, [])
-
-  useEffect(() => {
-    setActive(true)
-    setConsumerFirstname(selectedPrixer?.firstName)
-    setConsumerLastname(selectedPrixer?.lastName)
-    setPhone(selectedPrixer?.phone)
-    setEmail(selectedPrixer?.email)
-    setInstagram(selectedPrixer?.instagram)
-  }, [selectedPrixer])
-
+  
   return (
     <React.Fragment>
       <Grid2

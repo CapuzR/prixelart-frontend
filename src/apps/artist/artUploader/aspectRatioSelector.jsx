@@ -13,7 +13,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import { Typography } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
-import getCroppedImg from '../../utils/cropImage';
+import getCroppedImg from '../../../utils/cropImage';
 import CropIcon from '@mui/icons-material/Crop';
 
 const useStyles = makeStyles((theme) => ({

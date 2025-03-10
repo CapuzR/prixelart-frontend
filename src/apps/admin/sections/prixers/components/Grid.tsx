@@ -11,20 +11,20 @@ import CloseIcon from "@mui/icons-material/Close"
 import DehazeIcon from "@mui/icons-material/Dehaze"
 
 import MoreVertIcon from "@mui/icons-material/MoreVert"
-import { useTheme, Theme } from "@mui/material/styles"
+import { useTheme } from "@mui/material/styles"
 import useMediaQuery from "@mui/material/useMediaQuery"
 
-import { Prixer } from "@types/prixer.types"
-import { Consumer } from "@types/consumer.types"
+import { Prixer } from "../../../../../types/prixer.types"
+import { Consumer } from "../../../../../types/consumer.types"
 
-export default function PrixersGrid({
+export default function Grid({
   tiles,
   selectedPrixer,
   setSelectedPrixer,
   permissions,
   consumers,
   setSelectedConsumer,
-  TurnIntoOrg,
+  TurnInto,
   ChangeVisibility,
   setOpenDestroy,
   accounts,
@@ -32,16 +32,17 @@ export default function PrixersGrid({
   setOpenNewMovement,
   setOpenList,
   setOpenNewBalance,
-  setOpenInfo
+  setOpenInfo,
+  setOpenComission,
+  org,
 }) {
-    const theme = useTheme()
-    const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
+  const theme = useTheme()
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
 
-    
   return (
     <Grid2
       container
-      spacing={2}
+      spacing={4}
       style={{
         padding: isMobile ? "0px" : "18px",
         display: "flex",
@@ -64,10 +65,13 @@ export default function PrixersGrid({
                   style={{
                     width: "100%",
                     display: "flex",
-                    justifyContent: "end",
-                    marginBottom: "-25px",
+                    justifyContent: "space-between",
+                    alignItems: "center",
                   }}
                 >
+                  <Typography variant="h5" style={{ paddingLeft: 16 }}>
+                    {tile?.firstName} {tile?.lastName}
+                  </Typography>
                   <IconButton
                     aria-controls="simple-menu"
                     aria-haspopup="true"
@@ -81,21 +85,19 @@ export default function PrixersGrid({
 
                 <CardContent
                   sx={{
-                    marginTop: -10,
+                    marginTop: "-10px",
                     display: "flex",
                     justifyContent: "center",
                     flexDirection: "column",
                     height: "100%",
                   }}
                 >
-                  <Typography gutterBottom variant="h5" component="h2">
-                    {tile?.firstName} {tile?.lastName}
-                  </Typography>
                   {permissions?.readConsumers && (
                     <Button
                       style={{
                         backgroundColor: "#e5e7e9",
                         textTransform: "none",
+                        color: "#404e5c",
                       }}
                       onClick={() => {
                         setOpenInfo(true)
@@ -124,7 +126,7 @@ export default function PrixersGrid({
                       </Typography>
                       <Switch
                         color="primary"
-                        onChange={(event) => TurnIntoOrg(event, tile?.username)}
+                        onChange={(event) => TurnInto(event, tile?.username)}
                         name="checkedA"
                         inputProps={{
                           "aria-label": "secondary checkbox",
@@ -184,12 +186,28 @@ export default function PrixersGrid({
                           style={{
                             backgroundColor: "rgb(229, 231, 233)",
                             textTransform: "none",
+                            color: "#404e5c",
                           }}
                         >
-                          Eliminar Prixer
+                          {org ? "Eliminar Organización" : "Eliminar Prixer"}
                         </Button>
                       </Box>
                     </Box>
+                  )}
+                  {org && (
+                    <Button
+                      style={{
+                        backgroundColor: "#e5e7e9",
+                        textTransform: "none",
+                        marginTop: 16,
+                        color: "#404e5c",
+                      }}
+                      onClick={() => {
+                        setOpenComission(true)
+                      }}
+                    >
+                      Definir comisión
+                    </Button>
                   )}
                 </CardContent>
               </Card>
@@ -209,7 +227,7 @@ export default function PrixersGrid({
                     width: "100%",
                     display: "flex",
                     justifyContent: "end",
-                    marginBottom: "-50px",
+                    marginBottom: "-10px",
                   }}
                 >
                   <IconButton
@@ -223,18 +241,20 @@ export default function PrixersGrid({
                   </IconButton>
                 </div>
                 <CardMedia
-                  component="img"
-                  alt={tile?.username}
+                  title={tile?.username}
                   image={tile?.avatar || "/PrixLogo.png"}
                   sx={{
                     borderRadius: "50%",
-                    margin: "auto",
-                    maxWidth: 250,
-                    maxHeight: 250
+                    margin: "10px auto",
+                    width: 250,
+                    height: 250,
+                    backgroundSize: "cover",
                   }}
-                  style={{
-                    opacity: tile?.status === true ? "100%" : "50%",
-                  }}
+                  style={
+                    {
+                      // opacity: tile?.status === true ? "100%" : "50%",
+                    }
+                  }
                 />
                 <CardContent
                   sx={{
@@ -242,14 +262,17 @@ export default function PrixersGrid({
                     display: "flex",
                     justifyContent: "center",
                     flexDirection: "column",
-                    height: "100%",
+                    // height: "100%",
                   }}
                 >
-                  <Typography gutterBottom variant="h5">
+                  <Typography gutterBottom variant="h5" color="#404e5c">
                     {tile?.firstName} {tile?.lastName}
                   </Typography>
-                  <Typography gutterBottom style={{ fontSize: 16 }}>
-                    {tile?.username} -
+                  <Typography
+                    gutterBottom
+                    style={{ fontSize: 16, color: "#404e5c" }}
+                  >
+                    {tile?.username} - 
                     {tile?.specialty ||
                       tile?.specialtyArt?.map(
                         (specialty, index) =>
@@ -270,9 +293,10 @@ export default function PrixersGrid({
                       borderColor: "#e5e7e9",
                       margin: "5px",
                       paddingBottom: "5px",
+                      marginTop: "auto",
                     }}
                   >
-                    <Typography variant="h6" align="center">
+                    <Typography variant="h6" align="center" color="#404e5c">
                       Balance $
                       {accounts &&
                         accounts
@@ -298,6 +322,7 @@ export default function PrixersGrid({
                           width: "40%",
                           backgroundColor: "#e5e7e9",
                           textTransform: "none",
+                          color: "#404e5c",
                         }}
                       >
                         Depósito
@@ -312,6 +337,7 @@ export default function PrixersGrid({
                           width: "40%",
                           backgroundColor: "#e5e7e9",
                           textTransform: "none",
+                          color: "#404e5c",
                         }}
                       >
                         Retiro
@@ -326,7 +352,11 @@ export default function PrixersGrid({
                       }}
                     >
                       <Button
-                        style={{ textTransform: "none" }}
+                        style={{
+                          textTransform: "none",
+                          color: "#404e5c",
+                          gap: 10,
+                        }}
                         onClick={() => {
                           setSelectedPrixer(tile)
                           setOpenList(true)
@@ -346,6 +376,8 @@ export default function PrixersGrid({
                         width: 160,
                         alignSelf: "center",
                         fontWeight: "bold",
+                        marginTop: "auto",
+                        marginBottom: 20,
                       }}
                       onClick={(e) => {
                         setSelectedPrixer(tile)

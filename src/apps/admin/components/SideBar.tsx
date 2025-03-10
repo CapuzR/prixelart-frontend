@@ -145,7 +145,7 @@ export default function SideBar({ active }) {
             <ListItemIcon>
               <InsertEmoticon />
             </ListItemIcon>
-            <ListItemText primary="Testimonios" />{" "}
+            <ListItemText primary="Testimonios" />
           </ListItemButton>
         </ListItem>
       </div>
@@ -161,7 +161,7 @@ export default function SideBar({ active }) {
               <ListItemIcon>
                 <AssignmentIcon />
               </ListItemIcon>
-              <ListItemText primary="Usuarios" />{" "}
+              <ListItemText primary="Administradores" />
             </ListItemButton>
           </ListItem>
         )}

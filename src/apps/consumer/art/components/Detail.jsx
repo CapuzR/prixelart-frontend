@@ -16,7 +16,7 @@ import Snackbar from '@mui/material/Snackbar';
 import Autocomplete from '@mui/lab/Autocomplete';
 import CircularProgress from '@mui/material/CircularProgress';
 import FloatingAddButton from 'components/floatingAddButton/floatingAddButton';
-import ArtUploader from 'components/artUploader/artUploader';
+import ArtUploader from '@apps/artist/artUploader/artUploader';
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import ShareIcon from '@mui/icons-material/Share';
 import utils from '../../../../utils/utils';

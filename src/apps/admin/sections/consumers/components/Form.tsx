@@ -10,21 +10,27 @@ import Select from "@mui/material/Select"
 import { Checkbox } from "@mui/material"
 
 import { useConsumerForm } from "@context/ConsumerFormContext"
-import { Prixer } from "../../../../../types/prixer.types"
 
-export default function ConsumerForm({ handleSubmit, prixers }) {
+export default function Form({ handleSubmit, prixers }) {
   const { state, dispatch } = useConsumerForm()
 
   const today = new Date()
   const minDate = new Date()
   const minimumAge = new Date(minDate.setFullYear(today.getFullYear() - 18))
-  const [selectedPrixer, setSelectedPrixer] = useState<Prixer | undefined>()
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     dispatch({
       type: "SET_FIELD",
       field: e.target.name as keyof typeof state,
       value: e.target.value,
+    })
+  }
+
+  const handleCheck = (e: React.ChangeEvent<HTMLInputElement>) => {
+    dispatch({
+      type: "SET_FIELD",
+      field: e.target.name as keyof typeof state,
+      value: e.target.checked,
     })
   }
 
@@ -36,8 +42,9 @@ export default function ConsumerForm({ handleSubmit, prixers }) {
             <Checkbox
               checked={state.active}
               color="primary"
+              name="active"
               inputProps={{ "aria-label": "secondary checkbox" }}
-              onChange={handleChange}
+              onChange={handleCheck}
             />
             Habilitado
           </Grid2>
@@ -92,8 +99,8 @@ export default function ConsumerForm({ handleSubmit, prixers }) {
                 fullWidth
                 id="lastname"
                 label="Apellidos"
-                name="consumerLastname"
-                autoComplete="consumerLastname"
+                name="lastname"
+                autoComplete="lastname"
                 value={state.lastname}
                 onChange={handleChange}
               />
@@ -210,8 +217,8 @@ export default function ConsumerForm({ handleSubmit, prixers }) {
                 fullWidth
                 // id="nationalId"
                 label="Cédula o RIF"
-                name="nationalId"
-                value={state.nationalId}
+                name="ci"
+                value={state.ci}
                 onChange={handleChange}
               />
             </FormControl>

@@ -25,8 +25,8 @@ export default function ShippingTable({
   const permissions = getPermissions()
 
   const [rows, setRows] = useState<ShippingMethod[]>()
-  const [totalElements, setTotalElements] = useState(rows?.length)
-  const [itemsPerPage, setItemPerPage] = useState(20)
+  const totalElements = rows?.length
+  const itemsPerPage = 20
   const [pageNumber, setPageNumber] = useState(1)
   const headers = ["Activo", "Nombre", "Costo", ""]
   const properties = ["active", "name", "price"]

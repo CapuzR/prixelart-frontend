@@ -13,7 +13,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import Grid from '@mui/material/Grid';
 import { makeStyles } from '@mui/styles';
 import { useState } from 'react';
-import ArtUploader from 'components/artUploader/artUploader';
+import ArtUploader from '@apps/artist/artUploader/artUploader';
 import ServiceGrid from './grid/serviceGrid';
 import Modal from '@mui/material/Modal';
 import Button from '@mui/material/Button';

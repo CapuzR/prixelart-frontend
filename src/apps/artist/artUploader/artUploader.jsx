@@ -10,18 +10,18 @@ import CloseIcon from '@mui/icons-material/Close';
 import Slide from '@mui/material/Slide';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
-import utils from '../../utils/utils.js';
+import utils from '../../../utils/utils.js';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import Tooltip from '@mui/material/Tooltip';
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
-import AspectRatioSelector from './aspectRatioSelector';
+import AspectRatioSelector from './aspectRatioSelector.jsx';
 import Cropper from 'react-easy-crop';
 
 import { useState } from 'react';
 import axios from 'axios';
 
-import Copyright from '../Copyright/copyright';
+import Copyright from '@components/Copyright/copyright';
 
 //material-ui
 import Grid from '@mui/material/Grid';

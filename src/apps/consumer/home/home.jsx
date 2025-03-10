@@ -29,7 +29,7 @@ import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 
 import CreateService from 'components/createService/createService';
-import ArtUploader from 'components/artUploader/artUploader';
+import ArtUploader from '@apps/artist/artUploader/artUploader';
 import ReactGA from 'react-ga';
 // import Slider from "react-slick"
 import 'slick-carousel/slick/slick.css';

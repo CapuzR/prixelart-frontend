@@ -3,9 +3,9 @@ import { useHistory, useLocation } from "react-router-dom"
 import Grid2 from "@mui/material/Grid2"
 import Paper from "@mui/material/Paper"
 
-import CreateConsumer from "./views/Create"
-import UpdateConsumer from "./views/Update"
-import ConsumersTable from "./components/Table"
+import Create from "./views/Create"
+import Update from "./views/Update"
+import Table from "./components/Table"
 import { ConsumerFormProvider } from "@context/ConsumerFormContext"
 
 export default function Consumers() {
@@ -28,7 +28,7 @@ export default function Consumers() {
   return (
     <div style={{ position: "relative" }}>
       <Grid2 container spacing={3}>
-        <Grid2 size={{ xs: 12 }}>
+        <Grid2>
           <Paper
             sx={{
               padding: 6,
@@ -40,18 +40,13 @@ export default function Consumers() {
           >
             <ConsumerFormProvider>
               {activeCrud === "create" ? (
-                <CreateConsumer />
+                <Create />
               ) : activeCrud === "read" ? (
-                <ConsumersTable
-                  setConsumer={setConsumer}
-                />
+                <Table />
               ) : (
                 activeCrud == "update" && (
                   <div>
-                    <UpdateConsumer
-                      consumer={consumer}
-                      setConsumer={setConsumer}
-                    />
+                    <Update />
                   </div>
                 )
               )}

@@ -18,8 +18,9 @@ import {
   InputAdornment,
   FormControl,
   useMediaQuery,
+  Paper,
 } from "@mui/material"
-import { makeStyles, useTheme } from "@mui/styles"
+import { makeStyles } from "@mui/styles"
 import { Theme } from "@mui/material/styles"
 
 import {
@@ -43,8 +44,6 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   image: {
     backgroundRepeat: "no-repeat",
-    // backgroundColor: '#404e5c',
-    // theme.palette.type === 'light' ? theme.palette.grey[50] : theme.palette.grey[900],
     backgroundSize: "cover",
     backgroundPosition: "center",
   },
@@ -70,7 +69,6 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 export default function Login() {
   const classes = useStyles()
-  const theme = useTheme<Theme>()
   const { showSnackBar } = useSnackBar()
   const isMobile = useMediaQuery("(max-width:480px)")
   const isTab = useMediaQuery("(max-width: 900px)")
@@ -155,7 +153,7 @@ export default function Login() {
           height: isTab ? "40vh" : "100%",
         }}
       />
-      <Grid2 size={{ xs: 12, lg: 5 }}>
+      <Grid2 size={{ xs: 12, lg: 5 }} component={Paper} elevation={6} square>
         <div
           className={classes.paper}
           style={{ marginTop: isTab ? "32px" : "100px" }}
@@ -163,7 +161,7 @@ export default function Login() {
           <Avatar className={classes.avatar}>
             <LockOutlinedIcon />
           </Avatar>
-          <Typography component="h1" variant="h5">
+          <Typography variant="h5">
             Iniciar sesión : Admin
           </Typography>
           <Grid2
@@ -185,7 +183,7 @@ export default function Login() {
                   alignContent: "center",
                 }}
               >
-                <Grid2 size={{ xs: 12, sm: 12, md: 12, lg: 6 }}>
+                <Grid2 size={{ xs: 12, lg: 6 }}>
                   <FormControl variant="outlined" style={{ width: "100%" }}>
                     <InputLabel htmlFor="email">Correo electrónico</InputLabel>
                     <OutlinedInput
@@ -197,7 +195,7 @@ export default function Login() {
                     />
                   </FormControl>
                 </Grid2>
-                <Grid2 size={{ xs: 12, sm: 12, md: 12, lg: 6 }}>
+                <Grid2 size={{ xs: 12, lg: 6 }}>
                   <FormControl variant="outlined" style={{ width: "100%" }}>
                     <InputLabel htmlFor="outlined-adornment-password">
                       Contraseña

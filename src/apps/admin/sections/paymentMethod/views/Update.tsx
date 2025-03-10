@@ -54,7 +54,7 @@ export default function UpdatePaymentMethod({ paymentMethod }) {
 
   return (
     <React.Fragment>
-      <Title>Actualización de Método de pago</Title>
+      <Title title="Actualización de Método de pago"/>
       <form style={{ height: "auto", padding: "15px" }} onSubmit={handleSubmit}>
         <Grid2 container spacing={2}>
           <Grid2 size={{ xs: 12 }}>
@@ -89,7 +89,6 @@ export default function UpdatePaymentMethod({ paymentMethod }) {
             <FormControl variant="outlined" fullWidth={true}>
               <TextField
                 variant="outlined"
-                required
                 multiline
                 fullWidth
                 minRows={5}

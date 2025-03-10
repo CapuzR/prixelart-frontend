@@ -43,11 +43,11 @@ import SideBar from "./components/SideBar"
 import Movements from "./sections/movements"
 import Orders from "./sections/orders/orders"
 import PaymentMethods from "./sections/paymentMethod"
-import Preferences from "./sections/preferences/Preferences"
+import Preferences from "./sections/preferences"
 import Prixers from "./sections/prixers"
 import Products from "./sections/products"
 import ShippingMethods from "./sections/shippingMethods"
-import Testimonials from "./sections/testimonials/Testimonials"
+import Testimonials from "./sections/testimonials/index"
 import Copyright from "@components/Copyright/copyright"
 
 const drawerWidth = 240
@@ -89,13 +89,6 @@ const useStyles = makeStyles()((theme: Theme) => {
     toolbar: {
       paddingRight: 24,
     },
-    toolbarIcon: {
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "flex-end",
-      padding: "0 8px",
-      ...theme.mixins.toolbar,
-    },
     appBar: {
       minHeight: "70px",
       zIndex: theme.zIndex.drawer + 1,
@@ -121,27 +114,6 @@ const useStyles = makeStyles()((theme: Theme) => {
     title: {
       flexGrow: 1,
     },
-    drawerPaper: {
-      position: "relative",
-      whiteSpace: "nowrap",
-      width: 240,
-      transition: theme.transitions.create("width", {
-        easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.enteringScreen,
-      }),
-    },
-    drawerPaperClose: {
-      overflowX: "hidden",
-      width: theme.spacing(7),
-      [theme.breakpoints.up("sm")]: {
-        width: theme.spacing(9),
-      },
-      transition: theme.transitions.create("width", {
-        easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.leavingScreen,
-      }),
-    },
-    appBarSpacer: theme.mixins.toolbar,
     content: {
       flexGrow: 1,
       height: "auto",
@@ -150,16 +122,6 @@ const useStyles = makeStyles()((theme: Theme) => {
     container: {
       paddingTop: theme.spacing(4),
       paddingBottom: theme.spacing(4),
-    },
-    paper: {
-      padding: theme.spacing(2),
-      display: "flex",
-      overflow: "auto",
-      flexDirection: "column",
-      height: "700px",
-    },
-    fixedHeight: {
-      height: 500,
     },
   }
 })
@@ -246,7 +208,7 @@ const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
 }))
 
-export default function AdminMain({ valuesConsumerForm, setValues }) {
+export default function AdminMain() {
   const theme = useTheme<Theme>()
   const { classes, cx } = useStyles()
   const [open, setOpen] = useState(false)

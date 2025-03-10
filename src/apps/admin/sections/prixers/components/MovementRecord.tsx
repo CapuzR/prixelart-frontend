@@ -1,49 +1,34 @@
 import { useState, useEffect } from "react"
-import axios from "axios"
 import Grid2 from "@mui/material/Grid2"
 import Typography from "@mui/material/Typography"
 import IconButton from "@mui/material/IconButton"
 import CloseIcon from "@mui/icons-material/Close"
-import Table from "@mui/material/Table"
-import TableBody from "@mui/material/TableBody"
-import TableCell from "@mui/material/TableCell"
-import TableHead from "@mui/material/TableHead"
-import TableRow from "@mui/material/TableRow"
-import moment from "moment"
-import "moment/locale/es"
 
-import { makeStyles } from "tss-react/mui"
-import { Theme } from "@mui/material/styles"
+// import moment from "moment"
+// import "moment/locale/es"
+
+import { useTheme } from "@mui/material/styles"
 import { getMovementsForPrixer } from "../api"
 import { Movement } from "../../../../../types/movement.types"
-
-const useStyles = makeStyles()((theme: Theme) => {
-  return {
-    paper1: {
-      position: "absolute",
-      width: "80%",
-      maxHeight: "90%",
-      overflowY: "auto",
-      backgroundColor: "white",
-      boxShadow: theme.shadows[2],
-      padding: "16px 32px 24px",
-      top: "50%",
-      left: "50%",
-      transform: "translate(-50%, -50%)",
-      textAlign: "justify",
-      minWidth: 320,
-      borderRadius: 10,
-      display: "flex",
-      flexDirection: "row",
-    },
-  }
-})
+import Table1 from "@components/Table"
 
 export default function MovementRecord({ selectedPrixer, handleClose }) {
-  const classes = useStyles()
+  const theme = useTheme()
   const [movements, setMovements] = useState<Movement[]>()
+  const totalElements = movements?.length
+  const itemsPerPage = 20
+  const [pageNumber, setPageNumber] = useState(1)
+  const headers = [
+    { title: "Fecha efectiva", type: "string" },
+    { title: "Descripción", type: "string" },
+    { title: "Monto", type: "string" },
+    { title: "Fecha", type: "string" },
+    { title: "Creado por", type: "string" },
+  ]
 
-  const getMovements = async (account) => {
+  const properties = ["date", "description", "value", "createdOn", "createdBy"]
+
+  const getMovements = async (account: string) => {
     const data = await getMovementsForPrixer(account)
     setMovements(data)
   }
@@ -53,22 +38,36 @@ export default function MovementRecord({ selectedPrixer, handleClose }) {
   }, [])
 
   return (
-    <Grid2 container className={classes.paper1}>
+    <Grid2
+      container
+      sx={{
+        position: "absolute",
+        width: "80%",
+        maxHeight: "90%",
+        overflowY: "auto",
+        backgroundColor: "white",
+        boxShadow: theme.shadows[2],
+        padding: 4,
+        top: "50%",
+        left: "50%",
+        transform: "translate(-50%, -50%)",
+        textAlign: "justify",
+        borderRadius: 10,
+        display: "flex",
+      }}
+    >
       <div
         style={{
           display: "flex",
           width: "100%",
-
           justifyContent: "space-between",
           alignItems: "center",
+          marginBottom: 16,
         }}
       >
         <Typography variant="h6">
           Historial de
-          {" " +
-            selectedPrixer?.firstName +
-            " " +
-            selectedPrixer?.lastName}
+          {" " + selectedPrixer?.firstName + " " + selectedPrixer?.lastName}
         </Typography>
 
         <IconButton onClick={handleClose}>
@@ -77,40 +76,15 @@ export default function MovementRecord({ selectedPrixer, handleClose }) {
       </div>
 
       {movements?.length > 0 ? (
-        <Table size="small">
-          <TableHead>
-            <TableRow>
-              <TableCell align="center">Fecha efectiva</TableCell>
-              <TableCell align="center">Descripción</TableCell>
-              <TableCell align="center">Monto</TableCell>
-              <TableCell align="center">Fecha</TableCell>
-              <TableCell align="center">Creado por</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {movements.map((mov) => (
-              <TableRow>
-                <TableCell align="center">
-                  {moment(mov.createdOn).format("DD/MM/YYYY")}
-                </TableCell>
-                <TableCell>{mov.description}</TableCell>
-                <TableCell align="right">
-                  {mov.type === "Retiro" && "-"}$
-                  {mov.value
-                    .toLocaleString("de-DE", {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    })
-                    .replace("-", "")}
-                </TableCell>
-                <TableCell align="center">
-                  {moment(mov.createdOn).format("DD/MM/YYYY")}
-                </TableCell>
-                <TableCell align="center">{mov.createdBy}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+        <Table1
+          headers={headers}
+          elements={movements}
+          properties={properties}
+          setPageNumber={setPageNumber}
+          pageNumber={pageNumber}
+          itemsPerPage={itemsPerPage}
+          maxLength={totalElements}
+        />
       ) : (
         <Typography style={{ display: "flex", justifyContent: "center" }}>
           Aún no hay movimientos registrados para este Prixer.

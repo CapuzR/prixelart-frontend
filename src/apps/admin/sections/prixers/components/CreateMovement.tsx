@@ -6,31 +6,10 @@ import CloseIcon from "@mui/icons-material/Close"
 import TextField from "@mui/material/TextField"
 import InputAdornment from "@mui/material/InputAdornment"
 import Button from "@mui/material/Button"
-import { Theme } from "@mui/material/styles"
-import { makeStyles } from "tss-react/mui"
+import { useTheme } from "@mui/material/styles"
 
 import { nanoid } from "nanoid"
 import { createMovement } from "../api"
-
-const useStyles = makeStyles()((theme: Theme) => {
-  return {
-    paper3: {
-      position: "absolute",
-      top: "50%",
-      left: "50%",
-      transform: "translate(-50%, -50%)",
-      width: 800,
-      backgroundColor: "white",
-      boxShadow: theme.shadows[2],
-      padding: "16px 32px 4px",
-      textAlign: "justify",
-      minWidth: 320,
-      borderRadius: 10,
-      display: "flex",
-      flexDirection: "row",
-    },
-  }
-})
 
 export default function CreateMovement({
   selectedPrixer,
@@ -45,8 +24,7 @@ export default function CreateMovement({
   readOrg,
   getBalance,
 }) {
-
-  const classes = useStyles()
+  const theme = useTheme()
   const [description, setDescription] = useState<string>()
 
   const createPayMovement = async () => {
@@ -73,9 +51,24 @@ export default function CreateMovement({
   }
 
   return (
-    <Grid2 container className={classes.paper3}>
+    <Grid2
+      container
+      sx={{
+        margin: "auto",
+        minWidth: 800,
+        backgroundColor: "white",
+        boxShadow: theme.shadows[2],
+        padding: 3,
+        textAlign: "justify",
+        borderRadius: 10,
+        display: "flex",
+        flexDirection: "row",
+        gap: 1,
+        height: "fit-content",
+      }}
+    >
       <Grid2
-        style={{
+        sx={{
           width: "100%",
           display: "flex",
         }}
@@ -105,15 +98,17 @@ export default function CreateMovement({
           flexDirection: "column",
           alignItems: "center",
           width: "100%",
+          gap: 16,
         }}
       >
         <Grid2
           container
+          spacing={3}
           style={{
             display: "flex",
           }}
         >
-          <Grid2 size={{ sm: 3 }} style={{ flexBasis: "0" }}>
+          <Grid2 size={{ sm: 3 }}>
             <TextField
               variant="outlined"
               label="Fecha"
@@ -126,7 +121,7 @@ export default function CreateMovement({
           </Grid2>
           <Grid2
             size={{ sm: 6 }}
-            style={{ paddingRight: "-20px", marginLeft: "10px" }}
+            // style={{ paddingRight: "-20px", marginLeft: "10px" }}
           >
             <TextField
               fullWidth
@@ -138,7 +133,7 @@ export default function CreateMovement({
               }}
             />
           </Grid2>
-          <Grid2 size={{ sm: 3 }} style={{ marginLeft: "10px" }}>
+          <Grid2 size={{ sm: 3 }}>
             <TextField
               variant="outlined"
               label="Monto"
@@ -149,7 +144,9 @@ export default function CreateMovement({
               type="number"
               slotProps={{
                 input: {
-                  startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                  startAdornment: (
+                    <InputAdornment position="start">$</InputAdornment>
+                  ),
                 },
               }}
             />

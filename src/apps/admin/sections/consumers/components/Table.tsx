@@ -14,12 +14,14 @@ import Table1 from "@components/Table"
 import { useSnackBar, useLoading, getPermissions } from "context/GlobalContext"
 import { Consumer } from "../../../../../types/consumer.types"
 import { deleteConsumer, getConsumers } from "../api"
+import { useConsumerForm } from "@context/ConsumerFormContext"
 
-export default function ConsumersTable({ setConsumer }) {
+export default function Table() {
   const history = useHistory()
   const { showSnackBar } = useSnackBar()
   const { setLoading } = useLoading()
   const permissions = getPermissions()
+  const { dispatch } = useConsumerForm()
 
   const [original, setOriginal] = useState<Consumer[]>([])
   const [rows, setRows] = useState<Consumer[]>([])
@@ -48,7 +50,10 @@ export default function ConsumersTable({ setConsumer }) {
   }, [])
 
   const handleUpdate = (consumer: Consumer) => {
-    setConsumer(consumer)
+    dispatch({
+      type: "SET_CLIENT",
+      client: consumer,
+    })
     history.push("/admin/consumer/update/" + consumer._id)
   }
 
@@ -61,7 +66,7 @@ export default function ConsumersTable({ setConsumer }) {
     readConsumers()
   }
 
-  const changeFilter = (e) => {
+  const changeFilter = (e: React.ChangeEvent<HTMLInputElement>) => {
     setLoading(true)
     let query = e.target.value.toLowerCase()
     console.log(query)
@@ -86,13 +91,13 @@ export default function ConsumersTable({ setConsumer }) {
   }
 
   const headers = [
-    "Activo",
-    "Nombre",
-    "Apellido",
-    "Tipo",
-    "Teléfono",
-    "Email",
-    "Dirección de envío",
+    { title: "Activo", type: 'string' },
+    { title:"Nombre", type: 'string' },
+    { title:"Apellido", type: 'string' },
+    { title:"Tipo", type: 'string' },
+    { title:"Teléfono", type: 'string' },
+    { title:"Email", type: 'string' },
+    { title:"Dirección de envío", type: 'string' },
     "",
   ]
 
@@ -111,7 +116,7 @@ export default function ConsumersTable({ setConsumer }) {
       {permissions?.readConsumers ? (
         <>
           <Grid2 sx={{ display: "flex", justifyContent: "space-between" }}>
-            <Title title={'Clientes frecuentes'}/>
+            <Title title={"Clientes frecuentes"} />
             <Grid2 sx={{ display: "flex", alignContent: "center", gap: 2 }}>
               <TextField
                 variant="outlined"

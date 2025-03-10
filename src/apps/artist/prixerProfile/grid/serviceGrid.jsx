@@ -34,7 +34,7 @@ import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import ServiceSearchBar from 'components/searchBar/serviceSearchBar';
 import FloatingAddButton from 'components/floatingAddButton/floatingAddButton';
-import ArtUploader from 'components/artUploader/artUploader';
+import ArtUploader from '@apps/artist/artUploader/artUploader';
 import CreateService from 'components/createService/createService';
 
 const IOSSwitch = withStyles((theme) => ({

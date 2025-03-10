@@ -61,20 +61,16 @@ export default function CreateWallet({
     <Grid2
       container
       sx={{
-        position: "fixed",
-        right: "30%",
-        top: "38%",
-        bottom: "37%",
-        left: "40%",
-        width: 300,
+        width: 320,
         backgroundColor: "white",
         boxShadow: theme.shadows[2],
-        padding: "16px 32px 24px",
+        padding: 3,
         textAlign: "justify",
-        minWidth: 320,
         borderRadius: 10,
         display: "flex",
         flexDirection: "row",
+        margin: "auto",
+        gap: 16,
       }}
     >
       <Grid2
@@ -106,6 +102,8 @@ export default function CreateWallet({
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
+          gap: 16,
+          width: "100%",
         }}
       >
         <TextField
@@ -123,9 +121,14 @@ export default function CreateWallet({
           onClick={() => {
             openNewAccount()
           }}
-          style={{ marginRight: 10, marginLeft: 10, marginTop: 5 }}
+          style={{
+            marginRight: 10,
+            marginLeft: 10,
+            marginTop: 5,
+            textTransform: "none",
+          }}
         >
-          Guardar
+          Crear
         </Button>
       </div>
     </Grid2>

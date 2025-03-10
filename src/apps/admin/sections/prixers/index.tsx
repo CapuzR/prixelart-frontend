@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react"
 import Paper from "@mui/material/Paper"
 import Box from "@mui/material/Box"
-import Typography from "@mui/material/Typography"
 import Modal from "@mui/material/Modal"
 import { useTheme } from "@mui/material/styles"
 
@@ -23,7 +22,7 @@ import {
   updateVisibility,
 } from "./api"
 import { getPrixers } from "../consumers/api"
-import PrixersGrid from "./components/PrixersGrid"
+import Grid from "./components/Grid"
 import { Account } from "../../../../types/account.types"
 import { useSnackBar, useLoading, getPermissions } from "context/GlobalContext"
 import OrgsGrid from "./components/OrgsGrid"
@@ -157,7 +156,7 @@ export default function PrixersCrud() {
       >
         {value === index && (
           <Box p={3}>
-            <Typography>{children}</Typography>
+            <>{children}</>
           </Box>
         )}
       </div>
@@ -201,14 +200,14 @@ export default function PrixersCrud() {
         </Tabs>
 
         <TabPanel value={value} index={0}>
-          <PrixersGrid
+          <Grid
             tiles={tiles}
             selectedPrixer={selectedPrixer}
             setSelectedPrixer={setSelectedPrixer}
             permissions={permissions}
             consumers={consumers}
             setSelectedConsumer={setSelectedConsumer}
-            TurnIntoOrg={TurnIntoOrg}
+            TurnInto={TurnIntoOrg}
             ChangeVisibility={ChangeVisibility}
             setOpenDestroy={setOpenDestroy}
             accounts={accounts}
@@ -217,18 +216,18 @@ export default function PrixersCrud() {
             setOpenList={setOpenList}
             setOpenNewBalance={setOpenNewBalance}
             setOpenInfo={setOpenInfo}
+            org={false}
           />
         </TabPanel>
 
         <TabPanel value={value} index={1}>
-          <OrgsGrid
-            orgs={orgs}
+          <Grid
+            tiles={orgs}
             selectedPrixer={selectedPrixer}
             setSelectedPrixer={setSelectedPrixer}
             permissions={permissions}
             consumers={consumers}
             setSelectedConsumer={setSelectedConsumer}
-            TurnIntoOrg={TurnIntoOrg}
             ChangeVisibility={ChangeVisibility}
             setOpenDestroy={setOpenDestroy}
             accounts={accounts}
@@ -237,13 +236,18 @@ export default function PrixersCrud() {
             setOpenList={setOpenList}
             setOpenNewBalance={setOpenNewBalance}
             setOpenInfo={setOpenInfo}
-            TurnIntoPrixer={TurnIntoPrixer}
+            TurnInto={TurnIntoPrixer}
+            org={true}
             setOpenComission={setOpenComission}
           />
         </TabPanel>
       </Paper>
 
-      <Modal open={openNewBalance} onClose={handleClose}>
+      <Modal
+        open={openNewBalance}
+        onClose={handleClose}
+        sx={{ display: "flex" }}
+      >
         <CreateWallet
           selectedPrixer={selectedPrixer}
           balance={balance}
@@ -257,7 +261,11 @@ export default function PrixersCrud() {
         />
       </Modal>
 
-      <Modal open={openNewMovement} onClose={handleClose}>
+      <Modal
+        open={openNewMovement}
+        onClose={handleClose}
+        sx={{ display: "flex" }}
+      >
         <CreateMovement
           selectedPrixer={selectedPrixer}
           handleClose={handleClose}
@@ -273,7 +281,7 @@ export default function PrixersCrud() {
         />
       </Modal>
 
-      <Modal open={openList} onClose={handleClose}>
+      <Modal open={openList} onClose={handleClose} sx={{ display: "flex" }}>
         <MovementRecord
           selectedPrixer={selectedPrixer}
           handleClose={handleClose}
@@ -302,8 +310,8 @@ export default function PrixersCrud() {
           selectedPrixer={selectedPrixer}
           selectedConsumer={selectedConsumer}
           routine={routine}
-          showSnackBar={showSnackBar}
           handleClose={handleClose}
+          org={value === 1 ? true : false}
         />
       </Modal>
     </div>

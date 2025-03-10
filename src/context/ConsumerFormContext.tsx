@@ -1,3 +1,4 @@
+import { Consumer } from "../types/consumer.types"
 import React, { createContext, useReducer, useContext } from "react"
 
 interface ConsumerFormState {
@@ -49,7 +50,12 @@ const initialState: ConsumerFormState = {
 }
 
 type ConsumerFormAction =
-  | { type: "SET_FIELD"; field: keyof ConsumerFormState; value: string }
+  | {
+      type: "SET_FIELD"
+      field: keyof ConsumerFormState
+      value: string | boolean
+    }
+  | { type: "SET_CLIENT"; client }
   | { type: "RESET_FORM" }
 
 const ConsumerFormReducer = (
@@ -59,6 +65,8 @@ const ConsumerFormReducer = (
   switch (action.type) {
     case "SET_FIELD":
       return { ...state, [action.field]: action.value }
+       case "SET_CLIENT":
+      return { ...state, ...action.client }
     case "RESET_FORM":
       return initialState
     default:

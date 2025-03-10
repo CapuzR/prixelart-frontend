@@ -61,6 +61,7 @@ export default function Table1({
     type: string
   }
 
+  console.log(deleteFunction)
   return (
     <Table size="medium">
       <TableHead>
@@ -100,7 +101,7 @@ export default function Table1({
       </TableHead>
       <TableBody>
         {dots &&
-          dots?.map((row: object, i: number) => (
+          dots?.map((row, i: number) => (
             <TableRow
               key={`element-${i}`}
               sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
@@ -117,39 +118,42 @@ export default function Table1({
                 }
               })}
               {/* Especificar el permiso según el área correspondiente !!! */}
-              {permissions?.modifyAdmins && (
+              {permissions?.modifyAdmins && (updateFunction || deleteFunction) && (
                 <TableCell align="center" sx={{ minWidth: 150 }}>
-                  <IconButton
-                    sx={{
-                      width: 35,
-                      height: 35,
-                      marginRight: "16px !important",
-                      "&:hover": {
-                        color: "DarkSlateGray",
-                      },
-                    }}
-                    onClick={(e) => {
-                      updateFunction(elements[i])
-                    }}
-                  >
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton
-                    sx={{
-                      width: 35,
-                      height: 35,
-                      marginRight: "16px !important",
-                      "&:hover": {
-                        color: "darkred", // Cambia el color al hacer hover
-                      },
-                    }}
-                    onClick={(e) => {
-                      e.preventDefault()
-                      deleteFunction(elements[i])
-                    }}
-                  >
-                    <DeleteIcon />
-                  </IconButton>
+                  {updateFunction && (
+                    <IconButton
+                      sx={{
+                        width: 35,
+                        height: 35,
+                        marginRight: "16px !important",
+                        "&:hover": {
+                          color: "DarkSlateGray",
+                        },
+                      }}
+                      onClick={(e) => {
+                        updateFunction(elements[i])
+                      }}
+                    >
+                      <EditIcon />
+                    </IconButton>
+                  )}
+                  {deleteFunction && (
+                    <IconButton
+                      sx={{
+                        width: 35,
+                        height: 35,
+                        marginRight: "16px !important",
+                        "&:hover": {
+                          color: "darkred",
+                        },
+                      }}
+                      onClick={(e) => {
+                        deleteFunction(elements[i])
+                      }}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  )}
                 </TableCell>
               )}
             </TableRow>

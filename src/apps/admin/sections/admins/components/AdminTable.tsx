@@ -1,5 +1,5 @@
 import { useHistory } from "react-router-dom"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 
 import Table1 from "@components/Table/index"
 import { Admin } from "../../../../../types/admin.types"
@@ -64,7 +64,6 @@ export default function AdminTable({
       headers={headers}
       elements={admins}
       properties={properties}
-      permissions={permissions}
       updateFunction={handleActive}
       deleteFunction={deleteMethod}
       setPageNumber={setPageNumber}

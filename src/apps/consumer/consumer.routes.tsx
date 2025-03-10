@@ -9,14 +9,14 @@ import Cart from "@apps/consumer/cart";
 import Prixers from "apps/consumer/prixers/prixersGrid";
 import OrgGrid from "apps/consumer/components/orgGrid/orgGrid";
 import PrixersService from "apps/consumer/prixerServices/prixerService";
-import TestimonialsGrid from "apps/consumer/testimonials/testimonialsGrid";
+import TestimonialsGrid from "apps/consumer/testimonials/TestimonialsGrid";
 import ProductDetails from "apps/consumer/products/Details/Details";
 import Flow from "apps/consumer/flow/Flow";
 import PrixerProfile from "apps/artist/prixerProfile/prixerProfile";
 import SoloService from "apps/artist/prixerProfile/fullscreenPhoto/fullscreenService";
 import Register from "apps/artist/register/userRegistration"
 import PrixerRegistration from "apps/artist/register/prixerRegistration"
-import Login from "apps/artist/login/loginPage"
+import Login from "@apps/artist/login"
 import PasswordChange from "apps/artist/prixerProfile/passwordChange/passwordChange"
 import ForgotPassword from "apps/artist/prixerProfile/passwordReset/forgotPassword"
 

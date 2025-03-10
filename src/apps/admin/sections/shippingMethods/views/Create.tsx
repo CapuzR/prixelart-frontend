@@ -58,7 +58,7 @@ export default function CreateShippingMethod() {
 
   return (
     <>
-      <Title>Agregar método de envío</Title>
+      <Title title={'Agregar método de envío'}/>
       <form noValidate onSubmit={handleSubmit}>
         <Grid2 container spacing={2}>
           <Grid2 size={{ xs: 12 }}>

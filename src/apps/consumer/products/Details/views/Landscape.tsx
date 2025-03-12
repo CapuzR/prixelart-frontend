@@ -9,6 +9,7 @@ import {
   FormControl,
   Select,
   InputLabel,
+  SelectChangeEvent,
 } from '@mui/material';
 import { Share as ShareIcon, ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
 
@@ -16,13 +17,13 @@ import Button from 'components/Button';
 
 import { generateWaProductMessage } from 'utils/utils';
 import { formatPriceForUI } from 'utils/formats';
-import { useConversionRate, useLoading } from 'context/GlobalContext';
+import { useConversionRate } from 'context/GlobalContext';
 
 import styles from './Landscape.module.scss';
 
 import { getFilteredOptions } from 'apps/consumer/products/services';
 
-import { Product, Item } from '../../interfaces';
+import { Product } from '../../interfaces';
 import { useCurrency } from 'context/GlobalContext';
 import { Slider } from 'components/Slider';
 import { Image } from 'components/Image';
@@ -33,8 +34,7 @@ interface LandscapeProps {
   expanded: string | false;
   description: { generalDescription: string; technicalSpecification: string };
   handleArtSelection: () => void;
-  // handleSaveProduct: () => void;
-  handleSelection: (e: React.ChangeEvent<{ name: string; value: number }>) => void;
+  handleSelection: (e: SelectChangeEvent<string>) => void;
   handleChange: (panel: string) => (event: React.ChangeEvent<{}>, isExpanded: boolean) => void;
 }
 
@@ -74,11 +74,11 @@ const Landscape: React.FC<LandscapeProps> = (props) => {
             {props.product?.price
               ? formatPriceForUI(props.product?.price, currency, conversionRate)
               : formatPriceForUI(
-                  props.product?.priceRange.from,
-                  currency,
-                  conversionRate,
-                  props.product?.priceRange.to
-                )}
+                props.product?.priceRange.from,
+                currency,
+                conversionRate,
+                props.product?.priceRange.to
+              )}
           </div>
           <Button
             type="onlyText"
@@ -119,11 +119,10 @@ const Landscape: React.FC<LandscapeProps> = (props) => {
         <div className={styles['select']}>
           <h4>Selecciona:</h4>
           <div
-            className={`${styles['attributes-container']} ${
-              props.product?.attributes?.length > 1 ? styles['space-between'] : styles['flex-start']
-            }`}
+            className={`${styles['attributes-container']} ${props.product?.attributes?.length > 1 ? styles['space-between'] : styles['flex-start']
+              }`}
           >
-            {props.product?.attributes?.map((att, iAtt, attributesArr) => (
+            {props.product?.attributes?.map((att, iAtt) => (
               <div key={iAtt} className={styles['attribute-select-wrapper']}>
                 <FormControl variant="outlined" className={styles['attribute-form-control']}>
                   <InputLabel id={att.name}>{att.name}</InputLabel>
@@ -131,7 +130,13 @@ const Landscape: React.FC<LandscapeProps> = (props) => {
                     labelId={att.name}
                     id={att.name}
                     name={att.name}
-                    value={props.product?.selection[att.name] || ''}
+                    value={
+                      (
+                        Array.isArray(props.product?.selection)
+                          ? props.product.selection
+                          : []
+                      ).find((sel) => sel.name === att.name)?.value || ''
+                    }
                     onChange={props.handleSelection}
                     label={att.name}
                   >

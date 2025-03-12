@@ -1,12 +1,17 @@
 {
   "compilerOptions": {
     "baseUrl": "src",
+    "skipLibCheck": true,
     "paths": {
-      "@*": ["*"]
+      "@*": [
+        "*"
+      ]
     },
     "jsx": "react-jsx",
     "allowJs": true,
-    "checkJs": false,
+    "checkJs": true,
+    "strict": true,
+    "noEmitOnError": true,
     "esModuleInterop": true,
     "module": "esnext",
     "target": "ESNext",
@@ -15,8 +20,16 @@
     "isolatedModules": true,
     "outDir": "./dist",
     "rootDir": "./src",
-    "types": ["node", "react"]
+    "types": [
+      "node",
+      "react"
+    ]
   },
-  "include": ["src"],
-  "exclude": ["node_modules", "dist"]
+  "include": [
+    "src"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
 }

@@ -19,12 +19,6 @@ export const paymentReducer = (
         method: undefined, // Clear the payment method when removed
       };
 
-    case 'SET_PAYMENT_VOUCHER':
-      return {
-        ...payment,
-        voucher: action.payload,
-      };
-
     default:
       return payment;
   }

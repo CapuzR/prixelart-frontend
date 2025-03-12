@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
 import DeleteIcon from '@mui/icons-material/Delete';
 import FileCopyIcon from '@mui/icons-material/FileCopy';
 import styles from './styles.module.scss';
@@ -10,7 +9,6 @@ import ItemCard from 'components/ItemCard';
 import { CartLine, Item } from '../interfaces';
 import { formatPriceForUI } from 'utils/formats';
 import { useConversionRate, useCurrency } from 'context/GlobalContext';
-import { queryCreator } from 'apps/consumer/flow/utils';
 
 export interface LineCardProps {
   line: CartLine;
@@ -18,13 +16,11 @@ export interface LineCardProps {
   handleDeleteElement?: (type: 'producto' | 'arte', item: Item) => void;
 }
 
-export default function LineCard({ line, direction, handleDeleteElement }: LineCardProps) {
+export default function LineCard({ line, direction = 'row', handleDeleteElement }: LineCardProps) {
   const { deleteLineInCart } = useCart();
   const { currency } = useCurrency();
   const { conversionRate } = useConversionRate();
   const [quantity, setQuantity] = useState<string | number>(line.quantity);
-
-  const history = useHistory();
 
   useEffect(() => {
     line.item.product?.price === undefined && setQuantity(1);
@@ -45,33 +41,9 @@ export default function LineCard({ line, direction, handleDeleteElement }: LineC
 
   const getFinalPrice = () => {
     const qty = typeof quantity === 'string' ? 1 : quantity;
-    return line.item.product?.price
-      ? formatPriceForUI(qty * line.item.product.price, currency, conversionRate)
+    return line.item.price
+      ? formatPriceForUI(qty * line.item.price, currency, conversionRate)
       : undefined;
-  };
-
-  const handleFlow = (type: 'producto' | 'arte') => {
-    const selectionAsObject: { [key: string]: string } = Array.isArray(line.item.product?.selection)
-      ? line.item.product?.selection.reduce(
-          (acc, sel, index) => {
-            acc[`selection-${index}`] = String(sel);
-            return acc;
-          },
-          {} as { [key: string]: string }
-        )
-      : line.item.product?.selection || {};
-
-    const queryString = queryCreator(
-      line.id,
-      line.item.sku,
-      line.item.product?.id,
-      line.item.art?.artId,
-      selectionAsObject,
-      type,
-      '1'
-    );
-
-    history.push({ pathname: '/flow', search: queryString });
   };
 
   return (
@@ -81,9 +53,7 @@ export default function LineCard({ line, direction, handleDeleteElement }: LineC
           item={line.item}
           direction="row"
           handleDeleteElement={handleDeleteElement}
-          handleFlow={handleFlow}
         />
-
         {line.item.product && line.quantity !== undefined && (
           <div className={styles['line-details']}>
             <div className={styles['quantity']}>
@@ -102,7 +72,6 @@ export default function LineCard({ line, direction, handleDeleteElement }: LineC
             <div className={styles['subtotal']}>
               <Typography level="h6">Subtotal</Typography>
               <Typography level="p">{getFinalPrice()}</Typography>
-              <Typography level="p">0</Typography>
             </div>
           </div>
         )}
@@ -110,7 +79,7 @@ export default function LineCard({ line, direction, handleDeleteElement }: LineC
 
       <ActionBar
         onUpperAction={handleDelete}
-        onLowerAction={() => {}}
+        onLowerAction={() => { }}
         upperIcon={<DeleteIcon className={styles['icon']} />}
         lowerIcon={<FileCopyIcon className={styles['icon']} />}
       />

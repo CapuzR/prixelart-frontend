@@ -2,7 +2,6 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import { Cart, CartLine } from 'apps/consumer/cart/interfaces';
 import { Item } from 'types/item.types';
 import { v4 as uuidv4 } from 'uuid';
-import { fetchLineDiscount } from 'apps/consumer/cart/api';
 
 interface CartContextType {
   cart: Cart;
@@ -13,6 +12,7 @@ interface CartContextType {
   ) => void;
   deleteLineInCart: (id: string) => void;
   deleteElementInItem: (id: string, type: 'producto' | 'arte') => void;
+  emptyCart: () => void;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -33,12 +33,12 @@ export const CartProvider: React.FC<MyComponentProps> = ({ children }) => {
     return storedCart
       ? JSON.parse(storedCart)
       : {
-          lines: [],
-          subTotal: 0,
-          totalUnits: 0,
-          cartDiscount: 0,
-          totalDiscount: 0,
-        };
+        lines: [],
+        subTotal: 0,
+        totalUnits: 0,
+        cartDiscount: 0,
+        totalDiscount: 0,
+      };
   });
 
   useEffect(() => {
@@ -202,7 +202,7 @@ export const CartProvider: React.FC<MyComponentProps> = ({ children }) => {
           }
           return line;
         })
-        .filter((line) => line.item.product || line.item.art); // Keep only lines with at least one valid element
+        .filter((line): line is CartLine => !!line.item.product || !!line.item.art); // Keep only lines with at least one valid element
 
       const { subTotal, totalUnits, cartDiscount, totalDiscount } =
         calculateCartTotals(updatedLines);
@@ -218,6 +218,16 @@ export const CartProvider: React.FC<MyComponentProps> = ({ children }) => {
     }
   };
 
+  const emptyCart = () => {
+    setCart({
+      lines: [],
+      subTotal: 0,
+      totalUnits: 0,
+      cartDiscount: 0,
+      totalDiscount: 0,
+    });
+  };
+
   return (
     <CartContext.Provider
       value={{
@@ -226,6 +236,7 @@ export const CartProvider: React.FC<MyComponentProps> = ({ children }) => {
         updateCartLine,
         deleteLineInCart,
         deleteElementInItem,
+        emptyCart,
       }}
     >
       {children}

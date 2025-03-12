@@ -41,7 +41,7 @@ const formatPriceForUI = (
   }
 
   const formattedTo =
-    currency === 'Bs' ? stringPrice(parsedTo * conversionRate) : stringPrice(parsedTo);
+    currency === 'Bs' ? stringPrice(parsedTo! * conversionRate) : stringPrice(parsedTo!);
 
   return `${currency} ${formattedFrom} - ${formattedTo}`;
 };

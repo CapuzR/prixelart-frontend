@@ -1,4 +1,3 @@
-// getFormConfig.tsx
 import LocalPhoneIcon from '@mui/icons-material/LocalPhone';
 import EmailIcon from '@mui/icons-material/Email';
 import HomeIcon from '@mui/icons-material/Home';
@@ -22,32 +21,29 @@ export function getFormConfig({ paymentMethods, shippingMethods, countries, sell
         name: {
           label: "Nombre",
           errorCheck: (value) => value?.length >= 2,
-          helperText: "Formato no válido.",
           width: 4,
         },
         lastName: {
           label: "Apellido",
           errorCheck: (value) => value?.length >= 2,
-          helperText: "Formato no válido.",
           width: 4,
         },
         id: {
           label: "CI",
           adornment: <PersonIcon color="secondary" />,
-          errorCheck: (value) => /^(?:[VEJ]-?)?\d{7,8}$/.test(value),
+          errorCheck: (value) => /^(?:[VEJ]-?)?\d{6,8}$/.test(value),
           helperText: "ej: V12345679 ó 12345678",
           width: 4,
         },
         phone: {
           label: "Teléfono",
-          errorCheck: (value) => /^[0-9]{10,14}$/.test(value),
-          helperText: "ej: 584141234567 ó +584141234567 ó 04143201028",
+          errorCheck: (value) => /^(?=(?:\D*\d){10,14}$)(?:(\+\d{1,3}\s?\d+)|(0\d+))$/.test(value),
+          helperText: "ej: +584141234567 ó 04143201028",
           adornment: <LocalPhoneIcon color="secondary" />,
         },
         email: {
           label: "Correo",
           errorCheck: (value) => /\S+@\S+\.\S+/.test(value),
-          helperText: "Formato no válido.",
           adornment: <EmailIcon color="secondary" />,
         },
         shortAddress: {
@@ -69,11 +65,10 @@ export function getFormConfig({ paymentMethods, shippingMethods, countries, sell
           label: "Método de Entrega",
           type: "dropdown",
           errorCheck: (value) => value?.length >= 2,
-          helperText: "Formato no válido.",
           adornment: <TwoWheelerIcon color="secondary" />,
           options: shippingMethods?.map((method) => method.name) || [],
           actionType: "SET_SHIPPING_DETAILS",
-          renderKey: "shipping", 
+          renderKey: "shipping",
           width: 6,
         },
         date: {
@@ -82,7 +77,7 @@ export function getFormConfig({ paymentMethods, shippingMethods, countries, sell
           errorCheck: (value) => value && !isNaN(Date.parse(value)),
           helperText: "Ingrese una fecha válida.",
           actionType: "SET_SHIPPING_DETAILS",
-          renderKey: "shipping", 
+          renderKey: "shipping",
           width: 6,
         },
         shippingEqualsBasic: {
@@ -94,42 +89,39 @@ export function getFormConfig({ paymentMethods, shippingMethods, countries, sell
         name: {
           label: "Nombre",
           errorCheck: (value) => value?.length >= 2,
-          helperText: "Formato no válido.",
           width: 6,
           conditionedBy: "shipping.shippingEqualsBasic",
           onConditionChange: createMirrorHandler("shipping.name", "basic.name"),
-          hiddingConditions: [(methodSelected) => requiresDelivery(methodSelected)],
-          requiredConditions: [(methodSelected) => requiresDelivery(methodSelected)]
+          hiddingConditions: [(methodSelected: string) => requiresDelivery(methodSelected)],
+          requiredConditions: [(methodSelected: string) => requiresDelivery(methodSelected)]
         },
         lastName: {
           label: "Apellido",
           errorCheck: (value) => value?.length >= 2,
-          helperText: "Formato no válido.",
           width: 6,
           conditionedBy: "shipping.shippingEqualsBasic",
           onConditionChange: createMirrorHandler("shipping.lastName", "basic.lastName"),
-          hiddingConditions: [(methodSelected) => requiresDelivery(methodSelected)],
-          requiredConditions: [(methodSelected) => requiresDelivery(methodSelected)]
+          hiddingConditions: [(methodSelected: string) => requiresDelivery(methodSelected)],
+          requiredConditions: [(methodSelected: string) => requiresDelivery(methodSelected)]
         },
         email: {
           label: "Correo",
           errorCheck: (value) => /\S+@\S+\.\S+/.test(value),
-          helperText: "Formato no válido.",
           adornment: <EmailIcon color="secondary" />,
           conditionedBy: "shipping.shippingEqualsBasic",
           onConditionChange: createMirrorHandler("shipping.email", "basic.email"),
-          hiddingConditions: [(methodSelected) => requiresDelivery(methodSelected)],
-          requiredConditions: [(methodSelected) => requiresDelivery(methodSelected)]
+          hiddingConditions: [(methodSelected: string) => requiresDelivery(methodSelected)],
+          requiredConditions: [(methodSelected: string) => requiresDelivery(methodSelected)]
         },
         phone: {
           label: "Teléfono",
-          errorCheck: (value) => /^[0-9]{10,14}$/.test(value),
-          helperText: "ej: 584141234567 ó +584141234567 ó 04143201028",
+          errorCheck: (value) => /^(?=(?:\D*\d){10,14}$)(?:(\+\d{1,3}\s?\d+)|(0\d+))$/.test(value),
+          helperText: "ej: +584141234567 ó 04143201028",
           adornment: <LocalPhoneIcon color="secondary" />,
           conditionedBy: "shipping.shippingEqualsBasic",
           onConditionChange: createMirrorHandler("shipping.phone", "basic.phone"),
-          hiddingConditions: [(methodSelected) => requiresDelivery(methodSelected)],
-          requiredConditions: [(methodSelected) => requiresDelivery(methodSelected)]
+          hiddingConditions: [(methodSelected: string) => requiresDelivery(methodSelected)],
+          requiredConditions: [(methodSelected: string) => requiresDelivery(methodSelected)]
         },
         line1: {
           label: "Dirección (Linea 1)",
@@ -138,8 +130,8 @@ export function getFormConfig({ paymentMethods, shippingMethods, countries, sell
           minRows: 3,
           adornment: <HomeIcon color="secondary" />,
           width: 12,
-          hiddingConditions: [(methodSelected) => requiresDelivery(methodSelected)],
-          requiredConditions: [(methodSelected) => requiresDelivery(methodSelected)]
+          hiddingConditions: [(methodSelected: string) => requiresDelivery(methodSelected)],
+          requiredConditions: [(methodSelected: string) => requiresDelivery(methodSelected)]
         },
         line2: {
           label: "Dirección (Linea 2)",
@@ -149,18 +141,17 @@ export function getFormConfig({ paymentMethods, shippingMethods, countries, sell
           adornment: <HomeIcon color="secondary" />,
           width: 12,
           required: false,
-          hiddingConditions: [(methodSelected) => requiresDelivery(methodSelected)],
-          requiredConditions: [(methodSelected) => requiresDelivery(methodSelected)]
+          hiddingConditions: [(methodSelected: string) => requiresDelivery(methodSelected)],
+          requiredConditions: [(methodSelected: string) => requiresDelivery(methodSelected)]
         },
         reference: {
           label: "Referencia",
           adornment: <HomeIcon color="secondary" />,
           errorCheck: (value) => value?.length >= 2,
-          helperText: "Formato no válido.",
           width: 12,
           minRows: 3,
-          hiddingConditions: [(methodSelected) => requiresDelivery(methodSelected)],
-          requiredConditions: [(methodSelected) => requiresDelivery(methodSelected)]
+          hiddingConditions: [(methodSelected: string) => requiresDelivery(methodSelected)],
+          requiredConditions: [(methodSelected: string) => requiresDelivery(methodSelected)]
         },
         country: {
           label: "País",
@@ -168,10 +159,9 @@ export function getFormConfig({ paymentMethods, shippingMethods, countries, sell
           type: "dropdown",
           options: countries?.map((s) => s.name) || [],
           errorCheck: (value) => value?.length >= 2,
-          helperText: "Formato no válido.",
           width: 6,
-          hiddingConditions: [(methodSelected) => requiresDelivery(methodSelected)],
-          requiredConditions: [(methodSelected) => requiresDelivery(methodSelected)]
+          hiddingConditions: [(methodSelected: string) => requiresDelivery(methodSelected)],
+          requiredConditions: [(methodSelected: string) => requiresDelivery(methodSelected)]
         },
         state: {
           label: "Estado",
@@ -179,27 +169,24 @@ export function getFormConfig({ paymentMethods, shippingMethods, countries, sell
           type: "dropdown",
           options: shippingStates,
           errorCheck: (value) => value?.length >= 2,
-          helperText: "Formato no válido.",
           width: 6,
-          hiddingConditions: [(methodSelected) => requiresDelivery(methodSelected)],
-          requiredConditions: [(methodSelected) => requiresDelivery(methodSelected)]
+          hiddingConditions: [(methodSelected: string) => requiresDelivery(methodSelected)],
+          requiredConditions: [(methodSelected: string) => requiresDelivery(methodSelected)]
         },
         city: {
           label: "Ciudad",
           errorCheck: (value) => value?.length >= 2,
-          helperText: "Formato no válido.",
           width: 6,
-          hiddingConditions: [(methodSelected) => requiresDelivery(methodSelected)],
-          requiredConditions: [(methodSelected) => requiresDelivery(methodSelected)]
+          hiddingConditions: [(methodSelected: string) => requiresDelivery(methodSelected)],
+          requiredConditions: [(methodSelected: string) => requiresDelivery(methodSelected)]
         },
         zipCode: {
           label: "Código Postal",
           adornment: <LocationOnIcon color="secondary" />,
           errorCheck: (value) => /^\d{4}$/.test(value),
-          helperText: "Formato no válido.",
           width: 6,
-          hiddingConditions: [(methodSelected) => requiresDelivery(methodSelected)],
-          requiredConditions: [(methodSelected) => requiresDelivery(methodSelected)]
+          hiddingConditions: [(methodSelected: string) => requiresDelivery(methodSelected)],
+          requiredConditions: [(methodSelected: string) => requiresDelivery(methodSelected)]
         },
       },
       actionType: "SET_SHIPPING_DETAILS",
@@ -218,31 +205,20 @@ export function getFormConfig({ paymentMethods, shippingMethods, countries, sell
           defaultValue: true,
           width: 12,
         },
-        // TODO: Implement this feature
-        // billingEqualsShipping: {
-        //   label: "Igual a datos de envío",
-        //   type: "checkbox",
-        //   defaultValue: false,
-        //   width: 6,
-        // },
         name: {
           label: "Nombre",
           errorCheck: (value) => value?.length >= 2,
-          helperText: "Formato no válido.",
           width: 6,
           conditionedBy: [
-            "billing.billingEqualsBasic", 
-            // "billing.billingEqualsShipping"
+            "billing.billingEqualsBasic",
           ],
           onConditionChange: createMirrorHandler("billing.name", [
             "basic.name",
-            // "shipping.name",
           ]),
         },
         lastName: {
           label: "Apellido",
           errorCheck: (value) => value?.length >= 2,
-          helperText: "Formato no válido.",
           width: 6,
           conditionedBy: "billing.billingEqualsBasic",
           onConditionChange: createMirrorHandler("billing.lastName", "basic.lastName"),
@@ -250,7 +226,6 @@ export function getFormConfig({ paymentMethods, shippingMethods, countries, sell
         companyName: {
           label: "Razón Social",
           adornment: <BusinessIcon color="secondary" />,
-          helperText: "Formato no válido.",
           required: false,
         },
         id: {
@@ -261,13 +236,12 @@ export function getFormConfig({ paymentMethods, shippingMethods, countries, sell
           },
           helperText:
             "Debe ser 12345678, V-12345679, E-12345679, o exactamente J-00012345-6 si es persona jurídica.",
-          // conditionedBy: "billing.billingEqualsBasic",
-          // onConditionChange: createMirrorHandler("billing.id", "basic.id"),
+          conditionedBy: "billing.billingEqualsBasic",
+          onConditionChange: createMirrorHandler("billing.id", "basic.id"),
         },
         email: {
           label: "Correo",
           errorCheck: (value) => /\S+@\S+\.\S+/.test(value),
-          helperText: "Formato no válido.",
           adornment: <EmailIcon color="secondary" />,
           conditionedBy: "billing.billingEqualsBasic",
           onConditionChange: createMirrorHandler("billing.email", "basic.email"),
@@ -287,8 +261,6 @@ export function getFormConfig({ paymentMethods, shippingMethods, countries, sell
           minRows: 3,
           adornment: <HomeIcon color="secondary" />,
           width: 12,
-          // conditionedBy: "billing.billingEqualsShipping",
-          // onConditionChange: createMirrorHandler("billing.line1", "shipping.line1"),
         },
         line2: {
           label: "Dirección (Linea 2)",
@@ -297,8 +269,6 @@ export function getFormConfig({ paymentMethods, shippingMethods, countries, sell
           minRows: 3,
           adornment: <HomeIcon color="secondary" />,
           width: 12,
-          // conditionedBy: "billing.billingEqualsShipping",
-          // onConditionChange: createMirrorHandler("billing.line2", "shipping.line2"),
           required: false,
         },
         country: {
@@ -307,10 +277,7 @@ export function getFormConfig({ paymentMethods, shippingMethods, countries, sell
           type: "dropdown",
           options: countries?.map((s) => s.name) || [],
           errorCheck: (value) => value?.length >= 2,
-          helperText: "Formato no válido.",
           width: 6,
-          // conditionedBy: "billing.billingEqualsShipping",
-          // onConditionChange: createMirrorHandler("billing.country", "shipping.country"),
         },
         state: {
           label: "Estado",
@@ -318,37 +285,27 @@ export function getFormConfig({ paymentMethods, shippingMethods, countries, sell
           type: "dropdown",
           options: billingStates,
           errorCheck: (value) => value?.length >= 2,
-          helperText: "Formato no válido.",
           width: 6,
-          // conditionedBy: "billing.billingEqualsShipping",
-          // onConditionChange: createMirrorHandler("billing.state", "shipping.state"),
         },
         city: {
           label: "Ciudad",
           errorCheck: (value) => value?.length >= 2,
-          helperText: "Formato no válido.",
           width: 6,
-          // conditionedBy: "billing.billingEqualsShipping",
-          // onConditionChange: createMirrorHandler("billing.city", "shipping.city"),
         },
         zipCode: {
           label: "Código Postal",
           adornment: <LocationOnIcon color="secondary" />,
           errorCheck: (value) => /^\d{4}$/.test(value),
-          helperText: "Formato no válido.",
           width: 6,
-          // conditionedBy: "billing.billingEqualsShipping",
-          // onConditionChange: createMirrorHandler("billing.zipCode", "shipping.zipCode"),
         },
         paymentMethod: {
           label: "Método de Pago",
           type: "dropdown",
           adornment: <PaymentIcon color="secondary" />,
           errorCheck: (value) => value?.length >= 2,
-          helperText: "Formato no válido.",
           options: paymentMethods?.map((method) => method.name) || [],
           actionType: "SET_PAYMENT_METHOD",
-          renderKey: "billing", 
+          renderKey: "billing",
         },
       },
       actionType: "SET_BILLING_DETAILS",
@@ -372,7 +329,6 @@ export function getFormConfig({ paymentMethods, shippingMethods, countries, sell
           label: "Vendedor",
           type: "dropdownWithTooltip",
           errorCheck: (value) => value?.length >= 2,
-          helperText: "Formato no válido.",
           options: sellers || [],
           actionType: "SET_SELLER",
           tooltip: "¿Alguno de nuestros asesores te ayudó en el proceso de compra?",

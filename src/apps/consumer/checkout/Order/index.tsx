@@ -1,5 +1,5 @@
-import { makeStyles, useTheme } from '@mui/styles';
-import Grid from '@mui/material/Grid';
+import { useTheme } from '@mui/styles';
+import Grid2 from '@mui/material/Grid2';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import List from '@mui/material/List';
@@ -8,40 +8,15 @@ import ListItemText from '@mui/material/ListItemText';
 import Collapse from '@mui/material/Collapse';
 import Divider from '@mui/material/Divider';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import MenuItem from '@mui/material/MenuItem';
-import OutlinedInput from '@mui/material/OutlinedInput';
-import Select from '@mui/material/Select';
-import InputLabel from '@mui/material/InputLabel';
-import FormControl from '@mui/material/FormControl';
-import Button from '@mui/material/Button';
-import { Theme, Typography } from '@mui/material';
-import TextField from '@mui/material/TextField';
+import { Theme } from '@mui/material';
 import { useEffect, useState } from 'react';
-import Tooltip from '@mui/material/Tooltip';
-// import { format } from 'utils/utils.js';
-import { calculateTotalPrice } from '../../cart/services.js';
-import { useConversionRate, useCurrency, useSnackBar } from 'context/GlobalContext';
+import { useConversionRate, useCurrency } from 'context/GlobalContext';
 
-import {
-  getTotalUnitsPVP,
-  getTotalUnitsPVM,
-  UnitPriceForOrg,
-} from '../pricesFunctions.jsx';
-import { CheckoutState } from '../interfaces.js';
-
-const useStyles = makeStyles((theme) => ({
-  gridInput: {
-    width: '100%',
-    marginBottom: '12px',
-  },
-  textField: {
-    marginRight: '8px',
-  },
-}));
+import { CheckoutState, Tax } from '../interfaces.js';
+import useStyles from './order.styles.js';
 
 interface OrderSummaryProps {
   checkoutState: CheckoutState;
-  // methods: any; // Replace with the correct type for react-hook-form methods
 }
 
 const Order: React.FC<OrderSummaryProps> = ({ checkoutState }) => {
@@ -49,14 +24,9 @@ const Order: React.FC<OrderSummaryProps> = ({ checkoutState }) => {
   const { currency } = useCurrency();
   const { conversionRate } = useConversionRate();
   const theme = useTheme<Theme>();
-  const [paymentMethods, setPaymentMethods] = useState([]);
-  const [previewVoucher, setPreviewVoucher] = useState();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [balance, setBalance] = useState(0);
-  const [discountList, setDiscountList] = useState([]);
-  const prixer = JSON.parse(localStorage?.getItem('token'))?.username;
 
-  console.log('checkoutState', checkoutState);
   // TODO : Debo obtener el saldo del prixer.
   // TODO : Debo obtener los vendedores.
   // TODO : Debo obtener los métodos de pago.
@@ -69,11 +39,51 @@ const Order: React.FC<OrderSummaryProps> = ({ checkoutState }) => {
   //   }
   // };
 
+  useEffect(() => {
+    // Subtotal
+    const newSubTotal = checkoutState.order.lines.reduce((acc, line) => {
+      const lineTotal =
+        line.subtotal != null ? line.subtotal : line.item.price * (line.quantity || 1);
+      return acc + lineTotal;
+    }, 0);
+    checkoutState.order.subTotal = newSubTotal;
+
+    const taxes: Tax[] = [];
+
+    // IVA  16%
+    const ivaValue = 16;
+    const ivaAmount = newSubTotal * (ivaValue / 100);
+    taxes.push({
+      id: 'iva',
+      name: 'IVA:',
+      value: ivaValue,
+      amount: ivaAmount,
+    });
+
+    // PaymentMethod = "Efectivo $", IGTF tax 3%
+    if (checkoutState.billing?.paymentMethod === 'Efectivo $') {
+      const igtfValue = 3;
+      const igtfAmount = newSubTotal * (igtfValue / 100);
+      taxes.push({
+        id: 'igtf',
+        name: 'IGTF:',
+        value: igtfValue,
+        amount: igtfAmount,
+      });
+    }
+
+    checkoutState.order.tax = taxes;
+
+    const totalTaxes = taxes.reduce((sum, tax) => sum + tax.amount, 0);
+    checkoutState.order.total = parseFloat((newSubTotal + totalTaxes).toFixed(2));
+  }, [checkoutState]);
+
+
   return (
     <div style={{ width: '700px' }}>
       <form noValidate autoComplete="off">
-        <Grid container>
-          <Grid item lg={12} md={12} sm={12} xs={12} className={classes.gridInput}>
+        <Grid2 container>
+          <Grid2 size={{ lg: 12, md: 12, sm: 12, xs: 12 }} className={classes.gridInput}>
             <AppBar position="static" style={{ borderRadius: 5 }}>
               <Toolbar style={{ fontSize: 20, justifyContent: 'center' }}>Orden de compra</Toolbar>
             </AppBar>
@@ -102,16 +112,14 @@ const Order: React.FC<OrderSummaryProps> = ({ checkoutState }) => {
                                     inset
                                     style={{ marginLeft: 0, paddingLeft: 0 }}
                                     primary={
-                                      <Grid container>
-                                        <Grid item xs={12} md={8}>
+                                      <Grid2 container>
+                                        <Grid2 size={{ md: 8, xs: 12 }}>
                                           Producto: {line.item.product.name}
                                           <br />
                                           Arte: {line.item.art.title}
-                                        </Grid>
-                                        <Grid
-                                          item
-                                          xs={12}
-                                          md={4}
+                                        </Grid2>
+                                        <Grid2
+                                          size={{ md: 4, xs: 12 }}
                                           style={{
                                             display: 'flex',
                                             justifyContent: isMobile ? 'space-between' : '',
@@ -130,10 +138,10 @@ const Order: React.FC<OrderSummaryProps> = ({ checkoutState }) => {
                                             Monto:
                                             <br></br>
                                             {currency ? ' Bs' : '$'}
-                                            {line.item.product.price * line.quantity}
+                                            {line.item.price * line.quantity}
                                           </div>
-                                        </Grid>
-                                      </Grid>
+                                        </Grid2>
+                                      </Grid2>
                                     }
                                   />
                                 </ListItem>
@@ -163,13 +171,12 @@ const Order: React.FC<OrderSummaryProps> = ({ checkoutState }) => {
                     <div
                       style={{
                         display: 'flex',
-                        justifyContent: 'space-between',
+                        justifyContent: 'end',
                       }}
                     >
                       {/* <Grid item lg={6} md={6} sm={6} xs={6} style={{ paddingLeft: 0 }}>
                         <FormControl
                           variant="outlined"
-                          fullWidth
                           style={{ marginTop: 25 }}
                           required
                         >
@@ -183,7 +190,7 @@ const Order: React.FC<OrderSummaryProps> = ({ checkoutState }) => {
                               paymentMethods.map((m) => <MenuItem value={m}>{m.name}</MenuItem>)}
                           </Select>
                         </FormControl> */}
-                        {/* {props.orderPaymentMethod && (
+                      {/* {props.orderPaymentMethod && (
                           <>
                             <div
                               style={{
@@ -226,12 +233,8 @@ const Order: React.FC<OrderSummaryProps> = ({ checkoutState }) => {
                           </>
                         )} */}
                       {/* </Grid> */}
-                      <Grid
-                        item
-                        lg={6}
-                        md={6}
-                        sm={6}
-                        xs={6}
+                      <Grid2
+                        size={{ lg: 6, md: 6, sm: 6, xs: 6 }}
                         style={{
                           display: 'flex',
                           alignItems: 'end',
@@ -253,61 +256,88 @@ const Order: React.FC<OrderSummaryProps> = ({ checkoutState }) => {
                           >
                             {currency
                               ? 'Saldo disponible: Bs' +
-                                (balance * conversionRate).toLocaleString('de-DE', {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 2,
-                                })
+                              (balance * conversionRate).toLocaleString('de-DE', {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2,
+                              })
                               : 'Saldo disponible: $' +
-                                balance.toLocaleString('de-DE', {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 2,
-                                })}
+                              balance.toLocaleString('de-DE', {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2,
+                              })}
                           </div>
                         )}
                         <strong>
-                          {`${currency === 'Bs' ? 'Subtotal: Bs' : 'Subtotal: $'}`}
-                          {checkoutState.order.subTotal}
-                        </strong>
-                        {checkoutState.order.tax.length > 0 && checkoutState.order.tax.map((tax) => (
-                          <strong>
-                            {`IVA: ${tax.name}`}
-                            {tax.value}
-                          </strong>
-                        ))}
-                        {checkoutState.order.shipping.method && currency == 'Bs' ? (
-                          <div></div>
-                          //Esto lo reemplacé y no sé por cuál función...
-                          // <strong>{`Envío: Bs${priceToUI(checkoutState.order.shippingCost * conversionRate)}`}</strong>
-                        ) : (
-                          checkoutState.order.shipping.method && (
-                            <strong>{`Envío: $${checkoutState.order.shippingCost.toLocaleString('de-DE', {
+                          {`${currency === 'Bs' ? 'Subtotal: Bs ' : 'Subtotal: $'}`}
+                          {currency === 'Bs'
+                            ? (checkoutState.order.subTotal * conversionRate).toLocaleString('de-DE', {
                               minimumFractionDigits: 2,
                               maximumFractionDigits: 2,
-                            })}`}</strong>
-                          )
-                        )}
+                            })
+                            : checkoutState.order.subTotal.toLocaleString('de-DE', {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                            })}
+                        </strong>
+                        {checkoutState.order.tax.length > 0 &&
+                          checkoutState.order.tax.map((tax) => (
+                            <strong key={tax.id}>
+                              {`${tax.name} (${tax.value}%) : ${currency === 'Bs'
+                                ? 'Bs ' +
+                                (tax.amount * conversionRate).toLocaleString('de-DE', {
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 2,
+                                })
+                                : '$' +
+                                tax.amount.toLocaleString('de-DE', {
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 2,
+                                })
+                                }`}
+                            </strong>
+                          ))}
+
+                        {checkoutState.order.shipping.method &&
+                          typeof checkoutState.order.shippingCost !== 'undefined' && (
+                            currency === 'Bs' ? (
+                              <strong>
+                                {`Envío: Bs${(
+                                  checkoutState.order.shippingCost * conversionRate
+                                ).toLocaleString('de-DE', {
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 2,
+                                })}`}
+                              </strong>
+                            ) : (
+                              <strong>
+                                {`Envío: $${checkoutState.order.shippingCost.toLocaleString('de-DE', {
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 2,
+                                })}`}
+                              </strong>
+                            )
+                          )}
                         <strong>
-                          {`${currency === 'Bs' ? 'Total: Bs' : 'Total: $'}`}
-                          {checkoutState.order.total}
+                          {`${currency === 'Bs' ? 'Total: Bs ' : 'Total: $'}`}
+                          {currency === 'Bs'
+                            ? (checkoutState.order.total * conversionRate).toLocaleString('de-DE', {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                            })
+                            : checkoutState.order.total.toLocaleString('de-DE', {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                            })}
                         </strong>
                         <br />
-                      </Grid>
+                      </Grid2>
                     </div>
-                    <Grid
-                      item
-                      lg={12}
-                      md={12}
-                      sm={12}
-                      xs={12}
-                      style={{ paddingLeft: 0, marginTop: 30 }}
-                    >
-                    </Grid>
                   </List>
                 </div>
               </div>
             </div>
-          </Grid>
-        </Grid>
+          </Grid2>
+        </Grid2>
       </form>
     </div>
   );

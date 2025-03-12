@@ -1,30 +1,36 @@
 export const splitDescription = (
   description: string | undefined
 ): { generalDescription: string; technicalSpecification: string } => {
-  const technicalKeyword = 'ESPECIFICACIÓN TÉCNICA';
-
-  if (!description || !description.includes(technicalKeyword)) {
-    return {
-      generalDescription: description || '',
-      technicalSpecification: '',
-    };
+  if (!description) {
+    return { generalDescription: '', technicalSpecification: '' };
   }
 
-  const [generalDescription, technicalSpecification] = description.split(technicalKeyword);
+  const technicalKeywordWithAsterisks = '**ESPECIFICACIONES TÉCNICAS**';
+  const technicalKeyword = 'ESPECIFICACIÓN TÉCNICA';
 
-  // Clean up leading/trailing ** in technicalSpecification, if present
-  const cleanedTechnicalSpecification = technicalSpecification
-    .trim()
-    .replace(/^\*\*/, '') // Remove leading **
-    .replace(/\*\*$/, ''); // Remove trailing **
+  let generalDescription = '';
+  let technicalSpecification = '';
+
+  if (description.includes(technicalKeywordWithAsterisks)) {
+    [generalDescription, technicalSpecification] = description.split(technicalKeywordWithAsterisks);
+  } else if (description.includes(technicalKeyword)) {
+    [generalDescription, technicalSpecification] = description.split(technicalKeyword);
+  } else {
+    return { generalDescription: description, technicalSpecification: '' };
+  }
 
   const cleanedGeneralDescription = generalDescription
     .trim()
     .replace(/^\*\*/, '') // Remove leading **
     .replace(/\*\*$/, ''); // Remove trailing **
 
+  const cleanedTechnicalSpecification = technicalSpecification
+    .trim()
+    .replace(/^\*\*/, '') // Remove leading **
+    .replace(/\*\*$/, ''); // Remove trailing **
+
   return {
-    generalDescription: cleanedGeneralDescription.trim(),
-    technicalSpecification: cleanedTechnicalSpecification.trim(),
+    generalDescription: cleanedGeneralDescription,
+    technicalSpecification: cleanedTechnicalSpecification,
   };
 };

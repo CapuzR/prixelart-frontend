@@ -4,8 +4,6 @@ export const queryCreator = (
   productId: string | undefined,
   artId: string | undefined,
   attributes: { [key: string]: string } | undefined,
-  openSection?: 'producto' | 'arte',
-  step?: string
 ) => {
   const searchParams = new URLSearchParams(window.location.search);
 
@@ -29,10 +27,6 @@ export const queryCreator = (
     searchParams.set('arte', artId);
   }
 
-  if (openSection) {
-    searchParams.set('openSection', openSection);
-  }
-
   attributes &&
     attributes !== undefined &&
     Object.keys(attributes).forEach((attrKey) => {
@@ -47,14 +41,13 @@ export const updateAttributes = (
   targetName: string,
   targetValue: string
 ): { [key: string]: string } => {
+  const attributesFromSelection = (productSelection || []).reduce((acc, selection, index) => {
+    acc[index] = String(selection);
+    return acc;
+  }, {} as { [key: string]: string });
+
   return {
-    ...Object.keys(productSelection || {}).reduce(
-      (acc, key) => {
-        acc[key] = String(productSelection?.[key]);
-        return acc;
-      },
-      {} as { [key: string]: string }
-    ),
+    ...attributesFromSelection,
     [targetName]: String(targetValue),
   };
 };

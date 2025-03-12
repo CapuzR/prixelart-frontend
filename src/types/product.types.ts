@@ -22,7 +22,7 @@ export interface Product {
   price: number;
   description: string;
   attributes: Attribute[];
-  selection: Selection[] | undefined;
+  selection: Selection[];
   variants: Array<Variant>;
   priceRange: PriceRange;
   observations: string;

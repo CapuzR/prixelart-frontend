@@ -31,7 +31,7 @@ const Typography: React.FC<TypographyProps> = ({
         styles.typography,
         styles[level],
         styles[align],
-        styles[className],
+        className,
         styles[`leading-${leading}`],
         styles[`tracking-${tracking}`],
         styles[`kerning-${kerning}`]

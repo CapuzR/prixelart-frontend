@@ -4,8 +4,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import Typography from '@mui/material/Typography';
 
 import useMediaQuery from '@mui/material/useMediaQuery';
-import { useTheme } from '@mui/styles';
-import { useHistory } from 'react-router-dom';
+import { useTheme } from '@mui/material/styles';
 
 import FloatingAddButton from 'components/floatingAddButton/floatingAddButton';
 import CreateService from 'components/createService/createService';
@@ -27,46 +26,29 @@ import { useConversionRate, useCurrency } from 'context/GlobalContext';
 import { Art } from '../interfaces';
 import { queryCreator } from 'apps/consumer/flow/utils';
 import CurrencySwitch from 'components/CurrencySwitch';
+import { useNavigate } from 'react-router-dom';
 
 ReactGA.initialize('G-0RWP9B33D8');
 ReactGA.pageview('/productos');
 
-interface ProductsCatalogProps {
-  pointedProduct?: string | null;
-  setPointedProduct?: (productName: string) => void;
-  flowData?: {
-    onlyGrid?: boolean;
-    addInFlow: (updatedArt?: Art, updatedProduct?: Product) => void | undefined;
-    selectedProductId?: string | undefined;
-  };
-}
-
-const ProductsCatalog: React.FC<ProductsCatalogProps> = ({
-  pointedProduct,
-  flowData = {
-    onlyGrid: false,
-    addInFlow: undefined,
-    selectedProductId: undefined,
-  },
-  setPointedProduct,
+const ProductsCatalog: React.FC = ({
 }) => {
   const theme = useTheme();
-  const history = useHistory();
+  const navigate = useNavigate();
   const { currency } = useCurrency();
   const { conversionRate } = useConversionRate();
 
-  const [products, setProducts] = useState([]);
-  const [bestSellers, setBestSellers] = useState<Product[] | undefined>(undefined);
-
-  const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
+  const isDesktop = useMediaQuery(theme.breakpoints.up('lg'));
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
+  const [products, setProducts] = useState<Product[]>([]);
+  const [bestSellers, setBestSellers] = useState<Product[] | undefined>(undefined);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [maxLength, setMaxLength] = useState(0);
   const [productsPerPage] = useState(10);
   const [sort, setSort] = useState('');
 
-  // Pronto se moverá.
   const [openServiceFormDialog, setOpenServiceFormDialog] = useState(false);
   const [createdService, setCreatedService] = useState(false);
   const [openArtFormDialog, setOpenArtFormDialog] = useState(false);
@@ -78,45 +60,29 @@ const ProductsCatalog: React.FC<ProductsCatalogProps> = ({
     { value: 'maxPrice', label: 'Mayor precio' },
   ];
 
-  const handleProduct = async (product) => {
-    setPointedProduct(product.name);
-    document.getElementById(product.name)?.scrollIntoView({
-      behavior: 'smooth',
-      block: 'start',
-    });
+  const scrollToProduct = async (product: Product) => {
+    const element = document.getElementById(product.name);
+    if (element) {
+      const offset = 100; // offset in pixels
+      const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
+      window.scrollTo({
+        top: elementPosition - offset,
+        behavior: 'smooth',
+      });
+    }
   };
 
-  const handleChangeSort = (event) => {
-    setSort(event.target.value);
+  const handleChangeSort = (event: React.ChangeEvent<{ value: unknown }>) => {
+    setSort(event.target.value as string);
   };
 
-  const handleDetails = (product) => {
-    history.push({
-      pathname: '/producto/' + product.id,
-    });
+  const handleDetails = (product: Product) => {
+    navigate('/producto/' + product.id);
     ReactGA.event({
       category: 'Productos',
       action: 'Ver_mas',
       label: product.name,
     });
-  };
-
-  const goToFlow = (art: Art, product: Product) => {
-    if (flowData?.addInFlow) {
-      flowData.addInFlow(art, { ...product, selection: undefined });
-    } else {
-      const queryString = queryCreator(
-        undefined,
-        undefined,
-        product?.id,
-        undefined,
-        undefined,
-        'producto',
-        '1'
-      );
-
-      history.push({ pathname: '/flow', search: queryString });
-    }
   };
 
   useEffect(() => {
@@ -149,65 +115,67 @@ const ProductsCatalog: React.FC<ProductsCatalogProps> = ({
   return (
     <div className={styles['catalog']}>
       <CssBaseline />
-      {!flowData.onlyGrid && (
-        <>
-          <div className={styles['title']}>
-            <Typography variant="h4">
-              <strong>Productos Prix</strong>
-            </Typography>
-          </div>
 
-          {bestSellers && (
-            <div className={styles['best-sellers']}>
-              <div className={styles['title-wrapper']}>
-                <Typography variant="h5" className={styles['best-seller-title']}>
-                  {isMobile ? (
-                    <strong>¡Más vendidos!</strong>
-                  ) : (
-                    <strong>¡Productos más vendidos! </strong>
-                  )}
-                </Typography>
-              </div>
-              <div className={styles['slider-wrapper']}>
-                <Slider
-                  images={bestSellers?.map((product) => ({
-                    url:
-                      product?.sources?.images.length > 0
-                        ? product.sources.images[0]?.url
-                        : product.thumbUrl,
-                  }))}
-                  useIndicators={{
-                    type: 'dots',
-                    position: 'below',
-                    color: { active: 'primary', inactive: 'secondary' },
-                  }}
-                  childConfig={{
-                    qtyPerSlide: isDesktop ? 4 : isMobile ? 1 : 3,
-                    spacing: 'sm',
-                  }}
-                  autoplay={false}
-                >
-                  {bestSellers?.map((product, i) => (
-                    <div key={i}>
-                      <ProductElement
-                        src={
-                          product?.sources?.images.length > 0
-                            ? product.sources.images[0]?.url
-                            : product.thumbUrl
-                        }
-                        productName={product.name}
-                        buttonLabel="Ver detalles"
-                        onButtonClick={() => handleProduct(product)}
-                        roundedCorner={true}
-                      />
-                    </div>
-                  ))}
-                </Slider>
-              </div>
+
+      <>
+        <div className={styles['title']}>
+          <Typography variant="h4">
+            <strong>Productos Prix</strong>
+          </Typography>
+        </div>
+
+        {bestSellers && (
+          <div className={styles['best-sellers']}>
+            <div className={styles['title-wrapper']}>
+              <Typography variant="h5" className={styles['best-seller-title']}>
+                {isMobile ? (
+                  <strong>¡Más vendidos!</strong>
+                ) : (
+                  <strong>¡Productos más vendidos! </strong>
+                )}
+              </Typography>
             </div>
-          )}
-        </>
-      )}
+            <div className={styles['slider-wrapper']}>
+              <Slider
+                images={bestSellers?.map((product) => ({
+                  url:
+                    product?.sources?.images.length > 0
+                      ? product.sources.images[0]?.url
+                      : product.thumbUrl,
+                }))}
+                useIndicators={{
+                  type: 'dots',
+                  position: 'below',
+                  color: { active: 'primary', inactive: 'secondary' },
+                }}
+                childConfig={{
+                  qtyPerSlide: isDesktop ? 4 : isMobile ? 1 : 3,
+                  spacing: 'sm',
+                }}
+                autoplay={false}
+              >
+                {bestSellers?.map((product, i) => (
+                  <div key={i}>
+                    <ProductElement
+                      src={
+                        product?.sources?.images.length > 0
+                          ? product.sources.images[0]?.url
+                          : product.thumbUrl
+                      }
+                      productName={product.name}
+                      buttonLabel="Ver detalles"
+                      onButtonClick={() => scrollToProduct(product)}
+                      roundedCorner={true}
+                    />
+                  </div>
+                ))}
+              </Slider>
+            </div>
+          </div>
+        )}
+      </>
+
+
       <div className={styles['grid-container']}>
         <div className={styles['search-bar']}>
           <div className={styles['sorting-select']}>
@@ -226,9 +194,6 @@ const ProductsCatalog: React.FC<ProductsCatalogProps> = ({
                   currency={currency}
                   conversionRate={conversionRate}
                   handleDetails={handleDetails}
-                  pointedProduct={pointedProduct}
-                  goToFlow={goToFlow}
-                  isSelectedInFlow={flowData?.selectedProductId === product.id}
                 />
               </Grid>
             ))

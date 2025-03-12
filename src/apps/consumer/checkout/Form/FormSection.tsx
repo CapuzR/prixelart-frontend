@@ -1,4 +1,3 @@
-import React, { useState, useEffect, useRef } from "react";
 import {
   Grid,
   TextField,
@@ -13,41 +12,84 @@ import {
   Tooltip,
 } from "@mui/material";
 import { ExpandMore, Info } from '@mui/icons-material';
-import { useFormContext, Controller, useWatch } from "react-hook-form";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker"; 
+import { useFormContext, Controller, FieldValues, ControllerRenderProps, FieldError } from "react-hook-form";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
-import { is } from "immutable";
-import { get } from "http";
 
-const FormSection = ({
-  order,
+interface FieldConfig {
+  label: string;
+  required?: boolean;
+  width?: number;
+  helperText?: string;
+  conditionedBy?: string | string[];
+  onConditionChange?: (...args: any[]) => void;
+  isHidden?: boolean;
+  type?: string;
+  options?: string[];
+  adornment?: React.ReactNode;
+  tooltip?: string;
+  [key: string]: any;
+}
+
+interface SectionConfig {
+  title: string;
+  fields: Record<string, FieldConfig>;
+}
+
+interface FormSectionProps {
+  sectionConfig: SectionConfig;
+  sectionKey: string;
+  isExpanded: boolean;
+  onToggle: (event: React.SyntheticEvent, expanded: boolean) => void;
+}
+
+
+const FormSection: React.FC<FormSectionProps> = ({
   sectionConfig,
   sectionKey,
   isExpanded,
   onToggle,
 }) => {
   const { control, getValues } = useFormContext();
-  const formValues = getValues(sectionKey); 
+  const formValues = getValues(sectionKey);
 
-  const renderFieldComponent = (field, fieldState, fieldConfig) => {
-    const { type, options, adornment, ...rest } = fieldConfig;
+  interface FieldProps extends ControllerRenderProps<FieldValues, string> { }
+
+  const renderFieldComponent = (
+    field: FieldProps,
+    fieldState: { error?: FieldError },
+    fieldConfig: FieldConfig
+  ) => {
+    const {
+      type,
+      options,
+      adornment,
+      width,
+      errorCheck,
+      conditionedBy,
+      onConditionChange,
+      hiddingConditions,
+      requiredConditions,
+      isHidden,
+      tooltip,
+      ...textFieldProps
+    } = fieldConfig;
     const isDisabled = field.disabled;
-    if (field.isHidden) return null;
+    if (fieldConfig.isHidden) return <></>;
 
     const commonProps = {
       ...field,
+      ...textFieldProps,
       error: !!fieldState.error,
       helperText: fieldState.error ? fieldState.error.message : fieldConfig.helperText,
-      fullWidth: true,
-      disabled: isDisabled, 
-      variant: "outlined",
+      disabled: isDisabled,
+      variant: "outlined" as const,
       InputProps: {
         startAdornment: adornment ? (
           <InputAdornment position="start">{adornment}</InputAdornment>
         ) : null,
       },
       value: field.value || "",
-      ...rest,
     };
 
     switch (type) {
@@ -74,7 +116,7 @@ const FormSection = ({
             label={fieldConfig.label}
           />
         );
-        
+
       case "tooltip":
         return (
           <FormControlLabel
@@ -92,7 +134,7 @@ const FormSection = ({
 
       case "date":
         return (
-          <DatePicker 
+          <DatePicker
             {...field}
             minDate={dayjs()}
             label={fieldConfig.label}
@@ -105,46 +147,45 @@ const FormSection = ({
               textField: {
                 error: !!fieldState.error,
                 helperText: fieldState.error ? fieldState.error.message : fieldConfig.helperText,
-                fullWidth: true,
                 variant: "outlined",
               },
             }}
           />
         );
 
-        case "textWithTooltip":
-          return (
-            <Grid container {...commonProps} spacing={1} alignItems="center">
-              <Grid item>
-                <TextField />
-              </Grid>
-              <Grid item>
-                <Tooltip title={field.tooltip}>
-                  <Info color="secondary" />
-                </Tooltip>
-              </Grid>
+      case "textWithTooltip":
+        return (
+          <Grid container {...commonProps} spacing={1} alignItems="center">
+            <Grid item>
+              <TextField />
             </Grid>
-          );
+            <Grid item>
+              <Tooltip title={fieldConfig.tooltip}>
+                <Info color="secondary" />
+              </Tooltip>
+            </Grid>
+          </Grid>
+        );
 
-          case "dropdownWithTooltip":
-            return (
-              <Grid container spacing={1} alignItems="center" xs={12}> {/* Set width to 6 */}
-                <Grid item xs={10}> {/* TextField takes 10 out of 12 columns */}
-                  <TextField {...commonProps} select fullWidth>
-                    {options?.map((option, idx) => (
-                      <MenuItem key={idx} value={option}>
-                        {option}
-                      </MenuItem>
-                    ))}
-                  </TextField>
-                </Grid>
-                <Grid item xs={2}> {/* Tooltip takes 2 out of 12 columns */}
-                  <Tooltip title={fieldConfig.tooltip}>
-                    <Info color="secondary" />
-                  </Tooltip>
-                </Grid>
-              </Grid>
-            );
+      case "dropdownWithTooltip":
+        return (
+          <Grid container spacing={1} alignItems="center" xs={12}> {/* Set width to 6 */}
+            <Grid item xs={10}> {/* TextField takes 10 out of 12 columns */}
+              <TextField {...commonProps} select>
+                {options?.map((option, idx) => (
+                  <MenuItem key={idx} value={option}>
+                    {option}
+                  </MenuItem>
+                ))}
+              </TextField>
+            </Grid>
+            <Grid item xs={2}> {/* Tooltip takes 2 out of 12 columns */}
+              <Tooltip title={fieldConfig.tooltip}>
+                <Info color="secondary" />
+              </Tooltip>
+            </Grid>
+          </Grid>
+        );
 
       case "text":
       default:
@@ -161,12 +202,12 @@ const FormSection = ({
         {Object.keys(fields).map((key) => {
           const fieldConfig = fields[key];
           const {
-            label, 
-            required = true, 
-            width = 6, 
-            helperText, 
+            label,
+            required = true,
+            width = 6,
+            helperText,
             errorCheck,
-            defaultValue, 
+            defaultValue,
             conditionedBy,
             onConditionChange,
             hiddingConditions,
@@ -175,13 +216,13 @@ const FormSection = ({
             ...rest
           } = fieldConfig;
 
-        const isDisabled = Array.isArray(conditionedBy)
-          ? conditionedBy.some((condition) => getValues(condition) === true)
-          : conditionedBy
-          ? getValues(conditionedBy) === true
-          : false;
+          const isDisabled = Array.isArray(conditionedBy)
+            ? conditionedBy.some((condition) => getValues(condition) === true)
+            : conditionedBy
+              ? getValues(conditionedBy) === true
+              : false;
 
-        if (isHidden) return null;
+          if (isHidden) return null;
 
           return (
             <Grid item xs={12} sm={width} key={key}>
@@ -199,14 +240,14 @@ const FormSection = ({
                     return true;
                   },
                 }}
-                render={({ field, fieldState }) =>{
+                render={({ field, fieldState }) => {
                   return renderFieldComponent(field, fieldState, {
                     label: `${label}${required ? " *" : " (opcional)"}`,
                     helperText,
                     required,
                     ...rest,
-                  })}
-                }  
+                  });
+                }}
               />
             </Grid>
           );

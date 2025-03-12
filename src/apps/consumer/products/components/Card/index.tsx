@@ -15,22 +15,16 @@ export interface CardProps {
   currency: 'USD' | 'Bs';
   conversionRate: number;
   handleDetails: (product: Product) => void;
-  pointedProduct: string;
-  goToFlow: (updatedArt?: Art, updatedProduct?: Product) => void;
-  isSelectedInFlow?: boolean;
 }
 export default function Card({
   product,
   currency,
   conversionRate,
   handleDetails,
-  pointedProduct,
-  goToFlow,
-  isSelectedInFlow,
 }: CardProps) {
   return (
     <div
-      className={`${styles['card-root']} ${product.name === pointedProduct && styles['pointed']}`}
+      className={`${styles['card-root']} `}
       id={product.name}
     >
       <div className={styles['slider-container']}>
@@ -65,11 +59,6 @@ export default function Card({
           </Typography>
         </div>
         <div className={styles['buttons-wrapper']}>
-          {!isSelectedInFlow && (
-            <Button onClick={() => goToFlow(undefined, product)}>
-              <AddShoppingCart />
-            </Button>
-          )}
           <Button onClick={() => handleDetails(product)}>Detalles</Button>
           <Button
             type="onlyText"

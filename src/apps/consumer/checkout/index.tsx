@@ -1,24 +1,28 @@
-import React, { useState, useMemo, useReducer, useCallback } from 'react';
-import { Stepper, Step, StepLabel, Button, Typography, Box, Container, Grid } from '@mui/material';
+import React, { useState } from 'react';
+import { Stepper, Step, StepLabel, Button, Typography, Box, Container, Grid, Snackbar } from '@mui/material';
 import Form from './Form';
 import Order from './Order';
-import { Cart, CheckoutState, DataLists } from './interfaces';
+import { CheckoutState, DataLists } from './interfaces';
 import { initializeCheckoutState } from './init';
 import { useForm, FormProvider } from 'react-hook-form';
+import { useCart } from '@context/CartContext';
+import { createOrderByUser } from './api';
+import { parseOrder } from './parseApi';
+import { useNavigate } from 'react-router-dom';
 
-interface CheckoutProps {
-  cart: Cart;
-  valuesConsumerForm: any;
-  setValuesConsumerForm: (values: any) => void;
-}
+const Checkout: React.FC = () => {
 
-const Checkout: React.FC<CheckoutProps> = ({ cart }) => {
+  const { cart, emptyCart } = useCart();
+  const [snackBar, setSnackBar] = useState(false);
+  const navigate = useNavigate();
+
   const methods = useForm<CheckoutState>({
     defaultValues: initializeCheckoutState(cart),
     mode: "onChange",
+    shouldUnregister: false,
   });
-  
-  const [ dataLists, setDataLists ] = useState<DataLists>(
+
+  const [dataLists, setDataLists] = useState<DataLists>(
     methods.getValues().dataLists || {
       shippingMethods: [],
       paymentMethods: [],
@@ -39,12 +43,30 @@ const Checkout: React.FC<CheckoutProps> = ({ cart }) => {
     setActiveStep((prev) => prev - 1);
   };
 
-  const handleSubmit = () => {
-    console.log('Order submitted!');
+  const closeAd = () => {
+    setSnackBar(false);
+    navigate('/');
+  };
+
+  const handleSubmit = async () => {
+    const checkoutData = methods.getValues();
+
+    const parsedData = parseOrder(checkoutData);
+    const response = await createOrderByUser(parsedData);
+
+    if (response.status === 'ok') {
+      emptyCart();
+      <Snackbar
+        open={snackBar}
+        autoHideDuration={5000}
+        message={"Orden realizada exitosamente! Pronto serás contactado por un miembro del equipo de Prixelart para coordinar la entrega. El Id de tu orden es: " + response.orderId}
+        onClick={closeAd}
+      />
+    }
   };
 
   return (
-    <Container maxWidth="md">
+    <Container maxWidth="md" style={{ width: '100%' }}>
       <Box sx={{ mt: 4, mb: 4 }}>
         <Typography variant="h4" align="center" gutterBottom>
           Concreta tu compra
@@ -61,18 +83,21 @@ const Checkout: React.FC<CheckoutProps> = ({ cart }) => {
       </Stepper>
 
       {/* Form Content */}
-      <Box sx={{ mt: 4, mb: 4 }}>
+      <Box sx={{ mt: 4, mb: 2 }}>
         {
           activeStep === 0 ? (
-          <FormProvider {...methods}>
-            <Form dataLists={dataLists} setDataLists={setDataLists} />
-          </FormProvider>
-          ) : 
-          activeStep === 1 ? (
-            <Order checkoutState={methods.getValues()} />
-          ) : 
-          (<div></div>)
-        }
+            <FormProvider {...methods}>
+              <Form dataLists={dataLists} setDataLists={setDataLists} />
+            </FormProvider>
+          ) :
+            activeStep === 1 ? (
+              (() => {
+                const checkoutState = methods.getValues();
+                return <Order checkoutState={checkoutState} />;
+              })()
+            ) : (
+              <div></div>
+            )}
       </Box>
 
       {/* Buttons */}

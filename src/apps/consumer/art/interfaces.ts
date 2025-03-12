@@ -1,3 +1,3 @@
 import { PickedArt } from 'apps/consumer/cart/interfaces';
-import { Art } from 'types/art.types';
-export type { Art, PickedArt };
+import { Art, ReadArtResponse } from 'types/art.types';
+export type { Art, PickedArt, ReadArtResponse };

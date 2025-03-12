@@ -29,7 +29,7 @@ export const Map = ({ icons, setSelectedIcon, setOpenSelected }) => {
         <img
           alt="icon"
           ref={rawMapRef}
-          src="/LPG/rawMap.png"
+          src="/LPG/rawMap.webp"
           style={{
             margin: 10,
             width: 'auto',

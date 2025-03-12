@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import { BrowserRouter as Router } from 'react-router-dom';
 import AppBar from '@components/appBar';
 import Routes from './routes';
 import { GlobalProvider, useTheme } from 'context/GlobalContext';
@@ -8,6 +7,7 @@ import Utility from '@components/Utility';
 import { CartProvider } from 'context/CartContext';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { Toolbar } from '@mui/material';
 
 const ThemedApp: React.FC = () => {
   const { theme } = useTheme();
@@ -15,10 +15,11 @@ const ThemedApp: React.FC = () => {
   return (
     <div className={`${theme} app`}>
       <Utility />
-      <div className="app-bar">
+      <div>
         <AppBar />
+        <Toolbar />
       </div>
-      <div className="routes">
+      <div>
         <Routes />
       </div>
     </div>
@@ -35,9 +36,7 @@ const App: React.FC = () => {
     <GlobalProvider>
       <CartProvider>
         <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <Router>
             <ThemedApp />
-          </Router>
         </LocalizationProvider>
       </CartProvider>
     </GlobalProvider>

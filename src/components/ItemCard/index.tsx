@@ -10,14 +10,12 @@ import { useConversionRate, useCurrency } from 'context/GlobalContext';
 export interface ItemCardProps {
   item: Item;
   direction?: 'row' | 'column';
-  handleFlow: (type: 'producto' | 'arte') => void;
   handleDeleteElement?: (type: 'producto' | 'arte', item: Item) => void;
 }
 
 export default function ItemCard({
   item,
   direction = 'row',
-  handleFlow,
   handleDeleteElement,
 }: ItemCardProps) {
   const { currency } = useCurrency();
@@ -40,7 +38,6 @@ export default function ItemCard({
         <ItemPlayground
           item={item}
           handleDeleteElement={handleDeleteElement}
-          handleFlow={handleFlow}
         />
       </div>
       <div className={styles['item-content']}>

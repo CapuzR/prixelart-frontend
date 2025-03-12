@@ -14,6 +14,7 @@ import {
   FormControl,
   Select,
   InputLabel,
+  SelectChangeEvent,
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
@@ -28,18 +29,13 @@ interface PortraitProps {
   expanded: string | false;
   description: { generalDescription: string; technicalSpecification: string };
   handleArtSelection: () => void;
-  // handleSaveProduct: () => void;
-  handleSelection: (e: React.ChangeEvent<{ name: string; value: number }>) => void;
+  handleSelection: (e: SelectChangeEvent<string>) => void;
   handleChange: (panel: string) => (event: React.ChangeEvent<{}>, isExpanded: boolean) => void;
 }
 
 const Portrait: React.FC<PortraitProps> = (props) => {
   const { currency } = useCurrency();
   const { conversionRate } = useConversionRate();
-
-  const handleSelect = (e: React.ChangeEvent<{ name: string; value: number }>) => {
-    props.handleSelection(e);
-  };
 
   return (
     <div className={styles['prix-product-container']}>
@@ -72,8 +68,10 @@ const Portrait: React.FC<PortraitProps> = (props) => {
                   labelId={att.name}
                   id={att.name}
                   name={att.name}
-                  value={props.product?.selection[att.name] || ''}
-                  onChange={handleSelect}
+                  value={
+                    props.product?.selection.find((sel) => sel.name === att.name)?.value || ''
+                  }
+                  onChange={props.handleSelection}
                   label={att.name}
                 >
                   <MenuItem value="">

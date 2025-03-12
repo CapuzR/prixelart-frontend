@@ -1,22 +1,16 @@
 import axios from "axios";
 import {
   parseConsumerDetails,
-  parsePrixerDetails,
   parseShippingMethods,
   parseBillingMethods,
 } from "./parseApi";
 import {
+  CheckoutState,
   ConsumerDetails,
-  BasicInfo,
-  ShippingMethod,
   PaymentMethod,
+  ShippingMethod,
 } from "./interfaces";
 
-/**
- * Fetch consumer details using token and parse the response.
- * @param token - The user's authentication token.
- * @returns Parsed ConsumerDetails or an object containing only basic details.
- */
 export const fetchConsumer = async (
   token: string
 ): Promise<ConsumerDetails | null> => {
@@ -47,13 +41,16 @@ export const fetchConsumer = async (
   }
 };
 
-/**
- * Fetch shipping methods from the backend.
- * @returns A list of parsed shipping methods or an empty array on error.
- */
 export const fetchShippingMethods = async (): Promise<ShippingMethod[]> => {
 
-  let shippingMethods = JSON.parse(localStorage.getItem("shippingMethods"));
+  const shippingMethodsStr = localStorage.getItem("shippingMethods");
+  let shippingMethods;
+
+  if (shippingMethodsStr) {
+    shippingMethods = JSON.parse(shippingMethodsStr);
+  } else {
+    shippingMethods = null;
+  }
 
   if (shippingMethods) {
     return shippingMethods;
@@ -74,13 +71,16 @@ export const fetchShippingMethods = async (): Promise<ShippingMethod[]> => {
   }
 };
 
-/**
- * Fetch billing methods from the backend.
- * @returns A list of parsed billing methods or an empty array on error.
- */
 export const fetchBillingMethods = async (): Promise<PaymentMethod[]> => {
 
-  let billingMethods = JSON.parse(localStorage.getItem("billingMethods"));
+  const billingMethodsStr = localStorage.getItem("billingMethods");
+  let billingMethods;
+
+  if (billingMethodsStr) {
+    billingMethods = JSON.parse(billingMethodsStr);
+  } else {
+    billingMethods = null;
+  }
 
   if (billingMethods) {
     return billingMethods;
@@ -101,12 +101,16 @@ export const fetchBillingMethods = async (): Promise<PaymentMethod[]> => {
   }
 };
 
-/**
- * Fetch sellers from the backend.
- * @returns A list of seller usernames or an empty array on error.
- */
 export const fetchSellers = async (): Promise<string[]> => {
-  let sellers = JSON.parse(localStorage.getItem("sellers"));
+
+  const sellersStr = localStorage.getItem("sellers");
+  let sellers;
+
+  if (sellersStr) {
+    sellers = JSON.parse(sellersStr);
+  } else {
+    sellers = null;
+  }
 
   if (sellers) {
     return sellers;
@@ -123,5 +127,31 @@ export const fetchSellers = async (): Promise<string[]> => {
   } catch (error) {
     console.error("Error fetching sellers:", error);
     return [];
+  }
+
+
+};
+
+export const createOrderByUser = async (payload: any): Promise<{ status: 'ok' | 'error'; orderId?: string }> => {
+  try {
+    const base_url = import.meta.env.VITE_BACKEND_URL + '/order/createv2';
+    const response = await fetch(base_url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+
+    const result = await response.json();
+    return { status: 'ok', orderId: result.order.res.orderId };
+
+  } catch (error) {
+    console.error('Error submitting order:', error);
+    return { status: 'error' };
   }
 };

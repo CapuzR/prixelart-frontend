@@ -101,7 +101,7 @@ export default function BottomAppBar() {
   const classes = useStyles();
 
   return (
-    <React.Fragment>
+    <>
       <CssBaseline />
       <Paper square className={classes.paper}>
         <Typography className={classes.text} variant="h5" gutterBottom>
@@ -139,6 +139,6 @@ export default function BottomAppBar() {
           </IconButton>
         </Toolbar>
       </AppBar>
-    </React.Fragment>
+    </>
   );
 }

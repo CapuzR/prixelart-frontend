@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import { Route, Switch } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 
-import ArtDetail from "apps/consumer/art/components/Detail";
+import ArtDetail from "apps/consumer/art/components/ArtsGrid/Details/Detail";
 import Home from "apps/consumer/home/home";
-import Catalog from "apps/consumer/art/catalog/views/Catalog";
+import Catalog from "@apps/consumer/art/catalog/Catalog";
 import Products from "apps/consumer/products/Catalog";
 import Cart from "@apps/consumer/cart";
 import Prixers from "apps/consumer/prixers/prixersGrid";
@@ -14,94 +14,85 @@ import ProductDetails from "apps/consumer/products/Details/Details";
 import Flow from "apps/consumer/flow/Flow";
 import PrixerProfile from "apps/artist/prixerProfile/prixerProfile";
 import SoloService from "apps/artist/prixerProfile/fullscreenPhoto/fullscreenService";
+import { Art } from "./art/interfaces";
 
-interface ConsumerRoutesProps {
-  permissions: any;
-}
+const ConsumerRoutes: React.FC = () => {
 
-const ConsumerRoutes: React.FC<ConsumerRoutesProps> = ({ permissions }) => {
-  const [prixer, setPrixer] = useState<any>(null);
-  const [fullArt, setFullArt] = useState<any>(null);
-  const [pointedProduct, setPointedProduct] = useState<any>(undefined);
 
   return (
-    <Switch>
-      <Route path="/productos">
-        <Products
-          pointedProduct={pointedProduct}
-          setPointedProduct={setPointedProduct}
-        />
-      </Route>
-      <Route path="/galeria">
-        <Catalog
-          setPrixer={setPrixer}
-          prixer={prixer}
-          setFullArt={setFullArt}
-          fullArt={fullArt}
-        />
-      </Route>
-      <Route path="/prixers">
-        <Prixers setPrixer={setPrixer} prixer={prixer} />
-      </Route>
-      <Route path="/organizaciones">
-        <OrgGrid setPrixer={setPrixer} prixer={prixer} />
-      </Route>
-      <Route path="/carrito">
-        <Cart />
-      </Route>
+    <Routes>
+      <Route
+        path="/productos"
+        element={
+          <Products />
+        } />
+      <Route
+        path="/galeria"
+        element={
+          <Catalog />
+        } />
+      <Route
+        path="/prixers"
+        element={<Prixers />}
+      />
+      <Route
+        path="/organizaciones"
+        element={<OrgGrid />}
+      />
+      <Route path="/carrito" element={<Cart />} />
 
-      <Route path="/servicios">
-        <PrixersService
-          setPrixer={setPrixer}
-          prixer={prixer}
-          permissions={permissions}
-        />
-      </Route>
 
-      {/* TODO : Cambiar a /servicio/:serviceId */}
-      <Route path="/service=:serviceId">
-        <SoloService
-          setPrixer={setPrixer}
-          prixer={prixer}
-          permissions={permissions}
-        />
-      </Route>
-      <Route path="/testimonios">
-        <TestimonialsGrid setPrixer={setPrixer} prixer={prixer} />
-      </Route>
-      {/* TODO : Cambiar a /arte/:artId */}
-      <Route exact path="/art=:artId" component={ArtDetail}>
-        <ArtDetail
-          prixer={prixer}
-          fullArt={fullArt}
-          permissions={permissions}
-        />
-      </Route>
-      <Route path="/prixer=:username">
-        <PrixerProfile
-          setPrixer={setPrixer}
-          setFullArt={setFullArt}
-          permissions={permissions}
-        />
-      </Route>
-      <Route path="/org=:username">
-        <PrixerProfile
-          setPrixer={setPrixer}
-          setFullArt={setFullArt}
-          permissions={permissions}
-        />
-      </Route>
+      <Route
+        path="/servicios"
+        element={
+          <PrixersService />
+        } />
+
+      {/* 
+      <Route
+        path="/servicio/:serviceId"
+        element={
+          <SoloService
+          />
+        } />
+
+      */}
+      <Route
+        path="/testimonios"
+        element={<TestimonialsGrid />}
+      />
+      <Route
+        path="/arte/:artId"
+        element={
+          <ArtDetail />
+        } />
+
+
+
+      <Route
+        path="/prixer/username"
+        element={
+          <PrixerProfile />
+        } />
+
+      {/*
+      <Route
+        path="/org/:username"
+        element={
+          <PrixerProfile
+            setPrixer={setPrixer}
+            setFullArt={setFullArt}
+            permissions={permissions}
+          />
+        } />
+
+      */}
+
       {/* TODO : Cómo debería llamarse? Flujo? Selección? */}
-      <Route path="/flow">
-        <Flow />
-      </Route>
-
-      <Route path="/producto/:id">
-        <ProductDetails />
-      </Route>
-
-      <Route path="/" component={Home} />
-    </Switch>
+      <Route path="/crear-prix" element={<Flow />} />
+      <Route path="/producto/:id" element={<ProductDetails />} />
+      <Route path="/" element={<Home />} />
+    </Routes>
   );
 };
 

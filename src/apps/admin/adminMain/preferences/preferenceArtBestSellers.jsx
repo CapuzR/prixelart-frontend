@@ -10,7 +10,7 @@ import { makeStyles } from '@mui/styles';
 import Snackbar from '@mui/material/Snackbar';
 import { Typography, Checkbox } from '@mui/material';
 import { VictoryChart, VictoryBar, VictoryAxis, VictoryLabel, VictoryTheme } from 'victory';
-import ArtGrid from '../../../consumer/art/components/grid';
+import ArtGrid from '../../../consumer/art/components/ArtsGrid/ArtsGrid';
 const useStyles = makeStyles((theme) => ({
   backdrop: {
     zIndex: theme.zIndex.drawer + 1,

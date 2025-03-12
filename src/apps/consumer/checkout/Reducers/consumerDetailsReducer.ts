@@ -1,29 +1,43 @@
 import { ConsumerDetails, CheckoutAction } from '../interfaces';
 
+const defaultState: ConsumerDetails = {
+  basic: { name: '', lastName: '', phone: '', email: '' },
+  selectedAddress: {
+    line1: '',
+    city: '',
+    state: '',
+    country: ''
+  },
+  addresses: [],
+  paymentMethods: [],
+};
+
+
 export const consumerDetailsReducer = (
-  consumerDetails: ConsumerDetails | undefined,
+  consumerDetails: ConsumerDetails,
   action: CheckoutAction
 ): ConsumerDetails => {
+
+  const currentState = consumerDetails || defaultState;
+
   switch (action.type) {
     case 'SET_CONSUMER_BASIC': {
-      console.log("SET_CONSUMER_BASIC", action);
       const { payload } = action;
 
       return {
-        ...consumerDetails,
+        ...currentState,
         basic: {
-          ...consumerDetails?.basic, // Preserve existing fields
-          ...payload, // Overwrite or add new fields to basic
+          ...currentState.basic,
+          ...payload,
         },
       };
     }
 
     case 'SET_CONSUMER_ADDRESS': {
-      console.log("SET_CONSUMER_ADDRESS", action);
       const { payload } = action;
 
       return {
-        ...consumerDetails,
+        ...currentState,
         selectedAddress: payload,
       };
     }
@@ -32,19 +46,14 @@ export const consumerDetailsReducer = (
       const { payload } = action;
 
       return {
-        ...consumerDetails,
-        paymentMethods: payload ? [...payload] : consumerDetails?.paymentMethods ?? [], // Replace paymentMethods if provided
+        ...currentState,
+        paymentMethods: payload ? [...payload] : consumerDetails?.paymentMethods ?? [],
       };
     }
 
     default:
       return (
-        consumerDetails || {
-          basic: { name: '', lastName: '', phone: '', email: '' },
-          selectedAddress: {},
-          addresses: [],
-          paymentMethods: [],
-        }
+        consumerDetails || currentState
       );
   }
 };

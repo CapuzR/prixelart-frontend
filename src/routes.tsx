@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
 import expire from "./utils/expire";
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import { BrowserRouter as Router, Route } from "react-router-dom";
 import { useLocation, useParams } from "react-router";
 
-import ArtistRoutes from "apps/artist/artist.routes";
-import AdminRoutes from "apps/admin/admin.routes";
+// import ArtistRoutes from "apps/artist/artist.routes";
+// import AdminRoutes from "apps/admin/admin.routes";
 import ConsumerRoutes from "apps/consumer/consumer.routes";
-import MapRoutes from "apps/map/map.routes";
-import OrgsRoutes from "apps/orgs/orgs.routes";
-
+// import MapRoutes from "apps/map/map.routes";
+// import OrgsRoutes from "apps/orgs/orgs.routes";
+{/*
 const Routes = () => {
   const [valuesConsumerForm, setValuesConsumerForm] = useState<string>("");
   let location = useLocation();
@@ -52,6 +52,24 @@ const Routes = () => {
       )}
     </>
   );
+};
+
+export default Routes;*/}
+
+const Routes = () => {
+  const [permissions, setPermissions] = useState<any>(
+    JSON.parse(localStorage.getItem("adminToken") || "{}")?.permissions
+  );
+
+  useEffect(() => {
+    if (localStorage.getItem("token")) {
+      expire("token", "tokenExpire");
+    } else if (localStorage.getItem("adminToken")) {
+      expire("adminToken", "adminTokenExpire");
+    }
+  }, []);
+
+  return <ConsumerRoutes/>;
 };
 
 export default Routes;

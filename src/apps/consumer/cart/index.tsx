@@ -1,7 +1,4 @@
-import React, { useState } from 'react';
 import { Alert } from '@mui/lab';
-
-import { useCart } from 'context/CartContext';
 
 import CurrencySwitch from 'components/CurrencySwitch';
 import Checkout from 'apps/consumer/checkout';
@@ -10,8 +7,6 @@ import CartGrid from './Grid';
 import styles from './styles.module.scss';
 
 const Cart = () => {
-  const { cart } = useCart();
-  const [valuesConsumerForm, setValuesConsumerForm] = useState<string>('');
 
   return (
     <div className={styles['main-container']}>
@@ -31,12 +26,8 @@ const Cart = () => {
           <CartGrid />
         </div>
 
-        <div className={styles['checkout-container']}>
-          <Checkout
-            cart={cart}
-            valuesConsumerForm={valuesConsumerForm}
-            setValuesConsumerForm={setValuesConsumerForm}
-          />
+        <div style={{ width: '100%' }}>
+          <Checkout />
         </div>
       </div>
     </div>

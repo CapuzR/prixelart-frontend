@@ -10,7 +10,6 @@ import {
 } from './interfaces';
 
 export const initializeCheckoutState = (cart: Cart): CheckoutState => {
-  // Helper function to safely parse JSON
   const safeParseJSON = <T>(data: string | null, defaultValue: T): T => {
     try {
       return data ? JSON.parse(data) : defaultValue;
@@ -19,14 +18,12 @@ export const initializeCheckoutState = (cart: Cart): CheckoutState => {
     }
   };
 
-  // Retrieve any existing checkout state from localStorage
   const storedState = localStorage.getItem('checkoutState');
   const parsedState: CheckoutState = safeParseJSON<CheckoutState>(
     storedState,
     {} as CheckoutState
   );
 
-  // Transform CartLines to OrderLines
   const mapCartLinesToOrderLines = (lines: Cart['lines']): OrderLine[] =>
     lines.map((line) => ({
       id: line.id,
@@ -55,7 +52,6 @@ export const initializeCheckoutState = (cart: Cart): CheckoutState => {
   const { subTotal, totalUnits, totalDiscount } = calculateOrderTotals();
 
   // Default consumer details
-  //Where's CI, Address, city, etc?
   const defaultConsumerDetails: BasicInfo = {
     name: '',
     id: '',
@@ -106,7 +102,6 @@ export const initializeCheckoutState = (cart: Cart): CheckoutState => {
   // Initialize or update state based on cart and stored state
   const initialState: CheckoutState = {
     activeStep: parsedState?.activeStep ?? 0,
-    loading: false,
     order: {
       id: parsedState?.order?.id || '',
       lines: parsedState?.order?.lines?.length === cart.lines.length
@@ -119,7 +114,7 @@ export const initializeCheckoutState = (cart: Cart): CheckoutState => {
           line1: '',
           line2: '',
           city: '',
-          state: '', 
+          state: '',
           country: ''
         },
         addresses: [],
@@ -137,21 +132,31 @@ export const initializeCheckoutState = (cart: Cart): CheckoutState => {
       tax: parsedState?.order?.tax || [],
       totalWithoutTax: subTotal,
       total: subTotal,
+      createdOn: parsedState?.order?.createdOn
+        ? new Date(parsedState.order.createdOn)
+        : new Date(),
+      createdBy: parsedState?.order?.createdBy || '',
     },
     dataLists: {
       shippingMethods: parsedState?.dataLists?.shippingMethods || [],
       paymentMethods: parsedState?.dataLists?.paymentMethods || [],
-      countries: countries.filter((country) => country.active),
-      states: countries
-      .filter((country) => country.active)
-      .flatMap((country) => country.states.map((state) => state.name)),
+      countries: countries
+        .filter((country) => country.active)
+        .map((country) => ({
+          ...country,
+          states: country.states.map((state) => ({
+            ...state,
+            subdivision: Array.isArray(state.subdivision)
+              ? state.subdivision.join(', ')
+              : state.subdivision ?? "",
+          })),
+        })),
       sellers: parsedState?.dataLists?.sellers || [],
     },
-    expandedSection: parsedState?.expandedSection || 'basic',
+    shippingMethods: parsedState?.dataLists?.shippingMethods || [],
+    paymentMethods: parsedState?.dataLists?.paymentMethods || [],
+    billing: undefined
   };
-
-  // Store the initial state in localStorage
-  localStorage.setItem('checkoutState', JSON.stringify(initialState));
 
   return initialState;
 };

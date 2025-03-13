@@ -9,7 +9,6 @@ $min-item-width: 600px;
 // Grid Container (Parent)
 .grid-container {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax($min-item-width, 1fr));
   gap: theme.$spacing-sm;
   padding: theme.$spacing-md;
   width: 100%;

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Route, Routes } from "react-router-dom";
 
 import ArtDetail from "apps/consumer/art/components/ArtsGrid/Details/Detail";
@@ -13,8 +13,6 @@ import TestimonialsGrid from "apps/consumer/testimonials/testimonialsGrid";
 import ProductDetails from "apps/consumer/products/Details/Details";
 import Flow from "apps/consumer/flow/Flow";
 import PrixerProfile from "apps/artist/prixerProfile/prixerProfile";
-import SoloService from "apps/artist/prixerProfile/fullscreenPhoto/fullscreenService";
-import { Art } from "./art/interfaces";
 
 const ConsumerRoutes: React.FC = () => {
 
@@ -41,7 +39,6 @@ const ConsumerRoutes: React.FC = () => {
       />
       <Route path="/carrito" element={<Cart />} />
 
-
       <Route
         path="/servicios"
         element={
@@ -66,8 +63,6 @@ const ConsumerRoutes: React.FC = () => {
         element={
           <ArtDetail />
         } />
-
-
 
       <Route
         path="/prixer/username"

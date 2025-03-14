@@ -65,7 +65,14 @@ export const CartProvider: React.FC<MyComponentProps> = ({ children }) => {
   const addOrUpdateItemInCart = async (item: Item, quantity: number = 1, lineId?: string) => {
     try {
       // const lineDiscount = await fetchLineDiscount(item, quantity);
+
+
       const lineDiscount = 0;
+
+      const isSameSelection = (sel1: { name: string; value: string }[] = [], sel2: { name: string; value: string }[] = []) => {
+        if (sel1.length !== sel2.length) return false;
+        return sel1.every(s1 => sel2.some(s2 => s1.name === s2.name && s1.value === s2.value));
+      };
 
       let updatedLines = [...cart.lines];
 
@@ -89,9 +96,11 @@ export const CartProvider: React.FC<MyComponentProps> = ({ children }) => {
           console.warn('Line with specified lineId not found. Adding as new line.');
         }
       } else {
-        const existingLineIndex = updatedLines.findIndex(
-          (line) =>
-            line.item.product?.id === item.product?.id && line.item.art?.artId === item.art?.artId
+
+        const existingLineIndex = updatedLines.findIndex((line) =>
+          line.item.product?.id === item.product?.id &&
+          line.item.art?.artId === item.art?.artId &&
+          isSameSelection(line.item.product?.selection, item.product?.selection)
         );
 
         if (existingLineIndex !== -1) {

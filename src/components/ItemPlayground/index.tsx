@@ -8,12 +8,12 @@ import DeleteIcon from '@mui/icons-material/Delete';
 
 export interface ItemPlaygroundProps {
   item: Item;
-  handleDeleteElement?: (type: 'producto' | 'arte', item: Item) => void;
+  handleChangeElement?: (type: 'producto' | 'arte', item: Item) => void;
 }
 
 export default function ItemPlayground({
   item,
-  handleDeleteElement
+  handleChangeElement
 }: ItemPlaygroundProps) {
   return (
     <div className={styles['container']}>
@@ -25,9 +25,8 @@ export default function ItemPlayground({
             {item?.product ? (
               <OverlayWithIcon
                 iconLeft={<AutorenewIcon />}
-                iconRight={<DeleteIcon />}
                 coverTarget="parent"
-                onClickRight={() => handleDeleteElement!('producto', item)}
+                onClickLeft={() => handleChangeElement!('producto', item)}
               >
                 <Image
                   src={item?.product?.sources?.images?.[0]?.url}
@@ -44,9 +43,8 @@ export default function ItemPlayground({
             {item?.art ? (
               <OverlayWithIcon
                 iconLeft={<AutorenewIcon />}
-                iconRight={<DeleteIcon />}
                 coverTarget="parent"
-                onClickRight={() => handleDeleteElement!('arte', item)}
+                onClickLeft={() => handleChangeElement!('arte', item)}
               >
                 <Image
                   src={item.art?.largeThumbUrl}

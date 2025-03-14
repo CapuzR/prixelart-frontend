@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Stepper, Step, StepLabel, Button, Typography, Box, Container, Grid, Snackbar } from '@mui/material';
+import { Stepper, Step, StepLabel, Button, Typography, Box, Container, Snackbar } from '@mui/material';
 import Form from './Form';
 import Order from './Order';
 import { CheckoutState, DataLists } from './interfaces';
@@ -10,8 +10,11 @@ import { createOrderByUser } from './api';
 import { parseOrder } from './parseApi';
 import { useNavigate } from 'react-router-dom';
 
-const Checkout: React.FC = () => {
+interface CheckoutProps {
+  setChecking: React.Dispatch<React.SetStateAction<boolean>>;
+}
 
+const Checkout: React.FC<CheckoutProps> = ({ setChecking }) => {
   const { cart, emptyCart } = useCart();
   const [snackBar, setSnackBar] = useState(false);
   const navigate = useNavigate();
@@ -29,17 +32,23 @@ const Checkout: React.FC = () => {
       countries: [],
       states: [],
       sellers: [],
-    });
+    }
+  );
 
   const steps = [`Tus datos`, `Orden de compra`, `Confirmación`];
-
   const [activeStep, setActiveStep] = useState(0);
 
-  const handleNext = () => {
-    setActiveStep((prev) => prev + 1);
+  const handleNext = async () => {
+    const isValid = await methods.trigger();
+    if (isValid) {
+      setActiveStep((prev) => prev + 1);
+    }
   };
 
   const handleBack = () => {
+    if (activeStep === 1) {
+      setChecking(false);
+    }
     setActiveStep((prev) => prev - 1);
   };
 
@@ -53,7 +62,6 @@ const Checkout: React.FC = () => {
 
     const parsedData = parseOrder(checkoutData);
     const response = await createOrderByUser(parsedData);
-
     if (response.status === 'ok') {
       emptyCart();
       <Snackbar
@@ -92,8 +100,21 @@ const Checkout: React.FC = () => {
           ) :
             activeStep === 1 ? (
               (() => {
+                setChecking(true);
                 const checkoutState = methods.getValues();
-                return <Order checkoutState={checkoutState} />;
+
+                checkoutState.order.lines = cart.lines.map((line) => ({
+                  ...line,
+                  pricePerUnit: line.item.price,
+                }));
+
+                const subtotal = cart.lines.reduce((total, line) => {
+                  console.log('price:', line.item.price, 'quantity:', line.quantity, 'multiplied:', line.item.price * line.quantity);
+                  return total + line.item.price * line.quantity;
+                }, 0);
+                console.log("subtotal", subtotal)
+
+                return <Order checkoutState={checkoutState} newSubTotal={subtotal} />;
               })()
             ) : (
               <div></div>

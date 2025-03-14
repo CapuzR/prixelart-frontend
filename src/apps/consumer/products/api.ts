@@ -47,15 +47,16 @@ interface FetchProductsResponse {
 export const fetchProducts = async (
   order: string,
   currentPage: number,
-  productsPerPage: number
+  productsPerPage: number,
+  search?: string
 ): Promise<FetchProductsResponse> => {
   const base_url = import.meta.env.VITE_BACKEND_URL + '/product/read-all-v2';
   const params = {
     orderType: order === 'A-Z' || order === 'lowerPrice' ? 'asc' : order === '' ? '' : 'desc',
     sortBy:
       order === 'lowerPrice' || order === 'maxPrice' ? 'priceRange' : order === '' ? '' : 'name',
-    initialPoint: (currentPage - 1) * productsPerPage,
-    productsPerPage: productsPerPage,
+    initialPoint: search ? 0 : (currentPage - 1) * productsPerPage,
+    productsPerPage: search ? 1000 : productsPerPage,
   };
   const response = await axios.get<FetchProductsAPIResponse>(base_url, {
     params,

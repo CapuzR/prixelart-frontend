@@ -17,9 +17,10 @@ import useStyles from './order.styles.js';
 
 interface OrderSummaryProps {
   checkoutState: CheckoutState;
+  newSubTotal: number;
 }
 
-const Order: React.FC<OrderSummaryProps> = ({ checkoutState }) => {
+const Order: React.FC<OrderSummaryProps> = ({ checkoutState, newSubTotal }) => {
   const classes = useStyles();
   const { currency } = useCurrency();
   const { conversionRate } = useConversionRate();
@@ -40,12 +41,7 @@ const Order: React.FC<OrderSummaryProps> = ({ checkoutState }) => {
   // };
 
   useEffect(() => {
-    // Subtotal
-    const newSubTotal = checkoutState.order.lines.reduce((acc, line) => {
-      const lineTotal =
-        line.subtotal != null ? line.subtotal : line.item.price * (line.quantity || 1);
-      return acc + lineTotal;
-    }, 0);
+
     checkoutState.order.subTotal = newSubTotal;
 
     const taxes: Tax[] = [];
@@ -53,6 +49,9 @@ const Order: React.FC<OrderSummaryProps> = ({ checkoutState }) => {
     // IVA  16%
     const ivaValue = 16;
     const ivaAmount = newSubTotal * (ivaValue / 100);
+
+    console.log('IVA Amount:', ivaAmount);
+
     taxes.push({
       id: 'iva',
       name: 'IVA:',
@@ -64,6 +63,8 @@ const Order: React.FC<OrderSummaryProps> = ({ checkoutState }) => {
     if (checkoutState.billing?.paymentMethod === 'Efectivo $') {
       const igtfValue = 3;
       const igtfAmount = newSubTotal * (igtfValue / 100);
+
+      console.log('IGTF Amount:', igtfAmount);
       taxes.push({
         id: 'igtf',
         name: 'IGTF:',
@@ -75,6 +76,9 @@ const Order: React.FC<OrderSummaryProps> = ({ checkoutState }) => {
     checkoutState.order.tax = taxes;
 
     const totalTaxes = taxes.reduce((sum, tax) => sum + tax.amount, 0);
+
+    console.log('Total Taxes:', totalTaxes);
+
     checkoutState.order.total = parseFloat((newSubTotal + totalTaxes).toFixed(2));
   }, [checkoutState]);
 
@@ -127,7 +131,7 @@ const Order: React.FC<OrderSummaryProps> = ({ checkoutState }) => {
                                         >
                                           <div>
                                             Cantidad:
-                                            <br></br> {line.quantity || 1}
+                                            <br></br> {line.quantity}
                                           </div>
                                           <div
                                             style={{
@@ -137,8 +141,11 @@ const Order: React.FC<OrderSummaryProps> = ({ checkoutState }) => {
                                           >
                                             Monto:
                                             <br></br>
-                                            {currency ? ' Bs' : '$'}
-                                            {line.item.price * line.quantity}
+                                            {currency === 'Bs' ? 'Bs ' : '$ '}
+                                            {currency === 'Bs' ? (line.item.price * line.quantity * conversionRate).toLocaleString('de-DE', {
+                                              minimumFractionDigits: 2,
+                                              maximumFractionDigits: 2,
+                                            }) : (line.item.price * line.quantity)}
                                           </div>
                                         </Grid2>
                                       </Grid2>

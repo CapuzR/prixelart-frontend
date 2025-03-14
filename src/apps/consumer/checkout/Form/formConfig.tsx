@@ -135,7 +135,6 @@ export function getFormConfig({ paymentMethods, shippingMethods, countries, sell
         },
         line2: {
           label: "Dirección (Linea 2)",
-          errorCheck: (value) => value?.length >= 20,
           helperText: "Incluir todos los detalles posibles.",
           minRows: 3,
           adornment: <HomeIcon color="secondary" />,
@@ -264,7 +263,6 @@ export function getFormConfig({ paymentMethods, shippingMethods, countries, sell
         },
         line2: {
           label: "Dirección (Linea 2)",
-          errorCheck: (value) => value?.length >= 20,
           helperText: "Incluir todos los detalles posibles.",
           minRows: 3,
           adornment: <HomeIcon color="secondary" />,
@@ -328,7 +326,6 @@ export function getFormConfig({ paymentMethods, shippingMethods, countries, sell
         seller: {
           label: "Vendedor",
           type: "dropdownWithTooltip",
-          errorCheck: (value) => value?.length >= 2,
           options: sellers || [],
           actionType: "SET_SELLER",
           tooltip: "¿Alguno de nuestros asesores te ayudó en el proceso de compra?",

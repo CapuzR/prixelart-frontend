@@ -1,28 +1,46 @@
 import React from 'react';
-import styles from './styles.module.scss'; // Link to your SCSS file
+import styles from './styles.module.scss';
 
-interface OverlayWithIconProps {
+interface BaseOverlayProps {
   children: React.ReactNode;
-  onClickLeft?: () => void; // Optional left icon click handler
-  iconLeft?: JSX.Element; // Optional left icon
-  iconRight?: JSX.Element; // Optional right icon
-  onClickRight?: () => void; // Optional right icon click handler
   coverTarget?: 'children' | 'parent';
 }
 
+type OnlyLeftProps = {
+  onClickLeft: () => void;
+  iconLeft: JSX.Element;
+  onClickRight?: never;
+  iconRight?: never;
+};
+
+type OnlyRightProps = {
+  onClickRight: () => void;
+  iconRight: JSX.Element;
+  onClickLeft?: never;
+  iconLeft?: never;
+};
+
+type BothActionsProps = {
+  onClickLeft: () => void;
+  iconLeft: JSX.Element;
+  onClickRight: () => void;
+  iconRight: JSX.Element;
+};
+
+type OverlayWithIconProps = BaseOverlayProps & (OnlyLeftProps | OnlyRightProps | BothActionsProps);
+
 const OverlayWithIcon: React.FC<OverlayWithIconProps> = ({
   children,
-  iconLeft,
-  iconRight,
-  onClickLeft,
-  onClickRight,
   coverTarget = 'children',
+  onClickLeft,
+  iconLeft,
+  onClickRight,
+  iconRight,
 }) => {
   return (
     <div
-      className={`${styles['hover-overlay-container']} ${
-        coverTarget === 'parent' ? styles['cover-parent'] : ''
-      }`}
+      className={`${styles['hover-overlay-container']} ${coverTarget === 'parent' ? styles['cover-parent'] : ''
+        }`}
     >
       {children}
       <div className={styles['hover-overlay']}>

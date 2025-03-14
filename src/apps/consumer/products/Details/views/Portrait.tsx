@@ -31,18 +31,36 @@ interface PortraitProps {
   handleArtSelection: () => void;
   handleSelection: (e: SelectChangeEvent<string>) => void;
   handleChange: (panel: string) => (event: React.ChangeEvent<{}>, isExpanded: boolean) => void;
+  isFetchingVariantPrice: boolean;
+  flowProductId?: string;
 }
 
 const Portrait: React.FC<PortraitProps> = (props) => {
   const { currency } = useCurrency();
   const { conversionRate } = useConversionRate();
 
+  const isOptionSelected =
+    Array.isArray(props.product.selection)
+      ? props.product.selection.some((sel) => sel.value !== '')
+      : false;
+
   return (
     <div className={styles['prix-product-container']}>
       <div className={styles['title-price']}>
         <div className={styles['title']}>{props.product?.name}</div>
         <div className={styles['price']}>
-          {formatPriceForUI(props.product?.price, currency, conversionRate)}
+          {isOptionSelected
+            ? formatPriceForUI(
+              props.product.price ?? props.product.priceRange.from,
+              currency,
+              conversionRate
+            )
+            : formatPriceForUI(
+              props.product.priceRange.from,
+              currency,
+              conversionRate,
+              props.product.priceRange.to
+            )}
         </div>
       </div>
       <div className={styles['carousel-wrapper']}>
@@ -56,9 +74,8 @@ const Portrait: React.FC<PortraitProps> = (props) => {
       <div className={styles['select']}>
         <h2>Selecciona:</h2>
         <div
-          className={`${styles['attributes-container']} ${
-            props.product?.attributes?.length > 1 ? styles['space-between'] : styles['flex-start']
-          }`}
+          className={`${styles['attributes-container']} ${props.product?.attributes?.length > 1 ? styles['space-between'] : styles['flex-start']
+            }`}
         >
           {props.product?.attributes?.map((att, iAtt, attributesArr) => (
             <div key={iAtt} className={styles['attribute-select-wrapper']}>
@@ -94,13 +111,13 @@ const Portrait: React.FC<PortraitProps> = (props) => {
         <Button
           color="primary"
           disabled={
-            props.product?.selection &&
-            Object.keys(props.product.selection).length === 0 &&
-            Object.keys(props.product.selection).every((el: string) => el === '')
+            (props.product?.selection &&
+              Object.keys(props.product.selection).length === 0 &&
+              Object.keys(props.product.selection).every((el: string) => el === '')) || props.isFetchingVariantPrice
           }
           onClick={props.handleArtSelection}
         >
-          Seleccionar Arte
+          {props.flowProductId ? 'Seleccionar' : 'Seleccionar Arte'}
         </Button>
       </div>
 

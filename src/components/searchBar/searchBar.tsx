@@ -83,18 +83,13 @@ const CustomizedInputBase: React.FC<SearchBarProps> = ({ onSearch }) => {
   return (
     <div
       style={{
-        width:
-          isDesktop && window.location.search.includes('?producto=')
-            ? '100%'
-            : isDesktop
-              ? '50%'
-              : '100%',
+        width:'75%',
         margin: 'auto',
         maxWidth: 616,
       }}
     >
       <Paper component="form" className={classes.root} elevation={3}>
-        <div style={{ display: 'flex', width: '100%', alignItems: 'center' }}>
+        <div style={{ display: 'flex', width: '100%', alignItems: 'center', height: '50px' }}>
           <IconButton
             type="submit"
             className={classes.iconButton}

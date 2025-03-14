@@ -3,11 +3,9 @@ import { useNavigate } from 'react-router-dom';
 
 import { CardActionArea, Typography, IconButton, Tooltip } from '@mui/material';
 import Img from 'react-cool-img';
-import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
 import Star from '@mui/icons-material/StarRate';
 import StarOutline from '@mui/icons-material/StarOutline';
 import { Art } from '../interfaces';
-import { addingToCart } from '../services';
 import { queryCreator } from 'apps/consumer/flow/utils';
 
 interface ArtThumbnailProps {

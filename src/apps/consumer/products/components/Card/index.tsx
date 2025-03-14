@@ -15,17 +15,20 @@ export interface CardProps {
   currency: 'USD' | 'Bs';
   conversionRate: number;
   handleDetails: (product: Product) => void;
+  isCart?: boolean;
 }
 export default function Card({
   product,
   currency,
   conversionRate,
   handleDetails,
+  isCart
 }: CardProps) {
   return (
     <div
-      className={`${styles['card-root']} `}
+      className={`${styles['card-root']}`}
       id={product.name}
+      style={isCart ? { flexDirection: 'column', alignItems: 'center' } : {}}
     >
       <div className={styles['slider-container']}>
         <Slider images={product?.sources?.images}>
@@ -41,24 +44,29 @@ export default function Card({
               ? `${product.name.split('\r\n')[0].slice(0, 15)}...`
               : `${product.name.split('\r\n')[0]}`}
           </Typography>
-          <p>
+          <p style={isCart ? { margin: 0 } : {}}>
             {product.description.split('\r\n')[0].length > 60
               ? `${product.description.split('\r\n')[0].slice(0, 65)}...`
               : `${product.description.split('\r\n')[0]}`}
           </p>
-          <Typography
+            <Typography
             gutterBottom
-            style={{ fontSize: 15, marginTop: '1rem', backgroundColor: '#fff' }}
-          >
+            style={{
+              fontSize: 15,
+              marginTop: '1rem',
+              backgroundColor: '#fff',
+              ...(isCart ? { margin: 0 } : {})
+            }}
+            >
             {formatPriceForUI(
               product.priceRange.from,
               currency,
               conversionRate,
               product.priceRange.to
             )}
-          </Typography>
+            </Typography>
         </div>
-        <div className={styles['buttons-wrapper']}>
+        <div className={styles['buttons-wrapper']} >
           <Button onClick={() => handleDetails(product)}>Detalles</Button>
           <Button
             type="onlyText"

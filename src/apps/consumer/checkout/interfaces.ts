@@ -168,8 +168,6 @@ export interface OrderLine {
   pricePerUnit: number; // The price of one unit at the time of purchase
   discount: number; // Discount applied to the line
   subtotal: number; // Total for the line (quantity * pricePerUnit - discount)
-  tax: number; // Tax applied to this line
-  total: number; // Final total for the line (subtotal + tax)
 }
 
 //Reducer actions
@@ -257,10 +255,4 @@ export interface FormSectionConfig {
 
 export interface FormConfig {
   [sectionKey: string]: FormSectionConfig;
-}
-
-export interface CheckoutFormData {
-  sections: FormConfig;
-  shippingStates: string[];
-  billingStates: string[];
 }

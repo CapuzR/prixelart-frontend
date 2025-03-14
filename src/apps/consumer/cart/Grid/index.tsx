@@ -6,16 +6,45 @@ import Typography from 'components/Typography';
 import styles from './styles.module.scss';
 import { Item } from '../interfaces';
 import LineCard from '../Detail';
+import { useNavigate } from 'react-router-dom';
+import { queryCreator } from '@apps/consumer/flow/utils';
+import { Button } from '@mui/material';
 
-const CartReview: React.FC = () => {
-  const { cart } = useCart();
+interface CartReviewProps {
+  checking: boolean;
+}
+
+const CartReview: React.FC<CartReviewProps> = ({ checking }) => {
+  const { cart, deleteLineInCart } = useCart();
+  const navigate = useNavigate();
   const isMobile = useMediaQuery('(max-width: 600px)');
-  const { deleteLineInCart, deleteElementInItem } = useCart();
 
-  const handleDeleteElement = (type: 'producto' | 'arte', item: Item) => {
-    const hasOtherItem = type === 'arte' ? item.product : item.art;
-    const line = cart.lines.filter((line) => line.item.sku === item.sku);
-    hasOtherItem ? deleteElementInItem(item.sku, type) : deleteLineInCart(line[0].id);
+  const handleChangeElement = (type: 'producto' | 'arte', item: Item) => {
+    const matchingLine = cart.lines.find((line) => {
+      const skuMatch = line.item.sku === item.sku;
+      const artMatch = item.art ? line.item.art?._id === item.art._id : true;
+      return skuMatch && artMatch;
+    });
+    if (matchingLine) {
+      deleteLineInCart(matchingLine.item.sku);
+
+      const selectionAsObject: { [key: string]: string } = Array.isArray(item.product?.selection)
+        ? item.product.selection.reduce((acc, sel) => {
+          acc[sel.name] = sel.value;
+          return acc;
+        }, {} as { [key: string]: string })
+        : item.product?.selection || {};
+
+      const queryString = queryCreator(
+        undefined,
+        undefined,
+        type === 'producto' ? undefined : item.product?.id,
+        type === 'arte' ? undefined : item.art?._id,
+        selectionAsObject
+      );
+      console.log(`/crear-prix?${queryString}`);
+      navigate(`/crear-prix?${queryString}`);
+    }
   };
 
   return (
@@ -33,11 +62,20 @@ const CartReview: React.FC = () => {
               key={index}
               direction="row"
               line={line}
-              handleDeleteElement={handleDeleteElement}
+              handleChangeElement={handleChangeElement}
+              checking={checking}
             />
           ))}
         </Grid>
       </div>
+      {!checking && (
+        <div className={styles['cart-add-more']}>
+          <Button style={{ backgroundColor: 'red', color: 'white', borderRadius: '8px', padding: '10px 20px', width: '80%', marginLeft: '10%', marginTop: '33px' }} onClick={() => navigate('/productos')}>
+            Añadir Más Productos
+          </Button>
+        </div>
+      )}
+
     </div>
   );
 };

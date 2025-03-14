@@ -13,13 +13,14 @@ import ServiceGrid from './grid/serviceGrid';
 import { useTheme } from '@mui/styles';
 import Biography from './grid/biography';
 import useStyles from './prixerProfile.styles';
+import { getUrlParams } from '@utils/util';
 
 const PrixerProfile: React.FC = () => {
   const classes = useStyles();
   const navigate = useNavigate();
   const theme = useTheme();
 
-  const globalParams = new URLSearchParams(window.location.pathname);
+  const globalParams = getUrlParams();
   const username: string | null = window.location.pathname.includes('org')
     ? globalParams.get('/org')
     : globalParams.get('/prixer');

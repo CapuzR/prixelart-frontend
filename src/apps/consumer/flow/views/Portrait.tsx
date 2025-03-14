@@ -16,7 +16,7 @@ interface PortraitProps {
   item: Partial<Item>;
   isUpdate: boolean;
   handleCart: (item: Item) => void;
-  handleDeleteElement: (type: 'producto' | 'arte', item: Item) => void;
+  handleChangeElement: (type: 'producto' | 'arte', item: Item) => void;
   getFilteredOptions: (att: { name: string; value: string[] }) => string[];
   handleSelection?: (e: React.ChangeEvent<{ name: string; value: number }>) => void;
   openSection: string;
@@ -70,7 +70,7 @@ const Portrait: React.FC<PortraitProps> = (props) => {
             <ItemCard
               item={props.item as Item}
               direction="column"
-              handleDeleteElement={props.handleDeleteElement}
+              handleChangeElement={props.handleChangeElement}
             />
           )}
         </div>

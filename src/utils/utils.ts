@@ -1,3 +1,5 @@
+import { PickedProduct } from "../types/product.types";
+
 export const generateWaMessage = (tile: any) => {
   // const waNumber = "584126377748";
   const welcomeMessage = 'Holaa, cuéntame más. Quiero asesoría y conocer sus productos.';
@@ -12,33 +14,22 @@ export const generateWaMessage = (tile: any) => {
   return url;
 };
 
-export function generateWaProductMessage(tile: any) {
+export const generateWaProductMessage = (tile: PickedProduct) => {
   const waNumber = '584126377748';
   const welcomeMessage = 'Holaa, cuéntame más. Quiero asesoría y conocer sus productos.';
-  const message = tile !== '' ? generateProductMessage(tile, 'wa') : welcomeMessage;
 
-  const url = 'https://wa.me/' + waNumber + '?text=' + message;
+  const message =
+    tile !== null
+      ? 'Holaa, este es uno de los Prix que me gustan:' +
+      '%0D%0A' +
+      ' *Modelo:* ' + tile.name +
+      '%0D%0A' +
+      ' *Enlace:* prixelart.com/?producto=' + tile.id
+      : welcomeMessage;
 
-  return url;
-}
-
-export const generateProductMessage = (tile: any, type: string) => {
-  let lineBreak = '';
-
-  type === 'wa' ? (lineBreak = '%0D%0A') : (lineBreak = '');
-
-  const productMainMessage = 'Holaa, este es uno de los Prix que me gustan:';
-  const productMessage =
-    productMainMessage +
-    lineBreak +
-    ' *Modelo:* ' +
-    tile.name +
-    lineBreak +
-    ' *Enlace:* prixelart.com/?producto=' +
-    tile._id;
-
-  return productMessage;
+  return 'https://wa.me/' + waNumber + '?text=' + message;
 };
+
 
 const generateServiceMessage = (tile: any, phone: string) => {
   if (phone.startsWith('0')) {
@@ -164,19 +155,6 @@ export const format = (input: string | number) => {
   }
   if (typeof num !== 'number' || isNaN(num)) return '';
   return num.toFixed(2).replace('.', ',');
-};
-
-export const toggleDecimalSeparator = (value: string | number) => {
-  if (typeof value === 'number') {
-    value = value.toString();
-  }
-  if (value?.includes(',')) {
-    return value.replace(/\./g, '').replace(/,/g, '.');
-  } else if (value?.includes('.')) {
-    return value.replace(/\./g, ',');
-  } else {
-    return value;
-  }
 };
 
 const util = {

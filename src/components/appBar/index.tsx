@@ -28,8 +28,6 @@ import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import { useCurrency } from 'context/GlobalContext';
 import { useCart } from 'context/CartContext';
 
-const drawerWidth = 240;
-
 const MenuAppBar: React.FC = () => {
   const theme = useTheme();
   const classes = useStyles();
@@ -45,6 +43,7 @@ const MenuAppBar: React.FC = () => {
   const [selectedTab, setSelectedTab] = useState("gallery");
 
   const tabRoutes: { [key: string]: string } = {
+    home: '/',
     gallery: '/galeria',
     products: '/productos',
     prixers: '/prixers',
@@ -57,7 +56,7 @@ const MenuAppBar: React.FC = () => {
     const currentTab = Object.keys(tabRoutes).find(
       (key) => tabRoutes[key] === location.pathname
     );
-    setSelectedTab(currentTab || "");
+    setSelectedTab(currentTab || "/");
   }, [location.pathname]);
 
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {

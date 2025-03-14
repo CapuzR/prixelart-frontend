@@ -20,6 +20,7 @@
     "exceljs": "^4.3.0",
     "immutable": "^4.1.0",
     "jwt-decode": "^3.1.2",
+    "madge": "^8.0.0",
     "moment": "^2.30.1",
     "moment-timezone": "^0.5.47",
     "mongodb": "^6.13.1",
@@ -38,6 +39,7 @@
     "recharts": "^2.15.1",
     "sass": "^1.85.1",
     "slick-carousel": "^1.8.1",
+    "ts-prune": "^0.10.3",
     "tss-react": "^4.9.15",
     "victory": "^36.6.11",
     "vite": "^6.2.0"

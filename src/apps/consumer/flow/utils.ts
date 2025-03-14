@@ -35,32 +35,3 @@ export const queryCreator = (
 
   return searchParams.toString();
 };
-
-export const updateAttributes = (
-  productSelection: Selection[] | undefined,
-  targetName: string,
-  targetValue: string
-): { [key: string]: string } => {
-  const attributesFromSelection = (productSelection || []).reduce((acc, selection, index) => {
-    acc[index] = String(selection);
-    return acc;
-  }, {} as { [key: string]: string });
-
-  return {
-    ...attributesFromSelection,
-    [targetName]: String(targetValue),
-  };
-};
-
-export function getUrlParams(excludedParams: string[] = []): { name: string; value: string }[] {
-  const searchParams = new URLSearchParams(window.location.search);
-  const paramsArray: { name: string; value: string }[] = [];
-
-  searchParams.forEach((value, key) => {
-    if (!excludedParams.includes(key)) {
-      paramsArray.push({ name: key, value });
-    }
-  });
-
-  return paramsArray;
-}

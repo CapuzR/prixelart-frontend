@@ -28,6 +28,7 @@ export const Indicators: React.FC<IndicatorsProps> = ({
   return (
     <div
       className={`${isBelow ? styles['below-indicator'] : styles['over-indicator']}`}
+      style={{minHeight: '20px'}}
       // style={{
       //   position: isBelow ? 'relative' : 'absolute',
       //   bottom: isBelow ? 'auto' : '20px',

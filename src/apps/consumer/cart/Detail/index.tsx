@@ -13,18 +13,15 @@ import { useConversionRate, useCurrency } from 'context/GlobalContext';
 export interface LineCardProps {
   line: CartLine;
   direction?: 'row' | 'column';
-  handleDeleteElement?: (type: 'producto' | 'arte', item: Item) => void;
+  handleChangeElement?: (type: 'producto' | 'arte', item: Item) => void;
+  checking?: boolean
 }
 
-export default function LineCard({ line, direction = 'row', handleDeleteElement }: LineCardProps) {
-  const { deleteLineInCart } = useCart();
+export default function LineCard({ line, direction = 'row', handleChangeElement, checking }: LineCardProps) {
+  const { deleteLineInCart, updateCartLine } = useCart();
   const { currency } = useCurrency();
   const { conversionRate } = useConversionRate();
   const [quantity, setQuantity] = useState<string | number>(line.quantity);
-
-  useEffect(() => {
-    line.item.product?.price === undefined && setQuantity(1);
-  }, [line.quantity]);
 
   const handleDelete = () => {
     deleteLineInCart(line.item.sku);
@@ -36,7 +33,14 @@ export default function LineCard({ line, direction = 'row', handleDeleteElement 
   };
 
   const handleQuantityBlur = () => {
-    if (!quantity) setQuantity(1);
+
+    const qty = typeof quantity === 'string' ? parseInt(quantity, 10) || 1 : quantity;
+
+    setQuantity(qty);
+
+    if (qty !== line.quantity) {
+      updateCartLine(line.id, { quantity: qty });
+    }
   };
 
   const getFinalPrice = () => {
@@ -52,7 +56,7 @@ export default function LineCard({ line, direction = 'row', handleDeleteElement 
         <ItemCard
           item={line.item}
           direction="row"
-          handleDeleteElement={handleDeleteElement}
+          handleChangeElement={handleChangeElement}
         />
         {line.item.product && line.quantity !== undefined && (
           <div className={styles['line-details']}>
@@ -65,7 +69,7 @@ export default function LineCard({ line, direction = 'row', handleDeleteElement 
                 onBlur={handleQuantityBlur}
                 className={styles['quantity-input']}
                 min="1"
-                disabled={line.item.product.price === undefined}
+                disabled={checking}
               />
             </div>
 
@@ -78,11 +82,12 @@ export default function LineCard({ line, direction = 'row', handleDeleteElement 
       </div>
 
       <ActionBar
-        onUpperAction={handleDelete}
-        onLowerAction={() => { }}
+        onUpperAction={!checking ? () => handleDelete : undefined}
+        // onLowerAction={() => { }}
         upperIcon={<DeleteIcon className={styles['icon']} />}
-        lowerIcon={<FileCopyIcon className={styles['icon']} />}
+      // lowerIcon={<FileCopyIcon className={styles['icon']} />}
       />
+
     </div>
   );
 }

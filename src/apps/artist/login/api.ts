@@ -27,15 +27,3 @@ export const fetchTermsAgreementStatus = async (userId: string): Promise<boolean
     throw error;
   }
 };
-
-// Update the user's terms agreement status
-export const updateTermsAgreement = async (userId: string): Promise<boolean> => {
-  try {
-    const updateUrl = `${BASE_URL}/prixer/update-terms/${userId}`;
-    const response = await axios.put(updateUrl, { termsAgree: true });
-    return response.data.success;
-  } catch (error) {
-    console.error('Error updating terms agreement:', error);
-    throw error;
-  }
-};

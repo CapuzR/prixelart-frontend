@@ -58,6 +58,7 @@ import { Art, ReadArtResponse } from '../../../interfaces';
 import { useStyles } from './artDetails.styles';
 import { loadAdmins } from '@apps/admin/adminMain/adminUser/api';
 import { fetchArt } from '@apps/consumer/art/api';
+import { getUrlParams } from '@utils/util';
 
 const IOSSwitch = withStyles((theme: Theme) => ({
   root: {
@@ -117,7 +118,7 @@ const ArtDetail: React.FC = () => {
   const classes = useStyles();
   const navigate = useNavigate();
 
-  const globalParams = new URLSearchParams(window.location.pathname);
+  const globalParams = getUrlParams();
   const [ready, setReady] = useState(false);
   const [art, setArt] = useState<Art | null>(null);
   // const [newTag, setNewTag] = useState([]);

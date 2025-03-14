@@ -36,6 +36,7 @@ import ServiceSearchBar from 'components/searchBar/serviceSearchBar';
 import FloatingAddButton from 'components/floatingAddButton/floatingAddButton';
 import ArtUploader from 'components/artUploader/artUploader';
 import CreateService from 'components/createService/createService';
+import { getUrlParams } from '@utils/util';
 
 const IOSSwitch = withStyles((theme) => ({
   root: {
@@ -176,7 +177,7 @@ export default function ServiceGrid(props) {
   const history = useHistory();
   const view = window.location.pathname.slice(1);
   const prixer = props.prixerUsername;
-  const globalParams = new URLSearchParams(window.location.pathname);
+  const globalParams = getUrlParams();
   const entries = globalParams.entries();
   const firstEntry = entries.next().value;
   const [key, value] = firstEntry;

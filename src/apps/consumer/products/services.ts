@@ -55,6 +55,5 @@ export const getFilteredOptions = (
         .filter((value): value is string => value !== null);
     })
     .flat();
-
-  return filteredOptions;
+  return filteredOptions.length > 0 ? filteredOptions : att.value || [];
 };

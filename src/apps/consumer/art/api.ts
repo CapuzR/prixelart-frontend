@@ -24,26 +24,3 @@ export const fetchGallery = async (filters: object): Promise<{ arts: Art[]; leng
     throw error;
   }
 };
-
-export const setVisibleArt = async (art: Art) => {
-  const base_url = import.meta.env.VITE_BACKEND_URL + '/art/disable/' + art.artId;
-  art.visible = !art.visible;
-  await axios.put(base_url, art, {
-    headers: {
-      adminToken: localStorage.getItem('adminTokenV'),
-    },
-    withCredentials: true,
-  });
-};
-
-export const fetchNextArtNumber = async (artId: string): Promise<number> => {
-  const base_url = `${import.meta.env.VITE_BACKEND_URL}/art/get-next-art-number`;
-
-  try {
-    const response = await axios.post(base_url, { artId });
-    return response?.data?.nextArtNumber;
-  } catch (error) {
-    console.error('Error fetching next art number:', error);
-    throw error;
-  }
-};

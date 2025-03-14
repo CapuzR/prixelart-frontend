@@ -2,7 +2,7 @@
 export interface PickedArt
   extends Pick<
     Art,
-    'artId' | 'title' | 'squareThumbUrl' | 'largeThumbUrl' | 'prixerUsername' | 'exclusive'
+    'artId' | 'title' | 'squareThumbUrl' | 'largeThumbUrl' | 'prixerUsername' | 'exclusive' | '_id'
   > { }
 
 export interface ReadArtResponse {

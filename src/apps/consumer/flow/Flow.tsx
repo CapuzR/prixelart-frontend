@@ -12,12 +12,13 @@ import { fetchArt } from 'apps/consumer/art/api';
 
 import Landscape from 'apps/consumer/flow/views/Landscape';
 
-import { Item, Art } from './interfaces';
-import { queryCreator, getUrlParams } from './utils';
+import { Item, Art, Product } from './interfaces';
+import { queryCreator } from './utils';
 import { parsePrice } from 'utils/formats';
 import { useCart } from 'context/CartContext';
-import { debounce } from 'utils/util';
 import { checkPermissions } from './services';
+import { getUrlParams } from '@utils/util';
+import { url } from 'inspector';
 
 ReactGA.initialize('G-0RWP9B33D8');
 
@@ -30,6 +31,9 @@ const Flow = () => {
   const { conversionRate } = useConversionRate();
   const { showSnackBar } = useSnackBar();
   const { cart, addOrUpdateItemInCart } = useCart();
+
+  const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
+
   const location = useLocation();
 
   const urlParams = Object.fromEntries(new URLSearchParams(location.search).entries());
@@ -52,22 +56,22 @@ const Flow = () => {
         if (urlParams.producto) {
           selectedProduct = await fetchProductDetails(urlParams.producto);
         }
+
         if (urlParams.arte) {
           selectedArt = await fetchArt(urlParams.arte);
         }
 
+        console.log('Fetched art from API:', selectedArt);
         const selectedAttributes = getUrlParams([
           'producto',
           'arte',
-          'step',
           'itemId',
           'lineId',
         ]);
 
-        selectedAttributes &&
-          selectedAttributes.map((att) => {
-            atts[att.name] = att.value;
-          });
+        Array.from(selectedAttributes.entries()).map(([key, value]) => {
+          atts[key] = value;
+        });
 
         setItem((prevItem) => ({
           ...prevItem,
@@ -120,10 +124,36 @@ const Flow = () => {
   }, [JSON.stringify(item.product?.selection), currency, conversionRate, item.art?.artId]);
 
   const handleArtSelect = (selectedArt: Art) => {
-    const updatedParams = new URLSearchParams(location.search);
-    updatedParams.set('arte', selectedArt._id);
-    navigate(`${location.pathname}?${updatedParams.toString()}`);
+    const newQueryString = queryCreator(
+      urlParams.lineId,
+      urlParams.itemId,
+      urlParams.producto,
+      selectedArt._id,
+      undefined
+    );
+    navigate(`${location.pathname}?${newQueryString}`);
     showSnackBar('¡Arte seleccionado! Puedes agregar el item al carrito');
+  };
+
+  const handleProductSelect = (selectedProduct: Product) => {
+    const attributes = selectedProduct.selection?.reduce((acc, curr) => {
+      acc[curr.name] = curr.value;
+      return acc;
+    }, {} as Record<string, string>);
+
+    setSelectedProductId(selectedProduct.id);
+
+    if (attributes) {
+      const newQueryString = queryCreator(
+        urlParams.lineId,
+        urlParams.itemId,
+        selectedProduct.id,
+        urlParams.arte,
+        attributes
+      );
+      navigate(`${location.pathname}?${newQueryString}`);
+      showSnackBar('¡Producto seleccionado! Puedes agregar el item al carrito');
+    }
   };
 
   const handleCart = (item: Item) => {
@@ -132,38 +162,43 @@ const Flow = () => {
     navigate('/carrito');
   };
 
-  const handleDeleteElement = (type: 'producto' | 'arte', item: Item) => {
+  const handleChangeElement = (type: 'producto' | 'arte', item: Item) => {
 
-    const selectionAsObject = (item.product?.selection || []).reduce(
-      (acc, sel, index) => {
-        acc[`selection-${index}`] = sel.value;
-        return acc;
-      },
-      {} as Record<string, string>
-    );
+    const selectionAsObject =
+      type === 'producto'
+        ? {}
+        : (item.product?.selection || []).reduce((acc, sel, index) => {
+          acc[`selection-${index}`] = sel.value;
+          return acc;
+        }, {} as Record<string, string>);
 
-    type === 'arte'
-      ? setItem((prevItem) => ({
+    if (type === 'arte') {
+      setItem((prevItem) => ({
         ...prevItem,
         art: undefined,
-      }))
-      : setItem((prevItem) => ({
+      }));
+    } else if (type === 'producto') {
+      setItem((prevItem) => ({
         ...prevItem,
         product: undefined,
+        attributes: undefined,
       }));
-
+    }
     const queryString = queryCreator(
       urlParams.lineId,
-      item.sku,
-      type == 'producto' ? undefined : item.product?.id,
-      type == 'arte' ? undefined : item.art?.artId,
+      type === 'producto' ? undefined : item.sku,
+      type === 'producto' ? undefined : item.product?.id,
+      type === 'arte' ? undefined : item.art?._id,
       selectionAsObject,
     );
+
 
     navigate({ pathname: location.pathname, search: queryString });
   };
 
+
   const handleSelection = (e: React.ChangeEvent<{ name: string; value: number }>) => {
+
     const prevSelection = item.product?.selection || [];
     const newSelection = [...prevSelection];
     const existingIndex = newSelection.findIndex((sel) => sel.name === e.target.name);
@@ -244,6 +279,7 @@ const Flow = () => {
           searchResult={props.searchResult}
           setSearchResult={props.setSearchResult}
           searchParams={searchParams}
+          selectedProductId={selectedProductId}
         />
       ) : ( */}
       <Landscape
@@ -253,9 +289,11 @@ const Flow = () => {
         handleCart={handleCart}
         getFilteredOptions={getFilteredOptions}
         handleSelection={handleSelection}
-        handleDeleteElement={handleDeleteElement}
+        handleChangeElement={handleChangeElement}
         isItemReady={isItemReady}
         onArtSelect={handleArtSelect}
+        onProductSelect={handleProductSelect}
+        selectedProductId={selectedProductId}
       />
       {/* )} */}
     </>

@@ -119,8 +119,6 @@ export const parseBillingMethods = (data: any[]): PaymentMethod[] =>
 
 export const parseOrder = (data: any): any => {
 
-  console.log("before:", data);
-
   // Build consumer data (assumed to be fine already)
   const basic = data.basic || {};
   const consumerPayload = {
@@ -188,6 +186,5 @@ export const parseOrder = (data: any): any => {
     consumerData: consumerPayload,
   };
 
-  console.log("after:", payload);
   return payload;
 }

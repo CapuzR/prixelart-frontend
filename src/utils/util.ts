@@ -12,24 +12,15 @@ export const getImageSize = (url: string): Promise<{ width: number; height: numb
   });
 };
 
-//TODO : Reemplazar Todos los URLSearchParams del app con este util.
-export function getUrlParams(excludedParams: string[] = []): { name: string; value: string }[] {
-  const searchParams = new URLSearchParams(window.location.search);
-  const paramsArray: { name: string; value: string }[] = [];
+export const getUrlParams = (excludedParams: string[] = []): URLSearchParams => {
+  const originalSearchParams = new URLSearchParams(window.location.search);
+  const filteredParams = new URLSearchParams();
 
-  searchParams.forEach((value, key) => {
+  originalSearchParams.forEach((value, key) => {
     if (!excludedParams.includes(key)) {
-      paramsArray.push({ name: key, value });
+      filteredParams.append(key, value);
     }
   });
 
-  return paramsArray;
-}
-
-export function debounce(fn: (...args: any[]) => void, delay: number) {
-  let timeoutId: NodeJS.Timeout;
-  return (...args: any[]) => {
-    if (timeoutId) clearTimeout(timeoutId);
-    timeoutId = setTimeout(() => fn(...args), delay);
-  };
+  return filteredParams;
 }

@@ -19,6 +19,7 @@ import 'react-quill/dist/quill.snow.css';
 import Tooltip from '@mui/material/Tooltip';
 import { Slider } from '@mui/material';
 import { useStyles } from './biography.styles';
+import { getUrlParams } from '@utils/util';
 
 interface BiographyProps {
   prixerUsername: string;
@@ -40,7 +41,7 @@ export default function Biography(props: BiographyProps) {
   const [snackBar, setSnackBar] = useState(false);
   const [loading, setLoading] = useState(false);
   const [snackBarMessage, setSnackBarMessage] = useState<string>('');
-  const globalParams = new URLSearchParams(window.location.pathname);
+  const globalParams = getUrlParams();
   const entries = globalParams.entries();
   const firstEntry = entries.next().value as [string, string];
   const [key, value] = firstEntry || ['', ''];

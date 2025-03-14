@@ -1,4 +1,5 @@
 @use '@/theme.scss' as theme;
+
 .item-playground {
   // height: 100%;
   flex: 1;
@@ -17,6 +18,8 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    text-align: center;
+    padding: theme.$spacing-md;
     flex: 1;
 
     small {
@@ -45,6 +48,10 @@
       border-color: theme.$primary-color;
     }
   }
+}
+
+.unit-price {
+  min-width: 125px;
 }
 
 .item-content {

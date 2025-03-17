@@ -443,10 +443,12 @@ export default function OrgCommission({
                   setComission(e.target.value)
                 }}
                 type={"number"}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">%</InputAdornment>
-                  ),
+                slotProps={{
+                  input: {
+                    startAdornment: (
+                      <InputAdornment position="start">% </InputAdornment>
+                    ),
+                  },
                 }}
               />
               <Accordion style={{ marginTop: 10 }}>

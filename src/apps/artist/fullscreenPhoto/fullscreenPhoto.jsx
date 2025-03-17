@@ -19,7 +19,7 @@ import FloatingAddButton from 'components/floatingAddButton/floatingAddButton';
 import ArtUploader from '@apps/artist/artUploader/artUploader';
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import ShareIcon from '@mui/icons-material/Share';
-import utils from '../../../../utils/utils';
+import utils from '../../../utils/utils';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import Select from '@mui/material/Select';

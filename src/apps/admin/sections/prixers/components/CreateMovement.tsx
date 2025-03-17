@@ -40,7 +40,6 @@ export default function CreateMovement({
     }
     const response = await createMovement(data)
 
-    console.log(response.data)
     showSnackBar("Balance actualizado exitosamente.")
     handleClose()
     setTimeout(() => {

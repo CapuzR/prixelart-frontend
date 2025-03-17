@@ -1,4 +1,16 @@
 import axios from "axios"
+import { Discount } from "../../../../types/discount.types"
+import UpdateProduct from "./views/Update"
+
+export const createProduct = async (data) => {
+  const base_url = import.meta.env.VITE_BACKEND_URL + "/product/create"
+  try {
+    const response = await axios.post(base_url, data)
+    return response.data
+  } catch (error) {
+    console.log(error)
+  }
+}
 
 export const getAllProducts = async () => {
   const base_url = import.meta.env.VITE_BACKEND_URL + "/product/read-allv1"
@@ -7,6 +19,17 @@ export const getAllProducts = async () => {
     return response.data.products
   } catch (e) {
     console.log(e)
+  }
+}
+
+export const updateProduct = async (data) => {
+  const base_url =
+    import.meta.env.VITE_BACKEND_URL + `/product/update/${data._id}`
+  try {
+    const response = await axios.put(base_url, data)
+    return response.data
+  } catch (error) {
+    console.log(error)
   }
 }
 
@@ -25,6 +48,16 @@ export const getDiscounts = async () => {
   try {
     const response = await axios.get(base_url)
     return response.data.discounts
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+export const createDiscount = async (data: Partial<Discount>) => {
+  const base_url = import.meta.env.VITE_BACKEND_URL + "/discount/create"
+  try {
+    const response = await axios.post(base_url, data, { withCredentials: true })
+    return response.data
   } catch (error) {
     console.log(error)
   }

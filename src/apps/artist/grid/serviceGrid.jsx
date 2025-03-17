@@ -29,7 +29,7 @@ import HighlightOffOutlinedIcon from '@mui/icons-material/HighlightOffOutlined';
 import AddIcon from '@mui/icons-material/Add';
 import Snackbar from '@mui/material/Snackbar';
 import DeleteIcon from '@mui/icons-material/Delete';
-import utils from '../../../../utils/utils';
+import utils from '../../../utils/utils';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import ServiceSearchBar from 'components/searchBar/serviceSearchBar';

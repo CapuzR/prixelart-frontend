@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { useHistory, useLocation } from "react-router-dom"
+import { useLocation } from "react-router-dom"
 import Grid2 from "@mui/material/Grid2"
 import Paper from "@mui/material/Paper"
 
@@ -9,10 +9,8 @@ import Table from "./components/Table"
 import { ConsumerFormProvider } from "@context/ConsumerFormContext"
 
 export default function Consumers() {
-  const history = useHistory()
   const location = useLocation()
   const [activeCrud, setActiveCrud] = useState("read")
-  const [consumer, setConsumer] = useState()
 
   useEffect(() => {
     location.pathname.split("/").length === 5
@@ -28,31 +26,30 @@ export default function Consumers() {
   return (
     <div style={{ position: "relative" }}>
       <Grid2 container spacing={3}>
-        <Grid2>
-          <Paper
-            sx={{
-              padding: 6,
-              display: "flex",
-              overflow: "none",
-              flexDirection: "column",
-              height: "auto",
-            }}
-          >
-            <ConsumerFormProvider>
-              {activeCrud === "create" ? (
-                <Create />
-              ) : activeCrud === "read" ? (
-                <Table />
-              ) : (
-                activeCrud == "update" && (
-                  <div>
-                    <Update />
-                  </div>
-                )
-              )}
-            </ConsumerFormProvider>
-          </Paper>
-        </Grid2>
+        <Paper
+          sx={{
+            padding: 6,
+            display: "flex",
+            overflow: "none",
+            flexDirection: "column",
+            height: "auto",
+            width: "100%"
+          }}
+        >
+          <ConsumerFormProvider>
+            {activeCrud === "create" ? (
+              <Create />
+            ) : activeCrud === "read" ? (
+              <Table />
+            ) : (
+              activeCrud == "update" && (
+                <div>
+                  <Update />
+                </div>
+              )
+            )}
+          </ConsumerFormProvider>
+        </Paper>
       </Grid2>
     </div>
   )

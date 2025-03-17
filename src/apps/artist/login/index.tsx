@@ -29,7 +29,7 @@ import InputAdornment from "@mui/material/InputAdornment"
 import FormControl from "@mui/material/FormControl"
 import Visibility from "@mui/icons-material/Visibility"
 import VisibilityOff from "@mui/icons-material/VisibilityOff"
-import TermsModal from "apps/artist/components/Terms"
+import TermsModal from "@apps/artist/components/Terms/UpdatedTerms"
 import { fetchTermsText, fetchTermsAgreementStatus, login } from "./api"
 
 import Copyright from "@components/Copyright/copyright"
@@ -101,7 +101,7 @@ export default function Login() {
           return
         }
 
-        const token = jwt(response.data.token)
+        const token: any = jwt(response.data.token)
         localStorage.setItem("token", JSON.stringify(token))
         localStorage.setItem(
           "tokenExpire",
@@ -128,7 +128,7 @@ export default function Login() {
   }
 
   const redirectUser = (role, username) => {
-    const rolePath = role === "Organization" ? "/org=" : "/prixer="
+    const rolePath = role === "Organization" ? "org=" : "prixer="
     window.location.href = `${import.meta.env.VITE_FRONTEND_URL}${rolePath}${username}`
   }
 

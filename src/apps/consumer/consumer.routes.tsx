@@ -1,33 +1,20 @@
-import React, { useState } from "react";
-import { Route, Switch } from "react-router-dom";
+import { useState } from "react"
+import { Route, Switch } from "react-router-dom"
 
-import ArtDetail from "apps/consumer/art/components/Detail";
-import Home from "apps/consumer/home/home";
-import Catalog from "apps/consumer/art/catalog/views/Catalog";
-import Products from "apps/consumer/products/Catalog";
-import Cart from "@apps/consumer/cart";
-import Prixers from "apps/consumer/prixers/prixersGrid";
-import OrgGrid from "apps/consumer/components/orgGrid/orgGrid";
-import PrixersService from "apps/consumer/prixerServices/prixerService";
-import TestimonialsGrid from "apps/consumer/testimonials/TestimonialsGrid";
-import ProductDetails from "apps/consumer/products/Details/Details";
-import Flow from "apps/consumer/flow/Flow";
-import PrixerProfile from "apps/artist/prixerProfile/prixerProfile";
-import SoloService from "apps/artist/prixerProfile/fullscreenPhoto/fullscreenService";
-import Register from "apps/artist/register/userRegistration"
-import PrixerRegistration from "apps/artist/register/prixerRegistration"
-import Login from "@apps/artist/login"
-import PasswordChange from "apps/artist/prixerProfile/passwordChange/passwordChange"
-import ForgotPassword from "apps/artist/prixerProfile/passwordReset/forgotPassword"
+import Home from "apps/consumer/home/home"
+import Catalog from "apps/consumer/art/catalog/views/Catalog"
+import Products from "apps/consumer/products/Catalog"
+import Cart from "@apps/consumer/cart"
+import Prixers from "apps/consumer/prixers/prixersGrid"
+import OrgGrid from "apps/consumer/components/orgGrid/orgGrid"
+import TestimonialsGrid from "apps/consumer/testimonials/TestimonialsGrid"
+import ProductDetails from "apps/consumer/products/Details/Details"
+import Flow from "apps/consumer/flow/Flow"
 
-interface ConsumerRoutesProps {
-  permissions: any;
-}
-
-const ConsumerRoutes: React.FC<ConsumerRoutesProps> = ({ permissions }) => {
-  const [prixer, setPrixer] = useState<any>(null);
-  const [fullArt, setFullArt] = useState<any>(null);
-  const [pointedProduct, setPointedProduct] = useState<any>(undefined);
+const ConsumerRoutes = () => {
+  const [prixer, setPrixer] = useState<any>(null)
+  const [fullArt, setFullArt] = useState<any>(null)
+  const [pointedProduct, setPointedProduct] = useState<any>(undefined)
 
   return (
     <Switch>
@@ -55,47 +42,10 @@ const ConsumerRoutes: React.FC<ConsumerRoutesProps> = ({ permissions }) => {
         <Cart />
       </Route>
 
-      <Route path="/servicios">
-        <PrixersService
-          setPrixer={setPrixer}
-          prixer={prixer}
-          permissions={permissions}
-        />
+      <Route path="/testimonios">
+        <TestimonialsGrid />
       </Route>
 
-      {/* TODO : Cambiar a /servicio/:serviceId */}
-      <Route path="/service=:serviceId">
-        <SoloService
-          setPrixer={setPrixer}
-          prixer={prixer}
-          permissions={permissions}
-        />
-      </Route>
-      <Route path="/testimonios">
-        <TestimonialsGrid setPrixer={setPrixer} prixer={prixer} />
-      </Route>
-      {/* TODO : Cambiar a /arte/:artId */}
-      <Route exact path="/art=:artId" component={ArtDetail}>
-        <ArtDetail
-          prixer={prixer}
-          fullArt={fullArt}
-          permissions={permissions}
-        />
-      </Route>
-      <Route path="/prixer=:username">
-        <PrixerProfile
-          setPrixer={setPrixer}
-          setFullArt={setFullArt}
-          permissions={permissions}
-        />
-      </Route>
-      <Route path="/org=:username">
-        <PrixerProfile
-          setPrixer={setPrixer}
-          setFullArt={setFullArt}
-          permissions={permissions}
-        />
-      </Route>
       {/* TODO : Cómo debería llamarse? Flujo? Selección? */}
       <Route path="/flow">
         <Flow />
@@ -105,30 +55,9 @@ const ConsumerRoutes: React.FC<ConsumerRoutesProps> = ({ permissions }) => {
         <ProductDetails />
       </Route>
 
-
-      <Route exact path="/iniciar">
-        <Login />
-      </Route>
-
-      <Route path="/registrar/prixer">
-        <PrixerRegistration />
-      </Route>
-
-      <Route path="/registrar">
-        <Register />
-      </Route>
-
-      <Route path="/cambio-contraseña">
-        <PasswordChange />
-      </Route>
-
-      <Route path="/olvido-contraseña">
-        <ForgotPassword />
-      </Route>
-
-      <Route path="/" component={Home} />
+      <Route path="/" component={Home} exact />
     </Switch>
-  );
-};
+  )
+}
 
-export default ConsumerRoutes;
+export default ConsumerRoutes

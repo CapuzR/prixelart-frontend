@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 
 import Table from "@mui/material/Table"
 import TableBody from "@mui/material/TableBody"
@@ -10,7 +10,7 @@ import IconButton from "@mui/material/IconButton"
 import EditIcon from "@mui/icons-material/Edit"
 import DeleteIcon from "@mui/icons-material/Delete"
 import PaginationBar from "@components/Pagination/PaginationBar"
-import { Typography } from "@mui/material"
+import { Tooltip, Typography } from "@mui/material"
 import FormControl from "@mui/material/FormControl"
 import InputLabel from "@mui/material/InputLabel"
 import Select, { SelectChangeEvent } from "@mui/material/Select"
@@ -44,9 +44,8 @@ export default function Table1({
       let xo = {}
 
       properties.forEach((prop: string) => {
-        xo[prop] = obj[prop] || ""
+        xo[prop] = obj[prop] ?? ""
       })
-
       return xo
     })
   }
@@ -61,7 +60,6 @@ export default function Table1({
     type: string
   }
 
-  console.log(deleteFunction)
   return (
     <Table size="medium">
       <TableHead>
@@ -107,55 +105,77 @@ export default function Table1({
               sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
             >
               {Object.entries(row).map(([key, value]) => {
-                if (typeof value === "boolean") {
+                if (Array.isArray(value)) {
                   return (
                     <TableCell align="center">
-                      <Checkbox disabled checked={value} color="primary" />
+                      <ul>
+                        {value.map((v) => (
+                          <li>{v}</li>
+                        ))}
+                      </ul>
                     </TableCell>
                   )
-                } else {
+                } else if (typeof value === "boolean") {
+                  return (
+                    <TableCell align="center">
+                      <Checkbox
+                        disabled
+                        checked={Boolean(value)}
+                        color="primary"
+                      />
+                    </TableCell>
+                  )
+                } else if (
+                  typeof value === "string" ||
+                  typeof value === "number"
+                ) {
                   return <TableCell align="center">{value}</TableCell>
                 }
               })}
               {/* Especificar el permiso según el área correspondiente !!! */}
-              {permissions?.modifyAdmins && (updateFunction || deleteFunction) && (
-                <TableCell align="center" sx={{ minWidth: 150 }}>
-                  {updateFunction && (
-                    <IconButton
-                      sx={{
-                        width: 35,
-                        height: 35,
-                        marginRight: "16px !important",
-                        "&:hover": {
-                          color: "DarkSlateGray",
-                        },
-                      }}
-                      onClick={(e) => {
-                        updateFunction(elements[i])
-                      }}
-                    >
-                      <EditIcon />
-                    </IconButton>
-                  )}
-                  {deleteFunction && (
-                    <IconButton
-                      sx={{
-                        width: 35,
-                        height: 35,
-                        marginRight: "16px !important",
-                        "&:hover": {
-                          color: "darkred",
-                        },
-                      }}
-                      onClick={(e) => {
-                        deleteFunction(elements[i])
-                      }}
-                    >
-                      <DeleteIcon />
-                    </IconButton>
-                  )}
-                </TableCell>
-              )}
+              {permissions?.modifyAdmins &&
+                (updateFunction || deleteFunction) && (
+                  <TableCell align="center" sx={{ minWidth: 150 }}>
+                    {updateFunction && (
+                      <Tooltip title="Editar">
+                        <IconButton
+                          sx={{
+                            width: 35,
+                            height: 35,
+                            marginRight: "16px !important",
+                            "&:hover": {
+                              color: "DarkSlateGray",
+                            },
+                          }}
+                          onClick={(e) => {
+                            updateFunction(elements[i])
+                          }}
+                        >
+                          <EditIcon />
+                        </IconButton>
+                      </Tooltip>
+                    )}
+                    {deleteFunction && (
+                      <Tooltip title="Eliminar">
+                        <IconButton
+                          sx={{
+                            width: 35,
+                            height: 35,
+                            marginRight: "16px !important",
+                            "&:hover": {
+                              color: "darkred",
+                            },
+                          }}
+                          onClick={(e) => {
+                            deleteFunction(elements[i])
+                          }}
+                        >
+                          <DeleteIcon />
+                        </IconButton>
+                      </Tooltip>
+                    )}
+                  </TableCell>
+                )}
             </TableRow>
           ))}
       </TableBody>

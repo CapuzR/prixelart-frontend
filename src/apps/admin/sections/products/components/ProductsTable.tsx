@@ -9,6 +9,8 @@ import DeleteIcon from "@mui/icons-material/Delete"
 import Fab from "@mui/material/Fab"
 import Typography from "@mui/material/Typography"
 import Paper from "@mui/material/Paper"
+import { Grid2, Tooltip, IconButton } from "@mui/material"
+
 import { getPermissions } from "@context/GlobalContext"
 
 export default function ProductsTable({
@@ -19,39 +21,34 @@ export default function ProductsTable({
 }) {
   const permissions = getPermissions()
 
+  const headers = [
+    "Imagen",
+    "Nombre",
+    "Activo",
+    "Categoría",
+    "PVP desde - hasta",
+    "PVM desde - hasta",
+    "Descuento",
+    "Tiempo de producción",
+    "",
+  ]
+
+  
   return (
     <Table size="small">
       <TableHead>
         <TableRow>
-          <TableCell align="center"></TableCell>
-          <TableCell align="center">Imagen</TableCell>
-          <TableCell align="center">Nombre</TableCell>
-          <TableCell align="center">Activo</TableCell>
-          <TableCell align="center">Categoría</TableCell>
-          <TableCell align="center">PVP desde-hasta</TableCell>
-          <TableCell align="center">PVM desde-hasta</TableCell>
-          <TableCell align="center">Descuento</TableCell>
-          <TableCell align="center">Tiempo de producción</TableCell>
+          {headers.map((head, i) => (
+            <TableCell key={i} align="center" style={{fontWeight: "bold"}}>
+              {head}
+            </TableCell>
+          ))}{" "}
         </TableRow>
       </TableHead>
       <TableBody>
         {rows &&
           rows.map((row) => (
             <TableRow key={row._id}>
-              <TableCell align="center">
-                {permissions?.createProduct && (
-                  <Fab
-                    color="default"
-                    style={{ width: 35, height: 35 }}
-                    aria-label="edit"
-                    onClick={(e) => {
-                      handleActive("product", row, "update")
-                    }}
-                  >
-                    <EditIcon />
-                  </Fab>
-                )}
-              </TableCell>
               <TableCell align="center">
                 {row.sources.images?.length > 0 ? (
                   <>
@@ -155,19 +152,47 @@ export default function ProductsTable({
                   : row.productionTime && row.productionTime + " día"}
               </TableCell>
               <TableCell align="center">
-                {permissions?.deleteProduct && (
-                  <Fab
-                    color="default"
-                    style={{ width: 35, height: 35 }}
-                    aria-label="Delete"
-                    onClick={(e) => {
-                      e.preventDefault()
-                      deleteElement("product", row._id)
-                    }}
-                  >
-                    <DeleteIcon />
-                  </Fab>
-                )}
+                <Grid2 sx={{ display: "flex" }}>
+                  {permissions?.createProduct && (
+                    <Tooltip title="Editar">
+                      <IconButton
+                        sx={{
+                          width: 35,
+                          height: 35,
+                          marginRight: "16px !important",
+                          "&:hover": {
+                            color: "DarkSlateGray",
+                          },
+                        }}
+                        onClick={(e) => {
+                          handleActive("product", row, "update")
+                        }}
+                      >
+                        <EditIcon />
+                      </IconButton>
+                    </Tooltip>
+                  )}
+                  {permissions?.deleteProduct && (
+                    <Tooltip title="Eliminar">
+                      <IconButton
+                        sx={{
+                          width: 35,
+                          height: 35,
+                          marginRight: "16px !important",
+                          "&:hover": {
+                            color: "darkred",
+                          },
+                        }}
+                        onClick={(e) => {
+                          e.preventDefault()
+                          deleteElement("product", row._id)
+                        }}
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    </Tooltip>
+                  )}
+                </Grid2>
               </TableCell>
             </TableRow>
           ))}

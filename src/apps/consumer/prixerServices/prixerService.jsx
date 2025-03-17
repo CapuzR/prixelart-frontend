@@ -10,7 +10,7 @@ import Typography from '@mui/material/Typography';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/styles';
 import PrixersGrid from 'apps/consumer/components/prixerGrid/prixerGrid';
-import ServiceGrid from 'apps/artist/prixerProfile/grid/serviceGrid';
+import ServiceGrid from '@apps/artist/grid/serviceGrid';
 
 const useStyles = makeStyles((theme) => ({
   paper: {

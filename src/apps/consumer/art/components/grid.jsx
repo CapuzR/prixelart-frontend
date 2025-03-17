@@ -21,7 +21,7 @@ import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import CardActionArea from '@mui/material/CardActionArea';
 import Box from '@mui/material/Box';
-import FullscreenPhoto from '../../../artist/prixerProfile/fullscreenPhoto/fullscreenPhoto';
+import FullscreenPhoto from '../../../artist/fullscreenPhoto/fullscreenPhoto';
 import Star from '@mui/icons-material/StarRate';
 import StarOutline from '@mui/icons-material/StarOutline';
 

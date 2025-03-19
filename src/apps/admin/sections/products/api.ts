@@ -22,9 +22,9 @@ export const getAllProducts = async () => {
   }
 }
 
-export const updateProduct = async (data) => {
+export const updateProduct = async (data, id) => {
   const base_url =
-    import.meta.env.VITE_BACKEND_URL + `/product/update/${data._id}`
+    import.meta.env.VITE_BACKEND_URL + `/product/update/${id}`
   try {
     const response = await axios.put(base_url, data)
     return response.data

@@ -1,29 +1,20 @@
+import { useState } from "react"
+
+import { Theme } from "@mui/material"
+import { makeStyles } from "tss-react/mui"
+
 import FloatingAddButton from "components/floatingAddButton/floatingAddButton"
 import CreateService from "components/createService/createService"
 import InfoCard from "./components/InfoCard"
-import PrixerOptions from "../stats/prixerOptions"
-import ArtsGrid from "../../consumer/art/components/grid"
+import Tabs from "./components/Tabs"
+import ArtsGrid from "../../consumer/art/components/Grid"
 import Container from "@mui/material/Container"
 import Grid2 from "@mui/material/Grid2"
-import { useState } from "react"
+
 import ArtUploader from "@apps/artist/artUploader/artUploader"
-import ServiceGrid from "../grid/serviceGrid"
-import Modal from "@mui/material/Modal"
-import Button from "@mui/material/Button"
-import MDEditor from "@uiw/react-md-editor"
-import Dialog from "@mui/material/Dialog"
-import Typography from "@mui/material/Typography"
-import { useHistory } from "react-router-dom"
-import useMediaQuery from "@mui/material/useMediaQuery"
-import { useTheme } from "@mui/styles"
-import DialogActions from "@mui/material/DialogActions"
-import DialogContent from "@mui/material/DialogContent"
-import DialogContentText from "@mui/material/DialogContentText"
-import DialogTitle from "@mui/material/DialogTitle"
-import Img from "react-cool-img"
-import Biography from "../grid/biography"
-import { Theme } from "@mui/material"
-import { makeStyles } from "tss-react/mui"
+import ServiceGrid from "../prixerService"
+import Biography from "./components/Bio"
+
 
 const useStyles = makeStyles()((theme: Theme) => {
   return {
@@ -69,9 +60,6 @@ const useStyles = makeStyles()((theme: Theme) => {
 export default function Profile() {
   const { classes } = useStyles()
   const globalParams = new URLSearchParams(window.location.pathname)
-  const username = window.location.pathname.includes("org")
-    ? globalParams.get("/org")
-    : globalParams.get("/prixer")
 
   const [openArtFormDialog, setOpenArtFormDialog] = useState(false)
   const [openServiceFormDialog, setOpenServiceFormDialog] = useState(false)
@@ -101,13 +89,13 @@ export default function Profile() {
 
   return (
     <Container component="main" maxWidth="xl" className={classes.paper}>
-      <InfoCard feed={feed} setFeed={setFeed} />
-      {feed !== "Settings" && (
-        <PrixerOptions
+      <InfoCard/>
+      {/* {feed !== "Settings" && ( */}
+        <Tabs
           feed={feed}
           setFeed={setFeed}
         />
-      )}
+       {/* )} */}
       {showPrixerGrid2()}
 
       {openArtFormDialog && (

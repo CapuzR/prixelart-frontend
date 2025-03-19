@@ -51,7 +51,8 @@ export default function CreateProduct() {
     history.push({ pathname: "/admin/product/" + action })
   }
 
-  const handleSubmit = async (images) => {
+  const handleSubmit = async (e, images) => {
+    e.preventDefault()
     if (images.images.length > 4) {
       showSnackBar("No puedes enviar mas de 4 fotos")
     } else {
@@ -66,7 +67,6 @@ export default function CreateProduct() {
           images.images.length > 1
         ) {
           showSnackBar("Por favor completa todos los campos requeridos.")
-          e.preventDefault()
         } else {
           setLoading(true)
           const formData = new FormData()

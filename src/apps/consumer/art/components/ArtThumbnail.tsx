@@ -51,7 +51,7 @@ export default function ArtThumbnail({
 
   return (
     <div key={i}>
-      {JSON.parse(localStorage.getItem('adminToken')) && tile.visible && (
+      {/* {JSON.parse(localStorage.getItem('adminToken')) && tile.visible && (
         <Typography
           style={{
             opacity: 0.5,
@@ -62,8 +62,7 @@ export default function ArtThumbnail({
         >
           Puntos: {tile.points}
         </Typography>
-      )}
-
+      )} */}
       <CardActionArea>
         {!isSelectedInFlow && (
           <Tooltip

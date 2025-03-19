@@ -1,8 +1,11 @@
-import React from "react"
-import { useState, useEffect } from "react"
-import { makeStyles } from "@mui/styles"
+import React, { useState, useEffect } from "react"
+import { useHistory } from "react-router-dom"
+import { Theme, useTheme } from "@mui/material"
+import useMediaQuery from "@mui/material/useMediaQuery"
+
 import Title from "../../../components/Title"
-import InputLabel from "@mui/material/InputLabel"
+
+import Grid2 from "@mui/material/Grid2"
 import TextField from "@mui/material/TextField"
 import Button from "@mui/material/Button"
 import IconButton from "@mui/material/IconButton"
@@ -11,86 +14,67 @@ import DialogActions from "@mui/material/DialogActions"
 import DialogContent from "@mui/material/DialogContent"
 import DialogContentText from "@mui/material/DialogContentText"
 import DialogTitle from "@mui/material/DialogTitle"
-import Grid from "@mui/material/Grid"
-import Snackbar from "@mui/material/Snackbar"
-import CircularProgress from "@mui/material/CircularProgress"
-import FormControl from "@mui/material/FormControl"
-import clsx from "clsx"
-import Checkbox from "@mui/material/Checkbox"
-import { useHistory } from "react-router-dom"
-import { useTheme } from "@mui/styles"
-import useMediaQuery from "@mui/material/useMediaQuery"
-import HighlightOffOutlinedIcon from "@mui/icons-material/HighlightOffOutlined"
-import EditIcon from "@mui/icons-material/Edit"
-import MDEditor from "@uiw/react-md-editor"
+
+import ViewListIcon from "@mui/icons-material/ViewList"
 import Variants from "./VariantsIndex"
 import Tabs from "@mui/material/Tabs"
 import Tab from "@mui/material/Tab"
 import Box from "@mui/material/Box"
-import Typography from "@mui/material/Typography"
 import PropTypes from "prop-types"
-import {
-  isAValidName,
-  isAValidCi,
-  isAValidPhoneNum,
-  isAValidEmail,
-  isAValidPrice,
-} from "utils/validations"
-import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline"
-import Paper from "@mui/material/Paper"
 import Mockup from "./UpdateMockUp"
-import InputAdornment from "@mui/material/InputAdornment"
-import ReactQuill from "react-quill"
 import "react-quill/dist/quill.snow.css"
 import ProductForm from "../components/ProductForm"
 import { useProductForm } from "@context/ProductContext"
 import { useSnackBar, useLoading } from "@context/GlobalContext"
 
 import { updateProduct } from "../api"
+import { makeStyles } from "tss-react/mui"
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    flexGrow: 1,
-    backgroundColor: theme.palette.background.paper,
-  },
-  seeMore: {
-    marginTop: theme.spacing(3),
-  },
-  form: {
-    height: 550,
-  },
-  backdrop: {
-    zIndex: theme.zIndex.drawer + 1,
-    color: theme.palette.primary.main,
-  },
-  loaderImage: {
-    width: "120%",
-    border: "2px",
-    height: "30vh",
-    borderStyle: "groove",
-    borderColor: "#d33f49",
-    backgroundColor: "#ededed",
-    display: "flex",
-    flexDirection: "row",
-  },
-  imageLoad: {
-    width: "100%",
-    height: "95%",
-    padding: "15px",
-    marginTop: "5px",
-  },
-  formHead: {
-    display: "flex",
-    flexDirection: "row",
-    alignContent: "center",
-    justifyContent: "space-evenly",
-    alignItems: "center",
-  },
-  buttonImgLoader: {
-    cursor: "pointer",
-    padding: "5px",
-  },
-}))
+const useStyles = makeStyles()((theme: Theme) => {
+  return {
+    root: {
+      flexGrow: 1,
+      backgroundColor: theme.palette.background.paper,
+    },
+    seeMore: {
+      marginTop: theme.spacing(3),
+    },
+    form: {
+      height: 550,
+    },
+    backdrop: {
+      zIndex: theme.zIndex.drawer + 1,
+      color: theme.palette.primary.main,
+    },
+    loaderImage: {
+      width: "120%",
+      border: "2px",
+      height: "30vh",
+      borderStyle: "groove",
+      borderColor: "#d33f49",
+      backgroundColor: "#ededed",
+      display: "flex",
+      flexDirection: "row",
+    },
+    imageLoad: {
+      width: "100%",
+      height: "95%",
+      padding: "15px",
+      marginTop: "5px",
+    },
+    formHead: {
+      display: "flex",
+      flexDirection: "row",
+      alignContent: "center",
+      justifyContent: "space-evenly",
+      alignItems: "center",
+    },
+    buttonImgLoader: {
+      cursor: "pointer",
+      padding: "5px",
+    },
+  }
+})
 function TabPanel(props) {
   const { children, value, index, ...other } = props
 
@@ -125,53 +109,16 @@ function a11yProps(index) {
 }
 
 export default function UpdateProduct() {
-  const classes = useStyles()
   const theme = useTheme()
   const { state, dispatch } = useProductForm()
-
   const history = useHistory()
   const isDesktop = useMediaQuery(theme.breakpoints.up("md"))
-  // const [productId, setProductId] = useState(
-  //  state._id || window.location.pathname.slice(22)
-  // )
-  const [images, newImages] = useState({ images: [] })
-  // const [thumbUrl, setThumbUrl] = useState(props?.product?.thumbUrl)
-  const [imagesList, setImagesList] = useState(state?.sources.images)
-  // const [active, setActive] = useState(props?.product?.active)
-  // const [productName, setProductName] = useState(props?.product?.name)
-  // const [variants, setVariants] = useState(props?.product?.variants)
-  // const [description, setDescription] = useState(props?.product?.description)
-  // const [category, setCategory] = useState(props?.product?.category)
-  // const [considerations, setConsiderations] = useState(
-  //  state.considerations || undefined
-  // )
-  // const [productionTime, setProductionTime] = useState(
-  //  state.productionTime || undefined
-  // )
-  // const [cost, setCost] = useState(props?.product?.cost || undefined)
-  // const [fromPublicPrice, setFromPublicPrice] = useState(
-  //  state.publicPrice?.from
-  // )
-  // const [toPublicPrice, setToPublicPrice] = useState(
-  //  state.publicPrice?.to || undefined
-  // )
-  // const [fromPrixerPrice, setFromPrixerPrice] = useState(
-  //  state.prixerPrice?.from
-  // )
-  // const [toPrixerPrice, setToPrixerPrice] = useState(
-  //  state.prixerPrice?.to || undefined
-  // )
-  // const [loading, setLoading] = useState(false)
-  // const [buttonState, setButtonState] = useState(false)
-  // const [activeVCrud, setActiveVCrud] = useState("read")
-  // const [hasSpecialVar, setHasSpecialVar] = useState(
-  //  state.hasSpecialVar || false
-  // )
-  // const [autoCertified, setAutoCertified] = useState(
-  //  state.autoCertified || false
-  // )
 
-  const [videoUrl, setVideoUrl] = useState(state?.sources.video)
+  const [images, newImages] = useState({ images: [] })
+  const [imagesList, setImagesList] = useState(state?.sources)
+  const [activeVCrud, setActiveVCrud] = useState("read")
+
+  const [videoUrl, setVideoUrl] = useState()
   const [imageLoader, setLoadImage] = useState({
     loader: [],
     filename: "Subir imagenes",
@@ -184,13 +131,7 @@ export default function UpdateProduct() {
   const handleChange = (event, newValue) => {
     setValue(newValue)
   }
-
-  //Error states.
-  const [errorMessage, setErrorMessage] = useState()
-  const [snackBarError, setSnackBarError] = useState(false)
   const [open, setOpen] = useState(false)
-  const [loadOpen, setLoadOpen] = useState(false)
-  const [loaDOpen, setLoaDOpen] = useState(false)
   const [mustImage, setMustImages] = useState(false)
 
   // const readProduct = () => {
@@ -205,19 +146,22 @@ export default function UpdateProduct() {
 
   useEffect(() => {
     // readProduct()
-    const indexImage =
-      imagesList?.length < 1 ? imagesList?.indexOf(thumbUrl) : undefined
+    const prev = { loader: [] }
 
-    imagesList?.map((url) => {
-      url?.type === "images"
-        ? imageLoader.loader.push(url && url.url)
-        : setVideoUrl(url && url.url)
+    const indexImage =
+      imagesList?.length < 1 ? imagesList?.indexOf(state?.thumbUrl) : undefined
+
+    imagesList?.map((img) => {
+      img?.type === "images"
+        ? prev.loader.push(img && img.url)
+        : setVideoUrl(img && img.url)
     })
 
     if (indexImage === -1) {
-      imagesList.push(thumbUrl)
-      imageLoader.loader.push(thumbUrl)
+      imagesList.push(state.thumbUrl)
+      prev.loader.push(state.thumbUrl)
     }
+    // setImagesList(prev)
     setTimeout(() => {
       if (state?.sources.images) {
         state?.sources.images.map((element) => {
@@ -225,9 +169,6 @@ export default function UpdateProduct() {
         })
       }
     }, 1000)
-    return () => {
-      localStorage.removeItem("product")
-    }
   }, [])
 
   const handleClickOpen = () => {
@@ -239,69 +180,63 @@ export default function UpdateProduct() {
   }
 
   //Preview de imagen antes de enviar
-  const convertToBase64 = (blob) => {
-    return new Promise((resolve) => {
-      var reader = new FileReader()
-      reader.onload = function () {
-        resolve(reader.result)
-      }
-      reader.readAsDataURL(blob)
-    })
-  }
+  // const convertToBase64 = (blob) => {
+  //   return new Promise((resolve) => {
+  //     var reader = new FileReader()
+  //     reader.onload = function () {
+  //       resolve(reader.result)
+  //     }
+  //     reader.readAsDataURL(blob)
+  //   })
+  // }
 
-  const loadImage = async (e) => {
-    e.preventDefault()
-    if (imageLoader.loader.length >= 4 || imagesList?.length >= 5) {
-      setLoadOpen(true)
-      setTimeout(() => {
-        setLoadOpen(false)
-      }, 3000)
-    } else {
-      const file = e.target.files[0]
-      const resizedString = await convertToBase64(file)
-      imageLoader.loader.push(resizedString)
-      images.images.push(file)
-      setLoadImage({
-        loader: imageLoader.loader,
-        filename: file.name.replace(/[,]/gi, ""),
-      })
-    }
-  }
+  // const loadImage = async (e) => {
+  //   e.preventDefault()
+  //   if (imageLoader.loader.length >= 4 || imagesList?.length >= 5) {
+  //     setLoadOpen(true)
+  //     setTimeout(() => {
+  //       setLoadOpen(false)
+  //     }, 3000)
+  //   } else {
+  //     const file = e.target.files[0]
+  //     const resizedString = await convertToBase64(file)
+  //     imageLoader.loader.push(resizedString)
+  //     images.images.push(file)
+  //     setLoadImage({
+  //       loader: imageLoader.loader,
+  //       filename: file.name.replace(/[,]/gi, ""),
+  //     })
+  //   }
+  // }
 
-  const replaceImage = async (e, index) => {
-    e.preventDefault()
-    const file = e.target.files[0]
-    const resizedString = await convertToBase64(file)
-    imageLoader.loader[index] = resizedString
-    images.images[index] = file
-    setLoadImage({ loader: imageLoader.loader, filename: file.name })
-  }
+  // const replaceImage = async (e, index) => {
+  //   e.preventDefault()
+  //   const file = e.target.files[0]
+  //   const resizedString = await convertToBase64(file)
+  //   imageLoader.loader[index] = resizedString
+  //   images.images[index] = file
+  //   setLoadImage({ loader: imageLoader.loader, filename: file.name })
+  // }
 
   const modifyString = (a, sti) => {
     const width = sti.replace("560", "326").replace("315", "326")
     setVideoUrl(width)
   }
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e, images) => {
     e.preventDefault()
     if (
       images.images.length &&
       imageLoader.loader.length &&
       imagesList?.length >= 5
     ) {
-      setLoaDOpen(true)
     } else {
       if (images?.images.length === 0 && imagesList?.length === 0) {
-        setMustImages(true)
-        setTimeout(() => {
-          setMustImages(false)
-        }, 3000)
       } else {
         if (
-          // !active &&
           !state.name &&
           !state.description &&
-          !state.publicPrice.from &&
+          !state.publicPrice?.from &&
           !images
         ) {
           showSnackBar("Por favor completa todos los campos requeridos.")
@@ -316,13 +251,13 @@ export default function UpdateProduct() {
           //     },
           //   ],
           // }
-          newFormData.append("active", state.active)
+          newFormData.append("active", state.active.toString())
           newFormData.append("name", state.name)
           newFormData.append("description", state.description)
-          newFormData.append("category", state.category)
+          newFormData.append("category", state.category.toString())
           newFormData.append("thumbUrl", state.thumbUrl)
 
-          newFormData.append("variants", JSON.stringify(variants))
+          newFormData.append("variants", JSON.stringify(state.variants))
           newFormData.append("considerations", state.considerations)
           newFormData.append("productionTime", state.productionTime)
           newFormData.append("cost", state.cost.toString())
@@ -339,66 +274,107 @@ export default function UpdateProduct() {
           newFormData.append("hasSpecialVar", state.hasSpecialVar.toString())
           newFormData.append("autoCertified", state.autoCertified.toString())
 
-          if (imagesList[0] !== undefined && imagesList.length > 0) {
-            const images = []
+          if (imagesList.length > 0) {
+            newFormData.append(
+              "images",
+              JSON.stringify(imagesList.map((img) => img.url))
+            )
+          }
+          // if (imagesList[0] !== undefined && imagesList.length > 0) {
+          //   const images = []
 
-            imagesList?.map((img) => {
-              img !== null &&
-                typeof img !== "string" &&
-                images.push(img.url + " ")
-            })
-            newFormData.append("images", images)
-          } else newFormData.append("images", [])
+          //   imagesList?.map((img) => {
+          //     img !== null &&
+          //       typeof img !== "string" &&
+          //       images.push(img.url + " ")
+          //   })
+          //   newFormData.append("images", images)
+          // } else newFormData.append("images", [])
           if (images.images) {
-            images.images.map((file) => {
+            images.images.forEach((file) => {
               newFormData.append("newProductImages", file)
             })
           }
+          // if (images.images) {
+          //   images.images.map((file) => {
+          //     newFormData.append("newProductImages", file)
+          //   })
+          // }
           if (videoUrl) {
             newFormData.append("video", videoUrl)
           }
-          const response = await updateProduct(newFormData)
+          const id = state._id
+          const response = await updateProduct(newFormData, id)
           if (response.success === false) {
             showSnackBar(response.message)
           } else {
             showSnackBar("Actualización de producto exitosa.")
-            // history.push("/product/read");
+            history.push("/admin/product/read")
           }
         }
       }
     }
   }
 
+  const handleProductAction = (action: string) => {
+    history.push({ pathname: "/admin/product/" + action })
+  }
+
   return (
     <React.Fragment>
-      <Tabs
-        value={value}
-        onChange={handleChange}
-        style={{ width: "70%" }}
-        indicatorColor="primary"
-        textColor="primary"
-      >
-        <Tab label="Descripción" {...a11yProps(0)} />
-        <Tab label="Variantes" {...a11yProps(1)} />
-        <Tab label="MockUp" {...a11yProps(2)} />
-      </Tabs>
+      <Grid2 container padding={3}>
+        <Grid2
+          size={{ xs: 12 }}
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
+          <Title title="Actualizar producto" />
+          <Tooltip title="Volver al listado">
+            <IconButton
+              color="default"
+              onClick={() => {
+                handleProductAction("read")
+              }}
+              style={{ marginRight: "10px" }}
+            >
+              <ViewListIcon />
+            </IconButton>
+          </Tooltip>
+        </Grid2>
+        <Tabs
+          value={value}
+          onChange={handleChange}
+          style={{ width: "70%" }}
+          indicatorColor="primary"
+          textColor="primary"
+        >
+          <Tab label="Descripción" {...a11yProps(0)} />
+          <Tab label="Variantes" {...a11yProps(1)} />
+          <Tab label="MockUp" {...a11yProps(2)} />
+        </Tabs>
 
-      <TabPanel value={value} index={0}>
-        <ProductForm handleSubmit={handleSubmit} openVideo={handleClickOpen} />
-      </TabPanel>
+        <TabPanel value={value} index={0}>
+          <ProductForm
+            handleSubmit={handleSubmit}
+            openVideo={handleClickOpen}
+          />
+        </TabPanel>
 
-      <TabPanel value={value} index={1}>
-        <Variants
-          product={state}
-          activeVCrud={activeVCrud}
-          setActiveVCrud={setActiveVCrud}
-        />
-      </TabPanel>
+        <TabPanel value={value} index={1}>
+          <Variants
+            product={state}
+            // activeVCrud={activeVCrud}
+            // setActiveVCrud={setActiveVCrud}
+          />
+        </TabPanel>
 
-      <TabPanel value={value} index={2}>
-        <Mockup product={state} setProduct={props.setProduct} />
-      </TabPanel>
-
+        <TabPanel value={value} index={2}>
+          <Mockup product={state} />
+        </TabPanel>
+      </Grid2>
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>Youtube Url</DialogTitle>
         <DialogContent>

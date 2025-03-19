@@ -25,7 +25,7 @@ import dayjs, { Dayjs } from "dayjs"
 
 import { useSnackBar, useLoading } from "@context/GlobalContext"
 import Copyright from "@components/Copyright/copyright"
-import { createPrixer, getTerms } from "@apps/artist/api"
+import { createPrixer } from "../api"
 
 import { DatePicker } from "@mui/x-date-pickers/DatePicker"
 import InitialTerms from "@apps/artist/components/Terms/index"

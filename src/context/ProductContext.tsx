@@ -1,4 +1,4 @@
-import { Product, PriceRange, Equation, Category } from "../types/product.types"
+import { Product, PriceRange, Equation, Category, Variant } from "../types/product.types"
 import React, { createContext, useReducer, useContext } from "react"
 
 interface ProductFormState {
@@ -17,6 +17,8 @@ interface ProductFormState {
   video: string
   productImages: Array<string | File>
   sources?: []
+  thumbUrl?: string
+  variants: Array<Variant>
 }
 // Es necesario que PriceRange y Equation existan al mismo tiempo
 const initialState: ProductFormState = {
@@ -40,12 +42,15 @@ const initialState: ProductFormState = {
   autoCertified: false,
   video: "",
   productImages: [],
+  sources: [],
+  thumbUrl: "",
+  variants: []
 }
 
 const formatProd = (prod) => {
   return {
     _id: prod._id,
-    active: prod.active === "true" ? true : false,
+    active: prod.active,
     name: prod.name,
     description: prod.description,
     category: prod?.category,
@@ -63,7 +68,7 @@ const formatProd = (prod) => {
     hasSpecialVar: prod?.hasSpecialVar === "true" ? true : false,
     autoCertified: prod?.autoCertified === "true" ? true : false,
     video: prod.sources?.video,
-    productImages: prod.sources.images,
+    sources: prod.sources.images,
   }
 }
 

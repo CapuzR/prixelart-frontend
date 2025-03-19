@@ -21,3 +21,9 @@ export interface Prixer {
   prixerId: string
   account: string
 }
+
+export interface Bio {
+  biography: string | undefined
+  images: string[]
+
+}

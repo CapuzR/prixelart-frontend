@@ -142,7 +142,6 @@ export default function Table({
     element: Product | Discount | Surcharge | Category,
     action: string
   ) => {
-    console.log(type, element, action)
     if (type === "product") {
       setProduct(element)
     } else if (type === "discount") {
@@ -158,6 +157,7 @@ export default function Table({
         product: element,
       })
     }
+
     // Cambiar el almacenamiento en el localStorage por reducer
     // localStorage.setItem(`${type}`, JSON.stringify(element))
 

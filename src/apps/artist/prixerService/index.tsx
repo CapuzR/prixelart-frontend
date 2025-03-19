@@ -1,41 +1,39 @@
-import React, { useState, useEffect } from 'react';
-import { makeStyles, withStyles } from '@mui/styles';
-import { useTheme } from '@mui/styles';
-import axios from 'axios';
-import { useHistory } from 'react-router-dom';
-import Paper from '@mui/material/Paper';
-import Button from '@mui/material/Button';
-import Backdrop from '@mui/material/Backdrop';
-import CircularProgress from '@mui/material/CircularProgress';
-import Typography from '@mui/material/Typography';
-import IconButton from '@mui/material/IconButton';
-import Grid from '@mui/material/Grid';
-import Slider from 'react-slick';
-import 'slick-carousel/slick/slick.css';
-import 'slick-carousel/slick/slick-theme.css';
-import useMediaQuery from '@mui/material/useMediaQuery';
-import DirectionsBikeIcon from '@mui/icons-material/DirectionsBike';
-import BusinessIcon from '@mui/icons-material/Business';
-import EditIcon from '@mui/icons-material/Edit';
-import { TextField } from '@mui/material';
-import clsx from 'clsx';
-import FormControl from '@mui/material/FormControl';
-import MenuItem from '@mui/material/MenuItem';
-import Select from '@mui/material/Select';
-import InputLabel from '@mui/material/InputLabel';
-import Switch from '@mui/material/Switch';
-import InputAdornment from '@mui/material/InputAdornment';
-import HighlightOffOutlinedIcon from '@mui/icons-material/HighlightOffOutlined';
-import AddIcon from '@mui/icons-material/Add';
-import Snackbar from '@mui/material/Snackbar';
-import DeleteIcon from '@mui/icons-material/Delete';
-import utils from '../../../utils/utils';
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
-import ServiceSearchBar from 'components/searchBar/serviceSearchBar';
-import FloatingAddButton from 'components/floatingAddButton/floatingAddButton';
-import ArtUploader from '@apps/artist/artUploader/artUploader';
-import CreateService from 'components/createService/createService';
+import { useState, useEffect } from "react"
+import { withStyles } from "@mui/styles"
+import axios from "axios"
+import { useHistory } from "react-router-dom"
+import Paper from "@mui/material/Paper"
+import Button from "@mui/material/Button"
+import Typography from "@mui/material/Typography"
+import IconButton from "@mui/material/IconButton"
+import Grid2 from "@mui/material/Grid2"
+import Slider from "react-slick"
+import "slick-carousel/slick/slick.css"
+import "slick-carousel/slick/slick-theme.css"
+import useMediaQuery from "@mui/material/useMediaQuery"
+import DirectionsBikeIcon from "@mui/icons-material/DirectionsBike"
+import BusinessIcon from "@mui/icons-material/Business"
+import EditIcon from "@mui/icons-material/Edit"
+import { TextField, Theme, useTheme } from "@mui/material"
+import FormControl from "@mui/material/FormControl"
+import MenuItem from "@mui/material/MenuItem"
+import Select from "@mui/material/Select"
+import InputLabel from "@mui/material/InputLabel"
+import Switch from "@mui/material/Switch"
+import InputAdornment from "@mui/material/InputAdornment"
+import HighlightOffOutlinedIcon from "@mui/icons-material/HighlightOffOutlined"
+import AddIcon from "@mui/icons-material/Add"
+import DeleteIcon from "@mui/icons-material/Delete"
+import { generateServiceMessage } from "../../../utils/utils"
+import ReactQuill from "react-quill"
+import "react-quill/dist/quill.snow.css"
+import ServiceSearchBar from "components/searchBar/serviceSearchBar"
+import FloatingAddButton from "components/floatingAddButton/floatingAddButton"
+import ArtUploader from "@apps/artist/artUploader/artUploader"
+import CreateService from "components/createService/createService"
+import { makeStyles } from "tss-react/mui"
+import { getPermissions, useLoading, useSnackBar } from "@context/GlobalContext"
+import { getServicesByPrixer } from "./api"
 
 const IOSSwitch = withStyles((theme) => ({
   root: {
@@ -43,23 +41,23 @@ const IOSSwitch = withStyles((theme) => ({
     height: 26,
     padding: 0,
     margin: theme.spacing(1),
-    position: 'absolute',
-    marginLeft: '-8vh',
+    position: "absolute",
+    marginLeft: "-8vh",
   },
   switchBase: {
     padding: 1,
-    '&$checked': {
-      transform: 'translateX(16px)',
+    "&$checked": {
+      transform: "translateX(16px)",
       color: theme.palette.common.white,
-      '& + $track': {
-        backgroundColor: 'primary',
+      "& + $track": {
+        backgroundColor: "primary",
         opacity: 1,
-        border: 'none',
+        border: "none",
       },
     },
-    '&$focusVisible $thumb': {
-      color: '#52d869',
-      border: '6px solid #fff',
+    "&$focusVisible $thumb": {
+      color: "#52d869",
+      border: "6px solid #fff",
     },
   },
   thumb: {
@@ -71,7 +69,7 @@ const IOSSwitch = withStyles((theme) => ({
     border: `1px solid ${theme.palette.grey[400]}`,
     backgroundColor: theme.palette.grey[400],
     opacity: 1,
-    transition: theme.transitions.create(['background-color', 'border']),
+    transition: theme.transitions.create(["background-color", "border"]),
   },
   checked: {},
   focusVisible: {},
@@ -89,195 +87,149 @@ const IOSSwitch = withStyles((theme) => ({
       }}
       {...props}
     />
-  );
-});
+  )
+})
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    justifyContent: 'space-around',
-    overflow: 'hidden',
-    backgroundColor: theme.palette.background.paper,
-    // marginBottom: "20px",
-  },
-  img: {
-    [theme.breakpoints.down('sm')]: {
-      maxHeight: 180,
+const useStyles = makeStyles()((theme: Theme) => {
+  return {
+    img: {
+      [theme.breakpoints.down("sm")]: {
+        maxHeight: 180,
+      },
+      [theme.breakpoints.up("sm")]: {
+        minHeight: 300,
+        maxHeight: 300,
+      },
+      [theme.breakpoints.up("lg")]: {
+        // minHeight: 300,
+        // maxHeight: 450,
+        minWidth: 300,
+      },
+      [theme.breakpoints.up("xl")]: {
+        minHeight: 450,
+        maxHeight: 450,
+      },
     },
-    [theme.breakpoints.up('sm')]: {
-      minHeight: 300,
-      maxHeight: 300,
+    imagen: {
+      objectFit: "fill",
     },
-    [theme.breakpoints.up('lg')]: {
-      // minHeight: 300,
-      // maxHeight: 450,
-      minWidth: 300,
+    paper2: {
+      position: "absolute",
+      width: "80%",
+      maxHeight: "90%",
+      overflowY: "auto",
+      backgroundColor: "white",
+      boxShadow: theme.shadows[2],
+      padding: "16px 32px 24px",
+      top: "50%",
+      left: "50%",
+      transform: "translate(-50%, -50%)",
+      textAlign: "justify",
+      minWidth: 320,
+      borderRadius: 10,
+      marginTop: "12px",
+      display: "flex",
+      flexDirection: "row",
     },
-    [theme.breakpoints.up('xl')]: {
-      minHeight: 450,
-      maxHeight: 450,
+    padding: {
+      padding: 0,
     },
-  },
-  imagen: {
-    objectFit: 'fill',
-  },
-  backdrop: {
-    zIndex: theme.zIndex.drawer + 1,
-    color: theme.palette.primary.main,
-  },
-  paper2: {
-    position: 'absolute',
-    width: '80%',
-    maxHeight: '90%',
-    overflowY: 'auto',
-    backgroundColor: 'white',
-    boxShadow: theme.shadows[2],
-    padding: '16px 32px 24px',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    textAlign: 'justify',
-    minWidth: 320,
-    borderRadius: 10,
-    marginTop: '12px',
-    display: 'flex',
-    flexDirection: 'row',
-  },
-  padding: {
-    padding: 0,
-  },
-  textField: {
-    width: '25ch',
-  },
-  form: {
-    width: '40%',
-    marginTop: 10,
-  },
-  buttonImgLoader: {
-    cursor: 'pointer',
-    padding: '5px',
-    color: '#d33f49',
-  },
-  buttonEdit: {
-    cursor: 'pointer',
-    padding: '5px',
-  },
-  float: {
-    position: 'relative',
-    marginLeft: '95%',
-  },
-}));
+    textField: {
+      width: "25ch",
+    },
+    form: {
+      width: "40%",
+      marginTop: 10,
+    },
+    buttonImgLoader: {
+      cursor: "pointer",
+      padding: "5px",
+      color: "#d33f49",
+    },
+    buttonEdit: {
+      cursor: "pointer",
+      padding: "5px",
+    },
+    float: {
+      position: "relative",
+      marginLeft: "95%",
+    },
+  }
+})
 
-export default function ServiceGrid(props) {
-  const classes = useStyles();
-  const [tiles, setTiles] = useState([]);
-  const [services, setServices] = useState([]);
-  const history = useHistory();
-  const view = window.location.pathname.slice(1);
-  const prixer = props.prixerUsername;
-  const globalParams = new URLSearchParams(window.location.pathname);
-  const entries = globalParams.entries();
-  const firstEntry = entries.next().value;
-  const [key, value] = firstEntry;
-  const [backdrop, setBackdrop] = useState(true);
-  const theme = useTheme();
-  const [snackBar, setSnackBar] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [snackBarMessage, setSnackBarMessage] = useState(false);
-  const [openEdit, setOpenEdit] = useState(false);
-  const totalOrders = tiles?.length;
-  const itemsPerPage = 30;
-  const noOfPages = Math.ceil(totalOrders / itemsPerPage);
-  const [pageNumber, setPageNumber] = useState(1);
-  const itemsToSkip = (pageNumber - 1) * itemsPerPage;
-  const tilesv2 = tiles?.slice(itemsToSkip, itemsPerPage + itemsToSkip);
-  const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
-  const isDeskTop = useMediaQuery(theme.breakpoints.up('sm'));
-  const isTab = useMediaQuery(theme.breakpoints.up('xs'));
-  const isMobile = useMediaQuery(theme.breakpoints.down('xs'));
-  const isnDesk = useMediaQuery(theme.breakpoints.down('md'));
-  const serviceAreas = ['Diseño', 'Fotografía', 'Artes Plásticas', 'Otro'];
-  const [serviceOnEdit, setServiceOnEdit] = useState(); //Data inicial
-  const [showFullDescription, setShowFullDescription] = useState([]);
-  const [query, setQuery] = useState();
-  const [categories, setCategories] = useState();
-  const [images, setImages] = useState([]); // Imágenes visaulizadas
-  const [newImg, setNewImg] = useState([]);
-  const [openArtFormDialog, setOpenArtFormDialog] = useState(false);
-  const [openShoppingCart, setOpenShoppingCart] = useState(false);
-  const [openServiceFormDialog, setOpenServiceFormDialog] = useState(false);
-  const [createdService, setCreatedService] = useState(false);
+export default function ServiceGrid2(props) {
+  const { classes, cx } = useStyles()
+  const { setLoading } = useLoading()
+  const { showSnackBar } = useSnackBar()
+  const permissions = getPermissions()
+
+  const [tiles, setTiles] = useState([])
+  const [services, setServices] = useState([])
+  const history = useHistory()
+  const view = window.location.pathname.slice(1)
+  const prixer = props.prixerUsername
+  const theme = useTheme()
+  const [openEdit, setOpenEdit] = useState()
+  const totalOrders = tiles?.length
+  const itemsPerPage = 30
+  // const noOfPages = Math.ceil(totalOrders / itemsPerPage)
+  const [pageNumber, setPageNumber] = useState(1)
+  const itemsToSkip = (pageNumber - 1) * itemsPerPage
+  const tilesv2 = tiles?.slice(itemsToSkip, itemsPerPage + itemsToSkip)
+  const isDesktop = useMediaQuery(theme.breakpoints.up("md"))
+  const isTab = useMediaQuery(theme.breakpoints.up("xs"))
+  const isMobile = useMediaQuery(theme.breakpoints.down("xs"))
+  const isnDesk = useMediaQuery(theme.breakpoints.down("md"))
+  const serviceAreas = ["Diseño", "Fotografía", "Artes Plásticas", "Otro"]
+  const [serviceOnEdit, setServiceOnEdit] = useState() //Data inicial
+  const [showFullDescription, setShowFullDescription] = useState([])
+  const [query, setQuery] = useState()
+  const [categories, setCategories] = useState()
+  const [images, setImages] = useState([]) // Imágenes visaulizadas
+  const [newImg, setNewImg] = useState([])
+  const [openArtFormDialog, setOpenArtFormDialog] = useState(false)
+  const [openShoppingCart, setOpenShoppingCart] = useState(false)
+  const [openServiceFormDialog, setOpenServiceFormDialog] = useState(false)
+  const [createdService, setCreatedService] = useState(false)
 
   const toggleDescription = (index) => {
-    const updatedShowFullDescription = [...showFullDescription];
-    updatedShowFullDescription[index] = !updatedShowFullDescription[index];
-    setShowFullDescription(updatedShowFullDescription);
-  };
+    const updatedShowFullDescription = [...showFullDescription]
+    updatedShowFullDescription[index] = !updatedShowFullDescription[index]
+    setShowFullDescription(updatedShowFullDescription)
+  }
 
-  const getMyServices = async () => {
-    setBackdrop(true);
+  const readServices = async () => {
+    let response
+    try {
+      if (prixer === null || prixer === undefined) {
+        response = await getServicesByPrixer(prixer)
+      } else {
+        response = await getServices()
+      }
 
-    const base_url = import.meta.env.VITE_BACKEND_URL + '/service/readMyServices';
-    await axios
-      .post(base_url, {
-        prixer: JSON.parse(localStorage.getItem('token')).username,
-      })
-      .then((response) => {
-        setTiles(response.data.services);
-        setServices(response.data.services);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-    setBackdrop(false);
-  };
-
-  const getServices = async () => {
-    let base_url;
-
-    if (prixer === (null || undefined)) {
-      base_url = import.meta.env.VITE_BACKEND_URL + '/service/getAllActive';
-    } else {
-      base_url = import.meta.env.VITE_BACKEND_URL + '/service/getServiceByPrixer/' + prixer;
+      setTiles(response)
+      setServices(response)
+    } catch (error) {
+      console.log(error)
     }
-    await axios
-      .get(base_url)
-      .then((response) => {
-        setTiles(response.data.services);
-        setServices(response.data.services);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-    setBackdrop(false);
-  };
+  }
 
   useEffect(() => {
-    if (
-      localStorage.getItem('token') &&
-      JSON.parse(localStorage.getItem('token')).username === prixer &&
-      view !== 'servicios'
-    ) {
-      getMyServices();
-    } else {
-      getServices();
-    }
-  }, []);
+    readServices()
+  }, [])
 
   if (props.createdService) {
   }
   useEffect(() => {
     if (props.createdService) {
-      getMyServices();
-      setSnackBar(true);
-      setSnackBarMessage('¡Servicio creado exitosamente!');
-    } else return;
-  }, [props.createdService]);
+      readServices()
+      showSnackBar("¡Servicio creado exitosamente!")
+    } else return
+  }, [props.createdService])
 
   useEffect(() => {
     if (categories && query?.length > 0) {
-      const result = [];
+      const result = []
       services.map((tile) => {
         if (
           tile.serviceArea === categories &&
@@ -285,215 +237,224 @@ export default function ServiceGrid(props) {
             tile.description
               .toLowerCase()
               .includes(
-                query.toLowerCase() || tile.serviceArea.toLowerCase().includes(query.toLowerCase())
+                query.toLowerCase() ||
+                  tile.serviceArea.toLowerCase().includes(query.toLowerCase())
               ))
         ) {
-          result.push(tile);
+          result.push(tile)
         }
-      });
-      setTiles(result);
+      })
+      setTiles(result)
     } else if (categories !== undefined) {
-      const result = services.filter((tile) => tile.serviceArea === categories);
-      setTiles(result);
+      const result = services.filter((tile) => tile.serviceArea === categories)
+      setTiles(result)
     } else if (query?.length > 0) {
-      const result = [];
+      const result = []
       services.map((tile) => {
         if (
           tile.title.toLowerCase().includes(query.toLowerCase()) ||
           tile.description
             .toLowerCase()
             .includes(
-              query.toLowerCase() || tile.serviceArea.toLowerCase().includes(query.toLowerCase())
+              query.toLowerCase() ||
+                tile.serviceArea.toLowerCase().includes(query.toLowerCase())
             )
         ) {
-          result.push(tile);
+          result.push(tile)
         }
-      });
-      setTiles(result);
+      })
+      setTiles(result)
     } else {
-      setTiles(services);
+      setTiles(services)
     }
-  }, [query, categories]);
+  }, [query, categories])
 
   const updateService = async () => {
-    var formData = new FormData();
-    formData.append('_id', serviceOnEdit._id);
-    formData.append('title', serviceOnEdit.title);
-    formData.append('description', serviceOnEdit.description);
-    formData.append('serviceArea', serviceOnEdit.serviceArea);
-    formData.append('isLocal', serviceOnEdit.isLocal);
-    formData.append('isRemote', serviceOnEdit.isRemote);
-    if (serviceOnEdit.location !== ('' || undefined)) {
-      formData.append('location', serviceOnEdit.location);
+    var formData = new FormData()
+    formData.append("_id", serviceOnEdit._id)
+    formData.append("title", serviceOnEdit.title)
+    formData.append("description", serviceOnEdit.description)
+    formData.append("serviceArea", serviceOnEdit.serviceArea)
+    formData.append("isLocal", serviceOnEdit.isLocal)
+    formData.append("isRemote", serviceOnEdit.isRemote)
+    if (serviceOnEdit.location !== ("" || undefined)) {
+      formData.append("location", serviceOnEdit.location)
     }
-    if (serviceOnEdit.productionTime !== ('' || undefined)) {
-      formData.append('productionTime', serviceOnEdit.productionTime);
+    if (serviceOnEdit.productionTime !== ("" || undefined)) {
+      formData.append("productionTime", serviceOnEdit.productionTime)
     }
-    formData.append('priceFrom', serviceOnEdit.publicPrice.from);
-    if (serviceOnEdit.publicPrice.to !== ('' || undefined)) {
-      formData.append('priceTo', serviceOnEdit.publicPrice.to);
+    formData.append("priceFrom", serviceOnEdit.publicPrice.from)
+    if (serviceOnEdit.publicPrice.to !== ("" || undefined)) {
+      formData.append("priceTo", serviceOnEdit.publicPrice.to)
     }
-    formData.append('userId', JSON.parse(localStorage.getItem('token')).id);
-    formData.append('prixerUsername', JSON.parse(localStorage.getItem('token')).username);
-    formData.append('prixer', JSON.parse(localStorage.getItem('token')).prixerId);
-    formData.append('active', serviceOnEdit.active || true);
+    formData.append("userId", JSON.parse(localStorage.getItem("token")).id)
+    formData.append(
+      "prixerUsername",
+      JSON.parse(localStorage.getItem("token")).username
+    )
+    formData.append(
+      "prixer",
+      JSON.parse(localStorage.getItem("token")).prixerId
+    )
+    formData.append("active", serviceOnEdit.active || true)
 
     if (serviceOnEdit.sources.images.length > 0) {
-      serviceOnEdit.sources.images.map((file) => formData.append('images', file.url));
+      serviceOnEdit.sources.images.map((file) =>
+        formData.append("images", file.url)
+      )
     }
 
     if (newImg.length > 0) {
-      newImg.map((file) => formData.append('newServiceImages', file));
+      newImg.map((file) => formData.append("newServiceImages", file))
     }
 
     const base_url =
-      import.meta.env.VITE_BACKEND_URL + '/service/updateMyService/' + serviceOnEdit._id;
-    const data = await axios.put(base_url, formData, {
-      'Content-Type': 'multipart/form-data',
-    });
+      import.meta.env.VITE_BACKEND_URL +
+      "/service/updateMyService/" +
+      serviceOnEdit._id
+    const data = await axios.put(base_url, formData)
     if (data.data.success) {
-      setBackdrop(false);
-      setSnackBarMessage(data.data.message);
-      setSnackBar(true);
-      getMyServices();
+      showSnackBar(data.data.message)
+      readServices()
     } else {
-      setSnackBarMessage(
-        'Por favor vuelve a intentarlo, puede que exista algún inconveniente de conexión. Si aún no lo has hecho por favor inicia sesión.'
-      );
-      setSnackBar(true);
+      showSnackBar(
+        "Por favor vuelve a intentarlo, puede que exista algún inconveniente de conexión. Si aún no lo has hecho por favor inicia sesión."
+      )
     }
-  };
+  }
 
   const deleteService = async (id) => {
-    const url = import.meta.env.VITE_BACKEND_URL + '/service/deleteService/' + id;
-    const serviceToDelete = await axios.put(url);
+    const url =
+      import.meta.env.VITE_BACKEND_URL + "/service/deleteService/" + id
+    const serviceToDelete = await axios.put(url)
     if (serviceToDelete.data.success) {
-      setSnackBarMessage(serviceToDelete.data.message);
-      setSnackBar(true);
-      getMyServices();
+      showSnackBar(serviceToDelete.data.message)
+      readServices()
     }
-  };
+  }
 
   const checkImages = async (tile) => {
-    const prevImg = [];
+    const prevImg = []
     await tile.sources.images.map((images) => {
-      prevImg.push(images.url);
-    });
-    setImages(prevImg);
-  };
+      prevImg.push(images.url)
+    })
+    setImages(prevImg)
+  }
 
   const adjustPrice = async (type, e) => {
-    const newPrice = serviceOnEdit.publicPrice;
-    if (type === 'from') {
-      newPrice.from = e;
+    const newPrice = serviceOnEdit.publicPrice
+    if (type === "from") {
+      newPrice.from = e
     } else {
-      newPrice.to = e;
+      newPrice.to = e
     }
-    setServiceOnEdit({ ...serviceOnEdit, publicPrice: newPrice });
-  };
+    setServiceOnEdit({ ...serviceOnEdit, publicPrice: newPrice })
+  }
 
   const loadNewImage = async (e) => {
-    e.preventDefault();
+    e.preventDefault()
     if (images.length === 6) {
-      setSnackBar(true);
-      setSnackBarMessage('Has alcanzado el máximo de imágenes (6).');
+      showSnackBar("Has alcanzado el máximo de imágenes (6).")
     } else {
-      const file = e.target.files[0];
-      const resizedString = await convertToBase64(file);
-      setImages([...images, { name: file.name, url: resizedString }]);
-      setNewImg([...newImg, file]);
+      const file = e.target.files[0]
+      const resizedString = await convertToBase64(file)
+      setImages([...images, { name: file.name, url: resizedString }])
+      setNewImg([...newImg, file])
     }
-  };
+  }
 
   const replaceImage = async (e, x, index) => {
-    const filteredPrev = serviceOnEdit.sources.images.filter((prev) => prev.url !== x);
-    setServiceOnEdit({ ...serviceOnEdit, sources: { images: filteredPrev } });
+    const filteredPrev = serviceOnEdit.sources.images.filter(
+      (prev) => prev.url !== x
+    )
+    setServiceOnEdit({ ...serviceOnEdit, sources: { images: filteredPrev } })
 
-    const file = e.target.files[0];
-    const resizedString = await convertToBase64(file);
-    const prevImg = [...images];
-    prevImg[index] = resizedString;
-    setImages(prevImg);
+    const file = e.target.files[0]
+    const resizedString = await convertToBase64(file)
+    const prevImg = [...images]
+    prevImg[index] = resizedString
+    setImages(prevImg)
 
     if (newImg.length > 0) {
-      const filteredNewImg = newImg.filter((img) => img.name !== x.name);
-      setNewImg([...filteredNewImg, file]);
+      const filteredNewImg = newImg.filter((img) => img.name !== x.name)
+      setNewImg([...filteredNewImg, file])
     } else {
-      setNewImg([...newImg, file]);
+      setNewImg([...newImg, file])
     }
-  };
+  }
 
   const deleteImg = async (x, i2) => {
-    const filteredPrev = serviceOnEdit.sources.images.filter((prev) => prev.url !== x);
-    setServiceOnEdit({ ...serviceOnEdit, sources: { images: filteredPrev } });
+    const filteredPrev = serviceOnEdit.sources.images.filter(
+      (prev) => prev.url !== x
+    )
+    setServiceOnEdit({ ...serviceOnEdit, sources: { images: filteredPrev } })
     if (newImg.length > 0) {
-      const filteredNewImg = newImg.filter((img) => img.name !== x.name);
-      setNewImg(filteredNewImg);
+      const filteredNewImg = newImg.filter((img) => img.name !== x.name)
+      setNewImg(filteredNewImg)
     }
-    const filteredImg = images.filter((img) => img !== x);
-    setImages(filteredImg);
-  };
+    const filteredImg = images.filter((img) => img !== x)
+    setImages(filteredImg)
+  }
 
   const convertToBase64 = (blob) => {
     return new Promise((resolve) => {
-      var reader = new FileReader();
+      var reader = new FileReader()
       reader.onload = function () {
-        resolve(reader.result);
-      };
-      reader.readAsDataURL(blob);
-    });
-  };
-
-  const closeAd = () => {
-    setSnackBar(false);
-  };
+        resolve(reader.result)
+      }
+      reader.readAsDataURL(blob)
+    })
+  }
 
   const handleChangeIsLocal = () => {
     setServiceOnEdit({
       ...serviceOnEdit,
       isLocal: !serviceOnEdit.isLocal,
-    });
-  };
+    })
+  }
 
   const handleChangeIsRemote = () => {
     setServiceOnEdit({
       ...serviceOnEdit,
       isRemote: !serviceOnEdit.isRemote,
-    });
-  };
+    })
+  }
 
   const RenderHTML = ({ htmlString }) => {
-    return <div dangerouslySetInnerHTML={{ __html: htmlString }} />;
-  };
+    return <div dangerouslySetInnerHTML={{ __html: htmlString }} />
+  }
 
   const handleEditorChange = (value) => {
     setServiceOnEdit((prevState) => ({
       ...prevState,
       description: value,
-    }));
-  };
+    }))
+  }
 
   const setVisibleService = async (service, event) => {
-    setLoading(true);
-    const base_url = import.meta.env.VITE_BACKEND_URL + '/service/disable/' + service._id;
-    service.visible = event;
+    setLoading(true)
+    const base_url =
+      import.meta.env.VITE_BACKEND_URL + "/service/disable/" + service._id
+    service.visible = event
     const response = await axios.put(
       base_url,
-      { visible: event, adminToken: localStorage.getItem('adminTokenV') },
+      { visible: event, adminToken: localStorage.getItem("adminTokenV") },
       { withCredentials: true }
-    );
-    setSnackBarMessage('Servicio modificado exitosamente');
-    getServices();
-    setSnackBar(true);
-    setLoading(false);
-  };
+    )
+    showSnackBar("Servicio modificado exitosamente")
+    readServices()
+    setLoading(false)
+  }
 
   const checkPhone = async (service) => {
-    const base_url = import.meta.env.VITE_BACKEND_URL + '/prixer/read';
-    const prixer = await axios.post(base_url, { username: service.prixer });
-    console.log(prixer);
-    await window.open(utils.generateServiceMessage(service, prixer.data.phone), '_blank');
-  };
+    const base_url = import.meta.env.VITE_BACKEND_URL + "/prixer/read"
+    const prixer = await axios.post(base_url, { username: service.prixer })
+    console.log(prixer)
+    await window.open(
+      utils.generateServiceMessage(service, prixer.data.phone),
+      "_blank"
+    )
+  }
 
   const settings = {
     slidesToShow: (isDesktop && 1) || (isMobile && 1) || (isTab && 1),
@@ -505,21 +466,15 @@ export default function ServiceGrid(props) {
     infinite: true,
     dots: true,
     adaptiveHeight: true,
-  };
+  }
 
   return (
     <>
-      <div className={classes.root}>
-        <Backdrop className={classes.backdrop} open={backdrop}>
-          <CircularProgress color="inherit" />
-        </Backdrop>
-      </div>
-
       <div
         style={{
-          width: '100%',
-          display: 'flex',
-          justifyContent: 'center',
+          width: "100%",
+          display: "flex",
+          justifyContent: "center",
           marginBottom: 15,
         }}
       >
@@ -531,98 +486,105 @@ export default function ServiceGrid(props) {
         />
       </div>
 
-      <Grid container style={{ justifyContent: 'center', marginBottom: 20 }}>
+      <Grid2 container style={{ justifyContent: "center", marginBottom: 20 }}>
         {tiles?.length > 0 ? (
           tilesv2.map((tile, i) => (
-            <Grid item xs={12} md={10} lg={8} key={i}>
+            <Grid2 size={{ xs: 12, md: 10, lg: 8 }} key={i}>
               <Paper elevation={3} style={{ padding: 20, marginBottom: 20 }}>
-                {props.permissions?.artBan && (
+                {/* {permissions?.artBan && (
                   <div
                     style={{
-                      display: 'flex',
-                      width: '100%',
-                      justifyContent: 'end',
+                      display: "flex",
+                      width: "100%",
+                      justifyContent: "end",
                     }}
                   >
                     <IOSSwitch
-                      color="primary"
+                      // color="primary"
                       size="normal"
                       checked={tile.visible}
                       onChange={(e) => {
-                        setVisibleService(tile, e.target.checked);
+                        setVisibleService(tile, e.target.checked)
                       }}
                     />
                   </div>
-                )}
-                <Grid container style={{ display: 'flex', flexDirection: 'row' }}>
+                )} */}
+                <Grid2
+                  container
+                  style={{ display: "flex", flexDirection: "row" }}
+                >
                   {isnDesk &&
-                  JSON.parse(localStorage.getItem('token')) &&
-                  JSON.parse(localStorage.getItem('token')).username === prixer &&
+                  JSON.parse(localStorage.getItem("token")) &&
+                  JSON.parse(localStorage.getItem("token")).username ===
+                    prixer &&
                   openEdit === i ? (
                     <Button
                       style={{
-                        backgroundColor: '#d33f49',
-                        color: 'white',
+                        backgroundColor: "#d33f49",
+                        color: "white",
                         padding: 8,
                         marginLeft: 10,
                       }}
                       onClick={() => {
-                        updateService();
-                        setOpenEdit(false);
+                        updateService()
+                        setOpenEdit(undefined)
                       }}
                     >
                       Guardar
                     </Button>
                   ) : (
-                    JSON.parse(localStorage.getItem('token')) &&
-                    JSON.parse(localStorage.getItem('token')).username === prixer &&
+                    JSON.parse(localStorage.getItem("token")) &&
+                    JSON.parse(localStorage.getItem("token")).username ===
+                      prixer &&
                     isnDesk && (
                       <div
                         style={{
-                          display: 'flex',
-                          justifyContent: 'end',
+                          display: "flex",
+                          justifyContent: "end",
                           marginTop: -15,
                           marginBottom: -15,
-                          width: '100%',
+                          width: "100%",
                         }}
                       >
                         <IconButton
-                          component="span"
                           color="primary"
                           onClick={() => {
-                            setOpenEdit(i);
-                            setServiceOnEdit(tile);
-                            checkImages(tile);
+                            setOpenEdit(i)
+                            setServiceOnEdit(tile)
+                            checkImages(tile)
                           }}
-                          variant="contained"
                         >
                           <EditIcon />
                         </IconButton>
 
                         <IconButton
-                          component="span"
                           color="primary"
                           onClick={() => {
-                            deleteService(tile._id);
+                            deleteService(tile._id)
                           }}
-                          variant="contained"
                         >
                           <DeleteIcon />
                         </IconButton>
                       </div>
                     )
                   )}
-                  <Grid item xs={12} md={4} style={{ marginBottom: isMobile && 15 }}>
+                  <Grid2
+                    size={{
+                      xs: 12,
+                      md: 4,
+                    }}
+                    style={{ marginBottom: isMobile && 15 }}
+                  >
                     {openEdit === i ? (
                       <>
                         <FormControl
-                          className={clsx(classes.margin, classes.textField)}
+                          className={cx(classes.margin, classes.textField)}
                           variant="outlined"
                           style={{
-                            width: '90%',
-                            display: 'flex',
-                            flexDirection: 'row',
-                            alignItems: 'center',
+                            width: "90%",
+                            display: "flex",
+                            flexDirection: "row",
+                            alignItems: "center",
                           }}
                         >
                           <Switch
@@ -631,7 +593,7 @@ export default function ServiceGrid(props) {
                               setServiceOnEdit({
                                 ...serviceOnEdit,
                                 active: e.target.value,
-                              });
+                              })
                             }}
                             color="primary"
                           />
@@ -645,24 +607,27 @@ export default function ServiceGrid(props) {
                                 borderRadius: 30,
                                 maxHeight: 100,
                                 marginRight: 10,
-                                width: '90%',
+                                width: "90%",
                               }}
                             >
                               <div
                                 style={{
-                                  marginBottom: '-50px',
+                                  marginBottom: "-50px",
                                   marginRight: 10,
-                                  textAlign: 'right',
+                                  textAlign: "right",
                                 }}
                               >
-                                <IconButton className={classes.buttonImgLoader} component="label">
+                                <IconButton
+                                  className={classes.buttonImgLoader}
+                                  component="label"
+                                >
                                   <input
                                     name="serviceImages"
                                     type="file"
                                     accept="image/*"
                                     hidden
                                     onChange={(a) => {
-                                      replaceImage(a, img, i2);
+                                      replaceImage(a, img, i2)
                                     }}
                                   />
                                   <EditIcon />
@@ -670,7 +635,7 @@ export default function ServiceGrid(props) {
                                 <IconButton
                                   className={classes.buttonImgLoader}
                                   onClick={(d) => {
-                                    deleteImg(img, i2);
+                                    deleteImg(img, i2)
                                   }}
                                 >
                                   <HighlightOffOutlinedIcon />
@@ -679,13 +644,18 @@ export default function ServiceGrid(props) {
                               <div
                                 style={{
                                   backgroundImage:
-                                    img?.url !== undefined ? `url(${img.url})` : `url(${img})`,
-                                  height: (isDesktop && 260) || (isMobile && 180) || (isTab && 260),
+                                    img?.url !== undefined
+                                      ? `url(${img.url})`
+                                      : `url(${img})`,
+                                  height:
+                                    (isDesktop && 260) ||
+                                    (isMobile && 180) ||
+                                    (isTab && 260),
                                   marginRight: 10,
-                                  backgroundSize: 'cover',
+                                  backgroundSize: "cover",
                                   borderRadius: 10,
-                                  backgroundPosition: 'back',
-                                  margin: '16px 10px 0px 10px',
+                                  backgroundPosition: "back",
+                                  margin: "16px 10px 0px 10px",
                                 }}
                               />
                             </div>
@@ -693,7 +663,7 @@ export default function ServiceGrid(props) {
                         </Slider>
                         <Button
                           className={classes.buttonImgLoader}
-                          style={{ marginTop: 20, display: 'flex' }}
+                          style={{ marginTop: 20, display: "flex" }}
                           component="label"
                         >
                           <input
@@ -702,7 +672,7 @@ export default function ServiceGrid(props) {
                             accept="image/*"
                             hidden
                             onChange={(a) => {
-                              loadNewImage(a);
+                              loadNewImage(a)
                             }}
                           />
                           <AddIcon fontSize="large" />
@@ -717,18 +687,21 @@ export default function ServiceGrid(props) {
                               borderRadius: 30,
                               maxHeight: 100,
                               marginRight: 10,
-                              width: '100%',
+                              width: "100%",
                             }}
                           >
                             <div
                               style={{
                                 backgroundImage: `url(${img.url})`,
-                                height: (isDesktop && 260) || (isMobile && 180) || (isTab && 260),
+                                height:
+                                  (isDesktop && 260) ||
+                                  (isMobile && 180) ||
+                                  (isTab && 260),
                                 marginRight: 10,
-                                width: '100%',
-                                backgroundSize: 'cover',
+                                width: "100%",
+                                backgroundSize: "cover",
                                 borderRadius: 10,
-                                backgroundPosition: 'back',
+                                backgroundPosition: "back",
                                 marginTop: 15,
                               }}
                             />
@@ -736,20 +709,21 @@ export default function ServiceGrid(props) {
                         ))}
                       </Slider>
                     )}
-                  </Grid>
-                  <Grid
-                    item
-                    xs={12}
-                    md={8}
+                  </Grid2>
+                  <Grid2
+                    size={{
+                      xs: 12,
+                      md: 8,
+                    }}
                     style={{ paddingLeft: isMobile ? 0 : 20, paddingTop: 10 }}
                   >
                     <div
                       style={{
-                        width: '100%',
-                        display: 'flex',
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
+                        width: "100%",
+                        display: "flex",
+                        flexDirection: "row",
+                        alignItems: "center",
+                        justifyContent: "space-between",
                       }}
                     >
                       {openEdit === i ? (
@@ -763,7 +737,7 @@ export default function ServiceGrid(props) {
                             setServiceOnEdit({
                               ...serviceOnEdit,
                               title: e.target.value,
-                            });
+                            })
                           }}
                         />
                       ) : (
@@ -771,49 +745,47 @@ export default function ServiceGrid(props) {
                           {tile.title}
                         </Typography>
                       )}
-                      {JSON.parse(localStorage.getItem('token')) &&
-                      JSON.parse(localStorage.getItem('token')).username === tile.prixer &&
+                      {JSON.parse(localStorage.getItem("token")) &&
+                      JSON.parse(localStorage.getItem("token")).username ===
+                        tile.prixer &&
                       !isnDesk &&
                       openEdit === i ? (
                         <Button
                           style={{
-                            backgroundColor: '#d33f49',
-                            color: 'white',
+                            backgroundColor: "#d33f49",
+                            color: "white",
                             padding: 8,
                             marginLeft: 10,
                           }}
                           onClick={() => {
-                            updateService();
-                            setOpenEdit(false);
+                            updateService()
+                            setOpenEdit(undefined)
                           }}
                         >
                           Guardar
                         </Button>
                       ) : (
-                        JSON.parse(localStorage.getItem('token')) &&
-                        JSON.parse(localStorage.getItem('token')).username === tile.prixer &&
+                        JSON.parse(localStorage.getItem("token")) &&
+                        JSON.parse(localStorage.getItem("token")).username ===
+                          tile.prixer &&
                         !isnDesk && (
                           <div>
                             <IconButton
-                              component="span"
                               color="primary"
                               onClick={() => {
-                                setOpenEdit(i);
-                                setServiceOnEdit(tile);
-                                checkImages(tile);
+                                setOpenEdit(i)
+                                setServiceOnEdit(tile)
+                                checkImages(tile)
                               }}
-                              variant="contained"
                             >
                               <EditIcon />
                             </IconButton>
 
                             <IconButton
-                              component="span"
                               color="primary"
                               onClick={() => {
-                                deleteService(tile._id);
+                                deleteService(tile._id)
                               }}
-                              variant="contained"
                             >
                               <DeleteIcon />
                             </IconButton>
@@ -821,17 +793,17 @@ export default function ServiceGrid(props) {
                         )
                       )}
                     </div>
-                    {view === 'servicios' && (
+                    {view === "servicios" && (
                       <Button
                         size="small"
                         style={{
-                          backgroundColor: 'gainsboro',
-                          color: '#404e5c',
-                          textTransform: 'none',
-                          padding: '1px 5px',
+                          backgroundColor: "gainsboro",
+                          color: "#404e5c",
+                          textTransform: "none",
+                          padding: "1px 5px",
                         }}
                         onClick={() => {
-                          history.push({ pathname: '/prixer=' + tile.prixer });
+                          history.push({ pathname: "/prixer=" + tile.prixer })
                         }}
                       >
                         de {tile.prixer}
@@ -841,12 +813,15 @@ export default function ServiceGrid(props) {
                       <div
                         style={{
                           marginTop: 10,
-                          display: 'flex',
-                          flexDirection: 'row',
-                          justifyContent: 'space-between',
+                          display: "flex",
+                          flexDirection: "row",
+                          justifyContent: "space-between",
                         }}
                       >
-                        <FormControl variant="outlined" className={classes.form}>
+                        <FormControl
+                          variant="outlined"
+                          className={classes.form}
+                        >
                           <InputLabel required>Tipo</InputLabel>
                           <Select
                             fullWidth
@@ -857,7 +832,7 @@ export default function ServiceGrid(props) {
                               setServiceOnEdit({
                                 ...serviceOnEdit,
                                 serviceArea: e.target.value,
-                              });
+                              })
                             }}
                           >
                             <MenuItem value="">
@@ -870,7 +845,10 @@ export default function ServiceGrid(props) {
                             ))}
                           </Select>
                         </FormControl>
-                        <FormControl variant="outlined" className={classes.form}>
+                        <FormControl
+                          variant="outlined"
+                          className={classes.form}
+                        >
                           <TextField
                             variant="outlined"
                             required
@@ -880,7 +858,7 @@ export default function ServiceGrid(props) {
                               setServiceOnEdit({
                                 ...serviceOnEdit,
                                 productionTime: e.target.value,
-                              });
+                              })
                             }}
                           />
                         </FormControl>
@@ -900,9 +878,9 @@ export default function ServiceGrid(props) {
                         modules={{
                           toolbar: [
                             [{ header: [1, 2, 3, 4, 5, 6, false] }],
-                            ['bold', 'italic', 'underline', 'strike'],
+                            ["bold", "italic", "underline", "strike"],
                             [{ align: [] }],
-                            [{ list: 'ordered' }, { list: 'bullet' }],
+                            [{ list: "ordered" }, { list: "bullet" }],
                           ],
                         }}
                         value={serviceOnEdit.description}
@@ -921,11 +899,11 @@ export default function ServiceGrid(props) {
                         {tile.description.length > 450 && (
                           <Button
                             style={{
-                              color: 'dimgray',
+                              color: "dimgray",
                             }}
                             onClick={() => toggleDescription(i)}
                           >
-                            {showFullDescription[i] ? 'Ver menos' : 'Ver más'}
+                            {showFullDescription[i] ? "Ver menos" : "Ver más"}
                           </Button>
                         )}
                       </>
@@ -933,22 +911,22 @@ export default function ServiceGrid(props) {
                     <div
                       style={{
                         paddingTop: 10,
-                        display: 'flex',
-                        flexDirection: 'row',
-                        alignItems: 'center',
+                        display: "flex",
+                        flexDirection: "row",
+                        alignItems: "center",
                         paddingBottom: 10,
                       }}
                     >
                       {openEdit === i ? (
                         <>
                           <FormControl
-                            className={clsx(classes.margin, classes.textField)}
+                            className={cx(classes.margin, classes.textField)}
                             variant="outlined"
                             style={{
-                              width: '90%',
-                              display: 'flex',
-                              flexDirection: 'row',
-                              alignItems: 'center',
+                              width: "90%",
+                              display: "flex",
+                              flexDirection: "row",
+                              alignItems: "center",
                             }}
                           >
                             <Switch
@@ -956,16 +934,18 @@ export default function ServiceGrid(props) {
                               onChange={handleChangeIsLocal}
                               color="primary"
                             />
-                            <Typography color="secondary">¿Trabajas en algún local?</Typography>
+                            <Typography color="secondary">
+                              ¿Trabajas en algún local?
+                            </Typography>
                           </FormControl>
                           <FormControl
-                            className={clsx(classes.margin, classes.textField)}
+                            className={cx(classes.margin, classes.textField)}
                             variant="outlined"
                             style={{
-                              width: '90%',
-                              display: 'flex',
-                              flexDirection: 'row',
-                              alignItems: 'center',
+                              width: "90%",
+                              display: "flex",
+                              flexDirection: "row",
+                              alignItems: "center",
                             }}
                           >
                             <Switch
@@ -973,14 +953,19 @@ export default function ServiceGrid(props) {
                               onChange={handleChangeIsRemote}
                               color="primary"
                             />
-                            <Typography color="secondary">¿Trabajas a domicilio?</Typography>
+                            <Typography color="secondary">
+                              ¿Trabajas a domicilio?
+                            </Typography>
                           </FormControl>
                         </>
                       ) : (
                         <>
                           {tile.isRemote && (
                             <>
-                              <DirectionsBikeIcon color="secondary" style={{ paddingRight: 5 }} />
+                              <DirectionsBikeIcon
+                                color="secondary"
+                                style={{ paddingRight: 5 }}
+                              />
                               <Typography variant="body2" color="secondary">
                                 Disponible para trabajar en locaciones
                               </Typography>
@@ -989,7 +974,10 @@ export default function ServiceGrid(props) {
 
                           {tile.isLocal && tile.location && (
                             <>
-                              <BusinessIcon color="secodary" style={{ paddingRight: 5 }} />
+                              <BusinessIcon
+                                color="secondary"
+                                style={{ paddingRight: 5 }}
+                              />
                               <Typography variant="body2" color="secondary">
                                 {tile.location}
                               </Typography>
@@ -1009,7 +997,7 @@ export default function ServiceGrid(props) {
                           setServiceOnEdit({
                             ...serviceOnEdit,
                             location: e.target.value,
-                          });
+                          })
                         }}
                         style={{ marginTop: 10 }}
                         minRows={3}
@@ -1025,9 +1013,9 @@ export default function ServiceGrid(props) {
                       <div
                         style={{
                           marginTop: 10,
-                          display: 'flex',
-                          flexDirection: 'row',
-                          justifyContent: 'space-between',
+                          display: "flex",
+                          flexDirection: "row",
+                          justifyContent: "space-between",
                         }}
                       >
                         <TextField
@@ -1037,10 +1025,14 @@ export default function ServiceGrid(props) {
                           type="Number"
                           value={serviceOnEdit?.publicPrice?.from}
                           onChange={(e) => {
-                            adjustPrice('from', e.target.value);
+                            adjustPrice("from", e.target.value)
                           }}
                           InputProps={{
-                            startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                            startAdornment: (
+                              <InputAdornment position="start">
+                                $
+                              </InputAdornment>
+                            ),
                           }}
                         />
                         <TextField
@@ -1049,52 +1041,65 @@ export default function ServiceGrid(props) {
                           type="Number"
                           value={serviceOnEdit.publicPrice?.to}
                           onChange={(e) => {
-                            adjustPrice('to', e.target.value);
+                            adjustPrice("to", e.target.value)
                           }}
                           InputProps={{
-                            startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                            startAdornment: (
+                              <InputAdornment position="start">
+                                $
+                              </InputAdornment>
+                            ),
                           }}
                         />
                       </div>
                     ) : (
-                      <Typography variant="body2" color="secondary" style={{ paddingTop: 10 }}>
+                      <Typography
+                        variant="body2"
+                        color="secondary"
+                        style={{ paddingTop: 10 }}
+                      >
                         Valor desde ${tile.publicPrice.from}
-                        {tile.publicPrice.to && '  hasta $' + tile.publicPrice.to}
+                        {tile.publicPrice.to &&
+                          "  hasta $" + tile.publicPrice.to}
                       </Typography>
                     )}
                     <div
                       style={{
-                        display: 'flex',
-                        justifyContent: 'end',
-                        alignContent: 'end',
+                        display: "flex",
+                        justifyContent: "end",
+                        alignContent: "end",
                       }}
                     >
                       <Button
                         style={{
-                          backgroundColor: 'gainsboro',
+                          backgroundColor: "gainsboro",
                           padding: 8,
                           marginLeft: 10,
                           marginTop: 20,
                         }}
                         color="secondary"
                         onClick={(e) => {
-                          window.open(utils.generateLikeServiceMessage(tile), '_blank');
+                          window.open(
+                            utils.generateLikeServiceMessage(tile),
+                            "_blank"
+                          )
                         }}
                       >
                         Compartir
                       </Button>
-                      {JSON.parse(localStorage.getItem('token')) ? (
-                        JSON.parse(localStorage.getItem('token')).username !== prixer && (
+                      {JSON.parse(localStorage.getItem("token")) ? (
+                        JSON.parse(localStorage.getItem("token")).username !==
+                          prixer && (
                           <Button
                             style={{
-                              backgroundColor: '#d33f49',
-                              color: 'white',
+                              backgroundColor: "#d33f49",
+                              color: "white",
                               padding: 8,
                               marginLeft: 10,
                               marginTop: 20,
                             }}
                             onClick={(e) => {
-                              checkPhone(tile);
+                              checkPhone(tile)
                             }}
                           >
                             Contactar
@@ -1103,26 +1108,26 @@ export default function ServiceGrid(props) {
                       ) : (
                         <Button
                           style={{
-                            backgroundColor: '#d33f49',
-                            color: 'white',
+                            backgroundColor: "#d33f49",
+                            color: "white",
                             padding: 8,
                             marginLeft: 10,
                             marginTop: 20,
                           }}
                           onClick={(e) => {
-                            checkPhone(tile);
+                            checkPhone(tile)
                           }}
                         >
                           Contactar
                         </Button>
                       )}
                     </div>
-                  </Grid>
-                </Grid>
+                  </Grid2>
+                </Grid2>
               </Paper>
-            </Grid>
+            </Grid2>
           ))
-        ) : JSON.parse(localStorage.getItem('token')) ? (
+        ) : JSON.parse(localStorage.getItem("token")) ? (
           <Typography
             variant="h4"
             color="secondary"
@@ -1145,14 +1150,14 @@ export default function ServiceGrid(props) {
             Pronto mis servicios estarán disponibles.
           </Typography>
         )}
-      </Grid>
-      <Grid className={classes.float}>
+      </Grid2>
+      <Grid2 className={classes.float}>
         <FloatingAddButton
           setOpenArtFormDialog={setOpenArtFormDialog}
           setOpenShoppingCart={setOpenShoppingCart}
           setOpenServiceFormDialog={setOpenServiceFormDialog}
         />
-      </Grid>
+      </Grid2>
 
       {openArtFormDialog && (
         <ArtUploader
@@ -1168,13 +1173,6 @@ export default function ServiceGrid(props) {
           setCreatedService={setCreatedService}
         />
       )}
-
-      <Snackbar
-        open={snackBar}
-        autoHideDuration={5000}
-        message={snackBarMessage}
-        onClose={closeAd}
-      />
     </>
-  );
+  )
 }

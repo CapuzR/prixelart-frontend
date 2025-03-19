@@ -11,6 +11,7 @@ export default function PaginationBar({ setPageNumber, pageNumber, itemsPerPage,
         paddingTop: 5,
         marginBottom: 4,
         width: '100%',
+        marginTop: 'auto'
       }}
     >
       {pageNumber - 3 > 0 && (

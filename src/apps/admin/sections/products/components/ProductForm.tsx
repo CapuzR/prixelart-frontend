@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import { useHistory } from "react-router-dom"
 
 import Grid2 from "@mui/material/Grid2"
@@ -31,7 +31,39 @@ export default function ProductForm({ handleSubmit, openVideo }) {
     filename: "Subir imagenes",
   })
   //   Reducir la anidación en ImageLoader
-  const [images, newImages] = useState({ images: [] })
+  const [images, setImages] = useState({ images: [] })
+  console.log(images, "nuevas")
+  console.log(imageLoader.loader, "prev")
+
+  useEffect(() => {
+    // readProduct()
+    const prev = { loader: [], filename: "Subir imagenes" }
+    const indexImage =
+      state.sources?.length < 1
+        ? state.sources?.indexOf(state?.thumbUrl)
+        : undefined
+
+    state.sources
+      ?.filter(
+        (img) =>
+          img.url !== undefined && img.url !== null && img.type === "images"
+      )
+      .forEach((img) => prev.loader.push(img.url)) // : setVideoUrl(img && img.url)
+    // )
+
+    if (indexImage === -1 && state.thumbUrl) {
+      prev.loader.push(state.thumbUrl)
+    }
+    setLoadImage(prev)
+    // setImagesList(prev)
+    // setTimeout(() => {
+    //   if (state?.sources.images) {
+    //     state?.sources.images.map((element) => {
+    //       element.type === "video" && setVideoUrl(element.url)
+    //     })
+    //   }
+    // }, 1000)
+  }, [])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
@@ -81,22 +113,21 @@ export default function ProductForm({ handleSubmit, openVideo }) {
 
   const loadImage = async (e) => {
     e.preventDefault()
-    if (imageLoader.loader.length > 4) {
-      showSnackBar("No puedes colocar mas de 4 fotos")
+
+    if (imageLoader.loader.length >= 4) {
+      return showSnackBar("No puedes agregar más de 4 fotos")
     } else {
       const file = e.target.files[0]
+      if (!file) return
+
       const resizedString = await convertToBase64(file)
-      if (imageLoader.loader.length >= 4) {
-        return null
-      } else {
-        imageLoader.loader.push(resizedString)
-        if (images.images.length >= 4) {
-          return null
-        } else {
-          images.images.push(file)
-        }
-      }
-      setLoadImage({ loader: imageLoader.loader, filename: file.name })
+      if (!resizedString) return
+
+      const newLoader = [...imageLoader.loader, resizedString]
+      const newImages = [...images.images, file]
+
+      setLoadImage({ loader: newLoader, filename: file.name })
+      newImages.length <= 4 && setImages({ images: newImages })
     }
   }
 
@@ -113,8 +144,23 @@ export default function ProductForm({ handleSubmit, openVideo }) {
     return (price as PriceRange).from !== undefined
   }
 
+  const deleteImg = (e, i) => {
+    e.preventDefault()
+    const imageToRemove = imageLoader.loader[i]
+    const newLoader = imageLoader.loader.filter((_, index) => index !== i)
+    const newImages = images.images.filter((file) => {
+      return file instanceof File ? true : file.url !== imageToRemove
+    })
+
+    setLoadImage({
+      loader: newLoader,
+      filename: "Subir Imagenes",
+    })
+    setImages({ images: newImages })
+  }
+  // const removeImg =
   return (
-    <form encType="multipart/form-data" noValidate onSubmit={handleSubmit(images)}>
+    <form encType="multipart/form-data" noValidate>
       <Grid2 container spacing={2}>
         <Grid2 container spacing={3}>
           <Grid2
@@ -168,7 +214,7 @@ export default function ProductForm({ handleSubmit, openVideo }) {
             {[
               ...imageLoader.loader,
               ...new Array(4 - imageLoader.loader.length).fill(null),
-            ].map((img, key_id) =>
+            ].map((img, i) =>
               img ? (
                 <div style={{ border: "1px gray solid", borderRadius: 4 }}>
                   <div
@@ -196,18 +242,27 @@ export default function ProductForm({ handleSubmit, openVideo }) {
                     <IconButton
                       sx={{ cursor: "pointer", padding: "5px" }}
                       style={{ color: "#d33f49" }}
-                      onClick={(d) => {
-                        imageLoader.loader.splice(key_id, 1)
-                        images.images.splice(key_id, 1)
-                        setLoadImage({
-                          loader: imageLoader.loader,
-                          filename: "Subir Imagenes",
-                        })
-                        newImages({ images: images.images })
+                      onClick={(e) => {
+                        deleteImg(e, i)
                       }}
                     >
                       <HighlightOffOutlinedIcon />
                     </IconButton>
+                    {/* <IconButton
+                      sx={{ cursor: "pointer", padding: "5px" }}
+                      style={{ color: "#d33f49" }}
+                      onClick={(d) => {
+                        // imageLoader.loader.splice(i, 1)
+                        // images.images.splice(i, 1)
+                        setLoadImage({
+                          loader: [],
+                          filename: "Subir Imagenes",
+                        })
+                        newImages({ images: [] })
+                      }}
+                    >
+                      <HighlightOffOutlinedIcon />
+                    </IconButton> */}
                   </div>
 
                   <img
@@ -695,10 +750,11 @@ export default function ProductForm({ handleSubmit, openVideo }) {
           variant="contained"
           color="primary"
           type="submit"
+          onClick={(e) => handleSubmit(e, images)}
           //   disabled={buttonState}
           style={{ marginTop: 20 }}
         >
-          Crear
+          Guardar
         </Button>
       </Grid2>
     </form>

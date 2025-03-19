@@ -38,7 +38,7 @@ import Tooltip from "@mui/material/Tooltip"
 import jwt from "jwt-decode"
 
 import { useSnackBar, useLoading } from "@context/GlobalContext"
-import { createUser } from "@apps/artist/api"
+import { createUser } from "../api"
 
 const useStyles = makeStyles()((theme: Theme) => {
   return {

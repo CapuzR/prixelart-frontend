@@ -1,19 +1,11 @@
 import { Product, Variant, Selection } from './interfaces';
 
-//Details.tsx
-export const prepareProductData = (product) => {
-  const initialSelection = product.attributes?.reduce((acc, attr) => {
-    acc[attr.name] = '';
-    return acc;
-  }, {});
-
-  return { ...product, selection: initialSelection };
-};
-
-//Details.tsx
 export const getSelectedVariant = (selectedAtt: Selection[], variants: Variant[]): Variant | null => {
+
   const selectedVariant = variants?.find((variant) =>
-    variant.attributes?.every((attr) => selectedAtt && Object.keys(selectedAtt).includes(attr.name))
+    variant.attributes?.every((attr) =>
+      selectedAtt.some(sel => sel.name === attr.name && sel.value === attr.value)
+    )
   );
 
   if (!selectedVariant) {
@@ -21,39 +13,47 @@ export const getSelectedVariant = (selectedAtt: Selection[], variants: Variant[]
     return null;
   }
 
-  return selectedVariant; // Just return the variant object
+  return selectedVariant;
 };
 
-//Lanscape.tsx & Portrait.tsx
 export const getFilteredOptions = (
-  product: Product | undefined,
+  product: Product,
   att: { name: string; value: string[] }
 ): string[] => {
-  if (
-    Object.values(product?.selection).every((s) => s.value === '') ||
-    !Object.keys(product?.selection).some(
-      (key) => key !== att.name && product?.selection[key] !== ''
-    )
-  ) {
+
+  const selection: Selection[] =
+    Array.isArray(product.selection)
+      ? product.selection
+      : typeof product.selection === 'object' && product.selection !== null
+        ? Object.values(product.selection) as Selection[]
+        : [];
+
+  const allEmpty = selection.every((s) => s.value === '');
+  const hasOtherSelection = selection.some(
+    (s) => s.name !== att.name && s.value !== ''
+  );
+
+  if (allEmpty || !hasOtherSelection) {
     return att.value || [];
   }
 
-  return Object.keys(product?.selection ?? {})
-    .filter((key) => {
-      if (key !== att.name && product?.selection[key] !== '') {
-        return att.value;
-      }
-    })
-    .map((key) => {
-      return product?.variants
-        ?.filter((variant) => {
-          return variant.attributes?.some(
-            (a) => a.name === key && a.value === product?.selection[key]
+  const filteredOptions = selection
+    .filter((sel) => sel.name !== att.name && sel.value !== '')
+    .map((sel) => {
+      const matchingVariants = product.variants.filter((variant) =>
+        variant.attributes?.some(
+          (a) => a.name === sel.name && a.value === sel.value
+        )
+      );
+      return matchingVariants
+        .map((variant) => {
+          const matchingAttr = variant.attributes?.find(
+            (a) => a.name === att.name
           );
+          return matchingAttr ? matchingAttr.value : null;
         })
-        ?.map((vari) => {
-          return vari.attributes?.filter((a) => a.name === att.name)[0].value;
-        });
+        .filter((value): value is string => value !== null);
     })
     .flat();
+  return filteredOptions.length > 0 ? filteredOptions : att.value || [];
 };

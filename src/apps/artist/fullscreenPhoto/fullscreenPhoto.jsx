@@ -47,6 +47,7 @@ import MenuItem from '@mui/material/MenuItem';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import CloseIcon from '@mui/icons-material/Close';
 import { useLoading, useSnackBar } from 'context/GlobalContext';
+import { getUrlParams } from '@utils/util';
 
 const IOSSwitch = withStyles((theme) => ({
   root: {
@@ -146,7 +147,7 @@ export default function ArtDetail(props) {
   const classes = useStyles();
   const history = useHistory();
   const theme = useTheme();
-  const globalParams = new URLSearchParams(window.location.pathname);
+  const globalParams = getUrlParams();
   const [ready, setReady] = useState(false);
   const [tiles, setTiles] = useState(props?.searchResult);
   // const [newTag, setNewTag] = useState([]);

@@ -5,7 +5,6 @@ import { Stepper, Step, StepLabel, Button } from '@mui/material';
 import ConsumerForm from './Consumer';
 import OrderForm from './Order';
 import styles from './styles.module.scss';
-import { getTotalUnitsPVP, getTotalUnitsPVM } from './pricesFunctions.js';
 import { isAValidEmail, isAValidCi, isAValidPhoneNum, isAValidName } from 'utils/validations';
 import { nanoid } from 'nanoid';
 import { useConversionRate, useCurrency, useSnackBar } from 'context/GlobalContext';

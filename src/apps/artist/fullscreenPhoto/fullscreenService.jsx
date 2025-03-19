@@ -32,6 +32,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import utils from '../../../utils/utils';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
+import { getUrlParams } from '@utils/util';
 
 const IOSSwitch = withStyles((theme) => ({
   root: {
@@ -165,7 +166,7 @@ export default function SoloService(props) {
   const classes = useStyles();
   const [tile, setTile] = useState(undefined);
   const history = useHistory();
-  const globalParams = new URLSearchParams(window.location.pathname);
+  const globalParams = getUrlParams();
   const service = globalParams.get('/service');
   const [backdrop, setBackdrop] = useState(true);
   const theme = useTheme();

@@ -11,7 +11,7 @@ export const checkoutReducer = (
           ? Math.max(state.activeStep - 1, 0)
           : action.payload === 'next'
           ? state.activeStep + 1
-          : action.payload; // Directly set if it's a number
+          : action.payload; 
       return { ...state, activeStep: newStep };
 
     case 'SET_LOADING':
@@ -23,13 +23,9 @@ export const checkoutReducer = (
     case 'SET_PAYMENT_METHODS':
       return { ...state, paymentMethods: action.payload };
 
-    case 'SET_SELLERS':
-      return { ...state, sellers: action.payload };
-
     case 'SET_EXPANDED_SECTION':
       return { ...state, expandedSection: action.payload };
 
-    // Delegate order-related actions to the orderReducer
     default:
       return {
         ...state,

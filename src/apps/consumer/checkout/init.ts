@@ -1,3 +1,5 @@
+import countries from '@data/countries.json';
+
 import {
   CheckoutState,
   Cart,
@@ -8,7 +10,6 @@ import {
 } from './interfaces';
 
 export const initializeCheckoutState = (cart: Cart): CheckoutState => {
-  // Helper function to safely parse JSON
   const safeParseJSON = <T>(data: string | null, defaultValue: T): T => {
     try {
       return data ? JSON.parse(data) : defaultValue;
@@ -17,14 +18,12 @@ export const initializeCheckoutState = (cart: Cart): CheckoutState => {
     }
   };
 
-  // Retrieve any existing checkout state from localStorage
   const storedState = localStorage.getItem('checkoutState');
   const parsedState: CheckoutState = safeParseJSON<CheckoutState>(
     storedState,
     {} as CheckoutState
   );
 
-  // Transform CartLines to OrderLines
   const mapCartLinesToOrderLines = (lines: Cart['lines']): OrderLine[] =>
     lines.map((line) => ({
       id: line.id,
@@ -55,9 +54,11 @@ export const initializeCheckoutState = (cart: Cart): CheckoutState => {
   // Default consumer details
   const defaultConsumerDetails: BasicInfo = {
     name: '',
+    id: '',
     lastName: '',
     email: '',
     phone: '',
+    shortAddress: '',
   };
 
   // Default shipping details
@@ -66,6 +67,7 @@ export const initializeCheckoutState = (cart: Cart): CheckoutState => {
       recepient: defaultConsumerDetails,
       address: {
         line1: '',
+        line2: '',
         city: '',
         state: '',
         country: '',
@@ -81,12 +83,13 @@ export const initializeCheckoutState = (cart: Cart): CheckoutState => {
 
   // Default billing details
   const defaultBillingDetails: BillingDetails = {
-    method: '',
+    method: undefined,
     billTo: defaultConsumerDetails,
     address: {
       recepient: defaultConsumerDetails,
       address: {
         line1: '',
+        line2: '',
         city: '',
         state: '',
         country: '',
@@ -99,7 +102,6 @@ export const initializeCheckoutState = (cart: Cart): CheckoutState => {
   // Initialize or update state based on cart and stored state
   const initialState: CheckoutState = {
     activeStep: parsedState?.activeStep ?? 0,
-    loading: false,
     order: {
       id: parsedState?.order?.id || '',
       lines: parsedState?.order?.lines?.length === cart.lines.length
@@ -110,14 +112,17 @@ export const initializeCheckoutState = (cart: Cart): CheckoutState => {
         basic: defaultConsumerDetails,
         selectedAddress: {
           line1: '',
+          line2: '',
           city: '',
-          state: '', 
+          state: '',
           country: ''
         },
         addresses: [],
         paymentMethods: [],
       },
       payment: parsedState?.order?.payment || undefined,
+      seller: parsedState?.order?.seller || '',
+      observations: parsedState?.order?.observations || '',
       shipping: parsedState?.order?.shipping || defaultShippingDetails,
       billing: parsedState?.order?.billing || defaultBillingDetails,
       totalUnits,
@@ -127,17 +132,31 @@ export const initializeCheckoutState = (cart: Cart): CheckoutState => {
       tax: parsedState?.order?.tax || [],
       totalWithoutTax: subTotal,
       total: subTotal,
+      createdOn: parsedState?.order?.createdOn
+        ? new Date(parsedState.order.createdOn)
+        : new Date(),
+      createdBy: parsedState?.order?.createdBy || '',
     },
     dataLists: {
       shippingMethods: parsedState?.dataLists?.shippingMethods || [],
       paymentMethods: parsedState?.dataLists?.paymentMethods || [],
+      countries: countries
+        .filter((country) => country.active)
+        .map((country) => ({
+          ...country,
+          states: country.states.map((state) => ({
+            ...state,
+            subdivision: Array.isArray(state.subdivision)
+              ? state.subdivision.join(', ')
+              : state.subdivision ?? "",
+          })),
+        })),
       sellers: parsedState?.dataLists?.sellers || [],
     },
-    expandedSection: parsedState?.expandedSection || 'basic',
+    shippingMethods: parsedState?.dataLists?.shippingMethods || [],
+    paymentMethods: parsedState?.dataLists?.paymentMethods || [],
+    billing: undefined
   };
-
-  // Store the initial state in localStorage
-  localStorage.setItem('checkoutState', JSON.stringify(initialState));
 
   return initialState;
 };

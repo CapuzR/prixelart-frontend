@@ -1,47 +1,80 @@
-import React, { useState, useMemo, useReducer, useCallback } from 'react';
-import { Stepper, Step, StepLabel, Button, Typography, Box, Container, Grid } from '@mui/material';
+import React, { useState } from 'react';
+import { Stepper, Step, StepLabel, Button, Typography, Box, Container, Snackbar } from '@mui/material';
 import Form from './Form';
-import { Cart, CheckoutState, DataLists } from './interfaces';
+import Order from './Order';
+import { CheckoutState, DataLists } from './interfaces';
 import { initializeCheckoutState } from './init';
 import { useForm, FormProvider } from 'react-hook-form';
+import { useCart } from '@context/CartContext';
+import { createOrderByUser } from './api';
+import { parseOrder } from './parseApi';
+import { useNavigate } from 'react-router-dom';
 
 interface CheckoutProps {
-  cart: Cart;
-  valuesConsumerForm: any;
-  setValuesConsumerForm: (values: any) => void;
+  setChecking: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const Checkout: React.FC<CheckoutProps> = ({ cart }) => {
+const Checkout: React.FC<CheckoutProps> = ({ setChecking }) => {
+  const { cart, emptyCart } = useCart();
+  const [snackBar, setSnackBar] = useState(false);
+  const navigate = useNavigate();
+
   const methods = useForm<CheckoutState>({
     defaultValues: initializeCheckoutState(cart),
     mode: "onChange",
+    shouldUnregister: false,
   });
 
-  const [ dataLists, setDataLists ] = useState<DataLists>(
+  const [dataLists, setDataLists] = useState<DataLists>(
     methods.getValues().dataLists || {
       shippingMethods: [],
       paymentMethods: [],
+      countries: [],
+      states: [],
       sellers: [],
-    });
+    }
+  );
 
   const steps = [`Tus datos`, `Orden de compra`, `Confirmación`];
-
   const [activeStep, setActiveStep] = useState(0);
 
-  const handleNext = () => {
-    setActiveStep((prev) => prev + 1);
+  const handleNext = async () => {
+    const isValid = await methods.trigger();
+    if (isValid) {
+      setActiveStep((prev) => prev + 1);
+    }
   };
 
   const handleBack = () => {
+    if (activeStep === 1) {
+      setChecking(false);
+    }
     setActiveStep((prev) => prev - 1);
   };
 
-  const handleSubmit = () => {
-    console.log('Order submitted!');
+  const closeAd = () => {
+    setSnackBar(false);
+    navigate('/');
+  };
+
+  const handleSubmit = async () => {
+    const checkoutData = methods.getValues();
+
+    const parsedData = parseOrder(checkoutData);
+    const response = await createOrderByUser(parsedData);
+    if (response.status === 'ok') {
+      emptyCart();
+      <Snackbar
+        open={snackBar}
+        autoHideDuration={5000}
+        message={"Orden realizada exitosamente! Pronto serás contactado por un miembro del equipo de Prixelart para coordinar la entrega. El Id de tu orden es: " + response.orderId}
+        onClick={closeAd}
+      />
+    }
   };
 
   return (
-    <Container maxWidth="md">
+    <Container maxWidth="md" style={{ width: '100%' }}>
       <Box sx={{ mt: 4, mb: 4 }}>
         <Typography variant="h4" align="center" gutterBottom>
           Concreta tu compra
@@ -58,13 +91,34 @@ const Checkout: React.FC<CheckoutProps> = ({ cart }) => {
       </Stepper>
 
       {/* Form Content */}
-      <Box sx={{ mt: 4, mb: 4 }}>
-        {activeStep === 0 && (
-          
-        <FormProvider {...methods}>
-          <Form dataLists={dataLists} setDataLists={setDataLists} />
-        </FormProvider>
-        )}
+      <Box sx={{ mt: 4, mb: 2 }}>
+        {
+          activeStep === 0 ? (
+            <FormProvider {...methods}>
+              <Form dataLists={dataLists} setDataLists={setDataLists} />
+            </FormProvider>
+          ) :
+            activeStep === 1 ? (
+              (() => {
+                setChecking(true);
+                const checkoutState = methods.getValues();
+
+                checkoutState.order.lines = cart.lines.map((line) => ({
+                  ...line,
+                  pricePerUnit: line.item.price,
+                }));
+
+                const subtotal = cart.lines.reduce((total, line) => {
+                  console.log('price:', line.item.price, 'quantity:', line.quantity, 'multiplied:', line.item.price * line.quantity);
+                  return total + line.item.price * line.quantity;
+                }, 0);
+                console.log("subtotal", subtotal)
+
+                return <Order checkoutState={checkoutState} newSubTotal={subtotal} />;
+              })()
+            ) : (
+              <div></div>
+            )}
       </Box>
 
       {/* Buttons */}

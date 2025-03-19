@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { useHistory, useParams, useLocation } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 import ReactGA from 'react-ga';
-import { useConversionRate, useCurrency, useLoading, useSnackBar } from 'context/GlobalContext';
-import { useCart } from 'context/CartContext';
-import { prepareProductData, getSelectedVariant } from '../services';
+import { useConversionRate, useCurrency, useLoading } from 'context/GlobalContext';
+import { getSelectedVariant } from '../services';
 import { fetchVariantPrice } from '../api';
 import { parsePrice } from 'utils/formats';
 import { splitDescription } from '../utils';
@@ -14,22 +13,29 @@ import { fetchProductDetails } from '../api';
 import Portrait from './views/Portrait';
 import Landscape from './views/Landscape';
 
-import { Item, Product } from '../interfaces';
-import { queryCreator, getUrlParams } from 'apps/consumer/flow/utils';
+import { Product } from '../interfaces';
+import { queryCreator } from 'apps/consumer/flow/utils';
+import { SelectChangeEvent } from '@mui/material';
+import { parseProduct } from '../parseApi';
+import { getUrlParams } from '@utils/util';
 
 ReactGA.initialize('G-0RWP9B33D8');
 
-const Details = () => {
-  const history = useHistory();
+interface DetailsProps {
+  productId?: string;
+}
+
+const Details: React.FC<DetailsProps> = ({ productId }) => {
+  const navigate = useNavigate();
   const { loading, setLoading } = useLoading();
   const { currency } = useCurrency();
   const { conversionRate } = useConversionRate();
-  const { id } = useParams();
-  const location = useLocation();
+  const { id: routeId } = useParams();
+  const id = productId || routeId || '';
+  const [isFetchingVariantPrice, setIsFetchingVariantPrice] = useState(false);
 
-  const urlParams = Object.fromEntries(new URLSearchParams(location.search).entries());
 
-  const [product, setProduct] = useState<Product | null>(null);
+  const [product, setProduct] = useState<Product>();
   const [isPortrait, setIsPortrait] = useState(window.innerWidth < 768);
   const [windowHeight, setWindowHeight] = useState(window.innerHeight);
   const [expanded, setExpanded] = useState<string | false>('panel1');
@@ -47,16 +53,22 @@ const Details = () => {
   }, []);
 
   useEffect(() => {
+
+    if (!id && !productId) {
+      return;
+    }
     const fetchProduct = async () => {
       setLoading(true);
       try {
-        const productData = await fetchProductDetails(id);
-        const product = prepareProductData(productData);
+        const fetchedProduct = await fetchProductDetails(productId ? productId : id);
+        const parsed = parseProduct(fetchedProduct);
 
-        const selectedAttributes = getUrlParams([]);
+        const selectedAttributes = Array.from(getUrlParams([]).entries()).map(
+          ([name, value]) => ({ name, value })
+        );
 
         setProduct({
-          ...product,
+          ...parsed,
           id,
           selection: selectedAttributes,
         });
@@ -72,84 +84,87 @@ const Details = () => {
 
   useEffect(() => {
     const fetchAndSetPrice = async () => {
-      if (
-        product?.selection &&
-        Object.keys(product?.selection).every((s) => product?.selection[s] !== '')
-      ) {
+      if (product?.selection && product?.selection.some((selection) => selection.value !== '')) {
         const selectedVariant = getSelectedVariant(product?.selection, product?.variants);
-
         if (selectedVariant) {
-          const updatedPrice = await fetchVariantPrice(selectedVariant._id);
+          setIsFetchingVariantPrice(true);
+          const updatedPrice = await fetchVariantPrice(selectedVariant.id, id!);
           const parsedPrice = parsePrice(updatedPrice);
 
-          setProduct((prevProduct) => ({
-            ...prevProduct,
-            price: parsedPrice,
-          }));
+          setProduct((prevProduct) =>
+            prevProduct
+              ? { ...prevProduct, price: parsedPrice }
+              : prevProduct
+          );
+          setIsFetchingVariantPrice(false);
         }
       }
     };
     fetchAndSetPrice();
   }, [product?.selection, currency, conversionRate]);
 
-  const handleSelection = (e: React.ChangeEvent<{ name: string; value: number }>) => {
+  const handleSelection = (e: SelectChangeEvent<string>) => {
     const { name, value } = e.target;
-    if (!name) return;
+    if (!name || !id) return;
 
-    setProduct((prevProduct) => ({
-      ...prevProduct,
-      id,
-      selection: {
-        ...prevProduct?.selection,
-        [name]: value,
-      },
-    }));
+    setProduct((prevProduct) => {
+      if (!prevProduct) return prevProduct;
 
-    //TODO : Refactor this. La tortura de los query params
-    const searchParams = new URLSearchParams(window.location.search);
-    product.selection &&
-      product.selection !== undefined &&
-      Object.keys(product.selection).forEach((attrKey) => {
-        searchParams.set(attrKey, product.selection[attrKey]);
-      });
+      const newSelection = Array.isArray(prevProduct.selection)
+        ? prevProduct.selection.map((sel) =>
+          sel.name === name ? { ...sel, value } : sel
+        )
+        : [];
 
-    searchParams.set(name, String(value));
+      if (!newSelection.find((sel) => sel.name === name)) {
+        newSelection.push({ name, value });
+      }
 
-    history.push({
-      pathname: `/producto/${id}`,
-      search: searchParams.toString(),
+      return { ...prevProduct, selection: newSelection };
     });
+
+    const searchParams = new URLSearchParams(window.location.search);
+    if (product?.selection) {
+      product.selection.forEach((selection) => {
+        searchParams.set(selection.name, selection.value);
+      });
+    }
+    searchParams.set(name, String(value));
+    if (!productId) {
+      if (value) {
+        navigate(`/producto/${id}?${searchParams.toString()}`);
+      } else {
+        navigate(`/producto/${id}`);
+      }
+    }
   };
 
   function handleArtSelection(): void {
     const selectionAsObject: { [key: string]: string } = Array.isArray(product?.selection)
       ? product?.selection.reduce(
-          (acc, item, index) => {
-            acc[`selection-${index}`] = String(item);
-            return acc;
-          },
-          {} as { [key: string]: string }
-        )
+        (acc, item) => {
+          acc[item.name] = item.value;
+          return acc;
+        },
+        {} as { [key: string]: string }
+      )
       : product?.selection || {};
 
+    let art: string | undefined;
+    if (productId) {
+      const params = new URLSearchParams(window.location.search);
+      art = params.get('arte') || undefined;
+    }
     const queryString = queryCreator(
       undefined,
       undefined,
       id,
-      undefined,
+      art,
       selectionAsObject || undefined,
-      Object.values(selectionAsObject).every((s) => typeof s === 'string' && s !== '')
-        ? 'arte'
-        : 'producto',
-      '1'
     );
 
-    history.push({ pathname: '/flow', search: queryString });
+    navigate(`/crear-prix?${queryString}`)
   }
-
-  // const handleSaveProduct = async () => {
-  //   addItemToCart({ product, art: undefined, quantity: 1 });
-  // };
 
   const handleChange =
     (panel: string) => (event: React.ChangeEvent<object>, isExpanded: boolean) => {
@@ -158,26 +173,32 @@ const Details = () => {
 
   return (
     <div style={{ maxHeight: `${windowHeight - 64}px`, overflowY: 'auto' }}>
-      {isPortrait ? (
-        <Portrait
-          product={product}
-          handleChange={handleChange}
-          handleSelection={handleSelection}
-          expanded={expanded}
-          description={description}
-          handleArtSelection={handleArtSelection}
-          // handleSaveProduct={handleSaveProduct}
-        />
+      {!isPortrait && !productId ? (
+        product && (
+          <Landscape
+            product={product}
+            handleChange={handleChange}
+            handleSelection={handleSelection}
+            expanded={expanded}
+            description={description}
+            handleArtSelection={handleArtSelection}
+            isFetchingVariantPrice={isFetchingVariantPrice}
+            flowProductId={productId}
+          />
+        )
       ) : (
-        <Landscape
-          product={product}
-          handleChange={handleChange}
-          handleSelection={handleSelection}
-          expanded={expanded}
-          description={description}
-          handleArtSelection={handleArtSelection}
-          // handleSaveProduct={handleSaveProduct}
-        />
+        product && (
+          <Portrait
+            product={product}
+            handleChange={handleChange}
+            handleSelection={handleSelection}
+            expanded={expanded}
+            description={description}
+            handleArtSelection={handleArtSelection}
+            isFetchingVariantPrice={isFetchingVariantPrice}
+            flowProductId={productId}
+          />
+        )
       )}
     </div>
   );

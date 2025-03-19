@@ -2,8 +2,12 @@
 export interface PickedArt
   extends Pick<
     Art,
-    'artId' | 'title' | 'squareThumbUrl' | 'largeThumbUrl' | 'prixerUsername' | 'exclusive'
-  > {}
+    'artId' | 'title' | 'squareThumbUrl' | 'largeThumbUrl' | 'prixerUsername' | 'exclusive' | '_id'
+  > { }
+
+export interface ReadArtResponse {
+  arts: Art;
+}
 
 export interface Art {
   crops: Crop[];
@@ -24,8 +28,8 @@ export interface Art {
   prixerUsername: string;
   status: string;
   artType: string;
-  originalPhotoWidth: string;
-  originalPhotoHeight: string;
+  originalPhotoWidth: number;
+  originalPhotoHeight: number;
   originalPhotoIso: string;
   originalPhotoPpi: string;
   artLocation: string;

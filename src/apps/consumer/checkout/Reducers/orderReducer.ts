@@ -1,9 +1,26 @@
 import { linesReducer } from './linesReducer';
 import { consumerDetailsReducer } from './consumerDetailsReducer';
 import { shippingReducer } from './shippingReducer';
-import { billingReducer } from './billingReducer';
 import { paymentReducer } from './paymentReducer';
-import { Order, CheckoutAction } from '../interfaces';
+import { Order, CheckoutAction, ConsumerDetails, PaymentDetails, BillingDetails } from '../interfaces';
+
+const initialConsumerDetails: ConsumerDetails = {
+  basic: {
+    name: '',
+    lastName: '',
+    phone: ''
+  },
+  selectedAddress: {
+    line1: '',
+    city: '',
+    state: '',
+    country: ''
+  },
+  addresses: [],
+  paymentMethods: []
+};
+
+const initialPaymentDetails: PaymentDetails = {};
 
 export const orderReducer = (
   order: Order,
@@ -25,6 +42,15 @@ export const orderReducer = (
         observations: action.payload,
       };
 
+    case 'SET_BILLING_DETAILS':
+      return {
+        ...order,
+        billing: {
+          ...order.billing,
+          ...action.payload,
+        },
+      };
+
     default:
       const { lines, totals } = linesReducer(order.lines, action);
 
@@ -33,10 +59,15 @@ export const orderReducer = (
         lines,
         totalUnits: totals?.totalUnits ?? order.totalUnits,
         subTotal: totals?.subTotal ?? order.subTotal,
-        consumerDetails: consumerDetailsReducer(order.consumerDetails, action),
+        consumerDetails: consumerDetailsReducer(
+          order.consumerDetails ?? initialConsumerDetails,
+          action
+        ),
         shipping: shippingReducer(order.shipping, action),
-        billing: billingReducer(order.billing, action),
-        payment: paymentReducer(order.payment, action),
+        payment: paymentReducer(
+          order.payment ?? initialPaymentDetails,
+          action
+        ),
       };
   }
 };

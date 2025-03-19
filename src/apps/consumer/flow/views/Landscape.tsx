@@ -5,39 +5,49 @@ import 'slick-carousel/slick/slick-theme.css';
 import { MenuItem, FormControl, Select, InputLabel } from '@mui/material';
 import { Share as ShareIcon } from '@mui/icons-material';
 
-import Grid from '../../art/components/grid';
 import Button from 'components/Button';
 
 import { generateWaProductMessage } from 'utils/utils';
 
 import styles from '../Flow.module.scss';
 
-import { Product, Art, Item, PickedProduct, PickedArt } from '../interfaces';
+import { Art, Item, Product } from '../interfaces';
 import ItemCard from 'components/ItemCard';
 import ProductsCatalog from 'apps/consumer/products/Catalog';
 import { useCart } from 'context/CartContext';
 import CurrencySwitch from 'components/CurrencySwitch';
+import ArtsGrid from '@apps/consumer/art/components/ArtsGrid/ArtsGrid';
+import Details from '@apps/consumer/products/Details/Details';
 
 interface LandscapeProps {
   itemId: string;
-  item: Item;
+  item: Partial<Item>;
   isUpdate: boolean;
-  addInFlow: (updatedArt?: Art, updatedProduct?: Product) => void;
   handleCart: (item: Item) => void;
-  handleDeleteElement: (type: 'producto' | 'arte', item: Item) => void;
+  handleChangeElement: (type: 'producto' | 'arte', item: Item) => void;
   getFilteredOptions: (att: { name: string; value: string[] }) => string[];
-  handleSelection: (e: React.ChangeEvent<{ name: string; value: number }>) => void;
-  openSection: string;
-  flowReady: boolean;
-  handleFlow: (type: 'producto' | 'arte') => void;
+  handleSelection?: (e: React.ChangeEvent<{ name: string; value: number }>) => void;
+  isItemReady: boolean;
+  onArtSelect: (selectedArt: Art) => void;
+  onProductSelect: (selectedProduct: Product) => void;
+  selectedProductId?: string | null;
 }
 
 const Landscape: React.FC<LandscapeProps> = (props) => {
+
   const { cart } = useCart();
 
   const handleCart = () => {
-    props.handleCart(props.item);
+    if (!props.item.sku) {
+      console.error("Item SKU is missing");
+      return;
+    }
+    props.handleCart(props.item as Item);
   };
+
+  const productExists = Boolean(props.item?.product);
+  const artExists = Boolean(props.item?.art);
+  const showRightSide = productExists !== artExists;
 
   return (
     <div className={styles['prix-product-container']}>
@@ -51,16 +61,16 @@ const Landscape: React.FC<LandscapeProps> = (props) => {
             type="onlyText"
             color="primary"
             onClick={(e) => {
-              window.open(generateWaProductMessage(props.item?.product), '_blank');
+              window.open(generateWaProductMessage(props.item?.product!), '_blank');
             }}
           >
             <ShareIcon className={styles['share-icon']} /> Compartir
           </Button>
           <Button
             color="primary"
-            disabled={!props.flowReady}
+            disabled={!props.isItemReady}
             onClick={handleCart}
-            highlighted={props.flowReady}
+            highlighted={props.isItemReady}
           >
             {cart.lines.some((l) => l.item.sku === props.item.sku)
               ? 'Actualizar'
@@ -72,76 +82,79 @@ const Landscape: React.FC<LandscapeProps> = (props) => {
       <div className={styles['main-content']}>
         {/* Left Side - Carusel e Info */}
         <div className={styles['left-side']}>
-          <ItemCard
-            item={props.item}
-            direction="column"
-            handleDeleteElement={props.handleDeleteElement}
-            handleFlow={props.handleFlow}
-          />
+          {(props.item.product || props.item.art) && (
+            <ItemCard
+              item={props.item as Item}
+              direction="column"
+              handleChangeElement={props.handleChangeElement}
+            />
+          )}
         </div>
 
         {/* Right Side - Gallery */}
-        <div className={styles['right-side']}>
-          {props.openSection === 'producto' && props.item?.product && (
-            <div className={styles['select']}>
-              <h2>Selecciona:</h2>
-              <div
-                className={`${styles['attributes-container']} ${
-                  props.item?.product?.attributes?.length > 1
-                    ? styles['space-between']
-                    : styles['flex-start']
-                }`}
-              >
-                {props.item?.product?.attributes?.map((att, iAtt) => (
-                  <div key={iAtt} style={{ width: '45%' }}>
-                    <FormControl variant="outlined" style={{ width: '100%' }}>
-                      <InputLabel id={att.name}>{att.name}</InputLabel>
-                      <Select
-                        labelId={att.name}
-                        id={att.name}
-                        name={att.name}
-                        value={props.item?.product?.selection[att.name] || ''}
-                        onChange={(e) => props.handleSelection(e as unknown as React.ChangeEvent<{ name: string; value: number }>)}
-                        label={att.name}
-                      >
-                        <MenuItem value="">
-                          <em>Selecciona una opción</em>
-                        </MenuItem>
-
-                        {props.getFilteredOptions(att).map((option) => (
-                          <MenuItem key={option} value={option}>
-                            {option}
+        {showRightSide && (
+          <div className={styles['right-side']}>
+            {(!productExists && artExists) && (
+              <div className={styles['select']}>
+                <div className={(props.item?.product?.attributes?.length || 0) > 1 ? styles['attributes-container'] + ' ' + styles['space-between'] : + ' ' + styles['flex-start']}>
+                  {props.item?.product?.attributes?.map((att, iAtt) => (
+                    <div key={iAtt} style={{ width: '45%' }}>
+                      <FormControl variant="outlined" style={{ width: '100%' }}>
+                        <Select
+                          labelId={att.name}
+                          id={att.name}
+                          name={att.name}
+                          value={
+                            props.item?.product?.selection?.find(
+                              (sel: { name: string; value: string }) => sel.name === att.name
+                            )?.value || ''
+                          }
+                          onChange={(e) =>
+                            props.handleSelection?.(
+                              e as unknown as React.ChangeEvent<{ name: string; value: number }>
+                            )
+                          }
+                          label={att.name}
+                        >
+                          <MenuItem value="">
+                            <em>Selecciona una opción</em>
                           </MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
-                  </div>
-                ))}
+                          {props.getFilteredOptions(att).map((option) => (
+                            <MenuItem key={option} value={option}>
+                              {option}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
-          )}
-          <div className={styles['right-side-bottom']}>
-            <h2>{`Elige el ${props.openSection === 'arte' ? 'arte' : 'producto'}:`}</h2>
-            <div className={styles['art-selection-container']}>
-              <div className={styles['art-grid-wrapper']}>
-                {props.openSection === 'arte' ? (
-                  <Grid
-                    setSelectedArt={props.addInFlow}
-                    selectedArtId={props.item?.art?.artId || undefined}
-                  />
-                ) : (
-                  <ProductsCatalog
-                    flowData={{
-                      onlyGrid: true,
-                      addInFlow: props.addInFlow,
-                      selectedProductId: props.item?.product?.id || undefined,
-                    }}
-                  />
-                )}
+            )}
+            <div className={styles['right-side-bottom']}>
+              <h2>
+                {props.selectedProductId
+                  ? 'Detalles del producto:'
+                  : (productExists && !artExists
+                    ? 'Elige el arte:'
+                    : (!productExists && artExists ? 'Elige el producto:' : ''))}
+              </h2>
+              <div className={styles['art-selection-container']}>
+                <div className={styles['art-grid-wrapper']}>
+                  {productExists && !artExists ? (
+                    <ArtsGrid onArtSelect={props.onArtSelect} />
+                  ) : !productExists && artExists ? (
+                    props.selectedProductId ? (
+                      <Details productId={props.selectedProductId} />
+                    ) : (
+                      <ProductsCatalog onProductSelect={props.onProductSelect} />
+                    )
+                  ) : null}
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

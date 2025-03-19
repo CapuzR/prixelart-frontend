@@ -2,7 +2,6 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import { Cart, CartLine } from 'apps/consumer/cart/interfaces';
 import { Item } from 'types/item.types';
 import { v4 as uuidv4 } from 'uuid';
-import { fetchLineDiscount } from 'apps/consumer/cart/api';
 
 interface CartContextType {
   cart: Cart;
@@ -13,6 +12,7 @@ interface CartContextType {
   ) => void;
   deleteLineInCart: (id: string) => void;
   deleteElementInItem: (id: string, type: 'producto' | 'arte') => void;
+  emptyCart: () => void;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -33,12 +33,12 @@ export const CartProvider: React.FC<MyComponentProps> = ({ children }) => {
     return storedCart
       ? JSON.parse(storedCart)
       : {
-          lines: [],
-          subTotal: 0,
-          totalUnits: 0,
-          cartDiscount: 0,
-          totalDiscount: 0,
-        };
+        lines: [],
+        subTotal: 0,
+        totalUnits: 0,
+        cartDiscount: 0,
+        totalDiscount: 0,
+      };
   });
 
   useEffect(() => {
@@ -65,7 +65,14 @@ export const CartProvider: React.FC<MyComponentProps> = ({ children }) => {
   const addOrUpdateItemInCart = async (item: Item, quantity: number = 1, lineId?: string) => {
     try {
       // const lineDiscount = await fetchLineDiscount(item, quantity);
+
+
       const lineDiscount = 0;
+
+      const isSameSelection = (sel1: { name: string; value: string }[] = [], sel2: { name: string; value: string }[] = []) => {
+        if (sel1.length !== sel2.length) return false;
+        return sel1.every(s1 => sel2.some(s2 => s1.name === s2.name && s1.value === s2.value));
+      };
 
       let updatedLines = [...cart.lines];
 
@@ -89,9 +96,11 @@ export const CartProvider: React.FC<MyComponentProps> = ({ children }) => {
           console.warn('Line with specified lineId not found. Adding as new line.');
         }
       } else {
-        const existingLineIndex = updatedLines.findIndex(
-          (line) =>
-            line.item.product?.id === item.product?.id && line.item.art?.artId === item.art?.artId
+
+        const existingLineIndex = updatedLines.findIndex((line) =>
+          line.item.product?.id === item.product?.id &&
+          line.item.art?.artId === item.art?.artId &&
+          isSameSelection(line.item.product?.selection, item.product?.selection)
         );
 
         if (existingLineIndex !== -1) {
@@ -202,7 +211,7 @@ export const CartProvider: React.FC<MyComponentProps> = ({ children }) => {
           }
           return line;
         })
-        .filter((line) => line.item.product || line.item.art); // Keep only lines with at least one valid element
+        .filter((line): line is CartLine => !!line.item.product || !!line.item.art); // Keep only lines with at least one valid element
 
       const { subTotal, totalUnits, cartDiscount, totalDiscount } =
         calculateCartTotals(updatedLines);
@@ -218,6 +227,16 @@ export const CartProvider: React.FC<MyComponentProps> = ({ children }) => {
     }
   };
 
+  const emptyCart = () => {
+    setCart({
+      lines: [],
+      subTotal: 0,
+      totalUnits: 0,
+      cartDiscount: 0,
+      totalDiscount: 0,
+    });
+  };
+
   return (
     <CartContext.Provider
       value={{
@@ -226,6 +245,7 @@ export const CartProvider: React.FC<MyComponentProps> = ({ children }) => {
         updateCartLine,
         deleteLineInCart,
         deleteElementInItem,
+        emptyCart,
       }}
     >
       {children}

@@ -2,26 +2,45 @@ import { Cart, Item } from "apps/consumer/cart/interfaces";
 export type { Cart };
 
 export interface CheckoutState {
+  billing: any;
   activeStep: number;
-  loading: boolean;
   order: Order;
   dataLists: DataLists;
-  expandedSection?: string | false;
+  shippingMethods: ShippingMethod[];
+  paymentMethods: PaymentMethod[];
 }
 
 export interface DataLists {
   shippingMethods: ShippingMethod[];
   paymentMethods: PaymentMethod[];
+  countries: {
+    code2: string;
+    code3: string;
+    name: string;
+    capital: string;
+    region: string;
+    active?: boolean;
+    subregion: string;
+    states: {
+      code: string;
+      name: string;
+      subdivision: string;
+    }[]
+  }[];
+  billingStates?: string[];
+  shippingStates?: string[];
   sellers: string[];
 };
 
 export interface Order {
-  id: string;
-  lines: OrderLine[];
+  id: string; // id  (orderId)
+  lines: OrderLine[]; // requests
+  createdOn: Date;
+  createdBy: string;
+  // updates: [Date, string]; // updates when and by whom
+  status: Status; // ship status
 
-  status: Status;
-
-  consumerDetails?: ConsumerDetails;
+  consumerDetails?: ConsumerDetails; // consumer details (consumerData)
   payment?: PaymentDetails;
   shipping: ShippingDetails;
   billing: BillingDetails;
@@ -29,12 +48,12 @@ export interface Order {
   totalUnits: number;
 
   subTotal: number;
-  discount: number;
-  shippingCost: number;
+  discount?: number;
+  shippingCost?: number;
   tax: Tax[];
   totalWithoutTax: number; // Base Imponible
   total: number; // Final order total (subTotal + tax + shipping - discount)
-  
+
   seller?: string;
   paymentVoucher?: File;
   observations?: string;
@@ -51,12 +70,12 @@ export interface PaymentDetails {
   method?: PaymentMethod;
   payer?: BasicInfo;
   address?: Address;
-  voucher?: File;
 }
 
 // Shipping-related details
 export interface ShippingDetails {
   method?: ShippingMethod;
+  country?: string;
   address?: Address;
   preferredDeliveryDate?: Date;
   estimatedShippingDate?: Date;
@@ -68,6 +87,7 @@ export interface BillingDetails {
   method?: string;
   billTo?: BasicInfo;
   address?: Address;
+  paymentMethod?: string;
 }
 
 export interface Address {
@@ -91,16 +111,7 @@ export interface BasicInfo {
   lastName: string;
   email?: string;
   phone: string;
-}
-
-export interface PaymentMethod {
-  id: string; // Unique identifier for the payment method
-  name: string; // Display name (e.g., 'Credit Card', 'PayPal')
-  type?: PaymentMethodType; // Type of payment
-  provider?: string; // Optional, name of the payment provider (e.g., Visa, PayPal)
-  token?: string; // Encrypted token from the payment gateway (instead of card details)
-  lastFourDigits?: string; // Optional, last four digits of a card
-  metadata?: Record<string, any>; // Optional, for other data needed by specific payment methods
+  shortAddress?: string;
 }
 
 export interface ShippingMethod {
@@ -118,7 +129,17 @@ enum OrderStatus {
   Returned = 6,
 }
 
-enum PaymentMethodType {
+export interface PaymentMethod {
+  id: string; // Unique identifier for the payment method
+  name: string; // Display name (e.g., 'Credit Card', 'PayPal')
+  type?: PaymentMethodType; // Type of payment
+  provider?: string; // Optional, name of the payment provider (e.g., Visa, PayPal)
+  token?: string; // Encrypted token from the payment gateway (instead of card details)
+  lastFourDigits?: string; // Optional, last four digits of a card
+  metadata?: string;
+}
+
+export enum PaymentMethodType {
   CreditCard = 'credit_card',
   PayPal = 'paypal',
   BankTransfer = 'bank_transfer',
@@ -133,7 +154,7 @@ interface Status {
   name: string;
 }
 
-interface Tax {
+export interface Tax {
   id: string;
   name: string; // Nombre del impuesto (e.g. IVA)
   value: number; // Porcentaje
@@ -147,8 +168,6 @@ export interface OrderLine {
   pricePerUnit: number; // The price of one unit at the time of purchase
   discount: number; // Discount applied to the line
   subtotal: number; // Total for the line (quantity * pricePerUnit - discount)
-  tax: number; // Tax applied to this line
-  total: number; // Final total for the line (subtotal + tax)
 }
 
 //Reducer actions
@@ -177,7 +196,7 @@ export type CheckoutAction =
   | { type: 'SET_CONSUMER_PAYMENT_METHODS'; payload: ConsumerDetails['paymentMethods'] }
   | { type: 'OTHER_ACTIONS'; payload?: any };
 
-  
+
 // Type for the errorCheck function used in form fields
 export type FormFieldErrorCheck = (value: any, data?: any) => boolean;
 
@@ -208,8 +227,8 @@ export interface FormFieldConfig {
   dataKey?: string;
   tooltip?: string;
   [key: string]: any;
-  
-  conditionedBy?: string;
+
+  conditionedBy?: string | string[];
   onConditionChange?: OnConditionChangeHandler;
 }
 

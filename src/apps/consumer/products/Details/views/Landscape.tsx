@@ -9,6 +9,7 @@ import {
   FormControl,
   Select,
   InputLabel,
+  SelectChangeEvent,
 } from '@mui/material';
 import { Share as ShareIcon, ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
 
@@ -16,13 +17,13 @@ import Button from 'components/Button';
 
 import { generateWaProductMessage } from 'utils/utils';
 import { formatPriceForUI } from 'utils/formats';
-import { useConversionRate, useLoading } from 'context/GlobalContext';
+import { useConversionRate } from 'context/GlobalContext';
 
 import styles from './Landscape.module.scss';
 
 import { getFilteredOptions } from 'apps/consumer/products/services';
 
-import { Product, Item } from '../../interfaces';
+import { Product } from '../../interfaces';
 import { useCurrency } from 'context/GlobalContext';
 import { Slider } from 'components/Slider';
 import { Image } from 'components/Image';
@@ -33,14 +34,20 @@ interface LandscapeProps {
   expanded: string | false;
   description: { generalDescription: string; technicalSpecification: string };
   handleArtSelection: () => void;
-  // handleSaveProduct: () => void;
-  handleSelection: (e: React.ChangeEvent<{ name: string; value: number }>) => void;
+  handleSelection: (e: SelectChangeEvent<string>) => void;
   handleChange: (panel: string) => (event: React.ChangeEvent<{}>, isExpanded: boolean) => void;
+  isFetchingVariantPrice: boolean;
+  flowProductId?: string;
 }
 
 const Landscape: React.FC<LandscapeProps> = (props) => {
   const { currency } = useCurrency();
   const { conversionRate } = useConversionRate();
+
+  const isOptionSelected =
+    Array.isArray(props.product.selection)
+      ? props.product.selection.some(sel => sel.value !== '')
+      : false;
 
   return (
     <div className={styles['prix-product-container']}>
@@ -67,18 +74,25 @@ const Landscape: React.FC<LandscapeProps> = (props) => {
       <div className={styles['right-side']}>
         <div className={styles['first-row-title-container']}>
           <div className={styles['product-title']}>{props.product?.name}</div>
-          <div className={styles['product-title']}>
-            <CurrencySwitch />
-          </div>
+          {!props.flowProductId && (
+            <div className={styles['product-title']}>
+              <CurrencySwitch />
+            </div>
+          )}
+
           <div className={styles['price-selected']}>
-            {props.product?.price
-              ? formatPriceForUI(props.product?.price, currency, conversionRate)
+            {isOptionSelected
+              ? formatPriceForUI(
+                props.product.price ?? props.product.priceRange.from,
+                currency,
+                conversionRate
+              )
               : formatPriceForUI(
-                  props.product?.priceRange.from,
-                  currency,
-                  conversionRate,
-                  props.product?.priceRange.to
-                )}
+                props.product.priceRange.from,
+                currency,
+                conversionRate,
+                props.product.priceRange.to
+              )}
           </div>
           <Button
             type="onlyText"
@@ -119,55 +133,54 @@ const Landscape: React.FC<LandscapeProps> = (props) => {
         <div className={styles['select']}>
           <h4>Selecciona:</h4>
           <div
-            className={`${styles['attributes-container']} ${
-              props.product?.attributes?.length > 1 ? styles['space-between'] : styles['flex-start']
-            }`}
+            className={`${styles['attributes-container']} ${props.product?.attributes?.length > 1 ? styles['space-between'] : styles['flex-start']
+              }`}
           >
-            {props.product?.attributes?.map((att, iAtt, attributesArr) => (
-              <div key={iAtt} className={styles['attribute-select-wrapper']}>
-                <FormControl variant="outlined" className={styles['attribute-form-control']}>
-                  <InputLabel id={att.name}>{att.name}</InputLabel>
-                  <Select
-                    labelId={att.name}
-                    id={att.name}
-                    name={att.name}
-                    value={props.product?.selection[att.name] || ''}
-                    onChange={props.handleSelection}
-                    label={att.name}
-                  >
-                    <MenuItem value="">
-                      <em>Selecciona una opción</em>
-                    </MenuItem>
+            {props.product?.attributes?.map((att, iAtt) => {
+              const selectedValue = (Array.isArray(props.product?.selection)
+                ? props.product.selection
+                : []).find((sel) => sel.name === att.name)?.value || '';
+              console.log(`For attribute ${att.name}, current selection is:`, selectedValue);
 
-                    {getFilteredOptions(props.product, att).map((option) => (
-                      <MenuItem key={option} value={option}>
-                        {option}
+              return (
+                <div key={iAtt} className={styles['attribute-select-wrapper']}>
+                  <FormControl variant="outlined" className={styles['attribute-form-control']}>
+                    <InputLabel id={att.name}>{att.name}</InputLabel>
+                    <Select
+                      labelId={att.name}
+                      id={att.name}
+                      name={att.name}
+                      value={selectedValue}
+                      onChange={props.handleSelection}
+                      label={att.name}
+                    >
+                      <MenuItem value="">
+                        <em>Selecciona una opción</em>
                       </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </div>
-            ))}
+                      {getFilteredOptions(props.product, att).map((option) => (
+                        <MenuItem key={option} value={option}>
+                          {option}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </div>
+              );
+            })}
+
           </div>
         </div>
         <div className={styles['buttons-container']}>
-          {/* <Button
-              type="onlyText"
-              color="primary"
-              onClick={props.handleSaveProduct}
-            >
-              Guardar
-            </Button> */}
           <Button
             color="primary"
             disabled={
-              props.product?.selection &&
-              Object.keys(props.product.selection).length === 0 &&
-              Object.keys(props.product.selection).every((el: string) => el === '')
+              (props.product?.selection &&
+                Object.keys(props.product.selection).length === 0 &&
+                Object.keys(props.product.selection).every((el: string) => el === '')) || props.isFetchingVariantPrice
             }
             onClick={props.handleArtSelection}
           >
-            Seleccionar Arte
+            {props.flowProductId ? 'Seleccionar' : 'Seleccionar Arte'}
           </Button>
         </div>
       </div>

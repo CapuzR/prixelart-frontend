@@ -28,19 +28,16 @@ export interface PickedProduct
   > {}
 
 export interface Product {
-  _id: string
-  name: string
-  price: number
-  description: string
-  discount: string
-  attributes: Attribute[]
-  selection: Selection[] | object[] | string | undefined
-  modifyPrice: number
-  comission: number
-  variants: Array<Variant>
-  priceRange: PriceRange | Equation
-  observations: string
-  thumbUrl: string
+  id: string;
+  name: string;
+  price: number;
+  description: string;
+  attributes: Attribute[];
+  selection: Selection[];
+  variants: Array<Variant>;
+  priceRange: PriceRange;
+  observations: string;
+  thumbUrl: string;
   sources: {
     images: { url: string }[]
   }

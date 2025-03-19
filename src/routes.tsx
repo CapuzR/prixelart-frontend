@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react"
 import expire from "./utils/expire"
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom"
+import { BrowserRouter as Router, Route } from "react-router-dom"
 import { useLocation, useParams } from "react-router"
 
 import ArtistRoutes from "apps/artist/artist.routes"

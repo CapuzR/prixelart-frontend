@@ -1,53 +1,41 @@
-import React, { useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import { CardActionArea, Typography, IconButton, Tooltip } from '@mui/material';
 import Img from 'react-cool-img';
-import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
 import Star from '@mui/icons-material/StarRate';
 import StarOutline from '@mui/icons-material/StarOutline';
 import { Art } from '../interfaces';
-import { setVisibleArt } from '../api';
-import { addingToCart } from '../services';
 import { queryCreator } from 'apps/consumer/flow/utils';
-import { set } from 'react-ga';
 
-export default function ArtThumbnail({
-  tile,
-  i,
-  handleCloseVisible,
-  setSelectedArt,
-  handleFullImageClick,
-  isSelectedInFlow,
-}) {
-  const [selectedLocalArt, setSelectedLocalArt] = useState<Art | undefined>(undefined);
-  //Mover estilo a archivos de estilos y eliminar funciones que no se utilizan.
-  const hideArt = (tile: Art, e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    setVisibleArt(tile);
-    setSelectedLocalArt(undefined);
-    handleCloseVisible();
-  };
-  const history = useHistory();
+interface ArtThumbnailProps {
+  tile: Art;
+  i: number;
+  handleFullImageClick: (e: React.MouseEvent<HTMLImageElement>, tile: Art) => void;
+}
 
-  function handleArtSelection(e): void {
-    console.log('selectedArt', setSelectedArt);
-    if (setSelectedArt) {
-      addingToCart(e, tile, setSelectedArt);
-    } else {
-      const queryString = queryCreator(
-        undefined,
-        undefined,
-        undefined,
-        tile.artId,
-        undefined,
-        'producto',
-        '1'
-      );
+export default function ArtThumbnail({ tile, i, handleFullImageClick, }: ArtThumbnailProps) {
 
-      history.push({ pathname: '/flow', search: queryString });
-    }
+  //Mover estilo a archivos de estilos
+
+  const navigate = useNavigate();
+
+  function handleArtSelection(e: React.MouseEvent<HTMLButtonElement>): void {
+
+
+    const queryString = queryCreator(
+      undefined,
+      undefined,
+      undefined,
+      tile.artId,
+      undefined,
+    );
+
+    navigate({ pathname: '/crear-prix', search: queryString });
+
   }
+
+  const adminToken = localStorage.getItem('adminToken');
 
   return (
     <div key={i}>
@@ -64,7 +52,8 @@ export default function ArtThumbnail({
         </Typography>
       )} */}
       <CardActionArea>
-        {!isSelectedInFlow && (
+
+        {/*!isSelectedInFlow && (
           <Tooltip
             title={
               window.location.search.includes('producto=')
@@ -81,7 +70,7 @@ export default function ArtThumbnail({
               <AddShoppingCartIcon />
             </IconButton>
           </Tooltip>
-        )}
+        )*/}
         {tile.exclusive === 'exclusive' && (
           <Tooltip title="Arte exclusivo">
             <IconButton size="small" color="primary" style={{ position: 'absolute', right: 0 }}>
@@ -104,7 +93,7 @@ export default function ArtThumbnail({
         )}
         <Img
           draggable={false}
-          onClick={(e) => {
+          onClick={(e: React.MouseEvent<HTMLImageElement>) => {
             handleFullImageClick(e, tile);
           }}
           placeholder="/imgLoading.svg"

@@ -8,14 +8,12 @@ import DeleteIcon from '@mui/icons-material/Delete';
 
 export interface ItemPlaygroundProps {
   item: Item;
-  handleDeleteElement?: (type: 'producto' | 'arte', item: Item) => void;
-  handleFlow?: (type: 'producto' | 'arte') => void;
+  handleChangeElement?: (type: 'producto' | 'arte', item: Item) => void;
 }
 
 export default function ItemPlayground({
   item,
-  handleDeleteElement,
-  handleFlow,
+  handleChangeElement
 }: ItemPlaygroundProps) {
   return (
     <div className={styles['container']}>
@@ -27,10 +25,8 @@ export default function ItemPlayground({
             {item?.product ? (
               <OverlayWithIcon
                 iconLeft={<AutorenewIcon />}
-                iconRight={<DeleteIcon />}
                 coverTarget="parent"
-                onClickLeft={() => handleFlow('producto')}
-                onClickRight={() => handleDeleteElement('producto', item)}
+                onClickLeft={() => handleChangeElement!('producto', item)}
               >
                 <Image
                   src={item?.product?.sources?.images?.[0]?.url}
@@ -40,17 +36,15 @@ export default function ItemPlayground({
                 />
               </OverlayWithIcon>
             ) : (
-              <AddImage onClick={() => handleFlow('producto')} />
+              <AddImage />
             )}
           </div>
           <div className={styles['art-area']}>
             {item?.art ? (
               <OverlayWithIcon
                 iconLeft={<AutorenewIcon />}
-                iconRight={<DeleteIcon />}
                 coverTarget="parent"
-                onClickLeft={() => handleFlow('arte')}
-                onClickRight={() => handleDeleteElement('arte', item)}
+                onClickLeft={() => handleChangeElement!('arte', item)}
               >
                 <Image
                   src={item.art?.largeThumbUrl}
@@ -60,7 +54,7 @@ export default function ItemPlayground({
                 />
               </OverlayWithIcon>
             ) : (
-              <AddImage onClick={() => handleFlow('arte')} />
+              <AddImage />
             )}
           </div>
         </div>

@@ -1865,3 +1865,4 @@ export default function ArtDetail(props) {
     </>
   );
 }
+

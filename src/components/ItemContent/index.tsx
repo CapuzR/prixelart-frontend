@@ -1,25 +1,25 @@
-import React from 'react';
 import styles from './styles.module.scss';
 import { Item } from './interfaces';
 import Typography from 'components/Typography';
 
 export interface ItemContentProps {
   item: Item;
-  // item: CartItem;
   direction?: 'row' | 'column';
 }
 
 export default function ItemContent({ item, direction = 'row' }: ItemContentProps) {
   const getSelectedAttributes = () => {
-    return Object.keys(item.product?.selection || {})
+    return item.product?.selection
       .slice(0, 3)
-      .filter((key) => item.product?.selection[key] !== '')
-      .map((key, index) => (
+      .filter((attr) => attr.value !== '')
+      .map((attr, index) => (
         <Typography key={index} level="p" color="textSecondary" leading="normal">
-          <strong>{key}</strong>: {item.product?.selection?.[key]}
+          <strong>{attr.name}</strong>: {attr.value}
         </Typography>
       ));
   };
+
+  console.log('ItemContent', item);
 
   return (
     <div className={`${styles['content-section']} ${styles[direction]}`}>

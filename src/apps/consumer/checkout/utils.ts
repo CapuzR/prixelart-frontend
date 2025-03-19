@@ -16,6 +16,7 @@ import {
 //Método de pago no funciona
 //La dirección de envío y facturación no se guardan automáticamente con el basic.
 //Detalles de la orden tampoco.
+//Chamo qué estás haciendo?!?!
 
 export const validateConsumerDetails = (
   consumerDetails?: ConsumerDetails
@@ -34,7 +35,6 @@ export const validateConsumerDetails = (
     }
     return requiredFields.every((field) => {
       const value = details[field as keyof typeof details];
-      console.log(`Validating field: ${field}, value: ${value}`);
       return isValidField(field as string, value);
     });
   };
@@ -74,9 +74,6 @@ export const validateConsumerDetails = (
 
 export const calculateEstimatedDeliveryDate = (lines: any[]): Date => {
   const today = new Date();
-  const monthsOrder = [
-    "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12",
-  ];
 
   const ProdTimes = lines
     ?.map((item) => item.product?.productionTime)
@@ -94,5 +91,4 @@ export const calculateEstimatedDeliveryDate = (lines: any[]): Date => {
     readyDate = new Date(today.setDate(today.getDate() + 1));
   }
   return readyDate;
-  // return `${readyDate.getFullYear()}-${monthsOrder[readyDate.getMonth()]}-${readyDate.getDate()}`;
 };

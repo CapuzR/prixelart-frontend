@@ -1,18 +1,14 @@
 import axios from 'axios';
 import { Product } from './interfaces';
+import { info } from 'console';
 
 const base_url = import.meta.env.VITE_BACKEND_URL;
-
-interface FetchProductDetailsAPIResponse {
-  info: string;
-  product: Product;
-}
 
 export const fetchProductDetails = async (productId: string): Promise<Product> => {
   const base_url = import.meta.env.VITE_BACKEND_URL + '/product/read_v2';
 
   try {
-    const response = await axios.get<FetchProductDetailsAPIResponse>(base_url, {
+    const response = await axios.get<{ info: string, product: Product }>(base_url, {
       params: { _id: productId },
     });
     return response.data.product;
@@ -22,25 +18,18 @@ export const fetchProductDetails = async (productId: string): Promise<Product> =
   }
 };
 
-interface FetchVariantPriceAPIResponse {
-  info: string;
-  price: string;
-}
-
-export const fetchVariantPrice = async (variantId: String, artId?: String): Promise<string> => {
+export const fetchVariantPrice = async (variantId: String, artId: String): Promise<string> => {
   try {
-    // console.log("fetchVariantPrice -> artId", artId);
-    const response = await axios.get<FetchVariantPriceAPIResponse>(
+    const response = await axios.get<{ info: string, price: string }>(
       `${base_url}/product/getVariantPrice`,
       {
         params: { variantId, artId: artId || null },
       }
     );
-    // console.log("fetchVariantPrice -> response", response.data.price);
     return response.data.price;
   } catch (error) {
     console.error('Error fetching variant price:', error);
-    return null;
+    return "";
   }
 };
 
@@ -58,15 +47,16 @@ interface FetchProductsResponse {
 export const fetchProducts = async (
   order: string,
   currentPage: number,
-  productsPerPage: number
+  productsPerPage: number,
+  search?: string
 ): Promise<FetchProductsResponse> => {
   const base_url = import.meta.env.VITE_BACKEND_URL + '/product/read-all-v2';
   const params = {
     orderType: order === 'A-Z' || order === 'lowerPrice' ? 'asc' : order === '' ? '' : 'desc',
     sortBy:
       order === 'lowerPrice' || order === 'maxPrice' ? 'priceRange' : order === '' ? '' : 'name',
-    initialPoint: (currentPage - 1) * productsPerPage,
-    productsPerPage: productsPerPage,
+    initialPoint: search ? 0 : (currentPage - 1) * productsPerPage,
+    productsPerPage: search ? 1000 : productsPerPage,
   };
   const response = await axios.get<FetchProductsAPIResponse>(base_url, {
     params,

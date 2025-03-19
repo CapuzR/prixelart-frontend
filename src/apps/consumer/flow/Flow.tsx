@@ -1,131 +1,90 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 
-import ReactGA, { set } from 'react-ga';
+import ReactGA from 'react-ga';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
-import {
-  useBackdrop,
-  useConversionRate,
-  useCurrency,
-  useLoading,
-  useSnackBar,
-} from 'context/GlobalContext';
-import { getSelectedVariant, prepareProductData } from 'apps/consumer/products/services';
+import { useConversionRate, useCurrency, useLoading, useSnackBar, } from 'context/GlobalContext';
+import { getSelectedVariant } from 'apps/consumer/products/services';
 
 import { fetchProductDetails, fetchVariantPrice } from 'apps/consumer/products/api';
-import { fetchArtDetails } from 'apps/consumer/art/api';
+import { fetchArt } from 'apps/consumer/art/api';
 
-import Portrait from 'apps/consumer/flow/views/Portrait';
 import Landscape from 'apps/consumer/flow/views/Landscape';
 
-import { Item, PickedProduct, PickedArt, Product, Art } from './interfaces';
-import { queryCreator, getUrlParams } from './utils';
+import { Item, Art, Product } from './interfaces';
+import { queryCreator } from './utils';
 import { parsePrice } from 'utils/formats';
 import { useCart } from 'context/CartContext';
-import { debounce } from 'utils/util';
 import { checkPermissions } from './services';
+import { getUrlParams } from '@utils/util';
+import { url } from 'inspector';
 
 ReactGA.initialize('G-0RWP9B33D8');
 
 const Flow = () => {
-  const [item, setItem] = useState<Item>({
-    sku: undefined,
-    product: undefined,
-    art: undefined,
-    price: undefined,
-    discount: undefined,
-  });
+  const [item, setItem] = useState<Partial<Item>>({});
 
-  const [flowReady, setFlowReady] = useState(false);
-  const [isPortrait, setIsPortrait] = useState(window.innerWidth < 768);
-
-  const history = useHistory();
+  const navigate = useNavigate();
   const { setLoading } = useLoading();
   const { currency } = useCurrency();
   const { conversionRate } = useConversionRate();
   const { showSnackBar } = useSnackBar();
-  const { backdropOpen, showBackdrop, closeBackdrop } = useBackdrop();
   const { cart, addOrUpdateItemInCart } = useCart();
+
+  const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
+
   const location = useLocation();
 
   const urlParams = Object.fromEntries(new URLSearchParams(location.search).entries());
   const isUpdate = cart.lines.some((l) => l.id === urlParams.lineId);
 
-  useEffect(() => {
-    const handleResize = () => {
-      setIsPortrait(window.innerWidth < 768);
-    };
-
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  const isItemReady = Boolean(urlParams.producto && urlParams.arte);
 
   useEffect(() => {
-    !urlParams.producto && !urlParams.arte && history.push('/');
-  }, []);
-
-  useEffect(() => {
-    debouncedCheckPermissions(item.product, item.art);
-  }, [item.product, item.art]);
+    !urlParams.producto && !urlParams.arte && navigate('/');
+  }, [urlParams, navigate]);
 
   useEffect(() => {
     const fetchItem = async () => {
       setLoading(true);
       try {
-        let fetchedProduct = undefined;
         let selectedProduct = undefined;
         let selectedArt = undefined;
-        const atts = {};
+        const atts: Record<string, string> = {};
 
         if (urlParams.producto) {
-          fetchedProduct = await fetchProductDetails(urlParams.producto);
-          selectedProduct = prepareProductData(fetchedProduct);
+          selectedProduct = await fetchProductDetails(urlParams.producto);
         }
 
-        urlParams.arte && (selectedArt = await fetchArtDetails(urlParams.arte));
+        if (urlParams.arte) {
+          selectedArt = await fetchArt(urlParams.arte);
+        }
 
+        console.log('Fetched art from API:', selectedArt);
         const selectedAttributes = getUrlParams([
           'producto',
           'arte',
-          'step',
           'itemId',
-          'openSection',
           'lineId',
         ]);
 
-
-        selectedAttributes &&
-          selectedAttributes.map((att) => {
-            atts[att.name] = att.value;
-          });
+        Array.from(selectedAttributes.entries()).map(([key, value]) => {
+          atts[key] = value;
+        });
 
         setItem((prevItem) => ({
-        ...prevItem,
-        sku: urlParams.itemId,
-        product: selectedProduct
-          ? {
+          ...prevItem,
+          sku: urlParams.producto,
+          product: selectedProduct
+            ? {
               ...selectedProduct,
               id: urlParams.producto,
-              selection: atts || undefined,
+              selection: Object.entries(atts).map(([name, value]) => ({ name, value })),
             }
-          : prevItem.product,
-        art: selectedArt || prevItem.art,
-      }));
-
-        // setItem({
-        //   sku: urlParams.itemId,
-        //   product: selectedProduct
-        //     ? {
-        //         ...selectedProduct,
-        //         id: urlParams.producto,
-        //         selection: atts || undefined,
-        //       }
-        //     : undefined,
-        //   art: selectedArt || undefined,
-        //   price: undefined,
-        //   discount: undefined,
-        // });
+            : prevItem.product,
+          art: selectedArt || prevItem.art,
+        }));
       } catch (error) {
         console.error('Error fetching product attributes:', error);
       } finally {
@@ -138,13 +97,15 @@ const Flow = () => {
 
   useEffect(() => {
     const fetchAndSetPrice = async () => {
-      if (
-        item.product?.selection &&
-        Object.keys(item.product?.selection).every((s) => item.product?.selection[s] !== '')
-      ) {
+
+      const isSelectionComplete = item.product?.selection?.every(
+        (sel) => sel.value !== ''
+      );
+
+      if (item.product?.selection && isSelectionComplete) {
         const selectedVariant = getSelectedVariant(item.product?.selection, item.product?.variants);
         if (selectedVariant) {
-          const updatedPrice = await fetchVariantPrice(selectedVariant._id, item.art?.artId);
+          const updatedPrice = await fetchVariantPrice(selectedVariant._id, urlParams.producto);
           const parsedPrice = parsePrice(updatedPrice);
 
           setItem((prevItem) => ({
@@ -162,190 +123,141 @@ const Flow = () => {
     fetchAndSetPrice();
   }, [JSON.stringify(item.product?.selection), currency, conversionRate, item.art?.artId]);
 
-  const debouncedCheckPermissions = useCallback(
-    debounce((product: PickedProduct, selectedArt: PickedArt) => {
-      const hasPermission = checkPermissions(product, selectedArt);
-      if (hasPermission) {
-        setFlowReady(true);
-      } else {
-        setFlowReady(false);
-      }
-    }, 300),
-    [showBackdrop, backdropOpen]
-  );
+  const handleArtSelect = (selectedArt: Art) => {
+    const newQueryString = queryCreator(
+      urlParams.lineId,
+      urlParams.itemId,
+      urlParams.producto,
+      selectedArt._id,
+      undefined
+    );
+    navigate(`${location.pathname}?${newQueryString}`);
+    showSnackBar('¡Arte seleccionado! Puedes agregar el item al carrito');
+  };
+
+  const handleProductSelect = (selectedProduct: Product) => {
+    const attributes = selectedProduct.selection?.reduce((acc, curr) => {
+      acc[curr.name] = curr.value;
+      return acc;
+    }, {} as Record<string, string>);
+
+    setSelectedProductId(selectedProduct.id);
+
+    if (attributes) {
+      const newQueryString = queryCreator(
+        urlParams.lineId,
+        urlParams.itemId,
+        selectedProduct.id,
+        urlParams.arte,
+        attributes
+      );
+      navigate(`${location.pathname}?${newQueryString}`);
+      showSnackBar('¡Producto seleccionado! Puedes agregar el item al carrito');
+    }
+  };
 
   const handleCart = (item: Item) => {
     addOrUpdateItemInCart(item, 1, urlParams.lineId);
-
     showSnackBar('Item added in the cart');
-    closeBackdrop();
-    history.push('/shopping');
+    navigate('/carrito');
   };
 
-  const handleDeleteElement = (type: 'producto' | 'arte', item: Item) => {
-    // TODO : Esto del selectionObject + QueryString + push debería agruparse de alguna manera...se utiliza mucho.
-    const selectionAsObject: { [key: string]: string } = Array.isArray(item.product?.selection)
-      ? item.product?.selection.reduce(
-          (acc, item, index) => {
-            acc[`selection-${index}`] = String(item);
-            return acc;
-          },
-          {} as { [key: string]: string }
-        )
-      : item.product?.selection || {};
+  const handleChangeElement = (type: 'producto' | 'arte', item: Item) => {
 
-    type === 'arte'
-      ? setItem((prevItem) => ({
-          ...prevItem,
-          art: undefined,
-        }))
-      : setItem((prevItem) => ({
-          ...prevItem,
-          product: undefined,
-        }));
+    const selectionAsObject =
+      type === 'producto'
+        ? {}
+        : (item.product?.selection || []).reduce((acc, sel, index) => {
+          acc[`selection-${index}`] = sel.value;
+          return acc;
+        }, {} as Record<string, string>);
 
+    if (type === 'arte') {
+      setItem((prevItem) => ({
+        ...prevItem,
+        art: undefined,
+      }));
+    } else if (type === 'producto') {
+      setItem((prevItem) => ({
+        ...prevItem,
+        product: undefined,
+        attributes: undefined,
+      }));
+    }
     const queryString = queryCreator(
       urlParams.lineId,
-      item.sku,
-      type == 'producto' ? undefined : item.product?.id,
-      type == 'arte' ? undefined : item.art?.artId,
+      type === 'producto' ? undefined : item.sku,
+      type === 'producto' ? undefined : item.product?.id,
+      type === 'arte' ? undefined : item.art?._id,
       selectionAsObject,
-      type === 'producto' ? 'producto' : 'arte',
-      '3'
     );
 
-    history.push({ pathname: location.pathname, search: queryString });
+
+    navigate({ pathname: location.pathname, search: queryString });
   };
 
+
   const handleSelection = (e: React.ChangeEvent<{ name: string; value: number }>) => {
-    let openSection: 'producto' | 'arte' = 'producto';
-    const newSelection = item.product?.selection && {
-      ...item.product?.selection,
-    };
-    e.target.name && (newSelection[e.target.name] = e.target.value as number);
+
+    const prevSelection = item.product?.selection || [];
+    const newSelection = [...prevSelection];
+    const existingIndex = newSelection.findIndex((sel) => sel.name === e.target.name);
+
+    if (existingIndex >= 0) {
+      newSelection[existingIndex] = { ...newSelection[existingIndex], value: e.target.value.toString() };
+    } else {
+      newSelection.push({ name: e.target.name, value: e.target.value.toString() });
+    }
 
     setItem((prevItem) => ({
       ...prevItem,
-      product: {
-        ...prevItem?.product,
-        selection: newSelection,
-      },
+      product: prevItem.product ? { ...prevItem.product, selection: newSelection } : prevItem.product,
     }));
-    
-    const selectionAsObject = Array.isArray(newSelection)
-      ? newSelection.reduce(
-          (acc, item, index) => {
-            acc[`selection-${index}`] = String(item);
-            return acc;
-          },
-          {} as { [key: string]: string }
-        )
-      : newSelection || {};
 
-    Object.values(newSelection).every((s) => typeof s === 'string' && s !== '') &&
-      Object.values(newSelection).length === item.product?.attributes?.length &&
-      !item.art?.artId &&
-      (openSection = 'arte');
-      
+    const selectionAsObject = (item.product?.selection || []).reduce(
+      (acc, sel, index) => {
+        acc[`selection-${index}`] = sel.value;
+        return acc;
+      },
+      {} as Record<string, string>
+    );
+
     const queryString = queryCreator(
       urlParams.lineId,
       item.sku,
       item.product?.id,
       item.art?.artId,
       selectionAsObject,
-      openSection,
-      '3'
     );
 
-    history.push({ pathname: location.pathname, search: queryString });
+    navigate(`${location.pathname}?${queryString}`);
   };
 
   const getFilteredOptions = (att: { name: string; value: string[] }) => {
+    const selections = item.product?.selection || [];
     if (
-      Object.values(item.product?.selection).every((s) => s.value === '') ||
-      !Object.keys(item.product?.selection).some(
-        (key) => key !== att.name && item.product?.selection[key] !== ''
-      )
+      selections.every((sel) => sel.value === '') ||
+      !selections.some((sel) => sel.name !== att.name && sel.value !== '')
     ) {
       return att.value || [];
     }
-    return Object.keys(item.product?.selection)
-      .filter((key) => {
-        if (key !== att.name && item.product?.selection[key] !== '') {
-          return att.value;
-        }
-      })
-      .map((key) => {
-        return item.product?.variants
-          ?.filter((variant) => {
-            return variant.attributes?.some(
-              (a) => a.name === key && a.value === item.product?.selection[key]
-            );
-          })
-          ?.map((vari) => {
-            return vari.attributes?.filter((a) => a.name === att.name)[0].value;
-          });
+    return selections
+      .filter((sel) => sel.name !== att.name && sel.value !== '')
+      .map((sel) => {
+        return (
+          item.product?.variants
+            ?.filter((variant) =>
+              variant.attributes?.some(
+                (a) => a.name === sel.name && a.value === sel.value
+              )
+            )
+            ?.map((vari) => {
+              const found = vari.attributes?.find((a) => a.name === att.name);
+              return found ? found.value : '';
+            }) || []
+        );
       })
       .flat();
-  };
-
-  const handleFlow = (type: 'producto' | 'arte') => {
-    const lineId = urlParams.lineId;
-    
-    const selectionAsObject: { [key: string]: string } = Array.isArray(item.product?.selection)
-      ? item.product?.selection.reduce(
-          (acc, sel, index) => {
-            acc[`selection-${index}`] = String(sel);
-            return acc;
-          },
-          {} as { [key: string]: string }
-        )
-      : item.product?.selection || {};
-
-    const queryString = queryCreator(
-      lineId,
-      item.sku,
-      item.product?.id,
-      item.art?.artId,
-      selectionAsObject,
-      type,
-      '1'
-    );
-    history.push({ pathname: '/flow', search: queryString });
-  };
-
-  const addInFlow = (updatedArt?: Art, updatedProduct?: Product) => {
-    const newSectionOpened: 'arte' | 'producto' = urlParams.openSection === 'arte' ? 'producto' : 'arte';
-
-    setItem((prevItem) => ({
-      ...prevItem,
-      id: urlParams.itemId,
-      product: updatedProduct !== undefined ? updatedProduct : prevItem.product,
-      art: updatedArt !== undefined ? updatedArt : prevItem.art,
-    }));
-
-    const selectionAsObject: { [key: string]: string } = Array.isArray(item.product?.selection)
-      ? item.product?.selection.reduce(
-          (acc, item, index) => {
-            acc[`selection-${index}`] = String(item);
-            return acc;
-          },
-          {} as { [key: string]: string }
-        )
-      : item.product?.selection || {};
-
-    const queryString = queryCreator(
-      urlParams.lineId,
-      urlParams.itemId,
-      updatedProduct?.id || item.product?.id,
-      updatedArt?.artId || item.art?.artId,
-      updatedProduct ? undefined : selectionAsObject,
-      !flowReady ? newSectionOpened : updatedArt ? 'arte' : 'producto',
-      '3'
-    );
-
-    history.push({ pathname: location.pathname, search: queryString });
-    showSnackBar('¡Arte seleccionado! Puedes agregar el item al carrito');
   };
 
   return (
@@ -361,14 +273,13 @@ const Flow = () => {
           getFilteredOptions={getFilteredOptions}
           handleChange={handleChange}
           handleSelection={handleSelection}
-          addInFlow={addInFlow}
           expanded={expanded}
           generalDescription={generalDescription}
           technicalSpecification={technicalSpecification}
           searchResult={props.searchResult}
           setSearchResult={props.setSearchResult}
           searchParams={searchParams}
-          openSection={props.openSection}
+          selectedProductId={selectedProductId}
         />
       ) : ( */}
       <Landscape
@@ -378,11 +289,11 @@ const Flow = () => {
         handleCart={handleCart}
         getFilteredOptions={getFilteredOptions}
         handleSelection={handleSelection}
-        handleDeleteElement={handleDeleteElement}
-        addInFlow={addInFlow}
-        openSection={urlParams.openSection}
-        flowReady={flowReady}
-        handleFlow={handleFlow}
+        handleChangeElement={handleChangeElement}
+        isItemReady={isItemReady}
+        onArtSelect={handleArtSelect}
+        onProductSelect={handleProductSelect}
+        selectedProductId={selectedProductId}
       />
       {/* )} */}
     </>

@@ -66,7 +66,7 @@ const generateLikeServiceMessage = (tile: any) => {
     ' *Enlace:* prixelart.com/service=' +
     tile._id;
 
-  const url = 'https://wa.me/' + '?text=' + message;
+  const url = 'https://wa.me/' + waNumber +'?text=' + message;
   return url;
 };
 
@@ -89,29 +89,6 @@ const generateArtMessage = (tile: any, type: string) => {
     tile.artId;
 
   return artMessage;
-};
-
-const generateWaBuyMessage = (buy: any) => {
-  const waNumber = '584126377748';
-  const message =
-    'Hola, quiero conocer el proceso para continuar con la compra de los items que seleccioné: ' +
-    buy.map(
-      (item: { art: { title: any; prixerUsername: any; }; product: { name: any; attributes: any[]; selection: { [x: string]: string; }; }; quantity: any; }, index: number) =>
-        item.art &&
-        item.product &&
-        '*Item ' +
-        `${index + 1}* %0D%0A
-          Arte: ${item.art.title} del Prixer: ${item.art.prixerUsername}, %0D%0A Producto: ${item.product.name
-        }, ${item.product.attributes.map((a, i) => {
-          return '- ' + a.name + ': ' + item.product.selection[i];
-        })}, %0D%0A Cantidad: ${item.quantity}
-          ` +
-        '%0D%0A'
-    );
-
-  const url = 'https://wa.me/' + waNumber + '?text=' + message;
-
-  return url;
 };
 
 export const maxPrintCalc = (width: number, height: number, ppi: any, iso: string) => {
@@ -166,7 +143,6 @@ const util = {
   maxPrintCalc,
   shuffle,
   generateWaProductMessage,
-  generateWaBuyMessage,
   generateServiceMessage,
   generateLikeServiceMessage,
   format,

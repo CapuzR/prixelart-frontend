@@ -6,7 +6,7 @@ import { useConversionRate, useCurrency, useLoading } from 'context/GlobalContex
 import { getSelectedVariant } from '../services';
 import { fetchVariantPrice } from '../api';
 import { parsePrice } from 'utils/formats';
-import { splitDescription } from '../utils';
+import { splitDescription } from '../helpers';
 
 import { fetchProductDetails } from '../api';
 

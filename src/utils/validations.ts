@@ -25,7 +25,7 @@ export function isAValidName(name: string): boolean {
 }
 
 export function isAValidCi(ci: string): boolean {
-  const re = /^[a-zA-Z-]?[0-9]{7,10}$/;
+  const re = /^[a-zA-Z-]?[0-9]{6,10}$/;
   return re.test(String(ci));
 }
 

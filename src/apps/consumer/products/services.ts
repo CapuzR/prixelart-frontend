@@ -1,4 +1,4 @@
-import { Product, Variant, Selection } from './interfaces';
+import { Product, Variant, Selection } from "../../../types/product.types";
 
 export const getSelectedVariant = (selectedAtt: Selection[], variants: Variant[]): Variant | null => {
 
@@ -16,44 +16,31 @@ export const getSelectedVariant = (selectedAtt: Selection[], variants: Variant[]
   return selectedVariant;
 };
 
-export const getFilteredOptions = (
-  product: Product,
-  att: { name: string; value: string[] }
-): string[] => {
+export const getFilteredOptions = (product: Product, att: { name: string; value: string[] }): string[] => {
 
-  const selection: Selection[] =
-    Array.isArray(product.selection)
-      ? product.selection
-      : typeof product.selection === 'object' && product.selection !== null
-        ? Object.values(product.selection) as Selection[]
-        : [];
+  const selection: Selection[] = Array.isArray(product.selection)
+    ? product.selection
+    : typeof product.selection === 'object' && product.selection !== null
+      ? Object.values(product.selection) as Selection[]
+      : [];
 
-  const allEmpty = selection.every((s) => s.value === '');
-  const hasOtherSelection = selection.some(
-    (s) => s.name !== att.name && s.value !== ''
-  );
+  const otherSelections = selection.filter(sel => sel.name !== att.name && sel.value !== '');
 
-  if (allEmpty || !hasOtherSelection) {
+  if (otherSelections.length === 0) {
     return att.value || [];
   }
 
-  const filteredOptions = selection
-    .filter((sel) => sel.name !== att.name && sel.value !== '')
-    .map((sel) => {
-      const matchingVariants = product.variants.filter((variant) =>
-        variant.attributes?.some(
-          (a) => a.name === sel.name && a.value === sel.value
-        )
+  const validOptions = (att.value || []).filter(option => {
+    return product.variants.some(variant => {
+      const hasCurrentOption = variant.attributes?.some(a => a.name === att.name && a.value === option);
+      if (!hasCurrentOption) return false;
+
+      const matchesAllOthers = otherSelections.every(sel =>
+        variant.attributes?.some(a => a.name === sel.name && a.value === sel.value)
       );
-      return matchingVariants
-        .map((variant) => {
-          const matchingAttr = variant.attributes?.find(
-            (a) => a.name === att.name
-          );
-          return matchingAttr ? matchingAttr.value : null;
-        })
-        .filter((value): value is string => value !== null);
-    })
-    .flat();
-  return filteredOptions.length > 0 ? filteredOptions : att.value || [];
+      return matchesAllOthers;
+    });
+  });
+
+  return validOptions;
 };

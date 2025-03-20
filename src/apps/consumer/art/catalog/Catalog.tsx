@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import FloatingAddButton from 'components/floatingAddButton/floatingAddButton';
 import ArtsGrid from '@apps/consumer/art/components/ArtsGrid/ArtsGrid';
 import Container from '@mui/material/Container';
@@ -8,7 +8,6 @@ import ArtUploader from 'components/artUploader/artUploader';
 import Typography from '@mui/material/Typography';
 import CreateService from 'components/createService/createService';
 import { Grid2 } from '@mui/material';
-import { Art } from '../interfaces';
 
 export default function Catalog() {
   const [openArtFormDialog, setOpenArtFormDialog] = useState<boolean>(false);
@@ -46,7 +45,7 @@ export default function Catalog() {
         <Grid2>
           <ArtsGrid />
         </Grid2>
-       
+
 
         {/* Art uploader */}
         {openArtFormDialog && (

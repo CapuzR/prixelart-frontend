@@ -5,12 +5,7 @@ import { getImageSize } from 'utils/util';
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
-export interface CarouselImage {
-    type: string;
-    url: string;
-}
-
-export interface CarouselItem {
+interface CarouselItem {
     images?: {
         type: string;
         url: string;

@@ -1,4 +1,4 @@
-import { OnConditionChangeHandler } from "../interfaces";
+import { OnConditionChangeHandler } from "../../../../types/order.types";
 
 export const createMirrorHandler = (
   watchedField: string,
@@ -23,13 +23,6 @@ export const createMirrorHandler = (
 };
 
 
-export const requiresDelivery = (
-  methodSelected: string,
-): boolean => {
-  //The Shipping methods should be an object  that specifies if
-  // it requires delivery or not, so we don't have to hardcode it.
-  if (methodSelected !== 'Pickup') {
-    return true
-  };
-  return false
+export const isPickup = (methodSelected: string): boolean => {
+  return methodSelected === 'Pickup';
 };

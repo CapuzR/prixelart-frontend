@@ -1,5 +1,5 @@
+import { Item } from '../../types/item.types';
 import styles from './styles.module.scss';
-import { Item } from './interfaces';
 import Typography from 'components/Typography';
 
 export interface ItemContentProps {
@@ -18,8 +18,6 @@ export default function ItemContent({ item, direction = 'row' }: ItemContentProp
         </Typography>
       ));
   };
-
-  console.log('ItemContent', item);
 
   return (
     <div className={`${styles['content-section']} ${styles[direction]}`}>

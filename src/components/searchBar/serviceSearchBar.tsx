@@ -24,8 +24,6 @@ interface ServiceSearchBarProps {
 const ServiceSearchBar: React.FC<ServiceSearchBarProps> = (props) => {
   const classes = useStyles();
   const theme = useTheme();
-  const params = new URLSearchParams(window.location.search);
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const isDesktop = useMediaQuery(theme.breakpoints.up('lg'));
 
   const serviceAreas: string[] = ['Diseño', 'Fotografía', 'Artes Plásticas', 'Otro'];
@@ -57,10 +55,6 @@ const ServiceSearchBar: React.FC<ServiceSearchBarProps> = (props) => {
             type="submit"
             className={classes.iconButton}
             aria-label="search"
-          // onClick={(e: React.FormEvent<HTMLFormElement>) => {
-          //   props.searchPhotos && props.searchPhotos(e, props.query, props.categories);
-          //   localStorage.setItem("filterCategory", JSON.stringify(props.categories));
-          // }}
           >
             <SearchIcon />
           </IconButton>

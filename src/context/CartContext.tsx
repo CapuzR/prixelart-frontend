@@ -1,5 +1,5 @@
+import { Cart, CartLine } from '../types/cart.types';
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { Cart, CartLine } from 'apps/consumer/cart/interfaces';
 import { Item } from 'types/item.types';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -10,8 +10,7 @@ interface CartContextType {
     lineId: string,
     updates: Partial<Pick<CartLine, 'quantity' | 'discount' | 'subtotal'>>
   ) => void;
-  deleteLineInCart: (id: string) => void;
-  deleteElementInItem: (id: string, type: 'producto' | 'arte') => void;
+  deleteLineInCart: (line: CartLine) => void;
   emptyCart: () => void;
 }
 
@@ -66,7 +65,6 @@ export const CartProvider: React.FC<MyComponentProps> = ({ children }) => {
     try {
       // const lineDiscount = await fetchLineDiscount(item, quantity);
 
-
       const lineDiscount = 0;
 
       const isSameSelection = (sel1: { name: string; value: string }[] = [], sel2: { name: string; value: string }[] = []) => {
@@ -81,7 +79,7 @@ export const CartProvider: React.FC<MyComponentProps> = ({ children }) => {
 
         if (existingLineIndex !== -1) {
           const existingLine = updatedLines[existingLineIndex];
-          const updatedQuantity = existingLine.quantity + quantity;
+          const updatedQuantity = existingLine.quantity;
           const updatedDiscount = existingLine.discount + lineDiscount;
           const updatedSubtotal = (item.price - item.discount - updatedDiscount) * updatedQuantity;
 
@@ -142,10 +140,7 @@ export const CartProvider: React.FC<MyComponentProps> = ({ children }) => {
     }
   };
 
-  const updateCartLine = async (
-    lineId: string,
-    updates: Partial<Pick<CartLine, 'quantity' | 'discount' | 'subtotal'>>
-  ) => {
+  const updateCartLine = async (lineId: string, updates: Partial<Pick<CartLine, 'quantity' | 'discount' | 'subtotal'>>) => {
     try {
       const updatedLines = cart.lines.map((line) => {
         if (line.id === lineId) {
@@ -180,9 +175,11 @@ export const CartProvider: React.FC<MyComponentProps> = ({ children }) => {
     }
   };
 
-  const deleteLineInCart = async (id: string) => {
+  const deleteLineInCart = async (line: CartLine) => {
     try {
-      const updatedLines = cart.lines.filter((line) => line.item.sku !== id);
+      console.log('Cart lines before deletion:', cart.lines);
+      const updatedLines = cart.lines.filter((cartLine: CartLine) => cartLine.id !== line.id);
+      console.log('Cart lines after deletion:', updatedLines);
       const { subTotal, totalUnits, cartDiscount, totalDiscount } =
         calculateCartTotals(updatedLines);
       setCart({
@@ -192,38 +189,9 @@ export const CartProvider: React.FC<MyComponentProps> = ({ children }) => {
         cartDiscount,
         totalDiscount,
       });
+      console.log('Cart updated successfully.');
     } catch (error) {
       console.error('Error deleting item from cart:', error);
-    }
-  };
-
-  const deleteElementInItem = async (id: string, type: 'producto' | 'arte') => {
-    try {
-      const updatedLines = cart.lines
-        .map((line) => {
-          if (line.item.sku === id) {
-            // Remove the specified element while keeping the rest of the item data
-            if (type === 'producto') {
-              return { ...line, item: { ...line.item, product: undefined } };
-            } else {
-              return { ...line, item: { ...line.item, art: undefined } };
-            }
-          }
-          return line;
-        })
-        .filter((line): line is CartLine => !!line.item.product || !!line.item.art); // Keep only lines with at least one valid element
-
-      const { subTotal, totalUnits, cartDiscount, totalDiscount } =
-        calculateCartTotals(updatedLines);
-      setCart({
-        lines: updatedLines,
-        subTotal,
-        totalUnits,
-        cartDiscount,
-        totalDiscount,
-      });
-    } catch (error) {
-      console.error('Error deleting element from item:', error);
     }
   };
 
@@ -244,7 +212,6 @@ export const CartProvider: React.FC<MyComponentProps> = ({ children }) => {
         addOrUpdateItemInCart,
         updateCartLine,
         deleteLineInCart,
-        deleteElementInItem,
         emptyCart,
       }}
     >

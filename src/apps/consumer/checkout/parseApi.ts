@@ -1,16 +1,7 @@
-import {
-  BasicInfo,
-  BillingDetails,
-  ShippingDetails,
-  ShippingMethod,
-  PaymentMethod,
-  ConsumerDetails,
-  Address,
-} from "./interfaces";
-
+import { BasicInfo, BillingDetails, ShippingDetails, ShippingMethod, PaymentMethod, ConsumerDetails, Address, } from '../../../types/order.types';
 import { v4 as uuidv4 } from 'uuid';
 
-export interface ConsumerApiResponse {
+interface ConsumerApiResponse {
   firstname: string;
   lastname: string;
   ci?: string;
@@ -24,7 +15,7 @@ export interface ConsumerApiResponse {
   expectedDate?: Date;
 }
 
-export interface PrixerApiResponse {
+interface PrixerApiResponse {
   firstName: string;
   lastName: string;
   phone?: string;
@@ -104,7 +95,7 @@ export const parsePrixerDetails = (data: PrixerApiResponse): BasicInfo => ({
 export const parseShippingMethods = (data: any[]): ShippingMethod[] =>
   data.map((method) => ({
     id: method._id,
-    name: method.name,
+    method: method.name,
     price: method.price,
   }));
 

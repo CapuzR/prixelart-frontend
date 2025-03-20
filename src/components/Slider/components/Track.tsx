@@ -22,14 +22,12 @@ export const Track: React.FC<TrackProps> = ({
   spacing,
   dotsPosition,
   dots,
-  useThumbnails,
-  trackFormatClass,
-}) => {
+  useThumbnails }) => {
   const flattenedChildren = React.Children.toArray(children);
 
   return (
     <div
-      className={`${styles['slider-container']} ${styles[dotsPosition]} ${styles[trackFormatClass]}`}
+      className={`${styles['slider-container']} ${styles[dotsPosition]}`}
     >
       <div
         className={`${styles['slider-wrapper']} ${styles[`spacing-${spacing}`]}`}

@@ -1,5 +1,5 @@
 import { orderReducer } from './orderReducer';
-import { CheckoutState, CheckoutAction } from '../interfaces';
+import { CheckoutState, CheckoutAction } from "../../../../types/order.types";
 export const checkoutReducer = (
   state: CheckoutState,
   action: CheckoutAction
@@ -10,21 +10,21 @@ export const checkoutReducer = (
         action.payload === 'back'
           ? Math.max(state.activeStep - 1, 0)
           : action.payload === 'next'
-          ? state.activeStep + 1
-          : action.payload; 
+            ? state.activeStep + 1
+            : action.payload;
       return { ...state, activeStep: newStep };
 
     case 'SET_LOADING':
-      return { ...state, loading: action.payload };
+      return { ...state, };
 
     case 'SET_SHIPPING_METHODS':
-      return { ...state, shippingMethods: action.payload };
+      return { ...state, shipping: action.payload };
 
     case 'SET_PAYMENT_METHODS':
       return { ...state, paymentMethods: action.payload };
 
     case 'SET_EXPANDED_SECTION':
-      return { ...state, expandedSection: action.payload };
+      return { ...state, };
 
     default:
       return {

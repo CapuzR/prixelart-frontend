@@ -1,6 +1,7 @@
+import { PickedArt } from "../types/art.types";
 import { PickedProduct } from "../types/product.types";
 
-export const generateWaMessage = (tile: any) => {
+export const generateWaMessage = (tile?: any) => {
   // const waNumber = "584126377748";
   const welcomeMessage = 'Holaa, cuéntame más. Quiero asesoría y conocer sus productos.';
   const message = tile !== '' ? generateArtMessage(tile, 'wa') : welcomeMessage;
@@ -14,20 +15,22 @@ export const generateWaMessage = (tile: any) => {
   return url;
 };
 
-export const generateWaProductMessage = (tile: PickedProduct) => {
+export const generateWaProductMessage = (tile: PickedProduct | PickedArt, url: string) => {
   const waNumber = '584126377748';
   const welcomeMessage = 'Holaa, cuéntame más. Quiero asesoría y conocer sus productos.';
+
+  console.log("el url", url);
 
   const message =
     tile !== null
       ? 'Holaa, este es uno de los Prix que me gustan:' +
-      '%0D%0A' +
-      ' *Modelo:* ' + tile.name +
-      '%0D%0A' +
-      ' *Enlace:* prixelart.com/?producto=' + tile.id
+        '%0D%0A' +
+        ' *Modelo:* ' + ('name' in tile ? tile.name : tile.title) +
+        '%0D%0A' +
+        ' *Enlace:* ' + url
       : welcomeMessage;
 
-  return 'https://wa.me/' + waNumber + '?text=' + message;
+  return 'https://wa.me/' + waNumber + '?text=' + encodeURIComponent(message);
 };
 
 

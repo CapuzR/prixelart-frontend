@@ -1,4 +1,3 @@
-// artDetails.styles.ts
 import { makeStyles, withStyles } from '@mui/styles';
 import { Theme } from '@mui/material';
 

@@ -6,14 +6,15 @@ import { useCart } from 'context/CartContext';
 import ActionBar from './components/ActionBar';
 import Typography from 'components/Typography';
 import ItemCard from 'components/ItemCard';
-import { CartLine, Item } from '../interfaces';
 import { formatPriceForUI } from 'utils/formats';
 import { useConversionRate, useCurrency } from 'context/GlobalContext';
+import { Item } from '../../../../types/item.types';
+import { CartLine } from '../../../../types/cart.types';
 
 export interface LineCardProps {
   line: CartLine;
   direction?: 'row' | 'column';
-  handleChangeElement?: (type: 'producto' | 'arte', item: Item) => void;
+  handleChangeElement?: (type: 'producto' | 'arte', item: Item, lineId?: string) => void;
   checking?: boolean
 }
 
@@ -24,7 +25,7 @@ export default function LineCard({ line, direction = 'row', handleChangeElement,
   const [quantity, setQuantity] = useState<string | number>(line.quantity);
 
   const handleDelete = () => {
-    deleteLineInCart(line.item.sku);
+    deleteLineInCart(line);
   };
 
   const handleQuantityChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -57,6 +58,7 @@ export default function LineCard({ line, direction = 'row', handleChangeElement,
           item={line.item}
           direction="row"
           handleChangeElement={handleChangeElement}
+          line = {line}
         />
         {line.item.product && line.quantity !== undefined && (
           <div className={styles['line-details']}>
@@ -82,7 +84,7 @@ export default function LineCard({ line, direction = 'row', handleChangeElement,
       </div>
 
       <ActionBar
-        onUpperAction={!checking ? () => handleDelete : undefined}
+        onUpperAction={!checking ? handleDelete : undefined}
         // onLowerAction={() => { }}
         upperIcon={<DeleteIcon className={styles['icon']} />}
       // lowerIcon={<FileCopyIcon className={styles['icon']} />}

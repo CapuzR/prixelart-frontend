@@ -1,4 +1,4 @@
-import { ConsumerDetails, CheckoutAction } from '../interfaces';
+import { CheckoutAction, ConsumerDetails } from "../../../../types/order.types";
 
 const defaultState: ConsumerDetails = {
   basic: { name: '', lastName: '', phone: '', email: '' },

@@ -51,14 +51,13 @@ import {
   exclusiveEdit,
   comissionEdit,
   AllowedEvent,
-} from '../../utils/artHelpers';
+} from '../helpers';
 import { Grid2, Theme } from '@mui/material';
 import { generateWaMessage } from 'utils/utils.js';
-import { Art, ReadArtResponse } from '../../../interfaces';
 import { useStyles } from './artDetails.styles';
-import { loadAdmins } from '@apps/admin/adminMain/adminUser/api';
 import { fetchArt } from '@apps/consumer/art/api';
 import { getUrlParams } from '@utils/util';
+import { Art } from '../../../../../../types/art.types';
 
 const IOSSwitch = withStyles((theme: Theme) => ({
   root: {

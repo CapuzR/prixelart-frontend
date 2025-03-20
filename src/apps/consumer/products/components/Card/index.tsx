@@ -8,7 +8,9 @@ import { Image } from 'components/Image';
 import utils from 'utils/utils.js';
 
 import styles from './styles.module.scss';
-import { Product, Art } from 'apps/consumer/products/interfaces';
+import { Product } from '../../../../../types/product.types';
+import { queryCreator } from '@apps/consumer/flow/helpers';
+import { useNavigate } from 'react-router-dom';
 
 export interface CardProps {
   product: Product;
@@ -16,14 +18,27 @@ export interface CardProps {
   conversionRate: number;
   handleDetails: (product: Product) => void;
   isCart?: boolean;
+  onProductSelect?: (product: Product) => void;
 }
-export default function Card({
-  product,
-  currency,
-  conversionRate,
-  handleDetails,
-  isCart
-}: CardProps) {
+export default function Card({ product, currency, conversionRate, handleDetails, isCart, onProductSelect }: CardProps) {
+
+  const navigate = useNavigate();
+
+  function handleProductSelection(): void {
+
+    let art: string | undefined;
+    const queryString = queryCreator(
+      undefined,
+      product.id,
+      undefined,
+      undefined,
+    );
+
+    navigate(`/crear-prix?${queryString}`)
+  }
+
+
+
   return (
     <div
       className={`${styles['card-root']}`}
@@ -39,17 +54,15 @@ export default function Card({
       </div>
       <div className={styles['card-content']}>
         <div className={styles['main-content']}>
-          <Typography gutterBottom variant="h4" component="h3">
-            {product.name.split('\r\n')[0].length > 15
-              ? `${product.name.split('\r\n')[0].slice(0, 15)}...`
-              : `${product.name.split('\r\n')[0]}`}
+          <Typography gutterBottom variant="h4" component="h3" className="truncate" sx={{ fontSize: '1.9rem' }} >
+            {product.name.split('\r\n')[0]}
           </Typography>
           <p style={isCart ? { margin: 0 } : {}}>
             {product.description.split('\r\n')[0].length > 60
               ? `${product.description.split('\r\n')[0].slice(0, 65)}...`
               : `${product.description.split('\r\n')[0]}`}
           </p>
-            <Typography
+          <Typography
             gutterBottom
             style={{
               fontSize: 15,
@@ -57,22 +70,31 @@ export default function Card({
               backgroundColor: '#fff',
               ...(isCart ? { margin: 0 } : {})
             }}
-            >
+          >
             {formatPriceForUI(
               product.priceRange.from,
               currency,
               conversionRate,
               product.priceRange.to
             )}
-            </Typography>
+          </Typography>
         </div>
         <div className={styles['buttons-wrapper']} >
+
+          {!onProductSelect && (
+            <Button onClick={() => handleProductSelection()}>
+              <AddShoppingCart />
+            </Button>
+          )}
           <Button onClick={() => handleDetails(product)}>Detalles</Button>
           <Button
             type="onlyText"
             color="primary"
-            onClick={() => window.open(utils.generateWaProductMessage(product), '_blank')}
-          >
+            className={styles['waButton']}
+            onClick={() => {
+              const currentUrl = window.location.href;
+              window.open(utils.generateWaProductMessage(product, currentUrl), '_blank');
+            }}>
             <WhatsApp /> Info
           </Button>
         </div>

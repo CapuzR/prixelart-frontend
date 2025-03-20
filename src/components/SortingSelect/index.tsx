@@ -1,17 +1,16 @@
 import React from 'react';
 import { FormControl, InputLabel, Select, MenuItem, SelectChangeEvent } from '@mui/material';
-import styles from './styles.module.scss';
 
 interface SortingSelectProps {
   sort: string;
   handleChange: (event: SelectChangeEvent<string>, child: React.ReactNode) => void;
-  options: { value: string; label: string }[]; // Array of options for sorting
+  options: { value: string; label: string }[];
 }
 
 const SortingSelect: React.FC<SortingSelectProps> = ({ sort, handleChange, options }) => {
   return (
-    <FormControl className={styles['form-control']}>
-      <InputLabel className={styles['input-label']} id="sorting-select-label">
+    <FormControl style={{ width: '100%', marginLeft: '10px', minWidth: '120px' }}>
+      <InputLabel style={{ marginLeft: '10px' }} id="sorting-select-label">
         Ordenar
       </InputLabel>
       <Select
@@ -22,7 +21,7 @@ const SortingSelect: React.FC<SortingSelectProps> = ({ sort, handleChange, optio
         onChange={handleChange}
       >
         {options.map((option) => (
-          <MenuItem key={option.value} value={option.value} >
+          <MenuItem key={option.value} value={option.value}>
             {option.label}
           </MenuItem>
         ))}

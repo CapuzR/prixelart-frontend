@@ -1,4 +1,4 @@
-import { Product } from "./interfaces";
+import { Product } from "../../../types/product.types";
 
 export const parseProduct = (data: any): Product => {
 

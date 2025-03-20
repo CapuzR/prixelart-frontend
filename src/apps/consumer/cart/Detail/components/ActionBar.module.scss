@@ -1,4 +1,5 @@
 @use '@/theme.scss' as theme;
+
 .action-bar {
   display: flex;
   flex-direction: column;
@@ -24,6 +25,7 @@
   &:hover {
     background-color: theme.$error-color;
     color: white;
+
     .icon {
       color: theme.$text-light-color;
     }
@@ -31,6 +33,7 @@
 
   &:nth-child(2):hover {
     background-color: theme.$warning-color;
+
     .icon {
       color: theme.$text-light-color;
     }

@@ -1,5 +1,5 @@
+import { Art } from '../../../types/art.types';
 import axios from 'axios';
-import { Art } from './interfaces';
 
 export const fetchArt = async (artId: string): Promise<Art> => {
   const URI = import.meta.env.VITE_BACKEND_URL + '/art/read-by-id';

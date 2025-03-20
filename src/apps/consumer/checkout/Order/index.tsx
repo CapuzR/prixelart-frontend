@@ -9,18 +9,17 @@ import Collapse from '@mui/material/Collapse';
 import Divider from '@mui/material/Divider';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { Theme } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useConversionRate, useCurrency } from 'context/GlobalContext';
 
-import { CheckoutState, Tax } from '../interfaces.js';
 import useStyles from './order.styles.js';
+import { CheckoutState } from '../../../../types/order.types';
 
 interface OrderSummaryProps {
   checkoutState: CheckoutState;
-  newSubTotal: number;
 }
 
-const Order: React.FC<OrderSummaryProps> = ({ checkoutState, newSubTotal }) => {
+const Order: React.FC<OrderSummaryProps> = ({ checkoutState }) => {
   const classes = useStyles();
   const { currency } = useCurrency();
   const { conversionRate } = useConversionRate();
@@ -40,51 +39,10 @@ const Order: React.FC<OrderSummaryProps> = ({ checkoutState, newSubTotal }) => {
   //   }
   // };
 
-  useEffect(() => {
-
-    checkoutState.order.subTotal = newSubTotal;
-
-    const taxes: Tax[] = [];
-
-    // IVA  16%
-    const ivaValue = 16;
-    const ivaAmount = newSubTotal * (ivaValue / 100);
-
-    console.log('IVA Amount:', ivaAmount);
-
-    taxes.push({
-      id: 'iva',
-      name: 'IVA:',
-      value: ivaValue,
-      amount: ivaAmount,
-    });
-
-    // PaymentMethod = "Efectivo $", IGTF tax 3%
-    if (checkoutState.billing?.paymentMethod === 'Efectivo $') {
-      const igtfValue = 3;
-      const igtfAmount = newSubTotal * (igtfValue / 100);
-
-      console.log('IGTF Amount:', igtfAmount);
-      taxes.push({
-        id: 'igtf',
-        name: 'IGTF:',
-        value: igtfValue,
-        amount: igtfAmount,
-      });
-    }
-
-    checkoutState.order.tax = taxes;
-
-    const totalTaxes = taxes.reduce((sum, tax) => sum + tax.amount, 0);
-
-    console.log('Total Taxes:', totalTaxes);
-
-    checkoutState.order.total = parseFloat((newSubTotal + totalTaxes).toFixed(2));
-  }, [checkoutState]);
-
+  console.log("checkoutState", checkoutState)
 
   return (
-    <div style={{ width: '700px' }}>
+    <div style={{ width: '500px' }}>
       <form noValidate autoComplete="off">
         <Grid2 container>
           <Grid2 size={{ lg: 12, md: 12, sm: 12, xs: 12 }} className={classes.gridInput}>
@@ -155,22 +113,6 @@ const Order: React.FC<OrderSummaryProps> = ({ checkoutState, newSubTotal }) => {
                               </List>
                             </Collapse>
                             <Divider />
-                            {/* TODO : Tengo que ver porque no debería ser posible hacer checkout si faltan productos por definir. */}
-                            {/* {getTotalCombinedItems(props.buyState).totalNotCompleted?.length >=
-                              1 && (
-                              <Typography
-                                style={{
-                                  fontSize: '11px',
-                                  // color: "primary",
-                                }}
-                              >
-                                {getTotalCombinedItems(props.buyState).totalNotCompleted?.length > 1
-                                  ? `Faltan ${
-                                      getTotalCombinedItems(props.buyState).totalNotCompleted.length
-                                    } productos por definir.`
-                                  : `Falta 1 producto por definir.`}
-                              </Typography>
-                            )} */}
                           </>
                         )}
                       </>
@@ -181,64 +123,6 @@ const Order: React.FC<OrderSummaryProps> = ({ checkoutState, newSubTotal }) => {
                         justifyContent: 'end',
                       }}
                     >
-                      {/* <Grid item lg={6} md={6} sm={6} xs={6} style={{ paddingLeft: 0 }}>
-                        <FormControl
-                          variant="outlined"
-                          style={{ marginTop: 25 }}
-                          required
-                        >
-                          <InputLabel htmlFor="outlined-age-simple">Método de pago</InputLabel>
-                          <Select
-                            input={<OutlinedInput />}
-                            value={checkoutState.order.billing.method}
-                            // onChange={(event) => handleDispatch('SET_ORDER_PAYMENT_METHOD', event.target.value)}
-                          >
-                            {paymentMethods &&
-                              paymentMethods.map((m) => <MenuItem value={m}>{m.name}</MenuItem>)}
-                          </Select>
-                        </FormControl> */}
-                      {/* {props.orderPaymentMethod && (
-                          <>
-                            <div
-                              style={{
-                                display: "flex",
-                                flexDirection: "column",
-                              }}
-                            >
-                              <p align="left">
-                                {props?.orderPaymentMethod?.instructions}
-                                <br></br>
-                                <br></br>
-                                {props?.orderPaymentMethod?.paymentData}
-                              </p>
-                              <div>
-                                {props.paymentVoucher && (
-                                  <img
-                                    src={previewVoucher}
-                                    style={{ width: 200, borderRadius: 10 }}
-                                  />
-                                )}
-                                <input
-                                  type="file"
-                                  id="inputfile"
-                                  accept="image/jpeg, image/jpg, image/webp, image/png"
-                                  onChange={onImageChange}
-                                  style={{ display: "none" }}
-                                />
-                                <label htmlFor="inputfile">
-                                  <Button
-                                    size="small"
-                                    variant="contained"
-                                    component="span"
-                                    style={{ textTransform: "capitalize" }}
-                                  >
-                                    Cargar comprobante
-                                  </Button>
-                                </label>
-                              </div>
-                            </div>
-                          </>
-                        )} */}
                       {/* </Grid> */}
                       <Grid2
                         size={{ lg: 6, md: 6, sm: 6, xs: 6 }}
@@ -304,7 +188,7 @@ const Order: React.FC<OrderSummaryProps> = ({ checkoutState, newSubTotal }) => {
                             </strong>
                           ))}
 
-                        {checkoutState.order.shipping.method &&
+                        {checkoutState.shipping.method &&
                           typeof checkoutState.order.shippingCost !== 'undefined' && (
                             currency === 'Bs' ? (
                               <strong>

@@ -1,20 +1,19 @@
-import { Item } from './interfaces';
 import styles from './styles.module.scss';
 import { Image } from 'components/Image';
 import AddImage from 'components/AddImage';
 import OverlayWithIcon from 'components/OverlayWithIcon';
 import AutorenewIcon from '@mui/icons-material/Autorenew';
-import DeleteIcon from '@mui/icons-material/Delete';
+import { Item } from '../../types/item.types';
+import { CartLine } from '../../types/cart.types';
 
 export interface ItemPlaygroundProps {
   item: Item;
-  handleChangeElement?: (type: 'producto' | 'arte', item: Item) => void;
+  handleChangeElement?: (type: 'producto' | 'arte', item: Item, lineId?: string) => void;
+  line?: CartLine;
 }
 
-export default function ItemPlayground({
-  item,
-  handleChangeElement
-}: ItemPlaygroundProps) {
+export default function ItemPlayground({ item, handleChangeElement, line }: ItemPlaygroundProps) {
+  
   return (
     <div className={styles['container']}>
       {item?.product?.mockUp ? (
@@ -26,7 +25,7 @@ export default function ItemPlayground({
               <OverlayWithIcon
                 iconLeft={<AutorenewIcon />}
                 coverTarget="parent"
-                onClickLeft={() => handleChangeElement!('producto', item)}
+                onClickLeft={() => handleChangeElement!('producto', item, line ? line.id : undefined)}
               >
                 <Image
                   src={item?.product?.sources?.images?.[0]?.url}
@@ -44,7 +43,7 @@ export default function ItemPlayground({
               <OverlayWithIcon
                 iconLeft={<AutorenewIcon />}
                 coverTarget="parent"
-                onClickLeft={() => handleChangeElement!('arte', item)}
+                onClickLeft={() => handleChangeElement!('arte', item, line ? line.id : undefined)}
               >
                 <Image
                   src={item.art?.largeThumbUrl}
@@ -58,7 +57,8 @@ export default function ItemPlayground({
             )}
           </div>
         </div>
-      )}
-    </div>
+      )
+      }
+    </div >
   );
 }

@@ -1,4 +1,4 @@
-import { Art } from "./interfaces";
+import { Art } from "../../../types/art.types";
 
 export const searchPhotos = (
   queryValue: string | null,

@@ -5,29 +5,26 @@ import { CardActionArea, Typography, IconButton, Tooltip } from '@mui/material';
 import Img from 'react-cool-img';
 import Star from '@mui/icons-material/StarRate';
 import StarOutline from '@mui/icons-material/StarOutline';
-import { Art } from '../interfaces';
-import { queryCreator } from 'apps/consumer/flow/utils';
+import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
+import { queryCreator } from '@apps/consumer/flow/helpers';
+import { Art } from '../../../../types/art.types';
+import { on } from 'events';
 
 interface ArtThumbnailProps {
   tile: Art;
   i: number;
   handleFullImageClick: (e: React.MouseEvent<HTMLImageElement>, tile: Art) => void;
+  onArtSelect?: (art: Art) => void;
 }
 
-export default function ArtThumbnail({ tile, i, handleFullImageClick, }: ArtThumbnailProps) {
-
-  //Mover estilo a archivos de estilos
-
+export default function ArtThumbnail({ tile, i, handleFullImageClick, onArtSelect }: ArtThumbnailProps) {
   const navigate = useNavigate();
 
   function handleArtSelection(e: React.MouseEvent<HTMLButtonElement>): void {
-
-
     const queryString = queryCreator(
       undefined,
       undefined,
-      undefined,
-      tile.artId,
+      tile._id,
       undefined,
     );
 
@@ -53,15 +50,8 @@ export default function ArtThumbnail({ tile, i, handleFullImageClick, }: ArtThum
       )}
 
       <CardActionArea>
-
-        {/*!isSelectedInFlow && (
-          <Tooltip
-            title={
-              window.location.search.includes('producto=')
-                ? 'Asociar al producto'
-                : 'Agregar al carrito'
-            }
-          >
+        {!onArtSelect && (
+          <Tooltip title='Agregar al carrito'>
             <IconButton
               size="small"
               color="primary"
@@ -71,7 +61,8 @@ export default function ArtThumbnail({ tile, i, handleFullImageClick, }: ArtThum
               <AddShoppingCartIcon />
             </IconButton>
           </Tooltip>
-        )*/}
+        )}
+
         {tile.exclusive === 'exclusive' && (
           <Tooltip title="Arte exclusivo">
             <IconButton size="small" color="primary" style={{ position: 'absolute', right: 0 }}>

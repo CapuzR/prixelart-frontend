@@ -23,16 +23,18 @@ const Cart = () => {
           <CurrencySwitch />
         </div>
       </div>
-      <div className={styles['content-row']}>
-        <div className={styles['cart-review-container']}>
-          <CartGrid checking={checking} />
-        </div>
+      <div className={styles['content-row']} style={checking ? { alignSelf: 'center' } : {}}>
+        {!checking && (
+          <div className={styles['cart-review-container']}>
+            <CartGrid checking={checking} />
+          </div>
+        )}
 
-        <div style={{ width: '100%' }}>
-          <Checkout setChecking={setChecking}/>
+        <div style={{ maxWidth: checking ? '100%' : '600px', }}>
+          <Checkout setChecking={setChecking} />
         </div>
       </div>
-    </div>
+    </div >
   );
 };
 

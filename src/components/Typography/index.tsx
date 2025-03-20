@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import styles from './styles.module.scss';
 
 interface TypographyProps {
-  level: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'p'; // Added h4, h5, and h6
+  level: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'p';
   align?: 'left' | 'center' | 'right' | 'justify';
   color?: string;
   leading?: 'tight' | 'normal' | 'loose';

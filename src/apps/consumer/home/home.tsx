@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTheme } from '@mui/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
 
@@ -24,7 +23,7 @@ import ProductElement from 'components/ProductElement';
 import { Theme } from '@mui/material/styles';
 import { Art } from '../../../types/art.types';
 import { Product } from '../../../types/product.types';
-import { fetchBestArts, fetchBestSellers, fetchCarouselImages, fetchLatestArts } from './home.utils';
+import { fetchBestArts, fetchBestSellers, fetchCarouselImages, fetchLatestArts } from './api';
 import Copyright from '@components/Copyright/copyright';
 import useStyles from './home.styles';
 import { Grid2 } from '@mui/material';
@@ -351,7 +350,7 @@ const Home: React.FC = () => {
                           color: { active: 'primary', inactive: 'secondary' },
                         }}
                         childConfig={{
-                          qtyPerSlide: isDesktop ? 5 : isMobile ? 3 : 5,
+                          qtyPerSlide: isDesktop ? 4 : isMobile ? 3 : 4,
                           spacing: 'sm',
                         }}
                         autoplay={false}
@@ -466,7 +465,7 @@ const Home: React.FC = () => {
                       color: { active: 'primary', inactive: 'secondary' },
                     }}
                     childConfig={{
-                      qtyPerSlide: isDesktop ? 5 : isMobile ? 1 : 5,
+                      qtyPerSlide: isDesktop ? 3 : isMobile ? 1 : 3,
                       spacing: 'sm',
                     }}
                     autoplay={false}
@@ -475,8 +474,6 @@ const Home: React.FC = () => {
                       <Image
                         src={art?.largeThumbUrl ? art?.largeThumbUrl : art?.imageUrl}
                         roundedCorner={true}
-                        fitTo="square"
-                        objectFit="contain"
                       />
                     ))}
                   </Slider>
@@ -583,7 +580,7 @@ const Home: React.FC = () => {
                         color: { active: 'primary', inactive: 'secondary' },
                       }}
                       childConfig={{
-                        qtyPerSlide: isDesktop ? 5 : isMobile ? 1 : 5,
+                        qtyPerSlide: isDesktop ? 2 : isMobile ? 1 : 2,
                         spacing: 'sm',
                       }}
                       autoplay={false}
@@ -640,15 +637,14 @@ const Home: React.FC = () => {
         />
       )}
 
-      <Grid className={classes.float}>
+      <Grid2 className={classes.float}>
         <FloatingAddButton
           setOpenArtFormDialog={setOpenArtFormDialog}
           setOpenServiceFormDialog={setOpenServiceFormDialog}
         />
-      </Grid>
+      </Grid2>
       {openModal && (
         <SimpleDialog
-          arts={openArts}
           setTabValue={setTabValue}
           setArts={setOpenArts}
           open={openModal}

@@ -2,7 +2,7 @@ import { linesReducer } from './linesReducer';
 import { consumerDetailsReducer } from './consumerDetailsReducer';
 import { shippingReducer } from './shippingReducer';
 import { paymentReducer } from './paymentReducer';
-import { Order, CheckoutAction, ConsumerDetails, PaymentDetails, BillingDetails } from '../interfaces';
+import { Order, CheckoutAction, ConsumerDetails, PaymentDetails } from "../../../../types/order.types";
 
 const initialConsumerDetails: ConsumerDetails = {
   basic: {

@@ -1,4 +1,3 @@
-import React from 'react';
 import './LoadingScreen.module.scss'; // SCSS for loading screen styles
 
 const LoadingScreen = () => {

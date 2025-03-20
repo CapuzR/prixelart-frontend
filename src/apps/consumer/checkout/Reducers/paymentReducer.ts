@@ -1,4 +1,4 @@
-import { PaymentDetails, CheckoutAction } from '../interfaces';
+import { PaymentDetails, CheckoutAction } from "../../../../types/order.types";
 
 export const paymentReducer = (
   payment: PaymentDetails,

@@ -42,7 +42,7 @@ export interface Art {
   createdOn: string;
 }
 
-interface Crop {
+export interface Crop {
   id: number;
   name: string;
   aspect: number;

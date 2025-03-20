@@ -1,6 +1,5 @@
+import { Product } from '../../../types/product.types';
 import axios from 'axios';
-import { Product } from './interfaces';
-import { info } from 'console';
 
 const base_url = import.meta.env.VITE_BACKEND_URL;
 

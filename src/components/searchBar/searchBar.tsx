@@ -1,5 +1,4 @@
 import React, { useState, useEffect, ChangeEvent, MouseEvent } from 'react';
-import { makeStyles } from '@mui/styles';
 import { useTheme } from '@mui/styles';
 import Paper from '@mui/material/Paper';
 import InputBase from '@mui/material/InputBase';
@@ -12,7 +11,6 @@ import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import Tooltip from '@mui/material/Tooltip';
-import useMediaQuery from '@mui/material/useMediaQuery';
 import { Theme } from '@mui/material/styles';
 import useStyles from './searchBar.styles';
 
@@ -24,8 +22,6 @@ const CustomizedInputBase: React.FC<SearchBarProps> = ({ onSearch }) => {
   const classes = useStyles();
   const theme = useTheme<Theme>();
   const params = new URLSearchParams(window.location.search);
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  const isDesktop = useMediaQuery(theme.breakpoints.up('lg'));
 
   const categoriesList: string[] = [
     'Abstracto',

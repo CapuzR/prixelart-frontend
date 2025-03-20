@@ -1,16 +1,26 @@
 import { useEffect, useRef, useState } from "react";
 
 import { fetchConsumer, fetchShippingMethods, fetchBillingMethods, fetchSellers } from "../api";
-import { calculateEstimatedDeliveryDate } from "../utils";
+import { calculateEstimatedDeliveryDate } from "../helpers";
 import FormSection from "@apps/consumer/checkout/Form/FormSection";
-import { FormConfig, DataLists } from "../interfaces";
 import { getFormConfig } from "./formConfig";
 import { useFormContext } from "react-hook-form";
+import { DataLists, FormConfig } from "../../../../types/order.types";
 
 interface FormProps {
   dataLists: DataLists;
   setDataLists: (dataLists: DataLists) => void;
 }
+
+interface Country {
+  name: string;
+  states: { name: string }[];
+}
+
+const computeStatesFromCountry = (countries: Country[], countryName: string): string[] => {
+  const countryObj = countries.find((country) => country.name === countryName);
+  return countryObj ? countryObj.states.map((state) => state.name) : [];
+};
 
 function Form({ dataLists, setDataLists }: FormProps) {
   const { setValue, getValues, watch } = useFormContext<FormConfig>();
@@ -33,11 +43,7 @@ function Form({ dataLists, setDataLists }: FormProps) {
 
   useEffect(() => {
     if (shippingCountry) {
-      const countryObj = dataLists.countries.find(
-        (country) => country.name === shippingCountry
-      );
-      const newStates = countryObj ? countryObj.states.map((s) => s.name) : [];
-
+      const newStates = computeStatesFromCountry(dataLists.countries, shippingCountry);
       setFormConfig((prevConfig) => ({
         ...prevConfig,
         shipping: {
@@ -51,9 +57,9 @@ function Form({ dataLists, setDataLists }: FormProps) {
           },
         },
       }));
-
       if (newStates.length > 0) {
-        setValue("shipping.state", newStates[0]);
+        const stateValue = shippingCountry === "Venezuela" ? "Miranda" : newStates[0];
+        setValue("shipping.state", stateValue);
       }
     }
   }, [shippingCountry, dataLists.countries, setFormConfig, getValues, setValue]);
@@ -64,11 +70,7 @@ function Form({ dataLists, setDataLists }: FormProps) {
 
   useEffect(() => {
     if (billingCountry) {
-      const countryObj = dataLists.countries.find(
-        (country) => country.name === billingCountry
-      );
-      const newStates = countryObj ? countryObj.states.map((s) => s.name) : [];
-
+      const newStates = computeStatesFromCountry(dataLists.countries, billingCountry);
       setFormConfig((prevConfig) => ({
         ...prevConfig,
         billing: {
@@ -82,9 +84,9 @@ function Form({ dataLists, setDataLists }: FormProps) {
           },
         },
       }));
-
       if (newStates.length > 0) {
-        setValue("billing.state", newStates[0]);
+        const stateValue = shippingCountry === "Venezuela" ? "Miranda" : newStates[0];
+        setValue("billing.state", stateValue);
       }
     }
   }, [billingCountry, dataLists.countries, setFormConfig, setValue]);
@@ -98,7 +100,7 @@ function Form({ dataLists, setDataLists }: FormProps) {
           ...getValues(section),
           name: basicFields[0],
           lastName: basicFields[1],
-          ci: basicFields[2],
+          id: basicFields[2],
           email: basicFields[3],
           phone: basicFields[4],
         });
@@ -107,25 +109,30 @@ function Form({ dataLists, setDataLists }: FormProps) {
   }, [state.shipping?.shippingEqualsBasic, ...basicFields, setValue]);
 
   // Si se cambia entre Pickup y Delivery
-  
+
   const shippingMethod = watch("shipping.method");
 
   useEffect(() => {
-    const updatedFormConfig = { ...formConfig };
-
-    Object.keys(updatedFormConfig.shipping.fields).forEach((fieldKey) => {
-      updatedFormConfig.shipping.fields[fieldKey].isHidden =
-        shippingMethod === "Pickup" &&
-        fieldKey !== "method" &&
-        fieldKey !== "date";
-
-      updatedFormConfig.shipping.fields[fieldKey].required =
-        !(shippingMethod === "Pickup" &&
+    setFormConfig((prevConfig) => {
+      const updatedShippingFields = { ...prevConfig.shipping.fields };
+      Object.keys(updatedShippingFields).forEach((fieldKey) => {
+        updatedShippingFields[fieldKey].isHidden =
+          shippingMethod === "Pickup" &&
           fieldKey !== "method" &&
-          fieldKey !== "date");
+          fieldKey !== "date";
+        updatedShippingFields[fieldKey].required =
+          !(shippingMethod === "Pickup" &&
+            fieldKey !== "method" &&
+            fieldKey !== "date");
+      });
+      return {
+        ...prevConfig,
+        shipping: {
+          ...prevConfig.shipping,
+          fields: updatedShippingFields,
+        },
+      };
     });
-
-    setFormConfig(updatedFormConfig);
   }, [shippingMethod]);
 
   // Fetch data on mount
@@ -150,19 +157,35 @@ function Form({ dataLists, setDataLists }: FormProps) {
 
         setDataLists({ ...dataLists, sellers, shippingMethods, paymentMethods });
 
-        const updatedFormConfig = getFormConfig({
-          ...dataLists,
-          sellers,
-          shippingMethods,
-          paymentMethods,
+        // Get computed states if available
+        const shippingStates = shippingCountry
+          ? computeStatesFromCountry(dataLists.countries, shippingCountry)
+          : [];
+        const billingStates = billingCountry
+          ? computeStatesFromCountry(dataLists.countries, billingCountry)
+          : [];
+
+        setFormConfig((prevConfig) => {
+          const newConfig = getFormConfig({
+            ...dataLists,
+            sellers,
+            shippingMethods,
+            paymentMethods,
+          });
+          // Merge in shipping state options
+          newConfig.shipping.fields.state.options =
+            shippingStates.length > 0
+              ? shippingStates
+              : prevConfig.shipping.fields.state.options || [];
+          // Merge in billing state options
+          newConfig.billing.fields.state.options =
+            billingStates.length > 0
+              ? billingStates
+              : prevConfig.billing.fields.state.options || [];
+          return newConfig;
         });
-        setFormConfig(updatedFormConfig);
 
-
-        const estimatedDeliveryDate = getValues(
-          "order.shipping.estimatedDeliveryDate"
-        );
-
+        const estimatedDeliveryDate = getValues("order.shipping.estimatedDeliveryDate");
         if (!estimatedDeliveryDate) {
           const calculatedDate = calculateEstimatedDeliveryDate(lines);
           if (calculatedDate) {
@@ -175,7 +198,7 @@ function Form({ dataLists, setDataLists }: FormProps) {
     };
 
     fetchData();
-  }, [lines, setValue, getValues, dataLists, setDataLists]);
+  }, [lines, setValue, getValues, dataLists, setDataLists, shippingCountry, billingCountry]);
 
   const handleSectionToggle = (sectionKey: string) => {
     setActiveSection((prev) => (prev === sectionKey ? null : sectionKey));

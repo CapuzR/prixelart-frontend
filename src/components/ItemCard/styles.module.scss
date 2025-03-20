@@ -1,9 +1,9 @@
 @use '@/theme.scss' as theme;
 
 .item-playground {
-  // height: 100%;
   flex: 1;
-  // max-width: 540px;
+  display: flex;
+  align-items: center;
 }
 
 .pricing-info {
@@ -52,6 +52,10 @@
 
 .unit-price {
   min-width: 125px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
 }
 
 .item-content {
@@ -59,7 +63,7 @@
   flex-direction: column;
   flex: 1;
   padding: theme.$spacing-md;
-  justify-content: space-between;
+  justify-content: center;
 }
 
 .card-root {
@@ -87,7 +91,8 @@
   }
 }
 
-// .extra-padding {
-//     @include paper(undefined, theme.$box-shadow-medium, theme.$border-radius-lg, theme.$spacing-xl);
-//     padding: theme.$spacing-xl theme.$spacing-lg*2;
-// }
+@media screen and (max-width: 1600px) {
+  .item-playground {
+    max-width: 200px;
+  }
+}

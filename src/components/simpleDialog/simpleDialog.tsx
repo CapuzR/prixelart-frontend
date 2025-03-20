@@ -3,16 +3,26 @@ import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import Slide from '@mui/material/Slide';
+import Slide, { SlideProps } from '@mui/material/Slide';
 import utils from '../../utils/utils';
 
-const Transition = React.forwardRef(function Transition(props, ref) {
+interface SimpleDialogProps {
+  open: boolean;
+  setTabValue: (value: string) => void;
+  setArts: (value: boolean) => void;
+  setOpen: (value: boolean) => void;
+}
+
+const Transition = React.forwardRef(function Transition(
+  props: SlideProps,
+  ref: React.Ref<unknown>
+) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-export default function SimpleDialog(props) {
+const SimpleDialog: React.FC<SimpleDialogProps> = (props) => {
   const handleClose = () => {
-    props.setTabValue(0);
+    props.setTabValue("0");
     props.setArts(true);
     props.setOpen(false);
   };
@@ -36,14 +46,14 @@ export default function SimpleDialog(props) {
             <ol>
               <li>
                 Escríbenos al whatsapp haciendo click{' '}
-                <a href={utils.generateWaMessage()} target="blank">
+                <a href={utils.generateWaMessage()} target="blank" rel="noreferrer">
                   aquí
                 </a>
                 .
               </li>
               <li>
                 Puedes ver tus artes favoritos{' '}
-                <a href="/galeria" target="blank">
+                <a href="/galeria" target="blank" rel="noreferrer">
                   aquí
                 </a>
                 .
@@ -59,4 +69,6 @@ export default function SimpleDialog(props) {
       </Dialog>
     </div>
   );
-}
+};
+
+export default SimpleDialog;

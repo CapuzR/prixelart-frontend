@@ -3,20 +3,21 @@ import Button from 'components/Button';
 import { Share as ShareIcon } from '@mui/icons-material';
 import { generateWaProductMessage } from 'utils/utils';
 import styles from './Portrait.module.scss';
-import { Product, Art, Item } from '../interfaces';
+import { Item } from '../../../../types/item.types';
 import { MenuItem, FormControl, Select, InputLabel, } from '@mui/material';
 import ArtsGrid from '../../art/components/ArtsGrid/ArtsGrid';
 import { useCart } from '@context/CartContext';
 import ProductsCatalog from '@apps/consumer/products/Catalog';
 import ItemCard from '@components/ItemCard';
 import CurrencySwitch from '@components/CurrencySwitch';
+import { CartLine } from '../../../../types/cart.types';
 
 interface PortraitProps {
   itemId: string;
   item: Partial<Item>;
   isUpdate: boolean;
   handleCart: (item: Item) => void;
-  handleChangeElement: (type: 'producto' | 'arte', item: Item) => void;
+  handleChangeElement: (type: 'producto' | 'arte', item: Item, lineId?: string) => void;
   getFilteredOptions: (att: { name: string; value: string[] }) => string[];
   handleSelection?: (e: React.ChangeEvent<{ name: string; value: number }>) => void;
   openSection: string;
@@ -25,6 +26,8 @@ interface PortraitProps {
 const Portrait: React.FC<PortraitProps> = (props) => {
 
   const { cart } = useCart();
+  const searchParams = new URLSearchParams(window.location.search);
+  const lineId = searchParams.get('lineId');
 
   const handleCart = () => {
     if (!props.item.sku) {
@@ -48,14 +51,21 @@ const Portrait: React.FC<PortraitProps> = (props) => {
           <Button
             type="onlyText"
             color="primary"
-            onClick={() =>
-              window.open(generateWaProductMessage(props.item?.product), '_blank')
-            }
+            onClick={(e) => {
+              const currentUrl = window.location.href;
+              window.open(
+                generateWaProductMessage(
+                  props.item?.product! ? props.item.product! : props.item?.art!,
+                  currentUrl
+                ),
+                '_blank'
+              );
+            }}
           >
             <ShareIcon className={styles['share-icon']} /> Compartir
           </Button>
           <Button color="primary" onClick={handleCart}>
-            {cart.lines.some((l) => l.item.sku === props.item.sku)
+            {cart.lines.some((l: CartLine) => l.id === lineId)
               ? 'Actualizar'
               : 'Agregar al carrito'}
           </Button>

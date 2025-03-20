@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import Switch from 'components/Switch';
 import { useCurrency } from 'context/GlobalContext';
 

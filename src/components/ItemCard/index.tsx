@@ -1,23 +1,20 @@
-import React from 'react';
 import styles from './styles.module.scss';
 import ItemPlayground from 'components/ItemPlayground';
 import ItemContent from 'components/ItemContent';
 import Typography from 'components/Typography';
 import { formatPriceForUI } from 'utils/formats';
-import { Item } from './interfaces';
 import { useConversionRate, useCurrency } from 'context/GlobalContext';
+import { Item } from '../../types/item.types';
+import { CartLine } from '../../types/cart.types';
 
 export interface ItemCardProps {
   item: Item;
   direction?: 'row' | 'column';
-  handleChangeElement?: (type: 'producto' | 'arte', item: Item) => void;
+  handleChangeElement?: (type: 'producto' | 'arte', item: Item, lineId?: string) => void;
+  line?: CartLine;
 }
 
-export default function ItemCard({
-  item,
-  direction = 'row',
-  handleChangeElement,
-}: ItemCardProps) {
+export default function ItemCard({ item, direction = 'row', handleChangeElement, line }: ItemCardProps) {
   const { currency } = useCurrency();
   const { conversionRate } = useConversionRate();
 
@@ -38,6 +35,7 @@ export default function ItemCard({
         <ItemPlayground
           item={item}
           handleChangeElement={handleChangeElement}
+          line={line}
         />
       </div>
       <div className={styles['item-content']}>

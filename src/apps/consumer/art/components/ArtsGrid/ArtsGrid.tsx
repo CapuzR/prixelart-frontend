@@ -5,10 +5,10 @@ import { fetchGallery } from '../../api';
 import ArtThumbnail from '../ArtThumbnail';
 import PaginationBar from '../../../../../components/Pagination/PaginationBar';
 import { useLoading } from 'context/GlobalContext';
-import Detail from './Details/Detail';
+import Detail from './Details/Details';
 import { useNavigate } from 'react-router-dom';
-import { Art } from '../../interfaces';
 import useStyles from './ArtsGrid.styles';
+import { Art } from '../../../../../types/art.types';
 
 interface GalleryFilters {
   text?: string | null;
@@ -36,7 +36,7 @@ const ArtsGrid: React.FC<ArtsGridProps> = ({ onArtSelect }) => {
   const [categoryValue, setCategoryValue] = useState<string | null>(
     globalParams.get('category') || null
   );
-  const [openFullArt, setOpenFullArt] = useState<boolean>(false);
+  
   const [pageNumber, setPageNumber] = useState<number>(1);
   const itemsPerPage: number = 30;
   const activePrixer = globalParams.get('prixer');
@@ -117,6 +117,7 @@ const ArtsGrid: React.FC<ArtsGridProps> = ({ onArtSelect }) => {
                         handleFullImageClick(e, tile);
                       }
                     }}
+                    onArtSelect={onArtSelect}
                   />
                 </div>
               ))
@@ -126,8 +127,6 @@ const ArtsGrid: React.FC<ArtsGridProps> = ({ onArtSelect }) => {
           </MasonryAny>
         </ResponsiveMasonryAny>
       </div>
-
-      {openFullArt && <Detail />}
 
       <PaginationBar
         pageNumber={pageNumber}

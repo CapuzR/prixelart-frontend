@@ -4,7 +4,6 @@ import MDEditor from '@uiw/react-md-editor';
 import Button from 'components/Button';
 import { formatPriceForUI } from 'utils/formats';
 import styles from './Portrait.module.scss';
-import { Product } from '../../interfaces';
 import {
   Typography,
   Accordion,
@@ -23,6 +22,7 @@ import { getFilteredOptions } from 'apps/consumer/products/services';
 import { useConversionRate, useCurrency } from 'context/GlobalContext';
 import { Slider } from 'components/Slider';
 import { Image } from 'components/Image';
+import { Product } from '../../../../../types/product.types';
 
 interface PortraitProps {
   product: Product;
@@ -39,17 +39,21 @@ const Portrait: React.FC<PortraitProps> = (props) => {
   const { currency } = useCurrency();
   const { conversionRate } = useConversionRate();
 
-  const isOptionSelected =
-    Array.isArray(props.product.selection)
-      ? props.product.selection.some((sel) => sel.value !== '')
-      : false;
+  const allAttributesSelected =
+    !props.product?.attributes || props.product?.attributes.length === 0
+      ? true
+      : props.product.attributes.every(attribute => {
+        const sel = props.product.selection?.find(s => s.name === attribute.name);
+        return sel && sel.value.trim() !== '';
+      });
+
 
   return (
     <div className={styles['prix-product-container']}>
       <div className={styles['title-price']}>
         <div className={styles['title']}>{props.product?.name}</div>
         <div className={styles['price']}>
-          {isOptionSelected
+          {allAttributesSelected
             ? formatPriceForUI(
               props.product.price ?? props.product.priceRange.from,
               currency,
@@ -77,7 +81,7 @@ const Portrait: React.FC<PortraitProps> = (props) => {
           className={`${styles['attributes-container']} ${props.product?.attributes?.length > 1 ? styles['space-between'] : styles['flex-start']
             }`}
         >
-          {props.product?.attributes?.map((att, iAtt, attributesArr) => (
+          {props.product?.attributes?.map((att, iAtt) => (
             <div key={iAtt} className={styles['attribute-select-wrapper']}>
               <FormControl variant="outlined" className={styles['attribute-form-control']}>
                 <InputLabel id={att.name}>{att.name}</InputLabel>
@@ -110,11 +114,7 @@ const Portrait: React.FC<PortraitProps> = (props) => {
       <div className={styles['buttons-container']}>
         <Button
           color="primary"
-          disabled={
-            (props.product?.selection &&
-              Object.keys(props.product.selection).length === 0 &&
-              Object.keys(props.product.selection).every((el: string) => el === '')) || props.isFetchingVariantPrice
-          }
+          disabled={!allAttributesSelected || props.isFetchingVariantPrice}
           onClick={props.handleArtSelection}
         >
           {props.flowProductId ? 'Seleccionar' : 'Seleccionar Arte'}

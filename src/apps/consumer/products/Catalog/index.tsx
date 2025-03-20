@@ -21,14 +21,12 @@ import { fetchBestSellers, fetchProducts } from '../api';
 import ReactGA from 'react-ga';
 
 import styles from './styles.module.scss';
-import { Product } from 'apps/consumer/products/interfaces';
 import { useConversionRate, useCurrency } from 'context/GlobalContext';
-import { Art } from '../interfaces';
-import { queryCreator } from 'apps/consumer/flow/utils';
 import CurrencySwitch from 'components/CurrencySwitch';
 import { useNavigate } from 'react-router-dom';
 import { Grid2, SelectChangeEvent } from '@mui/material';
 import SearchBar from '@components/searchBar/searchBar';
+import { Product } from '../../../../types/product.types';
 
 ReactGA.initialize('G-0RWP9B33D8');
 ReactGA.pageview('/productos');
@@ -146,11 +144,11 @@ const ProductsCatalog: React.FC<ProductsCatalogProps> = ({ onProductSelect }) =>
           </Typography>
         </div>
 
-        {bestSellers && (
+        {bestSellers && !onProductSelect && (
           <div className={styles['best-sellers']}>
             <div className={styles['title-wrapper']}>
               <Typography variant="h5" className={styles['best-seller-title']}>
-                {isMobile || onProductSelect ? (
+                {isMobile ? (
                   <strong>¡Más vendidos!</strong>
                 ) : (
                   <strong>¡Productos más vendidos! </strong>
@@ -222,6 +220,7 @@ const ProductsCatalog: React.FC<ProductsCatalogProps> = ({ onProductSelect }) =>
                     onProductSelect ? onProductSelect(product) : handleDetails(product)
                   }
                   isCart={onProductSelect ? true : false}
+                  onProductSelect={onProductSelect}
                 />
               </Grid2>
             ))

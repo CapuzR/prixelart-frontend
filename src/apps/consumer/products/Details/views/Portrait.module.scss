@@ -4,6 +4,9 @@
 .prix-product-container {
   justify-content: center;
   padding: theme.$spacing-md theme.$spacing-xl;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .steps-wrapper {
@@ -23,7 +26,7 @@
 
 .title-price {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   justify-content: center;
   align-items: center;
   text-align: center;
@@ -44,7 +47,8 @@
 }
 
 .carousel-wrapper {
-  min-height: 300px;
+  width: 50%;
+  min-width: 300px;
   justify-content: center;
 }
 
@@ -57,4 +61,6 @@
   margin: theme.$spacing-md 0;
   gap: theme.$spacing-md;
   width: 100%;
-};
+}
+
+;

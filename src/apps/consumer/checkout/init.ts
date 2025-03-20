@@ -1,13 +1,7 @@
 import countries from '@data/countries.json';
 
-import {
-  CheckoutState,
-  Cart,
-  OrderLine,
-  BasicInfo,
-  ShippingDetails,
-  BillingDetails,
-} from './interfaces';
+import { Cart } from '../../../types/cart.types';
+import { BasicInfo, BillingDetails, CheckoutState, OrderLine, ShippingDetails } from '../../../types/order.types';
 
 export const initializeCheckoutState = (cart: Cart): CheckoutState => {
   const safeParseJSON = <T>(data: string | null, defaultValue: T): T => {
@@ -69,8 +63,8 @@ export const initializeCheckoutState = (cart: Cart): CheckoutState => {
         line1: '',
         line2: '',
         city: '',
-        state: '',
-        country: '',
+        state: 'Miranda',
+        country: 'Venezuela',
         zipCode: '',
         reference: '',
       },
@@ -91,8 +85,8 @@ export const initializeCheckoutState = (cart: Cart): CheckoutState => {
         line1: '',
         line2: '',
         city: '',
-        state: '',
-        country: '',
+        state: 'Miranda',
+        country: 'Venezuela',
         zipCode: '',
         reference: '',
       },
@@ -114,8 +108,8 @@ export const initializeCheckoutState = (cart: Cart): CheckoutState => {
           line1: '',
           line2: '',
           city: '',
-          state: '',
-          country: ''
+          state: 'Miranda',
+          country: 'Venezuela',
         },
         addresses: [],
         paymentMethods: [],
@@ -153,7 +147,7 @@ export const initializeCheckoutState = (cart: Cart): CheckoutState => {
         })),
       sellers: parsedState?.dataLists?.sellers || [],
     },
-    shippingMethods: parsedState?.dataLists?.shippingMethods || [],
+    shipping: parsedState?.dataLists?.shippingMethods?.[0] || { id: 0, method: "", price: 0 },
     paymentMethods: parsedState?.dataLists?.paymentMethods || [],
     billing: undefined
   };

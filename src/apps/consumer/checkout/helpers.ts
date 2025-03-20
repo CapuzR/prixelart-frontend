@@ -1,9 +1,4 @@
-import {
-  ConsumerDetails,
-  ShippingDetails,
-  BillingDetails,
-  BasicInfo,
-} from './interfaces';
+import { BasicInfo, BillingDetails, ConsumerDetails, ShippingDetails } from '../../../types/order.types';
 import {
   isAValidName,
   isAValidCi,

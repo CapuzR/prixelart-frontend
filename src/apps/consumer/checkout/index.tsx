@@ -2,13 +2,14 @@ import React, { useState } from 'react';
 import { Stepper, Step, StepLabel, Button, Typography, Box, Container, Snackbar } from '@mui/material';
 import Form from './Form';
 import Order from './Order';
-import { CheckoutState, DataLists } from './interfaces';
 import { initializeCheckoutState } from './init';
 import { useForm, FormProvider } from 'react-hook-form';
 import { useCart } from '@context/CartContext';
 import { createOrderByUser } from './api';
 import { parseOrder } from './parseApi';
 import { useNavigate } from 'react-router-dom';
+import { CartLine } from '../../../types/cart.types';
+import { CheckoutState, DataLists, Tax } from '../../../types/order.types';
 
 interface CheckoutProps {
   setChecking: React.Dispatch<React.SetStateAction<boolean>>;
@@ -103,18 +104,60 @@ const Checkout: React.FC<CheckoutProps> = ({ setChecking }) => {
                 setChecking(true);
                 const checkoutState = methods.getValues();
 
-                checkoutState.order.lines = cart.lines.map((line) => ({
+                // Map cart lines to order lines
+                checkoutState.order.lines = cart.lines.map((line: CartLine) => ({
                   ...line,
                   pricePerUnit: line.item.price,
                 }));
 
-                const subtotal = cart.lines.reduce((total, line) => {
-                  console.log('price:', line.item.price, 'quantity:', line.quantity, 'multiplied:', line.item.price * line.quantity);
+                // Calculate subtotal from the cart
+                const subtotal = cart.lines.reduce((total: number, line: CartLine) => {
                   return total + line.item.price * line.quantity;
                 }, 0);
-                console.log("subtotal", subtotal)
 
-                return <Order checkoutState={checkoutState} newSubTotal={subtotal} />;
+                // Perform tax calculations before sending data to the Order component
+                checkoutState.order.subTotal = subtotal;
+
+                if (checkoutState.shipping && dataLists.shippingMethods) {
+                  const selectedMethod = dataLists.shippingMethods.find((method) => {
+                    return method.method === checkoutState.shipping.method;
+                  });
+                  if (selectedMethod) {
+                    checkoutState.order.shippingCost = selectedMethod.price as number;
+                  }
+                }
+
+
+                const taxes: Tax[] = [];
+
+                // IVA (16%)
+                const ivaValue = 16;
+                const ivaAmount = subtotal * (ivaValue / 100);
+                taxes.push({
+                  id: 'iva',
+                  name: 'IVA:',
+                  value: ivaValue,
+                  amount: ivaAmount,
+                });
+
+                // Add IGTF (3%) if the payment method is "Efectivo $"
+                if (checkoutState.billing?.paymentMethod === 'Efectivo $') {
+                  const igtfValue = 3;
+                  const igtfAmount = subtotal * (igtfValue / 100);
+                  taxes.push({
+                    id: 'igtf',
+                    name: 'IGTF:',
+                    value: igtfValue,
+                    amount: igtfAmount,
+                  });
+                }
+
+                checkoutState.order.tax = taxes;
+                const totalTaxes = taxes.reduce((sum, tax) => sum + tax.amount, 0);
+                checkoutState.order.total = parseFloat((subtotal + totalTaxes).toFixed(2));
+
+                // Now pass the updated checkoutState and subtotal to the Order component
+                return <Order checkoutState={checkoutState} />;
               })()
             ) : (
               <div></div>

@@ -1,15 +1,6 @@
 import axios from "axios";
-import {
-  parseConsumerDetails,
-  parseShippingMethods,
-  parseBillingMethods,
-} from "./parseApi";
-import {
-  CheckoutState,
-  ConsumerDetails,
-  PaymentMethod,
-  ShippingMethod,
-} from "./interfaces";
+import { parseConsumerDetails, parseShippingMethods, parseBillingMethods, } from "./parseApi";
+import { ConsumerDetails, PaymentMethod, ShippingMethod, } from "../../../types/order.types";
 
 export const fetchConsumer = async (
   token: string
@@ -26,14 +17,6 @@ export const fetchConsumer = async (
       return parseConsumerDetails(consumerResponse.data.consumer);
     }
 
-    // Fetch prixer details as a fallback
-    // const username = JSON.parse(token).username;
-    // const prixerResponse = await axios.post(`${baseUrl}/prixer/read`, { username });
-    // if (prixerResponse.data) {
-    //   const parsedPrixer: BasicInfo = parsePrixerDetails(prixerResponse.data);
-    //   return { basic: parsedPrixer };
-    // }
-
     return null;
   } catch (error) {
     console.error("Error fetching consumer or prixer data:", error);
@@ -43,26 +26,12 @@ export const fetchConsumer = async (
 
 export const fetchShippingMethods = async (): Promise<ShippingMethod[]> => {
 
-  const shippingMethodsStr = localStorage.getItem("shippingMethods");
-  let shippingMethods;
-
-  if (shippingMethodsStr) {
-    shippingMethods = JSON.parse(shippingMethodsStr);
-  } else {
-    shippingMethods = null;
-  }
-
-  if (shippingMethods) {
-    return shippingMethods;
-  }
-
   const baseUrl = `${import.meta.env.VITE_BACKEND_URL}/shipping-method/read-all-v2`;
 
   try {
     const response = await axios.get(baseUrl);
     const parsedShippingMethods = parseShippingMethods(response.data);
     const shippingMethods = Array.isArray(parsedShippingMethods) ? parsedShippingMethods : [];
-    localStorage.setItem("shippingMethods", JSON.stringify(shippingMethods));
 
     return shippingMethods;
   } catch (error) {

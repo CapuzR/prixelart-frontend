@@ -1,11 +1,10 @@
 @use '@/theme.scss' as theme;
+
 .container {
-  display: flex;
+  display: inline-flex;
   width: 100%;
   height: auto;
   position: relative;
-  height: auto;
-  // height: 100%;
 }
 
 .sel-container {
@@ -28,4 +27,17 @@
   @include theme.paper(undefined, theme.$box-shadow-medium, theme.$border-radius-lg, theme.$spacing-md);
   padding: 0;
   height: auto;
+}
+
+@media screen and (max-width: 1600px) {
+  .sel-container {
+    flex-direction: column;
+    width: 150px;
+    gap: 10px;
+  }
+
+  .sel-container .art-area,
+  .sel-container .product-area {
+    width: 100%;
+  }
 }

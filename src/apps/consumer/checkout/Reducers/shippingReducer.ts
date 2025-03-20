@@ -1,4 +1,4 @@
-import { ShippingDetails, CheckoutAction } from '../interfaces';
+import { ShippingDetails, CheckoutAction } from "../../../../types/order.types";
 
 export const shippingReducer = (
   shipping: ShippingDetails,

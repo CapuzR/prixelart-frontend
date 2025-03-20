@@ -23,11 +23,11 @@ import styles from './Landscape.module.scss';
 
 import { getFilteredOptions } from 'apps/consumer/products/services';
 
-import { Product } from '../../interfaces';
 import { useCurrency } from 'context/GlobalContext';
 import { Slider } from 'components/Slider';
 import { Image } from 'components/Image';
 import CurrencySwitch from 'components/CurrencySwitch';
+import { Product } from '../../../../../types/product.types';
 
 interface LandscapeProps {
   product: Product;
@@ -48,6 +48,17 @@ const Landscape: React.FC<LandscapeProps> = (props) => {
     Array.isArray(props.product.selection)
       ? props.product.selection.some(sel => sel.value !== '')
       : false;
+
+  console.log("producto: ", props.product);
+
+  const allAttributesSelected =
+    !props.product?.attributes || props.product?.attributes.length === 0
+      ? true
+      : props.product.attributes.every(attribute => {
+        const sel = props.product.selection?.find(s => s.name === attribute.name);
+        return sel && sel.value.trim() !== '';
+      });
+
 
   return (
     <div className={styles['prix-product-container']}>
@@ -97,10 +108,10 @@ const Landscape: React.FC<LandscapeProps> = (props) => {
           <Button
             type="onlyText"
             color="primary"
-            onClick={(e) => {
-              window.open(generateWaProductMessage(props.product), '_blank');
-            }}
-          >
+            onClick={() => {
+              const currentUrl = window.location.href;
+              window.open(generateWaProductMessage(props.product, currentUrl), '_blank');
+            }}>
             <ShareIcon className={styles['share-icon']} />
           </Button>
         </div>
@@ -140,7 +151,6 @@ const Landscape: React.FC<LandscapeProps> = (props) => {
               const selectedValue = (Array.isArray(props.product?.selection)
                 ? props.product.selection
                 : []).find((sel) => sel.name === att.name)?.value || '';
-              console.log(`For attribute ${att.name}, current selection is:`, selectedValue);
 
               return (
                 <div key={iAtt} className={styles['attribute-select-wrapper']}>
@@ -173,13 +183,8 @@ const Landscape: React.FC<LandscapeProps> = (props) => {
         <div className={styles['buttons-container']}>
           <Button
             color="primary"
-            disabled={
-              (props.product?.selection &&
-                Object.keys(props.product.selection).length === 0 &&
-                Object.keys(props.product.selection).every((el: string) => el === '')) || props.isFetchingVariantPrice
-            }
-            onClick={props.handleArtSelection}
-          >
+            disabled={!allAttributesSelected || props.isFetchingVariantPrice}
+            onClick={props.handleArtSelection}>
             {props.flowProductId ? 'Seleccionar' : 'Seleccionar Arte'}
           </Button>
         </div>

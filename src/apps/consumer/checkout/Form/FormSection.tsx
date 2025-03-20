@@ -44,12 +44,7 @@ interface FormSectionProps {
 }
 
 
-const FormSection: React.FC<FormSectionProps> = ({
-  sectionConfig,
-  sectionKey,
-  isExpanded,
-  onToggle,
-}) => {
+const FormSection: React.FC<FormSectionProps> = ({ sectionConfig, sectionKey, isExpanded, onToggle, }) => {
   const { control, getValues } = useFormContext();
   const formValues = getValues(sectionKey);
 
@@ -95,7 +90,7 @@ const FormSection: React.FC<FormSectionProps> = ({
     switch (type) {
       case "dropdown":
         return (
-          <TextField {...commonProps} select>
+          <TextField fullWidth {...commonProps} select>
             {options?.map((option, idx) => (
               <MenuItem key={idx} value={option}>
                 {option}
@@ -145,6 +140,7 @@ const FormSection: React.FC<FormSectionProps> = ({
             }}
             slotProps={{
               textField: {
+                fullWidth: true,
                 error: !!fieldState.error,
                 helperText: fieldState.error ? fieldState.error.message : fieldConfig.helperText,
                 variant: "outlined",
@@ -171,7 +167,7 @@ const FormSection: React.FC<FormSectionProps> = ({
         return (
           <Grid container spacing={1} alignItems="center" xs={12}> {/* Set width to 6 */}
             <Grid item xs={10}> {/* TextField takes 10 out of 12 columns */}
-              <TextField {...commonProps} select>
+              <TextField fullWidth {...commonProps} select>
                 {options?.map((option, idx) => (
                   <MenuItem key={idx} value={option}>
                     {option}
@@ -189,8 +185,7 @@ const FormSection: React.FC<FormSectionProps> = ({
 
       case "text":
       default:
-        return <TextField {...commonProps} />;
-
+        return <TextField fullWidth {...commonProps} />;
     }
   };
 

@@ -12,13 +12,13 @@ import { fetchArt } from 'apps/consumer/art/api';
 
 import Landscape from 'apps/consumer/flow/views/Landscape';
 
-import { Item, Art, Product } from './interfaces';
-import { queryCreator } from './utils';
+import { queryCreator } from './helpers';
 import { parsePrice } from 'utils/formats';
 import { useCart } from 'context/CartContext';
-import { checkPermissions } from './services';
 import { getUrlParams } from '@utils/util';
-import { url } from 'inspector';
+import { Item } from '../../../types/item.types';
+import { Product, Selection } from '../../../types/product.types';
+import { Art } from '../../../types/art.types';
 
 ReactGA.initialize('G-0RWP9B33D8');
 
@@ -30,16 +30,21 @@ const Flow = () => {
   const { currency } = useCurrency();
   const { conversionRate } = useConversionRate();
   const { showSnackBar } = useSnackBar();
-  const { cart, addOrUpdateItemInCart } = useCart();
+  const { addOrUpdateItemInCart } = useCart();
 
   const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
 
   const location = useLocation();
 
   const urlParams = Object.fromEntries(new URLSearchParams(location.search).entries());
-  const isUpdate = cart.lines.some((l) => l.id === urlParams.lineId);
 
-  const isItemReady = Boolean(urlParams.producto && urlParams.arte);
+  const isProductAttributesComplete = item.product
+    ? item.product.attributes.every(attribute => {
+      return urlParams[attribute.name] && urlParams[attribute.name].trim() !== '';
+    })
+    : false;
+
+  const isItemReady = Boolean(urlParams.producto && urlParams.arte && isProductAttributesComplete);
 
   useEffect(() => {
     !urlParams.producto && !urlParams.arte && navigate('/');
@@ -61,7 +66,6 @@ const Flow = () => {
           selectedArt = await fetchArt(urlParams.arte);
         }
 
-        console.log('Fetched art from API:', selectedArt);
         const selectedAttributes = getUrlParams([
           'producto',
           'arte',
@@ -93,7 +97,13 @@ const Flow = () => {
     };
 
     fetchItem();
-  }, [urlParams.producto, urlParams.arte]);
+  }, [location.search]);
+
+  useEffect(() => {
+    if (urlParams.producto) {
+      setSelectedProductId(urlParams.producto);
+    }
+  }, [urlParams]);
 
   useEffect(() => {
     const fetchAndSetPrice = async () => {
@@ -124,19 +134,28 @@ const Flow = () => {
   }, [JSON.stringify(item.product?.selection), currency, conversionRate, item.art?.artId]);
 
   const handleArtSelect = (selectedArt: Art) => {
+
+    const excludedKeys = new Set(['producto', 'arte', 'lineId']);
+
+    const existingAttributes = Object.entries(urlParams).reduce((acc, [key, value]) => {
+      if (!excludedKeys.has(key)) {
+        acc[key] = value;
+      }
+      return acc;
+    }, {} as Record<string, string>);
+
     const newQueryString = queryCreator(
       urlParams.lineId,
-      urlParams.itemId,
       urlParams.producto,
       selectedArt._id,
-      undefined
+      existingAttributes
     );
     navigate(`${location.pathname}?${newQueryString}`);
     showSnackBar('¡Arte seleccionado! Puedes agregar el item al carrito');
   };
 
   const handleProductSelect = (selectedProduct: Product) => {
-    const attributes = selectedProduct.selection?.reduce((acc, curr) => {
+    const attributes = selectedProduct.selection?.reduce((acc: Record<string, string>, curr: Selection) => {
       acc[curr.name] = curr.value;
       return acc;
     }, {} as Record<string, string>);
@@ -146,7 +165,6 @@ const Flow = () => {
     if (attributes) {
       const newQueryString = queryCreator(
         urlParams.lineId,
-        urlParams.itemId,
         selectedProduct.id,
         urlParams.arte,
         attributes
@@ -162,13 +180,13 @@ const Flow = () => {
     navigate('/carrito');
   };
 
-  const handleChangeElement = (type: 'producto' | 'arte', item: Item) => {
+  const handleChangeElement = (type: 'producto' | 'arte', item: Item, lineId?: string) => {
 
     const selectionAsObject =
       type === 'producto'
         ? {}
-        : (item.product?.selection || []).reduce((acc, sel, index) => {
-          acc[`selection-${index}`] = sel.value;
+        : (item.product?.selection || []).reduce((acc, sel) => {
+          acc[sel.name] = sel.value;
           return acc;
         }, {} as Record<string, string>);
 
@@ -184,10 +202,10 @@ const Flow = () => {
         attributes: undefined,
       }));
     }
+
     const queryString = queryCreator(
-      urlParams.lineId,
+      lineId ? lineId : undefined,
       type === 'producto' ? undefined : item.sku,
-      type === 'producto' ? undefined : item.product?.id,
       type === 'arte' ? undefined : item.art?._id,
       selectionAsObject,
     );
@@ -215,8 +233,8 @@ const Flow = () => {
     }));
 
     const selectionAsObject = (item.product?.selection || []).reduce(
-      (acc, sel, index) => {
-        acc[`selection-${index}`] = sel.value;
+      (acc, sel) => {
+        acc[sel.name] = sel.value;
         return acc;
       },
       {} as Record<string, string>
@@ -225,7 +243,6 @@ const Flow = () => {
     const queryString = queryCreator(
       urlParams.lineId,
       item.sku,
-      item.product?.id,
       item.art?.artId,
       selectionAsObject,
     );
@@ -265,27 +282,7 @@ const Flow = () => {
       {/* {
       isPortrait ? (
         <Portrait
-          product={product}
-          selectedArt={selectedArt}
-          setSelectedArt={setSelectedArt}
-          handleAddItem={handleAddItem}
-          handleUpdateItem={handleUpdateItem}
-          getFilteredOptions={getFilteredOptions}
-          handleChange={handleChange}
-          handleSelection={handleSelection}
-          expanded={expanded}
-          generalDescription={generalDescription}
-          technicalSpecification={technicalSpecification}
-          searchResult={props.searchResult}
-          setSearchResult={props.setSearchResult}
-          searchParams={searchParams}
-          selectedProductId={selectedProductId}
-        />
-      ) : ( */}
-      <Landscape
         item={item}
-        isUpdate={isUpdate}
-        itemId={urlParams.itemId}
         handleCart={handleCart}
         getFilteredOptions={getFilteredOptions}
         handleSelection={handleSelection}
@@ -294,6 +291,19 @@ const Flow = () => {
         onArtSelect={handleArtSelect}
         onProductSelect={handleProductSelect}
         selectedProductId={selectedProductId}
+        />
+      ) : ( */}
+      <Landscape
+        item={item}
+        handleCart={handleCart}
+        getFilteredOptions={getFilteredOptions}
+        handleSelection={handleSelection}
+        handleChangeElement={handleChangeElement}
+        isItemReady={isItemReady}
+        onArtSelect={handleArtSelect}
+        onProductSelect={handleProductSelect}
+        selectedProductId={selectedProductId}
+        isProductAttributesComplete={isProductAttributesComplete}
       />
       {/* )} */}
     </>

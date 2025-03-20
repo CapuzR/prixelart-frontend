@@ -1,5 +1,5 @@
+import { Item } from '../../../types/item.types';
 import axios from 'axios';
-import { Item } from './interfaces';
 
 export const fetchCart = async (): Promise<Item[]> => {
   try {

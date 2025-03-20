@@ -30,7 +30,7 @@
 .cart-review-container {
   display: flex;
   justify-content: space-between;
-  min-width: 60%;
+  min-width: calc(100% - 600px);
 }
 
 .empty-space {

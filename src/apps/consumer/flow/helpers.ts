@@ -1,6 +1,5 @@
 export const queryCreator = (
   lineId: string | undefined,
-  itemId: string | undefined,
   productId: string | undefined,
   artId: string | undefined,
   attributes: { [key: string]: string } | undefined,
@@ -13,10 +12,6 @@ export const queryCreator = (
 
   if (lineId) {
     searchParams.set('lineId', lineId);
-  }
-
-  if (itemId) {
-    searchParams.set('itemId', itemId);
   }
 
   if (productId) {

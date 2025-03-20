@@ -1,7 +1,7 @@
 import React from "react";
 import { Route, Routes } from "react-router-dom";
 
-import ArtDetail from "apps/consumer/art/components/ArtsGrid/Details/Detail";
+import ArtDetail from "@apps/consumer/art/components/ArtsGrid/Details/Details";
 import Home from "apps/consumer/home/home";
 import Catalog from "@apps/consumer/art/catalog/Catalog";
 import Products from "apps/consumer/products/Catalog";
@@ -15,7 +15,6 @@ import Flow from "apps/consumer/flow/Flow";
 import PrixerProfile from "apps/artist/prixerProfile/prixerProfile";
 
 const ConsumerRoutes: React.FC = () => {
-
 
   return (
     <Routes>
@@ -52,7 +51,6 @@ const ConsumerRoutes: React.FC = () => {
           <SoloService
           />
         } />
-
       */}
       <Route
         path="/testimonios"

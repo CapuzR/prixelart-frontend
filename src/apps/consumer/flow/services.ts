@@ -1,4 +1,5 @@
-import { PickedProduct, PickedArt } from './interfaces';
+import { PickedArt } from "../../../types/art.types";
+import { PickedProduct } from "../../../types/product.types";
 
 export const checkPermissions = (product: PickedProduct | null, art: PickedArt | null): boolean => {
   if (!product || !art || !product.selection) {

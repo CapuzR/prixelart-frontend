@@ -13,11 +13,11 @@ import { fetchProductDetails } from '../api';
 import Portrait from './views/Portrait';
 import Landscape from './views/Landscape';
 
-import { Product } from '../interfaces';
-import { queryCreator } from 'apps/consumer/flow/utils';
+import { queryCreator } from '@apps/consumer/flow/helpers';
 import { SelectChangeEvent } from '@mui/material';
 import { parseProduct } from '../parseApi';
 import { getUrlParams } from '@utils/util';
+import { Product } from '../../../../types/product.types';
 
 ReactGA.initialize('G-0RWP9B33D8');
 
@@ -156,7 +156,6 @@ const Details: React.FC<DetailsProps> = ({ productId }) => {
       art = params.get('arte') || undefined;
     }
     const queryString = queryCreator(
-      undefined,
       undefined,
       id,
       art,

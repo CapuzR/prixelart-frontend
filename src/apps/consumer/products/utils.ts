@@ -7,6 +7,7 @@ export const splitDescription = (
 
   const technicalKeywordWithAsterisks = '**ESPECIFICACIONES TÉCNICAS**';
   const technicalKeyword = 'ESPECIFICACIÓN TÉCNICA';
+  const flexibleTechnicalKeyword = '**E.TÉCNICAS FLEXIBLES*';
 
   let generalDescription = '';
   let technicalSpecification = '';
@@ -15,6 +16,8 @@ export const splitDescription = (
     [generalDescription, technicalSpecification] = description.split(technicalKeywordWithAsterisks);
   } else if (description.includes(technicalKeyword)) {
     [generalDescription, technicalSpecification] = description.split(technicalKeyword);
+  } else if (description.includes(flexibleTechnicalKeyword)) {
+    [generalDescription, technicalSpecification] = description.split(flexibleTechnicalKeyword);
   } else {
     return { generalDescription: description, technicalSpecification: '' };
   }

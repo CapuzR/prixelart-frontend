@@ -22,7 +22,7 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import Img from 'react-cool-img';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import MaximizeIcon from '@mui/icons-material/Maximize';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
@@ -162,7 +162,7 @@ export default function Home(props) {
   const [openArtFormDialog, setOpenArtFormDialog] = useState(false);
   const [openShoppingCart, setOpenShoppingCart] = useState(false);
   const [value, setValue] = useState('');
-  const history = useHistory();
+  const navigate = useNavigate();
 
   // const brands = [brand1, brand2, brand3, brand4, brand5];
   const imgsMobile = [
@@ -273,12 +273,12 @@ export default function Home(props) {
 
   const handleProductCatalog = (e) => {
     e.preventDefault();
-    history.push({ pathname: '/productos' });
+    navigate({ pathname: '/productos' });
   };
 
   const handleProduct = async (product) => {
     props.setPointedProduct(product.name);
-    history.push({ pathname: '/productos' });
+    navigate({ pathname: '/productos' });
     setTimeout(() => {
       document.getElementById(product.name)?.scrollIntoView({
         behavior: 'smooth',
@@ -289,11 +289,11 @@ export default function Home(props) {
 
   const handleGallery = (e) => {
     e.preventDefault();
-    history.push({ pathname: '/galeria' });
+    navigate({ pathname: '/galeria' });
   };
 
   const handleArt = async (art) => {
-    history.push({
+    navigate({
       pathname: '/art=' + art.artId,
     });
   };

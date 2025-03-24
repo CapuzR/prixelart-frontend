@@ -5,7 +5,7 @@ import { makeStyles } from "tss-react/mui"
 import Grid2 from "@mui/material/Grid2"
 import Paper from "@mui/material/Paper"
 
-import { useHistory, useLocation } from "react-router-dom"
+import { useNavigate, useLocation } from "react-router-dom"
 
 import CreateAdmin from "./views/Create"
 import ReadAdmins from "./views/Read"
@@ -15,7 +15,7 @@ import UpdateAdminRole from "./views/UpdateRole"
 
 import { getAdmins } from "./api"
 
-import { Admin } from "../../../../types/admin.types"
+import { Admin, AdminRole } from "../../../../types/admin.types"
 
 import { useSnackBar, useLoading } from "context/GlobalContext"
 import { AdminFormProvider } from "@context/AdminFormContext"
@@ -34,12 +34,13 @@ const useStyles = makeStyles()((theme: Theme) => {
 export default function AdminCrud() {
   const { classes, cx } = useStyles()
   const location = useLocation()
-  const history = useHistory()
+  const navigate = useNavigate()
   const fixedHeightPaper = cx(classes.paper)
   const [activeCrud, setActiveCrud] = useState("read")
   const [page, setPage] = useState(0)
   const [admin, setAdmin] = useState<Partial<Admin>>()
-  const [admins, setAdmins] = useState()
+  const [role, setRole] = useState<Partial<AdminRole>>()
+  const [admins, setAdmins] = useState<Admin[]>([])
   const { showSnackBar } = useSnackBar()
   const { setLoading } = useLoading()
 
@@ -50,8 +51,8 @@ export default function AdminCrud() {
   const loadAdmin = async () => {
     setLoading(true)
     try {
-      const admins = await getAdmins()
-      setAdmins(admins)
+      const response = await getAdmins()
+      setAdmins(response)
     } catch (error) {
       showSnackBar(
         "Error obteniendo lista de administradores, por favor inténtelo de nuevo."
@@ -63,11 +64,11 @@ export default function AdminCrud() {
   const handleUserAction = (action: string) => {
     if (action === "create" && page === 0) {
       setActiveCrud("create")
-      history.push("/admin/admins/" + action)
+      navigate("/admin/admins/" + action)
     } else if (action === "create" && page === 1) {
       setActiveCrud("createRole")
     } else {
-      history.push("/admin/admins/" + action)
+      navigate("/admin/admins/" + action)
       setActiveCrud(action)
     }
   }
@@ -83,7 +84,7 @@ export default function AdminCrud() {
         )
   }, [location.pathname])
 
-  const updateAdminProperty = (property: any, value: string) => {
+  const updateAdminProperty = (property: string, value: string | boolean) => {
     if (property === "all") {
       setAdmin({
         username: "",
@@ -102,11 +103,15 @@ export default function AdminCrud() {
     }
   }
 
-  function Callback(childData) {
+  function Callback(childData: number) {
     setPage(childData)
   }
 
-  function Callback2(childData) {
+  function Callback2(childData: AdminRole) {
+    setRole(childData)
+  }
+
+  function Callback3(childData: Admin) {
     setAdmin(childData)
   }
 
@@ -122,10 +127,11 @@ export default function AdminCrud() {
                 <ReadAdmins
                   handleCallback={Callback}
                   setActiveCrud={setActiveCrud}
-                  handleCallback2={Callback2}
                   admins={admins}
                   loadAdmin={loadAdmin}
                   handleUserAction={handleUserAction}
+                  handleCallback2={Callback2}
+                  handleCallback3={Callback3}
                 />
               ) : activeCrud === "update" ? (
                 <UpdateAdmin
@@ -136,7 +142,7 @@ export default function AdminCrud() {
               ) : activeCrud === "createRole" ? (
                 <CreateAdminRole setActiveCrud={setActiveCrud} />
               ) : activeCrud === "updateRole" ? (
-                <UpdateAdminRole admin={admin} setActiveCrud={setActiveCrud} />
+                <UpdateAdminRole role={role} />
               ) : (
                 <></>
               )}

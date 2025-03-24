@@ -4,7 +4,7 @@ import { Map } from '../components/map/map.jsx';
 import { IconCard } from '../components/map/card.jsx';
 import { IconsForm } from '../components/iconsForm/iconsForm.jsx';
 import { IconsList } from '../components/iconsForm/iconList.jsx';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 import data from '../data/LPG/data.json';
 
@@ -12,7 +12,7 @@ export const Desktop = () => {
   const [selectedIcon, setSelectedIcon] = React.useState();
   const [openSelected, setOpenSelected] = React.useState(false);
   const [icons, setIcons] = React.useState(data.array);
-  const history = useHistory();
+  const navigate = useNavigate();
 
   return (
     <Grid
@@ -86,7 +86,7 @@ export const Desktop = () => {
               marginRight: '-20px',
               zIndex: 2,
             }}
-            onClick={(e) => history.push({ pathname: '/prixer=LPG' })}
+            onClick={(e) => navigate({ pathname: '/prixer=LPG' })}
           />
         </div>
       </Grid>
@@ -121,7 +121,7 @@ export const Desktop = () => {
               maxWidth: "140px",
               maxHeight: "140px",
             }}
-            onClick={(e) => history.push({ pathname: "/LPG" })}
+            onClick={(e) => navigate({ pathname: "/LPG" })}
           />
         </div> */}
       </Grid>

@@ -1,38 +1,38 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react"
 
-import axios from "axios";
+import axios from "axios"
 
-import { Theme } from "@mui/material/styles";
-import { makeStyles } from "tss-react/mui";
+import { Theme } from "@mui/material/styles"
+import { makeStyles } from "tss-react/mui"
 
-import TextField from "@mui/material/TextField";
-import Button from "@mui/material/Button";
-import Grid2 from "@mui/material/Grid2";
-import OutlinedInput from "@mui/material/OutlinedInput";
-import InputAdornment from '@mui/material/InputAdornment';
-import InputLabel from "@mui/material/InputLabel";
-import FormControl from "@mui/material/FormControl";
-import MenuItem from "@mui/material/MenuItem";
-import Select from "@mui/material/Select";
-import { Switch, Typography } from "@mui/material";
-import Modal from "@mui/material/Modal";
-import IconButton from "@mui/material/IconButton";
+import TextField from "@mui/material/TextField"
+import Button from "@mui/material/Button"
+import Grid2 from "@mui/material/Grid2"
+import OutlinedInput from "@mui/material/OutlinedInput"
+import InputAdornment from "@mui/material/InputAdornment"
+import InputLabel from "@mui/material/InputLabel"
+import FormControl from "@mui/material/FormControl"
+import MenuItem from "@mui/material/MenuItem"
+import Select from "@mui/material/Select"
+import { Switch, Typography } from "@mui/material"
+import Modal from "@mui/material/Modal"
+import IconButton from "@mui/material/IconButton"
 
-import CloseIcon from "@mui/icons-material/Close";
-import Visibility from "@mui/icons-material/Visibility";
-import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import CloseIcon from "@mui/icons-material/Close"
+import Visibility from "@mui/icons-material/Visibility"
+import VisibilityOff from "@mui/icons-material/VisibilityOff"
 
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom"
 
-import Title from "../../../components/Title";
+import Title from "../../../components/Title"
 import {
   isAValidEmail,
   isAValidPassword,
   isAValidUsername,
-} from "utils/validations";
-import { useSnackBar, useLoading } from "context/GlobalContext";
-import { AdminRole, Admin } from "../../../../../types/admin.types";
-import { getRoles, updateAdmin } from "../api";
+} from "utils/validations"
+import { useSnackBar, useLoading } from "context/GlobalContext"
+import { AdminRole, Admin } from "../../../../../types/admin.types"
+import { getRoles, updateAdmin } from "../api"
 
 const useStyles = makeStyles()((theme: Theme) => {
   return {
@@ -55,131 +55,144 @@ const useStyles = makeStyles()((theme: Theme) => {
       display: "flex",
       flexDirection: "row",
     },
-  };
-});
+  }
+})
 
-export default function UpdateAdmin({ admin, updateAdminProperty, loadAdmin }) {
-  const { classes, cx } = useStyles();
-  const history = useHistory();
-  const { showSnackBar } = useSnackBar();
-  const { setLoading } = useLoading();
+interface AdminProps {
+  admin: Partial<Admin> | undefined
+  loadAdmin: () => Promise<void>
+  updateAdminProperty: (name: string, value: string | boolean) => void
+}
 
-  const [showPassword, setShowPassword] = useState(false);
-  const [password, setPassword] = useState("");
-  const [passwordError, setPasswordError] = useState();
+export default function UpdateAdmin({
+  admin,
+  updateAdminProperty,
+  loadAdmin,
+}: AdminProps) {
+  const { classes, cx } = useStyles()
+  const navigate = useNavigate()
+  const { showSnackBar } = useSnackBar()
+  const { setLoading } = useLoading()
 
-  const [buttonState, setButtonState] = useState(false);
-  const [roles, setRoles] = useState<AdminRole[]>();
-  const [changePassword, setChangePassword] = useState(false);
+  const [showPassword, setShowPassword] = useState(false)
+  const [password, setPassword] = useState("")
+  const [passwordError, setPasswordError] = useState()
+
+  const [buttonState, setButtonState] = useState(false)
+  const [roles, setRoles] = useState<AdminRole[]>()
+  const [changePassword, setChangePassword] = useState(false)
 
   const loadRoles = async () => {
     try {
-      setLoading(true);
-      const roles = await getRoles();
-      setRoles(roles);
+      setLoading(true)
+      const roles = await getRoles()
+      setRoles(roles)
     } catch (error) {
       showSnackBar(
         "Error obteniendo lista de roles, por favor inténtelo de nuevo."
-      );
-      console.error("Error obteniendo lista de roles:", error);
+      )
+      console.error("Error obteniendo lista de roles:", error)
     }
-  };
+  }
 
   useEffect(() => {
-    loadRoles();
-  }, []);
+    loadRoles()
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+    e.preventDefault()
     if (
-      admin.username.length < 1 ||
-      admin.area.length < 1 ||
-      admin.firstname.length < 1 ||
-      admin.lastname.length < 1 ||
-      admin.phone.length < 1 ||
-      admin.email.length < 1
+      (admin?.username && admin.username.length < 1) ||
+      (admin?.area && admin.area.length < 1) ||
+      (admin?.firstname && admin.firstname.length < 1) ||
+      (admin?.lastname && admin.lastname.length < 1) ||
+      (admin?.phone && admin.phone.length < 1) ||
+      (admin?.email && admin.email.length < 1)
     ) {
-      showSnackBar("Por favor completa todos los campos requeridos.");
-      e.preventDefault();
+      showSnackBar("Por favor completa todos los campos requeridos.")
+      e.preventDefault()
     } else {
-      setLoading(true);
-      setButtonState(true);
+      setLoading(true)
+      setButtonState(true)
 
       const data = {
-        _id: admin._id,
-        username: admin.username,
-        area: admin.area,
-        firstname: admin.firstname,
-        lastname: admin.lastname,
-        email: admin.email.toLowerCase(),
-        phone: admin.phone,
-        isSeller: admin.isSeller,
-      };
+        _id: admin?._id,
+        username: admin?.username,
+        area: admin?.area,
+        firstname: admin?.firstname,
+        lastname: admin?.lastname,
+        email: admin?.email?.toLowerCase(),
+        phone: admin?.phone,
+        isSeller: admin?.isSeller,
+      }
 
-      const response = await updateAdmin(data);
+      const response = await updateAdmin(data)
 
       if (response.success === false) {
-        setLoading(false);
-        setButtonState(false);
-        showSnackBar(response.message);
+        setLoading(false)
+        setButtonState(false)
+        showSnackBar(response.message)
       } else {
-        showSnackBar(`Actualización de Administrador ${response.admin.username} exitoso.`);
-        updateAdminProperty("all", "");
-        history.push({ pathname: "/admin/user/read" });
-        loadAdmin();
+        showSnackBar(
+          `Actualización de Administrador ${response.admin.username} exitoso.`
+        )
+        updateAdminProperty("all", "")
+        navigate({ pathname: "/admin/user/read" })
+        loadAdmin()
       }
     }
-  };
+  }
 
   const changeFromAdminPassword = async () => {
     // Esta función debe eliminarse!
     const data = {
-      id: admin._id,
+      id: admin?._id,
       newPassword: password,
-      adminToken: localStorage.getItem("adminTokenV"),
-    };
-    const base_url = import.meta.env.VITE_BACKEND_URL + "/emergency-reset";
-    const response = await axios.post(base_url, data);
-    if (response.data.success) {
-      showSnackBar(response.data.info);
-      setPassword("");
     }
-  };
+    const base_url = import.meta.env.VITE_BACKEND_URL + "/emergency-reset"
+    const response = await axios.post(base_url, data)
+    if (response.data.success) {
+      showSnackBar(response.data.info)
+      setPassword("")
+    }
+  }
 
   const handleSeller = (event: React.ChangeEvent<HTMLInputElement>) => {
-    updateAdminProperty("isSeller", event.target.checked);
-  };
+    updateAdminProperty("isSeller", event.target.checked)
+  }
 
   const handleClose = () => {
-    setChangePassword(false);
-  };
+    setChangePassword(false)
+  }
 
-  const handlePasswordChange = (e) => {
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (isAValidPassword(e.target.value)) {
-      setPassword(e.target.value);
+      setPassword(e.target.value)
     } else {
-      setPassword(e.target.value);
+      setPassword(e.target.value)
       showSnackBar(
         "Disculpa, tu contraseña debe tener entre 8 y 15 caracteres, incluyendo al menos: una minúscula, una mayúscula, un número y un caracter especial."
-      );
+      )
     }
-  };
+  }
 
   const handleClickShowPassword = () => {
-    setShowPassword(!showPassword);
-  };
+    setShowPassword(!showPassword)
+  }
 
-  const handleMouseDownPassword = (event) => {
-    event.preventDefault();
-  };
+  const handleMouseDownPassword = (
+    event: React.MouseEvent<HTMLButtonElement>
+  ) => {
+    event.preventDefault()
+  }
 
   return (
     <React.Fragment>
-      <Title>Actualizar Administrador</Title>
+      <Title title="Actualizar Administrador" />
       <form className={classes.form} noValidate onSubmit={handleSubmit}>
         <Grid2 container spacing={2}>
           <Grid2 size={{ xs: 4 }}>
-            <FormControl  fullWidth variant="outlined">
+            <FormControl fullWidth variant="outlined">
               <TextField
                 variant="outlined"
                 required
@@ -188,25 +201,21 @@ export default function UpdateAdmin({ admin, updateAdminProperty, loadAdmin }) {
                 label="Nombre de usuario"
                 name="username"
                 autoComplete="username"
-                value={admin.username}
+                value={admin?.username}
                 onChange={(e) => {
-                  updateAdminProperty("username", e.target.value);
+                  updateAdminProperty("username", e.target.value)
                 }}
               />
             </FormControl>
           </Grid2>
           <Grid2 size={{ xs: 4 }}>
-            <FormControl fullWidth
-              variant="outlined"
-              // style={{ width: "50%" }}
-              required
-            >
+            <FormControl fullWidth variant="outlined" required>
               <InputLabel>Área</InputLabel>
               <Select
                 input={<OutlinedInput />}
-                value={admin.area}
+                value={admin?.area}
                 onChange={(e) => {
-                  updateAdminProperty("area", e.target.value);
+                  updateAdminProperty("area", e.target.value)
                 }}
               >
                 {roles &&
@@ -217,7 +226,8 @@ export default function UpdateAdmin({ admin, updateAdminProperty, loadAdmin }) {
             </FormControl>
           </Grid2>
           <Grid2 size={{ xs: 4 }}>
-            <FormControl fullWidth
+            <FormControl
+              fullWidth
               style={{
                 display: "flex",
                 flexDirection: "row",
@@ -231,7 +241,7 @@ export default function UpdateAdmin({ admin, updateAdminProperty, loadAdmin }) {
                 Mostrar como Asesor de ventas
               </Typography>
               <Switch
-                checked={admin.isSeller}
+                checked={admin?.isSeller}
                 onChange={handleSeller}
                 color="primary"
               />
@@ -247,9 +257,9 @@ export default function UpdateAdmin({ admin, updateAdminProperty, loadAdmin }) {
                 label="Nombre"
                 name="firstname"
                 autoComplete="firstname"
-                value={admin.firstname}
+                value={admin?.firstname}
                 onChange={(e) => {
-                  updateAdminProperty("firstname", e.target.value);
+                  updateAdminProperty("firstname", e.target.value)
                 }}
               />
             </FormControl>
@@ -264,9 +274,9 @@ export default function UpdateAdmin({ admin, updateAdminProperty, loadAdmin }) {
                 label="Apellido"
                 name="lastname"
                 autoComplete="lastname"
-                value={admin.lastname}
+                value={admin?.lastname}
                 onChange={(e) => {
-                  updateAdminProperty("lastname", e.target.value);
+                  updateAdminProperty("lastname", e.target.value)
                 }}
               />
             </FormControl>
@@ -282,9 +292,9 @@ export default function UpdateAdmin({ admin, updateAdminProperty, loadAdmin }) {
                 label="Correo electrónico"
                 name="email"
                 autoComplete="email"
-                value={admin.email}
+                value={admin?.email}
                 onChange={(e) => {
-                  updateAdminProperty("email", e.target.value);
+                  updateAdminProperty("email", e.target.value)
                 }}
               />
             </FormControl>
@@ -299,9 +309,9 @@ export default function UpdateAdmin({ admin, updateAdminProperty, loadAdmin }) {
                 label="Teléfono"
                 name="phone"
                 autoComplete="phone"
-                value={admin.phone}
+                value={admin?.phone}
                 onChange={(e) => {
-                  updateAdminProperty("phone", e.target.value);
+                  updateAdminProperty("phone", e.target.value)
                 }}
               />
             </FormControl>
@@ -314,7 +324,7 @@ export default function UpdateAdmin({ admin, updateAdminProperty, loadAdmin }) {
               variant="contained"
               style={{ marginRight: 20, textTransform: "none" }}
               onClick={(e) => {
-                setChangePassword(true);
+                setChangePassword(true)
               }}
             >
               Cambiar contraseña
@@ -394,5 +404,5 @@ export default function UpdateAdmin({ admin, updateAdminProperty, loadAdmin }) {
         </Grid2>
       </Modal>
     </React.Fragment>
-  );
+  )
 }

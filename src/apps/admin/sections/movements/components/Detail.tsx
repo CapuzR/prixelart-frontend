@@ -16,8 +16,15 @@ import { getOrder } from "../../orders/api"
 import { Discount } from "../../../../../types/discount.types"
 import { Order } from "../../../../../types/order.types"
 import { finalPrice, unitPrice } from "../service"
+import { Item } from "../../../../../types/item.types"
 
-export default function MovOrder({ orderId, type, handleClose }) {
+interface MovProps {
+  orderId: string | undefined
+  type: string | undefined
+  handleClose: () => void
+}
+
+export default function MovOrder({ orderId, type, handleClose }: MovProps) {
   const theme = useTheme()
   const { setLoading } = useLoading()
 
@@ -36,7 +43,7 @@ export default function MovOrder({ orderId, type, handleClose }) {
 
   const consultOrder = async () => {
     try {
-      const order = await getOrder(orderId)
+      const order = orderId && (await getOrder(orderId))
       setOrder(order)
     } catch (error) {
       console.log(error)
@@ -54,7 +61,7 @@ export default function MovOrder({ orderId, type, handleClose }) {
     return s
   }
 
-  function handleKeyDown(event) {
+  function handleKeyDown(event: KeyboardEvent) {
     if (event.key === "Escape") {
       handleClose()
     } else return
@@ -102,7 +109,7 @@ export default function MovOrder({ orderId, type, handleClose }) {
             </IconButton>
           </Grid2>
           {type === "Depósito"
-            ? order?.requests.map((item, index) => (
+            ? order?.requests.map((item: Item, index) => (
                 <>
                   <div
                     style={{
@@ -181,7 +188,7 @@ export default function MovOrder({ orderId, type, handleClose }) {
                       <div>{"Arte: " + item.art?.title}</div>
                       <div>{"Id: " + item.art?.artId}</div>
                       <div>{"Producto: " + item.product.name}</div>
-                      {item.product.selection &&
+                      {/* {item.product.selection &&
                         item.product.selection.attributes &&
                         item.product.attributes.map((a, i) => {
                           return (
@@ -196,7 +203,7 @@ export default function MovOrder({ orderId, type, handleClose }) {
                                 item.product?.selection?.attributes[i]?.value}
                             </p>
                           )
-                        })}
+                        })} */}
                     </div>
                   </div>
                   <Grid2
@@ -218,40 +225,46 @@ export default function MovOrder({ orderId, type, handleClose }) {
                         padding: 15,
                       }}
                     >
-                      <Typography
+                      {/* <Typography
                         variant="h6"
                         style={{ textAlign: "center", margin: 5 }}
                       >
                         Comisión para {item.art.prixerUsername}
-                      </Typography>
-                      <div>
+                      </Typography> */}
+                      {/* <div>
                         {"Precio unitario: $" +
-                          unitPrice(item, discountList).toLocaleString("de-DE", {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                          })}
-                      </div>
+                          unitPrice(item, discountList).toLocaleString(
+                            "de-DE",
+                            {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                            }
+                          )}
+                      </div> */}
                       {typeof item.product.discount === "string" &&
                         !item.product.modifyPrice && (
                           <div>
                             {"Descuento: " + getDis(item.product.discount)}
                           </div>
                         )}
-                      <div>{"Cantidad: " + item?.quantity}</div>
-                      <div>
+                      {/* <div>{"Cantidad: " + item?.quantity}</div> */}
+                      {/* <div>
                         {"Precio final: $" +
-                          finalPrice(item, discountList).toLocaleString("de-DE", {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                          })}
-                      </div>
-                      <strong>
+                          finalPrice(item, discountList).toLocaleString(
+                            "de-DE",
+                            {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                            }
+                          )}
+                      </div> */}
+                      {/* <strong>
                         {"Comisión: $" +
                           item.product?.comission?.toLocaleString("de-DE", {
                             minimumFractionDigits: 2,
                             maximumFractionDigits: 2,
                           })}
-                      </strong>
+                      </strong> */}
                     </Grid2>
                   </Grid2>
                 </>
@@ -358,7 +371,7 @@ export default function MovOrder({ orderId, type, handleClose }) {
                             {"Prixer: " + item.art?.prixerUsername}
                           </div>
                           <div>{"Producto: " + item.product.name}</div>
-                          {item.product.selection &&
+                          {/* {item.product.selection &&
                             item.product.selection.attributes &&
                             item.product.attributes.map((a, i) => {
                               return (
@@ -375,15 +388,18 @@ export default function MovOrder({ orderId, type, handleClose }) {
                                       ?.value}
                                 </p>
                               )
-                            })}
-                          <div>{"Cantidad: " + item.quantity}</div>
-                          <div>
+                            })} */}
+                          {/* <div>{"Cantidad: " + item.quantity}</div> */}
+                          {/* <div>
                             {"Precio unitario: $" +
-                              unitPrice(item, discountList).toLocaleString("de-DE", {
-                                minimumFractionDigits: 2,
-                                maximumFractionDigits: 2,
-                              })}
-                          </div>
+                              unitPrice(item, discountList).toLocaleString(
+                                "de-DE",
+                                {
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 2,
+                                }
+                              )}
+                          </div> */}
                           {typeof item.product.discount === "string" &&
                             !item.product.modifyPrice && (
                               <div>
@@ -421,7 +437,7 @@ export default function MovOrder({ orderId, type, handleClose }) {
                           maximumFractionDigits: 2,
                         })}
                     </div>
-                    {(order.shippingCost ||
+                    {/* {(order.shippingCost ||
                       order.shippingData?.shippingMethod?.price) && (
                       <div>
                         {"Envío: $" +
@@ -434,7 +450,7 @@ export default function MovOrder({ orderId, type, handleClose }) {
                             maximumFractionDigits: 2,
                           })}
                       </div>
-                    )}
+                    )} */}
                     <div>
                       <strong>
                         {"Total: $" +

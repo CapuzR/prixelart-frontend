@@ -7,25 +7,37 @@ import IconButton from "@mui/material/IconButton"
 
 import { getRoles } from "../api"
 import { useSnackBar, useLoading } from "context/GlobalContext"
-import { AdminRole } from "../../../../../types/admin.types"
+import { Admin, AdminRole } from "../../../../../types/admin.types"
 import AdminTable from "../components/AdminTable"
 import Table2 from "../components/Table2"
 import AddIcon from "@mui/icons-material/Add"
 import ViewListIcon from "@mui/icons-material/ViewList"
 import { getPermissions } from "@context/GlobalContext"
+import { Permissions } from "../../../../../types/permissions.types"
+
+interface AdminTableProps {
+  admins: Admin[]
+  loadAdmin: () => Promise<void>
+  handleCallback: (page: number) => void
+  handleCallback2: (role: AdminRole) => void
+  handleCallback3: (admin: Admin) => void
+  handleUserAction: (state: string) => void
+  setActiveCrud: (state: string) => void
+}
 
 export default function ReadAdmins({
   handleCallback,
-  setActiveCrud,
   handleCallback2,
+  handleCallback3,
+  setActiveCrud,
   admins,
   loadAdmin,
   handleUserAction,
-}) {
+}: AdminTableProps) {
   const permissions = getPermissions()
   const [roles, setRoles] = useState<AdminRole[]>([])
   const [value, setValue] = useState(0)
-  const globalParams = window.location.pathname
+
   const { showSnackBar } = useSnackBar()
   const { setLoading } = useLoading()
 
@@ -33,9 +45,7 @@ export default function ReadAdmins({
     setLoading(true)
     try {
       const roles = await getRoles()
-      if (globalParams === "/admin/admins/read") {
-        setRoles(roles)
-      }
+      setRoles(roles)
     } catch (error) {
       showSnackBar(
         "Error obteniendo lista de roles, por favor inténtelo de nuevo."
@@ -47,6 +57,10 @@ export default function ReadAdmins({
   useEffect(() => {
     loadRoles()
   }, [])
+
+  useEffect(() => {
+    handleCallback(value)
+  }, [value])
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue)
@@ -71,7 +85,7 @@ export default function ReadAdmins({
       >
         {value === index && (
           <Box sx={{ p: 3 }}>
-            <Typography>{children}</Typography>
+            <>{children}</>
           </Box>
         )}
       </div>
@@ -94,15 +108,6 @@ export default function ReadAdmins({
             <Tab label="Roles" {...a11yProps(1)} />
             {permissions?.modifyAdmins && (
               <div style={{ marginLeft: "auto" }}>
-                {/* <IconButton
-                  aria-label="edit"
-                  onClick={() => {
-                    handleUserAction("read")
-                  }}
-                  style={{ right: 10 }}
-                >
-                  <ViewListIcon />
-                </IconButton> */}
                 <IconButton
                   color="primary"
                   aria-label="add"
@@ -119,8 +124,8 @@ export default function ReadAdmins({
             <AdminTable
               admins={admins}
               permissions={permissions}
-              handleCallback2={handleCallback2}
               loadAdmin={loadAdmin}
+              handleCallback={handleCallback3}
             />
           </TabPanel>
 
@@ -129,8 +134,8 @@ export default function ReadAdmins({
               roles={roles}
               permissions={permissions}
               loadRoles={loadRoles}
-              handleCallback2={handleCallback2}
               setActiveCrud={setActiveCrud}
+              handleCallback2={handleCallback2}
             />
           </TabPanel>
         </>
@@ -144,8 +149,6 @@ export default function ReadAdmins({
           No tienes permiso para entrar a esta área.
         </Typography>
       )}
-      {/* {up && <UpdateAdmin admin={up} />} */}
-      {handleCallback(value)}
     </React.Fragment>
   )
 }

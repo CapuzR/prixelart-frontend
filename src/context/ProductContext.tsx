@@ -1,74 +1,96 @@
-import { Product, PriceRange, Equation, Category, Variant } from "../types/product.types"
+import {
+  Product,
+  PriceRange,
+  Equation,
+  Category,
+  Variant,
+} from "../types/product.types"
 import React, { createContext, useReducer, useContext } from "react"
 
+interface Img {
+  url: string
+  type: string
+}
 interface ProductFormState {
-  _id: string
-  active: boolean
+  _id?: string
+  active: boolean | string
   name: string
   description: string
   category: Category | string // create and import Category Interface
   considerations: string
-  productionTime: string
+  productionTime: number
   cost: number
-  publicPrice: PriceRange | Equation
-  prixerPrice: PriceRange | Equation
-  hasSpecialVar: boolean
-  autoCertified: boolean
-  video: string
+  publicPrice: { from?: number; to?: number; equation?: number }
+  prixerPrice: { from?: number; to?: number; equation?: number }
+  hasSpecialVar: boolean | string
+  autoCertified: boolean | string
+  video?: { type: string; url: string }
   productImages: Array<string | File>
-  sources?: []
+  sources?: Img[]
   thumbUrl?: string
   variants: Array<Variant>
 }
 // Es necesario que PriceRange y Equation existan al mismo tiempo
 const initialState: ProductFormState = {
-  _id: "",
   active: true,
   name: "",
   description: "",
   category: "",
   considerations: "",
-  productionTime: "",
+  productionTime: 0,
   cost: 0,
   publicPrice: {
     from: 0,
     to: 0,
+    equation: 0,
   },
   prixerPrice: {
     from: 0,
     to: 0,
+    equation: 0,
   },
   hasSpecialVar: false,
   autoCertified: false,
-  video: "",
+  video: undefined,
   productImages: [],
   sources: [],
   thumbUrl: "",
-  variants: []
+  variants: [],
 }
 
-const formatProd = (prod) => {
+const formatProd = (prod: Partial<Product>) => {
   return {
     _id: prod._id,
-    active: prod.active,
-    name: prod.name,
-    description: prod.description,
-    category: prod?.category,
-    considerations: prod?.considerations,
-    productionTime: prod?.productionTime,
+    active: prod.active || false,
+    name: prod?.name || "",
+    description: prod.description || "",
+    category: prod?.category || "",
+    considerations: prod?.considerations || "",
+    productionTime: prod?.productionTime || 0,
     cost: Number(prod.cost),
     publicPrice: {
       from: Number(prod.publicPrice?.from) || 0,
-      to: Number(prod.publicPrice.to) || 0,
+      to: Number(prod.publicPrice?.to) || 0,
+      equation: Number(),
     },
     prixerPrice: {
       from: Number(prod.prixerPrice?.from) || 0,
-      to: Number(prod.prixerPrice.to) || 0,
+      to: Number(prod.prixerPrice?.to) || 0,
     },
-    hasSpecialVar: prod?.hasSpecialVar === "true" ? true : false,
-    autoCertified: prod?.autoCertified === "true" ? true : false,
-    video: prod.sources?.video,
-    sources: prod.sources.images,
+    hasSpecialVar:
+      (typeof prod.hasSpecialVar === "string" &&
+        prod?.hasSpecialVar === "true") ||
+      (prod?.hasSpecialVar && prod?.hasSpecialVar === true)
+        ? true
+        : false,
+    autoCertified:
+      (typeof prod?.autoCertified === "string" &&
+        prod?.autoCertified === "true") ||
+      (prod?.autoCertified && prod?.autoCertified === true)
+        ? true
+        : false,
+    video: prod.sources?.video || undefined,
+    sources: prod.sources && prod.sources.images,
   }
 }
 

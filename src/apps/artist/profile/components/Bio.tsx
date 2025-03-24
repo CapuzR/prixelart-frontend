@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react"
 
 import axios from "axios"
-import { useHistory } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 import Paper from "@mui/material/Paper"
 import Button from "@mui/material/Button"
 import Backdrop from "@mui/material/Backdrop"

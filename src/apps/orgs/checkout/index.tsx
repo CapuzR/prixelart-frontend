@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import axios, { AxiosRequestConfig } from 'axios';
 import { Stepper, Step, StepLabel, Button } from '@mui/material';
 import ConsumerForm from './Consumer';
@@ -23,7 +23,7 @@ const Checkout: React.FC<CheckoutProps> = ({ cart, valuesConsumerForm, setValues
   const { currency } = useCurrency();
   const { conversionRate } = useConversionRate();
   const { showSnackBar } = useSnackBar();
-  const history = useHistory();
+  const navigate = useNavigate();
   const [orderPaymentMethod, setOrderPaymentMethod] = useState(undefined);
   const [observations, setObservations] = useState();
   const [activeStep, setActiveStep] = useState(0);
@@ -193,7 +193,7 @@ const Checkout: React.FC<CheckoutProps> = ({ cart, valuesConsumerForm, setValues
         });
 
       setValuesConsumerForm(undefined);
-      history.push({ pathname: '/' });
+      navigate({ pathname: '/' });
       setLoading(false);
     } else {
       showSnackBar('Por favor selecciona una forma de pago.');

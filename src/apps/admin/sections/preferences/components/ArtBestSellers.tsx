@@ -13,7 +13,7 @@ import {
   VictoryLabel,
   VictoryTheme,
 } from "victory"
-import ArtGrid from "../../../../consumer/art/components/grid"
+import ArtsGrid from "@apps/consumer/art/components/ArtsGrid/ArtsGrid"
 import { useSnackBar, useLoading, getPermissions } from "@context/GlobalContext"
 // Migrar gráficos de Victory a Mui X-charts
 import { Art } from "../../../../../types/art.types"
@@ -37,18 +37,22 @@ const useStyles = makeStyles()((theme: Theme) => {
 })
 
 export default function ArtBestSellers() {
-  const classes = useStyles()
+  const { classes } = useStyles()
   const { showSnackBar } = useSnackBar()
   const { setLoading } = useLoading()
   const permissions = getPermissions()
 
-  const [arts, setArts] = useState<Art[]>()
-  const [bestSellers, setBestSellers] = useState<Art[]>()
-  const [mostSellers, setMostSellers] = useState<Art[]>()
+  const [arts, setArts] = useState<Art[]>([])
+  const [bestSellers, setBestSellers] = useState<Art[]>([])
+  const [mostSellers, setMostSellers] = useState<Art[]>([])
 
-  const addMostSellerToBestSeller = (selectedMostSeller) => {
-    const artv1 = arts.find((art: Art) => art.title === selectedMostSeller)
-    if (bestSellers?.length === 0 || bestSellers === undefined) {
+  const addMostSellerToBestSeller = (selectedMostSeller: string) => {
+    const artv1 =
+      arts && arts.find((art: Art) => art.title === selectedMostSeller)
+    if (
+      (artv1 !== undefined && bestSellers?.length === 0) ||
+      (artv1 !== undefined && bestSellers === undefined)
+    ) {
       setBestSellers([artv1])
     } else if (bestSellers?.some((art) => art.title === selectedMostSeller)) {
       const withoutArt = bestSellers.filter(
@@ -56,9 +60,9 @@ export default function ArtBestSellers() {
       )
       setBestSellers(withoutArt)
       showSnackBar("Arte eliminado del banner.")
-    } else if (bestSellers.length === 9) {
+    } else if (bestSellers && bestSellers.length === 9) {
       showSnackBar("Has alcanzado el máximo de Artes a mostrar (9 artes).")
-    } else {
+    } else if (artv1) {
       setBestSellers([...bestSellers, artv1])
     }
   }
@@ -99,8 +103,8 @@ export default function ArtBestSellers() {
 
   const updateBestSellers = async () => {
     if (permissions.modifyArtBestSellers) {
-      let data = []
-      bestSellers.map((prod) => {
+      let data: string[] = []
+      bestSellers.map((prod: Art) => {
         data.push(prod._id)
       })
       const base_url =
@@ -219,7 +223,7 @@ export default function ArtBestSellers() {
                   style={{
                     backgroundImage:
                       `url(${art.largeThumbUrl.replace(" ", "_")})` ||
-                      `url(${art.thumbUrl.replace(" ", "_")})`,
+                      `url(${art?.thumbUrl?.replace(" ", "_")})`,
                     width: 100,
                     height: 100,
                     backgroundSize: "cover",
@@ -259,11 +263,7 @@ export default function ArtBestSellers() {
         </div>
       </Paper>
       <Grid2 style={{ marginTop: 20 }}>
-        <ArtGrid
-          // setSearchResult={setSearchResult}
-          // searchResult={searchResult}
-          addMostSellerToBestSeller={addMostSellerToBestSeller}
-        />
+        <ArtsGrid />
       </Grid2>
 
       {permissions.modifyBestSellers && (

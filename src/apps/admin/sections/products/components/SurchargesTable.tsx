@@ -11,12 +11,19 @@ import Typography from "@mui/material/Typography"
 import Paper from "@mui/material/Paper"
 import { getPermissions } from "@context/GlobalContext"
 import React from "react"
+import { Surcharge } from "../../../../../types/surcharge.types"
+
+interface TableProps {
+  surchargeList: Surcharge[]
+  handleActive: (product: string, row: Surcharge, action: string) => void
+  deleteElement: (product: string, id: string) => void
+}
 
 export default function SurchargesTable({
   surchargeList,
   handleActive,
   deleteElement,
-}) {
+}: TableProps) {
   const permissions = getPermissions()
 
   return (
@@ -54,9 +61,9 @@ export default function SurchargesTable({
               <TableCell align="center">
                 <Checkbox
                   disabled
-                  checked={sur.active}
+                  checked={Boolean(sur.active)}
                   color="primary"
-                  inputProps={{ "aria-label": "secondary checkbox" }}
+                  // slotProps={{ "aria-label": "secondary checkbox" }}
                 />
               </TableCell>
               <TableCell align="center">{sur.type}</TableCell>

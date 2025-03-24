@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react"
 
 import Title from "@apps/admin/components/Title"
 import Grid2 from "@mui/material/Grid2"
-import { useHistory } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 import IconButton from "@mui/material/IconButton"
 import ViewListIcon from "@mui/icons-material/ViewList"
 
@@ -16,14 +16,19 @@ import ConsumerForm from "../components/Form"
 import { useConsumerForm } from "@context/ConsumerFormContext"
 
 export default function Create() {
-  const history = useHistory()
+  const navigate = useNavigate()
   const { showSnackBar } = useSnackBar()
   const { setLoading } = useLoading()
   const { state, dispatch } = useConsumerForm()
 
   const [prixers, setPrixers] = useState<Prixer[]>([])
 
-  const admin = `${JSON.parse(localStorage.getItem("adminToken")).firstname} ${JSON.parse(localStorage.getItem("adminToken")).lastname}`
+  const adminToken = localStorage.getItem("adminToken")
+  const adminData = adminToken ? JSON.parse(adminToken) : null
+
+  const admin = adminData
+    ? `${adminData.firstname} ${adminData.lastname}`
+    : ""
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -38,21 +43,21 @@ export default function Create() {
       delete data._id
 
       const response = await createConsumer(data)
-      if (response.data.success === false) {
+      if (response && response.data.success === false) {
         showSnackBar(response.data.message)
       } else {
         showSnackBar("Registro de consumidor exitoso.")
         resetState()
-        history.push({ pathname: "/admin/consumer/read" })
+        navigate({ pathname: "/admin/consumer/read" })
       }
     }
   }
 
-    const resetState = () => {
-      dispatch({
-        type: "RESET_FORM"
-      })
-    }
+  const resetState = () => {
+    dispatch({
+      type: "RESET_FORM",
+    })
+  }
 
   const readPrixers = async () => {
     try {
@@ -65,13 +70,13 @@ export default function Create() {
   }
 
   const handleConsumerAction = (action: string) => {
-    history.push({ pathname: action })
+    navigate({ pathname: action })
   }
 
   useEffect(() => {
     readPrixers()
   }, [])
-  
+
   return (
     <React.Fragment>
       <Grid2

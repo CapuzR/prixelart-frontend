@@ -20,7 +20,7 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import Radio from '@mui/material/Radio';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import isotipo from './assets/isotipo.svg';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/styles';
@@ -57,7 +57,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function ProductDetail(props) {
   const classes = useStyles();
-  const history = useHistory();
+  const navigate = useNavigate();
   const theme = useTheme();
 
   const isMobile = useMediaQuery(theme.breakpoints.down('xs'));
@@ -216,7 +216,7 @@ export default function ProductDetail(props) {
   };
 
   const handleMain = () => {
-    history.push({ pathname: '/chiguirebipolar' });
+    navigate({ pathname: '/chiguirebipolar' });
   };
 
   const scrollToSection = (selector) => {
@@ -234,7 +234,7 @@ export default function ProductDetail(props) {
   };
 
   const handleCart = () => {
-    history.push({ pathname: '/chiguirebipolar/carrito' });
+    navigate({ pathname: '/chiguirebipolar/carrito' });
   };
 
   const handleToPrixelart = () => {

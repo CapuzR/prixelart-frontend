@@ -13,7 +13,13 @@ import ArtBestSellers from "./components/ArtBestSellers"
 import Grid2 from "@mui/material/Grid2"
 import Paper from "@mui/material/Paper"
 
-function TabPanel(props) {
+interface TabPanelProps {
+  children?: React.ReactNode
+  index: number
+  value: number
+}
+
+function TabPanel(props: TabPanelProps) {
   const { children, value, index } = props
   return (
     <div
@@ -24,7 +30,7 @@ function TabPanel(props) {
     >
       {value === index && (
         <Box p={3}>
-          <Typography>{children}</Typography>
+          <>{children}</>
         </Box>
       )}
     </div>

@@ -1,13 +1,13 @@
 import axios from "axios"
 import { Prixer } from "../../../../types/prixer.types"
-
+import { Movement } from "../../../../types/movement.types"
 export const getAllPrixers = async () => {
   const base_url = import.meta.env.VITE_BACKEND_URL + "/prixer/read-all-full"
   try {
     const response = await axios.get(base_url, { withCredentials: true })
 
     let prev = response.data.prixers
-    prev.map((prix) => {
+    prev.map((prix: Prixer) => {
       if (prix !== null) {
         return prix
       }
@@ -73,9 +73,9 @@ export const updateToPrixer = async (user: string) => {
   }
 }
 
-export const updateVisibility = async (body) => {
+export const updateVisibility = async (body: Partial<Prixer>) => {
   const base_url =
-    import.meta.env.VITE_BACKEND_URL + "/prixer/update-home/" + body.id
+    import.meta.env.VITE_BACKEND_URL + "/prixer/update-home/" + body._id
   try {
     const response = await axios.put(base_url, body)
     return response.data
@@ -84,7 +84,7 @@ export const updateVisibility = async (body) => {
   }
 }
 
-export const createAccount = async (data) => {
+export const createAccount = async (data: Partial<Prixer>) => {
   const base_url = import.meta.env.VITE_BACKEND_URL + "/account/create"
   try {
     const response = await axios.post(base_url, data)
@@ -94,7 +94,7 @@ export const createAccount = async (data) => {
   }
 }
 
-export const createMovement = async (data) => {
+export const createMovement = async (data: Partial<Movement>) => {
   const base_url = import.meta.env.VITE_BACKEND_URL + "/movement/create"
   try {
     const response = await axios.post(base_url, data)
@@ -104,7 +104,7 @@ export const createMovement = async (data) => {
   }
 }
 
-export const deletePrixer = async (data) => {
+export const deletePrixer = async (data: string) => {
   const base_url = import.meta.env.VITE_BACKEND_URL + "/prixers/destroyPrixer"
   try {
     const response = await axios.put(base_url, data)

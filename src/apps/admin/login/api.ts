@@ -5,8 +5,6 @@ import { Permissions } from "../../../types/permissions.types";
 
 import { Dispatch, SetStateAction } from "react";
 import jwtDecode from "jwt-decode";
-import { permission } from "process";
-
 const now = new Date();
 
 export const getRandomArt = async () => {
@@ -33,7 +31,7 @@ export const login = async (email: string, password: string) => {
     const log = response.data;
 
     const token = jwtDecode<AdminToken>(log.adminToken);
-    const permissions = token.permissions;
+    const permissions: Permissions = token.permissions;
     localStorage.setItem("adminToken", JSON.stringify(token));
     localStorage.setItem(
       "adminTokenExpire",

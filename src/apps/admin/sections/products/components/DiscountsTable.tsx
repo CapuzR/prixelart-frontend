@@ -1,11 +1,17 @@
 import Table1 from "@components/Table"
 import { useState } from "react"
-
+import { Organization } from "../../../../../types/organization.types"
+import { Discount } from "../../../../../types/discount.types"
+interface TableProps {
+  handleActive: () => void
+  discountList: Discount[]
+  deleteElement: (org: Organization | undefined) => void
+}
 export default function DiscountsTable({
   handleActive,
   discountList,
   deleteElement,
-}) {
+}: TableProps) {
   const [pageNumber, setPageNumber] = useState(1)
   const [itemsPerPage, setItemPerPage] = useState(20)
   const [totalElements, setTotalElements] = useState(discountList?.length)
@@ -21,7 +27,7 @@ export default function DiscountsTable({
 
   const properties = ["name", "active", "type", "value", "appliedProducts"]
 
-  const handleUpdate = (element) => {
+  const handleUpdate = (element: any) => {
     console.log(element)
   }
 

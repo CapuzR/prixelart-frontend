@@ -10,6 +10,8 @@ import CreatePaymentMethod from "./views/Create"
 import UpdatePaymentMethod from "./views/Update"
 import PaymentTable from "./components/Table"
 
+import { PaymentMethod } from "../../../../types/paymentMethod.types"
+
 const useStyles = makeStyles()((theme: Theme) => {
   return {
     paper: {
@@ -30,7 +32,7 @@ export default function PaymentMethods() {
   const location = useLocation()
   const fixedHeightPaper = cx(classes.paper, classes.fixedHeight)
   const [activeCrud, setActiveCrud] = useState("read")
-  const [paymentMethod, setPaymentMethod] = useState()
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>()
 
   useEffect(() => {
     location.pathname.split("/").length === 5
@@ -53,7 +55,7 @@ export default function PaymentMethods() {
             ) : activeCrud === "read" ? (
               <PaymentTable setPaymentMethod={setPaymentMethod} />
             ) : (
-              activeCrud == "update" && (
+              activeCrud == "update" && paymentMethod &&(
                 <div>
                   <UpdatePaymentMethod paymentMethod={paymentMethod} />
                 </div>

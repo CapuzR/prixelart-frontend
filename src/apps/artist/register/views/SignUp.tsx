@@ -1,7 +1,7 @@
 //Llevar el Password a un componente propio.
 
 import { useEffect, useState } from "react"
-import { useHistory } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 
 import {
   isAValidName,
@@ -83,7 +83,7 @@ const useStyles = makeStyles()((theme: Theme) => {
 
 export default function SignUp() {
   const { classes, cx } = useStyles()
-  const history = useHistory()
+  const navigate = useNavigate()
   const theme = useTheme()
 
   const { showSnackBar } = useSnackBar()
@@ -130,7 +130,7 @@ export default function SignUp() {
           showSnackBar(response.data.message)
         } else {
           showSnackBar("Registro de usuario exitoso.")
-          history.push({ pathname: "/registrar/prixer" })
+          navigate({ pathname: "/registrar/prixer" })
           const token = jwt(response.data.token)
           localStorage.setItem("token", JSON.stringify(token))
           localStorage.setItem(
@@ -361,7 +361,7 @@ export default function SignUp() {
             <Link
               href="#"
               onClick={() => {
-                history.push({ pathname: "/iniciar" })
+                navigate({ pathname: "/iniciar" })
               }}
               variant="body2"
             >

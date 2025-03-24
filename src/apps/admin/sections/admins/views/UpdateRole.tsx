@@ -7,82 +7,93 @@ import Grid2 from "@mui/material/Grid2"
 import FormControl from "@mui/material/FormControl"
 import { Switch, Typography } from "@mui/material"
 
-import { useHistory } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 import { useSnackBar, useLoading } from "context/GlobalContext"
 
 import { updateRole } from "../api"
+import { AdminRole } from "../../../../../types/admin.types"
 
-export default function UpdateAdminRole({ admin, setActiveCrud }) {
-  const history = useHistory()
-  const [area, setArea] = useState(admin.area)
-  const [detailOrder, setDetailOrder] = useState(admin.detailOrder || false)
-  const [detailPay, setDetailPay] = useState(admin.detailOrder || false)
-  const [orderStatus, setOrderStatus] = useState(admin.orderStatus || false)
-  const [createOrder, setCreateOrder] = useState(admin.createOrder || false)
+interface FormProps {
+  role: Partial<AdminRole> | undefined
+}
+
+export default function UpdateAdminRole({
+  role,
+}: FormProps) {
+  const navigate = useNavigate()
+  const [area, setArea] = useState(role?.area)
+  const [detailOrder, setDetailOrder] = useState(role?.detailOrder || false)
+  const [detailPay, setDetailPay] = useState(role?.detailOrder || false)
+  const [orderStatus, setOrderStatus] = useState(role?.orderStatus || false)
+  const [createOrder, setCreateOrder] = useState(role?.createOrder || false)
   const [createProduct, setCreateProduct] = useState(
-    admin.createProduct || false
+    role?.createProduct || false
   )
   const [deleteProduct, setDeleteProduct] = useState(
-    admin.deleteProduct || false
+    role?.deleteProduct || false
   )
   const [createDiscount, setCreateDiscount] = useState(
-    admin.createDiscount || false
+    role?.createDiscount || false
   )
   const [deleteDiscount, setDeleteDiscount] = useState(
-    admin.deleteDiscount || false
+    role?.deleteDiscount || false
   )
-  const [modifyDollar, setModifyDollar] = useState(admin.modifyDollar || false)
+  const [modifyDollar, setModifyDollar] = useState(
+    role?.modifyDollar || false
+  )
   const [modifyBanners, setModifyBanners] = useState(
-    admin.modifyBanners || false
+    role?.modifyBanners || false
   )
   const [modifyTermsAndCo, setModifyTermsAndCo] = useState(
-    admin.modifyTermsAndCo || false
+    role?.modifyTermsAndCo || false
   )
   const [createPaymentMethod, setCreatePaymentMethod] = useState(
-    admin.createPaymentMethod || false
+    role?.createPaymentMethod || false
   )
   const [deletePaymentMethod, setDeletePaymentMethod] = useState(
-    admin.deletePaymentMethod || false
+    role?.deletePaymentMethod || false
   )
   const [createShippingMethod, setCreateShippingMethod] = useState(
-    admin.createShippingMethod || false
+    role?.createShippingMethod || false
   )
   const [deleteShippingMethod, setDeleteShippingMethod] = useState(
-    admin.deleteShippingMethod || false
+    role?.deleteShippingMethod || false
   )
-  const [prixerBan, setPrixerBan] = useState(admin.prixerBan || false)
+  const [prixerBan, setPrixerBan] = useState(role?.prixerBan || false)
   const [createTestimonial, setCreateTestimonial] = useState(
-    admin.createTestimonial || false
+    role?.createTestimonial || false
   )
   const [deleteTestimonial, setDeleteTestimonial] = useState(
-    admin.deleteTestimonial || false
+    role?.deleteTestimonial || false
   )
 
-  const [modifyAdmins, setModifyAdmins] = useState(admin.modifyAdmins || false)
+  const [modifyAdmins, setModifyAdmins] = useState(
+    role?.modifyAdmins || false
+  )
 
   const [setPrixerBalance, setSetPrixerBalance] = useState(
-    admin.setPrixerBalance || false
+    role?.setPrixerBalance || false
   )
 
   const [readMovements, setReadMovements] = useState(
-    admin.readMovements || false
+    role?.readMovements || false
   )
 
   const [createConsumer, setCreateConsumer] = useState(
-    admin.createConsumer || false
+    role?.createConsumer || false
   )
   const [readConsumers, setReadConsumers] = useState(
-    admin.readConsumers || false
+    role?.readConsumers || false
   )
   const [deleteConsumer, setDeleteConsumer] = useState(
-    admin.deleteConsumer || false
+    role?.deleteConsumer || false
   )
-  const [artBan, setArtBan] = useState(admin.artBan || false)
+  const [artBan, setArtBan] = useState(role?.artBan || false)
   const [modifyBestSellers, setModifyBestSellers] = useState(
-    admin.modifyBestSellers || false
+    role?.modifyBestSellers || false
   )
   const [modifyArtBestSellers, setModifyArtBestSellers] = useState(
-    admin.modifyArtBestSellers || false
+    role?.modifyArtBestSellers || false
   )
 
   const [buttonState, setButtonState] = useState(false)
@@ -98,7 +109,7 @@ export default function UpdateAdminRole({ admin, setActiveCrud }) {
       setButtonState(true)
 
       const data = {
-        _id: admin._id,
+        _id: role?._id,
         area: area,
         detailOrder: detailOrder,
         detailPay: detailPay,
@@ -126,8 +137,7 @@ export default function UpdateAdminRole({ admin, setActiveCrud }) {
         deleteConsumer: deleteConsumer,
         artBan: artBan,
         modifyBestSellers: modifyBestSellers,
-        modifyArtBestSellers: modifyArtBestSellers,
-        adminToken: localStorage.getItem("adminTokenV"),
+        modifyArtBestSellers: modifyArtBestSellers
       }
 
       const updatedRole = await updateRole(data)
@@ -137,7 +147,7 @@ export default function UpdateAdminRole({ admin, setActiveCrud }) {
         showSnackBar(updatedRole.message)
       } else {
         showSnackBar(`Actualización de Rol de ${data.area} exitoso.`)
-        history.push({ pathname: "/admin/user/read" })
+        navigate({ pathname: "/adminRole/user/read" })
       }
     }
   }
@@ -251,7 +261,7 @@ export default function UpdateAdminRole({ admin, setActiveCrud }) {
 
   return (
     <React.Fragment>
-      <Title>Actualizar Rol de Administrador</Title>
+      <Title title="Actualizar Rol de Administrador"/>
       <form noValidate onSubmit={handleSubmit}>
         <Grid2 size={{ xs: 12, md: 6 }}>
           <FormControl

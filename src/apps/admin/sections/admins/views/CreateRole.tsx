@@ -7,14 +7,18 @@ import Grid2 from "@mui/material/Grid2"
 import FormControl from "@mui/material/FormControl"
 import { Switch, Typography } from "@mui/material"
 
-import { useHistory } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 import { useSnackBar, useLoading } from "context/GlobalContext"
 
 import { createRole } from "../api"
 
-export default function CreateAdminRole({ setActiveCrud }) {
+interface RoleProps {
+  setActiveCrud: (state: string) => void
+}
+
+export default function CreateAdminRole({ setActiveCrud }: RoleProps) {
   // const classes = useStyles();
-  const history = useHistory()
+  const navigate = useNavigate()
   const [area, setArea] = useState<string>()
   const [detailOrder, setDetailOrder] = useState(false)
   const [detailPay, setDetailPay] = useState(false)
@@ -96,7 +100,7 @@ export default function CreateAdminRole({ setActiveCrud }) {
         showSnackBar(newRole)
       } else {
         showSnackBar(`Registro de Rol ${newRole.newRole.area} exitoso.`)
-        history.push({ pathname: "/admin/user/read" })
+        navigate({ pathname: "/admin/user/read" })
         setActiveCrud("read")
       }
     }
@@ -212,7 +216,7 @@ export default function CreateAdminRole({ setActiveCrud }) {
 
   return (
     <React.Fragment>
-      <Title>Crear Rol de Administrador</Title>
+      <Title title="Crear Rol de Administrador"/>
       <form noValidate onSubmit={handleSubmit}>
         <Grid2 size={{ xs: 12, md: 6 }}>
           <FormControl

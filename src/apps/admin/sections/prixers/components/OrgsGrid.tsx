@@ -14,7 +14,32 @@ import MoreVertIcon from "@mui/icons-material/MoreVert"
 import { useTheme, Theme } from "@mui/material/styles"
 import useMediaQuery from "@mui/material/useMediaQuery"
 
+import { Account } from "../../../../../types/account.types"
+import { Consumer } from "../../../../../types/consumer.types"
+import { Permissions } from "../../../../../types/permissions.types"
 import { Organization } from "../../../../../types/organization.types"
+
+interface GridProps {
+  orgs: Organization[]
+  selectedPrixer: Organization
+  setSelectedPrixer: (org: Organization | undefined) => void
+  permissions: Permissions
+  consumers: Consumer[]
+  setSelectedConsumer: (consumer: Consumer) => void
+  TurnIntoPrixer: (e: React.ChangeEvent<HTMLInputElement>, prixer: string) => void
+  ChangeVisibility: (
+    e: React.ChangeEvent<HTMLInputElement>,
+    prixer: Organization
+  ) => void
+  accounts: Account[]
+  setType: (type: string) => void
+  setOpenNewMovement: (x: boolean) => void
+  setOpenList: (x: boolean) => void
+  setOpenNewBalance: (x: boolean) => void
+  setOpenInfo: (x: boolean) => void
+  setOpenComission: (x: boolean) => void
+  org: Organization[]
+}
 
 export default function OrgsGrid({
   orgs,
@@ -23,9 +48,7 @@ export default function OrgsGrid({
   permissions,
   consumers,
   setSelectedConsumer,
-  TurnIntoOrg,
   ChangeVisibility,
-  setOpenDestroy,
   accounts,
   setType,
   setOpenNewMovement,
@@ -34,9 +57,26 @@ export default function OrgsGrid({
   setOpenInfo,
   TurnIntoPrixer,
   setOpenComission,
-}) {
+}: GridProps) {
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
+
+  const formatBalance = (accounts: Account[], org: Organization) => {
+    const balance = accounts?.find((acc) => acc._id === org?.account)?.balance
+
+    if (balance) {
+      const numericBalance = Number(balance)
+      const formattedBalance =
+        numericBalance !== undefined && numericBalance !== null
+          ? numericBalance?.toLocaleString("de-DE", {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })
+          : "0,00"
+
+      return formattedBalance
+    }
+  }
 
   return (
     <Grid2
@@ -258,13 +298,7 @@ export default function OrgsGrid({
                   >
                     <Typography variant="h6" align="center">
                       Balance $
-                      {accounts &&
-                        accounts
-                          ?.find((acc) => acc._id === tile?.account)
-                          ?.balance.toLocaleString("de-DE", {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                          })}
+                      {formatBalance(accounts, tile)}
                     </Typography>
                     <div
                       style={{

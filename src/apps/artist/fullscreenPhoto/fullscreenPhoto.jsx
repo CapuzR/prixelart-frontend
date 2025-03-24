@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { makeStyles, withStyles } from '@mui/styles';
 import Card from '@mui/material/Card';
 import CardActionArea from '@mui/material/CardActionArea';
@@ -145,7 +145,7 @@ const photoIsos = ['100', '200', '400'];
 export default function ArtDetail(props) {
   console.log(props);
   const classes = useStyles();
-  const history = useHistory();
+  const navigate = useNavigate();
   const theme = useTheme();
   const globalParams = getUrlParams();
   const [ready, setReady] = useState(false);
@@ -397,7 +397,7 @@ export default function ArtDetail(props) {
 
   const navigateToPrixer = (e, prixerUsername) => {
     e.preventDefault();
-    history.push({ pathname: '/prixer=' + prixerUsername });
+    navigate({ pathname: '/prixer=' + prixerUsername });
   };
 
   const deleteArt = async () => {

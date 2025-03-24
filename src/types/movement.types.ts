@@ -11,5 +11,5 @@ export interface Movement {
     price: string;
     type: string;
     value: number;
-    _id: string; 
+    _id?: string; 
 }

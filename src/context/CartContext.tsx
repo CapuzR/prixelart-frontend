@@ -98,7 +98,7 @@ export const CartProvider: React.FC<MyComponentProps> = ({ children }) => {
       } else {
 
         const existingLineIndex = updatedLines.findIndex((line) =>
-          line.item.product?.id === item.product?.id &&
+          line.item.product?._id === item.product?._id &&
           line.item.art?.artId === item.art?.artId &&
           isSameSelection(line.item.product?.selection, item.product?.selection)
         );

@@ -8,7 +8,7 @@ import Grid from '@mui/material/Grid';
 import Snackbar from '@mui/material/Snackbar';
 import CircularProgress from '@mui/material/CircularProgress';
 import FormControl from '@mui/material/FormControl';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useTheme } from '@mui/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import Backdrop from '@mui/material/Backdrop';
@@ -77,7 +77,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function UpdateMockup(props) {
   const classes = useStyles();
-  const history = useHistory();
+  const navigate = useNavigate();
   const theme = useTheme();
   const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
   const [loading, setLoading] = useState(false);

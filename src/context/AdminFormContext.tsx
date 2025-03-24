@@ -1,3 +1,4 @@
+import { Admin } from "../types/admin.types"
 import React, { createContext, useReducer, useContext } from "react"
 
 interface AdminFormState {
@@ -11,37 +12,66 @@ interface AdminFormState {
   isSeller: boolean
 }
 
-const initialState: AdminFormState = {
-  username: "",
-  firstname: "",
-  lastname: "",
-  area: "",
-  email: "",
-  phone: "",
-  password: "",
-  isSeller: false
+interface AdminState {
+  page: number
+  admin: AdminFormState
+}
+
+const initialState: AdminState = {
+  page: 0,
+  admin: {
+    username: "",
+    firstname: "",
+    lastname: "",
+    area: "",
+    email: "",
+    phone: "",
+    password: "",
+    isSeller: false,
+  },
 }
 
 type AdminFormAction =
   | { type: "SET_FIELD"; field: keyof AdminFormState; value: string }
+  | { type: "SET_ADMIN"; admin: Admin }
   | { type: "RESET_FORM" }
+  | { type: "SET_PAGE"; page: number }
+  | { type: "RESET_PAGE" }
 
 const adminFormReducer = (
-  state: AdminFormState,
+  state: AdminState,
   action: AdminFormAction
-): AdminFormState => {
+): AdminState => {
   switch (action.type) {
     case "SET_FIELD":
-      return { ...state, [action.field]: action.value }
+      return {
+        ...state,
+        admin: {
+          ...state.admin,
+          [action.field]: action.value,
+        },
+      }
+    case "SET_ADMIN":
+      return {
+        ...state,
+        admin: {
+          ...state.admin,
+          ...action.admin,
+        },
+      }
     case "RESET_FORM":
       return initialState
+    case "SET_PAGE":
+      return { ...state, page: action.page }
+    case "RESET_PAGE":
+      return { ...state, page: 0 }
     default:
       return state
   }
 }
 
 const AdminFormContext = createContext<{
-  state: AdminFormState
+  state: AdminState
   dispatch: React.Dispatch<AdminFormAction>
 } | null>(null)
 

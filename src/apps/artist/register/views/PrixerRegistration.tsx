@@ -1,7 +1,7 @@
 import React, { useState, FormEvent } from "react"
 
 import Avatar from "@mui/material/Avatar"
-import { useHistory } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 import Button from "@mui/material/Button"
 import CssBaseline from "@mui/material/CssBaseline"
 import TextField from "@mui/material/TextField"
@@ -111,7 +111,7 @@ function getStyles(specialty, theme) {
 
 export default function PrixerRegistration() {
   const { classes } = useStyles()
-  const history = useHistory()
+  const navigate = useNavigate()
   const theme = useTheme()
 
   const { showSnackBar } = useSnackBar()
@@ -200,7 +200,7 @@ export default function PrixerRegistration() {
           const token = JSON.parse(localStorage.getItem("token"))
           token.prixerId = token.id
           localStorage.setItem("token", JSON.stringify(token))
-          history.push({
+          navigate({
             pathname: "/prixer=" + response.data.prixerData.username,
           })
         }

@@ -2,7 +2,7 @@ import { Consumer } from "../types/consumer.types"
 import React, { createContext, useReducer, useContext } from "react"
 
 interface ConsumerFormState {
-  _id: string
+  _id?: string
   active: boolean
   consumerType: string
   username: string
@@ -14,8 +14,8 @@ interface ConsumerFormState {
   address: string
   billingAddress: string
   shippingAddress: string
-  contactedBy: string
-  birthdate: Date
+  contactedBy: string | object
+  birthdate: Date | undefined
   instagram: string
   facebook: string
   twitter: string
@@ -26,7 +26,6 @@ interface ConsumerFormState {
 }
 
 const initialState: ConsumerFormState = {
-  _id: "",
   active: false,
   consumerType: "",
   username: "",
@@ -55,7 +54,7 @@ type ConsumerFormAction =
       field: keyof ConsumerFormState
       value: string | boolean
     }
-  | { type: "SET_CLIENT"; client }
+  | { type: "SET_CLIENT"; client: Consumer }
   | { type: "RESET_FORM" }
 
 const ConsumerFormReducer = (

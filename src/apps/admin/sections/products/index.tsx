@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
 
-import { useHistory, useLocation } from "react-router-dom"
+import { useNavigate, useLocation } from "react-router-dom"
 import Grid2 from "@mui/material/Grid2"
 import Paper from "@mui/material/Paper"
 import { Theme, useTheme } from "@mui/material/styles"
@@ -44,30 +44,16 @@ export default function Products() {
   const [productEdit, setProductEdit] = useState(true)
   const [activeCrud, setActiveCrud] = useState("read")
   const [page, setPage] = useState(0)
-  const [product, setProduct] = useState(
-    localStorage.getItem("product")
-      ? JSON.parse(localStorage.getItem("product"))
-      : undefined
-  )
+  const prod = localStorage.getItem("product")
+  const sur = localStorage.getItem("surcharge")
+  const disc = localStorage.getItem("discount")
+  const cat = localStorage.getItem("category")
 
-  const [discount, setDiscount] = useState(
-    localStorage.getItem("discount")
-      ? JSON.parse(localStorage.getItem("discount"))
-      : undefined
-  )
+  const [product, setProduct] = useState(prod && JSON.parse(prod))
+  const [surcharge, setSurcharge] = useState(sur && JSON.parse(sur))
+  const [discount, setDiscount] = useState(disc && JSON.parse(disc))
+  const [category, setCategory] = useState(cat && JSON.parse(cat))
 
-  const [surcharge, setSurcharge] = useState(
-    localStorage.getItem("surcharge")
-      ? JSON.parse(localStorage.getItem("surcharge"))
-      : undefined
-  )
-
-  const [category, setCategory] = useState(
-    localStorage.getItem("category")
-      ? JSON.parse(localStorage.getItem("category"))
-      : undefined
-  )
-  
   useEffect(() => {
     location.pathname.split("/").length === 5
       ? setActiveCrud(
@@ -79,7 +65,7 @@ export default function Products() {
         )
   }, [location.pathname])
 
-  const Callback = (childData) => {
+  const Callback = (childData: number) => {
     setPage(childData)
   }
 

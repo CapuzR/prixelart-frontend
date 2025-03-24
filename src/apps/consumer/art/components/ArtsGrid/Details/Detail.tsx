@@ -13,7 +13,7 @@ import TextField from '@mui/material/TextField';
 import Snackbar from '@mui/material/Snackbar';
 import Autocomplete from '@mui/lab/Autocomplete';
 import FloatingAddButton from 'components/floatingAddButton/floatingAddButton';
-import ArtUploader from 'components/artUploader/artUploader';
+import ArtUploader from '@apps/artist/artUploader/artUploader';
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import utils from '../../../../../../utils/utils';
 import FormControl from '@mui/material/FormControl';
@@ -54,9 +54,8 @@ import {
 } from '../../utils/artHelpers';
 import { Grid2, Theme } from '@mui/material';
 import { generateWaMessage } from 'utils/utils.js';
-import { Art, ReadArtResponse } from '../../../interfaces';
+import { Art } from '../../../interfaces';
 import { useStyles } from './artDetails.styles';
-import { loadAdmins } from '@apps/admin/adminMain/adminUser/api';
 import { fetchArt } from '@apps/consumer/art/api';
 import { getUrlParams } from '@utils/util';
 

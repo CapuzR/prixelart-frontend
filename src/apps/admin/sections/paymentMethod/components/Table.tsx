@@ -1,6 +1,6 @@
 import React from "react"
 import { useEffect, useState } from "react"
-import { useHistory } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 
 import IconButton from "@mui/material/IconButton"
 import AddIcon from "@mui/icons-material/Add"
@@ -13,8 +13,12 @@ import { PaymentMethod } from "../../../../../types/paymentMethod.types"
 import { useSnackBar, useLoading, getPermissions } from "context/GlobalContext"
 import { getMethods, deleteMethod } from "../api"
 
-export default function PaymentTable({ setPaymentMethod }) {
-  const history = useHistory()
+interface TableProps {
+  setPaymentMethod: (element: PaymentMethod) => void
+}
+
+export default function PaymentTable({ setPaymentMethod }: TableProps) {
+  const navigate = useNavigate()
   const [rows, setRows] = useState([])
   const { showSnackBar } = useSnackBar()
   const { setLoading } = useLoading()
@@ -46,11 +50,11 @@ export default function PaymentTable({ setPaymentMethod }) {
 
   const handleActive = (paymentMethod: PaymentMethod) => {
     setPaymentMethod(paymentMethod)
-    history.push("/admin/payment-method/update/" + paymentMethod._id)
+    navigate("/admin/payment-method/update/" + paymentMethod._id)
   }
 
   const handleAction = (action: string) => {
-    history.push({ pathname: "/admin/payment-method/" + action })
+    navigate({ pathname: "/admin/payment-method/" + action })
   }
 
   const deletePaymentMethod = async (paymentMethod: PaymentMethod) => {

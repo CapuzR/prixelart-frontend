@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react"
 import { withStyles } from "@mui/styles"
 import axios from "axios"
-import { useHistory } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 import Paper from "@mui/material/Paper"
 import Button from "@mui/material/Button"
 import Typography from "@mui/material/Typography"
@@ -165,7 +165,7 @@ export default function ServiceGrid2(props) {
 
   const [tiles, setTiles] = useState([])
   const [services, setServices] = useState([])
-  const history = useHistory()
+  const navigate = useNavigate()
   const view = window.location.pathname.slice(1)
   const prixer = props.prixerUsername
   const theme = useTheme()
@@ -803,7 +803,7 @@ export default function ServiceGrid2(props) {
                           padding: "1px 5px",
                         }}
                         onClick={() => {
-                          history.push({ pathname: "/prixer=" + tile.prixer })
+                          navigate({ pathname: "/prixer=" + tile.prixer })
                         }}
                       >
                         de {tile.prixer}

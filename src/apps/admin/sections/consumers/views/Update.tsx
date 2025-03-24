@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react"
-import { useHistory } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 
 import Title from "@apps/admin/components/Title"
 import Grid2 from "@mui/material/Grid2"
@@ -15,12 +15,11 @@ import { useConsumerForm } from "@context/ConsumerFormContext"
 import ConsumerForm from "../components/Form"
 
 export default function Update() {
-  const history = useHistory()
+  const navigate = useNavigate()
   const { showSnackBar } = useSnackBar()
   const { setLoading } = useLoading()
   const { state, dispatch } = useConsumerForm()
-  console.log(state)
-  const [prixers, setPrixers] = useState<Prixer[]>()
+  const [prixers, setPrixers] = useState<Prixer[]>([])
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -31,11 +30,11 @@ export default function Update() {
 
       const response = await updateConsumer(state)
 
-      if (response.data.success === false) {
+      if (response && response.data.success === false) {
         showSnackBar(response.data.message)
       } else {
         showSnackBar("Actualización de consumidor exitosa.")
-        history.push("/admin/consumer/read")
+        navigate("/admin/consumer/read")
         resetState()
       }
     }
@@ -62,7 +61,7 @@ export default function Update() {
   }, [])
 
   const handleConsumerAction = (action: string) => {
-    history.push({ pathname: action })
+    navigate({ pathname: action })
   }
 
   return (

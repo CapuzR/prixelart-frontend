@@ -1,6 +1,6 @@
 import React from "react"
 import { useEffect, useState } from "react"
-import { useHistory } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 import Title from "@apps/admin/components/Title"
 import { Typography } from "@mui/material"
 import Grid2 from "@mui/material/Grid2"
@@ -17,7 +17,7 @@ import { deleteConsumer, getConsumers } from "../api"
 import { useConsumerForm } from "@context/ConsumerFormContext"
 
 export default function Table() {
-  const history = useHistory()
+  const navigate = useNavigate()
   const { showSnackBar } = useSnackBar()
   const { setLoading } = useLoading()
   const permissions = getPermissions()
@@ -54,7 +54,7 @@ export default function Table() {
       type: "SET_CLIENT",
       client: consumer,
     })
-    history.push("/admin/consumer/update/" + consumer._id)
+    navigate("/admin/consumer/update/" + consumer._id)
   }
 
   const deleteClient = async (row: Consumer) => {
@@ -87,7 +87,7 @@ export default function Table() {
   }
 
   const handleConsumerAction = (action: string) => {
-    history.push({ pathname: action })
+    navigate({ pathname: action })
   }
 
   const headers = [

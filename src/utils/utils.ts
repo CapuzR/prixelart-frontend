@@ -24,7 +24,7 @@ export const generateWaProductMessage = (tile: PickedProduct) => {
       '%0D%0A' +
       ' *Modelo:* ' + tile.name +
       '%0D%0A' +
-      ' *Enlace:* prixelart.com/?producto=' + tile.id
+      ' *Enlace:* prixelart.com/?producto=' + tile._id
       : welcomeMessage;
 
   return 'https://wa.me/' + waNumber + '?text=' + message;

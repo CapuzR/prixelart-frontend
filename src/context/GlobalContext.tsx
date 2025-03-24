@@ -52,10 +52,11 @@ export const GlobalProvider: React.FC<GlobalProviderProps> = ({ children }) => {
   const [loading, setLoading] = useState<boolean>(false)
   const [snackbarOpen, setSnackbarOpen] = useState<boolean>(false)
   const [snackbarMessage, setSnackbarMessage] = useState<string>("")
-  const [backdropOpen, setBackdropOpen] = useState<boolean>(false) // New state for the backdrop
-  const [permissions, setPermissions] = useState(
-    JSON.parse(localStorage.getItem("adminToken"))?.permissions || "{}"
-  )
+  const [backdropOpen, setBackdropOpen] = useState<boolean>(false)
+  const adminToken = localStorage.getItem("adminToken")
+  const adminData = adminToken ? JSON.parse(adminToken) : null
+
+  const [permissions, setPermissions] = useState(adminData?.permissions || "{}")
   // Function to fetch the conversion rate
   const fetchConversionRate = async () => {
     try {

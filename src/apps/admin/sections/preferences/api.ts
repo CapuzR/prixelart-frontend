@@ -39,7 +39,7 @@ export const getArtBestSellers = async () => {
   }
 }
 
-export const updateTerms = async (termsAndConditions) => {
+export const updateTerms = async (termsAndConditions: string) => {
   const base_url =
     import.meta.env.VITE_BACKEND_URL + "/termsAndConditions/update"
   try {

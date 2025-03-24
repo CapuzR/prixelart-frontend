@@ -1,6 +1,6 @@
 import React, { useRef } from "react"
 import { useEffect, useState } from "react"
-import { useHistory } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 
 import Tabs from "@mui/material/Tabs"
 import Tab from "@mui/material/Tab"
@@ -41,7 +41,7 @@ export default function Table({
   setCategory,
   setActiveCrud,
 }) {
-  const history = useHistory()
+  const navigate = useNavigate()
   const { showSnackBar } = useSnackBar()
   const { setLoading } = useLoading()
   const permissions = getPermissions()
@@ -58,7 +58,7 @@ export default function Table({
 
   const tabs = ["Productos", "Categorías", "Descuentos", "Recargos"]
   const handleProductAction = (action: string) => {
-    history.push({ pathname: "/admin/product/" + action })
+    navigate({ pathname: "/admin/product/" + action })
   }
 
   const handleChange = (event, newValue) => {
@@ -161,7 +161,7 @@ export default function Table({
     // Cambiar el almacenamiento en el localStorage por reducer
     // localStorage.setItem(`${type}`, JSON.stringify(element))
 
-    history.push({ pathname: "/admin/product/" + action + "/" + element._id })
+    navigate({ pathname: "/admin/product/" + action + "/" + element._id })
     setActiveCrud(action)
   }
 

@@ -1,7 +1,7 @@
 import React from "react"
 import { useState, useEffect } from "react"
 import { makeStyles } from "@mui/styles"
-import { useHistory } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 
 import Title from "../../../components/Title"
 import axios from "axios"
@@ -70,7 +70,7 @@ const useStyles = makeStyles((theme) => ({
 export default function CreateDiscount() {
   const classes = useStyles()
   const theme = useTheme()
-  const history = useHistory()
+  const navigate = useNavigate()
 
   const { setLoading } = useLoading()
   const { showSnackBar } = useSnackBar()
@@ -127,7 +127,7 @@ export default function CreateDiscount() {
         setType(undefined)
         setValue(undefined)
         setAppliedProducts([])
-        history.push("/admin/product/read")
+        navigate("/admin/product/read")
       }
     }
   }

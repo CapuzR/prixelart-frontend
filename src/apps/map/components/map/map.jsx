@@ -1,10 +1,10 @@
 import React from 'react';
 import { Icon } from './icon.jsx';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 export const Map = ({ icons, setSelectedIcon, setOpenSelected }) => {
-  const history = useHistory();
+  const navigate = useNavigate();
 
   let rawMapRef = React.useRef(document.getElementById('rawMap'));
   const isMobile = useMediaQuery('(max-width:1090px)');
@@ -66,7 +66,7 @@ export const Map = ({ icons, setSelectedIcon, setOpenSelected }) => {
             width: "auto",
             maxHeight: "140px",
           }}
-          onClick={(e) => history.push({ pathname: "/LPG" })}
+          onClick={(e) => navigate({ pathname: "/LPG" })}
         />
       </div> */}
     </div>

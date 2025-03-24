@@ -47,7 +47,7 @@ export const updateAdmin = async (admin: Partial<Admin>) => {
   }
 }
 
-export const updateRole = async (admin: AdminRole) => {
+export const updateRole = async (admin: Partial<AdminRole>) => {
   const base_url =
     import.meta.env.VITE_BACKEND_URL + "/adminRole/update/" + admin._id
   try {

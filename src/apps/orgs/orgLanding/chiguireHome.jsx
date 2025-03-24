@@ -22,7 +22,7 @@ import Grid from '@mui/material/Grid';
 import CBProducts from './productsGrid';
 import CBFooter from './footer';
 import PrixelartSection from './prixelart';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import isotipo from './assets/isotipo.svg';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/styles';
@@ -73,7 +73,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function ChiguireHome() {
   const classes = useStyles();
-  const history = useHistory();
+  const navigate = useNavigate();
   const theme = useTheme();
 
   const isMobile = useMediaQuery(theme.breakpoints.down('xs'));
@@ -155,7 +155,7 @@ export default function ChiguireHome() {
   };
 
   const handleCart = () => {
-    history.push({ pathname: '/chiguirebipolar/carrito' });
+    navigate({ pathname: '/chiguirebipolar/carrito' });
   };
 
   const handleCB = () => {

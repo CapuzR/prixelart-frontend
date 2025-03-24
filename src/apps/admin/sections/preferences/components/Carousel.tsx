@@ -86,6 +86,23 @@ interface TabPanelProps {
   value: number
 }
 
+interface image {
+  images: {
+    type: string
+    url: string
+  }
+}
+
+interface fileImg {
+  file: File | undefined
+  _id: string
+}
+
+interface loader {
+  loader: string | object
+  filename: string
+}
+
 function TabPanel(props: TabPanelProps) {
   const { children, value, index, ...other } = props
 
@@ -120,14 +137,14 @@ export default function Carousel() {
   const { setLoading } = useLoading()
   const permissions = getPermissions()
   const isDesktop = useMediaQuery(theme.breakpoints.up("sm"))
-  const [image, newImage] = useState({ file: "", _id: "" }) //enviar
-  const [imageLoader, setLoadImage] = useState({
-    loader: "",
+  const [image, newImage] = useState<fileImg>({ file: undefined, _id: "" }) //enviar
+  const [imageLoader, setLoadImage] = useState<loader>({
+    loader: {},
     filename: "Subir imagenes",
   }) //loader de imagenes
   const [type, setType] = useState("")
   const [value, setValue] = useState(0)
-  const [images, newImages] = useState({ images: [] }) // lista de imagenes para renderizar
+  const [images, newImages] = useState({ images: [] }) // lista de imagenes para renderizar. Simplificar este estado
   const [update, setUpdate] = useState(false) // modal de update
   const [open, setOpen] = useState(false) //modal de eliminar -> confirm
   const [Open, setOpenI] = useState(false) // Toast para imagen eliminada exitosamente
@@ -137,7 +154,7 @@ export default function Carousel() {
   const [createF, setCreateF] = useState(false)
   const [croppedArt, setCroppedArt] = useState(aspectRatios)
 
-  const classes = useStyles()
+  const { classes } = useStyles()
 
   const openWithoutImage = () => {
     setWithoutImage(true)
@@ -147,7 +164,7 @@ export default function Carousel() {
     setWithoutImage(false)
   }
 
-  const handleChange = (event, newValue) => {
+  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue)
   }
 
@@ -201,38 +218,38 @@ export default function Carousel() {
 
   // CRUD
   //Editar imagen:
-  const handleUpdate = async (x) => {
-    x.preventDefault()
-    setLoading(true)
-    const URI = import.meta.env.VITE_BACKEND_URL + "/carousel/" + image._id
-    const formData = new FormData()
-    type === "bannerImagesDesktop"
-      ? formData.append("bannerImagesDesktop", image.file)
-      : formData.append("bannerImagesMobile", image.file)
-    let res = await axios.put(URI, formData)
-    setLoadImage({
-      loader: "",
-      filename: "Subir imagenes",
-    })
-    setType("")
-    newImage({
-      _id: "",
-      file: "",
-    })
-    setLoadImage({ loader: "", filename: "Subir imagenes" })
-    openUpdate()
-    getImagesForTheCarousel()
-    closeUpdate()
-  }
+  // const handleUpdate = async (e) => {
+  //   e.preventDefault()
+  //   setLoading(true)
+  //   const URI = import.meta.env.VITE_BACKEND_URL + "/carousel/" + image._id
+  //   const formData = new FormData()
+  //   type === "bannerImagesDesktop"
+  //     ? formData.append("bannerImagesDesktop", image.file)
+  //     : formData.append("bannerImagesMobile", image.file)
+  //   let res = await axios.put(URI, formData)
+  //   setLoadImage({
+  //     loader: "",
+  //     filename: "Subir imagenes",
+  //   })
+  //   setType("")
+  //   newImage({
+  //     _id: "",
+  //     file: "",
+  //   })
+  //   setLoadImage({ loader: "", filename: "Subir imagenes" })
+  //   openUpdate()
+  //   getImagesForTheCarousel()
+  //   closeUpdate()
+  // }
 
   // Crear imagen:
-  const handleSubmit = async (a) => {
-    a.preventDefault()
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
     const imagesDesktop = images.images.filter(
-      (obj) => obj.images?.type === "desktop"
+      (obj: image) => obj.images?.type === "desktop"
     )
     const imagesMobile = images.images.filter(
-      (obj) => obj.images?.type === "mobile"
+      (obj: image) => obj.images?.type === "mobile"
     )
     if (
       imagesDesktop.length + imagesMobile.length === 12 ||
@@ -240,42 +257,44 @@ export default function Carousel() {
     ) {
       maxImageOpen()
       setLoadImage({
-        loader: "",
+        loader: {},
         filename: "Subir imagenes",
       })
     } else {
       setLoading(true)
       setLoadImage({
-        loader: "",
+        loader: {},
         filename: "Subir imagenes",
       })
 
       const URI = import.meta.env.VITE_BACKEND_URL + "/carousel"
       const newFormData = new FormData()
-      type === "bannerImagesDesktop"
+      type === "bannerImagesDesktop" && image.file
         ? newFormData.append("bannerImagesDesktop", image.file)
-        : newFormData.append("bannerImagesMobile", image.file)
-      newFormData.append("adminToken", localStorage.getItem("adminTokenV"))
+        : image.file && newFormData.append("bannerImagesMobile", image.file)
       let res = await axios.post(URI, newFormData, { withCredentials: true })
       createOpen()
       setType("")
       newImage({
         _id: "",
-        file: "",
+        file: undefined,
       })
-      setLoadImage(false)
+      setLoadImage({
+        loader: {},
+        filename: "Subir imagenes",
+      })
       createOpen()
       getImagesForTheCarousel()
     }
   }
 
-  const deleteImage = async (d) => {
+  const deleteImage = async (d: React.MouseEvent<HTMLButtonElement>) => {
     d.preventDefault()
     const imagesDesktop = images.images.filter(
-      (obj) => obj?.images?.type === "desktop"
+      (obj: image) => obj?.images?.type === "desktop"
     )
     const imagesMobile = images.images.filter(
-      (obj) => obj?.images?.type === "mobile"
+      (obj: image) => obj?.images?.type === "mobile"
     )
     if (imagesDesktop.length + imagesMobile.length === 2) {
       openWithoutImage()
@@ -293,8 +312,8 @@ export default function Carousel() {
     }
   }
   //Preview de imagen antes de enviar
-  const convertToBase64 = (blob) => {
-    return new Promise((resolve) => {
+  const convertToBase64 = async (blob: File) => {
+    return await new Promise((resolve) => {
       var reader = new FileReader()
       reader.onload = function () {
         resolve(reader.result)
@@ -303,17 +322,19 @@ export default function Carousel() {
     })
   }
   // Actualizacion del estado para preview de imagen
-  const loadImage = async (e) => {
+  const loadImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
     setType(e.target.name)
-    const file = e.target.files[0]
-    const resizedString = await convertToBase64(file)
-    setLoadImage({ loader: resizedString, filename: file.name })
+    const file = e.target.files?.[0]
+    if (file) {
+      const resizedString = await convertToBase64(file)
+      setLoadImage({ loader: resizedString || "", filename: file?.name || "" })
+    }
   }
 
   //Cancelar subida de imagen
   const cancelUploadImage = () => {
-    setLoadImage({ loader: "", filename: "Subir imagenes" })
-    newImage({ _id: "", file: "" })
+    setLoadImage({ loader: {}, filename: "Subir imagenes" })
+    newImage({ _id: "", file: undefined })
   }
   //Tomar imagenes en array para ser listadas y renderizadas
   const getImagesForTheCarousel = () => {
@@ -359,7 +380,7 @@ export default function Carousel() {
               <Grid2 size={{ lg: 8 }} style={{ display: "flex" }}>
                 <img
                   className={classes.imageLoad}
-                  src={imageLoader.loader}
+                  src={imageLoader.loader.toString()}
                   alt="Uploaded"
                 />
                 {/* {croppedArt.map(
@@ -490,13 +511,7 @@ export default function Carousel() {
               {permissions?.modifyBanners && (
                 <FormControl>
                   <form
-                    onSubmit={(s) => {
-                      if (image._id !== "") {
-                        handleUpdate(s)
-                      } else {
-                        handleSubmit(s)
-                      }
-                    }}
+                    onSubmit={handleSubmit}
                     encType="multipart/form-data"
                     style={{
                       display: "flex",
@@ -533,7 +548,7 @@ export default function Carousel() {
                           loadImage(a)
                           newImage({
                             _id: image._id,
-                            file: a.target.files[0],
+                            file: a.target.files?.[0],
                           })
                         }}
                       />
@@ -599,11 +614,11 @@ export default function Carousel() {
               />
             </Box>
 
-            <ImageList cols={isDesktop ? 2 : 1} rowHeight={300}>
-              {images.images ? (
-                images.images.map((img, key_id) =>
+            {/* <ImageList cols={isDesktop ? 2 : 1} rowHeight={300}>
+              {images.images.length > 0 ? (
+                images.images.map((img: image, key_id) =>
                   img.images ? (
-                    img.images.type === "desktop" && (
+                    img.images?.type === "desktop" && (
                       <ImageListItem key={key_id}>
                         <Box>
                           {permissions?.modifyBanners && (
@@ -795,20 +810,14 @@ export default function Carousel() {
                   Que mal, parece que no tienes imagenes en el carrusel
                 </Typography>
               )}
-            </ImageList>
+            </ImageList> */}
           </TabPanel>
           <TabPanel value={value} index={1}>
             <Box style={{ display: "flex", justifyContent: "center" }}>
               {permissions?.modifyBanners && (
                 <FormControl>
-                  <form
-                    onSubmit={(s) => {
-                      if (image._id != "") {
-                        handleUpdate(s)
-                      } else {
-                        handleSubmit(s)
-                      }
-                    }}
+                  {/* <form
+                    onSubmit={handleSubmit}
                     encType="multipart/form-data"
                     style={{
                       display: "flex",
@@ -858,7 +867,7 @@ export default function Carousel() {
                     >
                       Enviar
                     </Button>
-                  </form>
+                  </form> */}
                   <Typography style={{ color: "gray", marginBottom: 10 }}>
                     Te recomendamos usar imágenes de proporción 9:16, o al menos
                     4:3
@@ -911,7 +920,7 @@ export default function Carousel() {
               />
             </Box>
 
-            <ImageList cols={isDesktop ? 2 : 1} rowHeight={300}>
+            {/* <ImageList cols={isDesktop ? 2 : 1} rowHeight={300}>
               {images.images ? (
                 images.images.map(
                   (img, key_id) =>
@@ -1021,7 +1030,7 @@ export default function Carousel() {
                   Que mal, parece que no tienes imagenes en el carrusel
                 </Typography>
               )}
-            </ImageList>
+            </ImageList> */}
           </TabPanel>
         </div>
       </Grid2>

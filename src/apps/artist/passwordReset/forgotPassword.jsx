@@ -3,7 +3,7 @@
 import React from 'react';
 import { useState } from 'react';
 import axios from 'axios';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import Copyright from 'components/Copyright/copyright';
 
@@ -60,7 +60,7 @@ function sleep(ms) {
 
 export default function ForgotPassword() {
   const classes = useStyles();
-  const history = useHistory();
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
 
   //Error states.
@@ -90,7 +90,7 @@ export default function ForgotPassword() {
             setErrorMessage('Hemos enviado un enlace a tu correo electrónico.');
             setSnackBarError(true);
             await sleep(3000);
-            history.push({ pathname: '/' });
+            navigate({ pathname: '/' });
           }
         })
         .catch((error) => {

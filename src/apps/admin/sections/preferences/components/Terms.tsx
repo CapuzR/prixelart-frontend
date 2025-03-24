@@ -25,14 +25,20 @@ const useStyles = makeStyles()((theme: Theme) => {
   }
 })
 
+interface cardinal {
+  horizontal: string
+  vertical: string
+  open: boolean
+}
+
 export default function Terms() {
-  const classes = useStyles()
+  const { classes } = useStyles()
   const { showSnackBar } = useSnackBar()
   const { setLoading } = useLoading()
   const permissions = getPermissions()
 
-  const [value, setValue] = useState("")
-  const [state, setState] = useState({
+  const [value, setValue] = useState<string | undefined>("")
+  const [state, setState] = useState<cardinal>({
     open: false,
     vertical: "top",
     horizontal: "center",
@@ -41,9 +47,11 @@ export default function Terms() {
 
   const handleChange = async () => {
     try {
-      const response = await updateTerms(value)
-      if (response.data.success) {
-        showSnackBar("Los términos y condiciones fueron actualizados!")
+      if (value) {
+        const response = await updateTerms(value)
+        if (response && response.data.success) {
+          showSnackBar("Los términos y condiciones fueron actualizados!")
+        }
       }
     } catch (error) {
       console.log(error)
@@ -63,9 +71,20 @@ export default function Terms() {
     readTerms()
   }, [])
 
-  const handleClick = (newState) => () => {
-    setState({ open: true, ...newState })
+  const handleClick = () => () => {
+    setState({
+      open: true,
+      vertical: "bottom",
+      horizontal: "right",
+    })
     handleChange()
+  }
+
+  const handleText: (value?: string) => void = (value) => {
+    setValue(value)
+    if (value === undefined) {
+      setValue("")
+    }
   }
 
   return (
@@ -78,10 +97,7 @@ export default function Terms() {
                 variant="outlined"
                 color="primary"
                 style={{ margin: "14px 30px" }}
-                onClick={handleClick({
-                  vertical: "bottom",
-                  horizontal: "right",
-                })}
+                onClick={handleClick}
               >
                 Actualizar
               </Button>
@@ -99,7 +115,7 @@ export default function Terms() {
                 {permissions?.modifyTermsAndCo && (
                   <MDEditor
                     value={value}
-                    onChange={setValue}
+                    onChange={handleText}
                     style={{ minHeight: "600px", height: "600px" }}
                   />
                 )}

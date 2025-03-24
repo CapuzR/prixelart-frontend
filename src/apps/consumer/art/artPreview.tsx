@@ -1,6 +1,6 @@
 import React from 'react';
 import Img from 'react-cool-img';
-import WarpImage from '../../admin/productCrud/warpImage';
+import WarpImage from '@apps/workshop/productCrud/warpImage';
 import { Art } from './interfaces';
 
 interface MockUp {

@@ -18,7 +18,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import FormControl from '@mui/material/FormControl';
 import clsx from 'clsx';
 import Checkbox from '@mui/material/Checkbox';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useTheme } from '@mui/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import HighlightOffOutlinedIcon from '@mui/icons-material/HighlightOffOutlined';

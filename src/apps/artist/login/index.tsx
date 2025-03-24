@@ -2,7 +2,7 @@
 //Llevar el Password a un componente propio.
 
 import { useEffect, useState } from "react"
-import { useHistory } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 import { Theme } from "@mui/material/styles"
 
 import Avatar from "@mui/material/Avatar"
@@ -69,7 +69,7 @@ const useStyles = makeStyles()((theme: Theme) => {
 
 export default function Login() {
   const { classes } = useStyles()
-  const history = useHistory()
+  const navigate = useNavigate()
   const { showSnackBar } = useSnackBar()
 
   const [email, setEmail] = useState("")
@@ -291,7 +291,7 @@ export default function Login() {
                   <Link
                     href="#"
                     onClick={() => {
-                      history.push({ pathname: "/registrar" })
+                      navigate({ pathname: "/registrar" })
                     }}
                     variant="body2"
                   >
@@ -300,7 +300,7 @@ export default function Login() {
                   <Link
                     href="#"
                     onClick={() => {
-                      history.push({ pathname: "/olvido-contraseña" })
+                      navigate({ pathname: "/olvido-contraseña" })
                     }}
                     variant="body2"
                   >

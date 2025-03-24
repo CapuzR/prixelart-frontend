@@ -235,7 +235,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Orders(props) {
   const classes = useStyles();
-  // const history = useHistory();
+  // const navigate = useNavigate();
   // const location = useLocation();
   const theme = useTheme();
 

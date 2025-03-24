@@ -1,9 +1,9 @@
 // Hay un montón de imports que no se utilizan, eliminar
 import { useState, useEffect } from "react"
-import { useHistory } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry"
-import SearchBar from "@components/searchBar/index.js"
+import SearchBar from "@components/searchBar/searchBar.js"
 
 import { readGallery, setVisibleArt } from "../api"
 import { handleFullImage } from "../services"
@@ -53,7 +53,7 @@ export default function Grid(props) {
   const { setLoading } = useLoading()
   const { showSnackBar } = useSnackBar()
 
-  const history = useHistory()
+  const navigate = useNavigate()
   const { classes } = useStyles()
   const [tiles, setTiles] = useState([])
   const [total, setTotal] = useState(1)
@@ -141,7 +141,7 @@ export default function Grid(props) {
     setCategoryValue(categories)
     //TODO War: Se debe utilizar para ?s= si no hay más params, si hay otros se debe usar &s=, igual con cat, etc.
     // const finalPath= searchPhotos(queryValue, categories, history, props.prixerUsername, globalParams);
-    // history.push({ pathname: finalPath })
+    // navigate({ pathname: finalPath })
   }
 
   const handleFullImageClick = (e, tile) => {

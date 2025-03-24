@@ -8,10 +8,17 @@ import FormControl from "@mui/material/FormControl"
 import MenuItem from "@mui/material/MenuItem"
 import Select from "@mui/material/Select"
 import { Checkbox } from "@mui/material"
+import { SelectChangeEvent } from "@mui/material";
 
 import { useConsumerForm } from "@context/ConsumerFormContext"
+import { Prixer } from "../../../../../types/prixer.types"
 
-export default function Form({ handleSubmit, prixers }) {
+interface FormProps {
+  handleSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
+  prixers: Prixer[];
+}
+
+export default function Form({ handleSubmit, prixers }: FormProps) {
   const { state, dispatch } = useConsumerForm()
 
   const today = new Date()
@@ -33,6 +40,14 @@ export default function Form({ handleSubmit, prixers }) {
       value: e.target.checked,
     })
   }
+
+    const handleSelectChange = (event: SelectChangeEvent<string>) => {
+      dispatch({
+        type: "SET_FIELD",
+        field: event.target.name as keyof typeof state,
+        value: event.target.value,
+      });
+    };
 
   return (
     <form style={{ padding: "15px" }} noValidate onSubmit={handleSubmit}>
@@ -60,7 +75,7 @@ export default function Form({ handleSubmit, prixers }) {
                 name="consumerType"
                 value={state.consumerType}
                 defaultValue="Particular"
-                onChange={handleChange}
+                onChange={handleSelectChange}
                 label="consumerType"
               >
                 <MenuItem value="">
@@ -118,7 +133,7 @@ export default function Form({ handleSubmit, prixers }) {
                   variant="outlined"
                   value={state.username}
                   onChange={
-                    handleChange
+                    handleSelectChange
                     // setSelectedPrixer(
                     //   prixers.find(
                     //     (prixer) => prixer.username === e.target.value
@@ -149,7 +164,7 @@ export default function Form({ handleSubmit, prixers }) {
                 variant="outlined"
                 value={state.gender}
                 defaultValue=""
-                onChange={handleChange}
+                onChange={handleSelectChange}
                 label="Género"
               >
                 <MenuItem value="">

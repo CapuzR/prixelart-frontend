@@ -1,4 +1,4 @@
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -15,6 +15,15 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { AdminRole } from "../../../../../types/admin.types";
 import { useSnackBar, useLoading } from "context/GlobalContext";
 import { getRoles, deleteAdmin, deleteAdminRole } from "../api";
+import { Permissions } from "../../../../../types/permissions.types";
+
+interface TableProps {
+  roles: AdminRole[]
+  permissions: Permissions
+  loadRoles: () => Promise<void>
+  handleCallback2: (role: AdminRole) => void
+  setActiveCrud: (state: string) => void
+}
 
 export default function Table2({
   roles,
@@ -22,18 +31,18 @@ export default function Table2({
   loadRoles,
   handleCallback2,
   setActiveCrud,
-}) {
+}: TableProps) {
   const headers = ["Área", "Permisos", ""];
   const { showSnackBar } = useSnackBar();
   const { setLoading } = useLoading();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const deleteRole = async (id: string) => {
     setLoading(true);
     try {
       const del = await deleteAdminRole(id);
 
-      if (del.status === 200) {
+      if (del && del.status === 200) {
         showSnackBar(
           `Rol de administrador ${del.data.area} eliminado con éxito`
         );
@@ -49,7 +58,7 @@ export default function Table2({
 
   const handleActiveRole = (role: AdminRole) => {
     handleCallback2(role);
-    history.push("/admin/user/updateRole");
+    navigate("/admin/user/updateRole");
     setActiveCrud("updateRole");
   };
 

@@ -11,7 +11,7 @@ import CreateMovement from "./components/CreateMovement"
 import MovementRecord from "./components/MovementRecord"
 import PrixerInfo from "./components/Info"
 import OrgCommission from "./components/OrgCommission"
-import RemovePrixer from "./destroyPrixer"
+// import RemovePrixer from "./destroyPrixer"
 
 import {
   getAllPrixers,
@@ -26,6 +26,9 @@ import Grid from "./components/Grid"
 import { Account } from "../../../../types/account.types"
 import { useSnackBar, useLoading, getPermissions } from "context/GlobalContext"
 import OrgsGrid from "./components/OrgsGrid"
+import { Prixer } from "../../../../types/prixer.types"
+import { Organization } from "../../../../types/organization.types"
+import { Consumer } from "../../../../types/consumer.types"
 
 export default function PrixersCrud() {
   const theme = useTheme()
@@ -44,18 +47,18 @@ export default function PrixersCrud() {
   const [openNewBalance, setOpenNewBalance] = useState(false)
   const [openNewMovement, setOpenNewMovement] = useState(false)
   const [openList, setOpenList] = useState(false)
-  const [selectedPrixer, setSelectedPrixer] = useState(undefined)
-  const [selectedConsumer, setSelectedConsumer] = useState(undefined)
-  const [balance, setBalance] = useState(0)
-  const [type, setType] = useState<string>()
-  const [date, setDate] = useState(new Date())
-  const [accounts, setAccounts] = useState<Account[]>()
+  const [selectedPrixer, setSelectedPrixer] = useState<Prixer | undefined>(undefined)
+  const [selectedConsumer, setSelectedConsumer] = useState<Consumer | undefined>(undefined)
+  const [balance, setBalance] = useState<number | string>(0)
+  const [type, setType] = useState<string>("")
+  const [date, setDate] = useState<Date>(new Date())
+  const [accounts, setAccounts] = useState<Account[]>([])
   const [anchorEl, setAnchorEl] = useState(null)
   const [openInfo, setOpenInfo] = useState(false)
   const [openComission, setOpenComission] = useState(false)
   const [openDestroy, setOpenDestroy] = useState(false)
 
-  const handleSection = (event, newValue) => {
+  const handleSection = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue)
   }
 
@@ -107,11 +110,11 @@ export default function PrixersCrud() {
     routine()
   }, [])
 
-  const handleChange = (event) => {
-    setState({ ...state, [event.target.name]: event.target.checked })
-  }
+  // const handleChange = (event) => {
+  //   setState({ ...state, [event.target.name]: event.target.checked })
+  // }
 
-  const ChangeVisibility = async (e, prixer) => {
+  const ChangeVisibility = async (e: React.ChangeEvent<HTMLInputElement>, prixer: Prixer) => {
     e.preventDefault()
     setLoading(true)
     setState({ ...state, [e.target.name]: e.target.checked })
@@ -120,7 +123,7 @@ export default function PrixersCrud() {
       status:
         e.target.value === "false" || e.target.value === "" ? true : false,
       account: prixer?.account,
-      id: prixer.prixerid,
+      id: prixer.prixerId,
     }
     // Simplificar esto
     const response = await updateVisibility(body)
@@ -140,12 +143,16 @@ export default function PrixersCrud() {
     setOpenInfo(false)
     setSelectedPrixer(undefined)
     setSelectedConsumer(undefined)
-    setDate(undefined)
+    setDate(new Date())
     setAnchorEl(null)
     setOpenDestroy(false)
   }
-
-  function TabPanel(props) {
+  interface TabPanelProps {
+    children?: React.ReactNode
+    index: number
+    value: number
+  }
+  function TabPanel(props: TabPanelProps) {
     const { children, value, index } = props
     return (
       <div
@@ -163,20 +170,20 @@ export default function PrixersCrud() {
     )
   }
 
-  const TurnIntoOrg = async (event, user: string) => {
+  const TurnIntoOrg = async (event: React.ChangeEvent<HTMLInputElement>, user: string) => {
     const response = await updateToOrg(user)
     if (response.success) {
       showSnackBar("Rol modificado a Organización.")
-      let prev = tiles.filter((tile) => tile.username !== user)
+      let prev = tiles.filter((tile: Prixer) => tile.username !== user)
       setTiles(prev)
     }
   }
 
-  const TurnIntoPrixer = async (event, user: string) => {
+  const TurnIntoPrixer = async (event: React.ChangeEvent<HTMLInputElement>, user: string) => {
     const response = await updateToPrixer(user)
     if (response.success) {
       showSnackBar("Rol modificado a Prixer.")
-      let prev = orgs.filter((o) => o.username !== user)
+      let prev = orgs.filter((o: Organization) => o.username !== user)
       if (prev[0] === null) {
         setOrgs([])
       } else {
@@ -216,6 +223,7 @@ export default function PrixersCrud() {
             setOpenList={setOpenList}
             setOpenNewBalance={setOpenNewBalance}
             setOpenInfo={setOpenInfo}
+            setOpenComission={setOpenComission}
             org={false}
           />
         </TabPanel>
@@ -305,7 +313,7 @@ export default function PrixersCrud() {
         />
       </Modal>
 
-      <Modal open={openDestroy} onClose={handleClose}>
+      {/* <Modal open={openDestroy} onClose={handleClose}>
         <RemovePrixer
           selectedPrixer={selectedPrixer}
           selectedConsumer={selectedConsumer}
@@ -313,7 +321,7 @@ export default function PrixersCrud() {
           handleClose={handleClose}
           org={value === 1 ? true : false}
         />
-      </Modal>
+      </Modal> */}
     </div>
   )
 }

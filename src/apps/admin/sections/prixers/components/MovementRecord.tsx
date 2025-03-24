@@ -11,8 +11,17 @@ import { useTheme } from "@mui/material/styles"
 import { getMovementsForPrixer } from "../api"
 import { Movement } from "../../../../../types/movement.types"
 import Table1 from "@components/Table"
+import { Prixer } from "../../../../../types/prixer.types"
 
-export default function MovementRecord({ selectedPrixer, handleClose }) {
+interface MovProps {
+  selectedPrixer: Prixer | undefined
+  handleClose: () => void
+}
+
+export default function MovementRecord({
+  selectedPrixer,
+  handleClose,
+}: MovProps) {
   const theme = useTheme()
   const [movements, setMovements] = useState<Movement[]>()
   const totalElements = movements?.length
@@ -34,7 +43,7 @@ export default function MovementRecord({ selectedPrixer, handleClose }) {
   }
 
   useEffect(() => {
-    getMovements(selectedPrixer.account)
+    selectedPrixer && getMovements(selectedPrixer?.account)
   }, [])
 
   return (
@@ -75,7 +84,7 @@ export default function MovementRecord({ selectedPrixer, handleClose }) {
         </IconButton>
       </div>
 
-      {movements?.length > 0 ? (
+      {movements && movements?.length > 0 ? (
         <Table1
           headers={headers}
           elements={movements}

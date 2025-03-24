@@ -1,6 +1,6 @@
 import React from 'react';
 import { useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { makeStyles } from '@mui/styles';
 import Title from '../../../components/Title';
 import axios from 'axios';
@@ -72,7 +72,7 @@ CreateVariant(props) {
   );
   const [loading, setLoading] = useState(false);
   const [buttonState, setButtonState] = useState(false);
-  const history = useHistory();
+  const navigate = useNavigate();
   const [image, setImage] = useState(props?.variant?.variantImage || []);
   const [videoUrl, setVideoUrl] = useState((props.variant && props.variant?.video) || undefined);
   const [videoPreview, setVideoPreview] = useState(undefined);
@@ -244,7 +244,7 @@ CreateVariant(props) {
           setSnackBarError(true);
           props.setVariant('');
         } else {
-          history.push('/product/update/' + props.product._id);
+          navigate('/product/update/' + props.product._id);
           setSnackBarError(true);
           setErrorMessage('Actualización de variante exitoso.');
           setActive('');

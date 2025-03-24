@@ -334,7 +334,7 @@ export default function OrderDetails(props) {
                 item: item.product,
                 previous: true,
               });
-              history.push({ pathname: '/galeria' });
+              navigate({ pathname: '/galeria' });
             }}
           >
             <WarpImage

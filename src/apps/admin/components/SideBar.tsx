@@ -1,6 +1,6 @@
 import React from "react"
 
-import { useHistory } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 
 import AccountBalanceIcon from "@mui/icons-material/AccountBalance"
 import AssignmentIcon from "@mui/icons-material/Assignment"
@@ -21,12 +21,12 @@ import ListItemText from "@mui/material/ListItemText"
 import ListItemButton from "@mui/material/ListItemButton"
 import { getPermissions } from "@context/GlobalContext"
 
-export default function SideBar({ active }) {
-  const history = useHistory()
+export default function SideBar() {
+  const navigate = useNavigate()
   const permissions = getPermissions()
 
-  const handleClick = (value) => {
-    history.push({ pathname: "/admin/" + value + "/read" })
+  const handleClick = (value: string) => {
+    navigate({ pathname: "/admin/" + value + "/read" })
   }
 
   return (

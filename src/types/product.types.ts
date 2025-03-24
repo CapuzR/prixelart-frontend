@@ -1,4 +1,5 @@
 import { Discount } from "./discount.types"
+import { Movement } from "./movement.types"
 
 export interface PickedProduct
   extends Pick<
@@ -28,18 +29,19 @@ export interface PickedProduct
   > {}
 
 export interface Product {
-  id: string;
-  name: string;
-  price: number;
-  description: string;
-  attributes: Attribute[];
-  selection: Selection[];
-  variants: Array<Variant>;
-  priceRange: PriceRange;
-  observations: string;
-  thumbUrl: string;
+  _id: string
+  name: string
+  price: number
+  description: string
+  attributes: Attribute[]
+  selection: Selection[]
+  variants: Array<Variant>
+  priceRange: PriceRange
+  observations: string
+  thumbUrl: string
   sources: {
-    images: { url: string }[]
+    images?: { type: string; url: string }[]
+    video?: { type: string; url: string }
   }
   productionTime: number
   mockUp: any
@@ -47,10 +49,16 @@ export interface Product {
   active: boolean
   considerations: string
   cost: number
-  publicPrice: PriceRange | Equation
-  prixerPrice: PriceRange | Equation
+  publicPrice: PriceRange
+  prixerPrice: PriceRange
   hasSpecialVar: boolean
   bestSeller: boolean
+  finalPrice?: number
+  modifyPrice?: number
+  discount: string | undefined
+  comission?: Movement[] | undefined
+  autoCertified?: boolean
+  video?: string
 }
 
 export interface Variant {
@@ -81,8 +89,9 @@ export interface Selection {
 }
 
 export interface PriceRange {
-  from: number
-  to: number
+  from?: number
+  to?: number
+  equation?: number
 }
 
 export interface Equation {

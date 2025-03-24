@@ -18,6 +18,21 @@ import MenuItem from "@mui/material/MenuItem"
 import { useTheme } from "@mui/styles"
 import { getPermissions } from "@context/GlobalContext"
 
+interface TableProps {
+  headers: any
+  elements: any
+  properties: any
+  updateFunction?: any
+  deleteFunction?: any
+  setPageNumber: any
+  pageNumber: any
+  itemsPerPage: any
+  maxLength: any
+  filter?: any // Hacer opcionales estas props
+  options?: any
+  handleFilter?: any
+}
+
 export default function Table1({
   headers,
   elements,
@@ -31,7 +46,7 @@ export default function Table1({
   filter,
   options,
   handleFilter,
-}) {
+}: TableProps) {
   const [dots, setDots] = useState<any[]>()
   const theme = useTheme()
   const permissions = getPermissions()
@@ -84,7 +99,7 @@ export default function Table1({
                     >
                       <MenuItem key={"none"} value={undefined}></MenuItem>
                       {options?.length > 0 &&
-                        options?.map((o, i) => (
+                        options?.map((o: any, i: number) => (
                           <MenuItem key={i} value={o}>
                             {o}
                           </MenuItem>

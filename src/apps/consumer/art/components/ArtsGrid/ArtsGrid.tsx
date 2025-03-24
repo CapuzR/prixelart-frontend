@@ -1,6 +1,6 @@
 import React, { useState, useEffect, MouseEvent } from 'react';
 import Masonry, { ResponsiveMasonry } from 'react-responsive-masonry';
-import SearchBar from 'components/searchBar/searchBar';
+import SearchBar from '@components/searchBar/searchBar';
 import { fetchGallery } from '../../api';
 import ArtThumbnail from '../ArtThumbnail';
 import PaginationBar from '../../../../../components/Pagination/PaginationBar';

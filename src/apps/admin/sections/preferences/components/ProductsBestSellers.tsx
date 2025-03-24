@@ -35,7 +35,7 @@ const useStyles = makeStyles()((theme: Theme) => {
 })
 
 export default function BestSellers() {
-  const classes = useStyles()
+  const {classes} = useStyles()
   const { showSnackBar } = useSnackBar()
   const { setLoading } = useLoading()
   const permissions = getPermissions()
@@ -44,17 +44,17 @@ export default function BestSellers() {
   const [bestSellers, setBestSellers] = useState<Product[]>()
   const [mostSellers, setMostSellers] = useState<Product[]>()
 
-  const addMostSellerToBestSeller = (selectedMostSeller) => {
-    const prodv1 = products.find((prod) => prod.name === selectedMostSeller)
-    if (bestSellers?.length === 0 || bestSellers === undefined) {
+  const addMostSellerToBestSeller = (selectedMostSeller: string) => {
+    const prodv1 = products && products.find((prod) => prod.name === selectedMostSeller)
+    if (prodv1 && bestSellers?.length === 0 || prodv1 && bestSellers === undefined) {
       setBestSellers([prodv1])
     } else if (bestSellers?.some((p) => p.name === selectedMostSeller)) {
       showSnackBar("Este producto ya está incluido en el banner.")
-    } else if (bestSellers.length === 9) {
+    } else if (bestSellers && bestSellers.length === 9) {
       showSnackBar(
         "Has alcanzado el máximo de Productos a mostrar (9 productos)."
       )
-    } else {
+    } else if (bestSellers !== undefined && prodv1 !== undefined) {
       setBestSellers([...bestSellers, prodv1])
     }
   }
@@ -103,8 +103,8 @@ export default function BestSellers() {
   }, [])
 
   const updateBestSellers = async () => {
-    let data = []
-    bestSellers.map((prod) => {
+    let data:string[] = []
+    bestSellers && bestSellers.map((prod) => {
       data.push(prod._id)
     })
     const base_url = import.meta.env.VITE_BACKEND_URL + "/updateBestSellers"

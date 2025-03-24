@@ -11,7 +11,7 @@ export const fetchConversionRateFromAPI = async () => {
 
     return response.data.dollarValue;
   } catch (err) {
-    console.error('Error fetching conversion rate:', err.message);
+    console.error('Error fetching conversion rate:', err);
     throw new Error('Failed to fetch conversion rate.');
   }
 };

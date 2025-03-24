@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useState, ChangeEvent } from "react"
 
 import Title from "../../../components/Title"
 import IconButton from "@mui/material/IconButton"
@@ -10,7 +10,7 @@ import DialogActions from "@mui/material/DialogActions"
 import DialogContent from "@mui/material/DialogContent"
 import DialogContentText from "@mui/material/DialogContentText"
 import DialogTitle from "@mui/material/DialogTitle"
-import { useHistory } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 import "react-quill/dist/quill.snow.css"
 import ViewListIcon from "@mui/icons-material/ViewList"
 import ProductForm from "../components/ProductForm"
@@ -25,7 +25,7 @@ export default function CreateProduct() {
   const { state, dispatch } = useProductForm()
   const { showSnackBar } = useSnackBar()
   const { setLoading } = useLoading()
-  const history = useHistory()
+  const navigate = useNavigate()
 
   const [open, setOpen] = useState(false)
   const [videoUrl, setVideoUrl] = useState("")
@@ -39,7 +39,10 @@ export default function CreateProduct() {
     setOpen(false)
   }
 
-  const modifyString = (a, sti) => {
+  const modifyString = (
+    a: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    sti: string
+  ) => {
     const url = sti.split(" ")
     const width = sti.replace("560", "326").replace("315", "326")
     const previewMp4 = sti.replace("1350", "510").replace("494", "350")
@@ -48,10 +51,13 @@ export default function CreateProduct() {
   }
 
   const handleProductAction = (action: string) => {
-    history.push({ pathname: "/admin/product/" + action })
+    navigate({ pathname: "/admin/product/" + action })
   }
 
-  const handleSubmit = async (e, images) => {
+  const handleSubmit = async (
+    e: React.FormEvent<HTMLFormElement>,
+    images: any
+  ) => {
     e.preventDefault()
     if (images.images.length > 4) {
       showSnackBar("No puedes enviar mas de 4 fotos")
@@ -69,7 +75,7 @@ export default function CreateProduct() {
           showSnackBar("Por favor completa todos los campos requeridos.")
         } else {
           setLoading(true)
-          const formData = new FormData()
+          const formData: any = new FormData()
           const data = {
             specialVars: [
               {
@@ -83,17 +89,29 @@ export default function CreateProduct() {
           formData.append("description", state.description)
           formData.append("category", state.category.toString())
           formData.append("considerations", state.considerations)
-          formData.append("productionTime", state.productionTime)
+          formData.append("productionTime", state.productionTime.toString())
           formData.append("cost", state.cost.toString())
-          formData.append("publicPriceFrom", state.publicPrice?.from.toString())
-          formData.append("publicPriceTo", state.publicPrice?.to.toString())
-          formData.append("prixerPriceFrom", state.prixerPrice?.from.toString())
-          formData.append("prixerPriceTo", state.prixerPrice?.to.toString())
+          if (state.publicPrice?.from)
+            formData.append(
+              "publicPriceFrom",
+              state.publicPrice?.from?.toString()
+            )
+          if (state.publicPrice?.to)
+            formData.append("publicPriceTo", state.publicPrice?.to.toString())
+          if (state.prixerPrice?.from)
+            formData.append(
+              "prixerPriceFrom",
+              state.prixerPrice?.from.toString()
+            )
+          if (state.prixerPrice?.to)
+            formData.append("prixerPriceTo", state.prixerPrice?.to.toString())
           formData.append("hasSpecialVar", state.hasSpecialVar.toString())
           formData.append("autoCertified", state.autoCertified.toString())
 
           formData.append("video", videoUrl)
-          images.images.map((file) => formData.append("productImages", file))
+          images.images.map((file: File) =>
+            formData.append("productImages", file)
+          )
 
           const response = await createProduct(formData)
           if (response.success === false) {
@@ -103,7 +121,7 @@ export default function CreateProduct() {
             dispatch({
               type: "RESET_FORM",
             })
-            history.push({ pathname: "/admin/product/read" })
+            navigate({ pathname: "/admin/product/read" })
           }
         }
       }
@@ -148,6 +166,7 @@ export default function CreateProduct() {
             onChange={(a) => {
               const div = document.getElementById("ll")
               modifyString(a, a.target.value)
+              if (div)
               div.innerHTML = videoPreview
             }}
             value={videoUrl}

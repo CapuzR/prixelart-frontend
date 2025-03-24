@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-import { useHistory } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 
 import TextField from "@mui/material/TextField"
 import Button from "@mui/material/Button"
@@ -11,9 +11,14 @@ import Title from "../../../components/Title"
 
 import { useSnackBar, useLoading } from "context/GlobalContext"
 import { updateMethod } from "../api"
+import { PaymentMethod } from "../../../../../types/paymentMethod.types"
 
-export default function UpdatePaymentMethod({ paymentMethod }) {
-  const history = useHistory()
+interface UpdateProps {
+  paymentMethod: PaymentMethod
+}
+
+export default function UpdatePaymentMethod({ paymentMethod }: UpdateProps) {
+  const navigate = useNavigate()
   const { showSnackBar } = useSnackBar()
   const { setLoading } = useLoading()
 
@@ -47,14 +52,14 @@ export default function UpdatePaymentMethod({ paymentMethod }) {
         showSnackBar(updatedMethod.message)
       } else {
         showSnackBar("Actualización del método de pago exitosa.")
-        history.push("/admin/payment-method/read")
+        navigate("/admin/payment-method/read")
       }
     }
   }
 
   return (
     <React.Fragment>
-      <Title title="Actualización de Método de pago"/>
+      <Title title="Actualización de Método de pago" />
       <form style={{ height: "auto", padding: "15px" }} onSubmit={handleSubmit}>
         <Grid2 container spacing={2}>
           <Grid2 size={{ xs: 12 }}>

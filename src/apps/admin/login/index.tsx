@@ -3,7 +3,7 @@
 
 // Bibliotecas externas
 import { useEffect, useState, FormEvent } from "react"
-import { useHistory } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 
 import {
   Avatar,
@@ -32,7 +32,6 @@ import {
 import { isAValidEmail, isAValidPassword } from "utils/validations"
 
 import Copyright from "@components/Copyright/copyright"
-import { forgotPassword } from "./service"
 import { getRandomArt, login } from "./api"
 import { Art } from "../../../types/art.types"
 import { useSnackBar, updatePermissions } from "context/GlobalContext"
@@ -72,7 +71,7 @@ export default function Login() {
   const { showSnackBar } = useSnackBar()
   const isMobile = useMediaQuery("(max-width:480px)")
   const isTab = useMediaQuery("(max-width: 900px)")
-  const history = useHistory()
+  const navigate = useNavigate()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
@@ -84,15 +83,18 @@ export default function Login() {
     if (!email || !password) {
       showSnackBar("Por favor completa todos los campos requeridos.")
     } else {
-      const { log, permissions } = await login(email, password)
+      const result = await login(email, password)
+      if (!result) {
+        throw new Error("Error: No se pudo iniciar sesión");
+      }
+      const { log, permissions } = result;
       setPermissions(permissions)
       if (log.error_info !== null && log.success === false) {
         showSnackBar(log.error_info)
       } else {
         showSnackBar("Inicio de sesión completado.")
         setPassword("")
-        // setPermissions(permissions);
-        history.push({ pathname: "/admin/order/read" })
+        navigate({ pathname: "/admin/order/read" })
       }
     }
   }
@@ -110,7 +112,7 @@ export default function Login() {
     fetchArt()
   }, [])
 
-  const handleEmailChange = (e) => {
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (isAValidEmail(e.target.value)) {
       setEmail(e.target.value)
     } else {
@@ -119,7 +121,7 @@ export default function Login() {
     }
   }
 
-  const handlePasswordChange = (e) => {
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (isAValidPassword(e.target.value)) {
       setPassword(e.target.value)
     } else {
@@ -134,11 +136,16 @@ export default function Login() {
     setShowPassword(!showPassword)
   }
 
+  const forgotPassword = () => {
+    navigate({ pathname: "/olvido-contraseña" });
+    // Pendiente por crear
+  }
+
   return (
     <Grid2
       container
       className={classes.root}
-      sx={{ marginTop: isMobile && "60px" }}
+      sx={{ marginTop: isMobile ? "60px" : undefined }}
     >
       <CssBaseline />
       <Grid2
@@ -147,10 +154,10 @@ export default function Login() {
           lg: 7,
         }}
         className={classes.image}
-        style={{ backgroundImage: "url(" + art + ")" }}
         sx={{
-          width: isTab && "100%",
+          width: isTab ? "100%" : undefined,
           height: isTab ? "40vh" : "100%",
+          backgroundImage: "url(" + art + ")"
         }}
       />
       <Grid2 size={{ xs: 12, lg: 5 }} component={Paper} elevation={6} square>
@@ -191,7 +198,7 @@ export default function Login() {
                       value={email}
                       label="Correo electrónico"
                       error={!isAValidEmail(email)}
-                      onChange={(e) => handleEmailChange(e)}
+                      onChange={handleEmailChange}
                     />
                   </FormControl>
                 </Grid2>
@@ -206,7 +213,7 @@ export default function Login() {
                       value={password}
                       label="Contraseña"
                       error={!isAValidPassword(password)}
-                      onChange={(e) => handlePasswordChange(e)}
+                      onChange={handlePasswordChange}
                       endAdornment={
                         <InputAdornment position="end">
                           <IconButton

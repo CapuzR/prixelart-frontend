@@ -3,7 +3,7 @@ import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import { makeStyles } from '@mui/styles';
 import Button from '@mui/material/Button';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/styles';
 
@@ -31,7 +31,7 @@ export default function PrixelartSection() {
   const [arts, setArts] = useState(0);
   const [products, setProducts] = useState(0);
   const sectionRef = useRef(null);
-  const history = useHistory();
+  const navigate = useNavigate();
   const theme = useTheme();
 
   const isMobile = useMediaQuery(theme.breakpoints.down('xs'));
@@ -109,7 +109,7 @@ export default function PrixelartSection() {
   };
 
   const handleMain = () => {
-    history.push({ pathname: '/' });
+    navigate({ pathname: '/' });
     ReactGA.event({
       category: 'Home CB',
       action: 'Leer_mas',

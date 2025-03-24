@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-import { useHistory } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 
 import TextField from "@mui/material/TextField"
 import Button from "@mui/material/Button"
@@ -17,7 +17,7 @@ export default function CreatePaymentMethod() {
   const [name, setName] = useState<string>()
   const [instructions, setInstructions] = useState<string>()
   const [paymentData, setPaymentData] = useState<string>()
-  const history = useHistory()
+  const navigate = useNavigate()
 
   const { showSnackBar } = useSnackBar()
   const { setLoading } = useLoading()
@@ -26,11 +26,14 @@ export default function CreatePaymentMethod() {
     event.preventDefault()
     setLoading(true)
 
+    const adminToken = localStorage.getItem("adminToken")
+    const adminData = adminToken ? JSON.parse(adminToken).username : null
+    
     const data = {
       active: active,
       name: name,
       createdOn: new Date(),
-      createdBy: JSON.parse(localStorage.getItem("adminToken")).username,
+      createdBy: adminData,
       instructions: instructions,
       paymentData: paymentData
     }
@@ -44,7 +47,7 @@ export default function CreatePaymentMethod() {
       setName("")
       setInstructions("")
       setPaymentData("")
-      history.push({ pathname: "/admin/payment-method/read" })
+      navigate({ pathname: "/admin/payment-method/read" })
     }
   }
 

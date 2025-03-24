@@ -16,6 +16,31 @@ import useMediaQuery from "@mui/material/useMediaQuery"
 
 import { Prixer } from "../../../../../types/prixer.types"
 import { Consumer } from "../../../../../types/consumer.types"
+import { Organization } from "../../../../../types/organization.types"
+import { Account } from "../../../../../types/account.types"
+import { Permissions } from "../../../../../types/permissions.types"
+interface GridProps {
+  tiles: Prixer[]
+  selectedPrixer: Prixer | undefined
+  setSelectedPrixer: (prixer: Prixer | undefined) => void
+  permissions: Permissions
+  consumers: Consumer[]
+  setSelectedConsumer: (consumer: Consumer) => void
+  TurnInto: (e: React.ChangeEvent<HTMLInputElement>, prixer: string) => void
+  ChangeVisibility: (
+    e: React.ChangeEvent<HTMLInputElement>,
+    prixer: Prixer
+  ) => void
+  setOpenDestroy: (x: boolean) => void
+  accounts: Account[]
+  setType: (type: string) => void
+  setOpenNewMovement: (x: boolean) => void
+  setOpenList: (x: boolean) => void
+  setOpenNewBalance: (x: boolean) => void
+  setOpenInfo: (x: boolean) => void
+  setOpenComission: (x: boolean) => void
+  org: boolean
+}
 
 export default function Grid({
   tiles,
@@ -35,9 +60,26 @@ export default function Grid({
   setOpenInfo,
   setOpenComission,
   org,
-}) {
+}: GridProps) {
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
+
+  const formatBalance = (accounts: Account[], tile: Prixer) => {
+    const balance = accounts?.find((acc) => acc._id === tile?.account)?.balance
+
+    if (balance) {
+      const numericBalance = Number(balance)
+      const formattedBalance =
+        numericBalance !== undefined && numericBalance !== null
+          ? numericBalance?.toLocaleString("de-DE", {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })
+          : "0,00"
+
+      return formattedBalance
+    }
+  }
 
   return (
     <Grid2
@@ -272,7 +314,7 @@ export default function Grid({
                     gutterBottom
                     style={{ fontSize: 16, color: "#404e5c" }}
                   >
-                    {tile?.username} - 
+                    {tile?.username} -
                     {tile?.specialty ||
                       tile?.specialtyArt?.map(
                         (specialty, index) =>
@@ -297,14 +339,7 @@ export default function Grid({
                     }}
                   >
                     <Typography variant="h6" align="center" color="#404e5c">
-                      Balance $
-                      {accounts &&
-                        accounts
-                          ?.find((acc) => acc._id === tile?.account)
-                          ?.balance.toLocaleString("de-DE", {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                          })}
+                      Balance ${accounts && formatBalance(accounts, tile)}
                     </Typography>
                     <div
                       style={{

@@ -26,6 +26,7 @@ import { deleteMovement, getMovements } from "../api"
 // import { getAllPrixers, getAllOrgs } from "../prixers/api"
 import { getPrixersNames, sortMovements } from "../service"
 import PaginationBar from "@components/Pagination/PaginationBar"
+import { Permissions } from "../../../../../types/permissions.types"
 
 const useStyles = makeStyles()((theme: Theme) => {
   return {
@@ -51,7 +52,15 @@ const useStyles = makeStyles()((theme: Theme) => {
   }
 })
 
-export default function MovementsTable({ openDetails, permissions }) {
+interface TableProps {
+  openDetails: (row: Movement) => void | Promise<void>
+  permissions: Permissions
+}
+
+export default function MovementsTable({
+  openDetails,
+  permissions,
+}: TableProps) {
   const { classes } = useStyles()
   const { showSnackBar } = useSnackBar()
   const { setLoading } = useLoading()

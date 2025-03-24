@@ -8,6 +8,18 @@ import Button from "@mui/material/Button"
 import { nanoid } from "nanoid"
 import { createAccount, createMovement } from "../api"
 import { useTheme } from "@mui/material/styles"
+import { Prixer } from "../../../../../types/prixer.types"
+interface WalletProps {
+  selectedPrixer: Prixer | undefined
+  handleClose: () => void
+  date: Date
+  balance: string | number
+  setBalance: (date: number | string) => void
+  showSnackBar: (text: string) => void
+  readPrixers: () => Promise<void>
+  readOrg: () => Promise<void>
+  getBalance: () => Promise<void>
+}
 
 export default function CreateWallet({
   selectedPrixer,
@@ -19,7 +31,7 @@ export default function CreateWallet({
   readPrixers,
   readOrg,
   getBalance,
-}) {
+}: WalletProps) {
   const theme = useTheme()
 
   const openNewAccount = async () => {
@@ -27,25 +39,26 @@ export default function CreateWallet({
     const data = {
       _id: nanoid(24),
       balance: 0,
-      email: selectedPrixer.email,
+      email: selectedPrixer?.email,
     }
     const wallet = await createAccount(data)
+    const adminToken = localStorage.getItem("adminToken")
+    const adminData = adminToken ? JSON.parse(adminToken).username : null
 
-    if (wallet.status === 200 && balance > 0) {
+    if (wallet && wallet.status === 200 && balance) {
       ID = wallet.data.createAccount.newAccount._id
       const data2 = {
         _id: nanoid(),
         createdOn: new Date(),
-        createdBy: JSON.parse(localStorage.getItem("adminToken")).username,
-        date: date,
+        createdBy: adminData,
+        date: new Date(date),
         destinatary: ID,
         description: "Saldo inicial",
         type: "Depósito",
-        value: balance,
+        value: Number(balance),
       }
 
       const firstMovement = await createMovement(data2)
-      console.log(firstMovement.data)
     }
 
     showSnackBar("Cartera creada y balance actualizado exitosamente.")

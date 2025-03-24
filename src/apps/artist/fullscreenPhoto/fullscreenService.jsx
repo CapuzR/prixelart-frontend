@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { makeStyles, withStyles } from '@mui/styles';
 import { useTheme } from '@mui/styles';
 import axios from 'axios';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
 import Backdrop from '@mui/material/Backdrop';
@@ -165,7 +165,7 @@ const useStyles = makeStyles((theme) => ({
 export default function SoloService(props) {
   const classes = useStyles();
   const [tile, setTile] = useState(undefined);
-  const history = useHistory();
+  const navigate = useNavigate();
   const globalParams = getUrlParams();
   const service = globalParams.get('/service');
   const [backdrop, setBackdrop] = useState(true);
@@ -712,7 +712,7 @@ export default function SoloService(props) {
                         padding: '1px 5px',
                       }}
                       onClick={() => {
-                        history.push({ pathname: '/prixer=' + tile?.prixer });
+                        navigate({ pathname: '/prixer=' + tile?.prixer });
                       }}
                     >
                       de {tile?.prixer}

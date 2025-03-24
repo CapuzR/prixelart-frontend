@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { useHistory } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 
 import IconButton from "@mui/material/IconButton"
 
@@ -19,7 +19,7 @@ export default function ShippingTable({
   setPrice,
   setActive,
 }) {
-  const history = useHistory()
+  const navigate = useNavigate()
   const { showSnackBar } = useSnackBar()
   const { setLoading } = useLoading()
   const permissions = getPermissions()
@@ -53,7 +53,7 @@ export default function ShippingTable({
     setName(shippingMethod.name)
     setPrice(shippingMethod.price)
     setActive(shippingMethod.active)
-    history.push("/admin/shipping-method/update/" + shippingMethod._id)
+    navigate("/admin/shipping-method/update/" + shippingMethod._id)
   }
 
   const deleteShippingMethod = async (shippingMethod: ShippingMethod) => {
@@ -64,7 +64,7 @@ export default function ShippingTable({
   }
 
   const handleAction = (action: string) => {
-    history.push({ pathname: "/admin/shipping-method/" + action })
+    navigate({ pathname: "/admin/shipping-method/" + action })
   }
 
   return (

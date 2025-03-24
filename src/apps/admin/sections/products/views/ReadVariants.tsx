@@ -1,6 +1,6 @@
 import React from 'react';
 import { useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Link from '@mui/material/Link';
 import { makeStyles } from '@mui/styles';
 import Table from '@mui/material/Table';
@@ -40,7 +40,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function ReadVariants(props) {
   const classes = useStyles();
-  const history = useHistory();
+  const navigate = useNavigate();
   const [rows, setRows] = useState();
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState();
@@ -80,11 +80,11 @@ export default function ReadVariants(props) {
   const handleActive = (variant, action) => {
     props.setVariant(variant);
     action == 'create' &&
-      history.push('/product' + '/' + props.product._id + '/variant/' + action);
+      navigate('/product' + '/' + props.product._id + '/variant/' + action);
     action == 'read' &&
-      history.push('/product' + '/' + props.product._id + '/variant/' + action);
+      navigate('/product' + '/' + props.product._id + '/variant/' + action);
     action == 'update' &&
-      history.push(
+      navigate(
         '/product' + '/' + props.product._id + '/variant/' + variant._id + '/' + action
       );
   };

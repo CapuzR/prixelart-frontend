@@ -19,7 +19,7 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import Img from 'react-cool-img';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/styles';
 import WarpImage from '@apps/admin/sections/products/components/WarpImage';
@@ -66,7 +66,7 @@ export default function Catalog(props) {
   const [openArtFormDialog, setOpenArtFormDialog] = useState(false);
   const [openShoppingCart, setOpenShoppingCart] = useState(false);
   const [selectedArt, setSelectedArt] = useState(undefined);
-  const history = useHistory();
+  const navigate = useNavigate();
   const theme = useTheme();
   const [openServiceFormDialog, setOpenServiceFormDialog] = useState(false);
   const [createdService, setCreatedService] = useState(false);

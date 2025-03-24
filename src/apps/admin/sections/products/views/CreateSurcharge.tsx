@@ -1,251 +1,254 @@
-import React from 'react';
-import { useState, useEffect } from 'react';
-import { makeStyles } from '@mui/styles';
-import { useHistory } from 'react-router-dom';
+import React from "react"
+import { useState, useEffect } from "react"
+import { useNavigate } from "react-router-dom"
 
-import Title from '@apps/admin/components/Title';
-import axios from 'axios';
-import TextField from '@mui/material/TextField';
-import InputLabel from '@mui/material/InputLabel';
-import OutlinedInput from '@mui/material/OutlinedInput';
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
-import Button from '@mui/material/Button';
-import Grid from '@mui/material/Grid';
-import Snackbar from '@mui/material/Snackbar';
-import CircularProgress from '@mui/material/CircularProgress';
-import { useTheme } from '@mui/styles';
-import useMediaQuery from '@mui/material/useMediaQuery';
-import FormControl from '@mui/material/FormControl';
-import clsx from 'clsx';
-import { isAValidName, isAValidCi, isAValidPhoneNum, isAValidEmail } from 'utils/validations';
-import Checkbox from '@mui/material/Checkbox';
-import Backdrop from '@mui/material/Backdrop';
-import InputAdornment from '@mui/material/InputAdornment';
-import { Typography } from '@mui/material';
-import { nanoid } from 'nanoid';
-import Accordion from '@mui/material/Accordion';
-import AccordionSummary from '@mui/material/AccordionSummary';
-import AccordionDetails from '@mui/material/AccordionDetails';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import Divider from '@mui/material/Divider';
-import FormControlLabel from '@mui/material/FormControlLabel';
+import Title from "@apps/admin/components/Title"
+import axios from "axios"
+import TextField from "@mui/material/TextField"
+import InputLabel from "@mui/material/InputLabel"
+import OutlinedInput from "@mui/material/OutlinedInput"
+import Select from "@mui/material/Select"
+import MenuItem from "@mui/material/MenuItem"
+import Button from "@mui/material/Button"
+import Grid2 from "@mui/material/Grid2"
+import Snackbar from "@mui/material/Snackbar"
+import CircularProgress from "@mui/material/CircularProgress"
+import { useTheme } from "@mui/styles"
+import useMediaQuery from "@mui/material/useMediaQuery"
+import FormControl from "@mui/material/FormControl"
+import clsx from "clsx"
+import {
+  isAValidName,
+  isAValidCi,
+  isAValidPhoneNum,
+  isAValidEmail,
+} from "utils/validations"
+import Checkbox from "@mui/material/Checkbox"
+import Backdrop from "@mui/material/Backdrop"
+import InputAdornment from "@mui/material/InputAdornment"
+import { Typography } from "@mui/material"
+import { nanoid } from "nanoid"
+import Accordion from "@mui/material/Accordion"
+import AccordionSummary from "@mui/material/AccordionSummary"
+import AccordionDetails from "@mui/material/AccordionDetails"
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore"
+import Divider from "@mui/material/Divider"
+import FormControlLabel from "@mui/material/FormControlLabel"
+import { Theme } from "@mui/material/styles"
+import { makeStyles } from "tss-react/mui"
+import { useSnackBar, useLoading } from "@context/GlobalContext"
+import React from "react"
 
-const useStyles = makeStyles((theme) => ({
-  seeMore: {
-    marginTop: theme.spacing(3),
-  },
-  backdrop: {
-    zIndex: theme.zIndex.drawer + 1,
-    color: theme.palette.primary.main,
-  },
-  loaderImage: {
-    width: '120%',
-    border: '2px',
-    height: '30vh',
-    borderStyle: 'groove',
-    borderColor: '#d33f49',
-    backgroundColor: '#ededed',
-    display: 'flex',
-    flexDirection: 'row',
-  },
-  imageLoad: {
-    maxWidth: '100%',
-    maxHeight: '100%',
-    padding: '5px',
-    marginTop: '5px',
-  },
-  formHead: {
-    display: 'flex',
-    flexDirection: 'row',
-    alignContent: 'center',
-    justifyContent: 'space-evenly',
-    alignItems: 'center',
-  },
-  buttonImgLoader: {
-    cursor: 'pointer',
-    padding: '5px',
-  },
-  buttonEdit: {
-    cursor: 'pointer',
-    padding: '5px',
-  },
-}));
+const useStyles = makeStyles()((theme: Theme) => {
+  return {
+    loaderImage: {
+      width: "120%",
+      border: "2px",
+      height: "30vh",
+      borderStyle: "groove",
+      borderColor: "#d33f49",
+      backgroundColor: "#ededed",
+      display: "flex",
+      flexDirection: "row",
+    },
+    imageLoad: {
+      maxWidth: "100%",
+      maxHeight: "100%",
+      padding: "5px",
+      marginTop: "5px",
+    },
+    formHead: {
+      display: "flex",
+      flexDirection: "row",
+      alignContent: "center",
+      justifyContent: "space-evenly",
+      alignItems: "center",
+    },
+    buttonImgLoader: {
+      cursor: "pointer",
+      padding: "5px",
+    },
+    buttonEdit: {
+      cursor: "pointer",
+      padding: "5px",
+    },
+  }
+})
 
 export default function CreateSurcharge() {
-  const classes = useStyles();
-  const theme = useTheme();
-  const history = useHistory();
+  const { classes } = useStyles()
+  const theme = useTheme()
+  const navigate = useNavigate()
+  const { showSnackBar } = useSnackBar()
+  const { setLoading } = useLoading()
 
-  const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
-  const [active, setActive] = useState(true);
-  const [name, setName] = useState();
-  const [description, setDescription] = useState();
-  const [type, setType] = useState('Porcentaje');
-  const [value, setValue] = useState(0);
-  const [appliedProducts, setAppliedProducts] = useState([]);
-  const [appliedUsers, setAppliedUsers] = useState([]);
-  const [appliedPercentage, setAppliedPercentage] = useState('ownerComission');
-  const [owners, setOwners] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [buttonState, setButtonState] = useState(false);
-  const [products, setProducts] = useState();
-  const discountTypes = ['Porcentaje', 'Monto'];
+  const [active, setActive] = useState(true)
+  const [name, setName] = useState("")
+  const [description, setDescription] = useState()
+  const [type, setType] = useState("Porcentaje")
+  const [value, setValue] = useState("")
+  const [appliedProducts, setAppliedProducts] = useState([])
+  const [appliedUsers, setAppliedUsers] = useState([])
+  const [appliedPercentage, setAppliedPercentage] = useState("ownerComission")
+  const [owners, setOwners] = useState([])
+  const [buttonState, setButtonState] = useState(false)
+  const [products, setProducts] = useState()
+  const discountTypes = ["Porcentaje", "Monto"]
   const [considerations, setConsiderations] = useState({
     artista: { type: type, value: value },
     corporativo: { type: type, value: value },
     da: { type: type, value: value },
     prixer: { type: type, value: value },
-  });
+  })
   //Error states.
-  const [errorMessage, setErrorMessage] = useState();
-  const [snackBarError, setSnackBarError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState()
+  const [snackBarError, setSnackBarError] = useState(false)
 
-  const handleConsiderations = (client, type, value) => {
-    if (type === 'type') {
+  const handleConsiderations = (
+    client: string,
+    type: string,
+    value: string
+  ) => {
+    if (type === "type") {
       setConsiderations((prevState) => {
-        const updatedClient = {
+        const updatedClient: any = {
           ...prevState[client],
           type: value,
-        };
+        }
         return {
           ...prevState,
           [client]: updatedClient,
-        };
-      });
+        }
+      })
     } else {
       setConsiderations((prevState) => {
         const updatedClient = {
           ...prevState[client],
           value: Number(value),
-        };
+        }
         return {
           ...prevState,
           [client]: updatedClient,
-        };
-      });
+        }
+      })
     }
-  };
+  }
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault()
 
     if (!name && !type && !value && !!appliedPercentage) {
-      setErrorMessage('Por favor completa todos los campos requeridos.');
-      setSnackBarError(true);
+      setErrorMessage("Por favor completa todos los campos requeridos.")
+      setSnackBarError(true)
     } else {
-      setLoading(true);
-      setButtonState(true);
+      setLoading(true)
+      setButtonState(true)
       const data = {
         surchargeId: nanoid(6),
         name: name,
         active: active,
         description: description,
         type: type,
-        value: value.replace(/[,]/gi, '.'),
+        value: value.replace(/[,]/gi, "."),
         appliedProducts: appliedProducts,
         appliedUsers: appliedUsers,
         appliedPercentage: appliedPercentage,
         considerations: considerations,
-        adminToken: localStorage.getItem('adminTokenV'),
-      };
-      const base_url = import.meta.env.VITE_BACKEND_URL + '/surcharge/create';
-      const response = await axios.post(base_url, data);
+        adminToken: localStorage.getItem("adminTokenV"),
+      }
+      const base_url = import.meta.env.VITE_BACKEND_URL + "/surcharge/create"
+      const response = await axios.post(base_url, data)
       if (response.data.success === false) {
-        setLoading(false);
-        setButtonState(false);
-        setErrorMessage(response.data.message);
-        setSnackBarError(true);
+        setLoading(false)
+        setButtonState(false)
+        setErrorMessage(response.data.message)
+        setSnackBarError(true)
       } else {
-        setErrorMessage('Creación de recargo exitoso.');
-        setSnackBarError(true);
-        setActive(false);
-        setName();
-        setDescription();
-        setType();
-        setValue();
-        setAppliedProducts([]);
-        setAppliedUsers([]);
-        history.push('/product/read');
+        setErrorMessage("Creación de recargo exitoso.")
+        setSnackBarError(true)
+        setActive(false)
+        setName()
+        setDescription()
+        setType()
+        setValue()
+        setAppliedProducts([])
+        setAppliedUsers([])
+        navigate("/product/read")
       }
     }
-  };
+  }
 
   const getProducts = async () => {
-    setLoading(true);
-    const base_url = import.meta.env.VITE_BACKEND_URL + '/product/read-allv1';
+    setLoading(true)
+    const base_url = import.meta.env.VITE_BACKEND_URL + "/product/read-allv1"
     await axios
       .post(
         base_url,
-        { adminToken: localStorage.getItem('adminTokenV') },
+        { adminToken: localStorage.getItem("adminTokenV") },
         { withCredentials: true }
       )
       .then((response) => {
-        setProducts(response.data.products);
+        setProducts(response.data.products)
       })
       .catch((error) => {
-        console.log(error);
-      });
-    setLoading(false);
-  };
+        console.log(error)
+      })
+    setLoading(false)
+  }
 
   const getOwnersAndPrixers = async () => {
-    setLoading(true);
-    const base_url = import.meta.env.VITE_BACKEND_URL + '/prixer/getOwnersAndPrixers';
+    setLoading(true)
+    const base_url =
+      import.meta.env.VITE_BACKEND_URL + "/prixer/getOwnersAndPrixers"
     await axios
       .post(
         base_url,
-        { adminToken: localStorage.getItem('adminTokenV') },
+        { adminToken: localStorage.getItem("adminTokenV") },
         { withCredentials: true }
       )
       .then((response) => {
-        setOwners(response.data.users);
+        setOwners(response.data.users)
       })
       .catch((error) => {
-        console.log(error);
-      });
-    setLoading(false);
-  };
+        console.log(error)
+      })
+    setLoading(false)
+  }
 
   useEffect(() => {
-    getOwnersAndPrixers();
-    getProducts();
-  }, []);
+    getOwnersAndPrixers()
+    getProducts()
+  }, [])
 
   const changeAppliedUsers = (e) => {
-    setAppliedUsers(e.target.value);
-  };
+    setAppliedUsers(e.target.value)
+  }
 
   return (
     <React.Fragment>
-      {
-        <Backdrop className={classes.backdrop} open={loading}>
-          <CircularProgress />
-        </Backdrop>
-      }
-      <Title>Crear Recargo</Title>
+      <Title title="Crear Recargo" />
       <form
         style={{
-          height: 'auto',
+          height: "auto",
         }}
         encType="multipart/form-data"
         noValidate
         onSubmit={handleSubmit}
       >
-        <Grid>
+        <Grid2>
           <Checkbox
             checked={active}
             color="primary"
-            inputProps={{ 'aria-label': 'secondary checkbox' }}
+            inputProps={{ "aria-label": "secondary checkbox" }}
             onChange={() => {
-              active ? setActive(false) : setActive(true);
+              active ? setActive(false) : setActive(true)
             }}
           />
           Habilitado
-        </Grid>
-        <div style={{ display: 'flex', marginTop: 10, marginBottom: 20 }}>
-          <Grid style={{ width: '50%', marginRight: 10 }}>
-            <FormControl className={classes.margin} variant="outlined" fullWidth={true}>
+        </Grid2>
+        <div style={{ display: "flex", marginTop: 10, marginBottom: 20 }}>
+          <Grid2 style={{ width: "50%", marginRight: 10 }}>
+            <FormControl variant="outlined" fullWidth={true}>
               <TextField
                 variant="outlined"
                 required
@@ -253,69 +256,82 @@ export default function CreateSurcharge() {
                 label="Nombre"
                 value={name}
                 onChange={(e) => {
-                  setName(e.target.value);
+                  setName(e.target.value)
                 }}
               />
             </FormControl>
-            <div style={{ marginTop: 10, display: 'flex', alignItems: 'center' }}>
+            <div
+              style={{ marginTop: 10, display: "flex", alignItems: "center" }}
+            >
               <Typography>PVP:</Typography>
               <FormControl
                 variant="outlined"
                 fullWidth={true}
                 required
-                style={{ width: '50%', marginRight: 10, marginLeft: 10 }}
+                style={{ width: "50%", marginRight: 10, marginLeft: 10 }}
               >
                 <InputLabel>Tipo</InputLabel>
                 <Select
-                  style={{ width: '100%' }}
+                  style={{ width: "100%" }}
                   input={<OutlinedInput />}
                   value={type}
                   onChange={(e) => {
-                    setType(e.target.value);
+                    setType(e.target.value)
                   }}
                 >
                   {discountTypes &&
-                    discountTypes.map((type) => <MenuItem value={type}>{type}</MenuItem>)}
+                    discountTypes.map((type) => (
+                      <MenuItem value={type}>{type}</MenuItem>
+                    ))}
                 </Select>
               </FormControl>
 
-              <FormControl style={{ width: '50%' }} variant="outlined" xs={12} fullWidth={true}>
-                {type === 'Monto' ? (
+              <FormControl
+                style={{ width: "50%" }}
+                variant="outlined"
+                fullWidth={true}
+              >
+                {type === "Monto" ? (
                   <TextField
                     variant="outlined"
                     required
                     fullWidth
                     type="number"
                     label="Valor"
-                    InputProps={{
-                      startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                    slotProps={{
+                      input: {
+                        startAdornment: (
+                          <InputAdornment position="start">$</InputAdornment>
+                        ),
+                      },
                     }}
                     value={value}
                     onChange={(e) => {
-                      setValue(e.target.value);
+                      setValue(e.target.value)
                     }}
-                    error={value !== undefined && !isAValidPrice(value)}
+                    // error={value !== undefined && !isAValidPrice(value)}
                   />
                 ) : (
-                  type === 'Porcentaje' && (
+                  type === "Porcentaje" && (
                     <TextField
                       variant="outlined"
                       required
                       fullWidth
                       type="number"
-                      InputProps={{
-                        startAdornment: <InputAdornment position="start">%</InputAdornment>,
-                        inputProps: { min: 1, max: 100 },
-                      }}
-                      InputLabelProps={{
-                        shrink: true,
+                      slotProps={{
+                        input: {
+                          startAdornment: (
+                            <InputAdornment position="start">%</InputAdornment>
+                          ),
+                          inputProps: { min: 1, max: 100, shrink: true },
+                        },
                       }}
                       label="Valor"
                       value={value}
                       onChange={(e) => {
-                        setValue(e.target.value);
+                        setValue(e.target.value)
                       }}
-                      error={value !== undefined && !isAValidPrice(value)}
+                      // error={value !== undefined && !isAValidPrice(value)}
                     />
                   )
                 )}
@@ -325,63 +341,73 @@ export default function CreateSurcharge() {
               <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                 <FormControlLabel
                   onClick={(event) => {
-                    event.stopPropagation();
+                    event.stopPropagation()
                     setConsiderations((prev) => {
-                      const updatedConsiderations = { ...prev };
+                      const updatedConsiderations = { ...prev }
                       Object.keys(updatedConsiderations).forEach((client) => {
                         updatedConsiderations[client] = {
                           ...updatedConsiderations[client],
                           type: type,
                           value: Number(value),
-                        };
-                      });
-                      return updatedConsiderations;
-                    });
+                        }
+                      })
+                      return updatedConsiderations
+                    })
                   }}
                   control={
                     <Checkbox
                       color="primary"
                       checked={
-                        Object.values(considerations).every((client) => client.value === value)
+                        Object.values(considerations).every(
+                          (client) => client.value === value
+                        )
                           ? true
                           : false
                       }
                     />
                   }
-                  label={'Ajustes'}
-                  style={{ color: '#404e5c' }}
+                  label={"Ajustes"}
+                  style={{ color: "#404e5c" }}
                 />
               </AccordionSummary>
-              <AccordionDetails style={{ display: 'flex', flexDirection: 'column' }}>
+              <AccordionDetails
+                style={{ display: "flex", flexDirection: "column" }}
+              >
                 <div
                   style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'end',
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "end",
                   }}
                 >
-                  <Typography style={{ width: '40%' }}>Artista:</Typography>
+                  <Typography style={{ width: "40%" }}>Artista:</Typography>
                   <FormControl
                     variant="outlined"
                     fullWidth={true}
                     required
-                    style={{ width: '30%', marginRight: 10, marginLeft: 10 }}
+                    style={{ width: "30%", marginRight: 10, marginLeft: 10 }}
                   >
                     <InputLabel>Tipo</InputLabel>
                     <Select
-                      style={{ width: '100%' }}
+                      style={{ width: "100%" }}
                       input={<OutlinedInput />}
                       value={considerations.artista.type}
                       onChange={(e) => {
-                        handleConsiderations('artista', 'type', e.target.value);
+                        handleConsiderations("artista", "type", e.target.value)
                       }}
                     >
                       {discountTypes &&
-                        discountTypes.map((type) => <MenuItem value={type}>{type}</MenuItem>)}
+                        discountTypes.map((type) => (
+                          <MenuItem value={type}>{type}</MenuItem>
+                        ))}
                     </Select>
                   </FormControl>
-                  <FormControl style={{ width: '30%' }} variant="outlined" xs={12} fullWidth={true}>
-                    {considerations.artista.type === 'Monto' ? (
+                  <FormControl
+                    style={{ width: "30%" }}
+                    variant="outlined"
+                    fullWidth={true}
+                  >
+                    {considerations.artista.type === "Monto" ? (
                       <TextField
                         variant="outlined"
                         required
@@ -389,37 +415,51 @@ export default function CreateSurcharge() {
                         type="number"
                         label="Valor"
                         InputProps={{
-                          startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                          startAdornment: (
+                            <InputAdornment position="start">$</InputAdornment>
+                          ),
                         }}
                         value={considerations.artista.value}
                         onChange={(e) => {
-                          handleConsiderations('artista', 'value', e.target.value);
+                          handleConsiderations(
+                            "artista",
+                            "value",
+                            e.target.value
+                          )
                         }}
-                        error={value !== undefined && !isAValidPrice(value)}
+                        // error={value !== undefined && !isAValidPrice(value)}
                       />
                     ) : (
-                      considerations.artista.type === 'Porcentaje' && (
+                      considerations.artista.type === "Porcentaje" && (
                         <TextField
                           variant="outlined"
                           required
                           fullWidth
                           type="number"
-                          InputProps={{
-                            startAdornment: <InputAdornment position="start">%</InputAdornment>,
-                            inputProps: {
-                              min: 1,
-                              max: value,
+                          slotProps={{
+                            input: {
+                              startAdornment: (
+                                <InputAdornment position="start">
+                                  %
+                                </InputAdornment>
+                              ),
+                              inputProps: {
+                                min: 1,
+                                max: value,
+                                shrink: true,
+                              },
                             },
-                          }}
-                          InputLabelProps={{
-                            shrink: true,
                           }}
                           label="Valor"
                           value={considerations.artista.value}
                           onChange={(e) => {
-                            handleConsiderations('artista', 'value', e.target.value);
+                            handleConsiderations(
+                              "artista",
+                              "value",
+                              e.target.value
+                            )
                           }}
-                          error={value !== undefined && !isAValidPrice(value)}
+                          // error={value !== undefined && !isAValidPrice(value)}
                         />
                       )
                     )}
@@ -428,33 +468,44 @@ export default function CreateSurcharge() {
                 <div
                   style={{
                     marginTop: 20,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'end',
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "end",
                   }}
                 >
-                  <Typography style={{ width: '40%' }}>Corporativo:</Typography>
+                  <Typography style={{ width: "40%" }}>Corporativo:</Typography>
                   <FormControl
                     variant="outlined"
                     fullWidth={true}
                     required
-                    style={{ width: '30%', marginRight: 10, marginLeft: 10 }}
+                    style={{ width: "30%", marginRight: 10, marginLeft: 10 }}
                   >
                     <InputLabel>Tipo</InputLabel>
                     <Select
-                      style={{ width: '100%' }}
+                      style={{ width: "100%" }}
                       input={<OutlinedInput />}
                       value={considerations.corporativo.type}
                       onChange={(e) => {
-                        handleConsiderations('corporativo', 'type', e.target.value);
+                        handleConsiderations(
+                          "corporativo",
+                          "type",
+                          e.target.value
+                        )
                       }}
                     >
                       {discountTypes &&
-                        discountTypes.map((type) => <MenuItem value={type}>{type}</MenuItem>)}
+                        discountTypes.map((type) => (
+                          <MenuItem value={type}>{type}</MenuItem>
+                        ))}
                     </Select>
                   </FormControl>
-                  <FormControl style={{ width: '30%' }} variant="outlined" xs={12} fullWidth={true}>
-                    {considerations.corporativo.type === 'Monto' ? (
+                  <FormControl
+                    style={{ width: "30%" }}
+                    variant="outlined"
+                    xs={12}
+                    fullWidth={true}
+                  >
+                    {considerations.corporativo.type === "Monto" ? (
                       <TextField
                         variant="outlined"
                         required
@@ -462,23 +513,33 @@ export default function CreateSurcharge() {
                         type="number"
                         label="Valor"
                         InputProps={{
-                          startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                          startAdornment: (
+                            <InputAdornment position="start">$</InputAdornment>
+                          ),
                         }}
                         value={considerations.corporativo.value}
                         onChange={(e) => {
-                          handleConsiderations('corporativo', 'value', e.target.value);
+                          handleConsiderations(
+                            "corporativo",
+                            "value",
+                            e.target.value
+                          )
                         }}
                         error={value !== undefined && !isAValidPrice(value)}
                       />
                     ) : (
-                      considerations.corporativo.type === 'Porcentaje' && (
+                      considerations.corporativo.type === "Porcentaje" && (
                         <TextField
                           variant="outlined"
                           required
                           fullWidth
                           type="number"
                           InputProps={{
-                            startAdornment: <InputAdornment position="start">%</InputAdornment>,
+                            startAdornment: (
+                              <InputAdornment position="start">
+                                %
+                              </InputAdornment>
+                            ),
                             inputProps: { min: 1, max: value },
                           }}
                           InputLabelProps={{
@@ -487,7 +548,11 @@ export default function CreateSurcharge() {
                           label="Valor"
                           value={considerations.corporativo.value}
                           onChange={(e) => {
-                            handleConsiderations('corporativo', 'value', e.target.value);
+                            handleConsiderations(
+                              "corporativo",
+                              "value",
+                              e.target.value
+                            )
                           }}
                           error={value !== undefined && !isAValidPrice(value)}
                         />
@@ -498,33 +563,40 @@ export default function CreateSurcharge() {
                 <div
                   style={{
                     marginTop: 20,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'end',
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "end",
                   }}
                 >
-                  <Typography style={{ width: '40%' }}>DAs:</Typography>
+                  <Typography style={{ width: "40%" }}>DAs:</Typography>
                   <FormControl
                     variant="outlined"
                     fullWidth={true}
                     required
-                    style={{ width: '30%', marginRight: 10, marginLeft: 10 }}
+                    style={{ width: "30%", marginRight: 10, marginLeft: 10 }}
                   >
                     <InputLabel>Tipo</InputLabel>
                     <Select
-                      style={{ width: '100%' }}
+                      style={{ width: "100%" }}
                       input={<OutlinedInput />}
                       value={considerations.da.type}
                       onChange={(e) => {
-                        handleConsiderations('da', 'type', e.target.value);
+                        handleConsiderations("da", "type", e.target.value)
                       }}
                     >
                       {discountTypes &&
-                        discountTypes.map((type) => <MenuItem value={type}>{type}</MenuItem>)}
+                        discountTypes.map((type) => (
+                          <MenuItem value={type}>{type}</MenuItem>
+                        ))}
                     </Select>
                   </FormControl>
-                  <FormControl style={{ width: '30%' }} variant="outlined" xs={12} fullWidth={true}>
-                    {considerations.da.type === 'Monto' ? (
+                  <FormControl
+                    style={{ width: "30%" }}
+                    variant="outlined"
+                    xs={12}
+                    fullWidth={true}
+                  >
+                    {considerations.da.type === "Monto" ? (
                       <TextField
                         variant="outlined"
                         required
@@ -532,23 +604,29 @@ export default function CreateSurcharge() {
                         type="number"
                         label="Valor"
                         InputProps={{
-                          startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                          startAdornment: (
+                            <InputAdornment position="start">$</InputAdornment>
+                          ),
                         }}
                         value={considerations.da.value}
                         onChange={(e) => {
-                          handleConsiderations('da', 'value', e.target.value);
+                          handleConsiderations("da", "value", e.target.value)
                         }}
                         error={value !== undefined && !isAValidPrice(value)}
                       />
                     ) : (
-                      considerations.da.type === 'Porcentaje' && (
+                      considerations.da.type === "Porcentaje" && (
                         <TextField
                           variant="outlined"
                           required
                           fullWidth
                           type="number"
                           InputProps={{
-                            startAdornment: <InputAdornment position="start">%</InputAdornment>,
+                            startAdornment: (
+                              <InputAdornment position="start">
+                                %
+                              </InputAdornment>
+                            ),
                             inputProps: { min: 1, max: value },
                           }}
                           InputLabelProps={{
@@ -557,7 +635,7 @@ export default function CreateSurcharge() {
                           label="Valor"
                           value={considerations.da.value}
                           onChange={(e) => {
-                            handleConsiderations('da', 'value', e.target.value);
+                            handleConsiderations("da", "value", e.target.value)
                           }}
                           error={value !== undefined && !isAValidPrice(value)}
                         />
@@ -568,33 +646,40 @@ export default function CreateSurcharge() {
                 <div
                   style={{
                     marginTop: 20,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'end',
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "end",
                   }}
                 >
-                  <Typography style={{ width: '40%' }}>Prixer:</Typography>
+                  <Typography style={{ width: "40%" }}>Prixer:</Typography>
                   <FormControl
                     variant="outlined"
                     fullWidth={true}
                     required
-                    style={{ width: '30%', marginRight: 10, marginLeft: 10 }}
+                    style={{ width: "30%", marginRight: 10, marginLeft: 10 }}
                   >
                     <InputLabel>Tipo</InputLabel>
                     <Select
-                      style={{ width: '100%' }}
+                      style={{ width: "100%" }}
                       input={<OutlinedInput />}
                       value={considerations.prixer.type}
                       onChange={(e) => {
-                        handleConsiderations('prixer', 'type', e.target.value);
+                        handleConsiderations("prixer", "type", e.target.value)
                       }}
                     >
                       {discountTypes &&
-                        discountTypes.map((type) => <MenuItem value={type}>{type}</MenuItem>)}
+                        discountTypes.map((type) => (
+                          <MenuItem value={type}>{type}</MenuItem>
+                        ))}
                     </Select>
                   </FormControl>
-                  <FormControl style={{ width: '30%' }} variant="outlined" xs={12} fullWidth={true}>
-                    {considerations.prixer.type === 'Monto' ? (
+                  <FormControl
+                    style={{ width: "30%" }}
+                    variant="outlined"
+                    xs={12}
+                    fullWidth={true}
+                  >
+                    {considerations.prixer.type === "Monto" ? (
                       <TextField
                         variant="outlined"
                         required
@@ -602,23 +687,33 @@ export default function CreateSurcharge() {
                         type="number"
                         label="Valor"
                         InputProps={{
-                          startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                          startAdornment: (
+                            <InputAdornment position="start">$</InputAdornment>
+                          ),
                         }}
                         value={considerations.prixer.value}
                         onChange={(e) => {
-                          handleConsiderations('prixer', 'value', e.target.value);
+                          handleConsiderations(
+                            "prixer",
+                            "value",
+                            e.target.value
+                          )
                         }}
                         error={value !== undefined && !isAValidPrice(value)}
                       />
                     ) : (
-                      considerations.prixer.type === 'Porcentaje' && (
+                      considerations.prixer.type === "Porcentaje" && (
                         <TextField
                           variant="outlined"
                           required
                           fullWidth
                           type="number"
                           InputProps={{
-                            startAdornment: <InputAdornment position="start">%</InputAdornment>,
+                            startAdornment: (
+                              <InputAdornment position="start">
+                                %
+                              </InputAdornment>
+                            ),
                             inputProps: { min: 1, max: value },
                           }}
                           InputLabelProps={{
@@ -627,7 +722,11 @@ export default function CreateSurcharge() {
                           label="Valor"
                           value={considerations.prixer.value}
                           onChange={(e) => {
-                            handleConsiderations('prixer', 'value', e.target.value);
+                            handleConsiderations(
+                              "prixer",
+                              "value",
+                              e.target.value
+                            )
                           }}
                           error={value !== undefined && !isAValidPrice(value)}
                         />
@@ -637,10 +736,10 @@ export default function CreateSurcharge() {
                 </div>
               </AccordionDetails>
             </Accordion>
-          </Grid>
+          </Grid2>
 
-          <Grid container style={{ width: '50%' }}>
-            <Grid item xs={12}>
+          <Grid2 container style={{ width: "50%" }}>
+            <Grid2 item xs={12}>
               <FormControl
                 className={clsx(classes.margin, classes.textField)}
                 variant="outlined"
@@ -655,12 +754,12 @@ export default function CreateSurcharge() {
                   label="Descripción"
                   value={description}
                   onChange={(e) => {
-                    setDescription(e.target.value);
+                    setDescription(e.target.value)
                   }}
                 />
               </FormControl>
-            </Grid>
-            <Grid item xs={12} style={{ marginTop: 10 }}>
+            </Grid2>
+            <Grid2 item xs={12} style={{ marginTop: 10 }}>
               <FormControl variant="outlined" fullWidth={true}>
                 <InputLabel>Prixer / Owner:</InputLabel>
                 <Select
@@ -670,53 +769,56 @@ export default function CreateSurcharge() {
                   multiple
                   onChange={changeAppliedUsers}
                 >
-                  {owners && owners.map((o) => <MenuItem value={o}>{o}</MenuItem>)}
+                  {owners &&
+                    owners.map((o) => <MenuItem value={o}>{o}</MenuItem>)}
                 </Select>
               </FormControl>
-            </Grid>
-          </Grid>
+            </Grid2>
+          </Grid2>
         </div>
         <Divider light variant="fullWidth" />
 
-        <Grid container spacing={2} style={{ marginTop: 20 }}>
-          <Grid item xs={12}>
+        <Grid2 container spacing={2} style={{ marginTop: 20 }}>
+          <Grid2 item xs={12}>
             <Checkbox
               checked={appliedProducts.length === products?.length}
               color="primary"
-              inputProps={{ 'aria-label': 'secondary checkbox' }}
+              inputProps={{ "aria-label": "secondary checkbox" }}
               onChange={() => {
                 if (appliedProducts.length !== products.length) {
-                  let v1 = [];
-                  products.map((product) => v1.push(product.name));
-                  setAppliedProducts(v1);
+                  let v1 = []
+                  products.map((product) => v1.push(product.name))
+                  setAppliedProducts(v1)
                 } else if (appliedProducts.length === products.length) {
-                  setAppliedProducts([]);
+                  setAppliedProducts([])
                 }
               }}
             />
             Todos los productos
-          </Grid>
+          </Grid2>
           {products &&
             products.map((product) => (
-              <Grid item xs={3}>
+              <Grid2 item xs={3}>
                 <Checkbox
                   checked={appliedProducts.includes(product.name)}
                   color="primary"
-                  inputProps={{ 'aria-label': 'secondary checkbox' }}
+                  inputProps={{ "aria-label": "secondary checkbox" }}
                   onChange={() => {
                     if (appliedProducts[0] === undefined) {
-                      setAppliedProducts([product.name]);
+                      setAppliedProducts([product.name])
                     } else if (appliedProducts.includes(product.name)) {
-                      setAppliedProducts(appliedProducts.filter((item) => item !== product.name));
+                      setAppliedProducts(
+                        appliedProducts.filter((item) => item !== product.name)
+                      )
                     } else {
-                      setAppliedProducts([...appliedProducts, product.name]);
+                      setAppliedProducts([...appliedProducts, product.name])
                     }
                   }}
                 />
                 {product.name}
-              </Grid>
+              </Grid2>
             ))}
-        </Grid>
+        </Grid2>
         <Button
           variant="contained"
           color="primary"
@@ -735,5 +837,5 @@ export default function CreateSurcharge() {
         className={classes.snackbar}
       />
     </React.Fragment>
-  );
+  )
 }

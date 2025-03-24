@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
 import clsx from 'clsx';
@@ -102,7 +102,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Variants(props) {
   const classes = useStyles();
-  const history = useHistory();
+  const navigate = useNavigate();
   const location = useLocation();
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
   const [variant, setVariant] = useState('');
@@ -110,11 +110,11 @@ export default function Variants(props) {
   const handleProductAction = (action) => {
     if (action === 'read') {
       setVariant('');
-      history.push({
+      navigate({
         pathname: '/product/' + props.product._id + '/variant/read',
       });
     } else {
-      history.push({
+      navigate({
         pathname: '/product/' + props.product._id + '/variant/create',
       });
     }

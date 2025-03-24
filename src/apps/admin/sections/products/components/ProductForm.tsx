@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react"
-import { useHistory } from "react-router-dom"
+import React, { useState, useEffect, MouseEvent } from "react"
+import { useNavigate } from "react-router-dom"
 
 import Grid2 from "@mui/material/Grid2"
 import Button from "@mui/material/Button"
@@ -17,30 +17,33 @@ import InputLabel from "@mui/material/InputLabel"
 import Title from "../../../components/Title"
 
 import { useProductForm } from "@context/ProductContext"
-import { isAValidPrice } from "@utils/validations"
 import { PriceRange, Equation } from "../../../../../types/product.types"
 import "react-quill/dist/quill.snow.css"
 import { useSnackBar } from "@context/GlobalContext"
 
-export default function ProductForm({ handleSubmit, openVideo }) {
+interface FormProps {
+  openVideo: () => void
+  handleSubmit: (e: React.FormEvent<HTMLFormElement>, images: any) => void
+}
+export default function ProductForm({ handleSubmit, openVideo }: FormProps) {
   const { state, dispatch } = useProductForm()
   const { showSnackBar } = useSnackBar()
 
-  const [imageLoader, setLoadImage] = useState({
+  const [imageLoader, setLoadImage] = useState<any>({
     loader: [],
     filename: "Subir imagenes",
   })
   //   Reducir la anidación en ImageLoader
-  const [images, setImages] = useState({ images: [] })
+  const [images, setImages] = useState<any>({ images: [] })
   console.log(images, "nuevas")
   console.log(imageLoader.loader, "prev")
 
   useEffect(() => {
     // readProduct()
-    const prev = { loader: [], filename: "Subir imagenes" }
+    const prev: any = { loader: [], filename: "Subir imagenes" }
     const indexImage =
-      state.sources?.length < 1
-        ? state.sources?.indexOf(state?.thumbUrl)
+      state.sources && state?.thumbUrl && state.sources?.length < 1
+        ? state.sources?.indexOf({ type: "image", url: state?.thumbUrl })
         : undefined
 
     state.sources
@@ -101,7 +104,7 @@ export default function ProductForm({ handleSubmit, openVideo }) {
     })
   }
 
-  const convertToBase64 = (blob) => {
+  const convertToBase64 = (blob: File) => {
     return new Promise((resolve) => {
       var reader = new FileReader()
       reader.onload = function () {
@@ -111,13 +114,13 @@ export default function ProductForm({ handleSubmit, openVideo }) {
     })
   }
 
-  const loadImage = async (e) => {
+  const loadImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault()
 
     if (imageLoader.loader.length >= 4) {
       return showSnackBar("No puedes agregar más de 4 fotos")
     } else {
-      const file = e.target.files[0]
+      const file = e.target.files?.[0]
       if (!file) return
 
       const resizedString = await convertToBase64(file)
@@ -131,24 +134,31 @@ export default function ProductForm({ handleSubmit, openVideo }) {
     }
   }
 
-  const replaceImage = async (e, index) => {
+  const replaceImage = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+    index: number
+  ) => {
     e.preventDefault()
-    const file = e.target.files[0]
-    const resizedString = await convertToBase64(file)
-    imageLoader.loader[index] = resizedString
-    images.images[index] = file
-    setLoadImage({ loader: imageLoader.loader, filename: file.name })
+    const file = e.target.files?.[0]
+    if (file) {
+      const resizedString = await convertToBase64(file)
+      imageLoader.loader[index] = resizedString
+      images.images[index] = file
+      setLoadImage({ loader: imageLoader.loader, filename: file.name })
+    }
   }
 
   const isPriceRange = (price: PriceRange | Equation): price is PriceRange => {
     return (price as PriceRange).from !== undefined
   }
 
-  const deleteImg = (e, i) => {
+  const deleteImg = (e: React.MouseEvent<HTMLButtonElement>, i: number) => {
     e.preventDefault()
     const imageToRemove = imageLoader.loader[i]
-    const newLoader = imageLoader.loader.filter((_, index) => index !== i)
-    const newImages = images.images.filter((file) => {
+    const newLoader = imageLoader.loader.filter(
+      (_: any, index: number) => index !== i
+    )
+    const newImages = images.images.filter((file: any) => {
       return file instanceof File ? true : file.url !== imageToRemove
     })
 
@@ -340,7 +350,7 @@ export default function ProductForm({ handleSubmit, openVideo }) {
           <Grid2 container sx={{ width: "100%" }}>
             <Grid2 size={{ xs: 12, md: 6 }}>
               <Checkbox
-                checked={state.active}
+                checked={Boolean(state.active)}
                 color="primary"
                 inputProps={{ "aria-label": "secondary checkbox" }}
                 onChange={handleCheck}
@@ -349,7 +359,7 @@ export default function ProductForm({ handleSubmit, openVideo }) {
             </Grid2>
             <Grid2 size={{ xs: 12, md: 3 }}>
               <Checkbox
-                checked={state.hasSpecialVar}
+                checked={Boolean(state.hasSpecialVar)}
                 color="primary"
                 inputProps={{ "aria-label": "secondary checkbox" }}
                 onChange={handleCheck}
@@ -358,7 +368,7 @@ export default function ProductForm({ handleSubmit, openVideo }) {
             </Grid2>
             <Grid2 size={{ xs: 12, md: 3 }}>
               <Checkbox
-                checked={state.autoCertified}
+                checked={Boolean(state.autoCertified)}
                 color="primary"
                 inputProps={{ "aria-label": "secondary checkbox" }}
                 onChange={handleCheck}
@@ -599,7 +609,7 @@ export default function ProductForm({ handleSubmit, openVideo }) {
                 name="cost"
                 value={state.cost}
                 onChange={handleChange}
-                error={state.cost !== undefined && !isAValidPrice(state.cost)}
+                // error={state.cost !== undefined && !isAValidPrice(state.cost)}
                 slotProps={{
                   input: {
                     startAdornment: (
@@ -636,10 +646,10 @@ export default function ProductForm({ handleSubmit, openVideo }) {
                   isPriceRange(state.publicPrice) ? state.publicPrice.from : ""
                 }
                 onChange={handleChange}
-                error={
-                  state.publicPrice?.from !== undefined &&
-                  !isAValidPrice(state.publicPrice?.from)
-                }
+                // error={
+                //   state.publicPrice?.from !== undefined &&
+                //   !isAValidPrice(state.publicPrice?.from)
+                // }
                 slotProps={{
                   input: {
                     startAdornment: (
@@ -664,10 +674,10 @@ export default function ProductForm({ handleSubmit, openVideo }) {
                   isPriceRange(state.publicPrice) ? state.publicPrice.to : ""
                 }
                 onChange={handleChange}
-                error={
-                  state.publicPrice?.to !== undefined &&
-                  !isAValidPrice(state.publicPrice?.to)
-                }
+                // error={
+                //   state.publicPrice?.to !== undefined &&
+                //   !isAValidPrice(state.publicPrice?.to)
+                // }
                 slotProps={{
                   input: {
                     startAdornment: (
@@ -704,10 +714,10 @@ export default function ProductForm({ handleSubmit, openVideo }) {
                   isPriceRange(state.prixerPrice) ? state.prixerPrice.from : ""
                 }
                 onChange={handleChange}
-                error={
-                  state.prixerPrice.from !== undefined &&
-                  !isAValidPrice(state.prixerPrice.from)
-                }
+                // error={
+                //   state.prixerPrice.from !== undefined &&
+                //   !isAValidPrice(state.prixerPrice.from)
+                // }
                 slotProps={{
                   input: {
                     startAdornment: (
@@ -731,10 +741,10 @@ export default function ProductForm({ handleSubmit, openVideo }) {
                   isPriceRange(state.prixerPrice) ? state.prixerPrice.to : ""
                 }
                 onChange={handleChange}
-                error={
-                  state.prixerPrice?.to !== undefined &&
-                  !isAValidPrice(state.prixerPrice?.to)
-                }
+                // error={
+                //   state.prixerPrice?.to !== undefined &&
+                //   !isAValidPrice(state.prixerPrice?.to)
+                // }
                 slotProps={{
                   input: {
                     startAdornment: (
@@ -750,8 +760,7 @@ export default function ProductForm({ handleSubmit, openVideo }) {
           variant="contained"
           color="primary"
           type="submit"
-          onClick={(e) => handleSubmit(e, images)}
-          //   disabled={buttonState}
+          onClick={(e) => handleSubmit(e, images)}          //   disabled={buttonState}
           style={{ marginTop: 20 }}
         >
           Guardar

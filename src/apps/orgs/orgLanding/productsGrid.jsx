@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import Grid from '@mui/material/Grid';
 import { makeStyles } from '@mui/styles';
@@ -40,7 +40,7 @@ export default function CBProducts() {
 
   const [all, setAll] = useState([]);
   const [tiles, setTiles] = useState([]);
-  const history = useHistory();
+  const navigate = useNavigate();
   const [checkedProducts, setCheckedProducts] = useState([]);
   const [checkedDesigns, setCheckedDesigns] = useState([]);
 
@@ -92,7 +92,7 @@ export default function CBProducts() {
   const designs = ['Cartoon', 'Cafecito', 'Independizar', 'Pasante Subpagado', 'Sobreviví'];
 
   const viewDetails = (item) => {
-    history.push({
+    navigate({
       pathname: '/chiguirebipolar/item=' + item.product.item,
     });
     ReactGA.event({

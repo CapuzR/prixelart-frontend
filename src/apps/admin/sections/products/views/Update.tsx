@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react"
-import { useHistory } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 import { Theme, useTheme } from "@mui/material"
 import useMediaQuery from "@mui/material/useMediaQuery"
 
@@ -111,7 +111,7 @@ function a11yProps(index) {
 export default function UpdateProduct() {
   const theme = useTheme()
   const { state, dispatch } = useProductForm()
-  const history = useHistory()
+  const navigate = useNavigate()
   const isDesktop = useMediaQuery(theme.breakpoints.up("md"))
 
   const [images, newImages] = useState({ images: [] })
@@ -309,7 +309,7 @@ export default function UpdateProduct() {
             showSnackBar(response.message)
           } else {
             showSnackBar("Actualización de producto exitosa.")
-            history.push("/admin/product/read")
+            navigate("/admin/product/read")
           }
         }
       }
@@ -317,7 +317,7 @@ export default function UpdateProduct() {
   }
 
   const handleProductAction = (action: string) => {
-    history.push({ pathname: "/admin/product/" + action })
+    navigate({ pathname: "/admin/product/" + action })
   }
 
   return (

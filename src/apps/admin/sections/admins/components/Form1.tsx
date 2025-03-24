@@ -12,6 +12,7 @@ import Select from "@mui/material/Select"
 import { Switch, Typography } from "@mui/material"
 import Visibility from "@mui/icons-material/Visibility"
 import VisibilityOff from "@mui/icons-material/VisibilityOff"
+import { SelectChangeEvent } from "@mui/material"
 
 import { useAdminForm } from "@context/AdminFormContext"
 import {
@@ -19,16 +20,31 @@ import {
   isAValidPassword,
   isAValidUsername,
 } from "utils/validations"
+import { AdminRole } from "../../../../../types/admin.types"
 
-export default function AdminForm({ handleSubmit, roles }) {
+interface FormProps {
+  handleSubmit: (event: React.FormEvent<HTMLFormElement>) => void
+  roles: AdminRole[]
+}
+
+export default function AdminForm({ handleSubmit, roles }: FormProps) {
   const { state, dispatch } = useAdminForm()
+  const { admin } = state
   const [showPassword, setShowPassword] = useState(false)
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     dispatch({
       type: "SET_FIELD",
-      field: e.target.name as keyof typeof state,
+      field: e.target.name as keyof typeof admin,
       value: e.target.value,
+    })
+  }
+
+  const handleSelectChange = (event: SelectChangeEvent<string>) => {
+    dispatch({
+      type: "SET_FIELD",
+      field: event.target.name as keyof typeof admin,
+      value: event.target.value,
     })
   }
 
@@ -50,7 +66,7 @@ export default function AdminForm({ handleSubmit, roles }) {
               label="Nombre de usuario"
               name="username"
               autoComplete="username"
-              value={state.username}
+              value={admin.username}
               onChange={handleChange}
             />
           </FormControl>
@@ -59,8 +75,8 @@ export default function AdminForm({ handleSubmit, roles }) {
           <FormControl variant="outlined" fullWidth required>
             <InputLabel>Área</InputLabel>
             <Select
-              value={state.area}
-              onChange={handleChange}
+              value={admin.area}
+              onChange={handleSelectChange}
               data-testid="area-select"
               name="area"
             >
@@ -88,7 +104,7 @@ export default function AdminForm({ handleSubmit, roles }) {
               Mostrar como Asesor de ventas
             </Typography>
             <Switch
-              checked={state.isSeller}
+              checked={admin.isSeller}
               onChange={handleChange}
               color="primary"
             />
@@ -105,7 +121,7 @@ export default function AdminForm({ handleSubmit, roles }) {
               aria-label="firstname"
               name="firstname"
               autoComplete="firstname"
-              value={state.firstname}
+              value={admin.firstname}
               onChange={handleChange}
             />
           </FormControl>
@@ -121,7 +137,7 @@ export default function AdminForm({ handleSubmit, roles }) {
               aria-label="Apellido"
               name="lastname"
               autoComplete="lastname"
-              value={state.lastname}
+              value={admin.lastname}
               onChange={handleChange}
             />
           </FormControl>
@@ -137,7 +153,7 @@ export default function AdminForm({ handleSubmit, roles }) {
               aria-label="Correo electrónico"
               name="email"
               autoComplete="email"
-              value={state.email}
+              value={admin.email}
               onChange={handleChange}
             />
           </FormControl>
@@ -153,7 +169,7 @@ export default function AdminForm({ handleSubmit, roles }) {
               aria-label="Teléfono"
               name="phone"
               autoComplete="phone"
-              value={state.phone}
+              value={admin.phone}
               onChange={handleChange}
             />
           </FormControl>
@@ -168,17 +184,14 @@ export default function AdminForm({ handleSubmit, roles }) {
               aria-label="Contraseña"
               name="password"
               type={showPassword ? "text" : "password"}
-              value={state.password}
-              error={isAValidPassword(state.password)}
+              value={admin.password}
+              error={isAValidPassword(admin.password)}
               onChange={handleChange}
               slotProps={{
                 input: {
                   endAdornment: (
                     <InputAdornment position="start">
-                      <IconButton
-                        onClick={handleClickShowPassword}
-                        edge="end"
-                      >
+                      <IconButton onClick={handleClickShowPassword} edge="end">
                         {showPassword ? <Visibility /> : <VisibilityOff />}
                       </IconButton>
                     </InputAdornment>

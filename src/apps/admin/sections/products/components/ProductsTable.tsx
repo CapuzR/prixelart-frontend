@@ -12,13 +12,22 @@ import Paper from "@mui/material/Paper"
 import { Grid2, Tooltip, IconButton } from "@mui/material"
 
 import { getPermissions } from "@context/GlobalContext"
+import { Product } from "../../../../../types/product.types"
+import { Discount } from "../../../../../types/discount.types"
+
+interface TableProps {
+  rows: Product[]
+  handleActive: (product: string, row: Product, action: string) => void
+  discountList: Discount[]
+  deleteElement: (product: string, id: string) => void
+}
 
 export default function ProductsTable({
   rows,
   handleActive,
   discountList,
   deleteElement,
-}) {
+}: TableProps) {
   const permissions = getPermissions()
 
   const headers = [
@@ -33,13 +42,12 @@ export default function ProductsTable({
     "",
   ]
 
-  
   return (
     <Table size="small">
       <TableHead>
         <TableRow>
           {headers.map((head, i) => (
-            <TableCell key={i} align="center" style={{fontWeight: "bold"}}>
+            <TableCell key={i} align="center" style={{ fontWeight: "bold" }}>
               {head}
             </TableCell>
           ))}{" "}
@@ -50,7 +58,7 @@ export default function ProductsTable({
           rows.map((row) => (
             <TableRow key={row._id}>
               <TableCell align="center">
-                {row.sources.images?.length > 0 ? (
+                {row.sources.images && row.sources.images?.length > 0 ? (
                   <>
                     {row.sources.images[0]?.type === "video" ? (
                       <span

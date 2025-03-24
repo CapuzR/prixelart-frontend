@@ -6,7 +6,7 @@ import Button from '@mui/material/Button';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import { makeStyles, withStyles } from '@mui/styles';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Badge from '@mui/material/Badge';
 import CB_isologo from './assets/CB_isologo_black.svg';
 import ShoppingCartOutlined from '@mui/icons-material/ShoppingCartOutlined';
@@ -132,7 +132,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function shoppingCartCb() {
   const classes = useStyles();
-  const history = useHistory();
+  const navigate = useNavigate();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('xs'));
   const isTab = useMediaQuery(theme.breakpoints.down('sm'));
@@ -197,7 +197,7 @@ export default function shoppingCartCb() {
   };
 
   const handleMain = () => {
-    history.push({ pathname: '/chiguirebipolar' });
+    navigate({ pathname: '/chiguirebipolar' });
   };
 
   const scrollToSection = (selector) => {
@@ -487,7 +487,7 @@ export default function shoppingCartCb() {
   }
 
   const handleCart = () => {
-    history.push({ pathname: '/chiguirebipolar/carrito' });
+    navigate({ pathname: '/chiguirebipolar/carrito' });
   };
 
   return (

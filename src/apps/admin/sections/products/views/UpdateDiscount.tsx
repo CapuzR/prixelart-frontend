@@ -1,7 +1,7 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
 import { makeStyles } from '@mui/styles';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import Title from '../../../components/Title';
 import axios from 'axios';
@@ -68,7 +68,7 @@ const useStyles = makeStyles((theme) => ({
 export default function UpdateDiscount(props) {
   const classes = useStyles();
   const theme = useTheme();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   // const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
   const [active, setActive] = useState(props.discount.active);
@@ -120,7 +120,7 @@ export default function UpdateDiscount(props) {
         setType();
         setValue('');
         setAppliedProducts([]);
-        history.push('/product/read');
+        navigate('/product/read');
       }
     }
   };

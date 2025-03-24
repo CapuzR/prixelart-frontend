@@ -3,7 +3,7 @@
 import React, { useEffect } from 'react';
 import { useState } from 'react';
 import axios from 'axios';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import { isAValidEmail, isAValidPassword, isAValidUsername } from 'utils/validations';
 import Copyright from 'components/Copyright/copyright';
@@ -70,7 +70,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function PasswordReset(props) {
   const classes = useStyles();
-  const history = useHistory();
+  const navigate = useNavigate();
   const [newPassword, setNewPassword] = useState('');
   const [showNewPassword, setShowNewPassword] = useState(false);
   const token = props.match.params.token;
@@ -128,7 +128,7 @@ export default function PasswordReset(props) {
           } else {
             setErrorMessage(response.data.info);
             setSnackBarError(true);
-            history.push({ pathname: '/iniciar' });
+            navigate({ pathname: '/iniciar' });
           }
         })
         .catch((error) => {

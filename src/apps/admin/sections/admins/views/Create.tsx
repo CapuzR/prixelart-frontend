@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react"
-import { useHistory } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 
 import Title from "../../../components/Title"
 import { useSnackBar, useLoading } from "context/GlobalContext"
@@ -8,12 +8,16 @@ import { AdminRole } from "../../../../../types/admin.types"
 import AdminForm from "../components/Form1"
 import { useAdminForm } from "@context/AdminFormContext"
 
-export default function CreateAdmin({ loadAdmin }) {
-  const history = useHistory()
+interface AdminProps {
+  loadAdmin: () => Promise<void>
+}
+
+export default function CreateAdmin({ loadAdmin }: AdminProps) {
+  const navigate = useNavigate()
   const { showSnackBar } = useSnackBar()
   const { setLoading } = useLoading()
   const { state, dispatch } = useAdminForm()
-
+  const { admin } = state
   const [roles, setRoles] = useState<AdminRole[]>([])
 
   const loadRoles = async () => {
@@ -36,30 +40,30 @@ export default function CreateAdmin({ loadAdmin }) {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     if (
-      !state.username ||
-      !state.area ||
-      !state.firstname ||
-      !state.lastname ||
-      !state.phone ||
-      !state.email ||
-      !state.password
+      !admin.username ||
+      !admin.area ||
+      !admin.firstname ||
+      !admin.lastname ||
+      !admin.phone ||
+      !admin.email ||
+      !admin.password
     ) {
       showSnackBar("Por favor completa todos los campos requeridos.")
     } else {
       setLoading(true)
 
-      const data = state
+      const data = admin
       data.email = data.email.toLowerCase()
 
-      const admin = await createAdmin(data)
-      if (!admin) {
+      const response = await createAdmin(data)
+      if (!response) {
         console.error("La respuesta de createAdmin es undefined")
-      } else if (admin.success === false) {
+      } else if (response.success === false) {
         setLoading(false)
-        showSnackBar(admin.message)
-      } else if (admin.success === true) {
-        showSnackBar(`Registro de Admin ${admin.newAdmin.username} exitoso.`)
-        history.push({ pathname: "/admin/admins/read" })
+        showSnackBar(response.message)
+      } else if (response.success === true) {
+        showSnackBar(`Registro de Admin ${response.newAdmin.username} exitoso.`)
+        navigate({ pathname: "/admin/admins/read" })
         loadAdmin()
       }
     }
@@ -67,8 +71,8 @@ export default function CreateAdmin({ loadAdmin }) {
 
   return (
     <React.Fragment>
-        <Title title={'Crear Administrador'}/>
-        <AdminForm handleSubmit={handleSubmit} roles={roles} />
+      <Title title={"Crear Administrador"} />
+      <AdminForm handleSubmit={handleSubmit} roles={roles} />
     </React.Fragment>
   )
 }

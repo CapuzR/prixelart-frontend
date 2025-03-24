@@ -10,6 +10,21 @@ import { useTheme } from "@mui/material/styles"
 
 import { nanoid } from "nanoid"
 import { createMovement } from "../api"
+import { Prixer } from "../../../../../types/prixer.types"
+
+interface MovProps {
+  selectedPrixer: Prixer | undefined
+  handleClose: () => void
+  date: Date
+  setDate: (date: Date) => void
+  balance: string | number
+  setBalance: (date: string) => void
+  type: string
+  showSnackBar: (text: string) => void
+  readPrixers: () => Promise<void>
+  readOrg: () => Promise<void>
+  getBalance: () => Promise<void>
+}
 
 export default function CreateMovement({
   selectedPrixer,
@@ -23,20 +38,22 @@ export default function CreateMovement({
   readPrixers,
   readOrg,
   getBalance,
-}) {
+}: MovProps) {
   const theme = useTheme()
   const [description, setDescription] = useState<string>()
+  const adminToken = localStorage.getItem("adminToken")
+  const adminData = adminToken ? JSON.parse(adminToken).username : null
 
   const createPayMovement = async () => {
     const data = {
       _id: nanoid(),
       createdOn: new Date(),
-      createdBy: JSON.parse(localStorage.getItem("adminToken")).username,
-      date: date,
-      destinatary: selectedPrixer.account,
+      createdBy: adminData,
+      date: new Date(date),
+      destinatary: selectedPrixer?.account,
       description: description,
       type: type,
-      value: balance,
+      value: Number(balance),
     }
     const response = await createMovement(data)
 
@@ -113,7 +130,7 @@ export default function CreateMovement({
               label="Fecha"
               value={date}
               onChange={(e) => {
-                setDate(e.target.value)
+                setDate(new Date(e.target.value))
               }}
               type={"date"}
             />

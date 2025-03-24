@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
-import { useHistory, useLocation } from "react-router-dom"
-
+import { useLocation } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney"
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft"
 import ChevronRightIcon from "@mui/icons-material/ChevronRight"
@@ -42,7 +42,7 @@ import { makeStyles } from "tss-react/mui"
 
 import Admin from "./sections/admins"
 import Consumers from "./sections/consumers"
-import Dashboard from "./sections/dashboard/dashboard"
+// import Dashboard from "./sections/dashboard/dashboard"
 import SideBar from "./components/SideBar"
 import Movements from "./sections/movements"
 import Orders from "./sections/orders/orders"
@@ -218,9 +218,11 @@ export default function AdminMain() {
   const [open, setOpen] = useState(false)
   const [active, setActive] = useState("admin")
   const location = useLocation()
-  const history = useHistory()
+  const navigate = useNavigate()
+
   const [openDollarView, setOpenDollarView] = useState(false)
   const permissions = getPermissions()
+  const token: string = localStorage.getItem("token") ?? ""
 
   // const { conversionRate, setConversionRate } = useConversionRate();
   const { cart } = useCart()
@@ -250,9 +252,9 @@ export default function AdminMain() {
     setOpenDollarView(false)
   }
 
-  return (
-    <div className={classes.root}>
-      {JSON.parse(localStorage.getItem("adminToken")) ? (
+  const redirectHome = () => {
+    if (token) {
+      return (
         <>
           <CssBaseline />
           <AppBar
@@ -301,7 +303,7 @@ export default function AdminMain() {
             </DrawerHeader>
             <Divider />
             <List component="nav">
-              <SideBar active={active} />
+              <SideBar/>
             </List>
           </Drawer>
           <main className={classes.content}>
@@ -309,7 +311,8 @@ export default function AdminMain() {
               {active === "admins" ? (
                 <Admin />
               ) : active === "dashboard" ? (
-                <Dashboard />
+                // <Dashboard />
+                <></>
               ) : active === "product" ? (
                 <Products />
               ) : active === "consumer" ? (
@@ -368,45 +371,46 @@ export default function AdminMain() {
                 </div>
               </Grid2>
               {/* <div style={{ display: "flex", alignItems: "center" }}>
-                <TextField
-                  variant="outlined"
-                  value={conversionRate}
-                  onChange={(e) => {
-                    if (e.target.value < 0) {
-                      setConversionRate(0);
-                    } else {
-                      setConversionRate(e.target.value);
-                    }
-                  }}
-                  error={
-                    conversionRate !== undefined &&
-                    !isAValidPrice(conversionRate)
+              <TextField
+                variant="outlined"
+                value={conversionRate}
+                onChange={(e) => {
+                  if (e.target.value < 0) {
+                    setConversionRate(0);
+                  } else {
+                    setConversionRate(e.target.value);
                   }
-                  type={"number"}
-                />
-                <Fab
-                  disabled={!isAValidPrice(conversionRate)}
-                  color="primary"
-                  size="small"
-                  onClick={() => {
-                    setConversionRate();
-                    setOpenDollarView(true);
-                    showSnackBar(
-                      "Tasa del dólar actualizada satisfactoriamente."
-                    );
-                    handleClose();
-                  }}
-                  style={{ marginRight: 10, marginLeft: 10 }}
-                >
-                  <SaveIcon />
-                </Fab>
-              </div> */}
+                }}
+                error={
+                  conversionRate !== undefined &&
+                  !isAValidPrice(conversionRate)
+                }
+                type={"number"}
+              />
+              <Fab
+                disabled={!isAValidPrice(conversionRate)}
+                color="primary"
+                size="small"
+                onClick={() => {
+                  setConversionRate();
+                  setOpenDollarView(true);
+                  showSnackBar(
+                    "Tasa del dólar actualizada satisfactoriamente."
+                  );
+                  handleClose();
+                }}
+                style={{ marginRight: 10, marginLeft: 10 }}
+              >
+                <SaveIcon />
+              </Fab>
+            </div> */}
             </Grid2>
           </Modal>
         </>
-      ) : (
-        history.push({ pathname: "/" })
-      )}
-    </div>
-  )
+      )
+    } else {
+      navigate({ pathname: "/" })
+    }
+  }
+  return <div className={classes.root}>{redirectHome()} </div>
 }

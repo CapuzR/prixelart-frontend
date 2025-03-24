@@ -1,8 +1,9 @@
 import axios from "axios"
 import { Discount } from "../../../../types/discount.types"
 import UpdateProduct from "./views/Update"
+import { Product } from "../../../../types/product.types"
 
-export const createProduct = async (data) => {
+export const createProduct = async (data: Product) => {
   const base_url = import.meta.env.VITE_BACKEND_URL + "/product/create"
   try {
     const response = await axios.post(base_url, data)
@@ -22,7 +23,7 @@ export const getAllProducts = async () => {
   }
 }
 
-export const updateProduct = async (data, id) => {
+export const updateProduct = async (data: Product, id: string) => {
   const base_url =
     import.meta.env.VITE_BACKEND_URL + `/product/update/${id}`
   try {

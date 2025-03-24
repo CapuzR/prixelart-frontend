@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react"
-import { useHistory, useLocation } from "react-router-dom"
+import { useNavigate, useLocation } from "react-router-dom"
 
 import Title from "../../../components/Title"
 import Grid2 from "@mui/material/Grid2"
@@ -26,7 +26,7 @@ export default function CreateShippingMethod() {
 
   const { showSnackBar } = useSnackBar()
   const { setLoading } = useLoading()
-  const history = useHistory()
+  const navigate = useNavigate()
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -52,7 +52,7 @@ export default function CreateShippingMethod() {
       setActive(true)
       setName("")
       setPrice("")
-      history.push({ pathname: "/admin/shipping-method/read" })
+      navigate({ pathname: "/admin/shipping-method/read" })
     }
   }
 

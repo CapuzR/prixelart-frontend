@@ -1,4 +1,4 @@
-import { useHistory, useLocation } from "react-router-dom"
+import { useNavigate, useLocation } from "react-router-dom"
 
 import Grid2 from "@mui/material/Grid2"
 import Checkbox from "@mui/material/Checkbox"
@@ -26,7 +26,7 @@ export default function UpdateShippingMethod({
   name,
   price,
 }) {
-  const history = useHistory()
+  const navigate = useNavigate()
 
   const { showSnackBar } = useSnackBar()
   const { setLoading } = useLoading()
@@ -58,7 +58,7 @@ export default function UpdateShippingMethod({
         setActive(true)
         setName("")
         setPrice("")
-        history.push("/admin/shipping-method/read")
+        navigate("/admin/shipping-method/read")
       }
     }
   }

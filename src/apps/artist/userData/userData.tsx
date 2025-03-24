@@ -96,7 +96,7 @@ const UserData: React.FC<UserDataProps> = (props) => {
         .post(base_url, data)
         .then((response) => {
           // if (!response.data.status) {
-          //   return history.push("/");
+          //   return navigate("/");
           // }
           setUsername(response.data.username);
           setEmail(response.data.email);

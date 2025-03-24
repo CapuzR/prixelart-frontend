@@ -4,6 +4,7 @@ export interface Prixer {
   lastName: string
   email: string
   specialtyArt: string[]
+  specialty?: string
   description: string
   instagram: string
   twitter: string

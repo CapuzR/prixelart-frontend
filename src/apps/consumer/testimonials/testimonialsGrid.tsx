@@ -9,7 +9,7 @@ import TestimonialsFeed from '../../admin/TestimonialsCrud/TestimonialsFeed';
 import { useTestimonialsGridStyles } from './TestimonialGrid.styles';
 
 
-const TestimonialsGrid: React.FC = (props) => {
+const TestimonialsGrid: React.FC = () => {
   const classes = useTestimonialsGridStyles();
 
   return (

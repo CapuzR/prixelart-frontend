@@ -30,7 +30,7 @@ import { Product } from "../../../../../types/product.types"
 import { Art } from "../../../../../types/art.types"
 
 interface MockupProps {
-  product: Product
+  product: Partial<Product>
   handleSubmit: (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
     images: any
@@ -293,7 +293,7 @@ export default function UpdateMockup({ product }: MockupProps) {
     }
   }
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async  (e: React.MouseEvent<HTMLButtonElement, MouseEvent>)  => {
     e.preventDefault()
 
     setLoading(true)

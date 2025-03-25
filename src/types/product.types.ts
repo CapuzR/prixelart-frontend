@@ -45,20 +45,21 @@ export interface Product {
   }
   productionTime: number
   mockUp: any
-  category?: string
-  active: boolean
+  category?: Category | string
+  active: boolean | string
   considerations: string
   cost: number
   publicPrice: PriceRange
   prixerPrice: PriceRange
-  hasSpecialVar: boolean
-  bestSeller: boolean
+  hasSpecialVar: boolean | string
+  bestSeller: boolean | string
   finalPrice?: number
   modifyPrice?: number
   discount: string | undefined
   comission?: Movement[] | undefined
-  autoCertified?: boolean
-  video?: string
+  autoCertified?: boolean | string
+  video?: { type: string; url: string }
+  productImages: any
 }
 
 export interface Variant {

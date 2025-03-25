@@ -15,7 +15,7 @@ import { getMethods, deleteMethod } from "../api"
 
 interface TableProps {
   setName: (x: string) => void
-  setPrice: (x: number) => void
+  setPrice: (x: string) => void
   setActive: (x: boolean) => void
   setShippingMethod: (x: ShippingMethod) => void
 }

@@ -15,7 +15,7 @@ import UpdateDiscount from "./views/UpdateDiscount"
 import CreateSurcharge from "./views/CreateSurcharge"
 import UpdateSurcharge from "./views/UpdateSurcharge"
 // import CreateCategory from "./views/CreateCategory"
-import UpdateCategory from "./views/UpdateCategory"
+// import UpdateCategory from "./views/UpdateCategory"
 
 import { ProductFormProvider } from "@context/ProductContext"
 
@@ -99,9 +99,10 @@ export default function Products() {
                 <UpdateProduct />
               ) : // ) : activeCrud === "createCategory" ? (
               //   <CreateCategory />
-              activeCrud === "updateCategory" ? (
-                <UpdateCategory category={category} />
-              ) : activeCrud === "createDiscount" ? (
+              // activeCrud === "updateCategory" ? (
+              //   <UpdateCategory category={category} />
+              // ) :
+              activeCrud === "createDiscount" ? (
                 <CreateDiscount />
               ) : activeCrud === "updateDiscount" ? (
                 <UpdateDiscount discount={discount} />

@@ -13,7 +13,7 @@ import { updateMethod } from "../api"
 import { ShippingMethod } from "../../../../../types/shippingMethod.types"
 
 interface MethodProps {
-  shippingMethod: ShippingMethod
+  shippingMethod: ShippingMethod | undefined
   setName: (x: string) => void
   setPrice: (x: number) => void
   setActive: (x: boolean) => void
@@ -40,7 +40,7 @@ export default function UpdateShippingMethod({
     event: React.FormEvent<HTMLFormElement>
   ) => {
     event.preventDefault()
-    if (!name || !price) {
+    if (!name || !price || !shippingMethod) {
       showSnackBar("Por favor completa todos los campos requeridos.")
     } else {
       setLoading(true)

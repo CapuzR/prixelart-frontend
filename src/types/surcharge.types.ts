@@ -12,9 +12,10 @@ export interface Surcharge {
   value: number
   _id: string
   surchargeId: string
-  active: { type: Boolean; required: false }
+  active: boolean
   appliedProducts: string[]
   appliedUsers: string[]
   appliedPercentage: string
   considerations: object
+  owners?: string[]
 }

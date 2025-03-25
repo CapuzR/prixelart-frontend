@@ -14,7 +14,7 @@ import { useSnackBar, useLoading } from "context/GlobalContext"
 export default function CreateShippingMethod() {
   const [active, setActive] = useState<boolean>(true)
   const [name, setName] = useState<string>()
-  const [price, setPrice] = useState<string>()
+  const [price, setPrice] = useState<number>()
 
   const { showSnackBar } = useSnackBar()
   const { setLoading } = useLoading()
@@ -45,7 +45,7 @@ export default function CreateShippingMethod() {
       )
       setActive(true)
       setName("")
-      setPrice("")
+      setPrice(0)
       navigate({ pathname: "/admin/shipping-method/read" })
     }
   }
@@ -90,7 +90,7 @@ export default function CreateShippingMethod() {
                 label="Precio aproximado"
                 value={price}
                 onChange={(e) => {
-                  setPrice(e.target.value)
+                  setPrice(Number(e.target.value))
                 }}
               />
             </FormControl>

@@ -55,7 +55,7 @@ export default function CreateProduct() {
   }
 
   const handleSubmit = async (
-    e: React.FormEvent<HTMLFormElement>,
+    e: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement>,
     images: any
   ) => {
     e.preventDefault()
@@ -87,7 +87,7 @@ export default function CreateProduct() {
           formData.append("active", state.active.toString())
           formData.append("name", state.name)
           formData.append("description", state.description)
-          formData.append("category", state.category.toString())
+          formData.append("category", state?.category?.toString())
           formData.append("considerations", state.considerations)
           formData.append("productionTime", state.productionTime.toString())
           formData.append("cost", state.cost.toString())

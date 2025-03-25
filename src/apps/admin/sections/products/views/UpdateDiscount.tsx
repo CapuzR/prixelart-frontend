@@ -21,8 +21,6 @@ import { Discount } from "../../../../../types/discount.types"
 import { Product } from "../../../../../types/product.types"
 interface DiscProps {
   discount: Discount
-  loadAdmin: () => Promise<void>
-  updateAdminProperty: (name: string, value: string | boolean) => void
 }
 
 const useStyles = makeStyles()((theme: Theme) => {

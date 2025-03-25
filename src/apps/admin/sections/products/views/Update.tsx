@@ -267,8 +267,9 @@ export default function UpdateProduct() {
           newFormData.append("active", state.active.toString())
           newFormData.append("name", state.name)
           newFormData.append("description", state.description)
-          newFormData.append("category", state.category.toString())
-          // newFormData.append("thumbUrl", state?.thumbUrl)
+          if (state?.category) {
+            newFormData.append("category", state?.category?.toString())
+          } // newFormData.append("thumbUrl", state?.thumbUrl)
 
           newFormData.append("variants", JSON.stringify(state.variants))
           newFormData.append("considerations", state.considerations)
@@ -401,7 +402,7 @@ export default function UpdateProduct() {
         </TabPanel>
 
         <TabPanel value={value} index={2}>
-          <Mockup product={state} />
+          <Mockup product={state} handleSubmit={handleSubmit}/>
         </TabPanel>
       </Grid2>
       <Dialog open={open} onClose={handleClose}>

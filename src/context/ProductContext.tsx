@@ -16,7 +16,7 @@ interface ProductFormState {
   active: boolean | string
   name: string
   description: string
-  category: Category | string // create and import Category Interface
+  category: Category | string | undefined// create and import Category Interface
   considerations: string
   productionTime: number
   cost: number

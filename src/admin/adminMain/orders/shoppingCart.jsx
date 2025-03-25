@@ -15,7 +15,6 @@ import FormControl from "@material-ui/core/FormControl"
 import InputLabel from "@material-ui/core/InputLabel"
 import TextField from "@material-ui/core/TextField"
 import InputAdornment from "@material-ui/core/InputAdornment"
-import Img from "react-cool-img"
 import Tooltip from "@material-ui/core/Tooltip"
 import { getProductsAttributes, getEquation } from "../../../products/services"
 import StarOutline from "@material-ui/icons/StarOutline"
@@ -26,7 +25,6 @@ import {
   UnitPriceSug,
   getComission,
 } from "../../../shoppingCart/pricesFunctions"
-import { update } from "immutable"
 const drawerWidth = 240
 
 const useStyles = makeStyles((theme) => ({
@@ -605,10 +603,10 @@ export default function ShoppingCart(props) {
     const purchase = props.buyState
     let item = purchase[index]
     item.product.modifyPrice = true
-    item.product.finalPrice = Number(newPrice.replace(/[,]/gi, "."))
+    item.product.finalPrice = Number(newPrice?.replace(/[,]/gi, "."))
 
     const updatedPrices = prices.map((price, i) =>
-      i === index ? newPrice.replace(/[,]/gi, ".") : price
+      i === index ? newPrice?.replace(/[,]/gi, ".") : price
     )
     setPrices(updatedPrices)
     let selectedOrg = checkOrgs(item.art)
@@ -745,8 +743,13 @@ export default function ShoppingCart(props) {
                       marginBottom: "-10px",
                     }}
                   >
-                    <Img
-                      placeholder="/imgLoading.svg"
+                    <img
+                      src={
+                        buy.product?.sources?.images[0]?.url ||
+                        buy.product?.thumbUrl ||
+                        "/imgError.svg"
+                      }
+                      alt={buy.product?.name || "Imagen del producto"}
                       style={{
                         backgroundColor: "#eeeeee",
                         height: 120,
@@ -754,15 +757,7 @@ export default function ShoppingCart(props) {
                         marginRight: "20px",
                         marginLeft: "20px",
                       }}
-                      src={
-                        buy.product?.sources?.images[0]?.url ||
-                        buy.product?.thumbUrl ||
-                        ""
-                      }
-                      debounce={1000}
-                      cache
-                      error="/imgError.svg"
-                      alt={buy.product && buy.product.name}
+                      onError={(e) => (e.currentTarget.src = "/imgError.svg")}
                       id={index}
                     />
                     <div
@@ -993,8 +988,7 @@ export default function ShoppingCart(props) {
                     }}
                   >
                     {buy.art && (
-                      <Img
-                        placeholder="/imgLoading.svg"
+                      <img
                         style={{
                           backgroundColor: "#eeeeee",
                           maxWidth: 120,
@@ -1006,13 +1000,11 @@ export default function ShoppingCart(props) {
                             ? buy.art.title === "Personalizado"
                               ? x
                               : buy.art?.squareThumbUrl
-                            : ""
+                            : "/imgError.svg"
                         }
-                        debounce={1000}
-                        cache
-                        error="/imgError.svg"
-                        alt={buy.art && buy.art.title}
-                        id={buy.art && buy.art?.artId}
+                        alt={buy.art?.title || "Imagen del arte"}
+                        id={buy.art?.artId}
+                        onError={(e) => (e.currentTarget.src = "/imgError.svg")}
                       />
                     )}
                   </div>
@@ -1081,8 +1073,7 @@ export default function ShoppingCart(props) {
                                 .map((art) => {
                                   return (
                                     <MenuItem value={art}>
-                                      <Img
-                                        placeholder="/imgLoading.svg"
+                                      <img
                                         style={{
                                           backgroundColor: "#eeeeee",
                                           maxWidth: 40,
@@ -1093,13 +1084,15 @@ export default function ShoppingCart(props) {
                                         src={
                                           art.title === "Personalizado"
                                             ? x
-                                            : art?.squareThumbUrl
+                                            : art?.squareThumbUrl ||
+                                              "/imgError.svg"
                                         }
-                                        debounce={1000}
-                                        cache
-                                        error="/imgError.svg"
-                                        alt={art.title}
+                                        alt={art.title || "Imagen del arte"}
                                         id={art?.artId}
+                                        onError={(e) =>
+                                          (e.currentTarget.src =
+                                            "/imgError.svg")
+                                        }
                                       />
                                       <div
                                         style={{
@@ -1125,8 +1118,7 @@ export default function ShoppingCart(props) {
                             : artList0.map((art) => {
                                 return (
                                   <MenuItem value={art}>
-                                    <Img
-                                      placeholder="/imgLoading.svg"
+                                    <img
                                       style={{
                                         backgroundColor: "#eeeeee",
                                         maxWidth: 40,
@@ -1137,13 +1129,14 @@ export default function ShoppingCart(props) {
                                       src={
                                         art.title === "Personalizado"
                                           ? x
-                                          : art?.squareThumbUrl
+                                          : art?.squareThumbUrl ||
+                                            "/imgError.svg"
                                       }
-                                      debounce={1000}
-                                      cache
-                                      error="/imgError.svg"
-                                      alt={art.title}
+                                      alt={art.title || "Imagen del arte"}
                                       id={art?.artId}
+                                      onError={(e) =>
+                                        (e.currentTarget.src = "/imgError.svg")
+                                      }
                                     />
                                     {art.title.substring(0, 22)}
                                   </MenuItem>

@@ -14,7 +14,7 @@ import DialogActions from "@mui/material/DialogActions"
 import DialogContent from "@mui/material/DialogContent"
 import DialogContentText from "@mui/material/DialogContentText"
 import DialogTitle from "@mui/material/DialogTitle"
-
+import Tooltip from "@mui/material/Tooltip"
 import ViewListIcon from "@mui/icons-material/ViewList"
 import Variants from "./VariantsIndex"
 import Tabs from "@mui/material/Tabs"
@@ -29,6 +29,12 @@ import { useSnackBar, useLoading } from "@context/GlobalContext"
 
 import { updateProduct } from "../api"
 import { makeStyles } from "tss-react/mui"
+
+interface TabPanelProps {
+  children?: React.ReactNode
+  index: number
+  value: number
+}
 
 const useStyles = makeStyles()((theme: Theme) => {
   return {
@@ -75,7 +81,7 @@ const useStyles = makeStyles()((theme: Theme) => {
     },
   }
 })
-function TabPanel(props) {
+function TabPanel(props: TabPanelProps) {
   const { children, value, index, ...other } = props
 
   return (
@@ -101,7 +107,7 @@ TabPanel.propTypes = {
   value: PropTypes.any.isRequired,
 }
 
-function a11yProps(index) {
+function a11yProps(index: number) {
   return {
     id: `simple-tab-${index}`,
     "aria-controls": `simple-tabpanel-${index}`,
@@ -115,10 +121,10 @@ export default function UpdateProduct() {
   const isDesktop = useMediaQuery(theme.breakpoints.up("md"))
 
   const [images, newImages] = useState({ images: [] })
-  const [imagesList, setImagesList] = useState(state?.sources)
+  const [imagesList, setImagesList] = useState(state?.sources || [])
   const [activeVCrud, setActiveVCrud] = useState("read")
 
-  const [videoUrl, setVideoUrl] = useState()
+  const [videoUrl, setVideoUrl] = useState<string>("")
   const [imageLoader, setLoadImage] = useState({
     loader: [],
     filename: "Subir imagenes",
@@ -128,9 +134,10 @@ export default function UpdateProduct() {
   const { showSnackBar } = useSnackBar()
   const { setLoading } = useLoading()
 
-  const handleChange = (event, newValue) => {
+  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue)
   }
+
   const [open, setOpen] = useState(false)
   const [mustImage, setMustImages] = useState(false)
 
@@ -146,12 +153,12 @@ export default function UpdateProduct() {
 
   useEffect(() => {
     // readProduct()
-    const prev = { loader: [] }
+    const prev: any = { loader: [] }
 
     const indexImage =
       imagesList?.length < 1 ? imagesList?.indexOf(state?.thumbUrl) : undefined
 
-    imagesList?.map((img) => {
+    imagesList?.map((img: any) => {
       img?.type === "images"
         ? prev.loader.push(img && img.url)
         : setVideoUrl(img && img.url)
@@ -164,7 +171,7 @@ export default function UpdateProduct() {
     // setImagesList(prev)
     setTimeout(() => {
       if (state?.sources.images) {
-        state?.sources.images.map((element) => {
+        state?.sources.images.map((element: any) => {
           element.type === "video" && setVideoUrl(element.url)
         })
       }
@@ -218,12 +225,18 @@ export default function UpdateProduct() {
   //   setLoadImage({ loader: imageLoader.loader, filename: file.name })
   // }
 
-  const modifyString = (a, sti) => {
+  const modifyString = (
+    a: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    sti: string
+  ) => {
     const width = sti.replace("560", "326").replace("315", "326")
     setVideoUrl(width)
   }
 
-  const handleSubmit = async (e, images) => {
+  const handleSubmit = async (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    images: any
+  ) => {
     e.preventDefault()
     if (
       images.images.length &&
@@ -255,29 +268,43 @@ export default function UpdateProduct() {
           newFormData.append("name", state.name)
           newFormData.append("description", state.description)
           newFormData.append("category", state.category.toString())
-          newFormData.append("thumbUrl", state.thumbUrl)
+          // newFormData.append("thumbUrl", state?.thumbUrl)
 
           newFormData.append("variants", JSON.stringify(state.variants))
           newFormData.append("considerations", state.considerations)
-          newFormData.append("productionTime", state.productionTime)
+          newFormData.append("productionTime", state?.productionTime.toString())
           newFormData.append("cost", state.cost.toString())
-          newFormData.append(
-            "publicPriceFrom",
-            state.publicPrice?.from.toString()
-          )
-          newFormData.append("publicPriceTo", state.publicPrice?.to.toString())
-          newFormData.append(
-            "prixerPriceFrom",
-            state.prixerPrice?.from.toString()
-          )
-          newFormData.append("prixerPriceTo", state.prixerPrice?.to.toString())
+          if (state.publicPrice?.from) {
+            newFormData.append(
+              "publicPriceFrom",
+              state.publicPrice?.from.toString()
+            )
+          }
+          if (state.publicPrice?.to) {
+            newFormData.append(
+              "publicPriceTo",
+              state.publicPrice?.to.toString()
+            )
+          }
+          if (state.prixerPrice?.from) {
+            newFormData.append(
+              "prixerPriceFrom",
+              state.prixerPrice?.from.toString()
+            )
+          }
+          if (state.prixerPrice?.to) {
+            newFormData.append(
+              "prixerPriceTo",
+              state.prixerPrice?.to.toString()
+            )
+          }
           newFormData.append("hasSpecialVar", state.hasSpecialVar.toString())
           newFormData.append("autoCertified", state.autoCertified.toString())
 
           if (imagesList.length > 0) {
             newFormData.append(
               "images",
-              JSON.stringify(imagesList.map((img) => img.url))
+              JSON.stringify(imagesList.map((img: any) => img.url))
             )
           }
           // if (imagesList[0] !== undefined && imagesList.length > 0) {
@@ -291,7 +318,7 @@ export default function UpdateProduct() {
           //   newFormData.append("images", images)
           // } else newFormData.append("images", [])
           if (images.images) {
-            images.images.forEach((file) => {
+            images.images.forEach((file: File) => {
               newFormData.append("newProductImages", file)
             })
           }
@@ -304,12 +331,14 @@ export default function UpdateProduct() {
             newFormData.append("video", videoUrl)
           }
           const id = state._id
-          const response = await updateProduct(newFormData, id)
-          if (response.success === false) {
-            showSnackBar(response.message)
-          } else {
-            showSnackBar("Actualización de producto exitosa.")
-            navigate("/admin/product/read")
+          if (id) {
+            const response = await updateProduct(newFormData, id)
+            if (response.success === false) {
+              showSnackBar(response.message)
+            } else {
+              showSnackBar("Actualización de producto exitosa.")
+              navigate("/admin/product/read")
+            }
           }
         }
       }

@@ -10,7 +10,7 @@ import CreateWallet from "./components/CreateWallet"
 import CreateMovement from "./components/CreateMovement"
 import MovementRecord from "./components/MovementRecord"
 import PrixerInfo from "./components/Info"
-import OrgCommission from "./components/OrgCommission"
+// import OrgComission from "./components/OrgCommission"
 // import RemovePrixer from "./destroyPrixer"
 
 import {
@@ -304,14 +304,14 @@ export default function PrixersCrud() {
         />
       </Modal>
 
-      <Modal open={openComission} onClose={handleClose}>
+      {/* <Modal open={openComission} onClose={handleClose}>
         <OrgCommission
           selectedPrixer={selectedPrixer}
           handleClose={handleClose}
           setOpenComission={setOpenComission}
           readOrg={readOrg}
         />
-      </Modal>
+      </Modal> */}
 
       {/* <Modal open={openDestroy} onClose={handleClose}>
         <RemovePrixer

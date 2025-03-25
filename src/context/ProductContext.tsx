@@ -26,7 +26,7 @@ interface ProductFormState {
   autoCertified: boolean | string
   video?: { type: string; url: string }
   productImages: Array<string | File>
-  sources?: Img[]
+  sources: any
   thumbUrl?: string
   variants: Array<Variant>
 }
@@ -53,8 +53,7 @@ const initialState: ProductFormState = {
   autoCertified: false,
   video: undefined,
   productImages: [],
-  sources: [],
-  thumbUrl: "",
+  sources: { images: [], video: undefined },
   variants: [],
 }
 

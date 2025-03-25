@@ -13,12 +13,19 @@ import { ShippingMethod } from "../../../../../types/shippingMethod.types"
 import { useSnackBar, useLoading, getPermissions } from "context/GlobalContext"
 import { getMethods, deleteMethod } from "../api"
 
+interface TableProps {
+  setName: (x: string) => void
+  setPrice: (x: number) => void
+  setActive: (x: boolean) => void
+  setShippingMethod: (x: ShippingMethod) => void
+}
+
 export default function ShippingTable({
   setShippingMethod,
   setName,
   setPrice,
   setActive,
-}) {
+}: TableProps) {
   const navigate = useNavigate()
   const { showSnackBar } = useSnackBar()
   const { setLoading } = useLoading()
@@ -51,7 +58,7 @@ export default function ShippingTable({
   const handleActive = (shippingMethod: ShippingMethod) => {
     setShippingMethod(shippingMethod)
     setName(shippingMethod.name)
-    setPrice(shippingMethod.price)
+    setPrice(Number(shippingMethod.price))
     setActive(shippingMethod.active)
     navigate("/admin/shipping-method/update/" + shippingMethod._id)
   }

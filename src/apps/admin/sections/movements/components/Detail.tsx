@@ -174,7 +174,8 @@ export default function MovOrder({ orderId, type, handleClose }: MovProps) {
                         <Img
                           src={
                             item.product?.thumbUrl ||
-                            item.product?.sources?.images[0]?.url
+                            (item.product?.sources?.images &&
+                              item.product?.sources?.images[0]?.url)
                           }
                           style={{
                             maxWidth: 150,
@@ -354,7 +355,8 @@ export default function MovOrder({ orderId, type, handleClose }: MovProps) {
                             <Img
                               src={
                                 item.product?.thumbUrl ||
-                                item.product?.sources?.images[0]?.url
+                                (item.product?.sources?.images &&
+                                  item.product?.sources?.images[0]?.url)
                               }
                               style={{
                                 maxWidth: isDeskTop ? "150px" : "120px",

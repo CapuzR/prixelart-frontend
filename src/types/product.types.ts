@@ -73,7 +73,12 @@ export interface Variant {
   cost: number
   publicPrice: Equation
   prixerPrice: Equation
-
+  thumbUrl: string
+  variantImage?: {
+    images?: { type: string; url: string }[]
+    video?: { type: string; url: string }
+  }
+  video?: string
   attributes: VariantAttribute[]
 }
 

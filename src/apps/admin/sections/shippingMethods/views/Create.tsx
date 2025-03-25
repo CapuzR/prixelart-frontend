@@ -8,14 +8,6 @@ import TextField from "@mui/material/TextField"
 import FormControl from "@mui/material/FormControl"
 import Button from "@mui/material/Button"
 
-import {
-  isAValidName,
-  isAValidCi,
-  isAValidPhoneNum,
-  isAValidEmail,
-  isAValidPrice,
-} from "utils/validations"
-
 import { createMethod } from "../api"
 import { useSnackBar, useLoading } from "context/GlobalContext"
 
@@ -31,12 +23,14 @@ export default function CreateShippingMethod() {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     setLoading(true)
+    const adminToken = localStorage.getItem("adminToken")
+    const adminData = adminToken ? JSON.parse(adminToken).username : null
 
     const data = {
       active: active,
       name: name,
       createdOn: new Date(),
-      createdBy: JSON.parse(localStorage.getItem("adminToken")).username,
+      createdBy: adminData,
       price: price,
     }
 
@@ -58,7 +52,7 @@ export default function CreateShippingMethod() {
 
   return (
     <>
-      <Title title={'Agregar método de envío'}/>
+      <Title title={"Agregar método de envío"} />
       <form noValidate onSubmit={handleSubmit}>
         <Grid2 container spacing={2}>
           <Grid2 size={{ xs: 12 }}>
@@ -98,7 +92,6 @@ export default function CreateShippingMethod() {
                 onChange={(e) => {
                   setPrice(e.target.value)
                 }}
-                error={price !== undefined && !isAValidPrice(price)}
               />
             </FormControl>
           </Grid2>
@@ -107,7 +100,6 @@ export default function CreateShippingMethod() {
               variant="contained"
               color="primary"
               type="submit"
-              disabled={!name || !price || !isAValidPrice(price)}
               style={{ marginTop: 20 }}
             >
               Crear

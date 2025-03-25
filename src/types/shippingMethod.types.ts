@@ -4,6 +4,6 @@ export interface ShippingMethod {
     name: string;
     createdOn: Date;
     createdBy: string;
-    price: string;
+    price: number;
     _id: string;
 }

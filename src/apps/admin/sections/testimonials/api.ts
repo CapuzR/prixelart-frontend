@@ -5,7 +5,10 @@ export const getTestimonials = async () => {
   try {
     const response = await axios.get(base_url)
 
-    const responsev2 = response.data.testimonials.sort(function (a, b) {
+    const responsev2 = response.data.testimonials.sort(function (
+      a: any,
+      b: any
+    ) {
       return a.position - b.position
     })
     return responsev2

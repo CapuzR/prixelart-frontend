@@ -35,7 +35,7 @@ const useStyles = makeStyles()((theme: Theme) => {
 })
 
 export default function BestSellers() {
-  const {classes} = useStyles()
+  const { classes } = useStyles()
   const { showSnackBar } = useSnackBar()
   const { setLoading } = useLoading()
   const permissions = getPermissions()
@@ -45,8 +45,12 @@ export default function BestSellers() {
   const [mostSellers, setMostSellers] = useState<Product[]>()
 
   const addMostSellerToBestSeller = (selectedMostSeller: string) => {
-    const prodv1 = products && products.find((prod) => prod.name === selectedMostSeller)
-    if (prodv1 && bestSellers?.length === 0 || prodv1 && bestSellers === undefined) {
+    const prodv1 =
+      products && products.find((prod) => prod.name === selectedMostSeller)
+    if (
+      (prodv1 && bestSellers?.length === 0) ||
+      (prodv1 && bestSellers === undefined)
+    ) {
       setBestSellers([prodv1])
     } else if (bestSellers?.some((p) => p.name === selectedMostSeller)) {
       showSnackBar("Este producto ya está incluido en el banner.")
@@ -103,10 +107,11 @@ export default function BestSellers() {
   }, [])
 
   const updateBestSellers = async () => {
-    let data:string[] = []
-    bestSellers && bestSellers.map((prod) => {
-      data.push(prod._id)
-    })
+    let data: string[] = []
+    bestSellers &&
+      bestSellers.map((prod) => {
+        data.push(prod._id)
+      })
     const base_url = import.meta.env.VITE_BACKEND_URL + "/updateBestSellers"
     await axios
       .put(base_url, {
@@ -218,7 +223,7 @@ export default function BestSellers() {
                   key={i}
                   style={{
                     backgroundImage:
-                      prod.sources.images.length > 0
+                      prod.sources.images && prod.sources.images.length > 0
                         ? "url(" + prod.sources.images[0]?.url + ")"
                         : "url(" + prod.thumbUrl + ")",
                     width: 100,

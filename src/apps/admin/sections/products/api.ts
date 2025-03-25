@@ -23,7 +23,7 @@ export const getAllProducts = async () => {
   }
 }
 
-export const updateProduct = async (data: Product, id: string) => {
+export const updateProduct = async (data: FormData, id: string) => {
   const base_url =
     import.meta.env.VITE_BACKEND_URL + `/product/update/${id}`
   try {

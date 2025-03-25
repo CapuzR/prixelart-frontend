@@ -7,15 +7,20 @@ import TextField from "@mui/material/TextField"
 import Button from "@mui/material/Button"
 
 import Title from "../../../components/Title"
-import {
-  isAValidName,
-  isAValidCi,
-  isAValidPhoneNum,
-  isAValidEmail,
-  isAValidPrice,
-} from "utils/validations"
+
 import { useSnackBar, useLoading } from "context/GlobalContext"
 import { updateMethod } from "../api"
+import { ShippingMethod } from "../../../../../types/shippingMethod.types"
+
+interface MethodProps {
+  shippingMethod: ShippingMethod
+  setName: (x: string) => void
+  setPrice: (x: number) => void
+  setActive: (x: boolean) => void
+  active: boolean
+  name: string
+  price: number
+}
 
 export default function UpdateShippingMethod({
   shippingMethod,
@@ -25,7 +30,7 @@ export default function UpdateShippingMethod({
   active,
   name,
   price,
-}) {
+}: MethodProps) {
   const navigate = useNavigate()
 
   const { showSnackBar } = useSnackBar()
@@ -40,11 +45,11 @@ export default function UpdateShippingMethod({
     } else {
       setLoading(true)
 
-      const data = {
+      const data: ShippingMethod = {
         _id: shippingMethod._id,
         active: active,
         name: name,
-        price: price.replace(/[,]/gi, "."),
+        price: Number(price),
         createdOn: shippingMethod.createdOn,
         createdBy: shippingMethod.createdBy,
       }
@@ -57,7 +62,7 @@ export default function UpdateShippingMethod({
         showSnackBar("Actualización de método de envío exitosa.")
         setActive(true)
         setName("")
-        setPrice("")
+        setPrice(0)
         navigate("/admin/shipping-method/read")
       }
     }
@@ -65,16 +70,13 @@ export default function UpdateShippingMethod({
 
   return (
     <>
-      <Title>Actualización de Método de envío</Title>
+      <Title title="Actualización de Método de envío"/>
       <form noValidate onSubmit={updateShippingMethod}>
         <Grid2 container spacing={2}>
           <Grid2 size={{ xs: 12 }}>
             <Checkbox
               checked={active}
               color="primary"
-              inputProps={{
-                "aria-label": "secondary checkbox",
-              }}
               onChange={() => {
                 setActive(!active)
               }}
@@ -103,9 +105,8 @@ export default function UpdateShippingMethod({
                 label="Precio aproximado"
                 value={price}
                 onChange={(e) => {
-                  setPrice(e.target.value)
+                  setPrice(Number(e.target.value))
                 }}
-                error={price !== undefined && !isAValidPrice(price)}
               />
             </FormControl>
           </Grid2>
@@ -115,7 +116,6 @@ export default function UpdateShippingMethod({
               color="primary"
               type="submit"
               style={{ marginTop: 20 }}
-              disabled={!name || !price || !isAValidPrice(price)}
             >
               Actualizar
             </Button>

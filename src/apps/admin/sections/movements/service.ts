@@ -6,8 +6,8 @@ import { Organization } from "../../../../types/organization.types"
 import { Discount } from "../../../../types/discount.types"
 
 interface Item {
-  product: Product,
-  art: Art,
+  product: Product
+  art: Art
   quantity: number
 }
 
@@ -26,7 +26,7 @@ export const sortMovements = (movements: Movement[]) => {
 }
 
 export const getPrixersNames = (list: Movement[]) => {
-  let prix:string[] = []
+  let prix: string[] = []
   list.map((mov) => {
     if (prix[0] === null) {
       prix = [mov.destinatary]
@@ -39,7 +39,11 @@ export const getPrixersNames = (list: Movement[]) => {
   return prix
 }
 
-export const getUsername = (fullname: string, orgs: Organization[], prixers: Prixer[]) => {
+export const getUsername = (
+  fullname: string,
+  orgs: Organization[],
+  prixers: Prixer[]
+) => {
   const name = fullname?.split(" ")
   let selected: Prixer | undefined
   if (name && name?.length === 2) {
@@ -53,7 +57,8 @@ export const getUsername = (fullname: string, orgs: Organization[], prixers: Pri
     }
   } else if (name && name?.length === 3) {
     selected = orgs.find(
-      (p: Prixer) => p.firstName === name[0] && p.lastName === name[1] + " " + name[2]
+      (p: Prixer) =>
+        p.firstName === name[0] && p.lastName === name[1] + " " + name[2]
     )
     if (selected === undefined) {
       selected = prixers?.find(
@@ -62,7 +67,7 @@ export const getUsername = (fullname: string, orgs: Organization[], prixers: Pri
     }
   }
   console.log(selected)
-//   setSelectedPrixer(selected?.username)
+  //   setSelectedPrixer(selected?.username)
   return selected?.username
 }
 
@@ -93,6 +98,8 @@ export const finalPrice = (item: Item, discountList: Discount[]) => {
     unitPrice = item.product?.publicPrice?.equation
       ? item.product?.publicPrice?.equation
       : item.product.publicPrice.from
+        ? item.product.publicPrice.from
+        : 0
 
     let op = Number(unitPrice * item.quantity)
     unitPrice = op
@@ -124,6 +131,8 @@ export const unitPrice = (item: Item, discountList: Discount[]) => {
     unitPrice = item.product?.publicPrice?.equation
       ? item.product?.publicPrice?.equation
       : item.product.publicPrice.from
+        ? item.product.publicPrice.from
+        : 0
 
     let op = Number(unitPrice)
     unitPrice = op

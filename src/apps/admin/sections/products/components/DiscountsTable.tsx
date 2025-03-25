@@ -3,9 +3,9 @@ import { useState } from "react"
 import { Organization } from "../../../../../types/organization.types"
 import { Discount } from "../../../../../types/discount.types"
 interface TableProps {
-  handleActive: () => void
+  handleActive: (type: string, element: Discount, action: string) => void
   discountList: Discount[]
-  deleteElement: (org: Organization | undefined) => void
+  deleteElement: (type: string, id: string) => void
 }
 export default function DiscountsTable({
   handleActive,
@@ -29,6 +29,7 @@ export default function DiscountsTable({
 
   const handleUpdate = (element: any) => {
     console.log(element)
+     handleActive ("discount", element, "update")
   }
 
   return (

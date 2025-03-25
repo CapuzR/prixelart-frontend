@@ -124,9 +124,13 @@ export default function MovementsTable({
   const deleteMov = async (mov: Movement) => {
     setLoading(true)
     try {
-      const response = await deleteMovement(mov._id)
-      showSnackBar(`Movimiento de  ${mov.destinatary} eliminado exitosamente.`)
-      readMovements()
+      if (mov._id) {
+        const response = await deleteMovement(mov._id)
+        showSnackBar(
+          `Movimiento de  ${mov.destinatary} eliminado exitosamente.`
+        )
+        readMovements()
+      }
     } catch (error) {
       console.log(error)
     }
@@ -201,7 +205,7 @@ export default function MovementsTable({
           {rows &&
             rowsv2.map((row, i) => (
               <TableRow key={`mov-0${i}`}>
-                <TableCell align="center">{row._id.toString()}</TableCell>
+                <TableCell align="center">{row?._id?.toString()}</TableCell>
                 <TableCell align="center">
                   {row.date
                     ? new Date(row?.date)?.toLocaleDateString()

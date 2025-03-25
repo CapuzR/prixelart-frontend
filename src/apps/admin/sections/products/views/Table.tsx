@@ -25,12 +25,22 @@ import { Surcharge } from "../../../../../types/surcharge.types"
 import { Category } from "../../../../../types/category.types"
 
 import ProductsTable from "../components/ProductsTable"
-import CategoriesTable from "../components/CategoriesTable"
+// import CategoriesTable from "../components/CategoriesTable"
 import DiscountsTable from "../components/DiscountsTable"
 import SurchargesTable from "../components/SurchargesTable"
 import ExcelJS from "exceljs"
 
 import { useProductForm } from "@context/ProductContext"
+
+interface TableProps {
+  product: Product
+  setActiveCrud: (active: string) => void
+  handleCallback: (value: number) => void
+  setDiscount: (disc: Discount | undefined) => void
+  setSurcharge: (surc: Surcharge | undefined) => void
+  setCategory: (cat: Category | undefined) => void
+  setProduct: (prod: Product | undefined) => void
+}
 
 export default function Table({
   handleCallback,
@@ -40,16 +50,16 @@ export default function Table({
   setSurcharge,
   setCategory,
   setActiveCrud,
-}) {
+}: TableProps) {
   const navigate = useNavigate()
   const { showSnackBar } = useSnackBar()
   const { setLoading } = useLoading()
   const permissions = getPermissions()
   const { state, dispatch } = useProductForm()
 
-  const inputRef = useRef(null)
+  const inputRef = useRef<HTMLInputElement | null>(null)
 
-  const [rows, setRows] = useState<Product[]>()
+  const [rows, setRows] = useState<Product[]>([])
   const [discountList, setDiscountList] = useState<Discount[]>([])
   const [surchargeList, setSurchargeList] = useState<Surcharge[]>([])
   const [value, setValue] = useState(0)
@@ -61,11 +71,11 @@ export default function Table({
     navigate({ pathname: "/admin/product/" + action })
   }
 
-  const handleChange = (event, newValue) => {
+  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue)
   }
 
-  const handleClose = (event, reason) => {
+  const handleClose = (event: any, reason: string) => {
     if (reason === "clickaway") {
       return
     }
@@ -138,32 +148,36 @@ export default function Table({
   }, [])
 
   const handleActive = (
-    type: string,
+    type: string | "product" | "discount" | "surcharge" | "category",
     element: Product | Discount | Surcharge | Category,
     action: string
   ) => {
-    if (type === "product") {
+    if (type === "product" && isProduct(element)) {
       setProduct(element)
-    } else if (type === "discount") {
+    } else if (type === "discount" && isDiscount(element)) {
       setDiscount(element)
-    } else if (type === "surcharge") {
+    } else if (type === "surcharge" && isSurcharge(element)) {
       setSurcharge(element)
-    } else if (type === "category") {
+    } else if (type === "category" && isCategory(element)) {
       setCategory(element)
     }
-    if (action === "update" && type === "product") {
+
+    if (action === "update" && type === "product" && isProduct(element)) {
       dispatch({
         type: "SET_FULL_FORM",
         product: element,
       })
     }
-
-    // Cambiar el almacenamiento en el localStorage por reducer
-    // localStorage.setItem(`${type}`, JSON.stringify(element))
-
     navigate({ pathname: "/admin/product/" + action + "/" + element._id })
     setActiveCrud(action)
   }
+
+  const isProduct = (el: any): el is Product => "productName" in el
+  const isDiscount = (el: any): el is Discount => "discountRate" in el
+  const isSurcharge = (el: any): el is Surcharge => "surchargeAmount" in el
+  const isCategory = (el: any): el is Category => "categoryName" in el
+  // Cambiar el almacenamiento en el localStorage por reducer
+  // localStorage.setItem(`${type}`, JSON.stringify(element))
 
   const CustomTypography = (text: string) => (
     <Typography
@@ -285,113 +299,119 @@ export default function Table({
   }
 
   const handleFileSelect = () => {
-    inputRef.current.click()
+    if (inputRef.current) {
+      inputRef.current.click()
+    }
   }
 
-  const updateManyProds = async (e) => {
+  const updateManyProds = async (e: React.ChangeEvent<HTMLInputElement>) => {
     setLoading(true)
-    const file = e.target.files[0]
+    const file: any = e.target.files?.[0]
     const workbook = new ExcelJS.Workbook()
-    await workbook.xlsx.load(file)
-    const worksheet = workbook.getWorksheet(1)
-    let data = []
+    if (file) {
+      await workbook.xlsx.load(file)
+      const worksheet = workbook.getWorksheet(1)
+      let data: any = []
 
-    interface Price {
-      from: any
-      to: any
-    }
-
-    interface AlternativePrice {
-      equation: any
-    }
-
-    worksheet.eachRow((row, i) => {
-      if (i > 1) {
-        const rowData = row.values
-        const prod: {
-          _id: any
-          name: any
-          active: any
-          description: any
-          category: any
-          considerations: any
-          productionTime: any
-          cost: any
-          publicPrice: Price | AlternativePrice
-          prixerPrice: Price | AlternativePrice
-          hasSpecialVar?: any
-          bestSeller?: any
-          variants: any[]
-        } = {
-          _id: rowData[1],
-          name: rowData[2],
-          active: rowData[3],
-          description: rowData[4],
-          category: rowData[5],
-          considerations: rowData[6],
-          productionTime: rowData[7],
-          cost: rowData[8],
-          publicPrice: { from: rowData[9], to: rowData[10] },
-          prixerPrice: { from: rowData[11], to: rowData[12] },
-          hasSpecialVar: rowData[13],
-          bestSeller: rowData[14],
-          variants: [],
-        }
-
-        const x = rows.find((item) => prod._id === item._id)
-        if (x) {
-          data.push(prod)
-        } else {
-          prod.publicPrice = { equation: rowData[9] }
-          prod.prixerPrice = { equation: rowData[11] }
-          delete prod.hasSpecialVar
-          delete prod.bestSeller
-          data.at(-1)?.variants.push(prod)
-        }
+      interface Price {
+        from: any
+        to: any
       }
-    })
 
-    const v2 = rows
-    v2.map((prod, i) => {
-      prod.name = data[i].name
-      prod.active = data[i].active
-      prod.description = data[i].description
-      prod.category = data[i].category
-      prod.considerations = data[i].considerations
-      prod.productionTime = data[i].productionTime
-      prod.cost = data[i].cost
-      prod.publicPrice = {
-        from: data[i].publicPrice.from,
-        to: data[i].publicPrice.to,
+      interface AlternativePrice {
+        equation: any
       }
-      prod.prixerPrice = {
-        from: data[i].prixerPrice.from,
-        to: data[i].prixerPrice.to,
-      }
-      prod.hasSpecialVar = data[i].hasSpecialVar
-      prod.bestSeller = data[i].bestSeller
+      worksheet &&
+        worksheet.eachRow((row, i) => {
+          if (i > 1) {
+            const rowData = Array.isArray(row.values)
+              ? row.values
+              : Object.values(row.values)
+            const prod: {
+              _id: any
+              name: any
+              active: any
+              description: any
+              category: any
+              considerations: any
+              productionTime: any
+              cost: any
+              publicPrice: Price | AlternativePrice
+              prixerPrice: Price | AlternativePrice
+              hasSpecialVar?: any
+              bestSeller?: any
+              variants: any[]
+            } = {
+              _id: rowData[1],
+              name: rowData[2],
+              active: rowData[3],
+              description: rowData[4],
+              category: rowData[5],
+              considerations: rowData[6],
+              productionTime: rowData[7],
+              cost: rowData[8],
+              publicPrice: { from: rowData[9], to: rowData[10] },
+              prixerPrice: { from: rowData[11], to: rowData[12] },
+              hasSpecialVar: rowData[13],
+              bestSeller: rowData[14],
+              variants: [],
+            }
 
-      if (prod.variants.length > 0) {
-        prod.variants.map((v, j) => {
-          v.name = data[i].variants[j].name
-          v.active = data[i].variants[j].active
-          v.description = data[i].variants[j].description
-          v.category = data[i].variants[j].category
-          v.considerations = data[i].variants[j].considerations
-          v.productionTime = data[i].variants[j].productionTime
-          v.cost = data[i].variants[j].cost
-          v.publicPrice.equation = data[i].variants[j].publicPrice.equation
-          v.prixerPrice.equation = data[i].variants[j].prixerPrice.equation
+            const x = rows.find((item) => prod._id === item._id)
+            if (x) {
+              data.push(prod)
+            } else {
+              prod.publicPrice = { equation: rowData[9] }
+              prod.prixerPrice = { equation: rowData[11] }
+              delete prod.hasSpecialVar
+              delete prod.bestSeller
+              data.at(-1)?.variants.push(prod)
+            }
+          }
         })
-      }
-    })
 
-    const base_url = import.meta.env.VITE_BACKEND_URL + `/product/updateMany`
-    const response = await axios.put(base_url, { products: v2 })
-    if (response.data.success === false) {
-      showSnackBar(response.data.message)
-    } else {
-      showSnackBar(response.data.message)
+      const v2 = rows
+      v2.map((prod, i) => {
+        prod.name = data[i].name
+        prod.active = data[i].active
+        prod.description = data[i].description
+        prod.category = data[i].category
+        prod.considerations = data[i].considerations
+        prod.productionTime = data[i].productionTime
+        prod.cost = data[i].cost
+        prod.publicPrice = {
+          from: data[i].publicPrice.from,
+          to: data[i].publicPrice.to,
+        }
+        prod.prixerPrice = {
+          from: data[i].prixerPrice.from,
+          to: data[i].prixerPrice.to,
+        }
+        prod.hasSpecialVar = data[i].hasSpecialVar
+        prod.bestSeller = data[i].bestSeller
+
+        if (prod.variants.length > 0) {
+          prod.variants.map((v, j) => {
+            v.name = data[i].variants[j].name
+            v.active = data[i].variants[j].active
+            v.description = data[i].variants[j].description
+            v.category = data[i].variants[j].category
+            v.considerations = data[i].variants[j].considerations
+            v.productionTime = data[i].variants[j].productionTime
+            v.cost = data[i].variants[j].cost
+            v.publicPrice.equation = data[i].variants[j].publicPrice.equation
+            v.prixerPrice.equation = data[i].variants[j].prixerPrice.equation
+          })
+        }
+      })
+
+      const base_url = import.meta.env.VITE_BACKEND_URL + `/product/updateMany`
+      const response = await axios.put(base_url, { products: v2 })
+      if (response.data.success === false) {
+        showSnackBar(response.data.message)
+      } else {
+        showSnackBar(response.data.message)
+      }
     }
   }
 
@@ -415,13 +435,13 @@ export default function Table({
     }
     if (value === 1) {
       if (categories?.length > 0) {
-        return (
-          <CategoriesTable
-            categories={categories}
-            handleActive={handleActive}
-            deleteElement={deleteElement}
-          />
-        )
+        // return (
+        //   <CategoriesTable
+        //     categories={categories}
+        //     handleActive={handleActive}
+        //     deleteElement={deleteElement}
+        //   />
+        // )
       } else {
         message = "No tenemos categorías por ahora."
         return CustomTypography(message)
@@ -467,6 +487,11 @@ export default function Table({
       return "Crear Descuento"
     } else return "Crear Recargo"
   }
+
+  useEffect(() => {
+    handleCallback(value)
+  }, [value])
+
   return (
     <React.Fragment>
       <Tabs
@@ -569,7 +594,6 @@ export default function Table({
           handleClose={handleClose}
         />
       </Modal>
-      {handleCallback(value)}
     </React.Fragment>
   )
 }

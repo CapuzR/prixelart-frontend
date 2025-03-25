@@ -17,7 +17,7 @@ import { Discount } from "../../../../../types/discount.types"
 
 interface TableProps {
   rows: Product[]
-  handleActive: (product: string, row: Product, action: string) => void
+  handleActive: (type: string, element: Product, action: string) => void
   discountList: Discount[]
   deleteElement: (product: string, id: string) => void
 }

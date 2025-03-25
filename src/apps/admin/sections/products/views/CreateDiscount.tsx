@@ -1,6 +1,6 @@
-import React from "react"
-import { useState, useEffect } from "react"
-import { makeStyles } from "@mui/styles"
+import React, { useState, useEffect } from "react"
+import { Theme } from "@mui/material/styles"
+import { makeStyles } from "tss-react/mui"
 import { useNavigate } from "react-router-dom"
 
 import Title from "../../../components/Title"
@@ -17,58 +17,52 @@ import CircularProgress from "@mui/material/CircularProgress"
 import { useTheme } from "@mui/styles"
 import useMediaQuery from "@mui/material/useMediaQuery"
 import FormControl from "@mui/material/FormControl"
-import clsx from "clsx"
-import {
-  isAValidName,
-  isAValidCi,
-  isAValidPrice,
-  isAValidPhoneNum,
-  isAValidEmail,
-} from "utils/validations"
+
 import Checkbox from "@mui/material/Checkbox"
-import Backdrop from "@mui/material/Backdrop"
 import InputAdornment from "@mui/material/InputAdornment"
 import { Typography } from "@mui/material"
-import { nanoid } from "nanoid"
 import { useLoading, useSnackBar } from "@context/GlobalContext"
 import { createDiscount, getAllProducts } from "../api"
+import { Product } from "../../../../../types/product.types"
 
-const useStyles = makeStyles((theme) => ({
-  loaderImage: {
-    width: "120%",
-    border: "2px",
-    height: "30vh",
-    borderStyle: "groove",
-    borderColor: "#d33f49",
-    backgroundColor: "#ededed",
-    display: "flex",
-    flexDirection: "row",
-  },
-  imageLoad: {
-    maxWidth: "100%",
-    maxHeight: "100%",
-    padding: "5px",
-    marginTop: "5px",
-  },
-  formHead: {
-    display: "flex",
-    flexDirection: "row",
-    alignContent: "center",
-    justifyContent: "space-evenly",
-    alignItems: "center",
-  },
-  buttonImgLoader: {
-    cursor: "pointer",
-    padding: "5px",
-  },
-  buttonEdit: {
-    cursor: "pointer",
-    padding: "5px",
-  },
-}))
+const useStyles = makeStyles()((theme: Theme) => {
+  return {
+    loaderImage: {
+      width: "120%",
+      border: "2px",
+      height: "30vh",
+      borderStyle: "groove",
+      borderColor: "#d33f49",
+      backgroundColor: "#ededed",
+      display: "flex",
+      flexDirection: "row",
+    },
+    imageLoad: {
+      maxWidth: "100%",
+      maxHeight: "100%",
+      padding: "5px",
+      marginTop: "5px",
+    },
+    formHead: {
+      display: "flex",
+      flexDirection: "row",
+      alignContent: "center",
+      justifyContent: "space-evenly",
+      alignItems: "center",
+    },
+    buttonImgLoader: {
+      cursor: "pointer",
+      padding: "5px",
+    },
+    buttonEdit: {
+      cursor: "pointer",
+      padding: "5px",
+    },
+  }
+})
 
 export default function CreateDiscount() {
-  const classes = useStyles()
+  const {classes, cx} = useStyles()
   const theme = useTheme()
   const navigate = useNavigate()
 
@@ -77,28 +71,28 @@ export default function CreateDiscount() {
 
   // const isDesktop = useMediaQuery(theme.breakpoints.up("md"))
   const [active, setActive] = useState(true)
-  const [name, setName] = useState()
-  const [description, setDescription] = useState()
-  const [type, setType] = useState()
-  const [value, setValue] = useState()
-  const [appliedProducts, setAppliedProducts] = useState([])
+  const [name, setName] = useState("")
+  const [description, setDescription] = useState("")
+  const [type, setType] = useState("")
+  const [value, setValue] = useState("")
+  const [appliedProducts, setAppliedProducts] = useState<string[]>([])
   const [buttonState, setButtonState] = useState(false)
-  const [products, setProducts] = useState()
+  const [products, setProducts] = useState<Product[]>([])
   const discountTypes = ["Porcentaje", "Monto"]
 
   const parseNumber = (value: string) => {
     if (!value) return 0
-  
+
     // Elimina separadores de miles y reemplaza la coma decimal por punto
     const formattedValue = value.replace(/\./g, "").replace(/,/g, ".")
-  
+
     return parseFloat(formattedValue) || 0
   }
 
   // console.log(parseNumber(value?.replace(",", ".")))
-  console.log(parseNumber(value))
+  // console.log(parseNumber(value))
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
     if (!name && !type && !value) {
@@ -122,10 +116,10 @@ export default function CreateDiscount() {
       } else {
         showSnackBar("Creación de descuento exitoso.")
         setActive(false)
-        setName(undefined)
-        setDescription(undefined)
-        setType(undefined)
-        setValue(undefined)
+        setName("")
+        setDescription("")
+        setType("")
+        setValue("")
         setAppliedProducts([])
         navigate("/admin/product/read")
       }
@@ -171,7 +165,6 @@ export default function CreateDiscount() {
           </Grid2>
           <Grid2 size={{ xs: 12, md: 6 }} style={{ padding: 5 }}>
             <FormControl
-              className={clsx(classes.margin, classes.textField)}
               variant="outlined"
               fullWidth={true}
             >
@@ -189,7 +182,6 @@ export default function CreateDiscount() {
           </Grid2>
           <Grid2 size={{ xs: 12, md: 6 }} style={{ padding: 5 }}>
             <FormControl
-              className={clsx(classes.margin, classes.textField)}
               variant="outlined"
               fullWidth={true}
             >
@@ -212,7 +204,6 @@ export default function CreateDiscount() {
             style={{ marginTop: "-75px", padding: 5 }}
           >
             <FormControl
-              className={clsx(classes.margin, classes.textField)}
               variant="outlined"
               fullWidth={true}
             >
@@ -236,7 +227,6 @@ export default function CreateDiscount() {
             style={{ marginTop: "-75px", padding: 5 }}
           >
             <FormControl
-              className={clsx(classes.margin, classes.textField)}
               variant="outlined"
               fullWidth={true}
             >
@@ -258,7 +248,6 @@ export default function CreateDiscount() {
                   onChange={(e) => {
                     setValue(e.target.value)
                   }}
-                  error={value !== undefined && !isAValidPrice(value)}
                 />
               ) : (
                 type === "Porcentaje" && (
@@ -280,7 +269,6 @@ export default function CreateDiscount() {
                     onChange={(e) => {
                       setValue(e.target.value)
                     }}
-                    error={value !== undefined && !isAValidPrice(value)}
                   />
                 )
               )}
@@ -296,7 +284,7 @@ export default function CreateDiscount() {
               inputProps={{ "aria-label": "secondary checkbox" }}
               onChange={() => {
                 if (appliedProducts.length !== products.length) {
-                  let v1 = []
+                  let v1: string[] = []
                   products.map((product) => v1.push(product.name))
                   setAppliedProducts(v1)
                 } else if (appliedProducts.length === products.length) {
@@ -335,7 +323,7 @@ export default function CreateDiscount() {
           type="submit"
           disabled={buttonState}
           style={{ marginTop: 20 }}
-          onClick={handleSubmit}
+          // onClick={handleSubmit}
         >
           Crear
         </Button>

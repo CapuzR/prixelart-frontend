@@ -69,7 +69,7 @@ export default function UpdateAdmin({
   updateAdminProperty,
   loadAdmin,
 }: AdminProps) {
-  const { classes, cx } = useStyles()
+  const { classes } = useStyles()
   const navigate = useNavigate()
   const { showSnackBar } = useSnackBar()
   const { setLoading } = useLoading()

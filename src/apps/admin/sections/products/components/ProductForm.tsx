@@ -1,4 +1,4 @@
-import React, { useState, useEffect, MouseEvent } from "react"
+import React, { useState, useEffect, FormEvent } from "react"
 import { useNavigate } from "react-router-dom"
 
 import Grid2 from "@mui/material/Grid2"
@@ -23,7 +23,7 @@ import { useSnackBar } from "@context/GlobalContext"
 
 interface FormProps {
   openVideo: () => void
-  handleSubmit: (e: React.FormEvent<HTMLFormElement>, images: any) => void
+  handleSubmit: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, images: any) => void
 }
 export default function ProductForm({ handleSubmit, openVideo }: FormProps) {
   const { state, dispatch } = useProductForm()
@@ -48,10 +48,10 @@ export default function ProductForm({ handleSubmit, openVideo }: FormProps) {
 
     state.sources
       ?.filter(
-        (img) =>
+        (img: any) =>
           img.url !== undefined && img.url !== null && img.type === "images"
       )
-      .forEach((img) => prev.loader.push(img.url)) // : setVideoUrl(img && img.url)
+      .forEach((img: any) => prev.loader.push(img.url)) // : setVideoUrl(img && img.url)
     // )
 
     if (indexImage === -1 && state.thumbUrl) {

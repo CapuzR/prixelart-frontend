@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Grid, Typography } from '@mui/material';
 import { Map } from '../components/map/map.jsx';
 import { IconCard } from '../components/map/card.jsx';
-import { IconsForm } from '../components/iconsForm/iconsForm.jsx';
+import { IconsForm } from '../components/iconsForm/index.js';
 import { IconsList } from '../components/iconsForm/iconList.jsx';
 import { useNavigate, useLocation } from 'react-router-dom';
 

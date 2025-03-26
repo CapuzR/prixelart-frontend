@@ -56,7 +56,7 @@ export default function Table1({
 
     let elements2 = elements?.slice(itemsToSkip, itemsPerPage + itemsToSkip)
     return elements2?.map((obj: any) => {
-      let xo = {}
+      let xo:any = {}
 
       properties.forEach((prop: string) => {
         xo[prop] = obj[prop] ?? ""
@@ -87,7 +87,7 @@ export default function Table1({
                 </Typography>
               ) : (
                 head.type === "select" && (
-                  <FormControl sx={{ margin: theme.spacing(1), minWidth: 120 }}>
+                  <FormControl sx={{ margin: "8px", minWidth: 120 }}>
                     <InputLabel id="demo-simple-select-label">
                       Destinatario
                     </InputLabel>

@@ -15,7 +15,7 @@ import { useSnackBar, useLoading } from "@context/GlobalContext"
 import { Product, Variant } from "../../../../../types/product.types"
 
 interface VarProps {
-  product: Product
+  product: Product | undefined
   setVariant: (variant: Variant) => void
 }
 
@@ -54,14 +54,14 @@ export default function ReadVariants({ product, setVariant }: VarProps) {
   const handleActive = (variant: Variant, action: string) => {
     setVariant(variant)
     action == "create" &&
-      navigate("/product" + "/" + product._id + "/variant/" + action)
+      navigate("/product" + "/" + product?._id + "/variant/" + action)
     action == "read" &&
-      navigate("/product" + "/" + product._id + "/variant/" + action)
+      navigate("/product" + "/" + product?._id + "/variant/" + action)
     action == "update" &&
       navigate(
         "/product" +
           "/" +
-          product._id +
+          product?._id +
           "/variant/" +
           variant._id +
           "/" +
@@ -72,7 +72,7 @@ export default function ReadVariants({ product, setVariant }: VarProps) {
   const deleteVariant = async (v: string) => {
     setLoading(true)
     const base_url = import.meta.env.VITE_BACKEND_URL + "/product/deleteVariant"
-    const id = product._id
+    const id = product?._id
 
     const deleteVar = await axios.put(base_url, {
       product: id,

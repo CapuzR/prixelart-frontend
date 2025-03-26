@@ -8,6 +8,7 @@ import Typography from "@mui/material/Typography"
 import Avatar from "@mui/material/Avatar"
 import useMediaQuery from "@mui/material/useMediaQuery"
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry"
+
 import { getTestimonials } from "../api"
 
 const useStyles = makeStyles()((theme: Theme) => {
@@ -44,7 +45,7 @@ const useStyles = makeStyles()((theme: Theme) => {
 // };
 
 export default function TestimonialsFeed() {
-  const classes = useStyles()
+  const {classes} = useStyles()
   const theme = useTheme()
 
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
@@ -75,8 +76,8 @@ export default function TestimonialsFeed() {
     >
       <ResponsiveMasonry columnsCountBreakPoints={{ 350: 1, 750: 2, 900: 3 }}>
         <Masonry style={{ columnGap: "8px" }}>
-          {tiles.map(
-            (tile) =>
+          {tiles?.map(
+            (tile: any) =>
               tile.status && (
                 <Paper className={classes.paper}>
                   <Grid2

@@ -24,8 +24,8 @@ import { Product, Variant } from "../../../../../types/product.types"
 import { useSnackBar, useLoading } from "@context/GlobalContext"
 
 interface VariantProps {
-  variant: Variant
-  product: Product
+  variant?: Variant | undefined
+  product: Product | undefined
   setVariant: (variant: Variant | undefined) => void
   setActiveVCrud: (active: string) => void
 }
@@ -261,7 +261,7 @@ export default function CreateVariant({
         const base_url =
           import.meta.env.VITE_BACKEND_URL +
           "/product/updateVariants/" +
-          product._id
+          product?._id
         const response = await axios.put(base_url, formData)
 
         if (response.data.success === false) {
@@ -270,7 +270,7 @@ export default function CreateVariant({
           // console.log(response.error)
           setVariant(undefined)
         } else {
-          navigate("/product/update/" + product._id)
+          navigate("/product/update/" + product?._id)
           showSnackBar("Actualización de variante exitoso.")
           setActive(true)
           setImage("")

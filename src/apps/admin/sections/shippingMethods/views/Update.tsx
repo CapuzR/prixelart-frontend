@@ -18,8 +18,8 @@ interface MethodProps {
   setPrice: (x: number) => void
   setActive: (x: boolean) => void
   active: boolean
-  name: string
-  price: number
+  name: string | undefined
+  price: number | undefined
 }
 
 export default function UpdateShippingMethod({

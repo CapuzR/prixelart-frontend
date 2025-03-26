@@ -6,6 +6,7 @@
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
+    "@hello-pangea/dnd": "^18.0.1",
     "@mui/icons-material": "^6.4.6",
     "@mui/lab": "^6.0.0-beta.29",
     "@mui/material": "^6.4.6",
@@ -26,7 +27,6 @@
     "mongodb": "^6.13.1",
     "nanoid": "^3.1.23",
     "react": "^19.0.0",
-    "react-beautiful-dnd": "^13.1.1",
     "react-cool-img": "^1.2.9",
     "react-dom": "^19.0.0",
     "react-easy-crop": "^5.4.1",
@@ -81,6 +81,7 @@
   "devDependencies": {
     "@types/node": "^22.13.5",
     "@types/react": "^19.0.10",
+    "@types/react-beautiful-dnd": "^13.1.8",
     "@types/react-dom": "^19.0.4",
     "@types/react-responsive-masonry": "^2.6.0",
     "@types/react-router-dom": "^5.3.3",

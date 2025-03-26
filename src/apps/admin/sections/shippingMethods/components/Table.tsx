@@ -15,7 +15,7 @@ import { getMethods, deleteMethod } from "../api"
 
 interface TableProps {
   setName: (x: string) => void
-  setPrice: (x: string) => void
+  setPrice: (x: number | undefined) => void
   setActive: (x: boolean) => void
   setShippingMethod: (x: ShippingMethod) => void
 }
@@ -58,7 +58,7 @@ export default function ShippingTable({
   const handleActive = (shippingMethod: ShippingMethod) => {
     setShippingMethod(shippingMethod)
     setName(shippingMethod.name)
-    setPrice(Number(shippingMethod.price))
+    setPrice(shippingMethod.price)
     setActive(shippingMethod.active)
     navigate("/admin/shipping-method/update/" + shippingMethod._id)
   }

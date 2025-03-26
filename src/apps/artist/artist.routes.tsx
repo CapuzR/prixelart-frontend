@@ -41,7 +41,10 @@ const ArtistRoutes = () => {
         <PrixerStats />
       </Route>
 
-      <Route path={["/art=:artId", "/arte/:artId"]} element={<ArtDetail/>}>
+      <Route path={"/art=:artId"} element={<ArtDetail/>}>
+        <ArtDetail />
+      </Route>
+      <Route path={"/arte/:artId"} element={<ArtDetail/>}>
         <ArtDetail />
       </Route>
       <Route path="/prixer=:username">
@@ -54,7 +57,10 @@ const ArtistRoutes = () => {
         <PrixersService />
       </Route>
 
-      <Route path={["/service=:serviceId", "/servicio/:serviceId"]}>
+      <Route path={"/service=:serviceId"}>
+        <SoloService />
+      </Route>
+      <Route path={"/servicio/:serviceId"}>
         <SoloService />
       </Route>
     </Routes>

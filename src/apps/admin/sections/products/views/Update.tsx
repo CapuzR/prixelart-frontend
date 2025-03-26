@@ -16,7 +16,7 @@ import DialogContentText from "@mui/material/DialogContentText"
 import DialogTitle from "@mui/material/DialogTitle"
 import Tooltip from "@mui/material/Tooltip"
 import ViewListIcon from "@mui/icons-material/ViewList"
-import Variants from "./VariantsIndex"
+import Variants from "./Variants"
 import Tabs from "@mui/material/Tabs"
 import Tab from "@mui/material/Tab"
 import Box from "@mui/material/Box"
@@ -396,8 +396,8 @@ export default function UpdateProduct() {
         <TabPanel value={value} index={1}>
           <Variants
             product={state}
-            // activeVCrud={activeVCrud}
-            // setActiveVCrud={setActiveVCrud}
+            activeVCrud={activeVCrud}
+            setActiveVCrud={setActiveVCrud}
           />
         </TabPanel>
 

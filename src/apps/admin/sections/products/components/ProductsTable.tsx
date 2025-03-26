@@ -113,12 +113,17 @@ export default function ProductsTable({
               <TableCell align="center">
                 <Checkbox
                   disabled
-                  checked={row.active}
+                  checked={
+                    row.active === "true" || row.active === true ? true : false
+                  }
                   color="primary"
-                  inputProps={{ "aria-label": "secondary checkbox" }}
                 />
               </TableCell>
-              <TableCell align="center">{row.category}</TableCell>
+              <TableCell align="center">
+                {typeof row.category === "string"
+                  ? row.category
+                  : row.category?.name}
+              </TableCell>
               <TableCell align="center">
                 $
                 {Number(row.publicPrice.from).toLocaleString("de-DE", {

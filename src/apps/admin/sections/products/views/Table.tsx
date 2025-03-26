@@ -590,8 +590,8 @@ export default function Table({
       <Modal open={openUpdateProduct} onClose={handleClose}>
         <UpdateProductV2
           product={product}
-          setProduct={setProduct}
-          handleClose={handleClose}
+          // setProduct={setProduct}
+          // handleClose={handleClose}
         />
       </Modal>
     </React.Fragment>

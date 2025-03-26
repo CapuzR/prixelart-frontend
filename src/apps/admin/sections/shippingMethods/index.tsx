@@ -39,8 +39,8 @@ export default function ReadShippingMethod() {
 
   const fixedHeightPaper = cx(classes.paper, classes.fixedHeight)
   const [active, setActive] = useState<boolean>(true)
-  const [name, setName] = useState<string>()
-  const [price, setPrice] = useState<string>()
+  const [name, setName] = useState<string | undefined>()
+  const [price, setPrice] = useState<number | undefined>()
   const [shippingMethod, setShippingMethod] = useState<ShippingMethod>()
 
   useEffect(() => {

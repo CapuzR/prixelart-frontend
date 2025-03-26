@@ -2,6 +2,7 @@ import { useState, useEffect } from "react"
 import axios from "axios"
 import { makeStyles } from "tss-react/mui"
 import { useTheme, Theme } from "@mui/material/styles"
+import { SelectChangeEvent } from "@mui/material"
 
 import Paper from "@mui/material/Paper"
 import Grid2 from "@mui/material/Grid2"
@@ -22,17 +23,17 @@ import FormControlLabel from "@mui/material/FormControlLabel"
 import DeleteIcon from "@mui/icons-material/Delete"
 import EditIcon from "@mui/icons-material/Edit"
 import IconButton from "@mui/material/IconButton"
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd"
+import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd"
 import { getTestimonials } from "./api"
 import { useSnackBar, useLoading, getPermissions } from "@context/GlobalContext"
-
+import { Testimonial } from "../../../../types/testimonial.types"
 // Investigar sobre drag&drop
-function getStyles(type, theme) {
+function getStyles(type: string, theme: Theme) {
   return {
     fontWeight:
       type.indexOf(type) === -1
-        ? theme.typography.fontWeightRegular
-        : theme.typography.fontWeightMedium,
+        ? (theme.typography.fontWeightRegular ?? 400)
+        : (theme.typography.fontWeightMedium ?? 500),
   }
 }
 
@@ -42,18 +43,6 @@ const useStyles = makeStyles()((theme: Theme) => {
       paddingTop: "81.25%",
       borderRadius: "50%",
       margin: "28px",
-    },
-    loading: {
-      display: "flex",
-      "& > * + *": {
-        marginLeft: theme.spacing(2),
-      },
-      marginLeft: "50vw",
-      marginTop: "50vh",
-    },
-    backdrop: {
-      zIndex: theme.zIndex.drawer + 1,
-      color: theme.palette.primary.main,
     },
     paper: {
       padding: theme.spacing(2),
@@ -69,20 +58,6 @@ const useStyles = makeStyles()((theme: Theme) => {
       width: 80,
       height: 80,
     },
-    snackbar: {
-      [theme.breakpoints.down("xs")]: {
-        bottom: 90,
-      },
-      margin: {
-        margin: theme.spacing(1),
-      },
-      withoutLabel: {
-        marginTop: theme.spacing(3),
-      },
-      textField: {
-        width: "25ch",
-      },
-    },
   }
 })
 
@@ -97,8 +72,8 @@ const MenuProps = {
   },
 }
 
-export default function Testimonials(props) {
-  const classes = useStyles()
+export default function Testimonials() {
+  const { classes } = useStyles()
   const { showSnackBar } = useSnackBar()
   const { setLoading } = useLoading()
   const permissions = getPermissions()
@@ -109,15 +84,16 @@ export default function Testimonials(props) {
   const [name, setName] = useState("")
   const [value, setValue] = useState("")
   const [footer, setFooter] = useState("")
-  const [tiles, setTiles] = useState([])
+  const [tiles, setTiles] = useState<Testimonial[]>([])
   const [avatarObj, setAvatarObj] = useState("")
-  const [avatarPic, setAvatarPic] = useState("")
+  const [avatarPic, setAvatarPic] = useState<File | undefined>(undefined)
   const [inputChange, setInputChange] = useState(false)
   const [state, setState] = useState({
     checkedA: true,
   })
-  const [updateId, setUpdateId] = useState()
-  const handleChangeType = (event) => {
+  const [updateId, setUpdateId] = useState<string>("")
+
+  const handleChangeType = (event: SelectChangeEvent<string>) => {
     setType(event.target.value)
   }
   // const [position, setPosition] = useState(tiles);
@@ -137,27 +113,26 @@ export default function Testimonials(props) {
     readTestimonial()
   }, [])
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
     e.preventDefault()
     if (!type || !name || !value || !avatar || !state) {
       showSnackBar("Por favor completa todos los campos requeridos.")
     } else {
       setLoading(true)
       const formData = new FormData()
-      formData.append("avatar", avatarPic)
+      if (avatarPic) formData.append("avatar", avatarPic)
       formData.append("type", type)
       formData.append("name", name)
       formData.append("value", value)
       formData.append("footer", footer)
-      formData.append("status", state.checkedA)
-      formData.append("adminToken", localStorage.getItem("adminTokenV"))
+      formData.append("status", state.checkedA.toString())
 
       const base_url = import.meta.env.VITE_BACKEND_URL + "/testimonial/create"
 
-      const response = axios
-        .post(base_url, formData, {
-          "Content-Type": "multipart/form-data",
-        })
+      const response = await axios
+        .post(base_url, formData)
         .then((response) => {
           if (response.data.success === false) {
             showSnackBar(response.data.message)
@@ -169,7 +144,7 @@ export default function Testimonials(props) {
             setValue("")
             setFooter("")
             setState({ checkedA: false })
-            setUpdateId(undefined)
+            setUpdateId("")
             readTestimonial()
           }
         })
@@ -180,18 +155,21 @@ export default function Testimonials(props) {
     }
   }
 
-  const handleChange = (event) => {
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setState({ ...state, [event.target.name]: event.target.checked })
-  } //Switch
+  }
 
-  const onImageChange = async (e) => {
+  const onImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       setInputChange(true)
       setAvatarObj(URL.createObjectURL(e.target.files[0]))
-      setAvatarPic(e.target.files[0])
+      if (!e.target.files) {
+        return
+      }
+      setAvatarPic(e.target.files?.[0])
     } //Avatar
   }
-  const deleteTestimonial = async (DeleteId) => {
+  const deleteTestimonial = async (DeleteId: string) => {
     setLoading(true)
     const base_url =
       import.meta.env.VITE_BACKEND_URL + "/testimonial/read/" + DeleteId
@@ -202,41 +180,31 @@ export default function Testimonials(props) {
     readTestimonial()
   }
 
-  const ChangeVisibility = async (e, GetId) => {
+  const ChangeVisibility = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+    GetId: string
+  ) => {
     e.preventDefault()
     setLoading(true)
     handleChange(e)
     const base_url =
       import.meta.env.VITE_BACKEND_URL + "/testimonial/update-home/" + GetId
-    const response = await axios.put(
-      base_url,
-      {
-        status: e.target.checked,
-        adminToken: localStorage.getItem("adminTokenV"),
-      },
-      {
-        "Content-Type": "multipart/form-data",
-      }
-    )
+    const response = await axios.put(base_url, {
+      status: e.target.checked,
+    })
     readTestimonial()
   }
 
-  const ChangePosition = async (index, GetId) => {
+  const ChangePosition = async (index: number, GetId: string) => {
     // e.preventDefault();
     setLoading(true)
     const base_url =
       import.meta.env.VITE_BACKEND_URL + "/testimonial/update-position/" + GetId
-    const response = await axios.put(
-      base_url,
-      { position: index },
-      {
-        "Content-Type": "multipart/form-data",
-      }
-    )
+    const response = await axios.put(base_url, { position: index })
     readTestimonial()
   }
 
-  const handleTestimonialDataEdit = async (GetId) => {
+  const handleTestimonialDataEdit = async (GetId: string) => {
     const base_url = import.meta.env.VITE_BACKEND_URL + "/testimonial/" + GetId
     const response = await axios.get(base_url)
     setName(response.data.name)
@@ -248,7 +216,10 @@ export default function Testimonials(props) {
     setUpdateId(GetId)
   }
 
-  const saveChanges = async (e, GetId) => {
+  const saveChanges = async (
+    e: React.MouseEvent<HTMLButtonElement>,
+    GetId: string
+  ) => {
     e.preventDefault()
     setLoading(true)
     const base_url =
@@ -259,24 +230,25 @@ export default function Testimonials(props) {
     formData.append("name", name)
     formData.append("value", value)
     formData.append("footer", footer)
-    formData.append("status", state.checkedA)
-    formData.append("adminToken", localStorage.getItem("adminTokenV"))
+    formData.append("status", state.checkedA.toString())
 
-    const response = await axios.put(base_url, formData, {
-      "Content-Type": "multipart/form-data",
-    })
+    const response = await axios.put(base_url, formData)
     setName("")
     setAvatarObj("")
     setType("")
     setValue("")
     setFooter("")
     setState({ checkedA: false })
-    setUpdateId(undefined)
+    setUpdateId("")
     readTestimonial()
   }
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
 
-  const reorder = (list, startIndex, endIndex) => {
+  const reorder = (
+    list: Testimonial[],
+    startIndex: number,
+    endIndex: number
+  ) => {
     const result = [...list]
     const [removed] = result.splice(startIndex, 1)
     result.splice(endIndex, 0, removed)
@@ -284,7 +256,7 @@ export default function Testimonials(props) {
   }
 
   return (
-    <div className={classes.root}>
+    <div>
       <Paper className={classes.paper}>
         <AppBar position="static">
           <Typography
@@ -311,7 +283,7 @@ export default function Testimonials(props) {
             justifyContent: "center",
           }}
         >
-          {props.permissions?.createTestimonial && (
+          {permissions?.createTestimonial && (
             <Grid2
               style={{
                 padding: isMobile ? "0px" : "24px",
@@ -328,12 +300,7 @@ export default function Testimonials(props) {
                 style={{ padding: isMobile ? "8px" : "24px" }}
                 className={classes.paper}
               >
-                <form
-                  encType="multipart/form-data"
-                  onSubmit={handleSubmit}
-                  className={classes.form}
-                  style={{ margin: 6 }}
-                >
+                <form encType="multipart/form-data" style={{ margin: 6 }}>
                   <Grid2
                     container
                     spacing={1}
@@ -521,7 +488,6 @@ export default function Testimonials(props) {
                     type="submit"
                     variant="contained"
                     color="primary"
-                    className={classes.submit}
                     value="submit"
                     style={{ paddingTop: "4px", width: "100px" }}
                     onClick={(event) =>
@@ -574,7 +540,6 @@ export default function Testimonials(props) {
                         >
                           {(draggableProvided) => (
                             <Grid2
-                              item
                               {...draggableProvided.draggableProps}
                               ref={draggableProvided.innerRef}
                               {...draggableProvided.dragHandleProps}
@@ -591,7 +556,7 @@ export default function Testimonials(props) {
                                       marginBottom={2}
                                       style={{ width: "100%" }}
                                     >
-                                      {props.permissions?.createTestimonial && (
+                                      {permissions?.createTestimonial && (
                                         <Box
                                           style={{
                                             display: "flex",
@@ -608,8 +573,7 @@ export default function Testimonials(props) {
                                           >
                                             <EditIcon color={"secondary"} />
                                           </IconButton>
-                                          {props.permissions
-                                            ?.deleteTestimonial && (
+                                          {permissions?.deleteTestimonial && (
                                             <IconButton
                                               onClick={() =>
                                                 deleteTestimonial(tile._id)
@@ -676,7 +640,7 @@ export default function Testimonials(props) {
                                           {tile.footer}
                                         </Typography>
                                       </Box>
-                                      {props.permissions?.createTestimonial && (
+                                      {permissions?.createTestimonial && (
                                         <Box
                                           style={{
                                             paddingTop: "10px",
@@ -701,10 +665,6 @@ export default function Testimonials(props) {
                                               ChangeVisibility(event, tile._id)
                                             }
                                             name="checkedA"
-                                            inputProps={{
-                                              "aria-label":
-                                                "secondary checkbox",
-                                            }}
                                           />
                                         </Box>
                                       )}

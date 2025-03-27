@@ -8,6 +8,7 @@ export interface PickedArt
     | "prixerUsername"
     | "exclusive"
     | "_id"
+    | "owner"
   > {}
 
 export interface ReadArtResponse {

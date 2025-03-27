@@ -83,9 +83,6 @@ const useStyles = makeStyles()((theme: Theme) => {
 
 export default function UpdateProductV2({ product }: ProdProps) {
   const { classes } = useStyles()
-  const theme = useTheme()
-  const { showSnackBar } = useSnackBar()
-  const { setLoading } = useLoading()
 
   // const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
   // const [productId, setProductId] = useState(product?._id);
@@ -135,14 +132,6 @@ export default function UpdateProductV2({ product }: ProdProps) {
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue)
   }
-
-  const [focus, setFocus] = useState(undefined)
-
-  //Error states.
-  const [open, setOpen] = useState(false)
-  const [loadOpen, setLoadOpen] = useState(false)
-  const [loaDOpen, setLoaDOpen] = useState(false)
-  const [mustImage, setMustImages] = useState(false)
 
   useEffect(() => {
     // readProduct();

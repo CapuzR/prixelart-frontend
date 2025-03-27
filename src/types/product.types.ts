@@ -26,6 +26,9 @@ export interface PickedProduct
     | "prixerPrice"
     | "hasSpecialVar"
     | "bestSeller"
+    | "finalPrice"
+    | "status"
+    | "autoCertified"
   > {}
 
 export interface Product {
@@ -34,7 +37,7 @@ export interface Product {
   price: number
   description: string
   attributes: Attribute[]
-  selection: Selection[]
+  selection: Selection
   variants: Array<Variant>
   priceRange: PriceRange
   observations: string
@@ -60,6 +63,7 @@ export interface Product {
   autoCertified?: boolean | string
   video?: { type: string; url: string }
   productImages: any
+  status: string
 }
 
 export interface Variant {
@@ -91,7 +95,8 @@ export interface VariantAttribute {
 export interface Selection {
   name: string
   value: string
-  attributes: object[]
+  attributes: any
+  // must be like [{type: string, value: string}]
 }
 
 export interface PriceRange {

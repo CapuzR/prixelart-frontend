@@ -4,7 +4,6 @@ const state = {
   orders: [],
   selectedOrder: undefined,
   nextId: 1,
-  admin: JSON.parse(localStorage.getItem('adminToken')),
 };
 
 //INIT

@@ -17,10 +17,10 @@ import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 import Img from 'react-cool-img';
 import Tooltip from '@mui/material/Tooltip';
-import oS from './orderServices';
+import oS from '../orderServices';
 import StarOutline from '@mui/icons-material/StarOutline';
 
-import { UnitPrice, UnitPriceSug, getComission } from '../../../consumer/checkout/pricesFunctions.jsx';
+import { UnitPrice, UnitPriceSug, getComission } from '../../../../consumer/checkout/pricesFunctions.js';
 import { update } from 'immutable';
 const drawerWidth = 240;
 

@@ -27,7 +27,7 @@ import {
   getPVM,
   getTotalUnitsPVM,
   getTotalUnitsPVP,
-} from '../../../consumer/checkout/pricesFunctions.jsx';
+} from '../../../../consumer/checkout/pricesFunctions.js';
 import CurrencySwitch from 'components/CurrencySwitch';
 const drawerWidth = 240;
 

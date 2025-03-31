@@ -9,7 +9,7 @@ const defaultState: ConsumerDetails = {
     country: ''
   },
   addresses: [],
-  paymentMethods: [],
+  type: 'Particular'
 };
 
 
@@ -33,21 +33,24 @@ export const consumerDetailsReducer = (
       };
     }
 
+    // case 'SET_CONSUMER_BASIC_AUTO': {
+    //   const { payload } = action;
+
+    //   return {
+    //     ...currentState,
+    //     basic: {
+    //       ...currentState.basic,
+    //       ...payload,
+    //     },
+    //   };
+    // }
+
     case 'SET_CONSUMER_ADDRESS': {
       const { payload } = action;
 
       return {
         ...currentState,
         selectedAddress: payload,
-      };
-    }
-
-    case 'SET_CONSUMER_PAYMENT_METHODS': {
-      const { payload } = action;
-
-      return {
-        ...currentState,
-        paymentMethods: payload ? [...payload] : consumerDetails?.paymentMethods ?? [],
       };
     }
 

@@ -17,18 +17,18 @@ export interface PickedProduct
     | "priceRange"
     | "variants"
     | "discount"
-    | "modifyPrice"
-    | "comission"
+    // | "modifyPrice"
+    // | "comission"
     | "active"
     | "considerations"
     | "cost"
-    | "publicPrice"
-    | "prixerPrice"
-    | "hasSpecialVar"
-    | "bestSeller"
-    | "finalPrice"
+    // | "publicPrice"
+    // | "prixerPrice"
+    // | "hasSpecialVar"
+    // | "bestSeller"
+    // | "finalPrice"
     | "status"
-    | "autoCertified"
+    // | "autoCertified"
   > {}
 
 export interface Product {
@@ -49,41 +49,33 @@ export interface Product {
   productionTime: number
   mockUp: any
   category?: Category | string
+  
   active: boolean | string
   considerations: string
   cost: number
-  publicPrice: PriceRange
-  prixerPrice: PriceRange
-  hasSpecialVar: boolean | string
-  bestSeller: boolean | string
-  finalPrice?: number
-  modifyPrice?: number
   discount: string | undefined
-  comission?: Movement[] | undefined
-  autoCertified?: boolean | string
-  video?: { type: string; url: string }
-  productImages: any
   status: string
 }
 
 export interface Variant {
   _id: string
-  id: string
+  // id: string
   name: string
   active: boolean
   description: string
-  category?: string
-  considerations: string
+  priceRange: PriceRange
+  // category?: string
+  // considerations: string
   productionTime: number
   cost: number
-  publicPrice: Equation
-  prixerPrice: Equation
+  // publicPrice: Equation
+  // prixerPrice: Equation
   thumbUrl: string
-  variantImage?: {
+  sources?: {
     images?: { type: string; url: string }[]
     video?: { type: string; url: string }
   }
-  video?: string
+  // video?: string
   attributes: VariantAttribute[]
 }
 
@@ -95,7 +87,7 @@ export interface VariantAttribute {
 export interface Selection {
   name: string
   value: string
-  attributes: any
+  attributes: Attribute
   // must be like [{type: string, value: string}]
 }
 

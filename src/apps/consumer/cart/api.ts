@@ -43,7 +43,7 @@ export const fetchLineDiscount = async (item: Item, quantity: number): Promise<n
     const response = await axios.get('/api/discount', {
       params: {
         itemId: item.sku,
-        productId: item.product?.id,
+        productId: item.product?._id,
         artId: item.art?.artId,
         quantity,
       },

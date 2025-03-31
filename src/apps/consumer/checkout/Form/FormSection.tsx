@@ -1,5 +1,5 @@
 import {
-  Grid,
+  Grid2,
   TextField,
   Checkbox,
   FormControlLabel,
@@ -10,39 +10,44 @@ import {
   InputAdornment,
   MenuItem,
   Tooltip,
-} from "@mui/material";
-import { ExpandMore, Info } from '@mui/icons-material';
-import { useFormContext, Controller, FieldValues, ControllerRenderProps, FieldError } from "react-hook-form";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import dayjs from "dayjs";
+} from "@mui/material"
+import { ExpandMore, Info } from "@mui/icons-material"
+import {
+  useFormContext,
+  Controller,
+  FieldValues,
+  ControllerRenderProps,
+  FieldError,
+} from "react-hook-form"
+import { DatePicker } from "@mui/x-date-pickers/DatePicker"
+import dayjs from "dayjs"
 
 interface FieldConfig {
-  label: string;
-  required?: boolean;
-  width?: number;
-  helperText?: string;
-  conditionedBy?: string | string[];
-  onConditionChange?: (...args: any[]) => void;
-  isHidden?: boolean;
-  type?: string;
-  options?: string[];
-  adornment?: React.ReactNode;
-  tooltip?: string;
-  [key: string]: any;
+  label: string
+  required?: boolean
+  width?: number
+  helperText?: string
+  conditionedBy?: string | string[]
+  onConditionChange?: (...args: any[]) => void
+  isHidden?: boolean
+  type?: string
+  options?: string[]
+  adornment?: React.ReactNode
+  tooltip?: string
+  [key: string]: any
 }
 
 interface SectionConfig {
-  title: string;
-  fields: Record<string, FieldConfig>;
+  title: string
+  fields: Record<string, FieldConfig>
 }
 
 interface FormSectionProps {
-  sectionConfig: SectionConfig;
-  sectionKey: string;
-  isExpanded: boolean;
-  onToggle: (event: React.SyntheticEvent, expanded: boolean) => void;
+  sectionConfig: SectionConfig
+  sectionKey: string
+  isExpanded: boolean
+  onToggle: (event: React.SyntheticEvent, expanded: boolean) => void
 }
-
 
 const FormSection: React.FC<FormSectionProps> = ({
   sectionConfig,
@@ -50,10 +55,10 @@ const FormSection: React.FC<FormSectionProps> = ({
   isExpanded,
   onToggle,
 }) => {
-  const { control, getValues } = useFormContext();
-  const formValues = getValues(sectionKey);
+  const { control, getValues } = useFormContext()
+  const formValues = getValues(sectionKey)
 
-  interface FieldProps extends ControllerRenderProps<FieldValues, string> { }
+  interface FieldProps extends ControllerRenderProps<FieldValues, string> {}
 
   const renderFieldComponent = (
     field: FieldProps,
@@ -73,15 +78,17 @@ const FormSection: React.FC<FormSectionProps> = ({
       isHidden,
       tooltip,
       ...textFieldProps
-    } = fieldConfig;
-    const isDisabled = field.disabled;
-    if (fieldConfig.isHidden) return <></>;
+    } = fieldConfig
+    const isDisabled = field.disabled
+    if (fieldConfig.isHidden) return <></>
 
     const commonProps = {
       ...field,
       ...textFieldProps,
       error: !!fieldState.error,
-      helperText: fieldState.error ? fieldState.error.message : fieldConfig.helperText,
+      helperText: fieldState.error
+        ? fieldState.error.message
+        : fieldConfig.helperText,
       disabled: isDisabled,
       variant: "outlined" as const,
       InputProps: {
@@ -90,7 +97,7 @@ const FormSection: React.FC<FormSectionProps> = ({
         ) : null,
       },
       value: field.value || "",
-    };
+    }
 
     switch (type) {
       case "dropdown":
@@ -102,7 +109,7 @@ const FormSection: React.FC<FormSectionProps> = ({
               </MenuItem>
             ))}
           </TextField>
-        );
+        )
 
       case "checkbox":
         return (
@@ -115,7 +122,7 @@ const FormSection: React.FC<FormSectionProps> = ({
             }
             label={fieldConfig.label}
           />
-        );
+        )
 
       case "tooltip":
         return (
@@ -130,7 +137,7 @@ const FormSection: React.FC<FormSectionProps> = ({
             }
             label={fieldConfig.label}
           />
-        );
+        )
 
       case "date":
         return (
@@ -141,36 +148,40 @@ const FormSection: React.FC<FormSectionProps> = ({
             format="DD/MM/YYYY"
             value={field.value ? dayjs(field.value) : null}
             onChange={(newValue) => {
-              field.onChange(newValue);
+              field.onChange(newValue)
             }}
             slotProps={{
               textField: {
                 error: !!fieldState.error,
-                helperText: fieldState.error ? fieldState.error.message : fieldConfig.helperText,
+                helperText: fieldState.error
+                  ? fieldState.error.message
+                  : fieldConfig.helperText,
                 variant: "outlined",
               },
             }}
           />
-        );
+        )
 
       case "textWithTooltip":
         return (
-          <Grid container {...commonProps} spacing={1} alignItems="center">
-            <Grid item>
+          <Grid2 container {...commonProps} spacing={1} alignItems="center">
+            <Grid2>
               <TextField />
-            </Grid>
-            <Grid item>
+            </Grid2>
+            <Grid2>
               <Tooltip title={fieldConfig.tooltip}>
                 <Info color="secondary" />
               </Tooltip>
-            </Grid>
-          </Grid>
-        );
+            </Grid2>
+          </Grid2>
+        )
 
       case "dropdownWithTooltip":
         return (
-          <Grid container spacing={1} alignItems="center" xs={12}> {/* Set width to 6 */}
-            <Grid item xs={10}> {/* TextField takes 10 out of 12 columns */}
+          <Grid2 container spacing={1} alignItems="center">
+            {/* Set width to 6 */}
+            <Grid2 size={{ xs: 10 }}>
+              {/* TextField takes 10 out of 12 columns */}
               <TextField {...commonProps} select>
                 {options?.map((option, idx) => (
                   <MenuItem key={idx} value={option}>
@@ -178,29 +189,29 @@ const FormSection: React.FC<FormSectionProps> = ({
                   </MenuItem>
                 ))}
               </TextField>
-            </Grid>
-            <Grid item xs={2}> {/* Tooltip takes 2 out of 12 columns */}
+            </Grid2>
+            <Grid2 size={{ xs: 2 }}>
+              {/* Tooltip takes 2 out of 12 columns */}
               <Tooltip title={fieldConfig.tooltip}>
                 <Info color="secondary" />
               </Tooltip>
-            </Grid>
-          </Grid>
-        );
+            </Grid2>
+          </Grid2>
+        )
 
       case "text":
       default:
-        return <TextField {...commonProps} />;
-
+        return <TextField {...commonProps} />
     }
-  };
+  }
 
   const renderFields = () => {
-    const fields = sectionConfig.fields || {};
+    const fields = sectionConfig.fields || {}
 
     return (
       <>
         {Object.keys(fields).map((key) => {
-          const fieldConfig = fields[key];
+          const fieldConfig = fields[key]
           const {
             label,
             required = true,
@@ -214,30 +225,32 @@ const FormSection: React.FC<FormSectionProps> = ({
             requiredConditions,
             isHidden,
             ...rest
-          } = fieldConfig;
+          } = fieldConfig
 
           const isDisabled = Array.isArray(conditionedBy)
             ? conditionedBy.some((condition) => getValues(condition) === true)
             : conditionedBy
               ? getValues(conditionedBy) === true
-              : false;
+              : false
 
-          if (isHidden) return null;
+          if (isHidden) return null
 
           return (
-            <Grid item xs={12} sm={width} key={key}>
+            <Grid2 width={width} key={key}>
               <Controller
                 name={`${sectionKey}.${key}`}
                 control={control}
                 disabled={isDisabled}
-                defaultValue={getValues(`${sectionKey}.${key}`) || defaultValue || ""}
+                defaultValue={
+                  getValues(`${sectionKey}.${key}`) || defaultValue || ""
+                }
                 rules={{
                   required: required ? "Este campo es requerido" : false,
                   validate: (value) => {
                     if (errorCheck && !errorCheck(value, formValues)) {
-                      return helperText || "Formato no válido.";
+                      return helperText || "Formato no válido."
                     }
-                    return true;
+                    return true
                   },
                 }}
                 render={({ field, fieldState }) => {
@@ -246,30 +259,28 @@ const FormSection: React.FC<FormSectionProps> = ({
                     helperText,
                     required,
                     ...rest,
-                  });
+                  })
                 }}
               />
-            </Grid>
-          );
+            </Grid2>
+          )
         })}
       </>
-    );
-  };
+    )
+  }
 
   return (
     <Accordion expanded={isExpanded} onChange={onToggle}>
-      <AccordionSummary
-        expandIcon={<ExpandMore />}
-      >
+      <AccordionSummary expandIcon={<ExpandMore />}>
         <Typography>{sectionConfig.title}</Typography>
       </AccordionSummary>
       <AccordionDetails>
-        <Grid container spacing={2}>
+        <Grid2 container spacing={2}>
           {renderFields()}
-        </Grid>
+        </Grid2>
       </AccordionDetails>
     </Accordion>
-  );
-};
+  )
+}
 
-export default FormSection;
+export default FormSection

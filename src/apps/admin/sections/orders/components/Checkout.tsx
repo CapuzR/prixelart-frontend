@@ -1,501 +1,327 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import Grid from '@mui/material/Grid';
-import { useTheme } from '@mui/styles';
-import { makeStyles } from '@mui/styles';
-import Typography from '@mui/material/Typography';
-import useMediaQuery from '@mui/material/useMediaQuery';
-import Button from '@mui/material/Button';
-import MenuItem from '@mui/material/MenuItem';
-import Select from '@mui/material/Select';
-import FormControl from '@mui/material/FormControl';
-import InputLabel from '@mui/material/InputLabel';
-import TextField from '@mui/material/TextField';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemText from '@mui/material/ListItemText';
-import Collapse from '@mui/material/Collapse';
-import Divider from '@mui/material/Divider';
-import Checkbox from '@mui/material/Checkbox';
-import FormControlLabel from '@mui/material/FormControlLabel';
+import { useEffect, useState } from "react"
+import axios from "axios"
+import Grid2 from "@mui/material/Grid2"
+import Typography from "@mui/material/Typography"
+import useMediaQuery from "@mui/material/useMediaQuery"
+import Button from "@mui/material/Button"
+import MenuItem from "@mui/material/MenuItem"
+import Select from "@mui/material/Select"
+import FormControl from "@mui/material/FormControl"
+import InputLabel from "@mui/material/InputLabel"
+import List from "@mui/material/List"
+import ListItem from "@mui/material/ListItem"
+import ListItemText from "@mui/material/ListItemText"
+import Collapse from "@mui/material/Collapse"
+import Divider from "@mui/material/Divider"
 
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
+import ReactQuill from "react-quill"
+import "react-quill/dist/quill.snow.css"
 import {
   UnitPrice,
   getPVP,
   getPVM,
   getTotalUnitsPVM,
   getTotalUnitsPVP,
-} from '../../../../consumer/checkout/pricesFunctions.js';
-import CurrencySwitch from 'components/CurrencySwitch';
-const drawerWidth = 240;
+} from "../../../../consumer/checkout/pricesFunctions.js"
+import CurrencySwitch from "components/CurrencySwitch"
+import { Theme, useTheme } from "@mui/material"
+import { makeStyles } from "tss-react/mui/mui.js"
+import { useConversionRate, useCurrency } from "@context/GlobalContext.js"
+import { PaymentMethod } from "../../../../../types/paymentMethod.types.js"
+import { useOrder } from "@context/OrdersContext.js"
+import React from "react"
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    display: 'flex',
-  },
-  formControl: {
-    minWidth: 120,
-  },
-  form: {
-    height: 'auto',
-  },
-  gridInput: {
-    display: 'flex',
-    width: '100%',
-    marginBottom: '12px',
-  },
-  textField: {
-    marginRight: '8px',
-  },
+interface CheckoutProps {
+  loadingOrder: boolean
+  createOrder: () => void
+}
 
-  toolbar: {
-    paddingRight: 24,
-  },
-  toolbarIcon: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    padding: '0 8px',
-    ...theme.mixins.toolbar,
-  },
-  appBar: {
-    zIndex: theme.zIndex.drawer + 1,
-    transition: theme.transitions.create(['width', 'margin'], {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
-    }),
-  },
-  appBarShift: {
-    marginLeft: drawerWidth,
-    width: `calc(100% - ${drawerWidth}px)`,
-    transition: theme.transitions.create(['width', 'margin'], {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-  },
-  menuButton: {
-    marginRight: 36,
-  },
-  menuButtonHidden: {
-    display: 'none',
-  },
-  title: {
-    flexGrow: 1,
-  },
-  drawerPaper: {
-    position: 'relative',
-    whiteSpace: 'nowrap',
-    width: drawerWidth,
-    transition: theme.transitions.create('width', {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-  },
-  drawerPaperClose: {
-    overflowX: 'hidden',
-    transition: theme.transitions.create('width', {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
-    }),
-    width: theme.spacing(7),
-    [theme.breakpoints.up('sm')]: {
-      width: theme.spacing(9),
+const useStyles = makeStyles()((theme: Theme) => {
+  return {
+    formControl: {
+      minWidth: 120,
     },
-  },
-  appBarSpacer: theme.mixins.toolbar,
-  content: {
-    flexGrow: 1,
-    height: '100vh',
-    overflow: 'auto',
-  },
-  container: {
-    paddingTop: theme.spacing(4),
-    paddingBottom: theme.spacing(4),
-  },
-  paper: {
-    padding: theme.spacing(2),
-    display: 'flex',
-    overflow: 'none',
-    flexDirection: 'column',
-  },
-  fixedHeight: {
-    height: 'auto',
-    overflow: 'none',
-  },
-  fab: {
-    right: 0,
-    position: 'absolute',
-  },
-  paper2: {
-    position: 'absolute',
-    width: '80%',
-    maxHeight: '90%',
-    overflowY: 'auto',
-    backgroundColor: 'white',
-    boxShadow: theme.shadows[2],
-    padding: '16px 32px 24px',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    textAlign: 'justify',
-    minWidth: 320,
-    borderRadius: 10,
-    marginTop: '12px',
-    display: 'flex',
-    flexDirection: 'row',
-  },
-  backdrop: {
-    zIndex: theme.zIndex.drawer + 1,
-    color: theme.palette.primary.main,
-  },
-  base: {
-    width: '70px',
-    height: '37px',
-    padding: '0px',
-  },
-  switchBase: {
-    color: 'silver',
-    padding: '1px',
-    '&$checked': {
-      '& + $track': {
-        backgroundColor: 'silver',
-      },
-    },
-  },
-  thumb: {
-    color: '#d33f49',
-    width: '30px',
-    height: '30px',
-    margin: '2px',
-    '&:before': {
-      content: "'$'",
-      fontSize: '18px',
-      color: 'white',
-      display: 'flex',
-      marginTop: '3px',
-      justifyContent: 'center',
-    },
-  },
-  thumbTrue: {
-    color: '#d33f49',
-    width: '30px',
-    height: '30px',
-    margin: '2px',
-    '&:before': {
-      content: "'Bs'",
-      fontSize: '18px',
-      color: 'white',
-      display: 'flex',
-      marginTop: '3px',
-      justifyContent: 'center',
-    },
-  },
-  track: {
-    borderRadius: '20px',
-    backgroundColor: 'silver',
-    opacity: '1 !important',
-    '&:after, &:before': {
-      color: 'black',
-      fontSize: '18px',
-      position: 'absolute',
-      top: '6px',
-    },
-    '&:after': {
-      content: "'$'",
-      left: '8px',
-    },
-    '&:before': {
-      content: "'Bs'",
-      right: '7px',
-    },
-  },
-  checked: {
-    color: '#d33f49 !important',
-    transform: 'translateX(35px) !important',
-    padding: '1px',
-  },
-  snackbar: {
-    [theme.breakpoints.down('xs')]: {
-      bottom: 90,
-    },
-    margin: {
-      margin: theme.spacing(1),
-    },
-    withoutLabel: {
-      marginTop: theme.spacing(3),
-    },
-    textField: {
-      width: '25ch',
-    },
-  },
-}));
-export default function Checkout(props) {
-  const classes = useStyles();
-  const theme = useTheme();
+  }
+})
 
-  const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+export default function Checkout(
+  {
+  loadingOrder,
+  createOrder
+}: CheckoutProps
+) {
+  const {classes} = useStyles()
+  const theme = useTheme()
+  const { state, dispatch } = useOrder()
+  const { order, discounts, prixers } = state
+  const { consumerDetails, shipping, billing } = order //Datos básicos, de envío y de facturación
+  const { basic } = consumerDetails
+  const { currency } = useCurrency();
+  const { conversionRate } = useConversionRate();
 
-  const [currency, setCurrency] = useState(false);
-  const [paymentMethods, setPaymentMethods] = useState(undefined);
-  const [prixers, setPrixers] = useState([]);
-  const [discountList, setDiscountList] = useState([]);
+  const isDesktop = useMediaQuery(theme.breakpoints.up("md"))
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"))
 
-  const handleEditorChange = (value) => {
-    props.setObservations(value);
-  };
+  const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([])
+  // const [prixers, setPrixers] = useState<Prixer[]>([])
 
-  let shippingCost = Number(props.shippingData?.shippingMethod?.price);
+  const handleEditorChange = (value: string) => {
+    dispatch({
+      type: "SET_OBSERVATIONS",
+      payload: value,
+    })
+  }
 
-  const setCertified = (i, data, p) => {
-    const kart = [...props.buyState];
-    const item = {
-      ...kart[i],
-      art: { ...kart[i].art, certificate: { ...kart[i].art.certificate } },
-    };
-    item.art.certificate[p] = data;
-    kart[i] = item;
-    props.setBuyState(kart);
-  };
+  let shippingCost = Number(shipping?.method?.price)
 
-  const getDiscounts = async () => {
-    const base_url = import.meta.env.VITE_BACKEND_URL + '/discount/read-allv2';
-    await axios
-      .post(base_url)
-      .then((response) => {
-        setDiscountList(response.data.discounts);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
+  // const setCertified = (i: number, data: string, p: string) => {
+  //   const kart = [...buyState]
+  //   const item = {
+  //     ...kart[i],
+  //     art: { ...kart[i].art, certificate: { ...kart[i].art.certificate } },
+  //   }
+  //   item.art.certificate[p] = data
+  //   kart[i] = item
+  //   setBuyState(kart)
+  // }
 
   useEffect(() => {
-    const base_url = import.meta.env.VITE_BACKEND_URL + '/prixer/read-all-full';
-
-    axios.get(base_url).then((response) => {
-      let prev = response.data.prixers;
-      prev.map((prix) => {
-        if (prix !== null) {
-          return prix;
-        }
-      });
-      setPrixers(prev);
-    });
-    getDiscounts();
-  }, []);
-
-  useEffect(() => {
-    const base_url = import.meta.env.VITE_BACKEND_URL + '/payment-method/read-all-v2';
+    const base_url =
+      import.meta.env.VITE_BACKEND_URL + "/payment-method/read-all-v2"
     axios
       .get(base_url)
       .then((response) => {
-        let prev = response.data;
-        if (props.selectedPrixer) {
-          prev.unshift({ name: 'Balance Prixer' });
+        let prev = response.data
+        if (selectedPrixer) {
+          prev.unshift({ name: "Balance Prixer" })
         }
-        setPaymentMethods(prev);
+        setPaymentMethods(prev)
       })
       .catch((error) => {
-        console.log(error);
-      });
-  }, [props.selectedPrixer]);
+        console.log(error)
+      })
+  }, [selectedPrixer])
 
   const getTotal = (x) => {
-    let n = [];
-    n.push(Number(getTotalPrice(props.buyState).replace(/[,]/gi, '.')));
-    n.push(getIvaCost(props.buyState));
+    let n = []
+    n.push(Number(getTotalPrice(buyState).replace(/[,]/gi, ".")))
+    n.push(getIvaCost(buyState))
     {
-      props.shippingData?.shippingMethod && n.push(shippingCost);
+      shippingData?.shippingMethod && n.push(shippingCost)
     }
-    console.log(n);
     let total = n.reduce(function (a, b) {
-      return a + b;
-    });
-    return total.toLocaleString('de-DE', {
+      return a + b
+    })
+    return total.toLocaleString("de-DE", {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
-    });
-  };
+    })
+  }
 
   const getIvaCost = (state) => {
-    if (typeof props.selectedPrixer?.username === 'string') {
-      return 0;
+    if (typeof selectedPrixer?.username === "string") {
+      return 0
     } else {
-      return Number(getTotalPrice(state).replace(/[,]/gi, '.')) * 0.16;
+      return Number(getTotalPrice(state).replace(/[,]/gi, ".")) * 0.16
     }
-  };
+  }
 
   const getTotalPrice = (state) => {
-    if (props.selectedPrixer) {
+    if (selectedPrixer) {
       return getTotalUnitsPVM(
         state,
         currency,
-        props.dollarValue,
-        discountList,
-        props.selectedPrixer.username
-      )?.toLocaleString('de-DE', {
+        conversionRate,
+        discounts,
+        selectedPrixer.username
+      )?.toLocaleString("de-DE", {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
-      });
+      })
     } else {
-      return getTotalUnitsPVP(state, currency, props.dollarValue, discountList)?.toLocaleString(
-        'de-DE',
-        {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        }
-      );
+      return getTotalUnitsPVP(
+        state,
+        currency,
+        conversionRate,
+        discounts
+      )?.toLocaleString("de-DE", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      })
     }
-  };
+  }
 
-  const changeCurrency = () => {
-    setCurrency(!currency);
-  };
+  // const changeCurrency = () => {
+  //   setCurrency(!currency)
+  // }
 
   const PriceSelect = (item) => {
-    if (typeof props.selectedPrixer?.username === 'string') {
+    if (selectedPrixer) {
       return (
-        getPVM(item, currency, props.dollarValue, discountList, props?.selectedPrixer?.username) *
-        item.quantity
-      ).toLocaleString('de-DE', {
+        getPVM(
+          item,
+          currency,
+          conversionRate,
+          discounts,
+          selectedPrixer?.username
+        ) * item.quantity
+      ).toLocaleString("de-DE", {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
-      });
+      })
     } else {
       return (
-        getPVP(item, currency, props.dollarValue, discountList) * item.quantity
-      ).toLocaleString('de-DE', {
+        getPVP(item, currency, conversionRate, discounts) * item.quantity
+      ).toLocaleString("de-DE", {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
-      });
+      })
     }
-  };
+  }
 
   const getTotalCombinedItems = (state) => {
-    const totalNotCompleted = state.filter((item) => !item.art || !item.product);
+    const totalNotCompleted = state.filter((item) => !item.art || !item.product)
     return {
       totalNotCompleted,
-    };
-  };
-
-  const handleShowCertified = async (index, value) => {
-    const newState = [...props.buyState];
-    let last = 0;
-    const matches = newState.filter((item) => item.art.artId === newState[index].art.artId);
-    const sequences = matches.map((item) => item.art.certificate.sequence);
-    last = Math.max(...sequences);
-
-    newState[index].product.autoCertified = value;
-    if (value) {
-      newState[index].art.certificate.sequence = last + 1;
-    } else {
-      newState[index].art.certificate.sequence = 0;
     }
-    props.setBuyState(newState);
-    localStorage.setItem('buyState', JSON.stringify(newState));
-  };
+  }
+
+  const handleShowCertified = async (index: number, value: boolean) => {
+    const newState = [...buyState]
+    let last = 0
+    const matches = newState.filter(
+      (item) => item.art.artId === newState[index].art.artId
+    )
+    const sequences = matches.map((item) => item.art.certificate.sequence)
+    last = Math.max(...sequences)
+
+    newState[index].product.autoCertified = value
+    if (value) {
+      newState[index].art.certificate.sequence = last + 1
+    } else {
+      newState[index].art.certificate.sequence = 0
+    }
+    setBuyState(newState)
+    localStorage.setItem("buyState", JSON.stringify(newState))
+  }
 
   useEffect(() => {
-    if (props.basicData && props.basicData.name && props.basicData.lastname) {
+    if (basic && basic.name && basic.lastName && prixers) {
       prixers.map((prixer) => {
         if (
           prixer?.firstName &&
-          prixer?.firstName?.toLowerCase() === props.basicData.name.toLowerCase().trim() &&
-          prixer?.lastName?.toLowerCase() === props.basicData.lastname.toLowerCase().trim()
+          prixer?.firstName?.toLowerCase() ===
+            basic.name.toLowerCase().trim() &&
+          prixer?.lastName?.toLowerCase() ===
+            basic.lastName.toLowerCase().trim()
         ) {
-          props.setSelectedPrixer(prixer);
-        } else return;
-      });
+          setSelectedPrixer(prixer)
+        } else return
+      })
     }
-  }, [prixers]);
+  }, [prixers])
 
-  let today = new Date();
-  const monthsOrder = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];
+  let today = new Date()
+  const monthsOrder = [
+    "01",
+    "02",
+    "03",
+    "04",
+    "05",
+    "06",
+    "07",
+    "08",
+    "09",
+    "10",
+    "11",
+    "12",
+  ]
 
-  let ProdTimes = props.buyState?.map((item) => {
-    if (item.product && item.art && item.product.productionTime !== undefined) {
-      return item.product.productionTime;
+  let ProdTimes = order.lines?.map((line) => {
+    if (line.item.product && line.item.art && line.item.product.productionTime !== undefined) {
+      return line.item.product.productionTime
     }
-  });
+  })
 
-  let orderedProdT = ProdTimes.sort(function (a, b) {
-    if (a.toLowerCase() > b.toLowerCase()) {
-      return 1;
-    }
-    if (a.toLowerCase() < b.toLowerCase()) {
-      return -1;
-    }
-    return 0;
-  });
+  let orderedProdT = ProdTimes.sort((a, b) => {
+    if (a === undefined) return 1
+    if (b === undefined) return -1
+    return a - b
+  })
 
-  let readyDate = new Date(today.setDate(today.getDate() + Number(orderedProdT[0])));
+
+  let readyDate = new Date(
+    today.setDate(today.getDate() + Number(orderedProdT[0]))
+  )
   const stringReadyDate =
-    readyDate.getFullYear() + '-' + monthsOrder[readyDate.getMonth()] + '-' + readyDate.getDate();
+    readyDate.getFullYear() +
+    "-" +
+    monthsOrder[readyDate.getMonth()] +
+    "-" +
+    readyDate.getDate()
 
-  useEffect(() => {
-    if (
-      props?.buyState[0] &&
-      props?.buyState[0].art &&
-      props?.shippingData?.shippingDate === undefined
-    ) {
-      props?.setShippingData({
-        ...props?.shippingData,
-        shippingDate: stringReadyDate,
-      });
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (
+  //     buyState[0] &&
+  //     buyState[0].art &&
+  //     shippingData?.shippingDate === undefined
+  //   ) {
+  //     .setShippingData({
+  //       ...shippingData,
+  //       shippingDate: stringReadyDate,
+  //     })
+  //   }
+  // }, [])
 
   return (
-    <Grid
+    <Grid2
       container
       style={{
-        display: 'flex',
-        padding: '8px',
+        display: "flex",
+        padding: "8px",
       }}
     >
-      <Grid
-        item
-        xs={12}
-        sm={12}
-        md={12}
-        lg={12}
-        xl={12}
-        style={{ display: 'flex', justifyContent: 'end' }}
+      <Grid2
+        style={{ display: "flex", justifyContent: "end" }}
       >
         <CurrencySwitch />
-      </Grid>
-      <Grid item lg={4} md={4}>
-        {props.basicData && (
+      </Grid2>
+      <Grid2 size={{md:4}}>
+        {/* {basic && ( */}
           <Typography>
-            Pedido a nombre de{' '}
+            Pedido a nombre de
             <strong>
-              {props.basicData.name} {props.basicData.lastname}
+              {basic.name} {basic.lastName}
             </strong>
-            .<br></br> A contactar por{' '}
-            <strong>{props.shippingData?.phone || props.basicData?.phone}</strong>.<br></br>{' '}
-            Entregar en <strong>{props.shippingData?.address || props.basicData?.address}</strong>
+            .<br></br> A contactar por{" "}
+            <strong>
+              {shipping.basic?.phone || basic?.phone}
+            </strong>
+            .<br></br> Entregar en{" "}
+            <strong>
+              {shipping.basic?.shortAddress || basic?.shortAddress}
+            </strong>
           </Typography>
-        )}
+        {/* )} */}
 
-        <FormControl variant="outlined" style={{ minWidth: '100%', marginTop: 20 }}>
+        <FormControl
+          variant="outlined"
+          style={{ minWidth: "100%", marginTop: 20 }}
+        >
           <ReactQuill
-            value={props.observations}
+            value={order.observations}
             onChange={handleEditorChange}
             placeholder="Escribe las observaciones aquí..."
           />
         </FormControl>
-      </Grid>
-      <Grid item md={8} lg={8} style={{ paddingLeft: 40 }}>
-        <div style={{ fontWeight: 'bold' }}>Items:</div>
+      </Grid2>
+      <Grid2 size={{md:8}} style={{ paddingLeft: 40 }}>
+        <div style={{ fontWeight: "bold" }}>Items:</div>
         <div>
           <List component="div" disablePadding>
-            {props.buyState.length > 0 ? (
-              props.buyState?.map((item, index) => (
-                <>
-                  {item.product && item.art && (
+            {order.lines.length > 0 ? 
+              order.lines?.map((line, index) => 
+                  line.item.product && line.item.art && (
                     <>
                       <ListItem>
                         <ListItemText primary={`#${index + 1}`} />
@@ -510,107 +336,128 @@ export default function Checkout(props) {
                                 paddingLeft: 0,
                               }}
                               primary={
-                                <Grid container>
-                                  <Grid item xs={12} md={8}>
-                                    <Grid style={{ display: 'flex' }}>
+                                <Grid2 container>
+                                  <Grid2 size={{ xs:12, md:8}}>
+                                    <Grid2 style={{ display: "flex" }}>
                                       <Typography
                                         style={{
-                                          fontWeight: 'bold',
+                                          fontWeight: "bold",
                                           marginRight: 4,
                                         }}
                                       >
                                         Producto:
                                       </Typography>
-                                      <Typography>{item.product.name}</Typography>
-                                    </Grid>
-                                    {item.product?.selection &&
-                                    typeof item.product.selection === 'string'
-                                      ? item.product?.selection
-                                      : item.product.selection?.name}
-                                    {item.product.selection?.name === 'Personalizado' &&
-                                      item.product.selection?.attributes[0]?.value &&
-                                      ` (${item.product.selection?.attributes[0]?.value})`}
-
-                                    <Grid style={{ display: 'flex' }}>
+                                      <Typography>
+                                        {line.item.product.name}
+                                      </Typography>
+                                    </Grid2>
+                                    {line.item.product?.selection &&
+                                    typeof line.item.product.selection === "string"
+                                      ? line.item.product?.selection
+                                      : line.item.product.selection?.name}
+                                    {/* {line.item.product.selection?.name ===
+                                      "Personalizado" &&
+                                      line.item.product.selection?.attributes
+                                        ?.value &&
+                                      ` (${line.item.product.selection?.attributes?.[0].value})`} */}
+                                    <Grid2 style={{ display: "flex" }}>
                                       <Typography
                                         style={{
-                                          fontWeight: 'bold',
+                                          fontWeight: "bold",
                                           marginRight: 4,
                                         }}
                                       >
                                         Arte:
                                       </Typography>
-                                      <Typography>{item.art.title}</Typography>
-                                    </Grid>
-                                    <Grid style={{ display: 'flex' }}>
+                                      <Typography>{line.item.art.title}</Typography>
+                                    </Grid2>
+                                    <Grid2 style={{ display: "flex" }}>
                                       <Typography
                                         style={{
-                                          fontWeight: 'bold',
+                                          fontWeight: "bold",
                                           marginRight: 4,
                                         }}
                                       >
                                         Prixer:
                                       </Typography>
-                                      <Typography>{item.art.prixerUsername}</Typography>
-                                    </Grid>
-                                    <Grid
+                                      <Typography>
+                                        {line.item.art.prixerUsername}
+                                      </Typography>
+                                    </Grid2>
+                                    {/* <Grid2
                                       style={{
-                                        display: 'flex',
-                                        flexDirection: 'column',
+                                        display: "flex",
+                                        flexDirection: "column",
                                       }}
                                     >
-                                      {item.product?.autoCertified && (
-                                        <Grid
-                                          item
-                                          xs={6}
+                                      {line.item.product?.autoCertified && (
+                                        <Grid2
+                                          size={{
+                                          xs:6}}
                                           style={{
-                                            display: 'flex',
+                                            display: "flex",
                                             marginTop: 8,
-                                            maxWidth: '100%',
+                                            maxWidth: "100%",
                                             // borderRadius: 10,
                                           }}
                                         >
                                           <TextField
                                             style={{
                                               marginRight: 8,
-                                              maxWidth: '5rem',
+                                              maxWidth: "5rem",
                                             }}
                                             variant="outlined"
                                             label="Código"
                                             onChange={(e) => {
-                                              setCertified(index, e.target.value, 'code');
+                                              setCertified(
+                                                index,
+                                                e.target.value,
+                                                "code"
+                                              )
                                             }}
                                             value={item.art?.certificate?.code}
                                           />
                                           <TextField
                                             style={{
                                               marginRight: 8,
-                                              maxWidth: '5rem',
+                                              maxWidth: "5rem",
                                             }}
                                             type="number"
                                             variant="outlined"
                                             label="Arte"
-                                            value={item.art?.certificate?.serial}
+                                            value={
+                                              item.art?.certificate?.serial
+                                            }
                                             onChange={(e) => {
-                                              setCertified(index, e.target.value, 'serial');
+                                              setCertified(
+                                                index,
+                                                e.target.value,
+                                                "serial"
+                                              )
                                             }}
                                           />
                                           <TextField
                                             style={{
-                                              maxWidth: '9rem',
+                                              maxWidth: "9rem",
                                             }}
                                             type="number"
                                             variant="outlined"
                                             label="Seguimiento"
-                                            value={item.art?.certificate?.sequence}
+                                            value={
+                                              item.art?.certificate?.sequence
+                                            }
                                             onChange={(e) => {
-                                              setCertified(index, e.target.value, 'sequence');
+                                              setCertified(
+                                                index,
+                                                e.target.value,
+                                                "sequence"
+                                              )
                                             }}
                                           />
-                                        </Grid>
+                                        </Grid2>
                                       )}
                                       <FormControlLabel
-                                        style={{ color: '#282c34' }}
+                                        style={{ color: "#282c34" }}
                                         control={
                                           <Checkbox
                                             checked={
@@ -621,28 +468,32 @@ export default function Checkout(props) {
                                             onChange={() => {
                                               handleShowCertified(
                                                 index,
-                                                Boolean(!item.product.autoCertified)
-                                              );
+                                                Boolean(
+                                                  !item.product.autoCertified
+                                                )
+                                              )
                                             }}
                                           />
                                         }
                                         label="Certificado"
                                       />
-                                    </Grid>
-                                  </Grid>
-                                  <Grid
-                                    item
-                                    xs={12}
-                                    md={4}
+                                    </Grid2> */}
+                                  </Grid2>
+                                  <Grid2
+                                    size={{
+                                    xs:12,
+                                    md:4}}
                                     style={{
-                                      display: 'flex',
-                                      justifyContent: isMobile ? 'space-between' : 'end',
+                                      display: "flex",
+                                      justifyContent: isMobile
+                                        ? "space-between"
+                                        : "end",
                                     }}
                                   >
-                                    <div>Cantidad: {item.quantity || 1}</div>
+                                    <div>Cantidad: {line.quantity}</div>
                                     <div
                                       style={{
-                                        textAlign: 'end',
+                                        textAlign: "end",
                                         paddingLeft: 10,
                                       }}
                                     >
@@ -650,21 +501,21 @@ export default function Checkout(props) {
                                       {(
                                         Number(
                                           UnitPrice(
-                                            item.product,
-                                            item.art,
+                                            line.item.product,
+                                            line.item.art,
                                             currency,
-                                            props.dollarValue,
-                                            discountList,
+                                            props.conversionRate,
+                                            discounts,
                                             props?.selectedPrixer?.username
-                                          ).replace(/[,]/gi, '.')
-                                        ) * item.quantity
-                                      ).toLocaleString('de-DE', {
+                                          ).replace(/[,]/gi, ".")
+                                        ) * line.quantity
+                                      ).toLocaleString("de-DE", {
                                         minimumFractionDigits: 2,
                                         maximumFractionDigits: 2,
                                       })}
                                     </div>
-                                  </Grid>
-                                </Grid>
+                                  </Grid2>
+                                </Grid2>
                               }
                             />
                           </ListItem>
@@ -672,68 +523,72 @@ export default function Checkout(props) {
                       </Collapse>
                       <Divider />
                     </>
-                  )}
-                </>
-              ))
-            ) : (
+                  )
+              )
+             : (
               <Typography>No has seleccionado nada aún.</Typography>
             )}
-            {getTotalCombinedItems(props.buyState).totalNotCompleted?.length >= 1 && (
+            {getTotalCombinedItems(buyState).totalNotCompleted?.length >=
+              1 && (
               <Typography
                 style={{
-                  fontSize: '11px',
+                  fontSize: "11px",
                   // color: "primary",
                 }}
               >
-                {getTotalCombinedItems(props.buyState).totalNotCompleted?.length > 1
+                {getTotalCombinedItems(buyState).totalNotCompleted
+                  ?.length > 1
                   ? `Faltan ${
-                      getTotalCombinedItems(props.buyState).totalNotCompleted.length
+                      getTotalCombinedItems(buyState).totalNotCompleted
+                        .length
                     } productos por definir.`
                   : `Falta 1 producto por definir.`}
               </Typography>
             )}
             <div
               style={{
-                display: 'flex',
-                justifyContent: 'space-between',
+                display: "flex",
+                justifyContent: "space-between",
               }}
             >
-              <Grid item lg={8} md={8} sm={6} xs={6} style={{ paddingLeft: 0 }}>
+              <Grid2 size={{ md:8, xs:6}} style={{ paddingLeft: 0 }}>
                 <FormControl
-                  disabled={props.buyState.length == 0}
+                  disabled={order.lines.length == 0}
                   className={classes.formControl}
                   style={{ minWidth: 200, marginTop: 25 }}
                   fullWidth
                 >
-                  <InputLabel style={{ paddingLeft: 15 }}>Método de pago</InputLabel>
+                  <InputLabel style={{ paddingLeft: 15 }}>
+                    Método de pago
+                  </InputLabel>
                   <Select
                     variant="outlined"
-                    value={props.orderPaymentMethod}
+                    value={billing.method}
                     onChange={(event) =>
-                      event.target.value.name === 'Balance Prixer'
-                        ? props.setBillingData({
-                            ...props.billingData,
-                            orderPaymentMethod: event.target.value.name,
+                      event.target.value === "Balance Prixer"
+                        ? setBillingData({
+                            ...billingData,
+                            orderPaymentMethod: event.target.value,
                             destinatary: props.selectedPrixer.account,
                           })
-                        : props.setBillingData({
-                            ...props.billingData,
-                            orderPaymentMethod: event.target.value.name,
+                        : setBillingData({
+                            ...billingData,
+                            orderPaymentMethod: event.target.value,
                           })
                     }
                   >
                     {paymentMethods &&
                       paymentMethods.map((m) =>
-                        m.name === 'Balance Prixer' ? (
+                        m.name === "Balance Prixer" ? (
                           <MenuItem
                             value={m}
                             style={{
-                              backgroundColor: '#d33f49',
-                              color: 'white',
+                              backgroundColor: "#d33f49",
+                              color: "white",
                               fontWeight: 600,
                             }}
                           >
-                            {m.name + ' de ' + props.selectedPrixer.username}
+                            {m.name + " de " + props.selectedPrixer.username}
                           </MenuItem>
                         ) : (
                           <MenuItem value={m}>{m.name}</MenuItem>
@@ -741,49 +596,49 @@ export default function Checkout(props) {
                       )}
                   </Select>
                 </FormControl>
-              </Grid>
-              <Grid
-                item
-                lg={4}
-                md={6}
-                sm={6}
-                xs={6}
+              </Grid2>
+              <Grid2
+                size={{
+                lg:4,
+                xs:6}}
                 style={{
-                  display: 'flex',
-                  alignItems: 'end',
-                  marginTop: '24px',
-                  marginRight: '14px',
-                  flexDirection: 'column',
+                  display: "flex",
+                  alignItems: "end",
+                  marginTop: "24px",
+                  marginRight: "14px",
+                  flexDirection: "column",
                 }}
               >
-                {props.buyState.length > 0 && (
+                {order.lines.length > 0 && (
                   <>
                     <strong>
                       Subtotal:
-                      {currency ? ' Bs' : '$'}
-                      {getTotalPrice(props.buyState)}
+                      {currency ? " Bs" : "$"}
+                      {getTotalPrice(buyState)}
                     </strong>
 
                     <strong>
                       IVA:
-                      {currency ? ' Bs' : '$'}
-                      {getIvaCost(props.buyState).toLocaleString('de-DE', {
+                      {currency ? " Bs" : "$"}
+                      {getIvaCost(buyState).toLocaleString("de-DE", {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
                       })}
                     </strong>
 
-                    {props?.shippingData?.shippingMethod && (
+                    {shipping.method && (
                       <strong>
                         Envío:
                         {currency
-                          ? ' Bs' +
-                            Number(shippingCost * props.dollarValue).toLocaleString('de-DE', {
+                          ? " Bs" +
+                            Number(
+                              shippingCost * conversionRate
+                            ).toLocaleString("de-DE", {
                               minimumFractionDigits: 2,
                               maximumFractionDigits: 2,
                             })
-                          : ' $' +
-                            shippingCost.toLocaleString('de-DE', {
+                          : " $" +
+                            shippingCost.toLocaleString("de-DE", {
                               minimumFractionDigits: 2,
                               maximumFractionDigits: 2,
                             })}
@@ -791,36 +646,34 @@ export default function Checkout(props) {
                     )}
                     <strong>
                       Total:
-                      {currency ? ' Bs' : '$'}
-                      {getTotal(props.buyState)}
+                      {currency ? " Bs" : "$"}
+                      {getTotal(buyState)}
                     </strong>
                     <br />
                   </>
                 )}
-              </Grid>
+              </Grid2>
             </div>
           </List>
         </div>
-      </Grid>
-      <Grid
-        item
-        lg={12}
+      </Grid2>
+      <Grid2
         style={{
-          display: 'flex',
-          justifyContent: 'end',
+          display: "flex",
+          justifyContent: "end",
           marginTop: 20,
-          marginBottom: '-20px',
+          marginBottom: "-20px",
         }}
       >
         <Button
-          disabled={props.loadingOrder || props.buyState.length == 0}
+          disabled={loadingOrder || buyState.length == 0}
           variant="contained"
-          color={'primary'}
-          onClick={props.createOrder}
+          color={"primary"}
+          onClick={createOrder}
         >
           Crear orden
         </Button>
-      </Grid>
-    </Grid>
-  );
+      </Grid2>
+    </Grid2>
+  )
 }

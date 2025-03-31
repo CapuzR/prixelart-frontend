@@ -33,6 +33,7 @@ const Order: React.FC<OrderSummaryProps> = ({ checkoutState, newSubTotal }) => {
   // TODO : Debo obtener los métodos de pago.
 
   //Voucher O.O
+  // xd
   // const onImageChange = async (e) => {
   //   if (e.target.files && e.target.files[0]) {
   //     props.setPaymentVoucher(e.target.files[0]);
@@ -60,7 +61,7 @@ const Order: React.FC<OrderSummaryProps> = ({ checkoutState, newSubTotal }) => {
     });
 
     // PaymentMethod = "Efectivo $", IGTF tax 3%
-    if (checkoutState.billing?.paymentMethod === 'Efectivo $') {
+    if (checkoutState.order.billing?.method === 'Efectivo $') {
       const igtfValue = 3;
       const igtfAmount = newSubTotal * (igtfValue / 100);
 

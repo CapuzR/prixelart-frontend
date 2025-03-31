@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react"
-import axios from "axios"
+
 import Grid2 from "@mui/material/Grid2"
 import Checkbox from "@mui/material/Checkbox"
 import Title from "../../../components/Title"
@@ -15,29 +15,19 @@ import EmailIcon from "@mui/icons-material/Email"
 import HomeIcon from "@mui/icons-material/Home"
 import BusinessIcon from "@mui/icons-material/Business"
 import Autocomplete from "@mui/lab/Autocomplete"
-import { Theme, Typography } from "@mui/material"
+import { AutocompleteInputChangeReason } from "@mui/material"
+
+import { Theme } from "@mui/material"
 import { makeStyles } from "tss-react/mui"
+
 import { useSnackBar, useLoading } from "@context/GlobalContext"
 import { Consumer } from "../../../../../types/consumer.types"
 import { Prixer } from "../../../../../types/prixer.types"
 import { ShippingMethod } from "../../../../../types/shippingMethod.types"
+import { useOrder } from "@context/OrdersContext"
+import { getConsumers, getPrixers, getShippingMethods } from "../api"
+import { BasicInfo, ConsumerDetails } from "@apps/consumer/checkout/interfaces"
 
-interface ConsumerProps {
-  setConsumer: (x: Consumer) => void
-  setShippingData: (x: any) => void
-  setValues: (x: any) => void
-  values: any
-  basicData: any
-  setSelectedPrixer: (x: any) => void
-  setSelectedConsumer: (x: any) => void
-  setConsumerType: (x: any) => void
-  setBasicData: (x: any) => void
-  consumerType: string
-  shippingData: any
-  setShippingMethod: (x: any) => void
-  setBillingData: (x: any) => void
-  billingData: any
-}
 const useStyles = makeStyles()((theme: Theme) => {
   return {
     gridInput: {
@@ -51,35 +41,23 @@ const useStyles = makeStyles()((theme: Theme) => {
   }
 })
 
-export default function ConsumerData({
-  setConsumer,
-  setShippingData,
-  setValues,
-  values,
-  basicData,
-  setSelectedPrixer,
-  setSelectedConsumer,
-  setConsumerType,
-  setBasicData,
-  consumerType,
-  shippingData,
-  setShippingMethod,
-  setBillingData,
-  billingData,
-}: ConsumerProps) {
+export default function ConsumerData() {
   const { classes } = useStyles()
-  const { showSnackBar } = useSnackBar()
   const { setLoading } = useLoading()
-
+  const { state, dispatch } = useOrder()
+  const { order } = state
+  const { consumerDetails, shipping, billing } = order //Datos básicos, de envío y de facturación
+  const { basic } = consumerDetails
+  // const { billTo } = billing
   const [shippingDataCheck, setShippingDataCheck] = useState(true)
-  const [shippingList, setShippingList] = useState<ShippingMethod[]>([])
   const [billingDataCheck, setBillingDataCheck] = useState(true)
   const [billingShDataCheck, setBillingShDataCheck] = useState(false)
+
+  const [shippingList, setShippingList] = useState<ShippingMethod[]>([])
   const [consumers, setConsumers] = useState<Consumer[]>([])
   const [prixers, setPrixers] = useState<Prixer[]>([])
   const [options, setOptions] = useState<string[]>([])
-  const [open, setOpen] = React.useState(false)
-  const anchorRef = React.useRef(null)
+
   let today = new Date()
   const months = [
     "Enero",
@@ -119,20 +97,20 @@ export default function ConsumerData({
     "sábado",
   ]
 
-  let ProdTimes = buyState.map((item) => {
-    if (item.product && item.art && item.product.productionTime !== undefined) {
-      return item.product.productionTime
+  let ProdTimes = order.lines.map((line) => {
+    if (
+      line.item.product &&
+      line.item.art &&
+      line.item.product.productionTime !== undefined
+    ) {
+      return line.item.product.productionTime
     }
   })
 
-  let orderedProdT = ProdTimes.sort(function (a, b) {
-    if (a.toLowerCase() > b.toLowerCase()) {
-      return 1
-    }
-    if (a.toLowerCase() < b.toLowerCase()) {
-      return -1
-    }
-    return 0
+  let orderedProdT = ProdTimes.sort((a, b) => {
+    if (a === undefined) return 1
+    if (b === undefined) return -1
+    return a - b
   })
 
   let readyDate = new Date(
@@ -146,69 +124,68 @@ export default function ConsumerData({
     "-" +
     readyDate.getDate()
 
-  const getShippingMethods = () => {
-    const base_url =
-      import.meta.env.VITE_BACKEND_URL + "/shipping-method/read-all-v2"
-    axios
-      .get(base_url)
-      .then((response) => {
-        setShippingList(response.data)
+  const readShippingMethods = async () => {
+    try {
+      const response = await getShippingMethods()
+      dispatch({
+        type: "SET_SHIPPING_METHODS",
+        payload: response,
       })
-      .catch((error) => {
-        console.log(error)
-      })
+    } catch (error) {
+      console.log(error)
+    }
   }
 
-  const getConsumers = () => {
-    const base_url = import.meta.env.VITE_BACKEND_URL + "/consumer/read-all"
-    axios
-      .post(base_url)
-      .then((response) => {
-        setConsumers(response.data)
-        setConsumer(response.data)
-      })
-      .catch((error) => {
-        console.log(error)
-      })
+  const readConsumers = async () => {
+    try {
+      const response = await getConsumers()
+      dispatch({
+        type: "SET_CONSUMERS",
+        payload: response,
+      }) // setConsumer(response.data)
+    } catch (error) {
+      console.log(error)
+    }
   }
 
-  const getPrixers = async () => {
-    const base_url = import.meta.env.VITE_BACKEND_URL + "/prixer/read-all-full"
-    await axios
-      .get(base_url)
-      .then((response) => {
-        setPrixers(response.data.prixers)
+  const readPrixers = async () => {
+    try {
+      const response = await getPrixers()
+      dispatch({
+        type: "SET_PRIXERS",
+        payload: response,
       })
-      .catch((error) => {
-        console.log(error)
-      })
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   useEffect(() => {
     setLoading(true)
-    getShippingMethods()
-    getConsumers()
-    getPrixers()
+    readShippingMethods()
+    readConsumers()
+    readPrixers()
     setLoading(false)
   }, [])
 
   const handleShippingDataCheck = () => {
+    // FIX this function!!!
     if (shippingDataCheck) {
-      setShippingData({
-        ...props.shippingData,
-        shippingName: "",
-        shippingLastName: "",
-        shippingPhone: "",
-        shippingAddress: "",
-      })
-    } else {
-      setValues({
-        ...props.shippingData,
-        shippingName: values.name,
-        shippingLastName: values.lastName,
-        shippingPhone: values.phone,
-        shippingAddress: values.address,
-      })
+    //   setShippingData({
+    //     ...props.shippingData,
+    //     shippingName: "",
+    //     shippingLastName: "",
+    //     shippingPhone: "",
+    //     shippingAddress: "",
+    //   })
+    // } else {
+    //   setValues({
+    //     ...props.shippingData,
+    //     shippingName: values.name,
+    //     shippingLastName: values.lastName,
+    //     shippingPhone: values.phone,
+    //     shippingAddress: values.address,
+    //   })
     }
 
     setShippingDataCheck(!shippingDataCheck)
@@ -217,14 +194,14 @@ export default function ConsumerData({
   useEffect(() => {
     let updatedv2: string[] = []
     const updated = consumers?.filter((consumer) =>
-      consumer.firstname?.toLowerCase().includes(basicData?.name?.toLowerCase())
+      consumer.firstname?.toLowerCase().includes(basic?.name?.toLowerCase())
     )
     updated.map((p) => {
       updatedv2.push(p.firstname + ", " + p.lastname)
     })
 
     const updatedv3 = prixers?.filter((prixer) =>
-      prixer?.firstName?.toLowerCase().includes(basicData?.name?.toLowerCase())
+      prixer?.firstName?.toLowerCase().includes(basic?.name?.toLowerCase())
     )
 
     updatedv3.map((p) => {
@@ -236,67 +213,198 @@ export default function ConsumerData({
     })
 
     setOptions(updatedv2)
-  }, [basicData?.name])
+  }, [basic?.name])
 
-  const handleInputChange = (event, value, reason) => {
+  const defaultData = {
+    consumerDetails: {
+      basic: {
+        name: "",
+        id: "",
+        lastName: "",
+        email: "",
+        phone: "",
+        shortAddress: "",
+      },
+      type: "Particular",
+      selectedAddress: {
+        line1: "",
+        line2: "",
+        city: "",
+        state: "",
+        country: "",
+      },
+      addresses: [],
+    },
+    shipping: {
+      basic: {
+        name: "",
+        id: "",
+        lastName: "",
+        email: "",
+        phone: "",
+        shortAddress: "",
+      },
+      address: {
+        recepient: {
+          name: "",
+          id: "",
+          lastName: "",
+          email: "",
+          phone: "",
+          shortAddress: "",
+        },
+        address: {
+          line1: "",
+          line2: "",
+          city: "",
+          state: "",
+          country: "",
+          zipCode: "",
+          reference: "",
+        },
+      },
+      preferredDeliveryDate: undefined,
+      estimatedShippingDate: undefined,
+      estimatedDeliveryDate: undefined,
+    },
+    billing: {
+      basic: {
+        name: "",
+        id: "",
+        lastName: "",
+        email: "",
+        phone: "",
+        shortAddress: "",
+      },
+      billTo: {
+        name: "",
+        id: "",
+        lastName: "",
+        email: "",
+        phone: "",
+        shortAddress: "",
+      },
+      address: {
+        recepient: {
+          name: "",
+          id: "",
+          lastName: "",
+          email: "",
+          phone: "",
+          shortAddress: "",
+        },
+        address: {
+          line1: "",
+          line2: "",
+          city: "",
+          state: "",
+          country: "",
+          zipCode: "",
+          reference: "",
+        },
+      },
+    },
+  }
+
+  const handleInputChange = (
+    event: React.SyntheticEvent,
+    value: string,
+    reason: AutocompleteInputChangeReason
+  ) => {
     if (reason === "clear") {
-      setSelectedPrixer(undefined)
-      setSelectedConsumer(undefined)
-      setConsumerType("Particular")
-      setBasicData(undefined)
-    } else if (event?.type === "change") {
-      setBasicData({
-        ...basicData,
-        name: value,
+      // setSelectedPrixer(undefined)
+      // setSelectedConsumer(undefined)
+      // setConsumerType("Particular")
+      dispatch({
+        type: "RESET_BASIC_DATA",
+        payload: {
+          consumerDetails: defaultData.consumerDetails,
+          shipping: defaultData.shipping,
+          billing: defaultData.billing,
+        },
       })
-    } else if (event?.type === "click") {
-      const valuev2 = value.split(",")
-      let prixer = prixers.find(
-        (prixer) =>
-          prixer?.firstName === valuev2[0] &&
-          prixer?.lastName === valuev2[1]?.trim()
-      )
-      let selected = consumers.find(
-        (consumer) =>
-          consumer.firstname === valuev2[0] &&
-          consumer.lastname === valuev2[1]?.trim()
-      )
-      if (selected) {
-        setSelectedConsumer(selected)
-        setConsumerType(selected.consumerType)
+    } else if (event?.type === "change") {
+      const form = basic
+      form.name = value
 
-        if (selected.consumerType === "Prixer") {
-          setSelectedPrixer(prixer)
-          setConsumerType("Prixer")
-        }
-        setBasicData({
-          ...basicData,
-          name: valuev2[0],
-          lastname: valuev2[1]?.trim(),
-          phone: selected?.phone,
-          email: selected?.email,
-          address: selected?.address,
-          ci: selected?.ci,
-        })
-      }
-      if (prixer) {
-        setSelectedPrixer(prixer)
-        setBasicData({
-          ...basicData,
-          name: valuev2[0],
-          lastname: valuev2[1]?.trim(),
-          phone: prixer?.phone,
-          email: prixer?.email,
-          address: prixer?.address,
-          ci: prixer?.ci,
-        })
-        setConsumerType("Prixer")
-      } else if (prixer === undefined && selected?.username) {
-        prixer = prixers.find(
-          (prixer) => prixer?.username === selected.username
-        )
-        setSelectedPrixer(prixer)
-      }
+      dispatch({
+        type: "SET_CONSUMER_BASIC",
+        payload: form,
+      })
+    }
+    // else if (event?.type === "click") {
+    //   const valuev2 = value.split(",")
+    //   let prixer = prixers.find(
+    //     (prixer) =>
+    //       prixer?.firstName === valuev2[0] &&
+    //       prixer?.lastName === valuev2[1]?.trim()
+    //   )
+    //   let selected = consumers.find(
+    //     (consumer) =>
+    //       consumer.firstname === valuev2[0] &&
+    //       consumer.lastname === valuev2[1]?.trim()
+    //   )
+    //   if (selected) {
+    //     setSelectedConsumer(selected)
+    //     setConsumerType(selected.consumerType)
+
+    //     if (selected.consumerType === "Prixer") {
+    //       setSelectedPrixer(prixer)
+    //       setConsumerType("Prixer")
+    //     }
+    //     setBasic({
+    //       ...basic,
+    //       name: valuev2[0],
+    //       lastname: valuev2[1]?.trim(),
+    //       phone: selected?.phone,
+    //       email: selected?.email,
+    //       address: selected?.address,
+    //       ci: selected?.ci,
+    //     })
+    //   }
+    //   if (prixer) {
+    //     setSelectedPrixer(prixer)
+    //     setBasic({
+    //       ...basic,
+    //       name: valuev2[0],
+    //       lastname: valuev2[1]?.trim(),
+    //       phone: prixer?.phone,
+    //       email: prixer?.email,
+    //       address: prixer?.address,
+    //       ci: prixer?.ci,
+    //     })
+    //     setConsumerType("Prixer")
+    //   } else if (prixer === undefined && selected?.username) {
+    //     prixer = prixers.find(
+    //       (prixer) => prixer?.username === selected.username
+    //     )
+    //     setSelectedPrixer(prixer)
+    //   }
+    // }
+  }
+
+  const handleInput = (value: string, type: keyof BasicInfo, area: string) => {
+    const form = basic
+    form[type] = value
+
+    if (area === "basic") {
+      dispatch({
+        type: "SET_CONSUMER_BASIC",
+        payload: form,
+        // this need to be the full object at this level?
+      })
+    } else if (area === "shipping") {
+      dispatch({
+        type: "SET_SHIPPING_BASIC",
+        payload: form,
+        // this need to be the full object at this level?
+      })
+    } else if (area === "billing") {
+      dispatch({
+        type: "SET_BILLING_BASIC",
+        payload: form,
+        // this need to be the full object at this level?
+      })
     }
   }
 
@@ -313,7 +421,7 @@ export default function ConsumerData({
               options={options}
               getOptionLabel={(option) => option}
               onInputChange={handleInputChange}
-              value={basicData?.name}
+              value={basic?.name}
               fullWidth
               style={{ marginRight: 8 }}
               renderInput={(params) => (
@@ -324,13 +432,8 @@ export default function ConsumerData({
                   variant="outlined"
                   fullWidth
                   className={classes.textField}
-                  value={basicData?.name}
-                  onChange={(e) =>
-                    setBasicData({
-                      ...basicData,
-                      name: e.target.value,
-                    })
-                  }
+                  value={basic?.name}
+                  onChange={(e) => handleInput(e.target.value, "name", "basic")}
                 />
               )}
             />
@@ -342,13 +445,8 @@ export default function ConsumerData({
               label="Apellido"
               fullWidth
               className={classes.textField}
-              value={basicData?.lastname}
-              onChange={(e) =>
-                setBasicData({
-                  ...basicData,
-                  lastname: e.target.value,
-                })
-              }
+              value={basic?.lastName}
+              onChange={(e) => handleInput(e.target.value, "lastName", "basic")}
               margin="normal"
             />
           </Grid2>
@@ -361,13 +459,8 @@ export default function ConsumerData({
               fullWidth
               helperText="ej: V-12345679 o V-1234567-0"
               className={classes.textField}
-              value={basicData?.ci}
-              onChange={(e) =>
-                setBasicData({
-                  ...basicData,
-                  ci: e.target.value,
-                })
-              }
+              value={basic?.id}
+              onChange={(e) => handleInput(e.target.value, "id", "basic")}
               margin="normal"
             />
           </Grid2>
@@ -379,14 +472,9 @@ export default function ConsumerData({
               fullWidth
               className={classes.textField}
               helperText="ej: 584141234567 o +584141234567 o 04143201028"
-              value={basicData?.phone}
+              value={basic?.phone}
               //   error={!UtilVals.isAValidPhoneNum(props.values?.phone)}
-              onChange={(e) =>
-                setBasicData({
-                  ...basicData,
-                  phone: e.target.value,
-                })
-              }
+              onChange={(e) => handleInput(e.target.value, "phone", "basic")}
               margin="normal"
               slotProps={{
                 input: {
@@ -406,13 +494,8 @@ export default function ConsumerData({
               label="Correo"
               fullWidth
               className={classes.textField}
-              value={basicData?.email}
-              onChange={(e) =>
-                setBasicData({
-                  ...basicData,
-                  email: e.target.value,
-                })
-              }
+              value={basic?.email}
+              onChange={(e) => handleInput(e.target.value, "email", "basic")}
               // error={!UtilVals.isAValidEmail(props.values?.email)}
               margin="normal"
               slotProps={{
@@ -432,7 +515,7 @@ export default function ConsumerData({
               variant="outlined"
             >
               <InputLabel>Tipo de cliente</InputLabel>
-              <Select
+              {/* <Select
                 label="Método de entrega"
                 className={classes.textField}
                 value={consumerType}
@@ -450,7 +533,7 @@ export default function ConsumerData({
                     </MenuItem>
                   )
                 )}
-              </Select>
+              </Select> */}
             </FormControl>
           </Grid2>
           <Grid2 className={classes.gridInput}>
@@ -463,12 +546,9 @@ export default function ConsumerData({
               multiline
               minRows={3}
               helperText="Incluir todos los detalles posibles, incluidas referencias."
-              value={basicData?.address}
+              value={basic?.shortAddress}
               onChange={(e) =>
-                setBasicData({
-                  ...basicData,
-                  address: e.target.value,
-                })
+                handleInput(e.target.value, "shortAddress", "basic")
               }
               margin="normal"
               slotProps={{
@@ -511,19 +591,8 @@ export default function ConsumerData({
               fullWidth
               className={classes.textField}
               disabled={shippingDataCheck}
-              value={
-                shippingDataCheck
-                  ? basicData?.name
-                    ? basicData?.name
-                    : ""
-                  : shippingData?.name
-              }
-              onChange={(e) =>
-                setShippingData({
-                  ...shippingData,
-                  name: e.target.value,
-                })
-              }
+              value={shipping.basic.name}
+              onChange={(e) => handleInput(e.target.value, "name", "shipping")}
               margin="normal"
             />
           </Grid2>
@@ -535,18 +604,9 @@ export default function ConsumerData({
               fullWidth
               disabled={shippingDataCheck}
               className={classes.textField}
-              value={
-                shippingDataCheck
-                  ? basicData?.lastname
-                    ? basicData?.lastname
-                    : ""
-                  : shippingData?.lastname
-              }
+              value={shipping.basic.lastName}
               onChange={(e) =>
-                setShippingData({
-                  ...shippingData,
-                  lastname: e.target.value,
-                })
+                handleInput(e.target.value, "lastName", "shipping")
               }
               margin="normal"
             />
@@ -560,13 +620,7 @@ export default function ConsumerData({
               disabled={shippingDataCheck}
               className={classes.textField}
               helperText="ej: 584141234567 o +584141234567 o 04143201028"
-              value={
-                shippingDataCheck
-                  ? basicData?.phone
-                    ? basicData?.phone
-                    : ""
-                  : shippingData?.phone
-              }
+              value={shipping.basic.phone}
               // error={
               //   shippingDataCheck
               //     ? props.values?.phone != undefined &&
@@ -575,18 +629,17 @@ export default function ConsumerData({
               //       !UtilVals.isAValidPhoneNum(props.values?.shippingPhone)
               // }
               onChange={(e) => {
-                setShippingData({
-                  ...shippingData,
-                  phone: e.target.value,
-                })
+                handleInput(e.target.value, "phone", "shipping")
               }}
               margin="normal"
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <LocalPhoneIcon />
-                  </InputAdornment>
-                ),
+              slotProps={{
+                input: {
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <LocalPhoneIcon />
+                    </InputAdornment>
+                  ),
+                },
               }}
             />
           </Grid2>
@@ -601,26 +654,19 @@ export default function ConsumerData({
               disabled={shippingDataCheck}
               minRows={3}
               helperText="Incluir todos los detalles posibles, incluidas referencias."
-              value={
-                shippingDataCheck
-                  ? basicData?.address
-                    ? basicData?.address
-                    : ""
-                  : shippingData?.address
-              }
+              value={shipping.basic.shortAddress}
               onChange={(e) =>
-                setShippingData({
-                  ...shippingData,
-                  address: e.target.value,
-                })
+                handleInput(e.target.value, "shortAddress", "shipping")
               }
               margin="normal"
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <HomeIcon />
-                  </InputAdornment>
-                ),
+              slotProps={{
+                input: {
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <HomeIcon />
+                    </InputAdornment>
+                  ),
+                },
               }}
             />
           </Grid2>
@@ -631,13 +677,24 @@ export default function ConsumerData({
                 id="shippingMethod"
                 label="Método de entrega"
                 className={classes.textField}
-                value={shippingData?.shippingMethod?.name}
+                value={
+                  typeof shipping.method !== "string"
+                    ? shipping?.method?.name
+                    : shipping?.method
+                }
                 onChange={(e) => {
-                  setShippingData({
-                    ...shippingData,
-                    shippingMethod: e.target.value,
+                  // setShippingData({
+                  //   ...shippingData,
+                  //   shippingMethod: e.target.value,
+                  // })
+                  // setShippingMethod(e.target.value)
+                  dispatch({
+                    type: "SET_SHIPPING_DETAILS",
+                    payload: { ...shipping, method: e.target.value },
+                    // this need to be the full object at this level?
                   })
-                  setShippingMethod(e.target.value)
+
+                  // handleInput(e.target.value, "method", "shipping")
                 }}
               >
                 <MenuItem value="" key={"vacío"}>
@@ -663,23 +720,32 @@ export default function ConsumerData({
                 variant="outlined"
                 // format="dd-MM-yyyy"
                 defaultValue={stringReadyDate}
-                value={shippingData?.shippingDate}
-                error={values?.today < stringReadyDate}
+                value={shipping?.shippingDate}
+                // error={values?.today < stringReadyDate}
                 // min={stringReadyDate}
                 className={classes.textField}
-                InputLabelProps={{
-                  shrink: true,
+                slotProps={{
+                  input: {
+                    inputProps: {
+                      shrink: true,
+                    },
+                  },
                 }}
                 onChange={(e) => {
-                  setShippingData({
-                    ...shippingData,
-                    shippingDate: e.target.value,
+                  // setShippingData({
+                  //   ...shippingData,
+                  //   shippingDate: e.target.value,
+                  // })
+                  dispatch({
+                    type: "SET_SHIPPING_DETAILS",
+                    payload: { ...shipping, shippingDate: e.target.value },
+                    // this need to be the full object at this level?
                   })
                 }}
               />
             </FormControl>
           </Grid2>
-          {buyState.length > 0 && (
+          {order.lines.length > 0 && (
             <Grid2>
               <div style={{ marginTop: 10, marginLeft: 10 }}>
                 {"El pedido estará listo el día " +
@@ -748,23 +814,8 @@ export default function ConsumerData({
               fullWidth
               className={classes.textField}
               disabled={billingDataCheck || billingShDataCheck}
-              value={
-                billingDataCheck
-                  ? basicData?.name
-                    ? basicData?.name
-                    : ""
-                  : billingShDataCheck
-                    ? shippingData?.name
-                      ? shippingData?.name
-                      : ""
-                    : billingData?.name
-              }
-              onChange={(e) =>
-                setBillingData({
-                  ...billingData,
-                  name: e.target.value,
-                })
-              }
+              value={billing.basic.name}
+              onChange={(e) => handleInput(e.target.value, "name", "billing")}
               margin="normal"
             />
           </Grid2>
@@ -782,22 +833,9 @@ export default function ConsumerData({
               fullWidth
               className={classes.textField}
               disabled={billingDataCheck || billingShDataCheck}
-              value={
-                billingDataCheck
-                  ? basicData?.lastname
-                    ? basicData?.lastname
-                    : ""
-                  : billingShDataCheck
-                    ? shippingData?.lastname
-                      ? shippingData?.lastname
-                      : ""
-                    : billingData?.lastname
-              }
+              value={billing.basic.lastName}
               onChange={(e) =>
-                setBillingData({
-                  ...billingData,
-                  lastname: e.target.value,
-                })
+                handleInput(e.target.value, "lastName", "billing")
               }
               margin="normal"
             />
@@ -818,29 +856,27 @@ export default function ConsumerData({
               className={classes.textField}
               helperText="ej: 584141234567 o +584141234567 o 04143201028"
               value={
-                billingDataCheck
-                  ? basicData?.phone
-                    ? basicData?.phone
-                    : ""
-                  : billingShDataCheck
-                    ? shippingData?.phone
-                      ? shippingData?.phone
-                      : ""
-                    : billingData?.phone
+                // billingDataCheck
+                //   ? basic?.phone
+                //     ? basic?.phone
+                //     : ""
+                //   : billingShDataCheck
+                //     ? shippingData?.phone
+                //       ? shippingData?.phone
+                //       : ""
+                //     : billingData?.phone
+                billing.basic.phone
               }
-              onChange={(e) =>
-                setBillingData({
-                  ...billingData,
-                  phone: e.target.value,
-                })
-              }
+              onChange={(e) => handleInput(e.target.value, "phone", "billing")}
               margin="normal"
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <LocalPhoneIcon />
-                  </InputAdornment>
-                ),
+              slotProps={{
+                input: {
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <LocalPhoneIcon />
+                    </InputAdornment>
+                  ),
+                },
               }}
             />
           </Grid2>
@@ -858,11 +894,11 @@ export default function ConsumerData({
               fullWidth
               className={classes.textField}
               disabled={billingDataCheck || billingShDataCheck}
-              value={billingData?.billingCompany}
+              value={billing?.company}
               onChange={(e) =>
-                setBillingData({
-                  ...billingData,
-                  billingCompany: e.target.value,
+                dispatch({
+                  type: "SET_BILLING_DETAILS",
+                  payload: { ...billing, company: e.target.value },
                 })
               }
               required
@@ -884,19 +920,8 @@ export default function ConsumerData({
               disabled={billingDataCheck || billingShDataCheck}
               className={classes.textField}
               helperText="ej: V-12345679 o V-1234567-0"
-              value={
-                billingDataCheck
-                  ? basicData?.ci
-                    ? basicData?.ci
-                    : ""
-                  : billingData?.Ci
-              }
-              onChange={(e) =>
-                setBillingData({
-                  ...billingData,
-                  ci: e.target.value,
-                })
-              }
+              value={billing.basic.id}
+              onChange={(e) => handleInput(e.target.value, "id", "billing")}
               margin="normal"
             />
           </Grid2>
@@ -910,22 +935,9 @@ export default function ConsumerData({
               minRows={3}
               disabled={billingDataCheck || billingShDataCheck}
               className={classes.textField}
-              value={
-                billingDataCheck
-                  ? basicData?.address
-                    ? basicData?.address
-                    : ""
-                  : billingShDataCheck
-                    ? shippingData?.address
-                      ? shippingData?.address
-                      : ""
-                    : billingData?.address
-              }
+              value={billing.basic.shortAddress}
               onChange={(e) =>
-                setBillingData({
-                  ...billingData,
-                  address: e.target.value,
-                })
+                handleInput(e.target.value, "shortAddress", "billing")
               }
               margin="normal"
               slotProps={{

@@ -9,6 +9,7 @@ export interface PickedArt
     | "exclusive"
     | "_id"
     | "owner"
+    | "comission"
   > {}
 
 export interface ReadArtResponse {
@@ -26,23 +27,23 @@ export interface Art {
   description: string
   category: string
   imageUrl: string
-  largeThumbUrl: string
-  mediumThumbUrl: string
-  smallThumbUrl: string
-  squareThumbUrl: string
+  largeThumbUrl?: string
+  mediumThumbUrl?: string
+  smallThumbUrl?: string
+  squareThumbUrl?: string
   thumbUrl?: string
   userId: string
   prixerUsername: string
   status: string
   artType: string
-  originalPhotoWidth: number
-  originalPhotoHeight: number
-  originalPhotoIso: string
-  originalPhotoPpi: string
-  artLocation: string
-  __v: number
-  disabledReason: string
-  bestSeller: boolean
+  originalPhotoWidth?: number
+  originalPhotoHeight?: number
+  originalPhotoIso?: string
+  originalPhotoPpi?: string
+  artLocation?: string
+  __v?: number
+  disabledReason?: string
+  bestSeller?: boolean
   comission: number
   exclusive: string
   owner: string

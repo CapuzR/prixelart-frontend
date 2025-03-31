@@ -26,20 +26,23 @@ import { Organization } from "../../../../../types/organization.types"
 import { Consumer } from "../../../../../types/consumer.types"
 import { ShippingMethod } from "../../../../../types/shippingMethod.types"
 import { basicData } from "../../../../../types/order.types"
+import { Prixer } from "../../../../../types/prixer.types"
+
 import {
   useSnackBar,
   useLoading,
   useConversionRate,
 } from "@context/GlobalContext"
+import { useCart } from "@context/CartContext"
+import { createConsumer, getDiscounts, getOrganizations, getSurcharges } from "../api"
+import { useOrder } from "@context/OrdersContext"
 
 interface OrderProps {
-  readOrders: () => Promise<any>
   discountList: Discount[]
   surchargeList: Surcharge[]
   orgs: Organization[]
   setDiscountList: React.Dispatch<React.SetStateAction<Discount[]>>
   setSurchargeList: React.Dispatch<React.SetStateAction<Surcharge[]>>
-  setPrixers: React.Dispatch<React.SetStateAction<never[]>>
   setOrgs: React.Dispatch<React.SetStateAction<Organization[]>>
   handleClose: () => void
   setConsumers: React.Dispatch<React.SetStateAction<Consumer[]>>
@@ -67,37 +70,34 @@ const useStyles = makeStyles()((theme: Theme) => {
     },
   }
 })
+
 export default function CreateOrder({
-  readOrders,
   discountList,
-  surchargeList,
-  orgs,
   setDiscountList,
   setSurchargeList,
-  setPrixers,
   setOrgs,
   handleClose,
-  setConsumers,
 }: OrderProps) {
   const { classes } = useStyles()
-  const theme = useTheme()
+  // const theme = useTheme()
   const adminToken = localStorage.getItem("adminToken")
   const adminData = adminToken ? JSON.parse(adminToken) : null
   const { showSnackBar } = useSnackBar()
   const { setLoading } = useLoading()
   const { conversionRate } = useConversionRate()
-
+  const { cart, emptyCart } = useCart()
+const {state, dispatch} = useOrder()
+const {activeStep, order } = state
   // const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
   // const isMobile = useMediaQuery(theme.breakpoints.down("md"));
-  const [activeStep, setActiveStep] = useState(0)
   const [basicData, setBasicData] = useState<basicData>()
   const [shippingData, setShippingData] = useState<any>()
   const [billingData, setBillingData] = useState<any>()
   const [openCreateOrder, setOpenCreateOrder] = useState(false)
   const [loadingOrder, setLoadingOrder] = useState(false)
-  const [orderPaymentMethod, setOrderPaymentMethod] = useState(undefined)
+  // const [orderPaymentMethod, setOrderPaymentMethod] = useState(undefined)
   const [observations, setObservations] = useState()
-  const [selectedPrixer, setSelectedPrixer] = useState()
+  const [selectedPrixer, setSelectedPrixer] = useState<Prixer>()
   const [shippingMethod, setShippingMethod] = useState<
     ShippingMethod | undefined
   >()
@@ -108,7 +108,10 @@ export default function CreateOrder({
   const steps = [`Datos del comprador`, `Productos`, `Orden de compra`]
 
   const handleStep = (step: number) => () => {
-    setActiveStep(step)
+    dispatch({
+      type: "SET_ACTIVE_STEP",
+      payload: step,
+    })
   }
 
   let shippingCost = Number(shippingMethod?.price)
@@ -153,19 +156,20 @@ export default function CreateOrder({
     setLoadingOrder(true)
     setLoading(true)
 
-    let orderLines = []
+    // let orderLines = []
 
-    buyState.map((s) => {
-      s.product &&
-        s.art &&
-        orderLines.push({
-          product: s.product,
-          art: s.art,
-          quantity: s.quantity,
-        })
-    })
+    // buyState.map((s) => {
+    //   s.product &&
+    //     s.art &&
+    //     orderLines.push({
+    //       product: s.product,
+    //       art: s.art,
+    //       quantity: s.quantity,
+    //     })
+    // })
+
     const consumerData = {
-      _id: selectedConsumer?._id || nanoid(6),
+      _id: selectedConsumer?._id || undefined,
       active: true,
       contactedBy: adminData.firstname + " " + adminData.lastname,
       consumerType: selectedPrixer ? "Prixer" : consumerType,
@@ -177,19 +181,16 @@ export default function CreateOrder({
       address: basicData?.address,
       billingAddress: billingData?.address || basicData?.address,
       shippingAddress: shippingData?.address || basicData?.address,
-      // prixerId: selectedPrixer?.prixerId,
+      prixerId: selectedPrixer?.prixerId ? selectedPrixer?.prixerId : undefined,
     }
     if (selectedPrixer) {
       consumerData.prixerId = selectedPrixer.prixerId
     }
-    await axios.post(
-      import.meta.env.VITE_BACKEND_URL + "/consumer/create",
-      consumerData
-    )
+   const createCons = await createConsumer(consumerData)
 
     const base_url = import.meta.env.VITE_BACKEND_URL + "/order/create"
     let input = {
-      orderId: nanoid(8),
+      id: nanoid(8),
       requests: orderLines,
       basicData: basicData,
       shippingData: shippingData,
@@ -264,7 +265,6 @@ export default function CreateOrder({
     setConsumerType("Particular")
     localStorage.removeItem("buyState")
     // setBuyState([])
-    readOrders()
     setLoading(false)
     setLoadingOrder(false)
     handleClose()
@@ -276,46 +276,36 @@ export default function CreateOrder({
     } else return
   }
 
-  const getDiscounts = async () => {
-    const base_url = import.meta.env.VITE_BACKEND_URL + "/discount/read-allv2"
-    await axios
-      .post(base_url, { adminToken: localStorage.getItem("adminTokenV") })
-      .then((response) => {
-        setDiscountList(response.data.discounts)
-      })
-      .catch((error) => {
+  const readDiscounts = async () => {
+    try {
+        const response = await getDiscounts()
+        setDiscountList(response)
+      } catch(error) {
         console.log(error)
-      })
+      }
   }
 
-  const getSurcharges = async () => {
-    const base_url = import.meta.env.VITE_BACKEND_URL + "/surcharge/read-active"
-    await axios
-      .get(base_url)
-      .then((response) => {
-        setSurchargeList(response.data.surcharges)
-      })
-      .catch((error) => {
+  const readSurcharges = async () => {
+    try {
+const response = await getSurcharges()
+        setSurchargeList(response)}
+      catch(error) {
         console.log(error)
-      })
+      }
   }
 
   const getORGs = async () => {
-    const base_url =
-      import.meta.env.VITE_BACKEND_URL + "/organization/read-all-full"
-    await axios
-      .get(base_url)
-      .then((response) => {
-        setOrgs(response.data.organizations)
-      })
-      .catch((error) => {
+    try {
+  const response = await getOrganizations()
+        setOrgs(response)}
+      catch(error) {
         console.log(error)
-      })
+      }
   }
 
   useEffect(() => {
-    getDiscounts()
-    getSurcharges()
+    readDiscounts()
+    readSurcharges()
     getORGs()
   }, [])
 
@@ -364,63 +354,17 @@ export default function CreateOrder({
       >
         {activeStep === 0 && (
           <ConsumerData
-            buyState={buyState}
-            basicData={basicData}
-            shippingData={shippingData}
-            billingData={billingData}
-            setBasicData={setBasicData}
-            setShippingData={setShippingData}
-            setBillingData={setBillingData}
-            setShippingMethod={setShippingMethod}
-            setSelectedConsumer={setSelectedConsumer}
-            selectedConsumer={selectedConsumer}
-            setSelectedPrixer={setSelectedPrixer}
-            selectedPrixer={selectedPrixer}
-            orgs={orgs}
-            setConsumerType={setConsumerType}
-            consumerType={consumerType}
-            setConsumers={setConsumers}
           />
         )}
         {activeStep === 1 && (
           <ShoppingCart
-            selectedPrixer={selectedPrixer}
-            selectedConsumer={selectedConsumer}
-            buyState={buyState}
-            discountList={discountList}
-            surchargeList={surchargeList}
-            AssociateProduct={AssociateProduct}
-            setSelectedArtToAssociate={setSelectedArtToAssociate}
-            setSelectedProductToAssociate={setSelectedProductToAssociate}
-            setBuyState={setBuyState}
-            addItemToBuyState={addItemToBuyState}
-            changeQuantity={changeQuantity}
-            deleteItemInBuyState={deleteItemInBuyState}
-            orgs={orgs}
-            consumerType={consumerType}
           />
         )}
         {activeStep === 2 && (
           <Checkout
-            selectedPrixer={selectedPrixer}
-            setSelectedPrixer={setSelectedPrixer}
-            basicData={basicData}
-            shippingData={shippingData}
-            setShippingData={setShippingData}
-            billingData={billingData}
-            setBillingData={setBillingData}
-            observations={observations}
-            dollarValue={conversionRate}
-            setObservations={setObservations}
-            buyState={buyState}
-            setBuyState={setBuyState}
             createOrder={createOrder}
-            orderPaymentMethod={orderPaymentMethod}
-            setOrderPaymentMethod={setOrderPaymentMethod}
-            discountList={discountList}
             loadingOrder={loadingOrder}
-            orgs={orgs}
-          ></Checkout>
+          />
         )}
       </div>
     </Grid2>

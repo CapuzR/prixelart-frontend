@@ -1,4 +1,4 @@
-import countries from '@data/countries.json';
+import countries from "@data/countries.json"
 
 import {
   CheckoutState,
@@ -7,24 +7,24 @@ import {
   BasicInfo,
   ShippingDetails,
   BillingDetails,
-} from './interfaces';
+} from "./interfaces"
 
 export const initializeCheckoutState = (cart: Cart): CheckoutState => {
   const safeParseJSON = <T>(data: string | null, defaultValue: T): T => {
     try {
-      return data ? JSON.parse(data) : defaultValue;
+      return data ? JSON.parse(data) : defaultValue
     } catch {
-      return defaultValue;
+      return defaultValue
     }
-  };
+  }
 
-  const storedState = localStorage.getItem('checkoutState');
+  const storedState = localStorage.getItem("checkoutState")
   const parsedState: CheckoutState = safeParseJSON<CheckoutState>(
     storedState,
     {} as CheckoutState
-  );
+  )
 
-  const mapCartLinesToOrderLines = (lines: Cart['lines']): OrderLine[] =>
+  const mapCartLinesToOrderLines = (lines: Cart["lines"]): OrderLine[] =>
     lines.map((line) => ({
       id: line.id,
       item: line.item,
@@ -34,95 +34,105 @@ export const initializeCheckoutState = (cart: Cart): CheckoutState => {
       subtotal: line.subtotal,
       tax: 0, // Default to 0; can be updated later
       total: line.subtotal, // Default to subtotal; can be updated later
-    }));
+    }))
 
-  const orderLines = mapCartLinesToOrderLines(cart.lines);
+  const orderLines = mapCartLinesToOrderLines(cart.lines)
 
   // Calculate totals based on the current cart
   const calculateOrderTotals = (): {
-    subTotal: number;
-    totalUnits: number;
-    totalDiscount: number;
+    subTotal: number
+    totalUnits: number
+    totalDiscount: number
   } => ({
     subTotal: cart.subTotal || 0,
     totalUnits: cart.totalUnits || 0,
     totalDiscount: cart.totalDiscount || 0,
-  });
+  })
 
-  const { subTotal, totalUnits, totalDiscount } = calculateOrderTotals();
+  const { subTotal, totalUnits, totalDiscount } = calculateOrderTotals()
 
   // Default consumer details
   const defaultConsumerDetails: BasicInfo = {
-    name: '',
-    id: '',
-    lastName: '',
-    email: '',
-    phone: '',
-    shortAddress: '',
-  };
+    name: "",
+    id: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    shortAddress: "",
+  }
 
   // Default shipping details
   const defaultShippingDetails: ShippingDetails = {
+    basic: {
+      name: "",
+      lastName: "",
+      phone: "",
+    },
     address: {
       recepient: defaultConsumerDetails,
       address: {
-        line1: '',
-        line2: '',
-        city: '',
-        state: '',
-        country: '',
-        zipCode: '',
-        reference: '',
+        line1: "",
+        line2: "",
+        city: "",
+        state: "",
+        country: "",
+        zipCode: "",
+        reference: "",
       },
     },
-    method: undefined,
     preferredDeliveryDate: undefined,
     estimatedShippingDate: undefined,
     estimatedDeliveryDate: undefined,
-  };
+  }
 
   // Default billing details
   const defaultBillingDetails: BillingDetails = {
+    basic: {
+      name: "",
+      lastName: "",
+      phone: "",
+    },
     method: undefined,
     billTo: defaultConsumerDetails,
     address: {
       recepient: defaultConsumerDetails,
       address: {
-        line1: '',
-        line2: '',
-        city: '',
-        state: '',
-        country: '',
-        zipCode: '',
-        reference: '',
+        line1: "",
+        line2: "",
+        city: "",
+        state: "",
+        country: "",
+        zipCode: "",
+        reference: "",
       },
     },
-  };
+  }
 
   // Initialize or update state based on cart and stored state
   const initialState: CheckoutState = {
     activeStep: parsedState?.activeStep ?? 0,
     order: {
-      id: parsedState?.order?.id || '',
-      lines: parsedState?.order?.lines?.length === cart.lines.length
-        ? parsedState.order.lines
-        : orderLines,
-      status: parsedState?.order?.status || { id: 1, name: 'Draft' },
+      id: parsedState?.order?.id || "",
+      lines:
+        parsedState?.order?.lines?.length === cart.lines.length
+          ? parsedState.order.lines
+          : orderLines,
+      status: parsedState?.order?.status || { id: 1, name: "Draft" },
       consumerDetails: parsedState?.order?.consumerDetails || {
         basic: defaultConsumerDetails,
         selectedAddress: {
-          line1: '',
-          line2: '',
-          city: '',
-          state: '',
-          country: ''
+          line1: "",
+          line2: "",
+          city: "",
+          state: "",
+          country: "",
         },
         addresses: [],
-        paymentMethods: [],
+        type: "Particular",
       },
-      payment: parsedState?.order?.payment || undefined,
-      seller: parsedState?.order?.seller || '',
-      observations: parsedState?.order?.observations || '',
+      payment: parsedState?.order?.payment || { methods: [] },
+      seller: parsedState?.order?.seller || "",
+      observations: parsedState?.order?.observations || "",
       shipping: parsedState?.order?.shipping || defaultShippingDetails,
       billing: parsedState?.order?.billing || defaultBillingDetails,
       totalUnits,
@@ -135,7 +145,7 @@ export const initializeCheckoutState = (cart: Cart): CheckoutState => {
       createdOn: parsedState?.order?.createdOn
         ? new Date(parsedState.order.createdOn)
         : new Date(),
-      createdBy: parsedState?.order?.createdBy || '',
+      createdBy: parsedState?.order?.createdBy || "",
     },
     dataLists: {
       shippingMethods: parsedState?.dataLists?.shippingMethods || [],
@@ -147,16 +157,19 @@ export const initializeCheckoutState = (cart: Cart): CheckoutState => {
           states: country.states.map((state) => ({
             ...state,
             subdivision: Array.isArray(state.subdivision)
-              ? state.subdivision.join(', ')
-              : state.subdivision ?? "",
+              ? state.subdivision.join(", ")
+              : (state.subdivision ?? ""),
           })),
         })),
       sellers: parsedState?.dataLists?.sellers || [],
     },
     shippingMethods: parsedState?.dataLists?.shippingMethods || [],
     paymentMethods: parsedState?.dataLists?.paymentMethods || [],
-    billing: undefined
-  };
+    discounts: [],
+    surcharges: [],
+    organizations: [],
+    // billing: undefined
+  }
 
-  return initialState;
-};
+  return initialState
+}

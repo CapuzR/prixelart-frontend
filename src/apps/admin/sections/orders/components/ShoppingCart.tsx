@@ -1,335 +1,199 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import Grid from '@mui/material/Grid';
-import Paper from '@mui/material/Paper';
-import { useTheme } from '@mui/styles';
-import { makeStyles } from '@mui/styles';
-import { Typography } from '@mui/material';
-import useMediaQuery from '@mui/material/useMediaQuery';
-import IconButton from '@mui/material/IconButton';
-import MenuItem from '@mui/material/MenuItem';
-import Select from '@mui/material/Select';
-import DeleteIcon from '@mui/icons-material/Delete';
-import FilterNoneIcon from '@mui/icons-material/FilterNone';
-import FormControl from '@mui/material/FormControl';
-import InputLabel from '@mui/material/InputLabel';
-import TextField from '@mui/material/TextField';
-import InputAdornment from '@mui/material/InputAdornment';
-import Img from 'react-cool-img';
-import Tooltip from '@mui/material/Tooltip';
-import oS from '../orderServices';
-import StarOutline from '@mui/icons-material/StarOutline';
+import React, { useEffect, useState } from "react"
+import Grid2 from "@mui/material/Grid2"
+import Paper from "@mui/material/Paper"
+import { Theme, useTheme } from "@mui/material"
+import { SelectChangeEvent } from "@mui/material/Select"
+import { Typography } from "@mui/material"
+import useMediaQuery from "@mui/material/useMediaQuery"
+import IconButton from "@mui/material/IconButton"
+import MenuItem from "@mui/material/MenuItem"
+import Select from "@mui/material/Select"
+import DeleteIcon from "@mui/icons-material/Delete"
+import FilterNoneIcon from "@mui/icons-material/FilterNone"
+import FormControl from "@mui/material/FormControl"
+import InputLabel from "@mui/material/InputLabel"
+import TextField from "@mui/material/TextField"
+import InputAdornment from "@mui/material/InputAdornment"
+import Img from "react-cool-img"
+import Tooltip from "@mui/material/Tooltip"
+import oS from "../services"
+import StarOutline from "@mui/icons-material/StarOutline"
 
-import { UnitPrice, UnitPriceSug, getComission } from '../../../../consumer/checkout/pricesFunctions.js';
-import { update } from 'immutable';
-const drawerWidth = 240;
+import {
+  UnitPrice,
+  UnitPriceSug,
+  getComission,
+} from "../../../../consumer/checkout/pricesFunctions"
+import { makeStyles } from "tss-react/mui"
+import { useConversionRate, useCurrency, useSnackBar } from "@context/GlobalContext"
+import { Discount } from "../../../../../types/discount.types"
+import { Prixer } from "../../../../../types/prixer.types"
+import { Art, PickedArt } from "../../../../../types/art.types"
+import { Organization } from "../../../../../types/organization.types"
+import {
+  PickedProduct,
+  Product,
+  Selection,
+} from "../../../../../types/product.types"
+import { Surcharge } from "../../../../../types/surcharge.types"
+import { Variant } from "aws-sdk/clients/iotsitewise"
+import { useOrder } from "@context/OrdersContext"
+import { getArts, getProducts } from "../api"
+import { nanoid } from "nanoid"
+import { OrderLine } from "@apps/consumer/checkout/interfaces"
+import { Item } from "../../../../../types/item.types"
+import { formatPriceForUI } from "@utils/formats"
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    display: 'flex',
-  },
-  formControl: {
-    // margin: theme.spacing(1),
-    minWidth: 120,
-  },
-  form: {
-    height: 'auto',
-    // padding: "15px",
-  },
-  gridInput: {
-    display: 'flex',
-    width: '100%',
-    marginBottom: '12px',
-  },
-  textField: {
-    marginRight: '8px',
-  },
+interface CartProps {
+  discounts: Discount[]
+  selectedPrixer: Prixer
+  orgs: Organization[]
+  consumerType: string
+  surcharges: Surcharge[]
+}
 
-  toolbar: {
-    paddingRight: 24,
-  },
-  toolbarIcon: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    padding: '0 8px',
-    ...theme.mixins.toolbar,
-  },
-  appBar: {
-    zIndex: theme.zIndex.drawer + 1,
-    transition: theme.transitions.create(['width', 'margin'], {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
-    }),
-  },
-  appBarShift: {
-    marginLeft: drawerWidth,
-    width: `calc(100% - ${drawerWidth}px)`,
-    transition: theme.transitions.create(['width', 'margin'], {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-  },
-  menuButton: {
-    marginRight: 36,
-  },
-  menuButtonHidden: {
-    display: 'none',
-  },
-  title: {
-    flexGrow: 1,
-  },
-  drawerPaper: {
-    position: 'relative',
-    whiteSpace: 'nowrap',
-    width: drawerWidth,
-    transition: theme.transitions.create('width', {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-  },
-  drawerPaperClose: {
-    overflowX: 'hidden',
-    transition: theme.transitions.create('width', {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
-    }),
-    width: theme.spacing(7),
-    [theme.breakpoints.up('sm')]: {
-      width: theme.spacing(9),
+const drawerWidth = 240
+
+const useStyles = makeStyles()((theme: Theme) => {
+  return {
+    formControl: {
+      minWidth: 120,
     },
-  },
-  appBarSpacer: theme.mixins.toolbar,
-  content: {
-    flexGrow: 1,
-    height: '100vh',
-    overflow: 'auto',
-  },
-  container: {
-    paddingTop: theme.spacing(4),
-    paddingBottom: theme.spacing(4),
-  },
-  paper: {
-    padding: theme.spacing(2),
-    display: 'flex',
-    overflow: 'none',
-    flexDirection: 'column',
-  },
-  fixedHeight: {
-    height: 'auto',
-    overflow: 'none',
-  },
-  fab: {
-    right: 0,
-    position: 'absolute',
-  },
-  paper2: {
-    position: 'absolute',
-    width: '80%',
-    maxHeight: '90%',
-    overflowY: 'auto',
-    backgroundColor: 'white',
-    boxShadow: theme.shadows[2],
-    padding: '16px 32px 24px',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    textAlign: 'justify',
-    minWidth: 320,
-    borderRadius: 10,
-    marginTop: '12px',
-    display: 'flex',
-    flexDirection: 'row',
-  },
-  backdrop: {
-    zIndex: theme.zIndex.drawer + 1,
-    color: theme.palette.primary.main,
-  },
-  base: {
-    width: '70px',
-    height: '37px',
-    padding: '0px',
-  },
-  switchBase: {
-    color: 'silver',
-    padding: '1px',
-    '&$checked': {
-      '& + $track': {
-        backgroundColor: 'silver',
-      },
-    },
-  },
-  thumb: {
-    color: '#d33f49',
-    width: '30px',
-    height: '30px',
-    margin: '2px',
-    '&:before': {
-      content: "'$'",
-      fontSize: '18px',
-      color: 'white',
-      display: 'flex',
-      marginTop: '3px',
-      justifyContent: 'center',
-    },
-  },
-  thumbTrue: {
-    color: '#d33f49',
-    width: '30px',
-    height: '30px',
-    margin: '2px',
-    '&:before': {
-      content: "'Bs'",
-      fontSize: '18px',
-      color: 'white',
-      display: 'flex',
-      marginTop: '3px',
-      justifyContent: 'center',
-    },
-  },
-  track: {
-    borderRadius: '20px',
-    backgroundColor: 'silver',
-    opacity: '1 !important',
-    '&:after, &:before': {
-      color: 'black',
-      fontSize: '18px',
-      position: 'absolute',
-      top: '6px',
-    },
-    '&:after': {
-      content: "'$'",
-      left: '8px',
-    },
-    '&:before': {
-      content: "'Bs'",
-      right: '7px',
-    },
-  },
-  checked: {
-    color: '#d33f49 !important',
-    transform: 'translateX(35px) !important',
-    padding: '1px',
-  },
-  snackbar: {
-    [theme.breakpoints.down('xs')]: {
-      bottom: 90,
-    },
-    margin: {
-      margin: theme.spacing(1),
-    },
-    withoutLabel: {
-      marginTop: theme.spacing(3),
-    },
+
     textField: {
-      width: '25ch',
+      marginRight: "8px",
     },
-  },
-}));
+  }
+})
 
-export default function ShoppingCart(props) {
-  const classes = useStyles();
-  const theme = useTheme();
+export default function ShoppingCart() {
+  const { classes } = useStyles()
 
-  const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-  const [productList, setProductList] = useState([]);
-  const [artist, setArtist] = useState([]);
-  const [artList, setArtList] = useState([]);
-  const [artList0, setArtList0] = useState([]);
-  const [artistFilter, setArtistFilter] = useState();
-  const [selectedArtist, setSelectedArtist] = useState([]);
-  const [prices, setPrices] = useState([]);
+  const theme = useTheme()
+  const { currency } = useCurrency();
+  const { conversionRate } = useConversionRate();
+  const adminToken = localStorage.getItem("adminToken")
+  const adminData = adminToken ? JSON.parse(adminToken) : null
+  const { showSnackBar } = useSnackBar()
+  const { state, dispatch } = useOrder()
+  const { order, surcharges, discounts, organizations } = state
+  const { lines } = order
 
-  let custom = { name: 'Personalizado', attributes: [{ value: '0x0cm' }] };
+  const isDesktop = useMediaQuery(theme.breakpoints.up("md"))
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"))
+  const [productList, setProductList] = useState<Product[]>([])
+  const [artist, setArtist] = useState<string[]>([])
+  const [artList, setArtList] = useState<Art[]>([])
+  const [artList0, setArtList0] = useState<Art[]>([])
+  const [selectedArtist, setSelectedArtist] = useState<string[]>([])
+  const [prices, setPrices] = useState<number[]>([])
 
-  const getProducts = async () => {
-    const base_url = import.meta.env.VITE_BACKEND_URL + '/product/read-all';
-    await axios.get(base_url).then(async (response) => {
-      let productsAttTemp1 = response.data.products;
-      await productsAttTemp1.map(async (p, iProd, pArr) => {
-        productsAttTemp1 = await oS.getEquation(p, iProd, pArr);
-      });
-      setProductList(
-        oS.getProductsAttributes(productsAttTemp1).sort(function (a, b) {
-          if (a.name.toLowerCase() > b.name.toLowerCase()) {
-            return 1;
-          }
-          if (a.name.toLowerCase() < b.name.toLowerCase()) {
-            return -1;
-          }
-          return 0;
-        })
-      );
-    });
-  };
+  let customArt: Art = {
+    crops: [],
+    points: 0,
+    tags: [],
+    visible: true,
+    _id: "0000",
+    artId: "none",
+    title: "Personalizado",
+    description: "",
+    category: "",
+    imageUrl: "/apple-touch-icon-180x180.png",
+    largeThumbUrl: "/apple-touch-icon-180x180.png",
+    squareThumbUrl: "/apple-touch-icon-180x180.png",
+    userId: "",
+    prixerUsername: "",
+    status: "visble",
+    artType: "Diseño",
+    comission: 10,
+    exclusive: "",
+    owner: "",
+    createdOn: new Date().toString(),
+  }
 
-  const getArts = async () => {
-    const base_url = import.meta.env.VITE_BACKEND_URL + '/art/read-all';
-    await axios.get(base_url).then((response) => {
-      const arts = response.data.arts;
-      arts.unshift({ title: 'Personalizado' });
-      let artist = [];
+  const readProducts = async () => {
+    try {
+      let products: Product[] = await getProducts()
+      setProductList(products)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const readArts = async () => {
+    try {
+      const arts: Art[] = await getArts()
+      arts.unshift(customArt)
+
+      let artist: string[] = []
+
       arts.map((art) => {
         if (artist.includes(art.prixerUsername)) {
-          return;
+          return
         } else {
-          artist.push(art.prixerUsername);
-          arts.push({
-            title: 'Personalizado',
-            owner: art.prixerUsername,
-            prixerUsername: art.prixerUsername,
-            comission: 10,
-          });
-          setArtList(arts);
-          setArtList0(arts);
+          artist.push(art.prixerUsername)
+          let customv2 = customArt
+          customv2.owner = art.prixerUsername
+          customv2.prixerUsername = art.prixerUsername
+          arts.push(customv2)
+          setArtList(arts)
+          setArtList0(arts)
         }
-      });
-      setArtist(artist);
-    });
-  };
+      })
+      setArtist(artist)
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   useEffect(() => {
-    getProducts();
-    getArts();
-  }, []);
+    readProducts()
+    readArts()
+  }, [])
 
   useEffect(() => {
-    let pricesList = [];
-    let artists = selectedArtist;
+    let pricesList: number[] = []
+    let artists = selectedArtist
 
-    props.buyState.map((item) => {
-      if (item.art) {
-        artists.push(item.art.prixerUsername);
+    order.lines.map((line) => {
+      if (line.item.art) {
+        artists.push(line.item.art.prixerUsername)
       } else {
-        artists.push(undefined);
+        return
       }
-      if (item.art && item.product) {
+      if (line.item.art && line.item.product) {
         pricesList.push(
           UnitPrice(
-            item.product,
-            item.art,
+            line.item.product,
+            line.item.art,
             false,
-            1,
-            props.discountList,
-            props?.selectedPrixer?.username
+            conversionRate,
+            discounts,
+            selectedPrixer?.username
           )
-        );
+        )
       }
-    });
-    setPrices(pricesList);
-    setSelectedArtist(artists);
-  }, []);
+    })
+    setPrices(pricesList)
+    setSelectedArtist(artists)
+  }, [])
 
-  const changeArtistFilter = (artist, i) => {
-    setArtistFilter(artist);
-    let artists = selectedArtist;
-    artists[i] = artist;
-    setSelectedArtist(artists);
-  };
+  const changeArtistFilter = (artist: string, i: number) => {
+    let artists = selectedArtist
+    artists[i] = artist
+    setSelectedArtist(artists)
+  }
 
-  const updatePrices = (index, prod, art, currency, dollarValue, discountList, prixer) => {
-    let selectedOrg = checkOrgs(art);
+  const updatePrices = (
+    index: number,
+    prod: Product,
+    art: Art,
+    currency: boolean,
+    conversionRate: number,
+    discounts: Discount[],
+    prixer: Prixer
+  ) => {
+    let selectedOrg = checkOrgs(art)
 
     if (prices.length === 0) {
       setPrices([
@@ -337,26 +201,26 @@ export default function ShoppingCart(props) {
           prod,
           art,
           currency,
-          dollarValue,
-          discountList,
+          conversionRate,
+          discounts,
           prixer,
           selectedOrg,
           props.consumerType
         ),
-      ]);
+      ])
     } else if (index <= prices.length) {
-      let prev = prices;
+      let prev = prices
       prev[index] = UnitPriceSug(
         prod,
         art,
         currency,
-        dollarValue,
-        discountList,
+        conversionRate,
+        discounts,
         prixer,
         selectedOrg,
         props.consumerType
-      );
-      setPrices(prev);
+      )
+      setPrices(prev)
     } else {
       setPrices([
         ...prices,
@@ -364,384 +228,500 @@ export default function ShoppingCart(props) {
           prod,
           art,
           currency,
-          dollarValue,
-          discountList,
+          conversionRate,
+          discounts,
           prixer,
           selectedOrg,
           props.consumerType
         ),
-      ]);
+      ])
     }
-  };
+  }
 
-  const removePrixer = (index) => {
-    let artists = selectedArtist;
-    artists.splice(index, 1);
-    setSelectedArtist(artists);
-  };
+  const removePrixer = (index: number) => {
+    let artists = selectedArtist
+    artists.splice(index, 1)
+    setSelectedArtist(artists)
+  }
 
-  const checkOrgs = (art) => {
+  const checkOrgs = (art: PickedArt) => {
     if (art !== undefined) {
-      const org = props?.orgs?.find((el) => el.username === art?.prixerUsername);
-      return org;
+      const org = organizations?.find(
+        (el) => el.username === art?.prixerUsername
+      )
+      return org
     }
-  };
+  }
 
-  const getCporg = (item) => {
-    const org = props?.orgs.find((el) => el.username === item.art.owner);
+  const getCporg = (item: Item) => {
+    if (item.art) {
+      const org = organizations.find((el) => el.username === item.art?.owner)
 
-    const applied = org?.agreement.appliedProducts.find((el) => el._id === item.product._id);
-    const varApplied = applied?.variants.find((v) => v.name === item.product.selection);
-    let percentage =
-      item.product.selection !== undefined && typeof item.product.selection === 'string'
-        ? varApplied?.cporg
-        : applied?.cporg;
+      const applied = org?.agreement.appliedProducts.find(
+        (el) => el === item.product._id
+      )
+      const varApplied = applied?.variants.find(
+        (v) => v.name === item.product.selection
+      )
+      let percentage =
+        item.product.selection !== undefined &&
+        typeof item.product.selection === "string"
+          ? varApplied?.cporg
+          : applied?.cporg
 
-    return percentage;
-  };
+      return percentage
+    }
+  }
 
-  const changeArt = async (art, product, index) => {
-    const prod = props.buyState[index]?.product;
-    let selectedOrg = checkOrgs(art);
-    let newPrice = await UnitPriceSug(
-      prod,
-      art,
-      false,
-      props.dollarValue,
-      props.discountList,
-      props?.selectedPrixer?.username,
-      selectedOrg,
-      props.consumerType
-    );
-    prod.finalPrice = Number(newPrice?.replace(/[,]/gi, '.'));
-    prod.comission = getComission(
-      prod,
-      art,
-      props.currency,
-      props.dollarValue,
-      props.discountList,
-      1,
-      props?.selectedPrixer?.username,
-      props.surchargeList,
-      selectedOrg,
-      props.consumerType
-    );
-    props.setSelectedProductToAssociate({
-      index,
-      item: prod,
-      previous: true,
-    });
-    props.AssociateProduct({
-      index: index,
-      item: prod,
-      type: 'product',
-    });
-    let selectedArt = art;
-    let selectedArtFull = artList.find((result) => result.artId === selectedArt.artId);
-    props.AssociateProduct({
-      index: index,
-      item: art.title === 'Personalizado' ? art : selectedArtFull,
-      type: 'art',
-    });
-    setArtistFilter(undefined);
+  // const handleVariantProduct = (
+  //   variant: string | Selection,
+  //   index: number,
+  //   item: any
+  // ) => {
+  //   let prod = item.product
+  //   prod.selection = variant
+  //   let selection
+  //   if (
+  //     variant !== "Personalizado" &&
+  //     item.product.attributes.length > 1 &&
+  //     item.product.name !== "Qrvo"
+  //   ) {
+  //     let name = typeof variant === "string" ? variant : variant.name
+  //     let namev2
+  //     if (name.length === 4) {
+  //       namev2 = `${name[0]} ${name[1]} ${name[2]}`
+  //     } else {
+  //       namev2 = name[0]
+  //     }
+  //     let selectionv2 = item.product?.variants.find(
+  //       (v) => v.name === namev2 && v.attributes[1].value === name[3]
+  //     )
+  //     prod.publicEquation = selectionv2?.publicPrice?.equation
+  //     prod.prixerEquation = selectionv2?.prixerPrice?.equation
+  //   } else if (variant !== "Personalizado") {
+  //     selection = prod?.variants.find((v) => v.name === variant)
+  //     prod.publicEquation = selection?.publicPrice?.equation
+  //     prod.prixerEquation = selection?.prixerPrice?.equation
+  //     let selectedOrg = checkOrgs(item.art)
 
-    updatePrices(
-      index,
-      product,
-      art,
-      props.currency,
-      props.dollarValue,
-      props.discountList,
-      props?.selectedPrixer?.username
-    );
+  //     if (item.art) {
+  //       prod.comission = getComission(
+  //         prod,
+  //         item.art,
+  //         currency,
+  //         conversionRate,
+  //         discounts,
+  //         item.quantity,
+  //         selectedPrixer?.username,
+  //         surcharges,
+  //         selectedOrg,
+  //         consumerType
+  //       )
 
-    let prev = selectedArtist;
-    prev.splice(index, 1, art.prixerUsername);
-    setSelectedArtist(prev);
-  };
+  //       prod.finalPrice = Number(
+  //         UnitPriceSug(
+  //           prod,
+  //           item.art,
+  //           false,
+  //           1,
+  //           discounts,
+  //           selectedPrixer?.username,
+  //           selectedOrg,
+  //           consumerType
+  //         )?.replace(/[,]/gi, ".")
+  //       )
+  //     }
+  //   } else {
+  //     prod.publicEquation = 0
+  //   }
 
-  const changeProduct = (event, art, index) => {
-    props.setSelectedArtToAssociate({
-      index,
-      item: art,
-      previous: true,
-    });
-    let selectedProduct = event.target.value;
-    let selectedProductFull = productList.find((result) => result.name === selectedProduct);
-    let selectedOrg = checkOrgs(art);
+  //   AssociateProduct({
+  //     index: index,
+  //     item: prod,
+  //     type: "product",
+  //   })
+
+  //   if (item.art) {
+  //     updatePrices(
+  //       index,
+  //       prod,
+  //       item.art,
+  //       false,
+  //       1,
+  //       discounts,
+  //       selectedPrixer?.username
+  //     )
+  //   }
+  // }
+
+  const modifyPrice = (id: string, newPrice: string) => {
+    let existingLine = lines.find((line) => line.id === id)
+    if (!existingLine) return
+
+    existingLine.pricePerUnit = Number(newPrice.replace(/[,]/gi, "."))
+    // item.product.modifyPrice = true
+    // item.product.finalPrice = Number(newPrice.replace(/[,]/gi, "."))
+
+    // const updatedPrices: string[] = prices.map((price, i) =>
+    //   i === index ? newPrice.replace(/[,]/gi, ".") : price
+    // )
+
+    // setPrices(updatedPrices)
+    // let selectedOrg = checkOrgs(item.art)
+
+    // item.product.comission = getComission(
+    //   item.product,
+    //   item.art,
+    //   currency,
+    //   conversionRate,
+    //   discounts,
+    //   item.quantity,
+    //   .selectedPrixer?.username,
+    //   surcharges,
+    //   selectedOrg,
+    //   consumerType
+    // )
+    // purchase.splice(index, 1, item)
+    // localStorage.setItem("order.lines", JSON.stringify(purchase))
+    // setBuyState(purchase)
+  }
+
+  // const modifyVariant = (product, index, dimension, value) => {
+  //   const purchase = props.order.lines
+  //   let item = purchase[index]
+  //   if (product.selection?.attributes) {
+  //     let prev = product.selection.attributes[0].value
+  //     let v2 = prev.split("x")
+  //     if (dimension === "width") {
+  //       product.selection.attributes = [
+  //         {
+  //           name: "Medida",
+  //           value: `${value}x${v2[1]}`,
+  //         },
+  //       ]
+  //     } else if (dimension === "height") {
+  //       product.selection.attributes = [
+  //         {
+  //           name: "Medida",
+  //           value: `${v2[0]}x${value}cm`,
+  //         },
+  //       ]
+  //     }
+  //   } else {
+  //     let selection = { name: "Personalizado" }
+  //     product.selection = selection
+
+  //     if (dimension === "width") {
+  //       product.selection.attributes = [
+  //         {
+  //           name: "Medida",
+  //           value: `${value}x0cm`,
+  //         },
+  //       ]
+  //     } else if (dimension === "height") {
+  //       product.selection.attributes = [
+  //         {
+  //           name: "Medida",
+  //           value: `0x${value}cm`,
+  //         },
+  //       ]
+  //     }
+  //   }
+  //   let prev = product.selection?.attributes[0]?.value
+  //   let v2 = prev.split("x")
+
+  //   item.product = product
+  //   purchase.splice(index, 1, item)
+  //   localStorage.setItem("order.lines", JSON.stringify(purchase))
+  //   props.setBuyState(purchase)
+  // }
+
+  const handleProduct = (event: SelectChangeEvent<string>) => {
+    const selectedProduct = event.target.value
+    let selectedProductFull = productList.find(
+      (result) => result.name === selectedProduct
+    )
+    if (!selectedProductFull) return
+
+    let newItem: Item = {
+      sku: nanoid(6),
+      product: selectedProductFull,
+      price: 0,
+    }
+
+    let newOrderLine: OrderLine = {
+      id: nanoid(6),
+      item: newItem,
+      quantity: 1,
+      pricePerUnit: 0,
+      subtotal: 0,
+    }
+
+    dispatch({
+      type: "ADD_ORDER_LINE",
+      payload: newOrderLine,
+    })
+    // props.addItemToBuyState({
+    //   type: "product",
+    //   item: selectedProduct,
+    // })
+  }
+
+  const removeOrderLine = (id: string, index: number) => {
+    dispatch({
+      type: "REMOVE_ORDER_LINE",
+      payload: id,
+    })
+    removePrixer(index)
+  }
+
+  const copyItem = (id: string) => {
+    dispatch({
+      type: "DUPLICATE_ORDER_LINE",
+      payload: id,
+    })
+    // const cart = localStorage.getItem("order.lines")
+    // let newState = JSON.parse(cart)
+    // newState.push(newState[i])
+    // setBuyState(newState)
+    // localStorage.setItem("order.lines", JSON.stringify(newState))
+    showSnackBar("Item duplicado correctamente.")
+
+    // const prev = selectedArtist
+    // const lastIndex = prev.length
+
+    // setSelectedArtist([...selectedArtist, prev[i]])
+  }
+
+  const changeProduct = (
+    event: SelectChangeEvent<string>,
+    id: string,
+    art?: PickedArt
+  ) => {
+    let selectedProduct = event.target.value
+    let selectedProductFull = productList.find(
+      (result) => result.name === selectedProduct
+    )
+    if (!selectedProductFull) return
+
+    const existingLine = lines.find((line) => line.id === id)
+    if (!existingLine) return
+
+    const updatedLine = { ...existingLine, ...{ product: selectedProductFull } }
+
+    dispatch({
+      type: "UPDATE_ORDER_LINE",
+      payload: updatedLine,
+    })
+
+    // let newItem: Item = {
+    //   sku: nanoid(6),
+    //   product: selectedProductFull,
+    //   price: 0,
+    // }
+
+    // let newOrderLine: OrderLine = {
+    //   id: nanoid(6),
+    //   item: newItem,
+    //   quantity: 1,
+    //   pricePerUnit: 0,
+    //   subtotal: 0,
+    // }
+
+    // setSelectedArtToAssociate({
+    //   index,
+    //   item: art,
+    //   previous: true,
+    // })
 
     if (art) {
-      selectedProductFull.comission = getComission(
-        selectedProductFull,
-        art,
-        false,
-        1,
-        props.discountList,
-        1,
-        props?.selectedPrixer?.username,
-        props.surchargeList,
-        selectedOrg,
-        props.consumerType
-      );
-
-      updatePrices(
-        index,
-        selectedProductFull,
-        art,
-        props.currency,
-        props.dollarValue,
-        props.discountList,
-        props?.selectedPrixer?.username
-      );
+      // selectedProductFull.comission = getComission(
+      //   selectedProductFull,
+      //   art,
+      //   false,
+      //   1,
+      //   discounts,
+      //   1,
+      //   selectedPrixer?.username,
+      //   surcharges,
+      //   selectedOrg,
+      //   consumerType
+      // )
+      // updatePrices(
+      //   index,
+      //   selectedProductFull,
+      //   art,
+      //   currency,
+      //   conversionRate,
+      //   discounts,
+      //   selectedPrixer?.username
+      // )
+      // let selectedOrg = checkOrgs(art)
+      // NOTE: clearly if Art is defined need to update price of the orderline
     }
-    props.AssociateProduct({
-      index: index,
-      item: selectedProductFull,
-      type: 'product',
-    });
-  };
+  }
 
-  const handleVariantProduct = (variant, index, item) => {
-    let prod = item.product;
-    prod.selection = variant;
-    let selection;
-    if (
-      variant !== 'Personalizado' &&
-      item.product.attributes.length > 1 &&
-      item.product.name !== 'Qrvo'
-    ) {
-      let name = variant.split(' ');
-      let namev2;
-      if (name.length === 4) {
-        namev2 = `${name[0]} ${name[1]} ${name[2]}`;
-      } else {
-        namev2 = name[0];
-      }
-      let selectionv2 = item.product?.variants.find(
-        (v) => v.name === namev2 && v.attributes[1].value === name[3]
-      );
-      prod.publicEquation = selectionv2?.publicPrice?.equation;
-      prod.prixerEquation = selectionv2?.prixerPrice?.equation;
-    } else if (variant !== 'Personalizado') {
-      selection = prod?.variants.find((v) => v.name === variant);
-      prod.publicEquation = selection?.publicPrice?.equation;
-      prod.prixerEquation = selection?.prixerPrice?.equation;
-      let selectedOrg = checkOrgs(item.art);
+  const changeArt = async (e: SelectChangeEvent<string>, id: string) => {
+    let selectedArt = e.target.value
+    let selectedArtFull = artList.find((result) => result.artId === selectedArt)
+    if (!selectedArtFull) return
 
-      if (item.art) {
-        prod.comission = getComission(
-          prod,
-          item.art,
-          props.currency,
-          props.dollarValue,
-          props.discountList,
-          item.quantity,
-          props?.selectedPrixer?.username,
-          props.surchargeList,
-          selectedOrg,
-          props.consumerType
-        );
+    const existingLine = lines.find((line) => line.id === id)
+    if (!existingLine) return
 
-        prod.finalPrice = Number(
-          UnitPriceSug(
-            prod,
-            item.art,
-            false,
-            1,
-            props.discountList,
-            props?.selectedPrixer?.username,
-            selectedOrg,
-            props.consumerType
-          )?.replace(/[,]/gi, '.')
-        );
-      }
-    } else {
-      prod.publicEquation = 0;
+    const updatedLine = { ...existingLine, ...{ art: selectedArtFull } }
+
+    dispatch({
+      type: "UPDATE_ORDER_LINE",
+      payload: updatedLine,
+    })
+
+    // const prod = order.lines[index]?.item.product
+    let selectedOrg = checkOrgs(selectedArtFull)
+    // let newPrice = UnitPriceSug(
+    //   prod,
+    //   art,
+    //   false,
+    //   conversionRate,
+    //   discounts,
+    //   selectedPrixer?.username,
+    //   selectedOrg,
+    //   consumerType
+    // )
+    // prod.finalPrice = Number(newPrice?.replace(/[,]/gi, "."))
+    // prod.comission = getComission(
+    //   prod,
+    //   art,
+    //   currency,
+    //   conversionRate,
+    //   discounts,
+    //   1,
+    //   selectedPrixer?.username,
+    //   surcharges,
+    //   selectedOrg,
+    //   consumerType
+    // )
+    // setSelectedProductToAssociate({
+    //   index,
+    //   item: prod,
+    //   previous: true,
+    // })
+    // AssociateProduct({
+    //   index: index,
+    //   item: prod,
+    //   type: "product",
+    // })
+    // let selectedArt = art
+    // let selectedArtFull = artList.find(
+    //   (result) => result.artId === selectedArt.artId
+    // )
+    // AssociateProduct({
+    //   index: index,
+    //   item: art.title === "Personalizado" ? art : selectedArtFull,
+    //   type: "art",
+    // })
+
+    // updatePrices(
+    //   index,
+    //   product,
+    //   art,
+    //   currency,
+    //   conversionRate,
+    //   discounts,
+    //   selectedPrixer?.username
+    // )
+
+    // let prev = selectedArtist
+    // prev.splice(index, 1, art.prixerUsername)
+    // setSelectedArtist(prev)
+  }
+
+  const changeQuantity = (id: string, quantity: string) => {
+    const existingLine = lines.find((line) => line.id === id)
+    if (!existingLine) return
+
+    const updatedLine = {
+      ...existingLine,
+      ...{ quantity: Number(quantity.replace(/[,]/gi, ".")) },
     }
 
-    props.AssociateProduct({
-      index: index,
-      item: prod,
-      type: 'product',
-    });
+    dispatch({
+      type: "UPDATE_ORDER_LINE",
+      payload: updatedLine,
+    })
+  }
 
-    if (item.art) {
-      updatePrices(
-        index,
-        prod,
-        item.art,
-        false,
-        1,
-        props.discountList,
-        props?.selectedPrixer?.username
-      );
-    }
-  };
-
-  const modifyPrice = (index, newPrice) => {
-    const purchase = props.buyState;
-    let item = purchase[index];
-    item.product.modifyPrice = true;
-    item.product.finalPrice = Number(newPrice.replace(/[,]/gi, '.'));
-
-    const updatedPrices = prices.map((price, i) =>
-      i === index ? newPrice.replace(/[,]/gi, '.') : price
-    );
-    setPrices(updatedPrices);
-    let selectedOrg = checkOrgs(item.art);
-
-    item.product.comission = getComission(
-      item.product,
-      item.art,
-      props.currency,
-      props.dollarValue,
-      props.discountList,
-      item.quantity,
-      props?.selectedPrixer?.username,
-      props.surchargeList,
-      selectedOrg,
-      props.consumerType
-    );
-    purchase.splice(index, 1, item);
-    localStorage.setItem('buyState', JSON.stringify(purchase));
-    props.setBuyState(purchase);
-  };
-
-  const modifyVariant = (product, index, dimension, value) => {
-    const purchase = props.buyState;
-    let item = purchase[index];
-    if (product.selection?.attributes) {
-      let prev = product.selection.attributes[0].value;
-      let v2 = prev.split('x');
-      if (dimension === 'width') {
-        product.selection.attributes = [
-          {
-            name: 'Medida',
-            value: `${value}x${v2[1]}`,
-          },
-        ];
-      } else if (dimension === 'height') {
-        product.selection.attributes = [
-          {
-            name: 'Medida',
-            value: `${v2[0]}x${value}cm`,
-          },
-        ];
-      }
-    } else {
-      let selection = { name: 'Personalizado' };
-      product.selection = selection;
-
-      if (dimension === 'width') {
-        product.selection.attributes = [
-          {
-            name: 'Medida',
-            value: `${value}x0cm`,
-          },
-        ];
-      } else if (dimension === 'height') {
-        product.selection.attributes = [
-          {
-            name: 'Medida',
-            value: `0x${value}cm`,
-          },
-        ];
-      }
-    }
-    let prev = product.selection?.attributes[0]?.value;
-    let v2 = prev.split('x');
-
-    item.product = product;
-    purchase.splice(index, 1, item);
-    localStorage.setItem('buyState', JSON.stringify(purchase));
-    props.setBuyState(purchase);
-  };
-
-  const handleProduct = (event) => {
-    let selectedProduct = event.target.value;
-    props.addItemToBuyState({
-      type: 'product',
-      item: selectedProduct,
-    });
-
-    setSelectedArtist([...selectedArtist, undefined]);
-  };
-
-  const copyItem = (i) => {
-    let newState = JSON.parse(localStorage.getItem('buyState'));
-    newState.push(newState[i]);
-    props.setBuyState(newState);
-    localStorage.setItem('buyState', JSON.stringify(newState));
-    props.setErrorMessage('Item duplicado correctamente.');
-    props.setSnackBarError(true);
-
-    const prev = selectedArtist;
-    const lastIndex = prev.length;
-
-    setSelectedArtist([...selectedArtist, prev[i]]);
+  const getFinalPrice = (line: OrderLine) => {
+    const qty = typeof line.quantity === 'string' ? 1 : line.quantity;
+    return line.item.price
+      ? formatPriceForUI(qty * line.item.price, currency, conversionRate)
+      : undefined;
   };
 
   return (
-    <Grid container style={{ display: 'flex', justifyContent: 'center' }}>
-      {props.buyState.length > 0 &&
-        props.buyState.map((buy, index) => {
+    <Grid2 container style={{ display: "flex", justifyContent: "center" }}>
+      {lines.length > 0 &&
+        lines.map((line, index) => {
           return (
-            <Grid
-              item
-              xs={12}
+            <Grid2
               key={index}
               style={{
                 height:
-                  (buy.product?.selection?.name === 'Personalizado' ||
-                    buy.product?.selection === 'Personalizado') &&
-                  215,
+                  line.item.product?.selection?.name === "Personalizado"
+                    ? 215
+                    : 0,
                 marginBottom: 20,
-                width: '100%',
+                width: "100%",
               }}
             >
               <Paper
                 style={{
                   padding: 10,
-                  marginTop: '2px',
-                  display: 'flex',
-                  flexDirection: isMobile ? 'column' : 'row',
+                  marginTop: "2px",
+                  display: "flex",
+                  flexDirection: isMobile ? "column" : "row",
                   height:
-                    (buy.product?.selection?.name === 'Personalizado' ||
-                      buy.product?.selection === 'Personalizado') &&
-                    215,
+                    line.item.product?.selection?.name === "Personalizado"
+                      ? 215
+                      : 0,
                 }}
                 elevation={3}
               >
-                <Grid item xs={5}>
+                <Grid2 size={{ xs: 5 }}>
                   <div
                     style={{
-                      display: 'flex',
+                      display: "flex",
                       height: 120,
                       marginRight: 20,
-                      marginBottom: '-10px',
+                      marginBottom: "-10px",
                     }}
                   >
                     <Img
                       placeholder="/imgLoading.svg"
                       style={{
-                        backgroundColor: '#eeeeee',
+                        backgroundColor: "#eeeeee",
                         height: 120,
-                        borderRadius: '10px',
-                        marginRight: '20px',
-                        marginLeft: '20px',
+                        borderRadius: "10px",
+                        marginRight: "20px",
+                        marginLeft: "20px",
                       }}
-                      src={buy.product?.sources?.images[0]?.url || buy.product?.thumbUrl || ''}
+                      src={
+                        (line.item.product?.sources?.images &&
+                          line.item.product?.sources?.images[0]?.url) ||
+                        line.item.product?.thumbUrl ||
+                        ""
+                      }
                       debounce={1000}
                       cache
                       error="/imgError.svg"
-                      alt={buy.product && buy.product.name}
+                      alt={line.item.product && line.item.product.name}
                       id={index}
                     />
                     <div
                       style={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        width: '100%',
+                        display: "flex",
+                        flexDirection: "column",
+                        width: "100%",
                       }}
                     >
                       <FormControl
@@ -752,80 +732,115 @@ export default function ShoppingCart(props) {
                         }}
                       >
                         <InputLabel style={{ paddingLeft: 15 }}>
-                          {buy.product ? 'Producto' : 'Agrega un producto'}
+                          {line.item.product
+                            ? "Producto"
+                            : "Agrega un producto"}
                         </InputLabel>
                         <Select
-                          id={'product ' + index}
+                          id={"product " + index}
                           variant="outlined"
-                          value={buy.product.name}
+                          value={line.item.product.name}
                           onChange={(e) => {
-                            changeProduct(e, buy.art, index);
+                            changeProduct(e, line.id, line.item?.art)
                           }}
                         >
                           {productList[0] !== null &&
                             productList.map((product) => {
-                              return <MenuItem value={product.name}>{product.name}</MenuItem>;
+                              return (
+                                <MenuItem value={product.name}>
+                                  {product.name}
+                                </MenuItem>
+                              )
                             })}
                         </Select>
                       </FormControl>
-                      {buy.product?.variants.length > 0 && (
-                        <FormControl className={classes.formControl} style={{ minWidth: 200 }}>
+                      {line.item.product?.variants.length > 0 && (
+                        <FormControl
+                          className={classes.formControl}
+                          style={{ minWidth: 200 }}
+                        >
                           <InputLabel style={{ paddingLeft: 15 }}>
-                            {buy.product?.attributes[0]?.name}
+                            {line.item.product?.attributes[0]?.name}
                           </InputLabel>
                           <Select
-                            id={'variant ' + index}
+                            id={"variant " + index}
                             variant="outlined"
                             value={
-                              props.buyState[index].product?.selection?.name ||
-                              props.buyState[index].product?.selection
+                              line.item.product?.selection?.name ||
+                              line.item.product?.selection
                             }
-                            onChange={(e) => {
-                              handleVariantProduct(e.target.value, index, props.buyState[index]);
-                            }}
+                            // NOTE: Solve this
+                            // onChange={(e) => {
+                            //   handleVariantProduct(
+                            //     e.target.value,
+                            //     index,
+                            //     order.lines[index]
+                            //   )
+                            // }}
                           >
-                            {buy.product.hasSpecialVar && (
-                              <MenuItem value={custom.name}>{custom.name}</MenuItem>
-                            )}
+                            {/* {line.item.product.hasSpecialVar && (
+                              <MenuItem value={custom.name}>
+                                {custom.name}
+                              </MenuItem>
+                            )} */}
                             {productList
-                              .find((product) => product.name === buy.product.name)
+                              .find(
+                                (product) =>
+                                  product.name === line.item.product.name
+                              )
                               ?.variants.map((a) => {
                                 if (a.active === true)
                                   return (
                                     <MenuItem
                                       value={
                                         a.attributes[1] !== undefined
-                                          ? a.name + ' ' + a.attributes[1].value
+                                          ? a.name + " " + a.attributes[1].value
                                           : a.name
                                       }
                                     >
                                       {/* {a.name} */}
                                       {a.attributes[1] !== undefined
-                                        ? a.name + ' ' + a.attributes[1].value
+                                        ? a.name + " " + a.attributes[1].value
                                         : a.name}
                                     </MenuItem>
-                                  );
+                                  )
                               })}
                           </Select>
-                          {(buy.product?.selection?.name === 'Personalizado' ||
-                            buy.product.selection === 'Personalizado') && (
-                            <div style={{ display: 'flex', marginTop: '-5px' }}>
+                          {line.item.product?.selection?.name ===
+                            // "Personalizado" ||
+                            // line.item.product.selection ===
+                            "Personalizado" && (
+                            <div style={{ display: "flex", marginTop: "-5px" }}>
                               <TextField
                                 variant="outlined"
                                 label="Ancho"
                                 className={classes.textField}
                                 style={{ width: 100, marginRight: 10 }}
                                 defaultValue={
-                                  buy.product.selection.attributes &&
-                                  buy.product?.selection?.attributes[0]?.value
-                                    ? buy.product?.selection?.attributes[0]?.value?.split('x')[0]
+                                  line.item.product.selection.attributes &&
+                                  line.item.product?.selection?.attributes[0]
+                                    ?.value
+                                    ? line.item.product?.selection?.attributes[0]?.value?.split(
+                                        "x"
+                                      )[0]
                                     : 0
                                 }
                                 onChange={(e) =>
-                                  modifyVariant(buy.product, index, 'width', e.target.value)
+                                  modifyVariant(
+                                    line.item.product,
+                                    index,
+                                    "width",
+                                    e.target.value
+                                  )
                                 }
-                                InputProps={{
-                                  endAdornment: <InputAdornment position="end">cm</InputAdornment>,
+                                slotProps={{
+                                  input: {
+                                    endAdornment: (
+                                      <InputAdornment position="end">
+                                        cm
+                                      </InputAdornment>
+                                    ),
+                                  },
                                 }}
                                 margin="normal"
                               />
@@ -835,18 +850,30 @@ export default function ShoppingCart(props) {
                                 className={classes.textField}
                                 style={{ width: 100 }}
                                 onChange={(e) =>
-                                  modifyVariant(buy.product, index, 'height', e.target.value)
+                                  modifyVariant(
+                                    line.item.product,
+                                    index,
+                                    "height",
+                                    e.target.value
+                                  )
                                 }
                                 defaultValue={
-                                  buy.product.selection.attributes &&
-                                  buy.product?.selection?.attributes[0]?.value
-                                    ? buy.product?.selection?.attributes[0]?.value
-                                        ?.split('x')[1]
+                                  line.item.product.selection.attributes &&
+                                  line.item.product?.selection?.attributes[0]
+                                    ?.value
+                                    ? line.item.product?.selection?.attributes[0]?.value
+                                        ?.split("x")[1]
                                         .slice(0, -2)
                                     : 0
                                 }
-                                InputProps={{
-                                  endAdornment: <InputAdornment position="end">cm</InputAdornment>,
+                                slotProps={{
+                                  input: {
+                                    endAdornment: (
+                                      <InputAdornment position="end">
+                                        cm
+                                      </InputAdornment>
+                                    ),
+                                  },
                                 }}
                                 margin="normal"
                               />
@@ -856,161 +883,169 @@ export default function ShoppingCart(props) {
                       )}
 
                       {props?.selectedPrixer?.username === undefined &&
-                        props.discountList !== undefined &&
-                        props.discountList !== null &&
-                        typeof buy.product.discount === 'string' && (
+                        typeof line.item.product.discount === "string" && (
                           <Typography
-                            variant="p"
-                            style={{ paddingTop: 5, fontSize: '12px' }}
+                            style={{ paddingTop: 5, fontSize: "12px" }}
                             color="secondary"
                           >
                             Este producto tiene aplicado un descuento de
-                            {props.discountList?.find(({ _id }) => _id === buy.product.discount)
-                              ?.type === 'Porcentaje'
-                              ? ' %' +
-                                props.discountList?.find(({ _id }) => _id === buy.product.discount)
-                                  .value
-                              : props.discountList?.find(({ _id }) => _id === buy.product.discount)
-                                  ?.type === 'Monto' &&
-                                ' $' +
-                                  props.discountList?.find(
-                                    ({ _id }) => _id === buy.product.discount
-                                  ).value}
+                            {discounts?.find(
+                              ({ _id }) => _id === line.item.product.discount
+                            )?.type === "Porcentaje"
+                              ? " %" +
+                                discounts?.find(
+                                  ({ _id }) =>
+                                    _id === line.item.product.discount
+                                )?.value
+                              : discounts?.find(
+                                  ({ _id }) =>
+                                    _id === line.item.product.discount
+                                )?.type === "Monto" &&
+                                " $" +
+                                  discounts?.find(
+                                    ({ _id }) =>
+                                      _id === line.item.product.discount
+                                  )?.value}
                           </Typography>
                         )}
 
-                      {buy.art &&
-                        props.surchargeList.length > 0 &&
-                        props.surchargeList.map((sur) => {
+                      {line.item.art &&
+                        surcharges.map((sur) => {
+                          const prixerUsername = line.item?.art?.prixerUsername
+                          const owner = line.item?.art?.owner
+
                           if (
-                            sur.appliedUsers.includes(buy.art.prixerUsername) ||
-                            sur.appliedUsers.includes(buy.art.owner)
+                            (prixerUsername &&
+                              sur.appliedUsers.includes(prixerUsername)) ||
+                            (owner && sur.appliedUsers.includes(owner))
                           ) {
                             return (
                               <Typography
-                                variant="p"
-                                style={{ paddingTop: 5, fontSize: '12px' }}
+                                style={{ paddingTop: 5, fontSize: "12px" }}
                                 color="secondary"
                               >
                                 Este arte tiene aplicado un recargo de
-                                {sur.type === 'Porcentaje' && ' ' + sur.value + '%'}
-                                {sur.type === 'Monto' && ' $' + sur.value}
-                                {sur.appliedPercentage === 'ownerComission' &&
-                                  ' sobre la comisión del Prixer/Org'}
+                                {sur.type === "Porcentaje" &&
+                                  " " + sur.value + "%"}
+                                {sur.type === "Monto" && " $" + sur.value}
+                                {sur.appliedPercentage === "ownerComission" &&
+                                  " sobre la comisión del Prixer/Org"}
                               </Typography>
-                            );
+                            )
                           }
                         })}
                     </div>
                   </div>
-                </Grid>
-                <Grid item xs={6} style={{ display: 'flex' }}>
+                </Grid2>
+                <Grid2 size={{ xs: 6 }} style={{ display: "flex" }}>
                   <div
                     style={{
-                      backgroundColor: '#eeeeee',
+                      backgroundColor: "#eeeeee",
                       width: 120,
                       height: 120,
-                      borderRadius: '10px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
+                      borderRadius: "10px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
                       marginRight: 20,
                     }}
                   >
-                    {buy.art && (
+                    {line.item.art && (
                       <Img
                         placeholder="/imgLoading.svg"
                         style={{
-                          backgroundColor: '#eeeeee',
+                          backgroundColor: "#eeeeee",
                           maxWidth: 120,
                           maxHeight: 120,
                           borderRadius: 10,
                         }}
                         src={
-                          buy.art
-                            ? buy.art.title === 'Personalizado'
-                              ? '/apple-touch-icon-180x180.png'
-                              : buy.art?.squareThumbUrl
-                            : ''
+                          line.item.art
+                            ? line.item.art.title === "Personalizado"
+                              ? "/apple-touch-icon-180x180.png"
+                              : line.item.art?.squareThumbUrl
+                            : ""
                         }
                         debounce={1000}
                         cache
                         error="/imgError.svg"
-                        alt={buy.art && buy.art.title}
-                        id={buy.art && buy.art?.artId}
+                        alt={line.item.art && line.item.art.title}
+                        id={line.item.art && line.item.art?.artId}
                       />
                     )}
                   </div>
                   <div
                     style={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignContent: 'space-between',
+                      display: "flex",
+                      flexDirection: "column",
+                      alignContent: "space-between",
                     }}
                   >
-                    <div style={{ display: 'flex', flexDirection: 'row' }}>
+                    <div style={{ display: "flex", flexDirection: "row" }}>
                       <FormControl
                         className={classes.formControl}
                         style={{
                           marginBottom: 10,
-                          display: 'flex',
-                          flexDirection: 'row',
-                          justifyContent: 'space-between',
+                          display: "flex",
+                          flexDirection: "row",
+                          justifyContent: "space-between",
                         }}
                       >
                         <InputLabel style={{ paddingLeft: 15 }}>
-                          {buy.art ? 'Prixer' : 'Selecciona un Prixer'}
+                          {line.item.art ? "Prixer" : "Selecciona un Prixer"}
                         </InputLabel>
                         <Select
                           value={selectedArtist[index]}
                           variant="outlined"
-                          onChange={(e) => changeArtistFilter(e.target.value, index)}
+                          onChange={(e) =>
+                            changeArtistFilter(e.target.value, index)
+                          }
                           style={{ width: 180, marginRight: 10 }}
                         >
                           <MenuItem value={undefined}>Todos</MenuItem>
-                          {artist !== '' &&
-                            artist.map((art) => {
-                              return <MenuItem value={art}>{art}</MenuItem>;
-                            })}
+                          {artist.map((art) => {
+                            return <MenuItem value={art}>{art}</MenuItem>
+                          })}
                         </Select>
                       </FormControl>
                       <FormControl
                         className={classes.formControl}
                         style={{
                           marginBottom: 10,
-                          display: 'flex',
-                          flexDirection: 'row',
-                          justifyContent: 'space-between',
+                          display: "flex",
+                          flexDirection: "row",
+                          justifyContent: "space-between",
                         }}
                       >
                         <InputLabel style={{ paddingLeft: 15 }}>
-                          {buy.art ? 'Arte' : 'Agrega un arte'}
+                          {line.item.art ? "Arte" : "Agrega un arte"}
                         </InputLabel>
                         <Select
-                          value={buy?.art?.title?.substring(0, 22)}
-                          id={'Art ' + index}
+                          value={line.item?.art?.title?.substring(0, 22)}
+                          id={"Art " + index}
                           variant="outlined"
-                          onChange={(e) => changeArt(e.target.value, buy.product, index)}
+                          onChange={(e) => changeArt(e, line.id)}
                           style={{ width: 210 }}
                         >
                           {selectedArtist[index] !== undefined
                             ? artList0
-                                .filter((art) => art.prixerUsername === selectedArtist[index])
+                                .filter(
+                                  (art) =>
+                                    art.prixerUsername === selectedArtist[index]
+                                )
                                 .map((art) => {
                                   return (
-                                    <MenuItem value={art}>
+                                    <MenuItem value={art.artId}>
                                       <Img
                                         placeholder="/imgLoading.svg"
                                         style={{
-                                          backgroundColor: '#eeeeee',
+                                          backgroundColor: "#eeeeee",
                                           maxWidth: 40,
                                           maxHeight: 40,
                                           borderRadius: 3,
                                           marginRight: 10,
                                         }}
-                                        src={
-                                          art.title === 'Personalizado' ? x : art?.squareThumbUrl
-                                        }
+                                        src={art?.squareThumbUrl}
                                         debounce={1000}
                                         cache
                                         error="/imgError.svg"
@@ -1019,38 +1054,38 @@ export default function ShoppingCart(props) {
                                       />
                                       <div
                                         style={{
-                                          display: 'flex',
-                                          justifyContent: 'space-between',
-                                          width: '100%',
+                                          display: "flex",
+                                          justifyContent: "space-between",
+                                          width: "100%",
                                         }}
                                       >
                                         {art.title.substring(0, 22)}
                                         {art.comission > 10 && (
                                           <StarOutline
                                             style={{
-                                              color: '#d33f49',
-                                              marginLeft: '10px',
+                                              color: "#d33f49",
+                                              marginLeft: "10px",
                                             }}
                                             fontSize="large"
                                           />
                                         )}
                                       </div>
                                     </MenuItem>
-                                  );
+                                  )
                                 })
                             : artList0.map((art) => {
                                 return (
-                                  <MenuItem value={art}>
+                                  <MenuItem value={art.artId}>
                                     <Img
                                       placeholder="/imgLoading.svg"
                                       style={{
-                                        backgroundColor: '#eeeeee',
+                                        backgroundColor: "#eeeeee",
                                         maxWidth: 40,
                                         maxHeight: 40,
                                         borderRadius: 3,
                                         marginRight: 10,
                                       }}
-                                      src={art.title === 'Personalizado' ? x : art?.squareThumbUrl}
+                                      src={art?.squareThumbUrl}
                                       debounce={1000}
                                       cache
                                       error="/imgError.svg"
@@ -1059,224 +1094,241 @@ export default function ShoppingCart(props) {
                                     />
                                     {art.title.substring(0, 22)}
                                   </MenuItem>
-                                );
+                                )
                               })}
                         </Select>
                       </FormControl>
                     </div>
-                    {buy.art && buy.art.title !== 'Personalizado' && (
-                      <>
-                        <p
-                          style={{
-                            fontSize: '12px',
-                            marginBottom: 10,
-                            marginTop: -2,
-                          }}
-                        >
-                          Arte: {buy.art?.artId}
-                        </p>
-                        <Typography
-                          variant="p"
-                          style={{
-                            fontSize: '12px',
-                            marginBottom: 10,
-                            marginTop: -2,
-                          }}
-                          color="secondary"
-                        >
-                          {(props?.selectedConsumer?.consumerType === 'Prixer' &&
-                            props?.selectedConsumer?.username === buy.art.prixerUsername) ||
-                          (props?.selectedConsumer?.consumerType === 'Prixer' &&
-                            props?.selectedConsumer?.username === buy.art.owner &&
-                            buy.art !== undefined &&
-                            buy.product !== undefined)
-                            ? 'El cliente es el autor o propietario del arte, su comisión ha sido omitida.'
-                            : buy.art !== undefined &&
-                              buy.product !== undefined &&
-                              `Este arte tiene una comisión de 
-                            ${checkOrgs(buy.art) ? getCporg(buy) : buy.art.comission}% equivalente a $${
-                              // typeof buy.product.comission === "string" ||
-                              // (typeof buy.product.comission === "number" &&
+                    {line.item.art &&
+                      line.item.art.title !== "Personalizado" && (
+                        <>
+                          <p
+                            style={{
+                              fontSize: "12px",
+                              marginBottom: 10,
+                              marginTop: -2,
+                            }}
+                          >
+                            Arte: {line.item.art?.artId}
+                          </p>
+                          <Typography
+                            style={{
+                              fontSize: "12px",
+                              marginBottom: 10,
+                              marginTop: -2,
+                            }}
+                            color="secondary"
+                          >
+                            {(props?.selectedConsumer?.consumerType ===
+                              "Prixer" &&
+                              props?.selectedConsumer?.username ===
+                                line.item.art.prixerUsername) ||
+                            (props?.selectedConsumer?.consumerType ===
+                              "Prixer" &&
+                              props?.selectedConsumer?.username ===
+                                line.item.art.owner &&
+                              line.item.art !== undefined &&
+                              line.item.product !== undefined)
+                              ? "El cliente es el autor o propietario del arte, su comisión ha sido omitida."
+                              : line.item.art !== undefined &&
+                                line.item.product !== undefined &&
+                                `Este arte tiene una comisión de 
+                            ${checkOrgs(line.item.art) ? getCporg(line.item) : line.item.art.comission}% equivalente a $${
+                              // typeof line.item.product.comission === "string" ||
+                              // (typeof line.item.product.comission === "number" &&
                               // ? (
-                              //     buy.product?.comission / buy.quantity
+                              //     line.item.product?.comission / line.quantity
                               //   ).toLocaleString("de-DE", {
                               //     minimumFractionDigits: 2,
                               //     maximumFractionDigits: 2,
                               //   })
                               // : (
-                              (
-                                getComission(
-                                  buy.product,
-                                  buy.art,
-                                  props.currency,
-                                  props.dollarValue,
-                                  props.discountList,
-                                  buy.quantity,
-                                  props?.selectedPrixer?.username,
-                                  props.surchargeList,
-                                  checkOrgs(buy.art),
-                                  props.consumerType
-                                ) / buy.quantity
-                              ).toLocaleString('de-DE', {
-                                minimumFractionDigits: 2,
-                                maximumFractionDigits: 2,
-                              })
+                              // (
+                              //   getComission(
+                              //     line.item,
+                              //     line.item.art,
+                              //     props.currency,
+                              //     props.conversionRate,
+                              //     props.discounts,
+                              //     line.quantity,
+                              //     props?.selectedPrixer?.username,
+                              //     props.surcharges,
+                              //     checkOrgs(line.art),
+                              //     props.consumerType
+                              //   ) / line.quantity
+                              // ).toLocaleString("de-DE", {
+                              //   minimumFractionDigits: 2,
+                              //   maximumFractionDigits: 2,
+                              // })
+                              "XX"
                             }`}
-                        </Typography>
-                      </>
-                    )}
-                    {buy.product && buy.art && (
-                      <Grid
-                        item
-                        xs
-                        style={{
-                          display: 'flex',
-                          justifyContent: 'space-between',
+                          </Typography>
+                        </>
+                      )}
+                    {line.item.product && line.item.art && (
+                      <Grid2
+                        sx={{
+                          display: "flex",
+                          justifyContent: "space-between",
                         }}
                       >
                         <TextField
                           variant="outlined"
                           label={
-                            buy.product.selection
-                              ? 'Precio variante: ' +
+                            line.item.product.selection
+                              ? "Precio variante: " +
                                 UnitPriceSug(
-                                  buy.product,
-                                  buy.art,
-                                  props.currency,
-                                  props.dollarValue,
-                                  props.discountList,
+                                  line.item.product,
+                                  line.item.art,
+                                  currency,
+                                  conversionRate,
+                                  discounts,
                                   props?.selectedPrixer?.username,
-                                  checkOrgs(buy.art),
+                                  checkOrgs(line.item.art),
                                   props.consumerType
                                 )
-                              : 'Precio base: ' +
+                              : "Precio base: " +
                                 UnitPrice(
-                                  buy.product,
-                                  buy.art,
-                                  props.currency,
-                                  props.dollarValue,
-                                  props.discountList,
-                                  props?.selectedPrixer?.username
+                                  line.item.product,
+                                  line.item.art,
+                                  false,
+                                  conversionRate,
+                                  discounts
+                                  // props?.selectedPrixer?.username
                                 )
                           }
-                          InputProps={{
-                            startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                          slotProps={{
+                            input: {
+                              startAdornment: (
+                                <InputAdornment position="start">
+                                  $
+                                </InputAdornment>
+                              ),
+                            },
                           }}
                           style={{ width: 160, height: 80 }}
                           value={prices[index]}
                           onChange={(e) => {
-                            modifyPrice(index, e.target.value);
+                            modifyPrice(line.id, e.target.value)
                           }}
                         />
                         <div
                           style={{
-                            display: 'flex',
-                            alignItems: 'end',
+                            display: "flex",
+                            alignItems: "end",
                           }}
                         >
                           <div
                             style={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              marginBottom: '25px',
+                              display: "flex",
+                              alignItems: "center",
+                              marginBottom: "25px",
                             }}
                           >
                             Cantidad:
                             <input
                               style={{
                                 width: 80,
-                                padding: '10px',
+                                padding: "10px",
                                 borderRadius: 4,
                               }}
                               type="number"
                               defaultValue={1}
-                              value={buy.quantity}
+                              value={line.quantity}
                               min="1"
-                              InputLabelProps={{
-                                shrink: true,
-                              }}
+                              // InputLabelProps={{
+                              //   shrink: true,
+                              // }}
                               onChange={(e) => {
-                                props.changeQuantity({
-                                  index,
-                                  art: buy.art,
-                                  product: buy.product,
-                                  quantity: e.target.value,
-                                  prixer: props?.selectedPrixer?.username,
-                                  consumerType: props.consumerType,
-                                });
+                                changeQuantity(line.id, e.target.value)
                               }}
                             />
                           </div>
                         </div>
-                      </Grid>
+                      </Grid2>
                     )}
                   </div>
-                </Grid>
-                <Grid
-                  item
-                  xs={1}
+                </Grid2>
+                <Grid2
+                  size={{
+                    xs: 1,
+                  }}
                   style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'end',
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "end",
                   }}
                 >
-                  <Tooltip title="Duplicar item" style={{ height: 40, width: 40 }}>
-                    <IconButton size="small" onClick={() => copyItem(index)} color="gainsboro">
+                  <Tooltip
+                    title="Duplicar item"
+                    style={{ height: 40, width: 40 }}
+                  >
+                    <IconButton
+                      size="small"
+                      onClick={() => copyItem(line.id)}
+                      sx={{ color: "gainsboro" }}
+                    >
                       <FilterNoneIcon />
                     </IconButton>
                   </Tooltip>
-                  <Tooltip title="Eliminar item" style={{ height: 40, width: 40 }}>
+                  <Tooltip
+                    title="Eliminar item"
+                    style={{ height: 40, width: 40 }}
+                  >
                     <IconButton
                       size="small"
                       onClick={() => {
-                        props.deleteItemInBuyState({ id: index });
-                        removePrixer(index);
+                        removeOrderLine(line.id, index)
                       }}
-                      color="gainsboro"
+                      sx={{ color: "gainsboro" }}
                     >
                       <DeleteIcon />
                     </IconButton>
                   </Tooltip>
-                </Grid>
+                </Grid2>
               </Paper>
-            </Grid>
-          );
+            </Grid2>
+          )
         })}
-      <Grid
+      <Grid2
         style={{
-          width: '50%',
+          width: "50%",
         }}
       >
         <Paper
           style={{
             padding: 10,
-            marginTop: '2px',
-            display: 'flex',
-            justifyContent: 'center',
-            flexDirection: isMobile ? 'column' : 'row',
+            marginTop: "2px",
+            display: "flex",
+            justifyContent: "center",
+            flexDirection: isMobile ? "column" : "row",
           }}
           elevation={3}
         >
-          <FormControl className={classes.formControl} style={{ width: '100%' }}>
-            <InputLabel id="demo-simple-select-label" style={{ paddingLeft: 15 }}>
+          <FormControl
+            className={classes.formControl}
+            style={{ width: "100%" }}
+          >
+            <InputLabel
+              id="demo-simple-select-label"
+              style={{ paddingLeft: 15 }}
+            >
               Agrega un producto
             </InputLabel>
             <Select
               variant="outlined"
               labelId="demo-simple-select-label"
               id="demo-simple-select"
-              value={''}
+              value={""}
               onChange={handleProduct}
             >
-              {productList !== '' &&
-                productList.map((product, index) => {
-                  return <MenuItem value={product}>{product.name}</MenuItem>;
-                })}
+              {productList.map((product, index) => {
+                return <MenuItem value={product.name}>{product.name}</MenuItem>
+              })}
             </Select>
           </FormControl>
         </Paper>
-      </Grid>
-    </Grid>
-  );
+      </Grid2>
+    </Grid2>
+  )
 }

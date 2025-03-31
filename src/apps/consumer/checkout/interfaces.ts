@@ -1,13 +1,24 @@
+import { Prixer } from "../../../types/prixer.types"
+import { Consumer } from "../../../types/consumer.types"
+import { Discount } from "../../../types/discount.types"
+import { Organization } from "../../../types/organization.types"
+import { Surcharge } from "../../../types/surcharge.types"
 import { Cart, Item } from "apps/consumer/cart/interfaces"
 export type { Cart }
 
+// Context de Checkout (!)
 export interface CheckoutState {
-  billing: any
+  // billing: any // ???
   activeStep: number
   order: Order
   dataLists: DataLists
   shippingMethods: ShippingMethod[]
   paymentMethods: PaymentMethod[]
+  discounts: Discount[]
+  surcharges: Surcharge[]
+  organizations: Organization[]
+  consumers?: Consumer[]
+  prixers?: Prixer[]
 }
 
 export interface DataLists {
@@ -38,10 +49,10 @@ export interface Order {
   createdOn: Date
   createdBy: string
   // updates: [Date, string]; // updates when and by whom
-  status: Status // ship status
+  status: Status // status
 
-  consumerDetails?: ConsumerDetails // consumer details (consumerData)
-  payment?: PaymentDetails
+  consumerDetails: ConsumerDetails // consumer details (consumerData)
+  payment: PaymentDetails
   shipping: ShippingDetails
   billing: BillingDetails
 
@@ -55,7 +66,6 @@ export interface Order {
   total: number // Final order total (subTotal + tax + shipping - discount)
 
   seller?: string
-  paymentVoucher?: File
   observations?: string
 }
 
@@ -63,11 +73,13 @@ export interface ConsumerDetails {
   basic: BasicInfo
   selectedAddress: BasicAddress
   addresses: Address[]
-  paymentMethods: PaymentMethod[]
+  type: string
+  id?: string
+  // paymentMethods?: PaymentMethod[]
 }
 
 export interface PaymentDetails {
-  method?: PaymentMethod
+  methods?: PaymentMethod[]
   payer?: BasicInfo
   address?: Address
 }
@@ -75,6 +87,7 @@ export interface PaymentDetails {
 // Shipping-related details
 export interface ShippingDetails {
   method?: ShippingMethod | string
+  basic: BasicInfo
   country?: string
   address?: Address
   shippingDate?: string
@@ -86,9 +99,11 @@ export interface ShippingDetails {
 //TODO : Estandarizar campos fijos como socialReason, countries, states, cities, etc.
 export interface BillingDetails {
   method?: string
+  basic: BasicInfo
+  company?: string
   billTo?: BasicInfo
   address?: Address
-  paymentMethod?: string
+  // paymentMethod?: string
 }
 
 export interface Address {
@@ -138,6 +153,7 @@ export interface PaymentMethod {
   token?: string // Encrypted token from the payment gateway (instead of card details)
   lastFourDigits?: string // Optional, last four digits of a card
   metadata?: string
+  voucher?: string
 }
 
 export enum PaymentMethodType {
@@ -151,7 +167,7 @@ export enum PaymentMethodType {
 }
 
 interface Status {
-  id: OrderStatus
+  id?: OrderStatus
   name: string
 }
 
@@ -167,24 +183,29 @@ export interface OrderLine {
   item: Item // The purchased item, same as CartLine
   quantity: number // Quantity purchased
   pricePerUnit: number // The price of one unit at the time of purchase
-  discount: number // Discount applied to the line
+  discount?: number // Discount applied to the line
+  surcharge?: number
   subtotal: number // Total for the line (quantity * pricePerUnit - discount)
 }
 
 //Reducer actions
 export type CheckoutAction =
   | { type: "SET_ACTIVE_STEP"; payload: number | "back" | "next" }
-  | { type: "SET_LOADING"; payload: boolean }
+  | { type: "RESET_ORDER" }
+  // | { type: "SET_LOADING"; payload: boolean }
   | { type: "SET_SHIPPING_METHODS"; payload: ShippingMethod[] }
   | { type: "SET_PAYMENT_METHODS"; payload: PaymentMethod[] }
+  | { type: "SET_CONSUMERS"; payload: Consumer[] }
+  | { type: "SET_PRIXERS"; payload: Prixer[] }
   | { type: "SET_SELLERS"; payload: string[] }
+
   | { type: "SET_EXPANDED_SECTION"; payload: string | false }
   | { type: "ADD_ORDER_LINE"; payload: OrderLine }
-  | { type: "REMOVE_ORDER_LINE"; payload: string } // payload is line ID
+  | { type: "REMOVE_ORDER_LINE"; payload: string }
+  | { type: "UPDATE_ORDER_LINE"; payload: OrderLine }
+  | { type: "DUPLICATE_ORDER_LINE"; payload: string}
   | { type: "SET_PAYMENT_METHOD"; payload: PaymentMethod | PaymentMethod[] }
   | { type: "SET_SHIPPING_METHOD"; payload: { method: string } }
-  | { type: "SET_SHIPPING_DETAILS"; payload: Partial<ShippingDetails> }
-  | { type: "SET_BILLING_DETAILS"; payload: Partial<BillingDetails> }
   | { type: "SET_PAYMENT_VOUCHER"; payload: File }
   | { type: "SET_SELLER"; payload: string }
   | { type: "REMOVE_PAYMENT_METHOD"; payload: string } // ID of the method to remove
@@ -193,11 +214,12 @@ export type CheckoutAction =
   | { type: "SET_CONSUMER_DETAILS"; payload: Partial<ConsumerDetails> }
   | { type: "SET_SELLER"; payload: string }
   | { type: "SET_CONSUMER_BASIC"; payload: Partial<ConsumerDetails["basic"]> }
-  | { type: "SET_CONSUMER_ADDRESS"; payload: BasicAddress }
-  | {
-      type: "SET_CONSUMER_PAYMENT_METHODS"
-      payload: ConsumerDetails["paymentMethods"]
-    }
+  | { type: "SET_SHIPPING_DETAILS"; payload: Partial<ShippingDetails> }
+  | { type: "SET_SHIPPING_BASIC"; payload: Partial<ShippingDetails["basic"]> }
+  | { type: "SET_BILLING_DETAILS"; payload: Partial<BillingDetails> }
+  | { type: "SET_BILLING_BASIC"; payload: Partial<BillingDetails["basic"]> }
+  | { type: "SET_CONSUMER_ADDRESS"; payload: BasicAddress } // Don't used yet
+  | { type: "RESET_BASIC_DATA"; payload: Partial<Order> }
   | { type: "OTHER_ACTIONS"; payload?: any }
 
 // Type for the errorCheck function used in form fields

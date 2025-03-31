@@ -19,7 +19,10 @@ import Img from "react-cool-img"
 import ArrowBackIcon from "@mui/icons-material/ArrowBack"
 // import WarpImage from '../products/components/WarpImage';
 
-import { getPVP, getPVM } from "../../../../consumer/checkout/pricesFunctions.js"
+import {
+  getPVP,
+  getPVM,
+} from "../../../../consumer/checkout/pricesFunctions.js"
 // import moment from 'moment';
 import moment from "moment-timezone"
 import "moment/locale/es"
@@ -33,6 +36,7 @@ import {
 } from "@context/GlobalContext.js"
 import { Item } from "../../../../../types/item.types.js"
 import { Consumer } from "../../../../../types/consumer.types.js"
+import { getConsumer } from "../api.js"
 
 interface OrderProps {
   discountList: Discount[]
@@ -108,17 +112,11 @@ export default function OrderDetails({
   //   })
   // }
 
-  const checkConsumer = async (order: Order) => {
+  const checkConsumer = async () => {
     let id: string
     id = modalContent?.consumerData.id || modalContent?.consumerId
-    const url = import.meta.env.VITE_BACKEND_URL + "/consumer/read-by-id"
-
-    const body = {
-      consumer: id,
-    }
-    await axios.post(url, body).then((res) => {
-      setConsumer(res.data)
-    })
+    const response = await getConsumer(id)
+    setConsumer(response)
   }
 
   const updateItemStatus = async (
@@ -315,7 +313,7 @@ export default function OrderDetails({
     const data = {
       paymentVoucher: paymentVoucher,
     }
-    let ID = modalContent.orderId
+    let ID = modalContent?.orderId
     const base_url2 =
       import.meta.env.VITE_BACKEND_URL + "/order/addVoucher/" + ID
     const uv = await axios.put(base_url2, data)
@@ -483,11 +481,9 @@ export default function OrderDetails({
                                       margin: 0,
                                     }}
                                   >
-                                    {item.product?.selection?.attributes[i]
-                                      ?.name +
+                                    {item.product?.selection?.attributes[i].name +
                                       ": " +
-                                      item.product?.selection?.attributes[i]
-                                        ?.value}
+                                      item.product?.selection?.attributes[i].value}
                                   </p>
                                 )
                               })

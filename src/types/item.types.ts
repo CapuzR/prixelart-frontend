@@ -6,6 +6,6 @@ export interface Item {
   art?: PickedArt
   product: PickedProduct
   price: number
-  discount: number
-  quantity: number
+  // discount: number
+  // quantity: number
 }

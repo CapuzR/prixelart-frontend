@@ -6,7 +6,7 @@ import ArtistRoutes from "apps/artist/artist.routes"
 import AdminRoutes from "apps/admin/admin.routes"
 import ConsumerRoutes from "apps/consumer/consumer.routes"
 import MapRoutes from "apps/map/map.routes"
-import OrgsRoutes from "apps/orgs/orgs.routes"
+// import OrgsRoutes from "apps/orgs/orgs.routes"
 
 const Routes = () => {
   let location = useLocation()

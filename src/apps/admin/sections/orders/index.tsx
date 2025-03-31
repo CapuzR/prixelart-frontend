@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import axios from "axios"
 import Grid2 from "@mui/material/Grid2"
 import Paper from "@mui/material/Paper"
@@ -16,7 +16,6 @@ import Tooltip from "@mui/material/Tooltip"
 import ReadOrders from "./components/Table"
 import OrderDetails from "./views/Details"
 import CreateOrder from "./views/Create"
-// import PayComission from "./payComission"
 import { getComission } from "../../../consumer/checkout/pricesFunctions.jsx"
 import moment from "moment-timezone"
 import "moment/locale/es"
@@ -28,8 +27,8 @@ import { Order, basicData } from "../../../../types/order.types"
 import { Discount } from "../../../../types/discount.types"
 import { Surcharge } from "../../../../types/surcharge.types"
 import { Organization } from "../../../../types/organization.types"
-
-// const drawerWidth = 240
+import { getClients, getOrders } from "./api"
+import { OrderProvider } from "@context/OrdersContext"
 
 const useStyles = makeStyles()((theme: Theme) => {
   return {
@@ -46,7 +45,7 @@ const useStyles = makeStyles()((theme: Theme) => {
   }
 })
 
-export default function Orders({}) {
+export default function Orders() {
   const { classes, cx } = useStyles()
   // const navigate = useNavigate();
   const theme = useTheme()
@@ -65,7 +64,6 @@ export default function Orders({}) {
   const [openCreateOrder, setOpenCreateOrder] = useState(false)
   const [discountList, setDiscountList] = useState<Discount[]>([])
   const [surchargeList, setSurchargeList] = useState<Surcharge[]>([])
-  const [prixers, setPrixers] = useState([])
   const [orgs, setOrgs] = useState<Organization[]>([])
   const [orders, setOrders] = useState<Order[]>([])
   const [consumers, setConsumers] = useState<Consumer[]>([])
@@ -95,12 +93,9 @@ export default function Orders({}) {
 
   const readOrders = async () => {
     setLoading(true)
-    const base_url = import.meta.env.VITE_BACKEND_URL + "/order/read-all"
     try {
-      const response = await axios.post(base_url, { withCredentials: true })
-      // setRows(response.data.orders)
-      // console.log(response.data.orders)
-      return response.data.orders
+      const response = await getOrders()
+      return response
     } catch (error) {
       console.log(error)
       return []
@@ -197,7 +192,7 @@ export default function Orders({}) {
         quantity: "",
         observations: eliminarEtiquetasHTML(order?.observations),
         createdBy: order.createdBy?.username,
-        paymentMethod: order?.billingData?.paymentMethod,
+        paymentMethod: order?.billingData?.method,
         shippingData: "",
         payStatus: order.payStatus,
         payDate: order.payDate && new Date(order?.payDate).toLocaleDateString(),
@@ -233,36 +228,37 @@ export default function Orders({}) {
 
         product = item.product.name
 
-        if (typeof item.product.selection === "string") {
+        // if (typeof item.product.selection === "string") {
           attributes = item.product.selection
-        } else if (
-          item.product.selection &&
-          typeof item.product.selection === "object" &&
-          item.product.selection?.attributes &&
-          item.product.selection?.attributes[1]?.value
-        ) {
-          attributes =
-            item.product.selection?.attributes[0]?.value +
-            ", " +
-            item.product.selection?.attributes[1]?.value
-        } else if (
-          item.product.selection &&
-          typeof item.product.selection === "object" &&
-          item.product.selection?.attributes
-        ) {
-          attributes = item.product.selection?.attributes[0]?.value
-        }
+        // } else if (
+        //   item.product.selection &&
+        //   typeof item.product.selection === "object" &&
+        //   item.product.selection?.attributes &&
+        //   item.product.selection?.attributes[1]?.value
+        // ) {
+        //   attributes =
+        //     item.product.selection?.attributes[0]?.value +
+        //     ", " +
+        //     item.product.selection?.attributes[1]?.value
+        // } else if (
+        //   item.product.selection &&
+        //   typeof item.product.selection === "object" &&
+        //   item.product.selection?.attributes
+        // ) {
+        //   attributes = item.product.selection?.attributes[0]?.value
+        // }
 
         quantity = item.quantity
 
-        if (
-          item.product.finalPrice !== undefined &&
-          typeof item.product.finalPrice === "string"
-        ) {
-          price = "$" + item.product.finalPrice
-        } else if (item.product.finalPrice !== undefined) {
-          price = "$" + item.product.finalPrice
-        } else if (item.product.publicPrice.equation !== undefined) {
+        // if (
+        //   item.product.finalPrice !== undefined &&
+        //   typeof item.product.finalPrice === "string"
+        // ) {
+        //   price = "$" + item.product.finalPrice
+        // } else if (item.product.finalPrice !== undefined) {
+        //   price = "$" + item.product.finalPrice
+        // } else
+         if (item.product.publicPrice.equation !== undefined) {
           price = "$" + item.product.publicPrice.equation
         } else if (item.product.prixerPrice.equation !== undefined) {
           price = "$" + item.product.prixerPrice.equation
@@ -594,10 +590,9 @@ export default function Orders({}) {
     }
   }
 
-  const getClients = async () => {
-    const URI = import.meta.env.VITE_BACKEND_URL + "/order/getClients"
-    const response = await axios.get(URI)
-    setClients(response.data.clients)
+  const readClients = async () => {
+    const response = await getClients()
+    setClients(response)
   }
 
   const updateItemFromOrders = (
@@ -625,11 +620,11 @@ export default function Orders({}) {
   }
 
   useEffect(() => {
-    getClients()
+    readClients()
   }, [])
 
   return (
-    <>
+    <OrderProvider>
       <Grid2
         container
         spacing={2}
@@ -733,7 +728,6 @@ export default function Orders({}) {
 
       <Modal open={openCreateOrder}>
         <CreateOrder
-          readOrders={readOrders}
           // buyState={props.buyState}
           // setBuyState={props.setBuyState}
           discountList={discountList}
@@ -749,7 +743,6 @@ export default function Orders({}) {
           orgs={orgs}
           setDiscountList={setDiscountList}
           setSurchargeList={setSurchargeList}
-          setPrixers={setPrixers}
           setOrgs={setOrgs}
           setConsumers={setConsumers}
         />
@@ -774,6 +767,6 @@ export default function Orders({}) {
           setModalContent={setModalContent}
         />
       </Modal> */}
-    </>
+    </OrderProvider>
   )
 }

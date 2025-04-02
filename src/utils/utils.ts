@@ -111,14 +111,14 @@ const generateWaBuyMessage = (buy: any) => {
   return url;
 };
 
-export const maxPrintCalc = (width: number, height: number, ppi: any, iso: string) => {
+export const maxPrintCalc = (width: number, height: number, ppi: any, iso: number) => {
   let widthCm = 0;
   let heightCm = 0;
   const pxToCmConversionRate = 2.54;
-  if (iso === '100' || iso === '200') {
+  if (iso === 100 || iso === 200) {
     widthCm = (width * pxToCmConversionRate) / 100;
     heightCm = (height * pxToCmConversionRate) / 100;
-  } else if (iso === '400') {
+  } else if (iso === 400) {
     widthCm = (width * pxToCmConversionRate) / 150;
     heightCm = (height * pxToCmConversionRate) / 150;
   }

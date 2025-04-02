@@ -74,7 +74,7 @@ const UnitPrice = (
   art: Art,
   currency: boolean,
   dollarValue: number,
-  discountList?: Discount[],
+  discounts?: Discount[],
   prixer?: string
 ): string => {
   let base = 0
@@ -118,10 +118,11 @@ const UnitPrice = (
   if (currency) {
     final = final * dollarValue
   }
-  return final.toLocaleString("de-DE", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  })
+  return final
+  // .toLocaleString("de-DE", {
+  //   minimumFractionDigits: 2,
+  //   maximumFractionDigits: 2,
+  // })
 }
 
 const UnitPriceSug = (

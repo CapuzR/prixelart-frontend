@@ -8,7 +8,7 @@ import { useTheme } from '@mui/material/styles';
 
 import FloatingAddButton from 'components/floatingAddButton/floatingAddButton';
 import CreateService from 'components/createService/createService';
-import ArtUploader from '@apps/artist/artUploader/artUploader';
+import ArtUploader from '@apps/artist/artUploader';
 import Grid from 'components/Grid';
 import ProductElement from 'components/ProductElement';
 import { Slider } from 'components/Slider';

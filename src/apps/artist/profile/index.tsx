@@ -11,7 +11,7 @@ import ArtsGrid from "../../consumer/art/components/Grid"
 import Container from "@mui/material/Container"
 import Grid2 from "@mui/material/Grid2"
 
-import ArtUploader from "@apps/artist/artUploader/artUploader"
+import ArtUploader from "@apps/artist/artUploader"
 import ServiceGrid from "../prixerService"
 import Biography from "./components/Bio"
 

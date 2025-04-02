@@ -10,11 +10,11 @@ import {
   BillingDetails,
   ShippingDetails,
 } from "../interfaces"
-import { initializeCheckoutState } from "../init"
-import { useCart } from "@context/CartContext"
+// import { initializeCheckoutState } from "../init"
+// import { useCart } from "@context/CartContext"
 import { nanoid } from "nanoid"
 
-const { cart, emptyCart } = useCart()
+// const { cart, emptyCart } = useCart()
 const initialConsumerDetails: ConsumerDetails = {
   basic: {
     name: "",

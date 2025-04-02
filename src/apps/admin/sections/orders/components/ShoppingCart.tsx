@@ -151,32 +151,32 @@ export default function ShoppingCart() {
     readArts()
   }, [])
 
-  useEffect(() => {
-    let pricesList: number[] = []
-    let artists = selectedArtist
+  // useEffect(() => {
+  //   let pricesList: number[] = []
+  //   let artists = selectedArtist
 
-    order.lines.map((line) => {
-      if (line.item.art) {
-        artists.push(line.item.art.prixerUsername)
-      } else {
-        return
-      }
-      if (line.item.art && line.item.product) {
-        pricesList.push(
-          UnitPrice(
-            line.item.product,
-            line.item.art,
-            false,
-            conversionRate,
-            discounts,
-            selectedPrixer?.username
-          )
-        )
-      }
-    })
-    setPrices(pricesList)
-    setSelectedArtist(artists)
-  }, [])
+  //   order.lines.map((line) => {
+  //     if (line.item.art) {
+  //       artists.push(line.item.art.prixerUsername)
+  //     } else {
+  //       return
+  //     }
+  //     // if (line.item.art && line.item.product) {
+  //     //   pricesList.push(
+  //     //     UnitPrice(
+  //     //       line.item.product,
+  //     //       line.item.art,
+  //     //       false,
+  //     //       conversionRate,
+  //     //       discounts,
+  //     //       selectedPrixer?.username
+  //     //     )
+  //     //   )
+  //     // }
+  //   })
+  //   setPrices(pricesList)
+  //   setSelectedArtist(artists)
+  // }, [])
 
   const changeArtistFilter = (artist: string, i: number) => {
     let artists = selectedArtist

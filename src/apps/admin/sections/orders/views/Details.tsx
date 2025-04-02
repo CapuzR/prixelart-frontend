@@ -26,7 +26,7 @@ import {
 // import moment from 'moment';
 import moment from "moment-timezone"
 import "moment/locale/es"
-import { makeStyles } from "tss-react/mui/mui.js"
+import { makeStyles } from "tss-react/mui"
 import { Discount } from "../../../../../types/discount.types.js"
 import { Order } from "../../../../../types/order.types.js"
 import {
@@ -481,9 +481,11 @@ export default function OrderDetails({
                                       margin: 0,
                                     }}
                                   >
-                                    {item.product?.selection?.attributes[i].name +
+                                    {item.product?.selection?.attributes[i]
+                                      .name +
                                       ": " +
-                                      item.product?.selection?.attributes[i].value}
+                                      item.product?.selection?.attributes[i]
+                                        .value}
                                   </p>
                                 )
                               })

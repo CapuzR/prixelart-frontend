@@ -13,7 +13,7 @@ import TextField from '@mui/material/TextField';
 import Snackbar from '@mui/material/Snackbar';
 import Autocomplete from '@mui/lab/Autocomplete';
 import FloatingAddButton from 'components/floatingAddButton/floatingAddButton';
-import ArtUploader from '@apps/artist/artUploader/artUploader';
+import ArtUploader from '@apps/artist/artUploader';
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import utils from '../../../../../../utils/utils';
 import FormControl from '@mui/material/FormControl';

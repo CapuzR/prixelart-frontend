@@ -110,8 +110,9 @@ export default function UpdateMockup({ product }: MockupProps) {
   const [aspectRatio, setAspectRatio] = useState(0)
   const [selectedImg, setSelectedImg] = useState(undefined)
   const [warpPercentage, setWarpPercentage] = useState(0)
-  const [warpOrientation, setWarpOrientation] = useState("vertical")
-  const [invertedWrap, setInvertedWrap] = useState(false)
+  const [warpOrientation, setWarpOrientation] = useState<
+    "horizontal" | "vertical"
+  >("vertical")
 
   const handleWidth = (event: React.ChangeEvent<HTMLInputElement>) => {
     setWidth(Number(event.target.value))
@@ -160,7 +161,11 @@ export default function UpdateMockup({ product }: MockupProps) {
   }
 
   const handleOrientation = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setWarpOrientation(event.target.value)
+    if (event.target.value === "horizontal") {
+      setWarpOrientation("horizontal")
+    } else {
+      setWarpOrientation("vertical")
+    }
   }
 
   // const handleInvertedWrap = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -293,7 +298,9 @@ export default function UpdateMockup({ product }: MockupProps) {
     }
   }
 
-  const handleSubmit = async  (e: React.MouseEvent<HTMLButtonElement, MouseEvent>)  => {
+  const handleSubmit = async (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
     e.preventDefault()
 
     setLoading(true)
@@ -717,7 +724,6 @@ export default function UpdateMockup({ product }: MockupProps) {
                   <WarpImage
                     warpPercentage={warpPercentage}
                     warpOrientation={warpOrientation}
-                    invertedWrap={invertedWrap}
                     randomArt={randomArt}
                     topLeft={topLeft}
                     width={width}

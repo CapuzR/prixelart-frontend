@@ -1,11 +1,15 @@
 import React, { createContext, useReducer, useContext } from "react"
-import { CheckoutState, CheckoutAction } from "@apps/consumer/checkout/interfaces"
+import {
+  CheckoutState,
+  CheckoutAction,
+} from "@apps/consumer/checkout/interfaces"
 import { initializeCheckoutState } from "@apps/consumer/checkout/init"
 import { checkoutReducer } from "@apps/consumer/checkout/Reducers/reducer"
-import { useCart } from "./CartContext";
+import { useCart } from "./CartContext"
 
-  const { cart, emptyCart } = useCart();
+const { cart } = useCart()
 
+// TODO: move a Checkout fully to Admin bc is bigger and must be independent
 const OrderContext = createContext<{
   state: CheckoutState
   dispatch: React.Dispatch<CheckoutAction>
@@ -14,7 +18,10 @@ const OrderContext = createContext<{
 export const OrderProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [state, dispatch] = useReducer(checkoutReducer, initializeCheckoutState(cart))
+  const [state, dispatch] = useReducer(
+    checkoutReducer,
+    initializeCheckoutState(cart)
+  )
   return (
     <OrderContext.Provider value={{ state, dispatch }}>
       {children}

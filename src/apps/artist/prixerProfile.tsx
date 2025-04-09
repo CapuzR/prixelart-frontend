@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import FloatingAddButton from 'components/floatingAddButton/floatingAddButton';
-import CreateService from 'components/createService/createService';
+import CreateService from '@components/createService';
 import UserData from './userData/userData';
 import PrixerOptions from './prixerOptions/prixerOptions';
 import ArtsGrid from '../../consumer/art/components/ArtsGrid/ArtsGrid';

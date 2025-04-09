@@ -68,8 +68,8 @@ export default function CreateProduct() {
         if (
           !state.name &&
           !state.cost &&
-          !state.publicPrice?.to &&
-          !state.prixerPrice?.to &&
+          !state.priceRange?.to &&
+          // !state.priceRange?.to &&
           images.images.length > 1
         ) {
           showSnackBar("Por favor completa todos los campos requeridos.")

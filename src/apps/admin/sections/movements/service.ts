@@ -75,13 +75,14 @@ export const finalPrice = (item: Item, discountList: Discount[]) => {
   let unitPrice: number
   let discount = discountList.find((dis) => dis._id === item.product.discount)
 
-  if (item.product.finalPrice !== undefined) {
-    unitPrice = Number(item.product.finalPrice * item.quantity)
-    return unitPrice
-  } else if (typeof item.product.discount === "string") {
-    unitPrice = item.product?.publicPrice?.equation
-      ? Number(item.product?.publicPrice?.equation)
-      : Number(item.product.publicPrice.from)
+  // if (item.product.finalPrice !== undefined) {
+  //   unitPrice = Number(item.product.finalPrice * item.quantity)
+  //   return unitPrice
+  // } else 
+  if (typeof item.product.discount === "string") {
+    unitPrice = item.product?.priceRange?.equation
+      ? Number(item.product?.priceRange?.equation)
+      : Number(item.product.priceRange.from)
 
     if (discount?.type === "Porcentaje") {
       let op = Number(
@@ -95,10 +96,10 @@ export const finalPrice = (item: Item, discountList: Discount[]) => {
       return unitPrice
     }
   } else {
-    unitPrice = item.product?.publicPrice?.equation
-      ? item.product?.publicPrice?.equation
-      : item.product.publicPrice.from
-        ? item.product.publicPrice.from
+    unitPrice = item.product?.priceRange?.equation
+      ? item.product?.priceRange?.equation
+      : item.product.priceRange.from
+        ? item.product.priceRange.from
         : 0
 
     let op = Number(unitPrice * item.quantity)
@@ -110,13 +111,14 @@ export const finalPrice = (item: Item, discountList: Discount[]) => {
 export const unitPrice = (item: Item, discountList: Discount[]) => {
   let unitPrice: string | number
   let discount = discountList.find((dis) => dis._id === item.product.discount)
-  if (item.product.finalPrice !== undefined) {
-    unitPrice = item.product.finalPrice
-    return unitPrice
-  } else if (typeof item.product.discount === "string") {
-    unitPrice = item.product?.publicPrice.equation
-      ? Number(item.product?.publicPrice?.equation)
-      : Number(item.product.publicPrice.from)
+  // if (item.product.finalPrice !== undefined) {
+  //   unitPrice = item.product.finalPrice
+  //   return unitPrice
+  // } else 
+  if (typeof item.product.discount === "string") {
+    unitPrice = item.product?.priceRange.equation
+      ? Number(item.product?.priceRange?.equation)
+      : Number(item.product.priceRange.from)
 
     if (discount?.type === "Porcentaje") {
       let op = Number(unitPrice - (unitPrice / 100) * discount.value)
@@ -128,10 +130,10 @@ export const unitPrice = (item: Item, discountList: Discount[]) => {
       return unitPrice
     }
   } else {
-    unitPrice = item.product?.publicPrice?.equation
-      ? item.product?.publicPrice?.equation
-      : item.product.publicPrice.from
-        ? item.product.publicPrice.from
+    unitPrice = item.product?.priceRange?.equation
+      ? item.product?.priceRange?.equation
+      : item.product.priceRange.from
+        ? item.product.priceRange.from
         : 0
 
     let op = Number(unitPrice)

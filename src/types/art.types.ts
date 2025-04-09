@@ -38,8 +38,8 @@ export interface Art {
   artType: string
   originalPhotoWidth?: number
   originalPhotoHeight?: number
-  originalPhotoIso?: string
-  originalPhotoPpi?: string
+  originalPhotoIso?: number
+  originalPhotoPpi?: number
   artLocation?: string
   __v?: number
   disabledReason?: string

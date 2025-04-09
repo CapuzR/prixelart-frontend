@@ -213,7 +213,7 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 }))
 
 export default function AdminMain() {
-  const theme = useTheme<Theme>()
+  const theme = useTheme()
   const { classes, cx } = useStyles()
   const [open, setOpen] = useState(false)
   const [active, setActive] = useState("admin")
@@ -222,7 +222,7 @@ export default function AdminMain() {
 
   const [openDollarView, setOpenDollarView] = useState(false)
   const permissions = getPermissions()
-  const token: string = localStorage.getItem("token") ?? ""
+  const token: string = localStorage.getItem("adminToken") ?? ""
 
   // const { conversionRate, setConversionRate } = useConversionRate();
   const { cart } = useCart()
@@ -408,6 +408,7 @@ export default function AdminMain() {
           </Modal>
         </>
       )
+
     } else {
       navigate({ pathname: "/" })
     }

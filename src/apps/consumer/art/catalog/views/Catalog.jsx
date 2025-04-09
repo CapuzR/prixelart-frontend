@@ -23,7 +23,7 @@ import { useNavigate } from 'react-router-dom';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/styles';
 import WarpImage from '@apps/admin/sections/products/components/WarpImage';
-import CreateService from 'components/createService/createService';
+import CreateService from '@components/createService';
 
 const useStyles = makeStyles((theme) => ({
   paper: {

@@ -5,15 +5,19 @@ import { useNavigate } from "react-router-dom"
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry"
 import SearchBar from "@components/searchBar/searchBar.js"
 
-import { readGallery, setVisibleArt } from "../api"
-import { handleFullImage } from "../services"
+import { fetchGallery } from "../api"
+// import { handleFullImage } from "../services"
 import ArtThumbnail from "./ArtThumbnail"
 import PaginationBar from "../../../../components/Pagination/PaginationBar"
 import { useLoading, useSnackBar } from "context/GlobalContext"
-import Detail from "./Detail"
+import Detail from "./ArtsGrid/Details/Detail"
 import { Theme, Typography } from "@mui/material"
 import { makeStyles } from "tss-react/mui"
+import { Art } from "../../../../types/art.types"
 
+interface GridProps {
+  fullArt: Art
+}
 // Todos los estilo debería estar en el SCSS
 const useStyles = makeStyles()((theme: Theme) => {
   return {
@@ -49,13 +53,13 @@ const useStyles = makeStyles()((theme: Theme) => {
   }
 })
 
-export default function Grid(props) {
+export default function Grid({fullArt}: GridProps) {
   const { setLoading } = useLoading()
   const { showSnackBar } = useSnackBar()
 
   const navigate = useNavigate()
   const { classes } = useStyles()
-  const [tiles, setTiles] = useState([])
+  const [tiles, setTiles] = useState<Art[]>([])
   const [total, setTotal] = useState(1)
 
   let globalParams = new URLSearchParams(window.location.search)
@@ -76,8 +80,11 @@ export default function Grid(props) {
   const itemsPerPage = 30
   const [pageNumber, setPageNumber] = useState(1)
   const activePrixer = globalParams.get("prixer")
-  const [searchResult, setSearchResult] = useState([])
+  const [searchResult, setSearchResult] = useState<Art[]>([])
 
+  const ResponsiveMasonryCast = ResponsiveMasonry as any;
+  const MasonryCast = Masonry as any;
+  
   const handleClickVisible = () => {
     setOpenV(true)
   }
@@ -121,10 +128,10 @@ export default function Grid(props) {
       filters.initialPoint = (pageNumber - 1) * itemsPerPage
       filters.itemsPerPage = itemsPerPage
 
-      const response = await readGallery(filters)
+      const response = await fetchGallery(filters)
       setTiles(response.arts)
       setTotal(response.length)
-      setSearchResult(response?.arts)
+      setSearchResult(response.arts)
     } catch (error) {
       console.error("Error fetching products:", error)
     } finally {
@@ -136,7 +143,10 @@ export default function Grid(props) {
     fetchData()
   }, [searchValue, categoryValue, pageNumber, username])
 
-  const handleSearch = (queryValue, categories) => {
+  const handleSearch = (
+    queryValue: string | null,
+    categories: string | null
+  ) => {
     setSearchValue(queryValue)
     setCategoryValue(categories)
     //TODO War: Se debe utilizar para ?s= si no hay más params, si hay otros se debe usar &s=, igual con cat, etc.
@@ -144,8 +154,8 @@ export default function Grid(props) {
     // navigate({ pathname: finalPath })
   }
 
-  const handleFullImageClick = (e, tile) => {
-    handleFullImage(e, tile, props, history, setOpenFullArt)
+  const handleFullImageClick = (e: any, tile: Art) => {
+    // handleFullImage(e, tile, props, history, setOpenFullArt)
   }
 
   // const handleAddingToCart = (e, tile) => {
@@ -164,9 +174,9 @@ export default function Grid(props) {
     >
       <div className={classes.root}>
         <SearchBar
-          searchPhotos={handleSearch}
-          searchValue={3}
-          setSearchValue={setSearchValue}
+          onSearch={handleSearch}
+          // searchValue={3}
+          // setSearchValue={setSearchValue}
         />
       </div>
       <div
@@ -179,7 +189,7 @@ export default function Grid(props) {
         }}
       >
         {tiles.length > 0 ? (
-          <ResponsiveMasonry
+          <ResponsiveMasonryCast
             columnsCountBreakPoints={{
               350: 1,
               750: 2,
@@ -187,27 +197,27 @@ export default function Grid(props) {
               1080: window.location.search.includes("producto=") ? 3 : 4,
             }}
           >
-            <Masonry style={{ columnGap: "7px" }}>
+            <MasonryCast style={{ columnGap: "7px" }}>
               {tiles ? (
                 tiles.map((tile, i) => (
                   <div key={i + 1000}>
                     <ArtThumbnail
                       tile={tile}
                       i={i}
-                      handleCloseVisible={handleCloseVisible}
-                      setSelectedArt={props.setSelectedArt}
+                      // handleCloseVisible={handleCloseVisible}
+                      // setSelectedArt={props.setSelectedArt}
                       handleFullImageClick={handleFullImageClick}
-                      isSelectedInFlow={
-                        props.selectedArtId === tile.artId || undefined
-                      }
+                      // isSelectedInFlow={
+                      //   props.selectedArtId === tile.artId || undefined
+                      // }
                     />
                   </div>
                 ))
               ) : (
                 <h1>Pronto encontrarás todo el arte que buscas.</h1>
               )}
-            </Masonry>
-          </ResponsiveMasonry>
+            </MasonryCast>
+          </ResponsiveMasonryCast>
         ) : (
           <div
             style={{
@@ -223,7 +233,10 @@ export default function Grid(props) {
       </div>
 
       {openFullArt && (
-        <Detail art={props.fullArt} searchResult={searchResult} />
+        <Detail 
+        // art={fullArt}
+        //  searchResult={searchResult} 
+         />
       )}
 
       <PaginationBar

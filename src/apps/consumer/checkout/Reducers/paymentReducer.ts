@@ -8,7 +8,7 @@ export const paymentReducer = (
     case 'SET_PAYMENT_METHOD':
       return {
         ...payment,
-        method: Array.isArray(action.payload)
+        payload: Array.isArray(action.payload)
           ? action.payload[0]
           : action.payload, // Replace or add a single method
       };
@@ -16,7 +16,7 @@ export const paymentReducer = (
     case 'REMOVE_PAYMENT_METHOD':
       return {
         ...payment,
-        method: undefined, // Clear the payment method when removed
+        payload: "", // Clear the payment method when removed
       };
 
     default:

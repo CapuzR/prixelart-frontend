@@ -17,7 +17,7 @@ const ThemedApp: React.FC = () => {
       <Utility />
       <div>
         <AppBar />
-        <Toolbar />
+        {/* <Toolbar /> Why this? */}
       </div>
       <div>
         <Routes />

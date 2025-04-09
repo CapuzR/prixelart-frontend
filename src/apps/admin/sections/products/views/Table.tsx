@@ -206,8 +206,8 @@ export default function Table({
       { header: "PVP máximo", key: "PVPmax", width: 10 },
       { header: "PVM mínimo", key: "PVMmin", width: 10 },
       { header: "PVM máximo", key: "PVMmax", width: 10 },
-      { header: "Variantes especiales", key: "hasSpecialVar", width: 12 },
-      { header: "bestSeller", key: "bestSeller", width: 12 },
+      // { header: "Variantes especiales", key: "hasSpecialVar", width: 12 },
+      // { header: "bestSeller", key: "bestSeller", width: 12 },
     ]
     worksheet.getRow(1).eachCell((cell) => {
       cell.font = { bold: true }
@@ -234,12 +234,12 @@ export default function Table({
         considerations: prod.considerations,
         productionTime: prod.productionTime,
         cost: prod.cost,
-        PVPmin: prod.publicPrice?.from,
-        PVPmax: prod.publicPrice?.to,
-        PVMmin: prod.prixerPrice?.from,
-        PVMmax: prod.prixerPrice?.to,
-        hasSpecialVar: prod.hasSpecialVar,
-        bestSeller: prod.bestSeller,
+        PVPmin: prod.priceRange?.from,
+        PVPmax: prod.priceRange?.to,
+        PVMmin: prod.priceRange?.from,
+        PVMmax: prod.priceRange?.to,
+        // // hasSpecialVar: prod.hasSpecialVar,
+        // // bestSeller: prod.bestSeller,
       }
 
       worksheet.addRow(v2).eachCell({ includeEmpty: true }, (cell) => {
@@ -262,12 +262,12 @@ export default function Table({
           name: v.name,
           active: v?.active,
           description: v.description,
-          category: v.category,
-          considerations: v.considerations,
+          // category: v.category,
+          // considerations: v.considerations,
           productionTime: v.productionTime,
           cost: v.cost,
-          PVPmin: v.publicPrice.equation,
-          PVMmin: v.prixerPrice.equation,
+          PVPmin: v.priceRange.equation,
+          PVMmin: v.priceRange.equation,
         }
 
         worksheet.addRow(vsub2).eachCell({ includeEmpty: true }, (cell) => {
@@ -336,10 +336,10 @@ export default function Table({
               considerations: any
               productionTime: any
               cost: any
-              publicPrice: Price | AlternativePrice
-              prixerPrice: Price | AlternativePrice
-              hasSpecialVar?: any
-              bestSeller?: any
+              priceRange: Price | AlternativePrice
+              // priceRange: Price | AlternativePrice
+              // hasSpecialVar?: any
+              // bestSeller?: any
               variants: any[]
             } = {
               _id: rowData[1],
@@ -350,10 +350,10 @@ export default function Table({
               considerations: rowData[6],
               productionTime: rowData[7],
               cost: rowData[8],
-              publicPrice: { from: rowData[9], to: rowData[10] },
-              prixerPrice: { from: rowData[11], to: rowData[12] },
-              hasSpecialVar: rowData[13],
-              bestSeller: rowData[14],
+              priceRange: { from: rowData[9], to: rowData[10] },
+              // priceRange: { from: rowData[11], to: rowData[12] },
+              // hasSpecialVar: rowData[13],
+              // bestSeller: rowData[14],
               variants: [],
             }
 
@@ -361,10 +361,10 @@ export default function Table({
             if (x) {
               data.push(prod)
             } else {
-              prod.publicPrice = { equation: rowData[9] }
-              prod.prixerPrice = { equation: rowData[11] }
-              delete prod.hasSpecialVar
-              delete prod.bestSeller
+              prod.priceRange = { equation: rowData[9] }
+              prod.priceRange = { equation: rowData[11] }
+              // delete prod.hasSpecialVar
+              // delete prod.bestSeller
               data.at(-1)?.variants.push(prod)
             }
           }
@@ -379,28 +379,28 @@ export default function Table({
         prod.considerations = data[i].considerations
         prod.productionTime = data[i].productionTime
         prod.cost = data[i].cost
-        prod.publicPrice = {
-          from: data[i].publicPrice.from,
-          to: data[i].publicPrice.to,
+        prod.priceRange = {
+          from: data[i].priceRange.from,
+          to: data[i].priceRange.to,
         }
-        prod.prixerPrice = {
-          from: data[i].prixerPrice.from,
-          to: data[i].prixerPrice.to,
+        prod.priceRange = {
+          from: data[i].priceRange.from,
+          to: data[i].priceRange.to,
         }
-        prod.hasSpecialVar = data[i].hasSpecialVar
-        prod.bestSeller = data[i].bestSeller
+        // // prod.hasSpecialVar = data[i].hasSpecialVar
+        // // prod.bestSeller = data[i].bestSeller
 
         if (prod.variants.length > 0) {
           prod.variants.map((v, j) => {
             v.name = data[i].variants[j].name
             v.active = data[i].variants[j].active
             v.description = data[i].variants[j].description
-            v.category = data[i].variants[j].category
-            v.considerations = data[i].variants[j].considerations
+            // v.category = data[i].variants[j].category
+            // v.considerations = data[i].variants[j].considerations
             v.productionTime = data[i].variants[j].productionTime
             v.cost = data[i].variants[j].cost
-            v.publicPrice.equation = data[i].variants[j].publicPrice.equation
-            v.prixerPrice.equation = data[i].variants[j].prixerPrice.equation
+            v.priceRange.equation = data[i].variants[j].priceRange.equation
+            v.priceRange.equation = data[i].variants[j].priceRange.equation
           })
         }
       })

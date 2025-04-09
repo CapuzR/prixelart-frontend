@@ -242,12 +242,12 @@ export default function MovOrder({ orderId, type, handleClose }: MovProps) {
                             }
                           )}
                       </div> */}
-                      {typeof item.product.discount === "string" &&
-                        !item.product.modifyPrice && (
-                          <div>
-                            {"Descuento: " + getDis(item.product.discount)}
-                          </div>
-                        )}
+                      {typeof item.product.discount === "string" && (
+                        // !item.product.modifyPrice && (
+                        <div>
+                          {"Descuento: " + getDis(item.product.discount)}
+                        </div>
+                      )}
                       {/* <div>{"Cantidad: " + item?.quantity}</div> */}
                       {/* <div>
                         {"Precio final: $" +
@@ -403,11 +403,11 @@ export default function MovOrder({ orderId, type, handleClose }: MovProps) {
                               )}
                           </div> */}
                           {typeof item.product.discount === "string" &&
-                            !item.product.modifyPrice && (
+                            // !item.product.modifyPrice && (
                               <div>
                                 {"Descuento: " + getDis(item.product.discount)}
                               </div>
-                            )}
+                            }
                         </div>
                       </div>
                     </>

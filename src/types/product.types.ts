@@ -33,15 +33,17 @@ export interface PickedProduct
 
 export interface Product {
   _id: string
+  active: boolean | string
   name: string
   price: number
+
   description: string
   attributes: Attribute[]
-  selection: Selection
+  selection?: Selection
   variants: Array<Variant>
   priceRange: PriceRange
   observations: string
-  thumbUrl: string
+  thumbUrl?: string
   sources: {
     images?: { type: string; url: string }[]
     video?: { type: string; url: string }
@@ -50,10 +52,9 @@ export interface Product {
   mockUp: any
   category?: Category | string
   
-  active: boolean | string
   considerations: string
   cost: number
-  discount: string | undefined
+  discount?: string
   status: string
 }
 

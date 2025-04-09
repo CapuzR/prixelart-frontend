@@ -18,7 +18,7 @@ export const fetchGallery = async (filters: object): Promise<{ arts: Art[]; leng
   try {
     const base_url = import.meta.env.VITE_BACKEND_URL + '/art/read-for-gallery';
     const response = await axios.post(base_url, filters);
-    return response?.data;
+    return response?.data?.arts;
   } catch (error) {
     console.error('Error consultando artes');
     throw error;

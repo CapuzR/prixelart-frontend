@@ -15,54 +15,20 @@ import PrixerRegistration from "./register/views/PrixerRegistration"
 const ArtistRoutes = () => {
   return (
     <Routes>
-      <Route path="/iniciar">
-        <Login />
-      </Route>
-
-      <Route path="/registrar">
-        <Register />
-      </Route>
-
-      <Route path="/cambio-contraseña">
-        <PasswordChange />
-      </Route>
-
-      <Route path="/olvido-contraseña">
-        <ForgotPassword />
-      </Route>
-
-      <Route path="/registrar/prixer">
-        <PrixerRegistration/>
-      </Route>
-
-      <Route path="/recuperar/:token" element={<ResetPassword/>} />
-
-      <Route path="/:username/stats">
-        <PrixerStats />
-      </Route>
-
-      <Route path={"/art=:artId"} element={<ArtDetail/>}>
-        <ArtDetail />
-      </Route>
-      <Route path={"/arte/:artId"} element={<ArtDetail/>}>
-        <ArtDetail />
-      </Route>
-      <Route path="/prixer=:username">
-        <Profile />
-      </Route>
-      <Route path="/org=:username">
-        <Profile />
-      </Route>
-      <Route path="/servicios">
-        <PrixersService />
-      </Route>
-
-      <Route path={"/service=:serviceId"}>
-        <SoloService />
-      </Route>
-      <Route path={"/servicio/:serviceId"}>
-        <SoloService />
-      </Route>
+      <Route path="/iniciar" element={<Login />} />
+      <Route path="/registrar" element={<Register />} />
+      <Route path="/cambio-contraseña" element={<PasswordChange />} />
+      <Route path="/olvido-contraseña" element={<ForgotPassword />} />
+      <Route path="/registrar/prixer" element={<PrixerRegistration />} />
+      <Route path="/recuperar/:token" element={<ResetPassword />} />
+      <Route path="/:username/stats" element={<PrixerStats />} />
+      <Route path={"/art=:artId"} element={<ArtDetail />} />
+      <Route path={"/arte/:artId"} element={<ArtDetail />} />
+      <Route path="/prixer=:username" element={<Profile />} />
+      <Route path="/org=:username" element={<Profile />} />
+      <Route path="/servicios" element={<PrixersService />} />
+      <Route path={"/service=:serviceId"} element={<SoloService />} />
+      <Route path={"/servicio/:serviceId"} element={<SoloService />} />
     </Routes>
   )
 }

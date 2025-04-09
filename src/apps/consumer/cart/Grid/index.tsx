@@ -38,7 +38,7 @@ const CartReview: React.FC<CartReviewProps> = ({ checking }) => {
       const queryString = queryCreator(
         undefined,
         undefined,
-        type === 'producto' ? undefined : item.product?.id,
+        type === 'producto' ? undefined : item.product?._id,
         type === 'arte' ? undefined : item.art?._id,
         selectionAsObject
       );

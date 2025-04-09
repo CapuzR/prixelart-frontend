@@ -10,11 +10,11 @@ import { useLocation, useParams } from "react-router"
 // }
 
 const AdminRoutes: React.FC = () => {
-  let location = useLocation()
-  const section = location.pathname.split("/")[1]
-  const hostname = window.location
-  console.log(section)
-  console.log(hostname)
+  // let location = useLocation()
+  // const section = location.pathname.split("/")[1]
+  // const hostname = window.location
+  // console.log(section)
+  // console.log(hostname)
 
   const various = [
     "/admin/admins/update/:adminId",
@@ -46,57 +46,21 @@ const AdminRoutes: React.FC = () => {
   ]
   return (
     <Routes>
-      <Route path="/admin/dashboard">
-        <AdminMain
-        // valuesConsumerForm={valuesConsumerForm}
-        // setValues={setValuesConsumerForm}
-        />
-      </Route>
-
-      <Route path="/admin/main">
-        <AdminMain
-        // valuesConsumerForm={valuesConsumerForm}
-        // setValues={setValuesConsumerForm}
-        />
-      </Route>
-
-      <Route path="/admin/admins/create">
-        <AdminMain
-        // valuesConsumerForm={valuesConsumerForm}
-        // setValues={setValuesConsumerForm}
-        />
-      </Route>
-
-      <Route path="/admin/admins/read">
-        <AdminMain
-        // valuesConsumerForm={valuesConsumerForm}
-        // setValues={setValuesConsumerForm}
-        />
-      </Route>
+      <Route path="/admin/dashboard" element={<AdminMain />} />
+      <Route path="/admin/main" element={<AdminMain />} />
+      <Route path="/admin/admins/create" element={<AdminMain />} />
+      <Route path="/admin/admins/read" element={<AdminMain />} />
 
       {various.map((path) => (
         <Route key={path} path={path} element={<AdminMain />} />
       ))}
 
-      <Route path="/admin/product/create">
-        <AdminMain />
-      </Route>
+      <Route path="/admin/product/create" element={<AdminMain />} />
+      <Route path="/admin/products/read" element={<AdminMain />} />
+      <Route path="/admin/consumer/create" element={<AdminMain />} />
+      <Route path="/admin/consumers/read" element={<AdminMain />} />
 
-      <Route path="/admin/products/read">
-        <AdminMain />
-      </Route>
-
-      <Route path="/admin/consumer/create">
-        <AdminMain />
-      </Route>
-
-      <Route path="/admin/consumers/read">
-        <AdminMain />
-      </Route>
-
-      <Route path="/admin/inicio">
-        <AdminLogin />
-      </Route>
+      <Route path="/admin/inicio" element={<AdminLogin />} />
     </Routes>
   )
 }

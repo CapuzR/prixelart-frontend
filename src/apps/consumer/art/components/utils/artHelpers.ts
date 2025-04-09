@@ -53,8 +53,8 @@ export const originalPhotoPpiEdit = (
 export const originalPhotoIsoEdit = (
     tiles: Art[],
     tile: Art,
-    e: AllowedEvent
-): Art[] => updateArtField(tiles, tile, 'originalPhotoIso', e.target.value);
+    e: SelectChangeEvent<number>
+): Art[] => updateArtField(tiles, tile, 'originalPhotoIso', e);
 
 export const descriptionEdit = (
     tiles: Art[],

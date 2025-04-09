@@ -7,7 +7,7 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 
 import FloatingAddButton from 'components/floatingAddButton/floatingAddButton';
-import CreateService from 'components/createService/createService';
+import CreateService from '@components/createService';
 import ArtUploader from '@apps/artist/artUploader';
 import Grid from 'components/Grid';
 import ProductElement from 'components/ProductElement';

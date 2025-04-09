@@ -4,9 +4,9 @@ import ArtsGrid from '@apps/consumer/art/components/ArtsGrid/ArtsGrid';
 import Container from '@mui/material/Container';
 import CssBaseline from '@mui/material/CssBaseline';
 import useStyles from './Catalog.styles';
-import ArtUploader from 'components/artUploader/artUploader';
+import ArtUploader from '@apps/artist/artUploader/index';
 import Typography from '@mui/material/Typography';
-import CreateService from 'components/createService/createService';
+import CreateService from '@components/createService';
 import { Grid2 } from '@mui/material';
 import { Art } from '../interfaces';
 

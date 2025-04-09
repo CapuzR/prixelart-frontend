@@ -18,7 +18,11 @@ export const parseProduct = (data: any): Product => {
     const price = typeof data.price === 'number' ? data.price : priceRange.from;
 
     return {
-        id,
+        _id: data?._id,
+        active: data.active,
+        considerations: data.considerations,
+        cost: data.cost,
+        status: data.status,
         name: data.name || '',
         price,
         description: data.description || '',

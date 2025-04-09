@@ -4,7 +4,7 @@ import { Theme } from "@mui/material"
 import { makeStyles } from "tss-react/mui"
 
 import FloatingAddButton from "components/floatingAddButton/floatingAddButton"
-import CreateService from "components/createService/createService"
+import CreateService from "@components/createService"
 import InfoCard from "./components/InfoCard"
 import Tabs from "./components/Tabs"
 import ArtsGrid from "../../consumer/art/components/Grid"

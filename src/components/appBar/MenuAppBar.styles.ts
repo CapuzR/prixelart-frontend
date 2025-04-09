@@ -29,7 +29,8 @@ const useStyles = makeStyles((theme: any) => ({
         minWidth: '0px',
         color: 'white !important',
         '&.Mui-selected': {
-            color: 'red !important',
+            // color: 'red !important',
+            fontWeight: 'bold'
         },
     },
     root2: {

@@ -23,7 +23,10 @@ import { useSnackBar } from "@context/GlobalContext"
 
 interface FormProps {
   openVideo: () => void
-  handleSubmit: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, images: any) => void
+  handleSubmit: (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    images: any
+  ) => void
 }
 export default function ProductForm({ handleSubmit, openVideo }: FormProps) {
   const { state, dispatch } = useProductForm()
@@ -42,15 +45,12 @@ export default function ProductForm({ handleSubmit, openVideo }: FormProps) {
     // readProduct()
     const prev: any = { loader: [], filename: "Subir imagenes" }
     const indexImage =
-      state.sources && state?.thumbUrl && state.sources?.length < 1
-        ? state.sources?.indexOf({ type: "image", url: state?.thumbUrl })
+      state.sources.images && state?.thumbUrl && state.sources.images.length < 1
+        ? state.sources.images?.indexOf({ type: "image", url: state?.thumbUrl })
         : undefined
 
-    state.sources
-      ?.filter(
-        (img: any) =>
-          img.url !== undefined && img.url !== null && img.type === "images"
-      )
+    state.sources.images
+      ?.filter((img: any) => img.url !== undefined && img.url !== null)
       .forEach((img: any) => prev.loader.push(img.url)) // : setVideoUrl(img && img.url)
     // )
 
@@ -296,7 +296,7 @@ export default function ProductForm({ handleSubmit, openVideo }: FormProps) {
                 />
               )
             )}
-            {state.video && (
+            {/* {state.video && (
               <>
                 <div
                   style={{
@@ -345,7 +345,7 @@ export default function ProductForm({ handleSubmit, openVideo }: FormProps) {
                   </Paper>
                 </div>
               </>
-            )}
+            )} */}
           </Grid2>
           <Grid2 container sx={{ width: "100%" }}>
             <Grid2 size={{ xs: 12, md: 6 }}>
@@ -357,7 +357,7 @@ export default function ProductForm({ handleSubmit, openVideo }: FormProps) {
               />
               Habilitado / Visible
             </Grid2>
-            <Grid2 size={{ xs: 12, md: 3 }}>
+            {/* <Grid2 size={{ xs: 12, md: 3 }}>
               <Checkbox
                 checked={Boolean(state.hasSpecialVar)}
                 color="primary"
@@ -365,23 +365,23 @@ export default function ProductForm({ handleSubmit, openVideo }: FormProps) {
                 onChange={handleCheck}
               />
               ¿Tiene variables especiales?
-            </Grid2>
-            <Grid2 size={{ xs: 12, md: 3 }}>
+            </Grid2> */}
+            {/* <Grid2 size={{ xs: 12, md: 3 }}>
               <Checkbox
                 checked={Boolean(state.autoCertified)}
                 color="primary"
                 inputProps={{ "aria-label": "secondary checkbox" }}
                 onChange={handleCheck}
               />
-              ¿Agregar certificado automáticamente?
-            </Grid2>
+              ¿Agregar certificado automáticamente? */}
+            {/* </Grid2> */}
           </Grid2>
-          {state.hasSpecialVar && (
+          {/* {state.hasSpecialVar && (
             <Grid2 container spacing={2}>
               <Grid2 container style={{ marginTop: 20 }}>
                 <h3>Variables especiales</h3>
               </Grid2>
-              {/* <>
+               <>
                 {specialVars &&
                   specialVars.map((specialVar, i) => (
                     <Grid2
@@ -485,9 +485,9 @@ export default function ProductForm({ handleSubmit, openVideo }: FormProps) {
                 >
                   +
                 </Button>
-              </> */}
+              </>
             </Grid2>
-          )}
+          )} */}
           <Grid2 size={{ xs: 12, md: 6 }}>
             <FormControl variant="outlined" fullWidth={true}>
               <TextField
@@ -640,15 +640,15 @@ export default function ProductForm({ handleSubmit, openVideo }: FormProps) {
                 fullWidth
                 id="fromPublicPrice"
                 label="Desde"
-                name="publicPrice.from"
+                name="priceRange.from"
                 autoComplete="fromPublicPrice"
                 value={
-                  isPriceRange(state.publicPrice) ? state.publicPrice.from : ""
+                  isPriceRange(state.priceRange) ? state.priceRange.from : ""
                 }
                 onChange={handleChange}
                 // error={
-                //   state.publicPrice?.from !== undefined &&
-                //   !isAValidPrice(state.publicPrice?.from)
+                //   state.priceRange?.from !== undefined &&
+                //   !isAValidPrice(state.priceRange?.from)
                 // }
                 slotProps={{
                   input: {
@@ -668,15 +668,15 @@ export default function ProductForm({ handleSubmit, openVideo }: FormProps) {
                 fullWidth
                 id="toPublicPrice"
                 label="Hasta"
-                name="publicPrice.to"
+                name="priceRange.to"
                 autoComplete="toPublicPrice"
                 value={
-                  isPriceRange(state.publicPrice) ? state.publicPrice.to : ""
+                  isPriceRange(state.priceRange) ? state.priceRange.to : ""
                 }
                 onChange={handleChange}
                 // error={
-                //   state.publicPrice?.to !== undefined &&
-                //   !isAValidPrice(state.publicPrice?.to)
+                //   state.priceRange?.to !== undefined &&
+                //   !isAValidPrice(state.priceRange?.to)
                 // }
                 slotProps={{
                   input: {
@@ -708,15 +708,15 @@ export default function ProductForm({ handleSubmit, openVideo }: FormProps) {
                 fullWidth
                 id="fromPrixerPrice"
                 label="Desde"
-                name="prixerPrice.from"
+                name="priceRange.from"
                 autoComplete="fromPrixerPrice"
                 value={
-                  isPriceRange(state.prixerPrice) ? state.prixerPrice.from : ""
+                  isPriceRange(state.priceRange) ? state.priceRange.from : ""
                 }
                 onChange={handleChange}
                 // error={
-                //   state.prixerPrice.from !== undefined &&
-                //   !isAValidPrice(state.prixerPrice.from)
+                //   state.priceRange.from !== undefined &&
+                //   !isAValidPrice(state.priceRange.from)
                 // }
                 slotProps={{
                   input: {
@@ -735,15 +735,15 @@ export default function ProductForm({ handleSubmit, openVideo }: FormProps) {
                 fullWidth
                 id="toPrixerPrice"
                 label="Hasta"
-                name="prixerPrice.to"
+                name="priceRange.to"
                 autoComplete="toPrixerPrice"
                 value={
-                  isPriceRange(state.prixerPrice) ? state.prixerPrice.to : ""
+                  isPriceRange(state.priceRange) ? state.priceRange.to : ""
                 }
                 onChange={handleChange}
                 // error={
-                //   state.prixerPrice?.to !== undefined &&
-                //   !isAValidPrice(state.prixerPrice?.to)
+                //   state.priceRange?.to !== undefined &&
+                //   !isAValidPrice(state.priceRange?.to)
                 // }
                 slotProps={{
                   input: {
@@ -760,7 +760,7 @@ export default function ProductForm({ handleSubmit, openVideo }: FormProps) {
           variant="contained"
           color="primary"
           type="submit"
-          onClick={(e) => handleSubmit(e, images)}          //   disabled={buttonState}
+          onClick={(e) => handleSubmit(e, images)} //   disabled={buttonState}
           style={{ marginTop: 20 }}
         >
           Guardar

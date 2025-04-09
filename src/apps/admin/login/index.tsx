@@ -40,6 +40,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   root: {
     marginTop: "64px !important",
     height: "calc(100vh - 64px)",
+    justifyContent: "center"
   },
   image: {
     backgroundRepeat: "no-repeat",
@@ -93,6 +94,8 @@ export default function Login() {
         showSnackBar(log.error_info)
       } else {
         showSnackBar("Inicio de sesión completado.")
+        console.log("Inicio de sesión completado.")
+
         setPassword("")
         navigate({ pathname: "/admin/order/read" })
       }

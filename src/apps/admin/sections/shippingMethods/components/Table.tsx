@@ -35,7 +35,12 @@ export default function ShippingTable({
   const totalElements = rows?.length
   const itemsPerPage = 20
   const [pageNumber, setPageNumber] = useState(1)
-  const headers = ["Activo", "Nombre", "Costo", ""]
+  const headers = [
+    { title: "Activo", type: "string" },
+    { title: "Nombre", type: "string" },
+    { title: "Costo", type: "string" },
+    "",
+  ]
   const properties = ["active", "name", "price"]
 
   const readMethods = async () => {

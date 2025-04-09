@@ -126,29 +126,29 @@ export default function ProductsTable({
               </TableCell>
               <TableCell align="center">
                 $
-                {Number(row.publicPrice.from).toLocaleString("de-DE", {
+                {Number(row.priceRange?.from).toLocaleString("de-DE", {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
                 })}
-                {row.publicPrice.to &&
+                {row.priceRange?.to &&
                   " - " +
-                    Number(row.publicPrice.to).toLocaleString("de-DE", {
+                    Number(row.priceRange?.to).toLocaleString("de-DE", {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
                     })}
               </TableCell>
               <TableCell align="center">
-                {row.prixerPrice &&
-                  row.prixerPrice.from &&
+                {row.priceRange &&
+                  row.priceRange.from &&
                   "$" +
-                    Number(row.prixerPrice?.from).toLocaleString("de-DE", {
+                    Number(row.priceRange?.from).toLocaleString("de-DE", {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
                     })}
-                {row.prixerPrice &&
-                  row.prixerPrice.to &&
+                {row.priceRange &&
+                  row.priceRange.to &&
                   " - " +
-                    Number(row.prixerPrice.to).toLocaleString("de-DE", {
+                    Number(row.priceRange.to).toLocaleString("de-DE", {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
                     })}

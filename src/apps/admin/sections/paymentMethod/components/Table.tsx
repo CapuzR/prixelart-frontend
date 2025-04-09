@@ -12,6 +12,7 @@ import Table1 from "@components/Table"
 import { PaymentMethod } from "../../../../../types/paymentMethod.types"
 import { useSnackBar, useLoading, getPermissions } from "context/GlobalContext"
 import { getMethods, deleteMethod } from "../api"
+import { title } from "process"
 
 interface TableProps {
   setPaymentMethod: (element: PaymentMethod) => void
@@ -28,7 +29,13 @@ export default function PaymentTable({ setPaymentMethod }: TableProps) {
   const [itemsPerPage, setItemPerPage] = useState(20)
   const [pageNumber, setPageNumber] = useState(1)
 
-  const headers = ["Activo", "Nombre", "Datos de pago", "Instrucciones", ""]
+  const headers = [
+    { title: "Activo", type: "string" },
+    { title: "Nombre", type: "string" },
+    { title: "Datos de pago", type: "string" },
+    { title: "Instrucciones", type: "string" },
+    "",
+  ]
   const properties = ["active", "name", "paymentData", "instructions"]
 
   const readMethods = async () => {

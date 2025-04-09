@@ -146,10 +146,9 @@ const MenuAppBar: React.FC = () => {
       });
     }
   };
-
+console.log(selectedTab)
   const handleTabChange = (event: React.SyntheticEvent, newValue: string) => {
     setSelectedTab(newValue);
-    // Navigate to the route associated with the selected tab
     if (tabRoutes[newValue]) {
       navigate(tabRoutes[newValue]);
     }
@@ -185,7 +184,7 @@ const MenuAppBar: React.FC = () => {
                 <IconButton className={classes.a} onClick={handleMain}>
                   <img src={logo} alt="Prixelart logo" style={{ width: 100 }} />
                 </IconButton>
-                <div
+                {/* <div
                   style={{
                     display: 'flex',
                     placeContent: 'center',
@@ -195,7 +194,7 @@ const MenuAppBar: React.FC = () => {
                   <IconButton onClick={handleCB} size="medium">
                     <img className={classes.brillante} src={CB} style={{ height: 45 }} />
                   </IconButton>
-                </div>
+                </div> */}
               </div>
               <IconButton onClick={openShoppingCart} color="inherit">
                 <Badge overlap="rectangular" badgeContent={cart.lines.length} style={{ color: "white" }}>
@@ -302,7 +301,7 @@ const MenuAppBar: React.FC = () => {
                 <Tab className={classes.button} value="organizaciones" label="Organizaciones" />
                 <Tab className={classes.button} value="services" label="Servicios" />
                 <Tab className={classes.button} value="testimonials" label="Testimonios" />
-                <div
+                {/* <div
                   style={{
                     display: 'flex',
                     placeContent: 'center',
@@ -317,7 +316,7 @@ const MenuAppBar: React.FC = () => {
                       style={{ marginLeft: 20, height: 45 }}
                     />
                   </IconButton>
-                </div>
+                </div> */}
               </Tabs>
             </div>
 

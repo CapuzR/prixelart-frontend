@@ -118,7 +118,7 @@ const UnitPrice = (
   if (currency) {
     final = final * dollarValue
   }
-  return final
+  return final.toString()
   // .toLocaleString("de-DE", {
   //   minimumFractionDigits: 2,
   //   maximumFractionDigits: 2,
@@ -333,7 +333,7 @@ const getComission = (
       (el) => el.id === item.product._id
     )
     const varApplied = applied?.variants?.find(
-      (v) => v.name === item.product.selection.name
+      (v) => v.name === item.product.selection?.name
     )
     let percentage =
       item.product.selection !== undefined &&
@@ -405,7 +405,7 @@ const getComissionv2 = (
       (el) => el.id === product._id
     )
     const varApplied = applied?.variants?.find(
-      (v) => v.name === product.selection.name
+      (v) => v.name === product?.selection?.name
     )
     let percentage =
       product.selection !== undefined && typeof product.selection === "string"

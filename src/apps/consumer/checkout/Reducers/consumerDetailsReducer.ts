@@ -1,7 +1,14 @@
 import { ConsumerDetails, CheckoutAction } from '../interfaces';
 
 const defaultState: ConsumerDetails = {
-  basic: { name: '', lastName: '', phone: '', email: '' },
+  basic: { 
+    name: '', 
+    lastName: '', 
+    phone: '', 
+    email: '',
+    id: '',
+    shortAddress: ''
+  },
   selectedAddress: {
     line1: '',
     city: '',
@@ -12,24 +19,30 @@ const defaultState: ConsumerDetails = {
   type: 'Particular'
 };
 
-
 export const consumerDetailsReducer = (
   consumerDetails: ConsumerDetails,
   action: CheckoutAction
 ): ConsumerDetails => {
-
   const currentState = consumerDetails || defaultState;
 
   switch (action.type) {
     case 'SET_CONSUMER_BASIC': {
       const { payload } = action;
-
       return {
         ...currentState,
         basic: {
           ...currentState.basic,
           ...payload,
         },
+      };
+    }
+
+    case 'SET_CONSUMER_DETAILS': {
+      const { payload } = action;
+      return {
+        ...currentState,
+        ...payload,
+        type: payload.type || currentState.type,
       };
     }
 
@@ -47,7 +60,6 @@ export const consumerDetailsReducer = (
 
     case 'SET_CONSUMER_ADDRESS': {
       const { payload } = action;
-
       return {
         ...currentState,
         selectedAddress: payload,
@@ -55,8 +67,6 @@ export const consumerDetailsReducer = (
     }
 
     default:
-      return (
-        consumerDetails || currentState
-      );
+      return currentState;
   }
 };

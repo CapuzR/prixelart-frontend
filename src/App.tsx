@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import AppBar from '@components/appBar';
 import Routes from './routes';
 import { GlobalProvider, useTheme } from 'context/GlobalContext';
 // import ReactGA from 'react-ga';
@@ -15,10 +14,6 @@ const ThemedApp: React.FC = () => {
   return (
     <div className={`${theme} app`}>
       <Utility />
-      <div>
-        <AppBar />
-        {/* <Toolbar /> Why this? */}
-      </div>
       <div>
         <Routes />
       </div>

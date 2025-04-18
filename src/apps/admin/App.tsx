@@ -1,60 +1,60 @@
-import { useEffect, useState } from "react"
-import { useLocation } from "react-router-dom"
-import { useNavigate } from "react-router-dom"
-import AttachMoneyIcon from "@mui/icons-material/AttachMoney"
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft"
-import ChevronRightIcon from "@mui/icons-material/ChevronRight"
-import CloseIcon from "@mui/icons-material/Close"
-import MenuIcon from "@mui/icons-material/Menu"
-import NotificationsIcon from "@mui/icons-material/Notifications"
-import SaveIcon from "@mui/icons-material/Save"
-import ListAltIcon from "@mui/icons-material/ListAlt"
-import PublishIcon from "@mui/icons-material/Publish"
-import AddIcon from "@mui/icons-material/Add"
-import ViewListIcon from "@mui/icons-material/ViewList"
+import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import CloseIcon from "@mui/icons-material/Close";
+import MenuIcon from "@mui/icons-material/Menu";
+import NotificationsIcon from "@mui/icons-material/Notifications";
+import SaveIcon from "@mui/icons-material/Save";
+import ListAltIcon from "@mui/icons-material/ListAlt";
+import PublishIcon from "@mui/icons-material/Publish";
+import AddIcon from "@mui/icons-material/Add";
+import ViewListIcon from "@mui/icons-material/ViewList";
 
-import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar"
-import Badge from "@mui/material/Badge"
-import Box from "@mui/material/Box"
-import Container from "@mui/material/Container"
-import CssBaseline from "@mui/material/CssBaseline"
-import Divider from "@mui/material/Divider"
-import MuiDrawer from "@mui/material/Drawer"
+import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
+import Badge from "@mui/material/Badge";
+import Box from "@mui/material/Box";
+import Container from "@mui/material/Container";
+import CssBaseline from "@mui/material/CssBaseline";
+import Divider from "@mui/material/Divider";
+import MuiDrawer from "@mui/material/Drawer";
 // import Drawer from "@mui/material/Drawer";
-import Fab from "@mui/material/Fab"
-import Grid2 from "@mui/material/Grid2"
-import IconButton from "@mui/material/IconButton"
-import List from "@mui/material/List"
-import Modal from "@mui/material/Modal"
-import Toolbar from "@mui/material/Toolbar"
-import Tooltip from "@mui/material/Tooltip"
-import Typography from "@mui/material/Typography"
+import Fab from "@mui/material/Fab";
+import Grid2 from "@mui/material/Grid2";
+import IconButton from "@mui/material/IconButton";
+import List from "@mui/material/List";
+import Modal from "@mui/material/Modal";
+import Toolbar from "@mui/material/Toolbar";
+import Tooltip from "@mui/material/Tooltip";
+import Typography from "@mui/material/Typography";
 
-import { styled, useTheme, Theme, CSSObject } from "@mui/material/styles"
-import { useCart } from "context/CartContext"
+import { styled, useTheme, Theme, CSSObject } from "@mui/material/styles";
+import { useCart } from "context/CartContext";
 import {
   useConversionRate,
   useSnackBar,
   getPermissions,
-} from "context/GlobalContext"
+} from "context/GlobalContext";
 
-import { makeStyles } from "tss-react/mui"
+import { makeStyles } from "tss-react/mui";
 
-import Admin from "./sections/admins"
-import Consumers from "./sections/consumers"
+import Admin from "./sections/admins";
+import Consumers from "./sections/consumers";
 // import Dashboard from "./sections/dashboard/dashboard"
-import SideBar from "./components/SideBar"
-import Movements from "./sections/movements"
-import Orders from "./sections/orders"
-import PaymentMethods from "./sections/paymentMethod"
-import Preferences from "./sections/preferences"
-import Prixers from "./sections/prixers"
-import Products from "./sections/products"
-import ShippingMethods from "./sections/shippingMethods"
-import Testimonials from "./sections/testimonials/index"
-import Copyright from "@components/Copyright/copyright"
+import SideBar from "./components/SideBar";
+import Movements from "./sections/movements";
+import Orders from "./sections/orders";
+import PaymentMethods from "./sections/paymentMethod";
+import Preferences from "./sections/preferences";
+import Prixers from "./sections/prixers";
+import Products from "./sections/products";
+import ShippingMethods from "./sections/shippingMethods";
+import Testimonials from "./sections/testimonials/index";
+import Copyright from "@components/Copyright/copyright";
 
-const drawerWidth = 240
+const drawerWidth = 240;
 
 const useStyles = makeStyles()((theme: Theme) => {
   return {
@@ -127,8 +127,8 @@ const useStyles = makeStyles()((theme: Theme) => {
       paddingTop: theme.spacing(4),
       paddingBottom: theme.spacing(4),
     },
-  }
-})
+  };
+});
 
 const openedMixin = (theme: Theme): CSSObject => ({
   width: drawerWidth,
@@ -137,7 +137,7 @@ const openedMixin = (theme: Theme): CSSObject => ({
     duration: theme.transitions.duration.enteringScreen,
   }),
   overflowX: "hidden",
-})
+});
 
 const closedMixin = (theme: Theme): CSSObject => ({
   transition: theme.transitions.create("width", {
@@ -149,10 +149,10 @@ const closedMixin = (theme: Theme): CSSObject => ({
   [theme.breakpoints.up("sm")]: {
     width: `calc(${theme.spacing(10)} + 1px)`,
   },
-})
+});
 
 interface AppBarProps extends MuiAppBarProps {
-  open?: boolean
+  open?: boolean;
 }
 
 const AppBar = styled(MuiAppBar, {
@@ -176,7 +176,7 @@ const AppBar = styled(MuiAppBar, {
       },
     },
   ],
-}))
+}));
 
 const Drawer = styled(MuiDrawer, {
   shouldForwardProp: (prop) => prop !== "open",
@@ -201,7 +201,7 @@ const Drawer = styled(MuiDrawer, {
       },
     },
   ],
-}))
+}));
 
 const DrawerHeader = styled("div")(({ theme }) => ({
   display: "flex",
@@ -210,47 +210,47 @@ const DrawerHeader = styled("div")(({ theme }) => ({
   padding: theme.spacing(0, 1),
   // necessary for content to be below app bar
   ...theme.mixins.toolbar,
-}))
+}));
 
 export default function AdminMain() {
-  const theme = useTheme()
-  const { classes, cx } = useStyles()
-  const [open, setOpen] = useState(false)
-  const [active, setActive] = useState("admin")
-  const location = useLocation()
-  const navigate = useNavigate()
+  const theme = useTheme();
+  const { classes, cx } = useStyles();
+  const [open, setOpen] = useState(false);
+  const [active, setActive] = useState("admin");
+  const location = useLocation();
+  const navigate = useNavigate();
 
-  const [openDollarView, setOpenDollarView] = useState(false)
-  const permissions = getPermissions()
-  const token: string = localStorage.getItem("adminToken") ?? ""
-
+  const [openDollarView, setOpenDollarView] = useState(false);
+  const permissions = getPermissions();
+  const token: string | undefined =
+    localStorage.getItem("adminToken") ?? undefined;
   // const { conversionRate, setConversionRate } = useConversionRate();
-  const { cart } = useCart()
+  const { cart } = useCart();
 
   const handleDrawerOpen = () => {
-    setOpen(true)
-  }
+    setOpen(true);
+  };
   const handleDrawerClose = () => {
-    setOpen(false)
-  }
+    setOpen(false);
+  };
 
   useEffect(() => {
-    const pathSegments = location.pathname.split("/").filter(Boolean)
-    const rootSegment = pathSegments.length > 0 ? pathSegments[1] : ""
-    setActive(rootSegment)
-  }, [location.pathname])
+    const pathSegments = location.pathname.split("/").filter(Boolean);
+    const rootSegment = pathSegments.length > 0 ? pathSegments[1] : "";
+    setActive(rootSegment);
+  }, [location.pathname]);
 
   useEffect(() => {
-    setOpen(false)
-  }, [active])
+    setOpen(false);
+  }, [active]);
 
   const dollarView = () => {
-    setOpenDollarView(true)
-  }
+    setOpenDollarView(true);
+  };
 
   const handleClose = () => {
-    setOpenDollarView(false)
-  }
+    setOpenDollarView(false);
+  };
 
   const redirectHome = () => {
     if (token) {
@@ -303,7 +303,7 @@ export default function AdminMain() {
             </DrawerHeader>
             <Divider />
             <List component="nav">
-              <SideBar/>
+              <SideBar />
             </List>
           </Drawer>
           <main className={classes.content}>
@@ -407,11 +407,10 @@ export default function AdminMain() {
             </Grid2>
           </Modal>
         </>
-      )
-
+      );
     } else {
-      navigate({ pathname: "/" })
+      navigate({ pathname: "/" });
     }
-  }
-  return <div className={classes.root}>{redirectHome()} </div>
+  };
+  return <div className={classes.root}>{redirectHome()} </div>;
 }

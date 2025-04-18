@@ -17,8 +17,8 @@ export interface CheckoutState {
   discounts: Discount[]
   surcharges: Surcharge[]
   organizations: Organization[]
-  consumers?: Consumer[]
-  prixers?: Prixer[]
+  consumers: Consumer[]
+  prixers: Prixer[]
 }
 
 export interface DataLists {

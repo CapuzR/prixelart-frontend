@@ -87,6 +87,7 @@ export default function CreateOrder({
   const { conversionRate } = useConversionRate()
   const { cart, emptyCart } = useCart()
 const {state, dispatch} = useOrder()
+console.log(state)
 const {activeStep, order } = state
   // const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
   // const isMobile = useMediaQuery(theme.breakpoints.down("md"));

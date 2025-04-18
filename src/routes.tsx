@@ -1,38 +1,45 @@
-import { useEffect } from "react"
-import expire from "./utils/expire"
+import { useEffect } from "react";
+import expire from "./utils/expire";
 
-import ArtistRoutes from "apps/artist/artist.routes"
-import AdminRoutes from "apps/admin/admin.routes"
-import ConsumerRoutes from "apps/consumer/consumer.routes"
+import ArtistRoutes from "apps/artist/artist.routes";
+import AdminRoutes from "apps/admin/admin.routes";
+import ConsumerRoutes from "apps/consumer/consumer.routes";
+import AppBar from "@components/appBar";
 
 const Routes = () => {
   useEffect(() => {
     const disableRightClick = (event: MouseEvent) => {
-      event.preventDefault()
-    }
+      event.preventDefault();
+    };
 
-    document.addEventListener("contextmenu", disableRightClick)
+    document.addEventListener("contextmenu", disableRightClick);
 
     return () => {
-      document.removeEventListener("contextmenu", disableRightClick)
-    }
-  }, [])
+      document.removeEventListener("contextmenu", disableRightClick);
+    };
+  }, []);
 
   useEffect(() => {
     if (localStorage.getItem("token")) {
-      expire("token", "tokenExpire")
+      expire("token", "tokenExpire");
     } else if (localStorage.getItem("adminToken")) {
-      expire("adminToken", "adminTokenExpire")
+      expire("adminToken", "adminTokenExpire");
     }
-  }, [])
+  }, []);
+
+  const adminToken = localStorage.getItem("adminToken");
+  const adminData = adminToken ? JSON.parse(adminToken) : null;
 
   return (
     <>
       <AdminRoutes />
-      <ArtistRoutes />
-      <ConsumerRoutes />
+      <>
+        <AppBar />
+        <ArtistRoutes />
+        <ConsumerRoutes />
+      </>
     </>
-  )
-}
+  );
+};
 
-export default Routes
+export default Routes;

@@ -1,6 +1,7 @@
 import { linesReducer } from "./linesReducer"
 import { consumerDetailsReducer } from "./consumerDetailsReducer"
 import { shippingReducer } from "./shippingReducer"
+import { billingReducer } from "./billingReducer"
 import { paymentReducer } from "./paymentReducer"
 import {
   Order,
@@ -106,13 +107,12 @@ export const orderReducer = (order: Order, action: CheckoutAction): Order => {
       }
 
     case "SET_BILLING_DETAILS":
+    case "SET_BILLING_BASIC":
       return {
         ...order,
-        billing: {
-          ...order.billing,
-          ...action.payload,
-        },
+        billing: billingReducer(order.billing, action),
       }
+
     case "RESET_ORDER":
       return initialOrder
 
@@ -146,6 +146,7 @@ export const orderReducer = (order: Order, action: CheckoutAction): Order => {
           action
         ),
         shipping: shippingReducer(order.shipping, action),
+        billing: billingReducer(order.billing, action),
         payment: paymentReducer(order.payment ?? initialPaymentDetails, action),
       }
   }

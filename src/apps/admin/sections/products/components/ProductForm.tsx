@@ -21,52 +21,48 @@ import { PriceRange, Equation } from "../../../../../types/product.types"
 import "react-quill/dist/quill.snow.css"
 import { useSnackBar } from "@context/GlobalContext"
 
+interface ImageState {
+  previews: string[];
+  files: File[];
+  filename: string;
+}
+
 interface FormProps {
   openVideo: () => void
   handleSubmit: (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-    images: any
+    images: File[]
   ) => void
 }
+
 export default function ProductForm({ handleSubmit, openVideo }: FormProps) {
   const { state, dispatch } = useProductForm()
   const { showSnackBar } = useSnackBar()
 
-  const [imageLoader, setLoadImage] = useState<any>({
-    loader: [],
-    filename: "Subir imagenes",
+  const [imageState, setImageState] = useState<ImageState>({
+    previews: [],
+    files: [],
+    filename: "Subir imagenes"
   })
-  //   Reducir la anidación en ImageLoader
-  const [images, setImages] = useState<any>({ images: [] })
-  console.log(images, "nuevas")
-  console.log(imageLoader.loader, "prev")
 
   useEffect(() => {
-    // readProduct()
-    const prev: any = { loader: [], filename: "Subir imagenes" }
-    const indexImage =
-      state.sources.images && state?.thumbUrl && state.sources.images.length < 1
-        ? state.sources.images?.indexOf({ type: "image", url: state?.thumbUrl })
-        : undefined
-
-    state.sources.images
-      ?.filter((img: any) => img.url !== undefined && img.url !== null)
-      .forEach((img: any) => prev.loader.push(img.url)) // : setVideoUrl(img && img.url)
-    // )
-
-    if (indexImage === -1 && state.thumbUrl) {
-      prev.loader.push(state.thumbUrl)
+    const initialPreviews: string[] = []
+    
+    if (state.sources?.images) {
+      state.sources.images
+        .filter((img: { url?: string }) => img.url !== undefined && img.url !== null)
+        .forEach((img: { url: string }) => initialPreviews.push(img.url))
     }
-    setLoadImage(prev)
-    // setImagesList(prev)
-    // setTimeout(() => {
-    //   if (state?.sources.images) {
-    //     state?.sources.images.map((element) => {
-    //       element.type === "video" && setVideoUrl(element.url)
-    //     })
-    //   }
-    // }, 1000)
-  }, [])
+
+    if (state.thumbUrl && !initialPreviews.includes(state.thumbUrl)) {
+      initialPreviews.push(state.thumbUrl)
+    }
+
+    setImageState(prev => ({
+      ...prev,
+      previews: initialPreviews
+    }))
+  }, [state.sources?.images, state.thumbUrl])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
@@ -104,71 +100,68 @@ export default function ProductForm({ handleSubmit, openVideo }: FormProps) {
     })
   }
 
-  const convertToBase64 = (blob: File) => {
-    return new Promise((resolve) => {
-      var reader = new FileReader()
-      reader.onload = function () {
-        resolve(reader.result)
-      }
-      reader.readAsDataURL(blob)
+  const convertToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.onload = () => resolve(reader.result as string)
+      reader.onerror = reject
+      reader.readAsDataURL(file)
     })
   }
 
   const loadImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault()
 
-    if (imageLoader.loader.length >= 4) {
+    if (imageState.previews.length >= 4) {
       return showSnackBar("No puedes agregar más de 4 fotos")
-    } else {
-      const file = e.target.files?.[0]
-      if (!file) return
+    }
 
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    try {
       const resizedString = await convertToBase64(file)
-      if (!resizedString) return
-
-      const newLoader = [...imageLoader.loader, resizedString]
-      const newImages = [...images.images, file]
-
-      setLoadImage({ loader: newLoader, filename: file.name })
-      newImages.length <= 4 && setImages({ images: newImages })
+      setImageState(prev => ({
+        previews: [...prev.previews, resizedString],
+        files: [...prev.files, file],
+        filename: file.name
+      }))
+    } catch (error) {
+      showSnackBar("Error al procesar la imagen")
     }
   }
 
-  const replaceImage = async (
-    e: React.ChangeEvent<HTMLInputElement>,
-    index: number
-  ) => {
+  const replaceImage = async (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
     e.preventDefault()
     const file = e.target.files?.[0]
-    if (file) {
+    if (!file) return
+
+    try {
       const resizedString = await convertToBase64(file)
-      imageLoader.loader[index] = resizedString
-      images.images[index] = file
-      setLoadImage({ loader: imageLoader.loader, filename: file.name })
+      setImageState(prev => ({
+        ...prev,
+        previews: prev.previews.map((preview, i) => i === index ? resizedString : preview),
+        files: prev.files.map((f, i) => i === index ? file : f),
+        filename: file.name
+      }))
+    } catch (error) {
+      showSnackBar("Error al reemplazar la imagen")
     }
+  }
+
+  const deleteImg = (e: React.MouseEvent<HTMLButtonElement>, index: number) => {
+    e.preventDefault()
+    setImageState(prev => ({
+      previews: prev.previews.filter((_, i) => i !== index),
+      files: prev.files.filter((_, i) => i !== index),
+      filename: "Subir Imagenes"
+    }))
   }
 
   const isPriceRange = (price: PriceRange | Equation): price is PriceRange => {
     return (price as PriceRange).from !== undefined
   }
 
-  const deleteImg = (e: React.MouseEvent<HTMLButtonElement>, i: number) => {
-    e.preventDefault()
-    const imageToRemove = imageLoader.loader[i]
-    const newLoader = imageLoader.loader.filter(
-      (_: any, index: number) => index !== i
-    )
-    const newImages = images.images.filter((file: any) => {
-      return file instanceof File ? true : file.url !== imageToRemove
-    })
-
-    setLoadImage({
-      loader: newLoader,
-      filename: "Subir Imagenes",
-    })
-    setImages({ images: newImages })
-  }
-  // const removeImg =
   return (
     <form encType="multipart/form-data" noValidate>
       <Grid2 container spacing={2}>
@@ -221,10 +214,7 @@ export default function ProductForm({ handleSubmit, openVideo }: FormProps) {
               gap: 4,
             }}
           >
-            {[
-              ...imageLoader.loader,
-              ...new Array(4 - imageLoader.loader.length).fill(null),
-            ].map((img, i) =>
+            {imageState.previews.map((img, i) =>
               img ? (
                 <div style={{ border: "1px gray solid", borderRadius: 4 }}>
                   <div
@@ -243,7 +233,6 @@ export default function ProductForm({ handleSubmit, openVideo }: FormProps) {
                         accept="image/*"
                         hidden
                         onChange={(a) => {
-                          const i = imageLoader.loader.indexOf(img)
                           replaceImage(a, i)
                         }}
                       />
@@ -258,21 +247,6 @@ export default function ProductForm({ handleSubmit, openVideo }: FormProps) {
                     >
                       <HighlightOffOutlinedIcon />
                     </IconButton>
-                    {/* <IconButton
-                      sx={{ cursor: "pointer", padding: "5px" }}
-                      style={{ color: "#d33f49" }}
-                      onClick={(d) => {
-                        // imageLoader.loader.splice(i, 1)
-                        // images.images.splice(i, 1)
-                        setLoadImage({
-                          loader: [],
-                          filename: "Subir Imagenes",
-                        })
-                        newImages({ images: [] })
-                      }}
-                    >
-                      <HighlightOffOutlinedIcon />
-                    </IconButton> */}
                   </div>
 
                   <img
@@ -296,198 +270,17 @@ export default function ProductForm({ handleSubmit, openVideo }: FormProps) {
                 />
               )
             )}
-            {/* {state.video && (
-              <>
-                <div
-                  style={{
-                    // width: "25%",
-                    marginRight: "4px",
-                    flexDirection: "row",
-                  }}
-                >
-                  <div
-                    style={{
-                      textAlign: "right",
-                      display: "flex",
-                    }}
-                  >
-                    <IconButton
-                      sx={{ cursor: "pointer", padding: "5px" }}
-                      style={{
-                        color: "#d33f49",
-                      }}
-                      onClick={openVideo}
-                    >
-                      <EditIcon />
-                    </IconButton>
-
-                    <IconButton
-                      sx={{
-                        cursor: "pointer",
-                        padding: "5px",
-                        color: "#d33f49",
-                      }}
-                      name="video"
-                      //   onClick={handleChange} cambiar la función
-                    >
-                      <HighlightOffOutlinedIcon />
-                    </IconButton>
-                  </div>
-
-                  <Paper elevation={3} style={{ padding: 10 }}>
-                    <span
-                      key={1}
-                      style={{ width: "100%" }}
-                      dangerouslySetInnerHTML={{
-                        __html: state.video,
-                      }}
-                    />
-                  </Paper>
-                </div>
-              </>
-            )} */}
           </Grid2>
           <Grid2 container sx={{ width: "100%" }}>
             <Grid2 size={{ xs: 12, md: 6 }}>
               <Checkbox
                 checked={Boolean(state.active)}
                 color="primary"
-                inputProps={{ "aria-label": "secondary checkbox" }}
                 onChange={handleCheck}
               />
               Habilitado / Visible
             </Grid2>
-            {/* <Grid2 size={{ xs: 12, md: 3 }}>
-              <Checkbox
-                checked={Boolean(state.hasSpecialVar)}
-                color="primary"
-                inputProps={{ "aria-label": "secondary checkbox" }}
-                onChange={handleCheck}
-              />
-              ¿Tiene variables especiales?
-            </Grid2> */}
-            {/* <Grid2 size={{ xs: 12, md: 3 }}>
-              <Checkbox
-                checked={Boolean(state.autoCertified)}
-                color="primary"
-                inputProps={{ "aria-label": "secondary checkbox" }}
-                onChange={handleCheck}
-              />
-              ¿Agregar certificado automáticamente? */}
-            {/* </Grid2> */}
           </Grid2>
-          {/* {state.hasSpecialVar && (
-            <Grid2 container spacing={2}>
-              <Grid2 container style={{ marginTop: 20 }}>
-                <h3>Variables especiales</h3>
-              </Grid2>
-               <>
-                {specialVars &&
-                  specialVars.map((specialVar, i) => (
-                    <Grid2
-                      container
-                      spacing={2}
-                      xs={12}
-                      style={{ marginBottom: 10 }}
-                    >
-                      <Grid2 item xs={12} md={5}>
-                        <FormControl
-                          className={cx(classes.margin, classes.textField)}
-                          variant="outlined"
-                          xs={12}
-                          fullWidth={true}
-                        >
-                          <TextField
-                            variant="outlined"
-                            required
-                            fullWidth
-                            id={specialVar}
-                            label="Nombre"
-                            name="specialVar"
-                            autoComplete="specialVar"
-                            value={specialVar.name}
-                            onChange={(e) => {
-                              setSpecialVars(
-                                specialVar
-                                  .slice(0, i)
-                                  .concat({
-                                    name: e.target.value,
-                                    isSpecialVarVisible:
-                                      specialVars.isSpecialVarVisible,
-                                  })
-                                  .concat(specialVars.slice(i + 1))
-                              )
-                            }}
-                          />
-                        </FormControl>
-                      </Grid2>
-                      <Grid2 item xs={12} md={5}>
-                        <FormControl
-                          className={cx(classes.margin, classes.textField)}
-                          variant="outlined"
-                          xs={12}
-                          fullWidth={true}
-                        >
-                          <Checkbox
-                            variant="outlined"
-                            required
-                            id="isSpecialVarVisible"
-                            label="Visible"
-                            name="isSpecialVarVisible"
-                            autoComplete="isSpecialVarVisible"
-                            value={specialVar.isSpecialVarVisible}
-                            onChange={(e) => {
-                              setSpecialVars(
-                                specialVars
-                                  .slice(0, i)
-                                  .concat({
-                                    name: specialVars.name,
-                                    isSpecialVarVisible: e.target.value,
-                                  })
-                                  .concat(specialVars.slice(i + 1))
-                              )
-                            }}
-                          />
-                        </FormControl>
-                      </Grid2>
-                      <Grid2 item xs={2}>
-                        <Button
-                          variant="contained"
-                          color="primary"
-                          onClick={() => {
-                            setSpecialVars(
-                              specialVars
-                                .slice(0, i)
-                                .concat(specialVars.slice(i + 1))
-                            )
-                          }}
-                          disabled={buttonState}
-                          style={{ marginTop: 20 }}
-                        >
-                          -
-                        </Button>
-                      </Grid2>
-                    </Grid2>
-                  ))}
-                <Button
-                  variant="contained"
-                  color="default"
-                  onClick={() => {
-                    setSpecialVars(
-                      specialVars.concat({
-                        name: "",
-                        isSpecialVarVisible: "",
-                      })
-                    )
-                  }}
-                  disabled={buttonState}
-                  style={{ marginTop: 20 }}
-                >
-                  +
-                </Button>
-              </>
-            </Grid2>
-          )} */}
           <Grid2 size={{ xs: 12, md: 6 }}>
             <FormControl variant="outlined" fullWidth={true}>
               <TextField
@@ -503,8 +296,6 @@ export default function ProductForm({ handleSubmit, openVideo }: FormProps) {
               />
             </FormControl>
           </Grid2>
-          {/* Cambiar por Select de Categories !!! */}
-          {/* O Autocompletar en todo caso */}
           <Grid2 size={{ xs: 12, md: 6 }}>
             <FormControl variant="outlined" fullWidth={true}>
               <TextField
@@ -609,7 +400,6 @@ export default function ProductForm({ handleSubmit, openVideo }: FormProps) {
                 name="cost"
                 value={state.cost}
                 onChange={handleChange}
-                // error={state.cost !== undefined && !isAValidPrice(state.cost)}
                 slotProps={{
                   input: {
                     startAdornment: (
@@ -646,10 +436,6 @@ export default function ProductForm({ handleSubmit, openVideo }: FormProps) {
                   isPriceRange(state.priceRange) ? state.priceRange.from : ""
                 }
                 onChange={handleChange}
-                // error={
-                //   state.priceRange?.from !== undefined &&
-                //   !isAValidPrice(state.priceRange?.from)
-                // }
                 slotProps={{
                   input: {
                     startAdornment: (
@@ -664,7 +450,6 @@ export default function ProductForm({ handleSubmit, openVideo }: FormProps) {
             <FormControl variant="outlined" fullWidth={true}>
               <TextField
                 variant="outlined"
-                // required
                 fullWidth
                 id="toPublicPrice"
                 label="Hasta"
@@ -674,10 +459,6 @@ export default function ProductForm({ handleSubmit, openVideo }: FormProps) {
                   isPriceRange(state.priceRange) ? state.priceRange.to : ""
                 }
                 onChange={handleChange}
-                // error={
-                //   state.priceRange?.to !== undefined &&
-                //   !isAValidPrice(state.priceRange?.to)
-                // }
                 slotProps={{
                   input: {
                     startAdornment: (
@@ -714,10 +495,6 @@ export default function ProductForm({ handleSubmit, openVideo }: FormProps) {
                   isPriceRange(state.priceRange) ? state.priceRange.from : ""
                 }
                 onChange={handleChange}
-                // error={
-                //   state.priceRange.from !== undefined &&
-                //   !isAValidPrice(state.priceRange.from)
-                // }
                 slotProps={{
                   input: {
                     startAdornment: (
@@ -741,10 +518,6 @@ export default function ProductForm({ handleSubmit, openVideo }: FormProps) {
                   isPriceRange(state.priceRange) ? state.priceRange.to : ""
                 }
                 onChange={handleChange}
-                // error={
-                //   state.priceRange?.to !== undefined &&
-                //   !isAValidPrice(state.priceRange?.to)
-                // }
                 slotProps={{
                   input: {
                     startAdornment: (
@@ -760,7 +533,7 @@ export default function ProductForm({ handleSubmit, openVideo }: FormProps) {
           variant="contained"
           color="primary"
           type="submit"
-          onClick={(e) => handleSubmit(e, images)} //   disabled={buttonState}
+          onClick={(e) => handleSubmit(e, imageState.files)}
           style={{ marginTop: 20 }}
         >
           Guardar

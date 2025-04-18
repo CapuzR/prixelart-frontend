@@ -1,32 +1,32 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useState } from "react";
 
-import Grid2 from "@mui/material/Grid2"
-import Checkbox from "@mui/material/Checkbox"
-import Title from "../../../components/Title"
-import MenuItem from "@mui/material/MenuItem"
-import Select from "@mui/material/Select"
-import FormControl from "@mui/material/FormControl"
-import InputLabel from "@mui/material/InputLabel"
-import TextField from "@mui/material/TextField"
-import FormControlLabel from "@mui/material/FormControlLabel"
-import InputAdornment from "@mui/material/InputAdornment"
-import LocalPhoneIcon from "@mui/icons-material/LocalPhone"
-import EmailIcon from "@mui/icons-material/Email"
-import HomeIcon from "@mui/icons-material/Home"
-import BusinessIcon from "@mui/icons-material/Business"
-import Autocomplete from "@mui/lab/Autocomplete"
-import { AutocompleteInputChangeReason } from "@mui/material"
+import Grid2 from "@mui/material/Grid2";
+import Checkbox from "@mui/material/Checkbox";
+import Title from "../../../components/Title";
+import MenuItem from "@mui/material/MenuItem";
+import Select from "@mui/material/Select";
+import FormControl from "@mui/material/FormControl";
+import InputLabel from "@mui/material/InputLabel";
+import TextField from "@mui/material/TextField";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import InputAdornment from "@mui/material/InputAdornment";
+import LocalPhoneIcon from "@mui/icons-material/LocalPhone";
+import EmailIcon from "@mui/icons-material/Email";
+import HomeIcon from "@mui/icons-material/Home";
+import BusinessIcon from "@mui/icons-material/Business";
+import Autocomplete from "@mui/lab/Autocomplete";
+import { AutocompleteInputChangeReason } from "@mui/material";
 
-import { Theme } from "@mui/material"
-import { makeStyles } from "tss-react/mui"
+import { Theme } from "@mui/material";
+import { makeStyles } from "tss-react/mui";
 
-import { useSnackBar, useLoading } from "@context/GlobalContext"
-import { Consumer } from "../../../../../types/consumer.types"
-import { Prixer } from "../../../../../types/prixer.types"
-import { ShippingMethod } from "../../../../../types/shippingMethod.types"
-import { useOrder } from "@context/OrdersContext"
-import { getConsumers, getPrixers, getShippingMethods } from "../api"
-import { BasicInfo, ConsumerDetails } from "@apps/consumer/checkout/interfaces"
+import { useSnackBar, useLoading } from "@context/GlobalContext";
+import { Consumer } from "../../../../../types/consumer.types";
+import { Prixer } from "../../../../../types/prixer.types";
+import { ShippingMethod } from "../../../../../types/shippingMethod.types";
+import { useOrder } from "@context/OrdersContext";
+import { getConsumers, getPrixers, getShippingMethods } from "../api";
+import { BasicInfo, ConsumerDetails } from "@apps/consumer/checkout/interfaces";
 
 const useStyles = makeStyles()((theme: Theme) => {
   return {
@@ -38,27 +38,34 @@ const useStyles = makeStyles()((theme: Theme) => {
     textField: {
       marginRight: "8px",
     },
-  }
-})
+  };
+});
 
 export default function ConsumerData() {
-  const { classes } = useStyles()
-  const { setLoading } = useLoading()
-  const { state, dispatch } = useOrder()
-  const { order } = state
-  const { consumerDetails, shipping, billing } = order //Datos básicos, de envío y de facturación
-  const { basic } = consumerDetails
+  const { classes } = useStyles();
+  const { setLoading } = useLoading();
+  const { state, dispatch } = useOrder();
+  const { order, prixers, consumers } = state;
+  const { consumerDetails, shipping, billing } = order; //Datos básicos, de envío y de facturación
+  const { basic } = consumerDetails;
   // const { billTo } = billing
-  const [shippingDataCheck, setShippingDataCheck] = useState(true)
-  const [billingDataCheck, setBillingDataCheck] = useState(true)
-  const [billingShDataCheck, setBillingShDataCheck] = useState(false)
+  const [shippingDataCheck, setShippingDataCheck] = useState(true);
+  const [billingDataCheck, setBillingDataCheck] = useState(true);
+  const [billingShDataCheck, setBillingShDataCheck] = useState(false);
 
-  const [shippingList, setShippingList] = useState<ShippingMethod[]>([])
-  const [consumers, setConsumers] = useState<Consumer[]>([])
-  const [prixers, setPrixers] = useState<Prixer[]>([])
-  const [options, setOptions] = useState<string[]>([])
+  const [shippingList, setShippingList] = useState<ShippingMethod[]>([]);
+  // const [consumers, setConsumers] = useState<Consumer[]>([]);
+  // const [prixers, setPrixers] = useState<Prixer[]>([]);
+  const [options, setOptions] = useState<Array<{
+    id: string;
+    label: string;
+    data: Consumer | Prixer;
+    type: 'consumer' | 'prixer';
+  }>>([]);
 
-  let today = new Date()
+  const [inputValue, setInputValue] = useState('');
+
+  let today = new Date();
   const months = [
     "Enero",
     "Febrero",
@@ -72,7 +79,7 @@ export default function ConsumerData() {
     "Octubre",
     "Noviembre",
     "Diciembre",
-  ]
+  ];
   const monthsOrder = [
     "01",
     "02",
@@ -86,7 +93,7 @@ export default function ConsumerData() {
     "10",
     "11",
     "12",
-  ]
+  ];
   const days = [
     "domingo",
     "lunes",
@@ -95,7 +102,7 @@ export default function ConsumerData() {
     "jueves",
     "viernes",
     "sábado",
-  ]
+  ];
 
   let ProdTimes = order.lines.map((line) => {
     if (
@@ -103,310 +110,307 @@ export default function ConsumerData() {
       line.item.art &&
       line.item.product.productionTime !== undefined
     ) {
-      return line.item.product.productionTime
+      return line.item.product.productionTime;
     }
-  })
+  });
 
   let orderedProdT = ProdTimes.sort((a, b) => {
-    if (a === undefined) return 1
-    if (b === undefined) return -1
-    return a - b
-  })
+    if (a === undefined) return 1;
+    if (b === undefined) return -1;
+    return a - b;
+  });
 
   let readyDate = new Date(
     today.setDate(today.getDate() + Number(orderedProdT[0]))
-  )
+  );
 
   const stringReadyDate =
     readyDate.getFullYear() +
     "-" +
     monthsOrder[readyDate.getMonth()] +
     "-" +
-    readyDate.getDate()
+    readyDate.getDate();
 
   const readShippingMethods = async () => {
     try {
-      const response = await getShippingMethods()
+      const response = await getShippingMethods();
       dispatch({
         type: "SET_SHIPPING_METHODS",
         payload: response,
-      })
+      });
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-  }
+  };
 
   const readConsumers = async () => {
     try {
-      const response = await getConsumers()
+      const response = await getConsumers();
       dispatch({
         type: "SET_CONSUMERS",
         payload: response,
-      }) // setConsumer(response.data)
+      }); // setConsumer(response.data)
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-  }
+  };
 
   const readPrixers = async () => {
     try {
-      const response = await getPrixers()
+      const response = await getPrixers();
       dispatch({
         type: "SET_PRIXERS",
         payload: response,
-      })
+      });
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-  }
+  };
 
   useEffect(() => {
-    setLoading(true)
-    readShippingMethods()
-    readConsumers()
-    readPrixers()
-    setLoading(false)
-  }, [])
+    setLoading(true);
+    readShippingMethods();
+    readConsumers();
+    readPrixers();
+    setLoading(false);
+  }, []);
+
+  useEffect(() => {
+    const combinedOptions: Array<{
+      id: string;
+      label: string;
+      data: Consumer | Prixer;
+      type: 'consumer' | 'prixer';
+    }> = [];
+
+    // Agregar consumers
+    consumers?.forEach((consumer) => {
+      combinedOptions.push({
+        id: consumer._id,
+        label: `${consumer.firstname} ${consumer.lastname}`,
+        data: consumer,
+        type: 'consumer'
+      });
+    });
+
+    // Agregar prixers
+    prixers?.forEach((prixer) => {
+      combinedOptions.push({
+        id: prixer._id,
+        label: `${prixer.firstName} ${prixer.lastName}`,
+        data: prixer,
+        type: 'prixer'
+      });
+    });
+
+    setOptions(combinedOptions);
+  }, [consumers, prixers]);
 
   const handleShippingDataCheck = () => {
-    // FIX this function!!!
-    if (shippingDataCheck) {
-    //   setShippingData({
-    //     ...props.shippingData,
-    //     shippingName: "",
-    //     shippingLastName: "",
-    //     shippingPhone: "",
-    //     shippingAddress: "",
-    //   })
-    // } else {
-    //   setValues({
-    //     ...props.shippingData,
-    //     shippingName: values.name,
-    //     shippingLastName: values.lastName,
-    //     shippingPhone: values.phone,
-    //     shippingAddress: values.address,
-    //   })
+    const newValue = !shippingDataCheck;
+    setShippingDataCheck(newValue);
+
+    if (newValue) {
+      dispatch({
+        type: "SET_SHIPPING_BASIC",
+        payload: {
+          ...shipping.basic,
+          name: basic.name,
+          lastName: basic.lastName,
+          phone: basic.phone,
+          email: basic.email,
+          id: basic.id,
+          shortAddress: basic.shortAddress,
+        },
+      });
+    } else {
+      dispatch({
+        type: "SET_SHIPPING_BASIC",
+        payload: {
+          ...shipping.basic,
+        },
+      });
     }
+  };
 
-    setShippingDataCheck(!shippingDataCheck)
-  }
+  const handleBillingDataCheck = () => {
+    const newValue = !billingDataCheck;
+    setBillingDataCheck(newValue);
+    if (newValue === true) {
+      setBillingShDataCheck(false);
+    }
+    if (newValue) {
+      console.log(basic);
 
-  useEffect(() => {
-    let updatedv2: string[] = []
-    const updated = consumers?.filter((consumer) =>
-      consumer.firstname?.toLowerCase().includes(basic?.name?.toLowerCase())
-    )
-    updated.map((p) => {
-      updatedv2.push(p.firstname + ", " + p.lastname)
-    })
+      // Si se activa el checkbox, copiar datos básicos a billing
+      dispatch({
+        type: "SET_BILLING_DETAILS",
+        payload: {
+          ...billing,
+          basic: {
+            name: basic.name,
+            lastName: basic.lastName,
+            phone: basic.phone,
+            email: basic.email,
+            id: basic.id,
+            shortAddress: basic.shortAddress,
+          },
+          billTo: {
+            name: basic.name,
+            lastName: basic.lastName,
+            phone: basic.phone,
+            email: basic.email,
+            id: basic.id,
+            shortAddress: basic.shortAddress,
+          },
+        },
+      });
+    } else {
+      // Si se desactiva el checkbox, mantener los datos actuales pero permitir edición
+      dispatch({
+        type: "SET_BILLING_BASIC",
+        payload: {
+          ...billing.basic,
+        },
+      });
+    }
+  };
 
-    const updatedv3 = prixers?.filter((prixer) =>
-      prixer?.firstName?.toLowerCase().includes(basic?.name?.toLowerCase())
-    )
-
-    updatedv3.map((p) => {
-      if (updatedv2.includes(p.firstName + ", " + p.lastName)) {
-        return
-      } else {
-        updatedv2.push(p.firstName + ", " + p.lastName)
-      }
-    })
-
-    setOptions(updatedv2)
-  }, [basic?.name])
+  const handleBillingShDataCheck = () => {
+    const newValue = !billingShDataCheck;
+    setBillingShDataCheck(newValue);
+    if (newValue === true) {
+      setBillingDataCheck(false);
+    }
+    if (newValue) {
+      // Si se activa el checkbox, copiar datos de shipping a billing
+      dispatch({
+        type: "SET_BILLING_DETAILS",
+        payload: {
+          ...billing,
+          basic: {
+            name: shipping.basic.name,
+            lastName: shipping.basic.lastName,
+            phone: shipping.basic.phone,
+            email: shipping.basic.email,
+            id: shipping.basic.id,
+            shortAddress: shipping.basic.shortAddress,
+          },
+          billTo: {
+            name: shipping.basic.name,
+            lastName: shipping.basic.lastName,
+            phone: shipping.basic.phone,
+            email: shipping.basic.email,
+            id: shipping.basic.id,
+            shortAddress: shipping.basic.shortAddress,
+          },
+        },
+      });
+    } else {
+      // Si se desactiva el checkbox, mantener los datos actuales pero permitir edición
+      dispatch({
+        type: "SET_BILLING_BASIC",
+        payload: {
+          ...billing.basic,
+        },
+      });
+    }
+  };
 
   const defaultData = {
-    consumerDetails: {
-      basic: {
-        name: "",
-        id: "",
-        lastName: "",
-        email: "",
-        phone: "",
-        shortAddress: "",
-      },
-      type: "Particular",
-      selectedAddress: {
-        line1: "",
-        line2: "",
-        city: "",
-        state: "",
-        country: "",
-      },
-      addresses: [],
-    },
-    shipping: {
-      basic: {
-        name: "",
-        id: "",
-        lastName: "",
-        email: "",
-        phone: "",
-        shortAddress: "",
-      },
-      address: {
-        recepient: {
-          name: "",
-          id: "",
-          lastName: "",
-          email: "",
-          phone: "",
-          shortAddress: "",
-        },
-        address: {
-          line1: "",
-          line2: "",
-          city: "",
-          state: "",
-          country: "",
-          zipCode: "",
-          reference: "",
-        },
-      },
-      preferredDeliveryDate: undefined,
-      estimatedShippingDate: undefined,
-      estimatedDeliveryDate: undefined,
-    },
-    billing: {
-      basic: {
-        name: "",
-        id: "",
-        lastName: "",
-        email: "",
-        phone: "",
-        shortAddress: "",
-      },
-      billTo: {
-        name: "",
-        id: "",
-        lastName: "",
-        email: "",
-        phone: "",
-        shortAddress: "",
-      },
-      address: {
-        recepient: {
-          name: "",
-          id: "",
-          lastName: "",
-          email: "",
-          phone: "",
-          shortAddress: "",
-        },
-        address: {
-          line1: "",
-          line2: "",
-          city: "",
-          state: "",
-          country: "",
-          zipCode: "",
-          reference: "",
-        },
-      },
-    },
-  }
+    name: "",
+    lastName: "",
+    phone: "",
+    email: "",
+    id: "",
+    shortAddress: "",
+  };
 
   const handleInputChange = (
     event: React.SyntheticEvent,
-    value: string,
+    newValue: string | { id: string; label: string; data: Consumer | Prixer; type: 'consumer' | 'prixer' } | null,
     reason: AutocompleteInputChangeReason
   ) => {
     if (reason === "clear") {
-      // setSelectedPrixer(undefined)
-      // setSelectedConsumer(undefined)
-      // setConsumerType("Particular")
       dispatch({
         type: "RESET_BASIC_DATA",
-        payload: {
-          consumerDetails: defaultData.consumerDetails,
-          shipping: defaultData.shipping,
-          billing: defaultData.billing,
-        },
-      })
-    } else if (event?.type === "change") {
-      const form = basic
-      form.name = value
-
+        payload: defaultData,
+      });
+      setInputValue('');
+    } else if (reason === "input") {
+      setInputValue(newValue as string);
       dispatch({
         type: "SET_CONSUMER_BASIC",
-        payload: form,
-      })
+        payload: { ...basic, name: newValue as string },
+      });
+    } else if (reason === "selectOption" && newValue && typeof newValue !== 'string') {
+      const selected = newValue.data;
+      if (newValue.type === 'consumer') {
+        const consumer = selected as Consumer;
+        dispatch({
+          type: "SET_CONSUMER_BASIC",
+          payload: {
+            name: consumer.firstname,
+            lastName: consumer.lastname,
+            phone: consumer.phone,
+            email: consumer.email,
+            id: consumer.ci,
+            shortAddress: consumer.address,
+          },
+        });
+      } else {
+        const prixer = selected as Prixer;
+        dispatch({
+          type: "SET_CONSUMER_BASIC",
+          payload: {
+            name: prixer.firstName,
+            lastName: prixer.lastName,
+            phone: prixer.phone,
+            email: prixer.email,
+            id: prixer._id,
+            shortAddress: prixer.city,
+          },
+        });
+      }
     }
-    // else if (event?.type === "click") {
-    //   const valuev2 = value.split(",")
-    //   let prixer = prixers.find(
-    //     (prixer) =>
-    //       prixer?.firstName === valuev2[0] &&
-    //       prixer?.lastName === valuev2[1]?.trim()
-    //   )
-    //   let selected = consumers.find(
-    //     (consumer) =>
-    //       consumer.firstname === valuev2[0] &&
-    //       consumer.lastname === valuev2[1]?.trim()
-    //   )
-    //   if (selected) {
-    //     setSelectedConsumer(selected)
-    //     setConsumerType(selected.consumerType)
-
-    //     if (selected.consumerType === "Prixer") {
-    //       setSelectedPrixer(prixer)
-    //       setConsumerType("Prixer")
-    //     }
-    //     setBasic({
-    //       ...basic,
-    //       name: valuev2[0],
-    //       lastname: valuev2[1]?.trim(),
-    //       phone: selected?.phone,
-    //       email: selected?.email,
-    //       address: selected?.address,
-    //       ci: selected?.ci,
-    //     })
-    //   }
-    //   if (prixer) {
-    //     setSelectedPrixer(prixer)
-    //     setBasic({
-    //       ...basic,
-    //       name: valuev2[0],
-    //       lastname: valuev2[1]?.trim(),
-    //       phone: prixer?.phone,
-    //       email: prixer?.email,
-    //       address: prixer?.address,
-    //       ci: prixer?.ci,
-    //     })
-    //     setConsumerType("Prixer")
-    //   } else if (prixer === undefined && selected?.username) {
-    //     prixer = prixers.find(
-    //       (prixer) => prixer?.username === selected.username
-    //     )
-    //     setSelectedPrixer(prixer)
-    //   }
-    // }
-  }
+  };
 
   const handleInput = (value: string, type: keyof BasicInfo, area: string) => {
-    const form = basic
-    form[type] = value
-
     if (area === "basic") {
       dispatch({
         type: "SET_CONSUMER_BASIC",
-        payload: form,
-        // this need to be the full object at this level?
-      })
+        payload: { ...basic, [type]: value },
+      });
     } else if (area === "shipping") {
       dispatch({
         type: "SET_SHIPPING_BASIC",
-        payload: form,
-        // this need to be the full object at this level?
-      })
+        payload: { ...shipping.basic, [type]: value },
+      });
     } else if (area === "billing") {
+      console.log(value, type, area);
+      // Asegurarnos de que el estado se actualice correctamente
+      const updatedBasic = {
+        ...billing.basic,
+        [type]: value,
+      };
+
       dispatch({
         type: "SET_BILLING_BASIC",
-        payload: form,
-        // this need to be the full object at this level?
-      })
+        payload: updatedBasic,
+      });
+
+      // Si el checkbox de datos básicos está activo, también actualizar billTo
+      if (billingDataCheck) {
+        dispatch({
+          type: "SET_BILLING_DETAILS",
+          payload: {
+            ...billing,
+            billTo: updatedBasic,
+          },
+        });
+      }
     }
-  }
+  };
 
   return (
     <>
@@ -419,7 +423,8 @@ export default function ConsumerData() {
             <Autocomplete
               freeSolo
               options={options}
-              getOptionLabel={(option) => option}
+              getOptionLabel={(option) => typeof option === 'string' ? option : option.label}
+              inputValue={inputValue}
               onInputChange={handleInputChange}
               value={basic?.name}
               fullWidth
@@ -432,10 +437,19 @@ export default function ConsumerData() {
                   variant="outlined"
                   fullWidth
                   className={classes.textField}
-                  value={basic?.name}
-                  onChange={(e) => handleInput(e.target.value, "name", "basic")}
                 />
               )}
+              openOnFocus
+              autoHighlight
+              clearOnBlur={false}
+              selectOnFocus={false}
+              blurOnSelect={false}
+              filterOptions={(options, state) => {
+                const inputValue = state.inputValue.trim().toLowerCase();
+                return options.filter(option => 
+                  option.label.toLowerCase().includes(inputValue)
+                );
+              }}
             />
           </Grid2>
           <Grid2 size={{ sm: 4, xs: 12 }} className={classes.gridInput}>
@@ -515,16 +529,22 @@ export default function ConsumerData() {
               variant="outlined"
             >
               <InputLabel>Tipo de cliente</InputLabel>
-              {/* <Select
-                label="Método de entrega"
+              <Select
+                label="Tipo de cliente"
                 className={classes.textField}
-                value={consumerType}
+                value={consumerDetails.type || ""}
                 onChange={(e) => {
-                  setConsumerType(e.target.value)
+                  dispatch({
+                    type: "SET_CONSUMER_DETAILS",
+                    payload: {
+                      ...consumerDetails,
+                      type: e.target.value as string,
+                    },
+                  });
                 }}
               >
                 <MenuItem value="">
-                  <em></em>
+                  <em>Seleccione un tipo</em>
                 </MenuItem>
                 {["Particular", "DAs", "Corporativo", "Prixer", "Artista"].map(
                   (n) => (
@@ -533,7 +553,7 @@ export default function ConsumerData() {
                     </MenuItem>
                   )
                 )}
-              </Select> */}
+              </Select>
             </FormControl>
           </Grid2>
           <Grid2 className={classes.gridInput}>
@@ -570,14 +590,12 @@ export default function ConsumerData() {
           <Title title="Datos de entrega" />
         </Grid2>
         <Grid2 container>
-          <Grid2>
+          <Grid2 size={{ xs: 12 }}>
             <FormControlLabel
               control={
                 <Checkbox
                   checked={shippingDataCheck}
-                  onChange={() => {
-                    handleShippingDataCheck()
-                  }}
+                  onChange={handleShippingDataCheck}
                 />
               }
               label="Igual a Datos básicos"
@@ -586,12 +604,12 @@ export default function ConsumerData() {
           <Grid2 size={{ sm: 4, xs: 12 }} className={classes.gridInput}>
             <TextField
               variant="outlined"
-              id="standard-name"
+              id="shipping-name"
               label="Nombre"
               fullWidth
               className={classes.textField}
               disabled={shippingDataCheck}
-              value={shipping.basic.name}
+              value={shipping.basic?.name || ""}
               onChange={(e) => handleInput(e.target.value, "name", "shipping")}
               margin="normal"
             />
@@ -604,7 +622,7 @@ export default function ConsumerData() {
               fullWidth
               disabled={shippingDataCheck}
               className={classes.textField}
-              value={shipping.basic.lastName}
+              value={shipping.basic?.lastName}
               onChange={(e) =>
                 handleInput(e.target.value, "lastName", "shipping")
               }
@@ -620,7 +638,7 @@ export default function ConsumerData() {
               disabled={shippingDataCheck}
               className={classes.textField}
               helperText="ej: 584141234567 o +584141234567 o 04143201028"
-              value={shipping.basic.phone}
+              value={shipping.basic?.phone}
               // error={
               //   shippingDataCheck
               //     ? props.values?.phone != undefined &&
@@ -629,7 +647,7 @@ export default function ConsumerData() {
               //       !UtilVals.isAValidPhoneNum(props.values?.shippingPhone)
               // }
               onChange={(e) => {
-                handleInput(e.target.value, "phone", "shipping")
+                handleInput(e.target.value, "phone", "shipping");
               }}
               margin="normal"
               slotProps={{
@@ -654,7 +672,7 @@ export default function ConsumerData() {
               disabled={shippingDataCheck}
               minRows={3}
               helperText="Incluir todos los detalles posibles, incluidas referencias."
-              value={shipping.basic.shortAddress}
+              value={shipping.basic?.shortAddress}
               onChange={(e) =>
                 handleInput(e.target.value, "shortAddress", "shipping")
               }
@@ -683,18 +701,10 @@ export default function ConsumerData() {
                     : shipping?.method
                 }
                 onChange={(e) => {
-                  // setShippingData({
-                  //   ...shippingData,
-                  //   shippingMethod: e.target.value,
-                  // })
-                  // setShippingMethod(e.target.value)
                   dispatch({
                     type: "SET_SHIPPING_DETAILS",
                     payload: { ...shipping, method: e.target.value },
-                    // this need to be the full object at this level?
-                  })
-
-                  // handleInput(e.target.value, "method", "shipping")
+                  });
                 }}
               >
                 <MenuItem value="" key={"vacío"}>
@@ -732,15 +742,11 @@ export default function ConsumerData() {
                   },
                 }}
                 onChange={(e) => {
-                  // setShippingData({
-                  //   ...shippingData,
-                  //   shippingDate: e.target.value,
-                  // })
                   dispatch({
                     type: "SET_SHIPPING_DETAILS",
                     payload: { ...shipping, shippingDate: e.target.value },
                     // this need to be the full object at this level?
-                  })
+                  });
                 }}
               />
             </FormControl>
@@ -766,19 +772,12 @@ export default function ConsumerData() {
           <Title title="Datos de facturación" />
         </Grid2>
         <Grid2 container>
-          <Grid2>
+          <Grid2 size={{ xs: 12 }}>
             <FormControlLabel
               control={
                 <Checkbox
                   checked={billingDataCheck}
-                  onChange={(e) => {
-                    if (billingShDataCheck) {
-                      setBillingDataCheck(!billingDataCheck)
-                      setBillingShDataCheck(!billingShDataCheck)
-                    } else {
-                      setBillingDataCheck(!billingDataCheck)
-                    }
-                  }}
+                  onChange={handleBillingDataCheck}
                 />
               }
               label="Igual a Datos básicos"
@@ -787,14 +786,7 @@ export default function ConsumerData() {
               control={
                 <Checkbox
                   checked={billingShDataCheck}
-                  onChange={(e) => {
-                    if (billingDataCheck) {
-                      setBillingShDataCheck(!billingShDataCheck)
-                      setBillingDataCheck(!billingDataCheck)
-                    } else {
-                      setBillingShDataCheck(!billingShDataCheck)
-                    }
-                  }}
+                  onChange={handleBillingShDataCheck}
                 />
               }
               label="Igual a Datos de entrega"
@@ -809,12 +801,12 @@ export default function ConsumerData() {
           >
             <TextField
               variant="outlined"
-              id="standard-name"
+              id="billing-name"
               label="Nombre"
               fullWidth
               className={classes.textField}
               disabled={billingDataCheck || billingShDataCheck}
-              value={billing.basic.name}
+              value={billing.basic?.name || ""}
               onChange={(e) => handleInput(e.target.value, "name", "billing")}
               margin="normal"
             />
@@ -833,7 +825,7 @@ export default function ConsumerData() {
               fullWidth
               className={classes.textField}
               disabled={billingDataCheck || billingShDataCheck}
-              value={billing.basic.lastName}
+              value={billing.basic?.lastName}
               onChange={(e) =>
                 handleInput(e.target.value, "lastName", "billing")
               }
@@ -865,7 +857,7 @@ export default function ConsumerData() {
                 //       ? shippingData?.phone
                 //       : ""
                 //     : billingData?.phone
-                billing.basic.phone
+                billing.basic?.phone
               }
               onChange={(e) => handleInput(e.target.value, "phone", "billing")}
               margin="normal"
@@ -894,11 +886,14 @@ export default function ConsumerData() {
               fullWidth
               className={classes.textField}
               disabled={billingDataCheck || billingShDataCheck}
-              value={billing?.company}
+              value={billing?.company || ""}
               onChange={(e) =>
                 dispatch({
                   type: "SET_BILLING_DETAILS",
-                  payload: { ...billing, company: e.target.value },
+                  payload: {
+                    ...billing,
+                    company: e.target.value,
+                  },
                 })
               }
               required
@@ -920,7 +915,7 @@ export default function ConsumerData() {
               disabled={billingDataCheck || billingShDataCheck}
               className={classes.textField}
               helperText="ej: V-12345679 o V-1234567-0"
-              value={billing.basic.id}
+              value={billing.basic?.id || ""}
               onChange={(e) => handleInput(e.target.value, "id", "billing")}
               margin="normal"
             />
@@ -935,7 +930,7 @@ export default function ConsumerData() {
               minRows={3}
               disabled={billingDataCheck || billingShDataCheck}
               className={classes.textField}
-              value={billing.basic.shortAddress}
+              value={billing.basic?.shortAddress}
               onChange={(e) =>
                 handleInput(e.target.value, "shortAddress", "billing")
               }
@@ -954,5 +949,5 @@ export default function ConsumerData() {
         </Grid2>
       </Grid2>
     </>
-  )
+  );
 }

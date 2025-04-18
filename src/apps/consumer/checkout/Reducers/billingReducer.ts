@@ -1,7 +1,15 @@
-import { ShippingDetails, CheckoutAction } from "../interfaces"
+import { BillingDetails, CheckoutAction } from "../interfaces"
 
-const defaultState: ShippingDetails = {
+const defaultState: BillingDetails = {
   basic: {
+    name: "",
+    lastName: "",
+    phone: "",
+    email: "",
+    id: "",
+    shortAddress: ""
+  },
+  billTo: {
     name: "",
     lastName: "",
     phone: "",
@@ -27,28 +35,17 @@ const defaultState: ShippingDetails = {
       zipCode: "",
       reference: ""
     }
-  },
-  preferredDeliveryDate: undefined,
-  estimatedShippingDate: undefined,
-  estimatedDeliveryDate: undefined
+  }
 }
 
-export const shippingReducer = (
-  shipping: ShippingDetails,
+export const billingReducer = (
+  billing: BillingDetails,
   action: CheckoutAction
-): ShippingDetails => {
-  const currentState = shipping || defaultState
+): BillingDetails => {
+  const currentState = billing || defaultState
 
   switch (action.type) {
-    case "SET_SHIPPING_METHOD": {
-      const { method } = action.payload as { method: string }
-      return {
-        ...currentState,
-        method: method
-      }
-    }
-
-    case "SET_SHIPPING_BASIC": {
+    case "SET_BILLING_BASIC": {
       const { payload } = action
       return {
         ...currentState,
@@ -59,7 +56,7 @@ export const shippingReducer = (
       }
     }
 
-    case "SET_SHIPPING_DETAILS": {
+    case "SET_BILLING_DETAILS": {
       const { payload } = action
       return {
         ...currentState,

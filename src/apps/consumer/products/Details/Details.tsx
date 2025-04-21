@@ -13,7 +13,7 @@ import { fetchProductDetails } from '../api';
 import Portrait from './views/Portrait';
 import Landscape from './views/Landscape';
 
-import { Product } from '../interfaces';
+import { Product, Selection } from '../interfaces';
 import { queryCreator } from 'apps/consumer/flow/utils';
 import { SelectChangeEvent } from '@mui/material';
 import { parseProduct } from '../parseApi';
@@ -34,7 +34,6 @@ const Details: React.FC<DetailsProps> = ({ productId }) => {
   const id = productId || routeId || '';
   const [isFetchingVariantPrice, setIsFetchingVariantPrice] = useState(false);
 
-
   const [product, setProduct] = useState<Product>();
   const [isPortrait, setIsPortrait] = useState(window.innerWidth < 768);
   const [windowHeight, setWindowHeight] = useState(window.innerHeight);
@@ -53,7 +52,6 @@ const Details: React.FC<DetailsProps> = ({ productId }) => {
   }, []);
 
   useEffect(() => {
-
     if (!id && !productId) {
       return;
     }
@@ -64,14 +62,14 @@ const Details: React.FC<DetailsProps> = ({ productId }) => {
         const parsed = parseProduct(fetchedProduct);
 
         const selectedAttributes = Array.from(getUrlParams([]).entries()).map(
-          ([name, value]) => ({ name, value })
+          ([name, value]) => ({ name, value, attributes: { name, value: [value] } } as Selection)
         );
 
-        // setProduct({
-        //   ...parsed,
-        //   id,
-        //   selection: selectedAttributes,
-        // });
+        setProduct({
+          ...parsed,
+          _id: id,
+          selection: selectedAttributes,
+        });
       } catch (error) {
         console.error('Error fetching product attributes:', error);
       } finally {
@@ -84,11 +82,15 @@ const Details: React.FC<DetailsProps> = ({ productId }) => {
 
   useEffect(() => {
     const fetchAndSetPrice = async () => {
-      if (product?.selection && product?.selection.some((selection) => selection.value !== '')) {
-        const selectedVariant = getSelectedVariant(product?.selection, product?.variants);
+      if (!product?.selection) return;
+      
+      const selectionArray = Array.isArray(product.selection) ? product.selection : [product.selection];
+      
+      if (selectionArray.some((selection: Selection) => selection.value !== '')) {
+        const selectedVariant = getSelectedVariant(selectionArray, product.variants);
         if (selectedVariant) {
           setIsFetchingVariantPrice(true);
-          const updatedPrice = await fetchVariantPrice(selectedVariant.id, id!);
+          const updatedPrice = await fetchVariantPrice(selectedVariant._id, id!);
           const parsedPrice = parsePrice(updatedPrice);
 
           setProduct((prevProduct) =>
@@ -105,27 +107,28 @@ const Details: React.FC<DetailsProps> = ({ productId }) => {
 
   const handleSelection = (e: SelectChangeEvent<string>) => {
     const { name, value } = e.target;
-    if (!name || !id) return;
+    if (!name || !id || !product) return;
 
     setProduct((prevProduct) => {
       if (!prevProduct) return prevProduct;
 
-      const newSelection = Array.isArray(prevProduct.selection)
-        ? prevProduct.selection.map((sel) =>
-          sel.name === name ? { ...sel, value } : sel
-        )
-        : [];
+      const currentSelection = Array.isArray(prevProduct.selection) ? prevProduct.selection : [prevProduct.selection];
+      
+      const newSelection = currentSelection.map((sel: Selection | undefined) =>
+        sel?.name === name ? { ...sel, value, attributes: { name, value: [value] } } : sel
+      ).filter((sel): sel is Selection => sel !== undefined);
 
-      if (!newSelection.find((sel) => sel.name === name)) {
-        newSelection.push({ name, value });
+      if (!newSelection.find((sel: Selection) => sel.name === name)) {
+        newSelection.push({ name, value, attributes: { name, value: [value] } } as Selection);
       }
 
       return { ...prevProduct, selection: newSelection };
     });
 
     const searchParams = new URLSearchParams(window.location.search);
-    if (product?.selection) {
-      product.selection.forEach((selection) => {
+    if (product.selection) {
+      const selectionArray = Array.isArray(product.selection) ? product.selection : [product.selection];
+      selectionArray.forEach((selection: Selection) => {
         searchParams.set(selection.name, selection.value);
       });
     }
@@ -140,15 +143,17 @@ const Details: React.FC<DetailsProps> = ({ productId }) => {
   };
 
   function handleArtSelection(): void {
-    const selectionAsObject: { [key: string]: string } = Array.isArray(product?.selection)
-      ? product?.selection.reduce(
-        (acc, item) => {
-          acc[item.name] = item.value;
-          return acc;
-        },
-        {} as { [key: string]: string }
-      )
-      : product?.selection || {};
+    if (!product?.selection) return;
+    
+    const selectionArray = Array.isArray(product.selection) ? product.selection : [product.selection];
+    
+    const selectionAsObject: { [key: string]: string } = selectionArray.reduce(
+      (acc, item: Selection) => {
+        acc[item.name] = item.value;
+        return acc;
+      },
+      {} as { [key: string]: string }
+    );
 
     let art: string | undefined;
     if (productId) {

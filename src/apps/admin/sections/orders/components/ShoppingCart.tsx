@@ -1,58 +1,74 @@
-import React, { useEffect, useState } from "react"
-import Grid2 from "@mui/material/Grid2"
-import Paper from "@mui/material/Paper"
-import { Theme, useTheme } from "@mui/material"
-import { SelectChangeEvent } from "@mui/material/Select"
-import { Typography } from "@mui/material"
-import useMediaQuery from "@mui/material/useMediaQuery"
-import IconButton from "@mui/material/IconButton"
-import MenuItem from "@mui/material/MenuItem"
-import Select from "@mui/material/Select"
-import DeleteIcon from "@mui/icons-material/Delete"
-import FilterNoneIcon from "@mui/icons-material/FilterNone"
-import FormControl from "@mui/material/FormControl"
-import InputLabel from "@mui/material/InputLabel"
-import TextField from "@mui/material/TextField"
-import InputAdornment from "@mui/material/InputAdornment"
-import Img from "react-cool-img"
-import Tooltip from "@mui/material/Tooltip"
-import oS from "../services"
-import StarOutline from "@mui/icons-material/StarOutline"
+import React, { useEffect, useState } from "react";
+import Grid2 from "@mui/material/Grid2";
+import Paper from "@mui/material/Paper";
+import { Theme, useTheme } from "@mui/material";
+import { SelectChangeEvent } from "@mui/material/Select";
+import { Typography } from "@mui/material";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import IconButton from "@mui/material/IconButton";
+import MenuItem from "@mui/material/MenuItem";
+import Select from "@mui/material/Select";
+import DeleteIcon from "@mui/icons-material/Delete";
+import FilterNoneIcon from "@mui/icons-material/FilterNone";
+import FormControl from "@mui/material/FormControl";
+import InputLabel from "@mui/material/InputLabel";
+import TextField from "@mui/material/TextField";
+import InputAdornment from "@mui/material/InputAdornment";
+import Img from "react-cool-img";
+import Tooltip from "@mui/material/Tooltip";
+import oS from "../services";
+import StarOutline from "@mui/icons-material/StarOutline";
 
 import {
   UnitPrice,
   UnitPriceSug,
   getComission,
-} from "../../../../consumer/checkout/pricesFunctions"
-import { makeStyles } from "tss-react/mui"
-import { useConversionRate, useCurrency, useSnackBar } from "@context/GlobalContext"
-import { Discount } from "../../../../../types/discount.types"
-import { Prixer } from "../../../../../types/prixer.types"
-import { Art, PickedArt } from "../../../../../types/art.types"
-import { Organization } from "../../../../../types/organization.types"
+  getPVPtext,
+  getPVMtext,
+} from "../../../../consumer/checkout/pricesFunctions";
+import { makeStyles } from "tss-react/mui";
+import {
+  useConversionRate,
+  useCurrency,
+  useSnackBar,
+} from "@context/GlobalContext";
+import { Discount } from "../../../../../types/discount.types";
+import { Prixer } from "../../../../../types/prixer.types";
+import { Art, PickedArt } from "../../../../../types/art.types";
+import { Organization as BaseOrganization } from "../../../../../types/organization.types";
 import {
   PickedProduct,
   Product,
   Selection,
-} from "../../../../../types/product.types"
-import { Surcharge } from "../../../../../types/surcharge.types"
-import { Variant } from "aws-sdk/clients/iotsitewise"
-import { useOrder } from "@context/OrdersContext"
-import { getArts, getProducts } from "../api"
-import { nanoid } from "nanoid"
-import { OrderLine } from "@apps/consumer/checkout/interfaces"
-import { Item } from "../../../../../types/item.types"
-import { formatPriceForUI } from "@utils/formats"
+} from "../../../../../types/product.types";
+import { Surcharge } from "../../../../../types/surcharge.types";
+import { Variant } from "aws-sdk/clients/iotsitewise";
+import { useOrder } from "@context/OrdersContext";
+import { getArts, getProducts } from "../api";
+import { nanoid } from "nanoid";
+import { OrderLine } from "@apps/consumer/checkout/interfaces";
+import { Item } from "../../../../../types/item.types";
+import { formatPriceForUI } from "@utils/formats";
+import { checkPermissions } from "apps/consumer/flow/services";
+import { getSelectedVariant } from "apps/consumer/products/services";
+import { fetchVariantPrice } from "apps/consumer/products/api";
+import { parsePrice } from "utils/formats";
+import {
+  Organization as PriceFunctionsOrg,
+  OrgAgreementProduct,
+  OrgAgreementProductVariant,
+} from "../../../../consumer/checkout/pricesFunctions";
+import { calculateFinalPrice } from "../../../utils/priceCalculations";
 
 interface CartProps {
-  discounts: Discount[]
-  selectedPrixer: Prixer
-  orgs: Organization[]
-  consumerType: string
-  surcharges: Surcharge[]
+  discounts: Discount[];
+  selectedPrixer: Prixer;
+  orgs: BaseOrganization[];
+  consumerType: string;
+  surcharges: Surcharge[];
 }
 
-const drawerWidth = 240
+const drawerWidth = 240;
 
 const useStyles = makeStyles()((theme: Theme) => {
   return {
@@ -63,30 +79,38 @@ const useStyles = makeStyles()((theme: Theme) => {
     textField: {
       marginRight: "8px",
     },
-  }
-})
+  };
+});
 
 export default function ShoppingCart() {
-  const { classes } = useStyles()
+  const { classes } = useStyles();
 
-  const theme = useTheme()
+  const theme = useTheme();
   const { currency } = useCurrency();
   const { conversionRate } = useConversionRate();
-  const adminToken = localStorage.getItem("adminToken")
-  const adminData = adminToken ? JSON.parse(adminToken) : null
-  const { showSnackBar } = useSnackBar()
-  const { state, dispatch } = useOrder()
-  const { order, surcharges, discounts, organizations } = state
-  const { lines } = order
-
-  const isDesktop = useMediaQuery(theme.breakpoints.up("md"))
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"))
-  const [productList, setProductList] = useState<Product[]>([])
-  const [artist, setArtist] = useState<string[]>([])
-  const [artList, setArtList] = useState<Art[]>([])
-  const [artList0, setArtList0] = useState<Art[]>([])
-  const [selectedArtist, setSelectedArtist] = useState<string[]>([])
-  const [prices, setPrices] = useState<number[]>([])
+  const adminToken = localStorage.getItem("adminToken");
+  const adminData = adminToken ? JSON.parse(adminToken) : null;
+  const { showSnackBar } = useSnackBar();
+  const { state, dispatch } = useOrder();
+  const {
+    order,
+    surcharges,
+    discounts,
+    organizations,
+    selectedConsumer,
+    selectedPrixer,
+  } = state;
+  const { lines, consumerDetails } = order;
+  const { type } = consumerDetails;
+  const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const [productList, setProductList] = useState<Product[]>([]);
+  const [artist, setArtist] = useState<string[]>([]);
+  const [artList, setArtList] = useState<Art[]>([]);
+  const [artList0, setArtList0] = useState<Art[]>([]);
+  const [selectedArtist, setSelectedArtist] = useState<string[]>([]);
+  const [filteredArtList, setFilteredArtList] = useState<Art[]>([]);
+  const [prices, setPrices] = useState<number[]>([]);
 
   let customArt: Art = {
     crops: [],
@@ -109,581 +133,412 @@ export default function ShoppingCart() {
     exclusive: "",
     owner: "",
     createdOn: new Date().toString(),
-  }
+  };
 
   const readProducts = async () => {
     try {
-      let products: Product[] = await getProducts()
-      setProductList(products)
+      let products: Product[] = await getProducts();
+      setProductList(products);
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-  }
+  };
 
   const readArts = async () => {
     try {
-      const arts: Art[] = await getArts()
-      arts.unshift(customArt)
+      const arts: Art[] = await getArts();
+      arts.unshift(customArt);
 
-      let artist: string[] = []
+      let artist: string[] = [];
 
       arts.map((art) => {
         if (artist.includes(art.prixerUsername)) {
-          return
+          return;
         } else {
-          artist.push(art.prixerUsername)
-          let customv2 = customArt
-          customv2.owner = art.prixerUsername
-          customv2.prixerUsername = art.prixerUsername
-          arts.push(customv2)
-          setArtList(arts)
-          setArtList0(arts)
+          artist.push(art.prixerUsername);
+          let customv2 = customArt;
+          customv2.owner = art.prixerUsername;
+          customv2.prixerUsername = art.prixerUsername;
+          arts.push(customv2);
+          setArtList(arts);
+          setArtList0(arts);
         }
-      })
-      setArtist(artist)
+      });
+      setArtist(artist);
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-  }
+  };
 
   useEffect(() => {
-    readProducts()
-    readArts()
-  }, [])
+    const readData = async () => {
+      try {
+        let products: Product[] = await getProducts();
+        setProductList(products);
 
-  // useEffect(() => {
-  //   let pricesList: number[] = []
-  //   let artists = selectedArtist
+        const arts: Art[] = await getArts();
+        arts.unshift(customArt);
 
-  //   order.lines.map((line) => {
-  //     if (line.item.art) {
-  //       artists.push(line.item.art.prixerUsername)
-  //     } else {
-  //       return
-  //     }
-  //     // if (line.item.art && line.item.product) {
-  //     //   pricesList.push(
-  //     //     UnitPrice(
-  //     //       line.item.product,
-  //     //       line.item.art,
-  //     //       false,
-  //     //       conversionRate,
-  //     //       discounts,
-  //     //       selectedPrixer?.username
-  //     //     )
-  //     //   )
-  //     // }
-  //   })
-  //   setPrices(pricesList)
-  //   setSelectedArtist(artists)
-  // }, [])
+        // Extraer usernames únicos de artistas
+        const uniqueArtists = Array.from(
+          new Set(arts.map((art) => art.prixerUsername))
+        ).filter(Boolean);
 
-  const changeArtistFilter = (artist: string, i: number) => {
-    let artists = selectedArtist
-    artists[i] = artist
-    setSelectedArtist(artists)
-  }
+        setArtist(uniqueArtists);
+        setArtList(arts);
+        setFilteredArtList(arts);
+      } catch (error) {
+        console.error(error);
+        showSnackBar("Error al cargar productos y artes");
+      }
+    };
 
-  const updatePrices = (
-    index: number,
-    prod: Product,
-    art: Art,
-    currency: boolean,
-    conversionRate: number,
-    discounts: Discount[],
-    prixer: Prixer
-  ) => {
-    let selectedOrg = checkOrgs(art)
+    readData();
+  }, []);
 
-    if (prices.length === 0) {
-      setPrices([
-        UnitPriceSug(
-          prod,
-          art,
-          currency,
-          conversionRate,
-          discounts,
-          prixer,
-          selectedOrg,
-          props.consumerType
-        ),
-      ])
-    } else if (index <= prices.length) {
-      let prev = prices
-      prev[index] = UnitPriceSug(
-        prod,
-        art,
-        currency,
-        conversionRate,
-        discounts,
-        prixer,
-        selectedOrg,
-        props.consumerType
-      )
-      setPrices(prev)
+  const changeArtistFilter = (artistUsername: string, lineIndex: number) => {
+    const newSelectedArtists = [...selectedArtist];
+    newSelectedArtists[lineIndex] = artistUsername;
+    setSelectedArtist(newSelectedArtists);
+
+    if (artistUsername) {
+      const filtered = artList.filter(
+        (art) => art.prixerUsername === artistUsername
+      );
+      setFilteredArtList(filtered);
     } else {
-      setPrices([
-        ...prices,
-        UnitPriceSug(
-          prod,
-          art,
-          currency,
-          conversionRate,
-          discounts,
-          prixer,
-          selectedOrg,
-          props.consumerType
-        ),
-      ])
+      setFilteredArtList(artList);
     }
-  }
+  };
 
   const removePrixer = (index: number) => {
-    let artists = selectedArtist
-    artists.splice(index, 1)
-    setSelectedArtist(artists)
-  }
+    let artists = selectedArtist;
+    artists.splice(index, 1);
+    setSelectedArtist(artists);
+  };
 
-  const checkOrgs = (art: PickedArt) => {
-    if (art !== undefined) {
-      const org = organizations?.find(
-        (el) => el.username === art?.prixerUsername
-      )
-      return org
+  const checkOrgs = (art: PickedArt): PriceFunctionsOrg | undefined => {
+    if (art) {
+      const org = organizations.find((el) => el.username === art.owner);
+      if (org) {
+        return {
+          agreement: {
+            base: org.agreement.base as "pvprixer" | "pvm" | "pvp",
+            appliedProducts: org.agreement.appliedProducts,
+            considerations: org.agreement.considerations,
+          },
+        };
+      }
     }
-  }
+    return undefined;
+  };
 
   const getCporg = (item: Item) => {
     if (item.art) {
-      const org = organizations.find((el) => el.username === item.art?.owner)
+      const org = organizations.find((el) => el.username === item.art?.owner);
 
       const applied = org?.agreement.appliedProducts.find(
-        (el) => el === item.product._id
-      )
-      const varApplied = applied?.variants.find(
-        (v) => v.name === item.product.selection
-      )
+        (el) => el.id === item.product._id
+      );
+      const varApplied = applied?.variants?.find(
+        (v) => v.name === item.product.selection?.name
+      );
       let percentage =
         item.product.selection !== undefined &&
         typeof item.product.selection === "string"
           ? varApplied?.cporg
-          : applied?.cporg
+          : applied?.cporg;
 
-      return percentage
+      return percentage;
     }
-  }
-
-  // const handleVariantProduct = (
-  //   variant: string | Selection,
-  //   index: number,
-  //   item: any
-  // ) => {
-  //   let prod = item.product
-  //   prod.selection = variant
-  //   let selection
-  //   if (
-  //     variant !== "Personalizado" &&
-  //     item.product.attributes.length > 1 &&
-  //     item.product.name !== "Qrvo"
-  //   ) {
-  //     let name = typeof variant === "string" ? variant : variant.name
-  //     let namev2
-  //     if (name.length === 4) {
-  //       namev2 = `${name[0]} ${name[1]} ${name[2]}`
-  //     } else {
-  //       namev2 = name[0]
-  //     }
-  //     let selectionv2 = item.product?.variants.find(
-  //       (v) => v.name === namev2 && v.attributes[1].value === name[3]
-  //     )
-  //     prod.publicEquation = selectionv2?.publicPrice?.equation
-  //     prod.prixerEquation = selectionv2?.prixerPrice?.equation
-  //   } else if (variant !== "Personalizado") {
-  //     selection = prod?.variants.find((v) => v.name === variant)
-  //     prod.publicEquation = selection?.publicPrice?.equation
-  //     prod.prixerEquation = selection?.prixerPrice?.equation
-  //     let selectedOrg = checkOrgs(item.art)
-
-  //     if (item.art) {
-  //       prod.comission = getComission(
-  //         prod,
-  //         item.art,
-  //         currency,
-  //         conversionRate,
-  //         discounts,
-  //         item.quantity,
-  //         selectedPrixer?.username,
-  //         surcharges,
-  //         selectedOrg,
-  //         consumerType
-  //       )
-
-  //       prod.finalPrice = Number(
-  //         UnitPriceSug(
-  //           prod,
-  //           item.art,
-  //           false,
-  //           1,
-  //           discounts,
-  //           selectedPrixer?.username,
-  //           selectedOrg,
-  //           consumerType
-  //         )?.replace(/[,]/gi, ".")
-  //       )
-  //     }
-  //   } else {
-  //     prod.publicEquation = 0
-  //   }
-
-  //   AssociateProduct({
-  //     index: index,
-  //     item: prod,
-  //     type: "product",
-  //   })
-
-  //   if (item.art) {
-  //     updatePrices(
-  //       index,
-  //       prod,
-  //       item.art,
-  //       false,
-  //       1,
-  //       discounts,
-  //       selectedPrixer?.username
-  //     )
-  //   }
-  // }
+  };
 
   const modifyPrice = (id: string, newPrice: string) => {
-    let existingLine = lines.find((line) => line.id === id)
-    if (!existingLine) return
+    let existingLine = lines.find((line) => line.id === id);
+    if (!existingLine) return;
 
-    existingLine.pricePerUnit = Number(newPrice.replace(/[,]/gi, "."))
-    // item.product.modifyPrice = true
-    // item.product.finalPrice = Number(newPrice.replace(/[,]/gi, "."))
+    existingLine.pricePerUnit = Number(newPrice.replace(/[,]/gi, "."));
+  };
 
-    // const updatedPrices: string[] = prices.map((price, i) =>
-    //   i === index ? newPrice.replace(/[,]/gi, ".") : price
-    // )
+  const calculateLinePrice = (
+    product: Product,
+    art?: Art,
+    quantity: number = 1
+  ) => {
+    const basePrice = product.price;
+    const artCommission = art ? art.comission || 0 : 0;
+    const finalPrice = calculateFinalPrice(basePrice, artCommission);
+    return {
+      pricePerUnit: finalPrice,
+      subtotal: finalPrice * quantity,
+    };
+  };
 
-    // setPrices(updatedPrices)
-    // let selectedOrg = checkOrgs(item.art)
+  const handleProduct = async (selectedProduct: Product) => {
+    if (!selectedProduct) return;
 
-    // item.product.comission = getComission(
-    //   item.product,
-    //   item.art,
-    //   currency,
-    //   conversionRate,
-    //   discounts,
-    //   item.quantity,
-    //   .selectedPrixer?.username,
-    //   surcharges,
-    //   selectedOrg,
-    //   consumerType
-    // )
-    // purchase.splice(index, 1, item)
-    // localStorage.setItem("order.lines", JSON.stringify(purchase))
-    // setBuyState(purchase)
-  }
-
-  // const modifyVariant = (product, index, dimension, value) => {
-  //   const purchase = props.order.lines
-  //   let item = purchase[index]
-  //   if (product.selection?.attributes) {
-  //     let prev = product.selection.attributes[0].value
-  //     let v2 = prev.split("x")
-  //     if (dimension === "width") {
-  //       product.selection.attributes = [
-  //         {
-  //           name: "Medida",
-  //           value: `${value}x${v2[1]}`,
-  //         },
-  //       ]
-  //     } else if (dimension === "height") {
-  //       product.selection.attributes = [
-  //         {
-  //           name: "Medida",
-  //           value: `${v2[0]}x${value}cm`,
-  //         },
-  //       ]
-  //     }
-  //   } else {
-  //     let selection = { name: "Personalizado" }
-  //     product.selection = selection
-
-  //     if (dimension === "width") {
-  //       product.selection.attributes = [
-  //         {
-  //           name: "Medida",
-  //           value: `${value}x0cm`,
-  //         },
-  //       ]
-  //     } else if (dimension === "height") {
-  //       product.selection.attributes = [
-  //         {
-  //           name: "Medida",
-  //           value: `0x${value}cm`,
-  //         },
-  //       ]
-  //     }
-  //   }
-  //   let prev = product.selection?.attributes[0]?.value
-  //   let v2 = prev.split("x")
-
-  //   item.product = product
-  //   purchase.splice(index, 1, item)
-  //   localStorage.setItem("order.lines", JSON.stringify(purchase))
-  //   props.setBuyState(purchase)
-  // }
-
-  const handleProduct = (event: SelectChangeEvent<string>) => {
-    const selectedProduct = event.target.value
-    let selectedProductFull = productList.find(
-      (result) => result.name === selectedProduct
-    )
-    if (!selectedProductFull) return
-
-    let newItem: Item = {
+    const newItem: Item = {
       sku: nanoid(6),
-      product: selectedProductFull,
-      price: 0,
-    }
+      product: {
+        ...selectedProduct,
+        selection: undefined,
+      },
+      price: selectedProduct.price,
+    };
 
-    let newOrderLine: OrderLine = {
-      id: nanoid(6),
-      item: newItem,
-      quantity: 1,
-      pricePerUnit: 0,
-      subtotal: 0,
-    }
+    const lineId = nanoid(6);
+    const { pricePerUnit, subtotal } = calculateLinePrice(selectedProduct);
 
     dispatch({
       type: "ADD_ORDER_LINE",
-      payload: newOrderLine,
-    })
-    // props.addItemToBuyState({
-    //   type: "product",
-    //   item: selectedProduct,
-    // })
-  }
+      payload: {
+        id: lineId,
+        item: newItem,
+        quantity: 1,
+        pricePerUnit,
+        subtotal,
+      },
+    });
+  };
+
+  const handleVariantSelect = async (
+    event: SelectChangeEvent<string>,
+    lineId: string
+  ) => {
+    const selectedVariantName = event.target.value;
+    const existingLine = lines.find((line) => line.id === lineId);
+
+    if (!existingLine || !existingLine.item.product) {
+      showSnackBar("Error: Línea de orden no encontrada");
+      return;
+    }
+
+    const product = existingLine.item.product;
+    const selectedVariant = product.variants?.find(
+      (v: {
+        name: string;
+        attributes: Array<{ name: string; value: string }>;
+      }) => v.name === selectedVariantName
+    );
+
+    if (!selectedVariant) {
+      showSnackBar("Error: Variante no encontrada");
+      return;
+    }
+
+    try {
+      const price = await fetchVariantPrice(selectedVariant._id, product._id);
+      const parsedPrice = parsePrice(price);
+
+      const updatedItem: Item = {
+        ...existingLine.item,
+        product: {
+          ...existingLine.item.product,
+          selection: {
+            name: selectedVariant.name,
+            value: selectedVariant.name,
+            attributes: {
+              name: selectedVariant.attributes[0].name,
+              value: [selectedVariant.attributes[0].value],
+            },
+          },
+          price: parsedPrice,
+        },
+        price: parsedPrice,
+      };
+
+      dispatch({
+        type: "UPDATE_ORDER_LINE",
+        payload: {
+          ...existingLine,
+          item: updatedItem,
+          pricePerUnit: parsedPrice,
+          subtotal: parsedPrice * existingLine.quantity,
+        },
+      });
+    } catch (error) {
+      console.error("Error al actualizar la variante:", error);
+      showSnackBar("Error al actualizar la variante");
+    }
+  };
 
   const removeOrderLine = (id: string, index: number) => {
     dispatch({
       type: "REMOVE_ORDER_LINE",
       payload: id,
-    })
-    removePrixer(index)
-  }
+    });
+    removePrixer(index);
+  };
 
   const copyItem = (id: string) => {
     dispatch({
       type: "DUPLICATE_ORDER_LINE",
       payload: id,
-    })
-    // const cart = localStorage.getItem("order.lines")
-    // let newState = JSON.parse(cart)
-    // newState.push(newState[i])
-    // setBuyState(newState)
-    // localStorage.setItem("order.lines", JSON.stringify(newState))
-    showSnackBar("Item duplicado correctamente.")
-
-    // const prev = selectedArtist
-    // const lastIndex = prev.length
-
-    // setSelectedArtist([...selectedArtist, prev[i]])
-  }
+    });
+    showSnackBar("Item duplicado correctamente.");
+  };
 
   const changeProduct = (
     event: SelectChangeEvent<string>,
     id: string,
     art?: PickedArt
   ) => {
-    let selectedProduct = event.target.value
-    let selectedProductFull = productList.find(
-      (result) => result.name === selectedProduct
-    )
-    if (!selectedProductFull) return
+    let selectedProduct = productList.find(
+      (result) => result.name === event.target.value
+    );
+    if (!selectedProduct) return;
 
-    const existingLine = lines.find((line) => line.id === id)
-    if (!existingLine) return
+    const existingLine = lines.find((line) => line.id === id);
+    if (!existingLine) return;
 
-    const updatedLine = { ...existingLine, ...{ product: selectedProductFull } }
-
-    dispatch({
-      type: "UPDATE_ORDER_LINE",
-      payload: updatedLine,
-    })
-
-    // let newItem: Item = {
-    //   sku: nanoid(6),
-    //   product: selectedProductFull,
-    //   price: 0,
-    // }
-
-    // let newOrderLine: OrderLine = {
-    //   id: nanoid(6),
-    //   item: newItem,
-    //   quantity: 1,
-    //   pricePerUnit: 0,
-    //   subtotal: 0,
-    // }
-
-    // setSelectedArtToAssociate({
-    //   index,
-    //   item: art,
-    //   previous: true,
-    // })
-
-    if (art) {
-      // selectedProductFull.comission = getComission(
-      //   selectedProductFull,
-      //   art,
-      //   false,
-      //   1,
-      //   discounts,
-      //   1,
-      //   selectedPrixer?.username,
-      //   surcharges,
-      //   selectedOrg,
-      //   consumerType
-      // )
-      // updatePrices(
-      //   index,
-      //   selectedProductFull,
-      //   art,
-      //   currency,
-      //   conversionRate,
-      //   discounts,
-      //   selectedPrixer?.username
-      // )
-      // let selectedOrg = checkOrgs(art)
-      // NOTE: clearly if Art is defined need to update price of the orderline
+    if (existingLine.item.art || existingLine.item.product?.selection) {
+      const confirmed = window.confirm(
+        "Cambiar el producto eliminará el arte y la variante seleccionada. ¿Desea continuar?"
+      );
+      if (!confirmed) return;
     }
-  }
 
-  const changeArt = async (e: SelectChangeEvent<string>, id: string) => {
-    let selectedArt = e.target.value
-    let selectedArtFull = artList.find((result) => result.artId === selectedArt)
-    if (!selectedArtFull) return
-
-    const existingLine = lines.find((line) => line.id === id)
-    if (!existingLine) return
-
-    const updatedLine = { ...existingLine, ...{ art: selectedArtFull } }
+    const updatedLine = {
+      ...existingLine,
+      item: {
+        sku: existingLine.item.sku,
+        product: {
+          ...selectedProduct,
+          selection: undefined,
+        },
+        art: undefined,
+        price: selectedProduct.price,
+      },
+      pricePerUnit: selectedProduct.price,
+      subtotal: selectedProduct.price * existingLine.quantity,
+    };
 
     dispatch({
       type: "UPDATE_ORDER_LINE",
       payload: updatedLine,
-    })
+    });
+  };
 
-    // const prod = order.lines[index]?.item.product
-    let selectedOrg = checkOrgs(selectedArtFull)
-    // let newPrice = UnitPriceSug(
-    //   prod,
-    //   art,
-    //   false,
-    //   conversionRate,
-    //   discounts,
-    //   selectedPrixer?.username,
-    //   selectedOrg,
-    //   consumerType
-    // )
-    // prod.finalPrice = Number(newPrice?.replace(/[,]/gi, "."))
-    // prod.comission = getComission(
-    //   prod,
-    //   art,
-    //   currency,
-    //   conversionRate,
-    //   discounts,
-    //   1,
-    //   selectedPrixer?.username,
-    //   surcharges,
-    //   selectedOrg,
-    //   consumerType
-    // )
-    // setSelectedProductToAssociate({
-    //   index,
-    //   item: prod,
-    //   previous: true,
-    // })
-    // AssociateProduct({
-    //   index: index,
-    //   item: prod,
-    //   type: "product",
-    // })
-    // let selectedArt = art
-    // let selectedArtFull = artList.find(
-    //   (result) => result.artId === selectedArt.artId
-    // )
-    // AssociateProduct({
-    //   index: index,
-    //   item: art.title === "Personalizado" ? art : selectedArtFull,
-    //   type: "art",
-    // })
+  const handleArtSelect = async (selectedArt: string, lineId: string) => {
+    const art = artList.find((a) => a.artId === selectedArt);
+    if (!art) {
+      showSnackBar("No se encontró el arte seleccionado");
+      return;
+    }
 
-    // updatePrices(
-    //   index,
-    //   product,
-    //   art,
-    //   currency,
-    //   conversionRate,
-    //   discounts,
-    //   selectedPrixer?.username
-    // )
+    const existingLine = lines.find((line) => line.id === lineId);
+    if (!existingLine) return;
+    // const canUpdate = checkPermissions(existingLine.item.product, art);
+    // if (!canUpdate) {
+    //   showSnackBar("Por favor complete la selección del producto primero");
+    //   return;
+    // }
 
-    // let prev = selectedArtist
-    // prev.splice(index, 1, art.prixerUsername)
-    // setSelectedArtist(prev)
-  }
+    const updatedItem = {
+      ...existingLine.item,
+      art: art,
+    };
+
+    dispatch({
+      type: "UPDATE_ORDER_LINE",
+      payload: {
+        ...existingLine,
+        item: updatedItem,
+      },
+    });
+  };
 
   const changeQuantity = (id: string, quantity: string) => {
-    const existingLine = lines.find((line) => line.id === id)
-    if (!existingLine) return
+    const existingLine = lines.find((line) => line.id === id);
+    if (!existingLine) return;
 
     const updatedLine = {
       ...existingLine,
       ...{ quantity: Number(quantity.replace(/[,]/gi, ".")) },
-    }
+    };
 
     dispatch({
       type: "UPDATE_ORDER_LINE",
       payload: updatedLine,
-    })
-  }
+    });
+  };
 
   const getFinalPrice = (line: OrderLine) => {
-    const qty = typeof line.quantity === 'string' ? 1 : line.quantity;
-    return line.item.price
-      ? formatPriceForUI(qty * line.item.price, currency, conversionRate)
-      : undefined;
+    if (!line.item.product || !line.item.art) return undefined;
+
+    const price = line.item.product.selection
+      ? UnitPriceSug(
+          line.item.product,
+          line.item.art,
+          currency,
+          conversionRate,
+          discounts,
+          selectedPrixer?.username,
+          checkOrgs(line.item.art),
+          type
+        )
+      : UnitPrice(
+          line.item.product,
+          line.item.art,
+          currency === "Bs",
+          conversionRate,
+          discounts,
+          selectedPrixer?.username
+        );
+
+    return formatPriceForUI(
+      Number(price) * line.quantity,
+      currency,
+      conversionRate
+    );
+  };
+
+  const updateLinePrice = (
+    lineId: string,
+    product: Product,
+    art?: Art,
+    quantity?: number
+  ) => {
+    const existingLine = lines.find((line) => line.id === lineId);
+    if (!existingLine) return;
+
+    const { pricePerUnit, subtotal } = calculateLinePrice(
+      product,
+      art,
+      quantity || existingLine.quantity
+    );
+
+    dispatch({
+      type: "UPDATE_ORDER_LINE",
+      payload: {
+        ...existingLine,
+        id: lineId,
+        pricePerUnit,
+        subtotal,
+      },
+    });
   };
 
   return (
-    <Grid2 container style={{ display: "flex", justifyContent: "center" }}>
+    <Grid2
+      container
+      style={{ display: "flex", justifyContent: "center", gap: 24 }}
+    >
       {lines.length > 0 &&
         lines.map((line, index) => {
           return (
             <Grid2
               key={index}
               style={{
-                height:
-                  line.item.product?.selection?.name === "Personalizado"
-                    ? 215
-                    : 0,
-                marginBottom: 20,
                 width: "100%",
               }}
             >
               <Paper
                 style={{
-                  padding: 10,
+                  padding: 12,
                   marginTop: "2px",
                   display: "flex",
                   flexDirection: isMobile ? "column" : "row",
-                  height:
-                    line.item.product?.selection?.name === "Personalizado"
-                      ? 215
-                      : 0,
                 }}
                 elevation={3}
               >
@@ -693,7 +548,6 @@ export default function ShoppingCart() {
                       display: "flex",
                       height: 120,
                       marginRight: 20,
-                      marginBottom: "-10px",
                     }}
                   >
                     <Img
@@ -703,7 +557,6 @@ export default function ShoppingCart() {
                         height: 120,
                         borderRadius: "10px",
                         marginRight: "20px",
-                        marginLeft: "20px",
                       }}
                       src={
                         (line.item.product?.sources?.images &&
@@ -739,150 +592,46 @@ export default function ShoppingCart() {
                         <Select
                           id={"product " + index}
                           variant="outlined"
-                          value={line.item.product.name}
-                          onChange={(e) => {
+                          value={line.item.product?.name || ""}
+                          onChange={(e) =>
                             changeProduct(e, line.id, line.item?.art)
-                          }}
+                          }
                         >
-                          {productList[0] !== null &&
-                            productList.map((product) => {
-                              return (
-                                <MenuItem value={product.name}>
-                                  {product.name}
-                                </MenuItem>
-                              )
-                            })}
+                          {productList.map((product) => (
+                            <MenuItem key={product._id} value={product.name}>
+                              {product.name}
+                            </MenuItem>
+                          ))}
                         </Select>
                       </FormControl>
-                      {line.item.product?.variants.length > 0 && (
-                        <FormControl
-                          className={classes.formControl}
-                          style={{ minWidth: 200 }}
-                        >
-                          <InputLabel style={{ paddingLeft: 15 }}>
-                            {line.item.product?.attributes[0]?.name}
-                          </InputLabel>
-                          <Select
-                            id={"variant " + index}
-                            variant="outlined"
-                            value={
-                              line.item.product?.selection?.name ||
-                              line.item.product?.selection
-                            }
-                            // NOTE: Solve this
-                            // onChange={(e) => {
-                            //   handleVariantProduct(
-                            //     e.target.value,
-                            //     index,
-                            //     order.lines[index]
-                            //   )
-                            // }}
-                          >
-                            {/* {line.item.product.hasSpecialVar && (
-                              <MenuItem value={custom.name}>
-                                {custom.name}
-                              </MenuItem>
-                            )} */}
-                            {productList
-                              .find(
-                                (product) =>
-                                  product.name === line.item.product.name
-                              )
-                              ?.variants.map((a) => {
-                                if (a.active === true)
-                                  return (
-                                    <MenuItem
-                                      value={
-                                        a.attributes[1] !== undefined
-                                          ? a.name + " " + a.attributes[1].value
-                                          : a.name
-                                      }
-                                    >
-                                      {/* {a.name} */}
-                                      {a.attributes[1] !== undefined
-                                        ? a.name + " " + a.attributes[1].value
-                                        : a.name}
-                                    </MenuItem>
-                                  )
-                              })}
-                          </Select>
-                          {line.item.product?.selection?.name ===
-                            // "Personalizado" ||
-                            // line.item.product.selection ===
-                            "Personalizado" && (
-                            <div style={{ display: "flex", marginTop: "-5px" }}>
-                              <TextField
-                                variant="outlined"
-                                label="Ancho"
-                                className={classes.textField}
-                                style={{ width: 100, marginRight: 10 }}
-                                defaultValue={
-                                  line.item.product.selection.attributes &&
-                                  line.item.product?.selection?.attributes[0]
-                                    ?.value
-                                    ? line.item.product?.selection?.attributes[0]?.value?.split(
-                                        "x"
-                                      )[0]
-                                    : 0
-                                }
-                                onChange={(e) =>
-                                  modifyVariant(
-                                    line.item.product,
-                                    index,
-                                    "width",
-                                    e.target.value
-                                  )
-                                }
-                                slotProps={{
-                                  input: {
-                                    endAdornment: (
-                                      <InputAdornment position="end">
-                                        cm
-                                      </InputAdornment>
-                                    ),
-                                  },
-                                }}
-                                margin="normal"
-                              />
-                              <TextField
-                                variant="outlined"
-                                label="Alto"
-                                className={classes.textField}
-                                style={{ width: 100 }}
-                                onChange={(e) =>
-                                  modifyVariant(
-                                    line.item.product,
-                                    index,
-                                    "height",
-                                    e.target.value
-                                  )
-                                }
-                                defaultValue={
-                                  line.item.product.selection.attributes &&
-                                  line.item.product?.selection?.attributes[0]
-                                    ?.value
-                                    ? line.item.product?.selection?.attributes[0]?.value
-                                        ?.split("x")[1]
-                                        .slice(0, -2)
-                                    : 0
-                                }
-                                slotProps={{
-                                  input: {
-                                    endAdornment: (
-                                      <InputAdornment position="end">
-                                        cm
-                                      </InputAdornment>
-                                    ),
-                                  },
-                                }}
-                                margin="normal"
-                              />
-                            </div>
-                          )}
-                        </FormControl>
-                      )}
+                      {line.item.product?.variants &&
+                        line.item.product.variants.length > 0 && (
+                          <FormControl className={classes.formControl}>
+                            <InputLabel style={{ paddingLeft: 15 }}>
+                              {line.item.product?.attributes?.[0]?.name ||
+                                "Variante"}
+                            </InputLabel>
+                            <Select
+                              id={"variant " + index}
+                              variant="outlined"
+                              value={line.item.product?.selection?.name || ""}
+                              onChange={(e) => handleVariantSelect(e, line.id)}
+                            >
+                              {line.item.product.variants.map((variant) => (
+                                <MenuItem
+                                  key={variant._id}
+                                  value={variant.name}
+                                >
+                                  {variant.attributes[1] !== undefined
+                                    ? `${variant.name} ${variant.attributes[1].value}`
+                                    : variant.name}
+                                </MenuItem>
+                              ))}
+                            </Select>
+                          </FormControl>
+                        )}
 
-                      {props?.selectedPrixer?.username === undefined &&
+                      {selectedPrixer?.username === undefined &&
                         typeof line.item.product.discount === "string" && (
                           <Typography
                             style={{ paddingTop: 5, fontSize: "12px" }}
@@ -911,8 +660,8 @@ export default function ShoppingCart() {
 
                       {line.item.art &&
                         surcharges.map((sur) => {
-                          const prixerUsername = line.item?.art?.prixerUsername
-                          const owner = line.item?.art?.owner
+                          const prixerUsername = line.item?.art?.prixerUsername;
+                          const owner = line.item?.art?.owner;
 
                           if (
                             (prixerUsername &&
@@ -931,7 +680,7 @@ export default function ShoppingCart() {
                                 {sur.appliedPercentage === "ownerComission" &&
                                   " sobre la comisión del Prixer/Org"}
                               </Typography>
-                            )
+                            );
                           }
                         })}
                     </div>
@@ -995,17 +744,19 @@ export default function ShoppingCart() {
                           {line.item.art ? "Prixer" : "Selecciona un Prixer"}
                         </InputLabel>
                         <Select
-                          value={selectedArtist[index]}
+                          value={selectedArtist[index] || ""}
                           variant="outlined"
                           onChange={(e) =>
-                            changeArtistFilter(e.target.value, index)
+                            changeArtistFilter(e.target.value as string, index)
                           }
                           style={{ width: 180, marginRight: 10 }}
                         >
-                          <MenuItem value={undefined}>Todos</MenuItem>
-                          {artist.map((art) => {
-                            return <MenuItem value={art}>{art}</MenuItem>
-                          })}
+                          <MenuItem value="">Todos</MenuItem>
+                          {artist.map((username) => (
+                            <MenuItem key={username} value={username}>
+                              {username}
+                            </MenuItem>
+                          ))}
                         </Select>
                       </FormControl>
                       <FormControl
@@ -1021,150 +772,102 @@ export default function ShoppingCart() {
                           {line.item.art ? "Arte" : "Agrega un arte"}
                         </InputLabel>
                         <Select
-                          value={line.item?.art?.title?.substring(0, 22)}
+                          value={line.item?.art?.title?.substring(0, 22) || ""}
                           id={"Art " + index}
                           variant="outlined"
-                          onChange={(e) => changeArt(e, line.id)}
+                          onChange={(e) =>
+                            handleArtSelect(e.target.value, line.id)
+                          }
                           style={{ width: 210 }}
                         >
-                          {selectedArtist[index] !== undefined
-                            ? artList0
-                                .filter(
-                                  (art) =>
-                                    art.prixerUsername === selectedArtist[index]
-                                )
-                                .map((art) => {
-                                  return (
-                                    <MenuItem value={art.artId}>
-                                      <Img
-                                        placeholder="/imgLoading.svg"
-                                        style={{
-                                          backgroundColor: "#eeeeee",
-                                          maxWidth: 40,
-                                          maxHeight: 40,
-                                          borderRadius: 3,
-                                          marginRight: 10,
-                                        }}
-                                        src={art?.squareThumbUrl}
-                                        debounce={1000}
-                                        cache
-                                        error="/imgError.svg"
-                                        alt={art.title}
-                                        id={art?.artId}
-                                      />
-                                      <div
-                                        style={{
-                                          display: "flex",
-                                          justifyContent: "space-between",
-                                          width: "100%",
-                                        }}
-                                      >
-                                        {art.title.substring(0, 22)}
-                                        {art.comission > 10 && (
-                                          <StarOutline
-                                            style={{
-                                              color: "#d33f49",
-                                              marginLeft: "10px",
-                                            }}
-                                            fontSize="large"
-                                          />
-                                        )}
-                                      </div>
-                                    </MenuItem>
-                                  )
-                                })
-                            : artList0.map((art) => {
-                                return (
-                                  <MenuItem value={art.artId}>
-                                    <Img
-                                      placeholder="/imgLoading.svg"
+                          {(selectedArtist[index]
+                            ? filteredArtList
+                            : artList
+                          ).map((art) => (
+                            <MenuItem key={art.artId} value={art.artId}>
+                              <div
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                }}
+                              >
+                                <Img
+                                  placeholder="/imgLoading.svg"
+                                  style={{
+                                    backgroundColor: "#eeeeee",
+                                    maxWidth: 40,
+                                    maxHeight: 40,
+                                    borderRadius: 3,
+                                    marginRight: 10,
+                                  }}
+                                  src={art?.squareThumbUrl}
+                                  debounce={1000}
+                                  cache
+                                  error="/imgError.svg"
+                                  alt={art.title}
+                                  id={art?.artId}
+                                />
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                    width: "100%",
+                                  }}
+                                >
+                                  {art.title.substring(0, 22)}
+                                  {art.comission > 10 && (
+                                    <StarOutline
                                       style={{
-                                        backgroundColor: "#eeeeee",
-                                        maxWidth: 40,
-                                        maxHeight: 40,
-                                        borderRadius: 3,
-                                        marginRight: 10,
+                                        color: "#d33f49",
+                                        marginLeft: "10px",
                                       }}
-                                      src={art?.squareThumbUrl}
-                                      debounce={1000}
-                                      cache
-                                      error="/imgError.svg"
-                                      alt={art.title}
-                                      id={art?.artId}
+                                      fontSize="large"
                                     />
-                                    {art.title.substring(0, 22)}
-                                  </MenuItem>
-                                )
-                              })}
+                                  )}
+                                </div>
+                              </div>
+                            </MenuItem>
+                          ))}
                         </Select>
                       </FormControl>
                     </div>
                     {line.item.art &&
                       line.item.art.title !== "Personalizado" && (
-                        <>
-                          <p
-                            style={{
-                              fontSize: "12px",
-                              marginBottom: 10,
-                              marginTop: -2,
-                            }}
-                          >
-                            Arte: {line.item.art?.artId}
-                          </p>
-                          <Typography
-                            style={{
-                              fontSize: "12px",
-                              marginBottom: 10,
-                              marginTop: -2,
-                            }}
-                            color="secondary"
-                          >
-                            {(props?.selectedConsumer?.consumerType ===
-                              "Prixer" &&
-                              props?.selectedConsumer?.username ===
-                                line.item.art.prixerUsername) ||
-                            (props?.selectedConsumer?.consumerType ===
-                              "Prixer" &&
-                              props?.selectedConsumer?.username ===
-                                line.item.art.owner &&
-                              line.item.art !== undefined &&
-                              line.item.product !== undefined)
-                              ? "El cliente es el autor o propietario del arte, su comisión ha sido omitida."
-                              : line.item.art !== undefined &&
-                                line.item.product !== undefined &&
-                                `Este arte tiene una comisión de 
-                            ${checkOrgs(line.item.art) ? getCporg(line.item) : line.item.art.comission}% equivalente a $${
-                              // typeof line.item.product.comission === "string" ||
-                              // (typeof line.item.product.comission === "number" &&
-                              // ? (
-                              //     line.item.product?.comission / line.quantity
-                              //   ).toLocaleString("de-DE", {
-                              //     minimumFractionDigits: 2,
-                              //     maximumFractionDigits: 2,
-                              //   })
-                              // : (
-                              // (
-                              //   getComission(
-                              //     line.item,
-                              //     line.item.art,
-                              //     props.currency,
-                              //     props.conversionRate,
-                              //     props.discounts,
-                              //     line.quantity,
-                              //     props?.selectedPrixer?.username,
-                              //     props.surcharges,
-                              //     checkOrgs(line.art),
-                              //     props.consumerType
-                              //   ) / line.quantity
-                              // ).toLocaleString("de-DE", {
-                              //   minimumFractionDigits: 2,
-                              //   maximumFractionDigits: 2,
-                              // })
-                              "XX"
-                            }`}
-                          </Typography>
-                        </>
+                        <p
+                          style={{
+                            fontSize: "12px",
+                            marginBottom: 10,
+                            marginTop: -2,
+                          }}
+                        >
+                          Arte: {line.item.art?.artId}
+                        </p>
                       )}
+                    {typeof line.item.product?.discount === "string" && (
+                      <Typography
+                        style={{
+                          fontSize: "12px",
+                          marginBottom: 10,
+                          marginTop: -2,
+                        }}
+                        color="secondary"
+                      >
+                        {(type === "Prixer" &&
+                          line.item.art &&
+                          selectedConsumer?.username ===
+                            line.item.art.prixerUsername) ||
+                        (type === "Prixer" &&
+                          line.item.art &&
+                          selectedConsumer?.username === line.item.art.owner &&
+                          line.item.art !== undefined &&
+                          line.item.product !== undefined)
+                          ? "El cliente es el autor o propietario del arte, su comisión ha sido omitida."
+                          : line.item.art !== undefined &&
+                            line.item.product !== undefined &&
+                            `Este arte tiene una comisión de 
+                            ${checkOrgs(line.item.art) ? getCporg(line.item) : line.item.art.comission}% equivalente a $${"XX"}`}
+                      </Typography>
+                    )}
                     {line.item.product && line.item.art && (
                       <Grid2
                         sx={{
@@ -1172,46 +875,26 @@ export default function ShoppingCart() {
                           justifyContent: "space-between",
                         }}
                       >
-                        <TextField
-                          variant="outlined"
-                          label={
-                            line.item.product.selection
-                              ? "Precio variante: " +
-                                UnitPriceSug(
+                        <div>
+                          <Typography variant="body2" color="textSecondary">
+                            {/* TO DO: Add price from backend call */}
+                            {line.item.product?.priceRange
+                              ? getPVPtext(
                                   line.item.product,
-                                  line.item.art,
-                                  currency,
-                                  conversionRate,
-                                  discounts,
-                                  props?.selectedPrixer?.username,
-                                  checkOrgs(line.item.art),
-                                  props.consumerType
-                                )
-                              : "Precio base: " +
-                                UnitPrice(
-                                  line.item.product,
-                                  line.item.art,
-                                  false,
+                                  currency === "Bs",
                                   conversionRate,
                                   discounts
-                                  // props?.selectedPrixer?.username
                                 )
-                          }
-                          slotProps={{
-                            input: {
-                              startAdornment: (
-                                <InputAdornment position="start">
-                                  $
-                                </InputAdornment>
-                              ),
-                            },
-                          }}
-                          style={{ width: 160, height: 80 }}
-                          value={prices[index]}
-                          onChange={(e) => {
-                            modifyPrice(line.id, e.target.value)
-                          }}
-                        />
+                              : formatPriceForUI(
+                                  line.item.product?.price || 0,
+                                  currency,
+                                  conversionRate
+                                )}
+                          </Typography>
+                          <Typography variant="h6">
+                            {getFinalPrice(line)}
+                          </Typography>
+                        </div>
                         <div
                           style={{
                             display: "flex",
@@ -1236,11 +919,8 @@ export default function ShoppingCart() {
                               defaultValue={1}
                               value={line.quantity}
                               min="1"
-                              // InputLabelProps={{
-                              //   shrink: true,
-                              // }}
                               onChange={(e) => {
-                                changeQuantity(line.id, e.target.value)
+                                changeQuantity(line.id, e.target.value);
                               }}
                             />
                           </div>
@@ -1278,7 +958,7 @@ export default function ShoppingCart() {
                     <IconButton
                       size="small"
                       onClick={() => {
-                        removeOrderLine(line.id, index)
+                        removeOrderLine(line.id, index);
                       }}
                       sx={{ color: "gainsboro" }}
                     >
@@ -1288,7 +968,7 @@ export default function ShoppingCart() {
                 </Grid2>
               </Paper>
             </Grid2>
-          )
+          );
         })}
       <Grid2
         style={{
@@ -1320,15 +1000,24 @@ export default function ShoppingCart() {
               labelId="demo-simple-select-label"
               id="demo-simple-select"
               value={""}
-              onChange={handleProduct}
+              onChange={(e) => {
+                const selectedProduct = productList.find(
+                  (p) => p.name === e.target.value
+                );
+                if (selectedProduct) {
+                  handleProduct(selectedProduct);
+                }
+              }}
             >
-              {productList.map((product, index) => {
-                return <MenuItem value={product.name}>{product.name}</MenuItem>
-              })}
+              {productList.map((product) => (
+                <MenuItem key={product._id} value={product.name}>
+                  {product.name}
+                </MenuItem>
+              ))}
             </Select>
           </FormControl>
         </Paper>
       </Grid2>
     </Grid2>
-  )
+  );
 }

@@ -94,7 +94,7 @@ const UnitPrice = (
       final = (final - final / 10) / (1 - art.comission / 100)
     }
   } else {
-    base = Number(product.priceRange.from)
+    base = Number(product.priceRange?.from)
     final = base - base / 10
     final = final / (1 - art.comission / 100)
   }
@@ -132,7 +132,7 @@ const UnitPriceSug = (
   dollarValue: number,
   discounts?: Discount[],
   prixer?: string,
-  org?: Organization,
+  org?: Organization | undefined,
   consumerType?: string
 ): string => {
   let price = 0
@@ -166,9 +166,9 @@ const UnitPriceSug = (
               String(product.priceRange?.equation || 0).replace(/[,]/gi, ".")
             )
       const pubFr =
-        typeof product.priceRange.from === "number"
+        typeof product.priceRange?.from === "number"
           ? product.priceRange.from
-          : Number(String(product.priceRange.from || 0).replace(/[,]/gi, "."))
+          : Number(String(product.priceRange?.from || 0).replace(/[,]/gi, "."))
 
       if (typeof product.selection === "string" && prixer !== undefined) {
         base = pubEq ? prxEq - prxEq / 10 : prxFr - prxFr / 10
@@ -454,7 +454,7 @@ const getComissionv2 = (
 }
 
 const getPVPtext = (
-  product: Product,
+  product: PickedProduct,
   currency: boolean,
   dollarValue: number,
   discountList?: Discount[]

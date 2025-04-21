@@ -1,3 +1,5 @@
+import { OrgAgreementProduct } from "@apps/consumer/checkout/pricesFunctions";
+
 export interface Organization {
   _id: string
   orgId?: string
@@ -24,7 +26,7 @@ export interface Organization {
   account: string
   agreement: {
     comission: number
-    appliedProducts: string[]
+    appliedProducts: OrgAgreementProduct[]
     base: string
     considerations: {
       artista: number

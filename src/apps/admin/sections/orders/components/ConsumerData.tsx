@@ -41,16 +41,24 @@ const useStyles = makeStyles()((theme: Theme) => {
   };
 });
 
+// Definir el tipo para las opciones
+type AutocompleteOption = {
+  id: string;
+  label: string;
+  data: Consumer | Prixer;
+  type: 'consumer' | 'prixer';
+};
+
 export default function ConsumerData() {
   const { classes } = useStyles();
   const { setLoading } = useLoading();
   const { state, dispatch } = useOrder();
-  const { order, prixers, consumers } = state;
+  const { order, prixers, consumers, selectedConsumer, selectedPrixer } = state;
   const { consumerDetails, shipping, billing } = order; //Datos básicos, de envío y de facturación
   const { basic } = consumerDetails;
   // const { billTo } = billing
-  const [shippingDataCheck, setShippingDataCheck] = useState(true);
-  const [billingDataCheck, setBillingDataCheck] = useState(true);
+  const [shippingDataCheck, setShippingDataCheck] = useState(false);
+  const [billingDataCheck, setBillingDataCheck] = useState(false);
   const [billingShDataCheck, setBillingShDataCheck] = useState(false);
 
   const [shippingList, setShippingList] = useState<ShippingMethod[]>([]);
@@ -183,25 +191,34 @@ export default function ConsumerData() {
       type: 'consumer' | 'prixer';
     }> = [];
 
-    // Agregar consumers
+    // Primero agregamos todos los consumers
     consumers?.forEach((consumer) => {
       combinedOptions.push({
         id: consumer._id,
-        label: `${consumer.firstname} ${consumer.lastname}`,
+        label: `C-${consumer.firstname} ${consumer.lastname}`,
         data: consumer,
         type: 'consumer'
       });
     });
 
-    // Agregar prixers
+    // Luego agregamos prixers que no tengan un consumer correspondiente
     prixers?.forEach((prixer) => {
-      combinedOptions.push({
-        id: prixer._id,
-        label: `${prixer.firstName} ${prixer.lastName}`,
-        data: prixer,
-        type: 'prixer'
-      });
+      const hasMatchingConsumer = consumers?.some(
+        consumer => consumer.username === prixer.username
+      );
+
+      if (!hasMatchingConsumer) {
+        combinedOptions.push({
+          id: prixer._id,
+          label: `P-${prixer.firstName} ${prixer.lastName}`,
+          data: prixer,
+          type: 'prixer'
+        });
+      }
     });
+
+    // Ordenamos las opciones alfabéticamente
+    combinedOptions.sort((a, b) => a.label.localeCompare(b.label));
 
     setOptions(combinedOptions);
   }, [consumers, prixers]);
@@ -232,6 +249,7 @@ export default function ConsumerData() {
       });
     }
   };
+  console.log(basic);
 
   const handleBillingDataCheck = () => {
     const newValue = !billingDataCheck;
@@ -240,7 +258,6 @@ export default function ConsumerData() {
       setBillingShDataCheck(false);
     }
     if (newValue) {
-      console.log(basic);
 
       // Si se activa el checkbox, copiar datos básicos a billing
       dispatch({
@@ -326,50 +343,52 @@ export default function ConsumerData() {
     shortAddress: "",
   };
 
-  const handleInputChange = (
-    event: React.SyntheticEvent,
-    newValue: string | { id: string; label: string; data: Consumer | Prixer; type: 'consumer' | 'prixer' } | null,
-    reason: AutocompleteInputChangeReason
-  ) => {
-    if (reason === "clear") {
+  const handleInputChange = (event: React.ChangeEvent<{}>, newValue: string) => {
+    setInputValue(newValue);
+    if (!newValue) {
+      dispatch({ type: 'SET_SELECTED_CONSUMER', payload: undefined });
       dispatch({
-        type: "RESET_BASIC_DATA",
-        payload: defaultData,
+        type: 'SET_CONSUMER_BASIC',
+        payload: {
+          name: '',
+          lastName: '',
+          phone: '',
+          email: '',
+          id: '',
+          shortAddress: ''
+        }
       });
-      setInputValue('');
-    } else if (reason === "input") {
-      setInputValue(newValue as string);
-      dispatch({
-        type: "SET_CONSUMER_BASIC",
-        payload: { ...basic, name: newValue as string },
-      });
-    } else if (reason === "selectOption" && newValue && typeof newValue !== 'string') {
-      const selected = newValue.data;
-      if (newValue.type === 'consumer') {
-        const consumer = selected as Consumer;
+    }
+  };
+
+  const handleOptionSelect = (event: React.ChangeEvent<{}>, value: any) => {
+    if (value) {
+      const selectedData = value.data;
+      if (value.type === 'consumer') {
+        dispatch({ type: 'SET_SELECTED_CONSUMER', payload: selectedData });
         dispatch({
-          type: "SET_CONSUMER_BASIC",
+          type: 'SET_CONSUMER_BASIC',
           payload: {
-            name: consumer.firstname,
-            lastName: consumer.lastname,
-            phone: consumer.phone,
-            email: consumer.email,
-            id: consumer.ci,
-            shortAddress: consumer.address,
-          },
+            name: selectedData.firstname,
+            lastName: selectedData.lastname,
+            phone: selectedData.phone,
+            email: selectedData.email,
+            id: selectedData.id,
+            shortAddress: selectedData.address
+          }
         });
-      } else {
-        const prixer = selected as Prixer;
+      } else if (value.type === 'prixer') {
+        dispatch({ type: 'SET_SELECTED_PRIXER', payload: selectedData });
         dispatch({
-          type: "SET_CONSUMER_BASIC",
+          type: 'SET_CONSUMER_BASIC',
           payload: {
-            name: prixer.firstName,
-            lastName: prixer.lastName,
-            phone: prixer.phone,
-            email: prixer.email,
-            id: prixer._id,
-            shortAddress: prixer.city,
-          },
+            name: selectedData.firstName,
+            lastName: selectedData.lastName,
+            phone: selectedData.phone,
+            email: selectedData.email,
+            id: selectedData.id,
+            shortAddress: selectedData.address
+          }
         });
       }
     }
@@ -423,10 +442,18 @@ export default function ConsumerData() {
             <Autocomplete
               freeSolo
               options={options}
-              getOptionLabel={(option) => typeof option === 'string' ? option : option.label}
+              getOptionLabel={(option) => 
+                typeof option === 'string' ? option : option.label.substring(2)
+              }
               inputValue={inputValue}
               onInputChange={handleInputChange}
-              value={basic?.name}
+              onChange={handleOptionSelect}
+              value={basic?.name ? {
+                id: selectedConsumer?._id || selectedPrixer?._id || '',
+                label: `${selectedConsumer ? 'C-' : 'P-'}${basic.name} ${basic.lastName}`,
+                data: selectedConsumer || selectedPrixer,
+                type: selectedConsumer ? 'consumer' : 'prixer'
+              } : null}
               fullWidth
               style={{ marginRight: 8 }}
               renderInput={(params) => (
@@ -447,9 +474,19 @@ export default function ConsumerData() {
               filterOptions={(options, state) => {
                 const inputValue = state.inputValue.trim().toLowerCase();
                 return options.filter(option => 
-                  option.label.toLowerCase().includes(inputValue)
+                  option.label.substring(2).toLowerCase().includes(inputValue)
                 );
               }}
+              renderOption={(props, option) => (
+                <li {...props}>
+                  {option.label.substring(2)}
+                  {option.type === 'prixer' && (
+                    <span style={{ marginLeft: 8, color: '#666' }}>
+                      (Prixer)
+                    </span>
+                  )}
+                </li>
+              )}
             />
           </Grid2>
           <Grid2 size={{ sm: 4, xs: 12 }} className={classes.gridInput}>
@@ -734,13 +771,6 @@ export default function ConsumerData() {
                 // error={values?.today < stringReadyDate}
                 // min={stringReadyDate}
                 className={classes.textField}
-                slotProps={{
-                  input: {
-                    inputProps: {
-                      shrink: true,
-                    },
-                  },
-                }}
                 onChange={(e) => {
                   dispatch({
                     type: "SET_SHIPPING_DETAILS",

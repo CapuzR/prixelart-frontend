@@ -14,6 +14,6 @@ export const checkPermissions = (product: PickedProduct | null, art: PickedArt |
 
   return keys.every((key) => {
     const value = selection[key as keyof typeof selection];
-    return typeof value === 'string' && value !== '';
+    return typeof value !== undefined && value !== '';
   });
 };

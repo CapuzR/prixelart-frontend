@@ -1,39 +1,42 @@
-import { useEffect, useState } from "react"
-import axios from "axios"
-import Grid2 from "@mui/material/Grid2"
-import Typography from "@mui/material/Typography"
-import useMediaQuery from "@mui/material/useMediaQuery"
-import Button from "@mui/material/Button"
-import MenuItem from "@mui/material/MenuItem"
-import Select from "@mui/material/Select"
-import FormControl from "@mui/material/FormControl"
-import InputLabel from "@mui/material/InputLabel"
-import List from "@mui/material/List"
-import ListItem from "@mui/material/ListItem"
-import ListItemText from "@mui/material/ListItemText"
-import Collapse from "@mui/material/Collapse"
-import Divider from "@mui/material/Divider"
+import { useEffect, useState } from "react";
+import axios from "axios";
+import Grid2 from "@mui/material/Grid2";
+import Typography from "@mui/material/Typography";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import Button from "@mui/material/Button";
+import MenuItem from "@mui/material/MenuItem";
+import Select from "@mui/material/Select";
+import FormControl from "@mui/material/FormControl";
+import InputLabel from "@mui/material/InputLabel";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemText from "@mui/material/ListItemText";
+import Collapse from "@mui/material/Collapse";
+import Divider from "@mui/material/Divider";
 
-import ReactQuill from "react-quill"
-import "react-quill/dist/quill.snow.css"
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 import {
   UnitPrice,
+  UnitPriceSug,
+  getComission,
+  getPVPtext,
+  getPVMtext,
   getPVP,
   getPVM,
   getTotalUnitsPVM,
   getTotalUnitsPVP,
-} from "../../../../consumer/checkout/pricesFunctions.js"
-import CurrencySwitch from "components/CurrencySwitch"
-import { Theme, useTheme } from "@mui/material"
-import { makeStyles } from "tss-react/mui"
-import { useConversionRate, useCurrency } from "@context/GlobalContext.js"
-import { PaymentMethod } from "../../../../../types/paymentMethod.types.js"
-import { useOrder } from "@context/OrdersContext.js"
-import React from "react"
+} from "../../../../consumer/checkout/pricesFunctions.js";
+import CurrencySwitch from "components/CurrencySwitch";
+import { Theme, useTheme } from "@mui/material";
+import { makeStyles } from "tss-react/mui";
+import { useConversionRate, useCurrency, useSnackBar } from "@context/GlobalContext.js";
+import { PaymentMethod } from "../../../../../types/paymentMethod.types.js";
+import { useOrder } from "@context/OrdersContext.js";
 
 interface CheckoutProps {
-  loadingOrder: boolean
-  createOrder: () => void
+  loadingOrder: boolean;
+  createOrder: () => void;
 }
 
 const useStyles = makeStyles()((theme: Theme) => {
@@ -41,85 +44,147 @@ const useStyles = makeStyles()((theme: Theme) => {
     formControl: {
       minWidth: 120,
     },
-  }
-})
+  };
+});
 
 export default function Checkout({ loadingOrder, createOrder }: CheckoutProps) {
-  const { classes } = useStyles()
-  const theme = useTheme()
-  const { state, dispatch } = useOrder()
-  const { order, discounts, prixers } = state
-  const { consumerDetails, shipping, billing } = order //Datos básicos, de envío y de facturación
-  const { basic } = consumerDetails
-  const { currency } = useCurrency()
-  const { conversionRate } = useConversionRate()
+  const { classes } = useStyles();
+  const theme = useTheme();
+  const { state, dispatch } = useOrder();
+  const { order, selectedPrixer, prixers } = state;
+  const { lines, consumerDetails, shipping, billing } = order;
+  const { basic } = consumerDetails;
+  const { currency } = useCurrency();
+  const { conversionRate } = useConversionRate();
+  const { showSnackBar } = useSnackBar();
 
-  const isDesktop = useMediaQuery(theme.breakpoints.up("md"))
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"))
+  const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
-  const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([])
-  // const [prixers, setPrixers] = useState<Prixer[]>([])
+  const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
 
   const handleEditorChange = (value: string) => {
     dispatch({
       type: "SET_OBSERVATIONS",
       payload: value,
-    })
-  }
+    });
+  };
 
-  let shippingCost = Number(shipping?.method?.price)
-
-  // const setCertified = (i: number, data: string, p: string) => {
-  //   const kart = [...buyState]
-  //   const item = {
-  //     ...kart[i],
-  //     art: { ...kart[i].art, certificate: { ...kart[i].art.certificate } },
-  //   }
-  //   item.art.certificate[p] = data
-  //   kart[i] = item
-  //   setBuyState(kart)
-  // }
+  let shippingCost = Number(shipping?.method?.price);
 
   useEffect(() => {
-    const base_url =
-      import.meta.env.VITE_BACKEND_URL + "/payment-method/read-all-v2"
-    axios
-      .get(base_url)
-      .then((response) => {
-        let prev = response.data
+    const fetchPaymentMethods = async () => {
+      try {
+        const response = await axios.get(
+          import.meta.env.VITE_BACKEND_URL + "/payment-method/read-all-v2"
+        );
+        let methods = response.data;
         if (selectedPrixer) {
-          prev.unshift({ name: "Balance Prixer" })
+          methods.unshift({ name: "Balance Prixer" });
         }
-        setPaymentMethods(prev)
-      })
-      .catch((error) => {
-        console.log(error)
-      })
-  }, [selectedPrixer])
+        setPaymentMethods(methods);
+      } catch (error) {
+        console.error(error);
+        showSnackBar('Error al cargar métodos de pago');
+      }
+    };
+
+    fetchPaymentMethods();
+  }, [selectedPrixer]);
+
+  const calculateTotals = () => {
+    let subtotal = lines.reduce((acc, line) => {
+      if (!line.item.product || !line.item.art) return acc;
+      return acc + (line.pricePerUnit * line.quantity);
+    }, 0);
+
+    const tax = selectedPrixer ? 0 : subtotal * 0.16;
+    const shippingCost = shipping.method?.price || 0;
+    const total = subtotal + tax + shippingCost;
+
+    return {
+      subtotal,
+      tax,
+      shippingCost,
+      total
+    };
+  };
+
+  const handlePaymentMethodChange = (method: string) => {
+    if (method === "Balance Prixer" && selectedPrixer) {
+      dispatch({
+        type: "SET_BILLING_DETAILS",
+        payload: {
+          ...billing,
+          method,
+          destinatary: selectedPrixer.account
+        }
+      });
+    } else {
+      dispatch({
+        type: "SET_BILLING_DETAILS",
+        payload: {
+          ...billing,
+          method
+        }
+      });
+    }
+  };
+
+  const handleCreateOrder = () => {
+    if (lines.length === 0) {
+      showSnackBar('Debe agregar al menos un producto');
+      return;
+    }
+
+    if (!billing.method) {
+      showSnackBar('Debe seleccionar un método de pago');
+      return;
+    }
+
+    const totals = calculateTotals();
+    
+    dispatch({
+      type: "UPDATE_ORDER",
+      payload: {
+        ...order,
+        subTotal: totals.subtotal,
+        tax: [{
+          id: 'IVA',
+          name: 'IVA',
+          value: 16,
+          amount: totals.tax
+        }],
+        total: totals.total
+      }
+    });
+
+    createOrder();
+  };
 
   const getTotal = (x) => {
-    let n = []
-    n.push(Number(getTotalPrice(buyState).replace(/[,]/gi, ".")))
-    n.push(getIvaCost(buyState))
+    let n = [];
+    n.push(Number(getTotalPrice(buyState).replace(/[,]/gi, ".")));
+    n.push(getIvaCost(buyState));
     {
-      shippingData?.shippingMethod && n.push(shippingCost)
+      shippingData?.shippingMethod && n.push(shippingCost);
     }
     let total = n.reduce(function (a, b) {
-      return a + b
-    })
+      return a + b;
+    });
     return total.toLocaleString("de-DE", {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
-    })
-  }
+    });
+  };
 
   const getIvaCost = (state) => {
     if (typeof selectedPrixer?.username === "string") {
-      return 0
+      return 0;
     } else {
-      return Number(getTotalPrice(state).replace(/[,]/gi, ".")) * 0.16
+      return Number(getTotalPrice(state).replace(/[,]/gi, ".")) * 0.16;
     }
-  }
+  };
 
   const getTotalPrice = (state) => {
     if (selectedPrixer) {
@@ -132,7 +197,7 @@ export default function Checkout({ loadingOrder, createOrder }: CheckoutProps) {
       )?.toLocaleString("de-DE", {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
-      })
+      });
     } else {
       return getTotalUnitsPVP(
         state,
@@ -142,13 +207,9 @@ export default function Checkout({ loadingOrder, createOrder }: CheckoutProps) {
       )?.toLocaleString("de-DE", {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
-      })
+      });
     }
-  }
-
-  // const changeCurrency = () => {
-  //   setCurrency(!currency)
-  // }
+  };
 
   const PriceSelect = (item) => {
     if (selectedPrixer) {
@@ -163,42 +224,44 @@ export default function Checkout({ loadingOrder, createOrder }: CheckoutProps) {
       ).toLocaleString("de-DE", {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
-      })
+      });
     } else {
       return (
         getPVP(item, currency, conversionRate, discounts) * item.quantity
       ).toLocaleString("de-DE", {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
-      })
+      });
     }
-  }
+  };
 
   const getTotalCombinedItems = (state) => {
-    const totalNotCompleted = state.filter((item) => !item.art || !item.product)
+    const totalNotCompleted = state.filter(
+      (item) => !item.art || !item.product
+    );
     return {
       totalNotCompleted,
-    }
-  }
+    };
+  };
 
   const handleShowCertified = async (index: number, value: boolean) => {
-    const newState = [...buyState]
-    let last = 0
+    const newState = [...buyState];
+    let last = 0;
     const matches = newState.filter(
       (item) => item.art.artId === newState[index].art.artId
-    )
-    const sequences = matches.map((item) => item.art.certificate.sequence)
-    last = Math.max(...sequences)
+    );
+    const sequences = matches.map((item) => item.art.certificate.sequence);
+    last = Math.max(...sequences);
 
-    newState[index].product.autoCertified = value
+    newState[index].product.autoCertified = value;
     if (value) {
-      newState[index].art.certificate.sequence = last + 1
+      newState[index].art.certificate.sequence = last + 1;
     } else {
-      newState[index].art.certificate.sequence = 0
+      newState[index].art.certificate.sequence = 0;
     }
-    setBuyState(newState)
-    localStorage.setItem("buyState", JSON.stringify(newState))
-  }
+    setBuyState(newState);
+    localStorage.setItem("buyState", JSON.stringify(newState));
+  };
 
   useEffect(() => {
     if (basic && basic.name && basic.lastName && prixers) {
@@ -210,13 +273,13 @@ export default function Checkout({ loadingOrder, createOrder }: CheckoutProps) {
           prixer?.lastName?.toLowerCase() ===
             basic.lastName.toLowerCase().trim()
         ) {
-          setSelectedPrixer(prixer)
-        } else return
-      })
+          setSelectedPrixer(prixer);
+        } else return;
+      });
     }
-  }, [prixers])
+  }, [prixers]);
 
-  let today = new Date()
+  let today = new Date();
   const monthsOrder = [
     "01",
     "02",
@@ -230,7 +293,7 @@ export default function Checkout({ loadingOrder, createOrder }: CheckoutProps) {
     "10",
     "11",
     "12",
-  ]
+  ];
 
   let ProdTimes = order.lines?.map((line) => {
     if (
@@ -238,38 +301,51 @@ export default function Checkout({ loadingOrder, createOrder }: CheckoutProps) {
       line.item.art &&
       line.item.product.productionTime !== undefined
     ) {
-      return line.item.product.productionTime
+      return line.item.product.productionTime;
     }
-  })
+  });
 
   let orderedProdT = ProdTimes.sort((a, b) => {
-    if (a === undefined) return 1
-    if (b === undefined) return -1
-    return a - b
-  })
+    if (a === undefined) return 1;
+    if (b === undefined) return -1;
+    return a - b;
+  });
 
   let readyDate = new Date(
     today.setDate(today.getDate() + Number(orderedProdT[0]))
-  )
+  );
   const stringReadyDate =
     readyDate.getFullYear() +
     "-" +
     monthsOrder[readyDate.getMonth()] +
     "-" +
-    readyDate.getDate()
+    readyDate.getDate();
 
-  // useEffect(() => {
-  //   if (
-  //     buyState[0] &&
-  //     buyState[0].art &&
-  //     shippingData?.shippingDate === undefined
-  //   ) {
-  //     .setShippingData({
-  //       ...shippingData,
-  //       shippingDate: stringReadyDate,
-  //     })
-  //   }
-  // }, [])
+  const getFinalPrice = (line: OrderLine) => {
+    if (!line.item.product || !line.item.art) return undefined;
+    
+    const price = line.item.product.selection
+      ? UnitPriceSug(
+          line.item.product,
+          line.item.art,
+          currency,
+          conversionRate,
+          discounts,
+          selectedPrixer?.username,
+          checkOrgs(line.item.art),
+          type
+        )
+      : UnitPrice(
+          line.item.product,
+          line.item.art,
+          currency,
+          conversionRate,
+          discounts,
+          selectedPrixer?.username
+        );
+
+    return formatPriceForUI(Number(price) * line.quantity, currency, conversionRate);
+  };
 
   return (
     <Grid2
@@ -283,7 +359,6 @@ export default function Checkout({ loadingOrder, createOrder }: CheckoutProps) {
         <CurrencySwitch />
       </Grid2>
       <Grid2 size={{ md: 4 }}>
-        {/* {basic && ( */}
         <Typography>
           Pedido a nombre de
           <strong>
@@ -294,7 +369,6 @@ export default function Checkout({ loadingOrder, createOrder }: CheckoutProps) {
           Entregar en{" "}
           <strong>{shipping.basic?.shortAddress || basic?.shortAddress}</strong>
         </Typography>
-        {/* )} */}
 
         <FormControl
           variant="outlined"
@@ -350,11 +424,6 @@ export default function Checkout({ loadingOrder, createOrder }: CheckoutProps) {
                                       "string"
                                       ? line.item.product?.selection
                                       : line.item.product.selection?.name}
-                                    {/* {line.item.product.selection?.name ===
-                                      "Personalizado" &&
-                                      line.item.product.selection?.attributes
-                                        ?.value &&
-                                      ` (${line.item.product.selection?.attributes?.[0].value})`} */}
                                     <Grid2 style={{ display: "flex" }}>
                                       <Typography
                                         style={{
@@ -381,100 +450,6 @@ export default function Checkout({ loadingOrder, createOrder }: CheckoutProps) {
                                         {line.item.art.prixerUsername}
                                       </Typography>
                                     </Grid2>
-                                    {/* <Grid2
-                                      style={{
-                                        display: "flex",
-                                        flexDirection: "column",
-                                      }}
-                                    >
-                                      {line.item.product?.autoCertified && (
-                                        <Grid2
-                                          size={{
-                                          xs:6}}
-                                          style={{
-                                            display: "flex",
-                                            marginTop: 8,
-                                            maxWidth: "100%",
-                                            // borderRadius: 10,
-                                          }}
-                                        >
-                                          <TextField
-                                            style={{
-                                              marginRight: 8,
-                                              maxWidth: "5rem",
-                                            }}
-                                            variant="outlined"
-                                            label="Código"
-                                            onChange={(e) => {
-                                              setCertified(
-                                                index,
-                                                e.target.value,
-                                                "code"
-                                              )
-                                            }}
-                                            value={item.art?.certificate?.code}
-                                          />
-                                          <TextField
-                                            style={{
-                                              marginRight: 8,
-                                              maxWidth: "5rem",
-                                            }}
-                                            type="number"
-                                            variant="outlined"
-                                            label="Arte"
-                                            value={
-                                              item.art?.certificate?.serial
-                                            }
-                                            onChange={(e) => {
-                                              setCertified(
-                                                index,
-                                                e.target.value,
-                                                "serial"
-                                              )
-                                            }}
-                                          />
-                                          <TextField
-                                            style={{
-                                              maxWidth: "9rem",
-                                            }}
-                                            type="number"
-                                            variant="outlined"
-                                            label="Seguimiento"
-                                            value={
-                                              item.art?.certificate?.sequence
-                                            }
-                                            onChange={(e) => {
-                                              setCertified(
-                                                index,
-                                                e.target.value,
-                                                "sequence"
-                                              )
-                                            }}
-                                          />
-                                        </Grid2>
-                                      )}
-                                      <FormControlLabel
-                                        style={{ color: "#282c34" }}
-                                        control={
-                                          <Checkbox
-                                            checked={
-                                              item.product.autoCertified
-                                                ? item.product.autoCertified
-                                                : false
-                                            }
-                                            onChange={() => {
-                                              handleShowCertified(
-                                                index,
-                                                Boolean(
-                                                  !item.product.autoCertified
-                                                )
-                                              )
-                                            }}
-                                          />
-                                        }
-                                        label="Certificado"
-                                      />
-                                    </Grid2> */}
                                   </Grid2>
                                   <Grid2
                                     size={{
@@ -496,21 +471,7 @@ export default function Checkout({ loadingOrder, createOrder }: CheckoutProps) {
                                       }}
                                     >
                                       Precio:
-                                      {(
-                                        Number(
-                                          UnitPrice(
-                                            line.item.product,
-                                            line.item.art,
-                                            currency,
-                                            conversionRate,
-                                            discounts,
-                                            props?.selectedPrixer?.username
-                                          ).replace(/[,]/gi, ".")
-                                        ) * line.quantity
-                                      ).toLocaleString("de-DE", {
-                                        minimumFractionDigits: 2,
-                                        maximumFractionDigits: 2,
-                                      })}
+                                      {getFinalPrice(line)}
                                     </div>
                                   </Grid2>
                                 </Grid2>
@@ -530,7 +491,6 @@ export default function Checkout({ loadingOrder, createOrder }: CheckoutProps) {
               <Typography
                 style={{
                   fontSize: "11px",
-                  // color: "primary",
                 }}
               >
                 {getTotalCombinedItems(buyState).totalNotCompleted?.length > 1
@@ -560,16 +520,7 @@ export default function Checkout({ loadingOrder, createOrder }: CheckoutProps) {
                     variant="outlined"
                     value={billing.method}
                     onChange={(event) =>
-                      event.target.value === "Balance Prixer"
-                        ? setBillingData({
-                            ...billingData,
-                            orderPaymentMethod: event.target.value,
-                            destinatary: props.selectedPrixer.account,
-                          })
-                        : setBillingData({
-                            ...billingData,
-                            orderPaymentMethod: event.target.value,
-                          })
+                      handlePaymentMethodChange(event.target.value)
                     }
                   >
                     {paymentMethods &&
@@ -665,11 +616,11 @@ export default function Checkout({ loadingOrder, createOrder }: CheckoutProps) {
           disabled={loadingOrder || buyState.length == 0}
           variant="contained"
           color={"primary"}
-          onClick={createOrder}
+          onClick={handleCreateOrder}
         >
           Crear orden
         </Button>
       </Grid2>
     </Grid2>
-  )
+  );
 }

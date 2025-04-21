@@ -17,18 +17,10 @@ export interface PickedProduct
     | "priceRange"
     | "variants"
     | "discount"
-    // | "modifyPrice"
-    // | "comission"
     | "active"
     | "considerations"
     | "cost"
-    // | "publicPrice"
-    // | "prixerPrice"
-    // | "hasSpecialVar"
-    // | "bestSeller"
-    // | "finalPrice"
     | "status"
-    // | "autoCertified"
   > {}
 
 export interface Product {

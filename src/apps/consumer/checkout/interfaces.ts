@@ -19,6 +19,8 @@ export interface CheckoutState {
   organizations: Organization[]
   consumers: Consumer[]
   prixers: Prixer[]
+  selectedPrixer?: Prixer
+  selectedConsumer?: Consumer
 }
 
 export interface DataLists {
@@ -221,6 +223,8 @@ export type CheckoutAction =
   | { type: "SET_CONSUMER_ADDRESS"; payload: BasicAddress } // Don't used yet
   | { type: "RESET_BASIC_DATA"; payload: Partial<Order> }
   | { type: "OTHER_ACTIONS"; payload?: any }
+  | { type: "SET_SELECTED_PRIXER"; payload: Prixer | undefined }
+  | { type: "SET_SELECTED_CONSUMER"; payload: Consumer | undefined }
 
 // Type for the errorCheck function used in form fields
 export type FormFieldErrorCheck = (value: any, data?: any) => boolean

@@ -28,7 +28,7 @@ import { Discount } from "../../../../types/discount.types"
 import { Surcharge } from "../../../../types/surcharge.types"
 import { Organization } from "../../../../types/organization.types"
 import { getClients, getOrders } from "./api"
-import { OrderProvider } from "@context/OrdersContext"
+import { OrdersProvider } from "@context/OrdersContext"
 
 const useStyles = makeStyles()((theme: Theme) => {
   return {
@@ -624,7 +624,7 @@ export default function Orders() {
   }, [])
 
   return (
-    <OrderProvider>
+    <OrdersProvider>
       <Grid2
         container
         spacing={2}
@@ -767,6 +767,6 @@ export default function Orders() {
           setModalContent={setModalContent}
         />
       </Modal> */}
-    </OrderProvider>
+    </OrdersProvider>
   )
 }

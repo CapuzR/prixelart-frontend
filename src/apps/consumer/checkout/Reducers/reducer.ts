@@ -32,6 +32,18 @@ export const checkoutReducer = (
     // case 'SET_EXPANDED_SECTION':
     //   return { ...state, expandedSection: action.payload };
 
+    case "SET_SELECTED_PRIXER":
+      return {
+        ...state,
+        selectedPrixer: action.payload
+      }
+      
+    case "SET_SELECTED_CONSUMER":
+      return {
+        ...state,
+        selectedConsumer: action.payload
+      }
+
     default:
       return {
         ...state,

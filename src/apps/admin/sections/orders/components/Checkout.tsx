@@ -30,9 +30,15 @@ import {
 import CurrencySwitch from "components/CurrencySwitch";
 import { Theme, useTheme } from "@mui/material";
 import { makeStyles } from "tss-react/mui";
-import { useConversionRate, useCurrency, useSnackBar } from "@context/GlobalContext.js";
+import {
+  useConversionRate,
+  useCurrency,
+  useSnackBar,
+} from "@context/GlobalContext.js";
 import { PaymentMethod } from "../../../../../types/paymentMethod.types.js";
 import { useOrder } from "@context/OrdersContext.js";
+// import { formatPriceForUI } from "../../../../../utils/formats.ts";
+import { OrderLine } from "@apps/consumer/checkout/interfaces.js";
 
 interface CheckoutProps {
   loadingOrder: boolean;
@@ -51,7 +57,7 @@ export default function Checkout({ loadingOrder, createOrder }: CheckoutProps) {
   const { classes } = useStyles();
   const theme = useTheme();
   const { state, dispatch } = useOrder();
-  const { order, selectedPrixer, prixers } = state;
+  const { order, selectedPrixer, prixers, discounts } = state;
   const { lines, consumerDetails, shipping, billing } = order;
   const { basic } = consumerDetails;
   const { currency } = useCurrency();
@@ -70,7 +76,8 @@ export default function Checkout({ loadingOrder, createOrder }: CheckoutProps) {
     });
   };
 
-  let shippingCost = Number(shipping?.method?.price);
+  const shippingCost =
+    typeof shipping.method === "object" ? shipping.method?.price || 0 : 0;
 
   useEffect(() => {
     const fetchPaymentMethods = async () => {
@@ -85,7 +92,7 @@ export default function Checkout({ loadingOrder, createOrder }: CheckoutProps) {
         setPaymentMethods(methods);
       } catch (error) {
         console.error(error);
-        showSnackBar('Error al cargar métodos de pago');
+        showSnackBar("Error al cargar métodos de pago");
       }
     };
 
@@ -95,189 +102,192 @@ export default function Checkout({ loadingOrder, createOrder }: CheckoutProps) {
   const calculateTotals = () => {
     let subtotal = lines.reduce((acc, line) => {
       if (!line.item.product || !line.item.art) return acc;
-      return acc + (line.pricePerUnit * line.quantity);
+      return acc + line.pricePerUnit * line.quantity;
     }, 0);
 
     const tax = selectedPrixer ? 0 : subtotal * 0.16;
-    const shippingCost = shipping.method?.price || 0;
+    const shippingCost =
+      typeof shipping.method === "object" ? shipping.method?.price || 0 : 0;
     const total = subtotal + tax + shippingCost;
 
     return {
       subtotal,
       tax,
       shippingCost,
-      total
+      total,
     };
   };
 
   const handlePaymentMethodChange = (method: string) => {
-    if (method === "Balance Prixer" && selectedPrixer) {
-      dispatch({
-        type: "SET_BILLING_DETAILS",
-        payload: {
-          ...billing,
-          method,
-          destinatary: selectedPrixer.account
-        }
-      });
-    } else {
-      dispatch({
-        type: "SET_BILLING_DETAILS",
-        payload: {
-          ...billing,
-          method
-        }
-      });
-    }
+    // if (method === "Balance Prixer" && selectedPrixer) {
+    //   dispatch({
+    //     type: "SET_BILLING_DETAILS",
+    //     payload: {
+    //       ...billing,
+    //       method,
+    //       destinatary: selectedPrixer.account
+    //     }
+    //   });
+    // } else {
+    dispatch({
+      type: "SET_BILLING_DETAILS",
+      payload: {
+        ...billing,
+        method,
+      },
+    });
+    // }
   };
 
   const handleCreateOrder = () => {
     if (lines.length === 0) {
-      showSnackBar('Debe agregar al menos un producto');
+      showSnackBar("Debe agregar al menos un producto");
       return;
     }
 
     if (!billing.method) {
-      showSnackBar('Debe seleccionar un método de pago');
+      showSnackBar("Debe seleccionar un método de pago");
       return;
     }
 
     const totals = calculateTotals();
-    
+
     dispatch({
       type: "UPDATE_ORDER",
       payload: {
         ...order,
         subTotal: totals.subtotal,
-        tax: [{
-          id: 'IVA',
-          name: 'IVA',
-          value: 16,
-          amount: totals.tax
-        }],
-        total: totals.total
-      }
+        tax: [
+          {
+            id: "IVA",
+            name: "IVA",
+            value: 16,
+            amount: totals.tax,
+          },
+        ],
+        total: totals.total,
+      },
     });
 
     createOrder();
   };
 
-  const getTotal = (x) => {
-    let n = [];
-    n.push(Number(getTotalPrice(buyState).replace(/[,]/gi, ".")));
-    n.push(getIvaCost(buyState));
-    {
-      shippingData?.shippingMethod && n.push(shippingCost);
-    }
-    let total = n.reduce(function (a, b) {
-      return a + b;
-    });
-    return total.toLocaleString("de-DE", {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    });
-  };
+  // const getTotal = (x) => {
+  //   let n = [];
+  //   n.push(Number(getTotalPrice(lines).replace(/[,]/gi, ".")));
+  //   n.push(getIvaCost(lines));
+  //   {
+  //     shipping?.method && n.push(shippingCost);
+  //   }
+  //   let total = n.reduce(function (a, b) {
+  //     return a + b;
+  //   });
+  //   return total.toLocaleString("de-DE", {
+  //     minimumFractionDigits: 2,
+  //     maximumFractionDigits: 2,
+  //   });
+  // };
 
-  const getIvaCost = (state) => {
-    if (typeof selectedPrixer?.username === "string") {
-      return 0;
-    } else {
-      return Number(getTotalPrice(state).replace(/[,]/gi, ".")) * 0.16;
-    }
-  };
+  // const getIvaCost = (state: any) => {
+  //   if (typeof selectedPrixer?.username === "string") {
+  //     return 0;
+  //   } else {
+  //     return Number(getTotalPrice(state).replace(/[,]/gi, ".")) * 0.16;
+  //   }
+  // };
 
-  const getTotalPrice = (state) => {
-    if (selectedPrixer) {
-      return getTotalUnitsPVM(
-        state,
-        currency,
-        conversionRate,
-        discounts,
-        selectedPrixer.username
-      )?.toLocaleString("de-DE", {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      });
-    } else {
-      return getTotalUnitsPVP(
-        state,
-        currency,
-        conversionRate,
-        discounts
-      )?.toLocaleString("de-DE", {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      });
-    }
-  };
+  // const getTotalPrice = (state: any) => {
+  //   if (selectedPrixer) {
+  //     return getTotalUnitsPVM(
+  //       state,
+  //       currency,
+  //       conversionRate,
+  //       discounts,
+  //       selectedPrixer.username
+  //     )?.toLocaleString("de-DE", {
+  //       minimumFractionDigits: 2,
+  //       maximumFractionDigits: 2,
+  //     });
+  //   } else {
+  //     return getTotalUnitsPVP(
+  //       state,
+  //       currency,
+  //       conversionRate,
+  //       discounts
+  //     )?.toLocaleString("de-DE", {
+  //       minimumFractionDigits: 2,
+  //       maximumFractionDigits: 2,
+  //     });
+  //   }
+  // };
 
-  const PriceSelect = (item) => {
-    if (selectedPrixer) {
-      return (
-        getPVM(
-          item,
-          currency,
-          conversionRate,
-          discounts,
-          selectedPrixer?.username
-        ) * item.quantity
-      ).toLocaleString("de-DE", {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      });
-    } else {
-      return (
-        getPVP(item, currency, conversionRate, discounts) * item.quantity
-      ).toLocaleString("de-DE", {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      });
-    }
-  };
+  // const PriceSelect = (item: any) => {
+  //   if (selectedPrixer) {
+  //     return (
+  //       getPVM(
+  //         item,
+  //         currency,
+  //         conversionRate,
+  //         discounts,
+  //         selectedPrixer?.username
+  //       ) * item.quantity
+  //     ).toLocaleString("de-DE", {
+  //       minimumFractionDigits: 2,
+  //       maximumFractionDigits: 2,
+  //     });
+  //   } else {
+  //     return (
+  //       getPVP(item, currency, conversionRate, discounts) * item.quantity
+  //     ).toLocaleString("de-DE", {
+  //       minimumFractionDigits: 2,
+  //       maximumFractionDigits: 2,
+  //     });
+  //   }
+  // };
 
-  const getTotalCombinedItems = (state) => {
-    const totalNotCompleted = state.filter(
-      (item) => !item.art || !item.product
+  const getTotalCombinedItems = (state: any) => {
+    const totalNotCompleted = state.map((item: any) => item.item).filter(
+      (item: any) => !item.art || !item.product
     );
     return {
       totalNotCompleted,
     };
   };
 
-  const handleShowCertified = async (index: number, value: boolean) => {
-    const newState = [...buyState];
-    let last = 0;
-    const matches = newState.filter(
-      (item) => item.art.artId === newState[index].art.artId
-    );
-    const sequences = matches.map((item) => item.art.certificate.sequence);
-    last = Math.max(...sequences);
+  // const handleShowCertified = async (index: number, value: boolean) => {
+  //   const newState = [...lines];
+  //   let last = 0;
+  //   const matches = newState.filter(
+  //     (item) => item.art.artId === newState[index].art.artId
+  //   );
+  //   const sequences = matches.map((item) => item.art.certificate.sequence);
+  //   last = Math.max(...sequences);
 
-    newState[index].product.autoCertified = value;
-    if (value) {
-      newState[index].art.certificate.sequence = last + 1;
-    } else {
-      newState[index].art.certificate.sequence = 0;
-    }
-    setBuyState(newState);
-    localStorage.setItem("buyState", JSON.stringify(newState));
-  };
+  //   newState[index].product.autoCertified = value;
+  //   if (value) {
+  //     newState[index].art.certificate.sequence = last + 1;
+  //   } else {
+  //     newState[index].art.certificate.sequence = 0;
+  //   }
+  //   setBuyState(newState);
+  //   localStorage.setItem("buyState", JSON.stringify(newState));
+  // };
 
-  useEffect(() => {
-    if (basic && basic.name && basic.lastName && prixers) {
-      prixers.map((prixer) => {
-        if (
-          prixer?.firstName &&
-          prixer?.firstName?.toLowerCase() ===
-            basic.name.toLowerCase().trim() &&
-          prixer?.lastName?.toLowerCase() ===
-            basic.lastName.toLowerCase().trim()
-        ) {
-          setSelectedPrixer(prixer);
-        } else return;
-      });
-    }
-  }, [prixers]);
+  // useEffect(() => {
+  //   if (basic && basic.name && basic.lastName && prixers) {
+  //     prixers.map((prixer) => {
+  //       if (
+  //         prixer?.firstName &&
+  //         prixer?.firstName?.toLowerCase() ===
+  //           basic.name.toLowerCase().trim() &&
+  //         prixer?.lastName?.toLowerCase() ===
+  //           basic.lastName.toLowerCase().trim()
+  //       ) {
+  //         setSelectedPrixer(prixer);
+  //       } else return;
+  //     });
+  //   }
+  // }, [prixers]);
 
   let today = new Date();
   const monthsOrder = [
@@ -321,31 +331,35 @@ export default function Checkout({ loadingOrder, createOrder }: CheckoutProps) {
     "-" +
     readyDate.getDate();
 
-  const getFinalPrice = (line: OrderLine) => {
-    if (!line.item.product || !line.item.art) return undefined;
-    
-    const price = line.item.product.selection
-      ? UnitPriceSug(
-          line.item.product,
-          line.item.art,
-          currency,
-          conversionRate,
-          discounts,
-          selectedPrixer?.username,
-          checkOrgs(line.item.art),
-          type
-        )
-      : UnitPrice(
-          line.item.product,
-          line.item.art,
-          currency,
-          conversionRate,
-          discounts,
-          selectedPrixer?.username
-        );
+  // const getFinalPrice = (line: OrderLine) => {
+  //   if (!line.item.product || !line.item.art) return undefined;
 
-    return formatPriceForUI(Number(price) * line.quantity, currency, conversionRate);
-  };
+  //   const price = line.item.product.selection
+  //     ? UnitPriceSug(
+  //         line.item.product,
+  //         line.item.art,
+  //         currency,
+  //         conversionRate,
+  //         discounts,
+  //         selectedPrixer?.username,
+  //         checkOrgs(line.item.art),
+  //         type
+  //       )
+  //     : UnitPrice(
+  //         line.item.product,
+  //         line.item.art,
+  //         currency,
+  //         conversionRate,
+  //         discounts,
+  //         selectedPrixer?.username
+  //       );
+
+  //   return formatPriceForUI(
+  //     Number(price) * line.quantity,
+  //     currency,
+  //     conversionRate
+  //   );
+  // };
 
   return (
     <Grid2
@@ -355,10 +369,7 @@ export default function Checkout({ loadingOrder, createOrder }: CheckoutProps) {
         padding: "8px",
       }}
     >
-      <Grid2 style={{ display: "flex", justifyContent: "end" }}>
-        <CurrencySwitch />
-      </Grid2>
-      <Grid2 size={{ md: 4 }}>
+      <Grid2 size={{ md: 4}}>
         <Typography>
           Pedido a nombre de
           <strong>
@@ -374,14 +385,17 @@ export default function Checkout({ loadingOrder, createOrder }: CheckoutProps) {
           variant="outlined"
           style={{ minWidth: "100%", marginTop: 20 }}
         >
-          <ReactQuill
+          {/* <ReactQuill
             value={order.observations}
             onChange={handleEditorChange}
             placeholder="Escribe las observaciones aquí..."
-          />
+          /> */}
         </FormControl>
       </Grid2>
-      <Grid2 size={{ md: 8 }} style={{ paddingLeft: 40 }}>
+      <Grid2 style={{marginLeft: 'auto', display: "flex", justifyContent: "end" }}>
+        <CurrencySwitch />
+      </Grid2>
+      <Grid2 size={{ md: 12 }} style={{ paddingLeft: 40 }}>
         <div style={{ fontWeight: "bold" }}>Items:</div>
         <div>
           <List component="div" disablePadding>
@@ -470,8 +484,9 @@ export default function Checkout({ loadingOrder, createOrder }: CheckoutProps) {
                                         paddingLeft: 10,
                                       }}
                                     >
-                                      Precio:
-                                      {getFinalPrice(line)}
+                                      Precio: XXOO
+                                      {/* TO DO: Add total amount function */}
+                                      {/* {getFinalPrice(line)} */}
                                     </div>
                                   </Grid2>
                                 </Grid2>
@@ -487,15 +502,15 @@ export default function Checkout({ loadingOrder, createOrder }: CheckoutProps) {
             ) : (
               <Typography>No has seleccionado nada aún.</Typography>
             )}
-            {getTotalCombinedItems(buyState).totalNotCompleted?.length >= 1 && (
+            {getTotalCombinedItems(lines).totalNotCompleted?.length >= 1 && (
               <Typography
                 style={{
                   fontSize: "11px",
                 }}
               >
-                {getTotalCombinedItems(buyState).totalNotCompleted?.length > 1
+                {getTotalCombinedItems(lines).totalNotCompleted?.length > 1
                   ? `Faltan ${
-                      getTotalCombinedItems(buyState).totalNotCompleted.length
+                      getTotalCombinedItems(lines).totalNotCompleted.length
                     } productos por definir.`
                   : `Falta 1 producto por definir.`}
               </Typography>
@@ -506,7 +521,7 @@ export default function Checkout({ loadingOrder, createOrder }: CheckoutProps) {
                 justifyContent: "space-between",
               }}
             >
-              <Grid2 size={{ md: 8, xs: 6 }} style={{ paddingLeft: 0 }}>
+              <Grid2 size={{md: 4, xs: 6 }} style={{ paddingLeft: 0 }}>
                 <FormControl
                   disabled={order.lines.length == 0}
                   className={classes.formControl}
@@ -527,17 +542,17 @@ export default function Checkout({ loadingOrder, createOrder }: CheckoutProps) {
                       paymentMethods.map((m) =>
                         m.name === "Balance Prixer" ? (
                           <MenuItem
-                            value={m}
+                            value={m.name}
                             style={{
                               backgroundColor: "#d33f49",
                               color: "white",
                               fontWeight: 600,
                             }}
                           >
-                            {m.name + " de " + props.selectedPrixer.username}
+                            {m.name + " de " + selectedPrixer?.username}
                           </MenuItem>
                         ) : (
-                          <MenuItem value={m}>{m.name}</MenuItem>
+                          <MenuItem value={m._id}>{m.name}</MenuItem>
                         )
                       )}
                   </Select>
@@ -561,16 +576,18 @@ export default function Checkout({ loadingOrder, createOrder }: CheckoutProps) {
                     <strong>
                       Subtotal:
                       {currency ? " Bs" : "$"}
-                      {getTotalPrice(buyState)}
+                      XXOO
+                      {/* TO DO: Add subtotal function */}
+                      {/* {getTotalPrice(lines)} */}
                     </strong>
 
                     <strong>
                       IVA:
-                      {currency ? " Bs" : "$"}
-                      {getIvaCost(buyState).toLocaleString("de-DE", {
+                      {currency ? " Bs" : "$"}XO
+                      {/* {getIvaCost(lines).toLocaleString("de-DE", {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
-                      })}
+                      })} */}
                     </strong>
 
                     {shipping.method && (
@@ -593,8 +610,8 @@ export default function Checkout({ loadingOrder, createOrder }: CheckoutProps) {
                     )}
                     <strong>
                       Total:
-                      {currency ? " Bs" : "$"}
-                      {getTotal(buyState)}
+                      {currency ? " Bs" : "$"}XXOO
+                      {/* {getTotal(lines)} */}
                     </strong>
                     <br />
                   </>
@@ -608,12 +625,13 @@ export default function Checkout({ loadingOrder, createOrder }: CheckoutProps) {
         style={{
           display: "flex",
           justifyContent: "end",
-          marginTop: 20,
-          marginBottom: "-20px",
+          margin: "20px auto 0",
+          // marginBottom: "-20px",
         }}
       >
         <Button
-          disabled={loadingOrder || buyState.length == 0}
+        sx={{padding: "10px 36px"}}
+          disabled={loadingOrder || lines.length == 0}
           variant="contained"
           color={"primary"}
           onClick={handleCreateOrder}

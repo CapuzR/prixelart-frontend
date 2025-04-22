@@ -399,7 +399,7 @@ export default function OrderDetails(props) {
               src={
                 item.art.title === "Personalizado"
                   ? x
-                  : item.art?.squareThumbUrl
+                  : encodeURI(item.art?.squareThumbUrl)
               }
               style={{
                 maxWidth: 150,
@@ -425,8 +425,8 @@ export default function OrderDetails(props) {
                 src={
                   item.product?.thumbUrl &&
                   item.product?.thumbUrl !== "undefined"
-                    ? item.product?.thumbUrl
-                    : item.product?.sources?.images[0]?.url
+                    ? encodeURI(item.product?.thumbUrl)
+                    : encodeURI(item.product?.sources?.images[0]?.url)
                 }
                 style={{
                   maxWidth: 150,
@@ -1134,7 +1134,7 @@ export default function OrderDetails(props) {
                     }}
                   >
                     <Img
-                      src={props.modalContent?.paymentVoucher}
+                      src={encodeURI(props.modalContent?.paymentVoucher)}
                       alt="Comprobante de pago"
                       style={{
                         maxWidth: 600,
@@ -1324,7 +1324,7 @@ export default function OrderDetails(props) {
                             elevation={3}
                           >
                             <Img
-                              src={item.art?.squareThumbUrl}
+                              src={encodeURI(item.art?.squareThumbUrl)}
                               style={{
                                 maxWidth: 150,
                                 maxHeight: 150,
@@ -1365,9 +1365,9 @@ export default function OrderDetails(props) {
                               elevation={3}
                             >
                               <Img
-                                src={
-                                  item.product.thumbUrl ||
-                                  item.product?.sources?.images[0].url
+                                src={encodeURI(
+                                  item.product.thumbUrl) ||
+                                  encodeURI(item.product?.sources?.images[0].url)
                                 }
                                 style={{
                                   maxWidth: 150,

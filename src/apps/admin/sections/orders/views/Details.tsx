@@ -1,52 +1,62 @@
-import React, { useEffect, useState } from "react"
-import axios from "axios"
-import { useNavigate } from "react-router-dom"
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
-import Grid2 from "@mui/material/Grid2"
-import Paper from "@mui/material/Paper"
-import { Theme, Typography } from "@mui/material"
-import MenuItem from "@mui/material/MenuItem"
-import Select from "@mui/material/Select"
-import OutlinedInput from "@mui/material/OutlinedInput"
-import Stepper from "@mui/material/Stepper"
-import Step from "@mui/material/Step"
-import StepButton from "@mui/material/StepButton"
-import Button from "@mui/material/Button"
+import Grid2 from "@mui/material/Grid2";
+import Paper from "@mui/material/Paper";
+import {
+  Divider,
+  Theme,
+  Typography,
+  FormControl,
+  InputLabel,
+} from "@mui/material";
+import MenuItem from "@mui/material/MenuItem";
+import Select from "@mui/material/Select";
+import OutlinedInput from "@mui/material/OutlinedInput";
+import Stepper from "@mui/material/Stepper";
+import Step from "@mui/material/Step";
+import StepButton from "@mui/material/StepButton";
+import Button from "@mui/material/Button";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemText from "@mui/material/ListItemText";
+import Collapse from "@mui/material/Collapse";
 
-import IconButton from "@mui/material/IconButton"
-import CloseIcon from "@mui/icons-material/Close"
-import Img from "react-cool-img"
-import ArrowBackIcon from "@mui/icons-material/ArrowBack"
+import IconButton from "@mui/material/IconButton";
+import CloseIcon from "@mui/icons-material/Close";
+import Img from "react-cool-img";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 // import WarpImage from '../products/components/WarpImage';
 
 import {
   getPVP,
   getPVM,
-} from "../../../../consumer/checkout/pricesFunctions.js"
+} from "../../../../consumer/checkout/pricesFunctions.js";
 // import moment from 'moment';
-import moment from "moment-timezone"
-import "moment/locale/es"
-import { makeStyles } from "tss-react/mui"
-import { Discount } from "../../../../../types/discount.types.js"
-import { Order } from "../../../../../types/order.types.js"
+import moment from "moment-timezone";
+import "moment/locale/es";
+import { makeStyles } from "tss-react/mui";
+import { Discount } from "../../../../../types/discount.types.js";
+import { Order } from "../../../../consumer/checkout/interfaces.js";
 import {
   getPermissions,
   useConversionRate,
   useSnackBar,
-} from "@context/GlobalContext.js"
-import { Item } from "../../../../../types/item.types.js"
-import { Consumer } from "../../../../../types/consumer.types.js"
-import { getConsumer } from "../api.js"
+} from "@context/GlobalContext.js";
+import { Item } from "../../../../../types/item.types.js";
+import { Consumer } from "../../../../../types/consumer.types.js";
+import { getConsumer } from "../api.js";
 
 interface OrderProps {
-  discountList: Discount[]
-  setModalContent: (order: Order) => void
-  modalContent: Order | undefined
-  handleClose: () => void
-  showVoucher: boolean
-  setShowVoucher: (x: boolean) => void
-  handleCloseVoucher: () => void
-  updateItemFromOrders: (order: string, index: number, status: string) => void
+  discountList: Discount[];
+  setModalContent: (order: Order) => void;
+  modalContent: Order;
+  handleClose: () => void;
+  showVoucher: boolean;
+  setShowVoucher: (x: boolean) => void;
+  handleCloseVoucher: () => void;
+  updateItemFromOrders: (order: string, index: number, status: string) => void;
 }
 
 const useStyles = makeStyles()((theme: Theme) => {
@@ -69,8 +79,8 @@ const useStyles = makeStyles()((theme: Theme) => {
       display: "flex",
       flexDirection: "row",
     },
-  }
-})
+  };
+});
 
 export default function OrderDetails({
   discountList,
@@ -82,22 +92,24 @@ export default function OrderDetails({
   showVoucher,
   handleCloseVoucher,
 }: OrderProps) {
-  const { classes } = useStyles()
-  const navigate = useNavigate()
-  const { showSnackBar } = useSnackBar()
+  const { classes } = useStyles();
+  const navigate = useNavigate();
+  const { showSnackBar } = useSnackBar();
+  const permissions = getPermissions();
+  const { conversionRate } = useConversionRate();
 
-  const permissions = getPermissions()
-  const { conversionRate } = useConversionRate()
-  const [consumer, setConsumer] = useState<Consumer | undefined>(undefined)
-  const [activeStep, setActiveStep] = useState(0)
-  const [paymentVoucher, setPaymentVoucher] = useState<File | undefined>()
-  const [previewVoucher, setPreviewVoucher] = useState<string | undefined>()
-  const [owners, setOwners] = useState([])
-  const steps = [`Detalles`, `Comprobante de pago`, `Comisiones`]
+  const { consumerDetails, shipping, billing, lines } = modalContent;
+  const { basic } = consumerDetails;
+  const [consumer, setConsumer] = useState<Consumer | undefined>(undefined);
+  const [activeStep, setActiveStep] = useState(0);
+  const [paymentVoucher, setPaymentVoucher] = useState<File | undefined>();
+  const [previewVoucher, setPreviewVoucher] = useState<string | undefined>();
+  const [owners, setOwners] = useState([]);
+  const steps = [`Detalles`, `Comprobante de pago`, `Comisiones`];
 
   const handleStep = (step: number) => () => {
-    setActiveStep(step)
-  }
+    setActiveStep(step);
+  };
 
   // const checkMov = async (id: string) => {
   //   const url =
@@ -113,68 +125,68 @@ export default function OrderDetails({
   // }
 
   const checkConsumer = async () => {
-    let id: string
-    id = modalContent?.consumerData.id || modalContent?.consumerId
-    const response = await getConsumer(id)
-    setConsumer(response)
-  }
+    let id: string;
+    id = basic?.id || "";
+    const response = await getConsumer(id);
+    setConsumer(response);
+  };
 
   const updateItemStatus = async (
     newStatus: string,
     index: number,
     orderId: string
   ) => {
-    const url = import.meta.env.VITE_BACKEND_URL + "/order/updateItemStatus"
+    const url = import.meta.env.VITE_BACKEND_URL + "/order/updateItemStatus";
     const body = {
       status: newStatus,
       index: index,
       order: orderId,
-    }
+    };
     await axios.put(url, body).then((res) => {
       if (res.data.auth) {
-        setModalContent(res.data.order)
-        updateItemFromOrders(orderId, index, newStatus)
+        setModalContent(res.data.order);
+        updateItemFromOrders(orderId, index, newStatus);
       }
-    })
-  }
+    });
+  };
 
-  const PriceSelect = (item: Item) => {
-    // if (typeof props.selectedPrixer?.username === "string") {
-    //   return getPVM(
-    //     item,
-    //     false,
-    //     props?.dollarValue,
-    //     discountList,
-    //     props?.selectedPrixer?.username
-    //   ).toLocaleString("de-DE", {
-    //     minimumFractionDigits: 2,
-    //     maximumFractionDigits: 2,
-    //   })
-    // } else {
-    return getPVP(item, false, conversionRate, discountList).toLocaleString(
-      "de-DE",
-      {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      }
-    )
-    // }
-  }
+  // const PriceSelect = (item: Item) => {
+  //   // if (typeof props.selectedPrixer?.username === "string") {
+  //   //   return getPVM(
+  //   //     item,
+  //   //     false,
+  //   //     props?.dollarValue,
+  //   //     discountList,
+  //   //     props?.selectedPrixer?.username
+  //   //   ).toLocaleString("de-DE", {
+  //   //     minimumFractionDigits: 2,
+  //   //     maximumFractionDigits: 2,
+  //   //   })
+  //   // } else {
+  //   return getPVP(item, false, conversionRate, discountList).toLocaleString(
+  //     "de-DE",
+  //     {
+  //       minimumFractionDigits: 2,
+  //       maximumFractionDigits: 2,
+  //     }
+  //   );
+  //   // }
+  // };
 
   const RenderHTML: React.FC<{ htmlString: string }> = ({ htmlString }) => {
-    return <div dangerouslySetInnerHTML={{ __html: htmlString }} />
-  }
+    return <div dangerouslySetInnerHTML={{ __html: htmlString }} />;
+  };
 
   function handleKeyDown(event: KeyboardEvent) {
     if (event.key === "Escape") {
-      handleClose()
-    } else return
+      handleClose();
+    } else return;
   }
-  document.addEventListener("keydown", handleKeyDown)
+  document.addEventListener("keydown", handleKeyDown);
 
   useEffect(() => {
-    checkConsumer(modalContent)
-  }, [])
+    checkConsumer();
+  }, []);
 
   const allowMockup = (item: Item, index: number) => {
     if (
@@ -196,7 +208,7 @@ export default function OrderDetails({
               //   item: item.product,
               //   previous: true,
               // })
-              navigate({ pathname: "/galeria" })
+              navigate({ pathname: "/galeria" });
             }}
           >
             {/* <WarpImage
@@ -231,7 +243,7 @@ export default function OrderDetails({
             />
           </div>
         </div>
-      )
+      );
     } else if (item.art) {
       return (
         <>
@@ -289,22 +301,22 @@ export default function OrderDetails({
             </Paper>
           )}
         </>
-      )
+      );
     }
-  }
+  };
 
   const onImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     // Debería poder cargar varios comprobantes de pago(?)
-    const file = e.target.files?.[0]
-    if (!file) return
+    const file = e.target.files?.[0];
+    if (!file) return;
 
-    setPaymentVoucher(file)
-    setPreviewVoucher(URL.createObjectURL(file))
-  }
+    setPaymentVoucher(file);
+    setPreviewVoucher(URL.createObjectURL(file));
+  };
 
-  function formatNumber(x: number, l: number) {
-    return x.toString().padStart(l, "0")
-  }
+  // function formatNumber(x: number, l: number) {
+  //   return x.toString().padStart(l, "0");
+  // }
 
   const uploadVoucher = async () => {
     // const formData = new FormData()
@@ -312,21 +324,21 @@ export default function OrderDetails({
 
     const data = {
       paymentVoucher: paymentVoucher,
-    }
-    let ID = modalContent?.orderId
+    };
+    let ID = modalContent?.orderId;
     const base_url2 =
-      import.meta.env.VITE_BACKEND_URL + "/order/addVoucher/" + ID
-    const uv = await axios.put(base_url2, data)
-    showSnackBar("Comprobante de pago agregado")
-    setPaymentVoucher(undefined)
-  }
+      import.meta.env.VITE_BACKEND_URL + "/order/addVoucher/" + ID;
+    const uv = await axios.put(base_url2, data);
+    showSnackBar("Comprobante de pago agregado");
+    setPaymentVoucher(undefined);
+  };
 
   const findOwner = async (account: string) => {
-    const url = import.meta.env.VITE_BACKEND_URL + "/user/getByAccount"
-    const user = await axios.post(url, { account: account })
-    const data = user.data.username
-    if (typeof data === "string") return data
-  }
+    const url = import.meta.env.VITE_BACKEND_URL + "/user/getByAccount";
+    const user = await axios.post(url, { account: account });
+    const data = user.data.username;
+    if (typeof data === "string") return data;
+  };
 
   // useEffect(() => {
   //   let prix = []
@@ -341,7 +353,7 @@ export default function OrderDetails({
   //   }
   // }, [])
 
-  console.log(modalContent)
+  console.log(modalContent);
 
   return (
     <Grid2 container className={classes.paper2}>
@@ -367,9 +379,7 @@ export default function OrderDetails({
           <strong>#{modalContent.orderId}</strong>
           {"de"}
           <strong>
-            {(modalContent.basicData.firstname || modalContent.basicData.name) +
-              " " +
-              modalContent.basicData.lastname}
+            {basic.name} {basic.lastName}
           </strong>
         </Typography>
         {showVoucher && (
@@ -397,20 +407,18 @@ export default function OrderDetails({
                         {label}
                       </StepButton>
                     </Step>
-                  )
+                  );
                 })}
               </Stepper>
               <div
                 style={{
-                  paddingRight: "10px",
-                  marginLeft: "13px",
-                  paddingBottom: 10,
+                  padding: "24px 10px 10px 10px",
                   maxHeight: "70%",
                   width: "100%",
                 }}
               >
                 {activeStep === 0 && (
-                  <div style={{ display: "flex" }}>
+                  <Grid2 sx={{ display: "flex" }} spacing={2}>
                     <Grid2
                       style={{
                         display: "flex",
@@ -421,7 +429,7 @@ export default function OrderDetails({
                         sm: 6,
                       }}
                     >
-                      {modalContent?.requests.map((item, index) => (
+                      {lines.map((line, index) => (
                         <div
                           style={{
                             display: "flex",
@@ -448,65 +456,41 @@ export default function OrderDetails({
                               justifyContent: "space-evenly",
                             }}
                           >
-                            {allowMockup(item, index)}
+                            {allowMockup(line.item, index)}
                           </div>
                           <div style={{ padding: 10 }}>
-                            {item.art?.title !== "Personalizado" ? (
+                            {line.item.art?.title !== "Personalizado" ? (
                               <>
-                                <div>{"Arte: " + item?.art?.title}</div>
-                                <div>{"Id: " + item.art?.artId}</div>
+                                <div>{"Arte: " + line.item?.art?.title}</div>
+                                <div>{"Id: " + line.item.art?.artId}</div>
                                 <div style={{ marginBottom: 10 }}>
-                                  {item.art?.prixerUsername !== undefined &&
-                                    "Prixer: " + item.art?.prixerUsername}
+                                  {line.item.art?.prixerUsername !==
+                                    undefined &&
+                                    "Prixer: " + line.item.art?.prixerUsername}
                                 </div>
                               </>
                             ) : (
                               <>
-                                <div>{"Arte: " + item.art?.title}</div>
+                                <div>{"Arte: " + line.item.art?.title}</div>
                                 <div style={{ marginBottom: 10 }}>
-                                  {"Prixer: " + item.art?.prixerUsername}
+                                  {"Prixer: " + line.item.art?.prixerUsername}
                                 </div>
                               </>
                             )}
-                            <div>{"Producto: " + item.product.name}</div>
-                            <div>{"Id: " + item.product._id}</div>
-                            {item.product.selection &&
-                            item.product.attributes &&
-                            typeof item.product.selection === "object" ? (
-                              item.product.attributes.map((a, i) => {
-                                return (
-                                  <p
-                                    style={{
-                                      padding: 0,
-                                      margin: 0,
-                                    }}
-                                  >
-                                    {item.product?.selection?.attributes[i]
-                                      .name +
-                                      ": " +
-                                      item.product?.selection?.attributes[i]
-                                        .value}
-                                  </p>
-                                )
-                              })
-                            ) : item.product.selection &&
-                              typeof item.product.selection === "string" &&
-                              item.product?.selection?.includes(" ") ? (
-                              <div>
-                                {item.product.selection}{" "}
-                                {item.product?.variants &&
-                                  item.product?.variants.length > 0 &&
-                                  item.product.variants?.find(
-                                    (v) => v.name === item.product.selection
-                                  )?.attributes[1]?.value}
-                              </div>
-                            ) : (
-                              item.product.selection && (
-                                <div>{item.product.selection.name}</div>
-                              )
+                            <Divider />
+                            <div>{"Producto: " + line.item.product.name}</div>
+                            <div>{"Id: " + line.item.product._id}</div>
+                            {line.item.product.selection && (
+                              <p>
+                                {line.item.product?.selection?.attributes.name +
+                                  ": " +
+                                  line.item.product?.selection?.attributes
+                                    .value}
+                              </p>
                             )}
-                            Precio unitario: $
-                            {item.product?.finalPrice
+                            <Divider />
+                            Precio unitario: $ XO
+                            {/* {item.product?.finalPrice
                               ? item.product?.finalPrice?.toLocaleString(
                                   "de-DE",
                                   {
@@ -514,11 +498,12 @@ export default function OrderDetails({
                                     maximumFractionDigits: 2,
                                   }
                                 )
-                              : PriceSelect(item)}
+                              : PriceSelect(item)} */}
                             <div>
                               {
-                                typeof item.product?.discount === "string" &&
-                                  "Descuento: " + item.product?.discount
+                                // typeof item.product?.discount === "string" &&
+                                "Descuento: XO"
+                                //  + item.product?.discount
                                 //     discountList?.find(
                                 //       ({ _id }) => _id === item.product.discount
                                 //     )?.name +
@@ -545,7 +530,7 @@ export default function OrderDetails({
                               {consumer?.consumerType === "Prixer" &&
                                 "No aplicado"}
                             </div>
-                            {item.product?.autoCertified && (
+                            {/* {line.item.product?.autoCertified && (
                               <div
                                 style={{
                                   marginTop: 10,
@@ -553,7 +538,7 @@ export default function OrderDetails({
                                   justifyContent: "space-between",
                                 }}
                               >
-                                {/* {"Certificado: " +
+                                 {"Certificado: " +
                                   modalContent.requests[0]?.art?.certificate?
                                     .code +
                                   formatNumber(
@@ -565,10 +550,10 @@ export default function OrderDetails({
                                     modalContent.requests[0].art?.certificate?
                                       .sequence,
                                     3
-                                  )} */}
+                                  )} 
                                 <div />
                               </div>
-                            )}
+                            )}*/}
                             <div
                               style={{
                                 marginTop: 10,
@@ -576,13 +561,13 @@ export default function OrderDetails({
                                 justifyContent: "space-between",
                               }}
                             >
-                              {"Cantidad: " + (item.quantity || 1)}
+                              {"Cantidad: " + (line.quantity || 1)}
                               <Select
                                 input={<OutlinedInput />}
                                 id="status"
                                 value={
-                                  item.product?.status
-                                    ? item.product?.status
+                                  line.item.product?.status
+                                    ? line.item.product?.status
                                     : "Por producir"
                                 }
                                 onChange={(e) => {
@@ -590,7 +575,7 @@ export default function OrderDetails({
                                     e.target.value,
                                     index,
                                     modalContent.orderId
-                                  )
+                                  );
                                 }}
                               >
                                 <MenuItem key={0} value={"Por producir"}>
@@ -647,23 +632,15 @@ export default function OrderDetails({
                       >
                         <strong>Datos básicos</strong>
                         <div>
-                          {"Nombre: " +
-                            (modalContent.basicData.firstname ||
-                              modalContent.basicData.name) +
-                            " " +
-                            modalContent.basicData.lastname}
+                          {"Nombre: " + basic.name + " " + basic.lastName}
                         </div>
-                        <div>{"CI o RIF: " + modalContent?.basicData.ci}</div>
-                        <div>
-                          {"Teléfono: " + modalContent?.basicData.phone}
-                        </div>
-                        <div>{"Email: " + modalContent?.basicData.email}</div>
-                        <div>
-                          {"Dirección: " + modalContent?.basicData.address}
-                        </div>
+                        <div>{"CI o RIF: " + basic.ci}</div>
+                        <div>{"Teléfono: " + basic.phone}</div>
+                        <div>{"Email: " + basic.email}</div>
+                        <div>{"Dirección: " + basic.shortAddress}</div>
                       </Grid2>
 
-                      {modalContent.shippingData !== undefined && (
+                      {shipping !== undefined && (
                         <Grid2
                           style={{
                             marginBottom: 40,
@@ -676,51 +653,47 @@ export default function OrderDetails({
                           }}
                         >
                           <strong>Datos de entrega</strong>
-                          {modalContent.shippingData?.name &&
-                            modalContent.shippingData?.lastname && (
-                              <div>
-                                {"Nombre: " +
-                                  modalContent?.shippingData?.name +
-                                  " " +
-                                  modalContent?.shippingData?.lastname}
-                              </div>
-                            )}
-                          {modalContent.shippingData?.phone && (
+                          {shipping.basic.name && shipping.basic.lastName && (
                             <div>
-                              {"Teléfono: " + modalContent?.shippingData?.phone}
+                              {"Nombre: " +
+                                shipping?.basic.name +
+                                " " +
+                                shipping?.basic.lastName}
                             </div>
                           )}
-                          {modalContent.shippingData?.shippingMethod && (
+                          {shipping.basic.phone && (
+                            <div>{"Teléfono: " + shipping.basic.phone}</div>
+                          )}
+                          {shipping.method && (
                             <div>
-                              {"Método de entrega: " +
-                                modalContent?.shippingData?.shippingMethod.name}
+                              {"Método de entrega: " + shipping?.method}
                             </div>
                           )}
-                          {modalContent.shippingData?.address ? (
+                          {shipping.address ? (
                             <div>
                               {"Dirección de envío: " +
-                                modalContent?.shippingData?.address}
+                                shipping.address?.address}
                             </div>
                           ) : (
-                            modalContent?.basicData?.address && (
+                            shipping?.basic?.shortAddress && (
                               <div>
                                 {"Dirección de envío: " +
-                                  modalContent?.basicData?.address}
+                                  shipping.basic.shortAddress}
                               </div>
                             )
                           )}
-                          {modalContent.shippingData?.shippingDate && (
+                          {shipping.preferredDeliveryDate && (
                             <div>
                               {"Fecha de entrega: " +
-                                moment(
-                                  modalContent?.shippingData?.shippingDate
-                                )?.format("DD/MM/YYYY")}
+                                moment(shipping?.preferredDeliveryDate)?.format(
+                                  "DD/MM/YYYY"
+                                )}
                             </div>
                           )}
                         </Grid2>
                       )}
 
-                      {modalContent.billingData !== undefined && (
+                      {billing !== undefined && (
                         <Grid2
                           style={{
                             marginBottom: 40,
@@ -734,39 +707,30 @@ export default function OrderDetails({
                         >
                           <strong>Datos de facturación</strong>
                           <div>
-                            {modalContent.createdBy.username !== undefined &&
-                              "Pedido creado por: " +
-                                modalContent.createdBy.username}
+                            {modalContent.createdBy !== undefined &&
+                              "Pedido creado por: " + modalContent.createdBy}
                           </div>
-                          {modalContent.billingData.name &&
-                            modalContent.billingData.lastname && (
-                              <div>
-                                {"Nombre: " +
-                                  modalContent?.billingData.name +
-                                  " " +
-                                  modalContent?.billingData.lastname}
-                              </div>
-                            )}
-                          {modalContent.billingData.ci && (
+                          {billing.basic.name && billing.basic.lastName && (
                             <div>
-                              {"CI o RIF: " + modalContent?.billingData.ci}
+                              {"Nombre: " +
+                                billing.basic.name +
+                                " " +
+                                billing.basic.lastName}
                             </div>
                           )}
-                          {modalContent.billingData.company && (
-                            <div>
-                              {"Razón social: " +
-                                modalContent?.billingData.company}
-                            </div>
+                          {billing.basic.ci && (
+                            <div>{"CI o RIF: " + billing.basic.ci}</div>
                           )}
-                          {modalContent.billingData.phone && (
-                            <div>
-                              {"Teléfono: " + modalContent?.billingData.phone}
-                            </div>
+                          {billing.company && (
+                            <div>{"Razón social: " + billing.company}</div>
                           )}
-                          {modalContent.billingData.address && (
+                          {billing.basic.phone && (
+                            <div>{"Teléfono: " + billing.basic.phone}</div>
+                          )}
+                          {billing.address?.address && (
                             <div style={{ marginBottom: 20 }}>
                               {"Dirección de cobro: " +
-                                modalContent?.billingData.address}
+                                billing.address?.address}
                             </div>
                           )}
                         </Grid2>
@@ -786,17 +750,14 @@ export default function OrderDetails({
                         <strong>Datos de pago</strong>
                         <div>
                           {"Subtotal: $" +
-                            Number(modalContent?.subtotal).toLocaleString(
-                              "de-DE",
-                              {
-                                minimumFractionDigits: 2,
-                                maximumFractionDigits: 2,
-                              }
-                            )}
+                            (modalContent?.subTotal).toLocaleString("de-DE", {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                            })}
                         </div>
                         <div>
                           IVA: $
-                          {modalContent?.billingData?.orderPaymentMethod ===
+                          {modalContent?.payment?.methods?.[0]?.name ===
                           "Balance Prixer"
                             ? "0,00"
                             : Number(modalContent?.tax).toLocaleString(
@@ -808,69 +769,65 @@ export default function OrderDetails({
                               )}
                         </div>
                         <div>
-                          {modalContent.shippingData?.shippingMethod &&
+                          {shipping.method &&
                             "Envío: $" +
-                              Number(
-                                modalContent?.shippingData?.shippingMethod
-                                  ?.price
-                              ).toLocaleString("de-DE", {
-                                minimumFractionDigits: 2,
-                                maximumFractionDigits: 2,
-                              })}
-                        </div>
-                        <div>
-                          {"Total: $" +
-                            Number(modalContent?.total).toLocaleString(
-                              "de-DE",
-                              {
-                                minimumFractionDigits: 2,
-                                maximumFractionDigits: 2,
-
-                                // maximumSignificantDigits: 2,
-                              }
-                            )}
-                        </div>
-                        {modalContent?.dollarValue && (
-                          <div style={{ marginBottom: 10 }}>
-                            {"Tasa del dólar: Bs" +
-                              Number(modalContent?.dollarValue).toLocaleString(
+                              (modalContent?.shippingCost || 0).toLocaleString(
                                 "de-DE",
                                 {
                                   minimumFractionDigits: 2,
                                   maximumFractionDigits: 2,
-
-                                  // maximumSignificantDigits: 2,
+                                }
+                              )}
+                        </div>
+                        <div>
+                          {"Total: $" +
+                            (modalContent?.total).toLocaleString("de-DE", {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                            })}
+                        </div>
+                        {modalContent.payment?.conversionRate && (
+                          <div style={{ marginBottom: 10 }}>
+                            {"Tasa del dólar: Bs" +
+                              (modalContent.payment?.conversionRate).toLocaleString(
+                                "de-DE",
+                                {
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 2,
                                 }
                               )}
                           </div>
                         )}
                         <div>
                           {"Forma de pago: " +
-                            modalContent?.billingData?.orderPaymentMethod}
+                            modalContent.payment.methods?.[0]?.name}
                         </div>
-                        {modalContent.paymentVoucher && (
-                          <Paper
-                            style={{
-                              width: 200,
-                              borderRadius: 10,
-                              marginTop: 10,
-                            }}
-                            elevation={3}
-                          >
-                            <Img
-                              style={{
-                                width: 200,
-                                borderRadius: 10,
-                                lineHeight: 0,
-                              }}
-                              src={modalContent?.paymentVoucher}
-                              alt="voucher"
-                              onClick={() => {
-                                setShowVoucher(!showVoucher)
-                              }}
-                            />
-                          </Paper>
-                        )}
+                        {modalContent.payment.voucher.length > 0 &&
+                          modalContent.payment.voucher.map(
+                            (voucher: string, index: number) => (
+                              <Paper
+                                style={{
+                                  width: 200,
+                                  borderRadius: 10,
+                                  marginTop: 10,
+                                }}
+                                elevation={3}
+                              >
+                                <Img
+                                  style={{
+                                    width: 200,
+                                    borderRadius: 10,
+                                    lineHeight: 0,
+                                  }}
+                                  src={voucher}
+                                  alt={`voucher ${index}`}
+                                  onClick={() => {
+                                    setShowVoucher(!showVoucher);
+                                  }}
+                                />
+                              </Paper>
+                            )
+                          )}
                       </Grid2>
 
                       {modalContent.observations && (
@@ -890,7 +847,7 @@ export default function OrderDetails({
                         </Grid2>
                       )}
                     </Grid2>
-                  </div>
+                  </Grid2>
                 )}
                 {activeStep === 1 && !permissions.detailPay ? (
                   <Typography
@@ -900,84 +857,90 @@ export default function OrderDetails({
                   >
                     No tienes autorización para esta área.
                   </Typography>
-                ) : activeStep === 1 &&
-                  modalContent?.paymentVoucher !== undefined ? (
-                  <Paper
-                    elevation={3}
-                    style={{
-                      width: "fit-content",
-                      height: "fit-content",
-                      maxWidth: 600,
-                      maxHeight: 400,
-                      borderRadius: 10,
-                      marginTop: 10,
-                    }}
-                  >
-                    <Img
-                      src={modalContent?.paymentVoucher}
-                      alt="Comprobante de pago"
-                      style={{
-                        maxWidth: 600,
-                        maxHeight: 400,
-                        borderRadius: 10,
-                      }}
-                    />
-                  </Paper>
                 ) : (
                   activeStep === 1 && (
-                    <div
-                      style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                      }}
-                    >
-                      {previewVoucher && (
-                        <Img
-                          alt="Comprobante de pago"
-                          src={previewVoucher}
-                          style={{
-                            width: 200,
-                            borderRadius: 10,
-                            marginBottom: 10,
-                          }}
-                        />
-                      )}
-                      <input
-                        type="file"
-                        id="inputfile"
-                        accept="image/jpeg, image/jpg, image/webp, image/png"
-                        onChange={onImageChange}
-                        style={{ display: "none" }}
-                      />
-                      <div>
-                        <label htmlFor="inputfile">
-                          <Button
-                            size="small"
-                            variant="contained"
-                            component="span"
-                            style={{ textTransform: "capitalize" }}
-                          >
-                            Cargar comprobante
-                          </Button>
-                        </label>
-                        {paymentVoucher && (
-                          <Button
-                            size="small"
-                            variant="contained"
-                            component="span"
-                            color="primary"
+                    <>
+                      {modalContent.payment.voucher.map(
+                        (voucher: string, index: number) => (
+                          <Paper
+                            elevation={3}
                             style={{
-                              textTransform: "capitalize",
-                              marginLeft: 10,
+                              width: "fit-content",
+                              height: "fit-content",
+                              maxWidth: 600,
+                              maxHeight: 400,
+                              borderRadius: 10,
+                              marginTop: 10,
                             }}
-                            onClick={uploadVoucher}
                           >
-                            Guardar
-                          </Button>
-                        )}
-                      </div>
-                    </div>
+                            <Img
+                              src={`voucher #${index}`}
+                              alt={`Comprobante de pago ${index}`}
+                              style={{
+                                maxWidth: 600,
+                                maxHeight: 400,
+                                borderRadius: 10,
+                              }}
+                            />
+                          </Paper>
+                        )
+                      )}
+                      {modalContent?.payment.voucher.length < 3 && (
+                        <div
+                          style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "center",
+                          }}
+                        >
+                          {previewVoucher && (
+                            <Img
+                              alt="Comprobante de pago"
+                              src={previewVoucher}
+                              style={{
+                                width: 200,
+                                borderRadius: 10,
+                                marginBottom: 10,
+                              }}
+                            />
+                          )}
+                          <input
+                            type="file"
+                            id="inputfile"
+                            accept="image/jpeg, image/jpg, image/webp, image/png"
+                            onChange={onImageChange}
+                            style={{ display: "none" }}
+                          />
+                          <div>
+                            <label htmlFor="inputfile">
+                              <Button
+                                size="small"
+                                variant="contained"
+                                component="span"
+                                style={{ textTransform: "capitalize" }}
+                              >
+                                Cargar comprobante
+                              </Button>
+                            </label>
+                            {paymentVoucher && (
+                              <Button
+                                size="small"
+                                variant="contained"
+                                component="span"
+                                color="primary"
+                                style={{
+                                  textTransform: "capitalize",
+                                  marginLeft: 10,
+                                }}
+                                onClick={uploadVoucher}
+                              >
+                                Guardar
+                              </Button>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </>
                   )
                 )}
                 {activeStep === 2 && !permissions.detailPay ? (
@@ -988,39 +951,40 @@ export default function OrderDetails({
                   >
                     No tienes autorización para esta área.
                   </Typography>
-                ) : activeStep === 2 &&
-                  modalContent?.comissions &&
-                  modalContent?.comissions.length > 0 ? (
-                  modalContent?.comissions.map((com: any, i: number) => (
-                    <div
-                      style={{
-                        width: "100%",
-                        backgroundColor: i % 2 === 0 ? "#eee" : "white",
-                        padding: "15px 30px",
-                        borderRadius: 10,
-                      }}
-                    >
-                      <Typography color="secondary" variant="h6">
-                        Propietario: {owners[i]}
-                      </Typography>
-
-                      <Typography
-                        color="secondary"
-                        variant="h6"
-                        style={{
-                          color:
-                            com.type === "Depósito" && com.value > 0
-                              ? "green"
-                              : "red",
-                        }}
-                      >
-                        {com.type === "Depósito" && "+"}
-                        {"$" + com.value}
-                      </Typography>
-                    </div>
-                  ))
                 ) : (
                   activeStep === 2 && (
+                    //   modalContent?.comissions &&
+                    //   modalContent?.comissions.length > 0 ? (
+                    //   modalContent?.comissions.map((com: any, i: number) => (
+                    //     <div
+                    //       style={{
+                    //         width: "100%",
+                    //         backgroundColor: i % 2 === 0 ? "#eee" : "white",
+                    //         padding: "15px 30px",
+                    //         borderRadius: 10,
+                    //       }}
+                    //     >
+                    //       <Typography color="secondary" variant="h6">
+                    //         Propietario: {owners[i]}
+                    //       </Typography>
+
+                    //       <Typography
+                    //         color="secondary"
+                    //         variant="h6"
+                    //         style={{
+                    //           color:
+                    //             com.type === "Depósito" && com.value > 0
+                    //               ? "green"
+                    //               : "red",
+                    //         }}
+                    //       >
+                    //         {com.type === "Depósito" && "+"}
+                    //         {"$" + com.value}
+                    //       </Typography>
+                    //     </div>
+                    //   ))
+                    // ) : (
+                    //   activeStep === 2 && (
                     <Typography
                       color="secondary"
                       variant="h6"
@@ -1039,7 +1003,7 @@ export default function OrderDetails({
                 flexDirection: "column",
               }}
             >
-              {modalContent?.requests.map((item, index) => (
+              {lines.map((line, index) => (
                 <div
                   style={{
                     margin: "0px 20px 20px 0px",
@@ -1064,9 +1028,9 @@ export default function OrderDetails({
                       justifyContent: "space-between",
                     }}
                   >
-                    {item.product?.mockUp !== undefined && (
+                    {line.item.product?.mockUp !== undefined && (
                       <div style={{ width: 210 }}>
-                        {allowMockup(item, index)}
+                        {allowMockup(line.item, index)}
                       </div>
                     )}
 
@@ -1083,7 +1047,7 @@ export default function OrderDetails({
                           display: "flex",
                         }}
                       >
-                        {item.product?.mockUp === undefined && (
+                        {line.item.product?.mockUp === undefined && (
                           <Paper
                             style={{
                               width: 150,
@@ -1099,7 +1063,7 @@ export default function OrderDetails({
                             elevation={3}
                           >
                             <Img
-                              src={item.art?.squareThumbUrl}
+                              src={line.item.art?.squareThumbUrl}
                               style={{
                                 maxWidth: 150,
                                 maxHeight: 150,
@@ -1115,10 +1079,10 @@ export default function OrderDetails({
                             paddingTop: 20,
                           }}
                         >
-                          <div>{"Arte: " + item.art?.title}</div>
-                          <div>{"Id: " + item.art?.artId}</div>
+                          <div>{"Arte: " + line.item.art?.title}</div>
+                          <div>{"Id: " + line.item.art?.artId}</div>
                           <div style={{ marginBottom: 10 }}>
-                            {"Prixer: " + item.art?.prixerUsername}
+                            {"Prixer: " + line.item.art?.prixerUsername}
                           </div>
                         </div>
                       </div>
@@ -1162,41 +1126,21 @@ export default function OrderDetails({
                           }}
                         >
                           <div>
-                            <div>{"Producto: " + item.product.name}</div>
-                            <div>{"Id: " + item.product._id}</div>
-                            {item.product.selection &&
-                            typeof item.product.selection === "object" ? (
-                              item.product.attributes.map((a, i) => {
-                                return (
-                                  <p
-                                    style={{
-                                      padding: 0,
-                                      margin: 0,
-                                    }}
-                                  >
-                                    {item.product?.selection?.attributes[i]
-                                      ?.name +
-                                      ": " +
-                                      item.product?.selection?.attributes[i]
-                                        ?.value}
-                                  </p>
-                                )
-                              })
-                            ) : item.product.selection &&
-                              typeof item.product.selection === "string" &&
-                              item.product?.selection?.includes(" ") ? (
-                              <div>
-                                {item.product.selection}{" "}
-                                {item.products?.variants &&
-                                  item.products?.variants.length > 0 &&
-                                  item.product.variants.find(
-                                    (v) => v.name === item.product.selection
-                                  ).attributes[1]?.value}
-                              </div>
-                            ) : (
-                              item.product.selection && (
-                                <div>{item.product.selection}</div>
-                              )
+                            <div>{"Producto: " + line.item.product.name}</div>
+                            <div>{"Id: " + line.item.product._id}</div>
+                            {line.item.product.selection && (
+                              <p
+                                style={{
+                                  padding: 0,
+                                  margin: 0,
+                                }}
+                              >
+                                {line.item.product?.selection?.attributes
+                                  ?.name +
+                                  ": " +
+                                  line.item.product?.selection?.attributes
+                                    ?.value}
+                              </p>
                             )}
                           </div>
                           <div
@@ -1206,13 +1150,13 @@ export default function OrderDetails({
                               justifyContent: "space-between",
                             }}
                           >
-                            {"Cantidad: " + (item.quantity || 1)}
+                            {"Cantidad: " + (line.quantity || 1)}
                             <Select
                               input={<OutlinedInput />}
                               id="status"
                               value={
-                                item.product?.status
-                                  ? item.product?.status
+                                line.item.product?.status
+                                  ? line.item.product?.status
                                   : "Por producir"
                               }
                               onChange={(e) => {
@@ -1220,7 +1164,7 @@ export default function OrderDetails({
                                   e.target.value,
                                   index,
                                   modalContent.orderId
-                                )
+                                );
                               }}
                             >
                               <MenuItem key={0} value={"Por producir"}>
@@ -1276,5 +1220,5 @@ export default function OrderDetails({
         </>
       )}
     </Grid2>
-  )
+  );
 }

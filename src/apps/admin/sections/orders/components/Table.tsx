@@ -243,7 +243,7 @@ export default function ReadOrders({
                 // fullWidth
                 label="ID"
                 onChange={handleID}
-                style={{ marginLeft: -15, width: "150%" }}
+                // style={{ width: "100%" }}
               />
             </TableCell>
             <TableCell align="center">

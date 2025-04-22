@@ -46,11 +46,13 @@ export interface DataLists {
 }
 
 export interface Order {
-  id: string // id  (orderId)
+  _id: string // id  (orderId)
+  orderId: string // a simple id for public display
   lines: OrderLine[] // requests
   createdOn: Date
   createdBy: string
   // updates: [Date, string]; // updates when and by whom
+  // comissions: Comission[] // TODO: Guardaremos registro en el pedido?
   status: Status // status
 
   consumerDetails: ConsumerDetails // consumer details (consumerData)
@@ -84,6 +86,8 @@ export interface PaymentDetails {
   methods?: PaymentMethod[]
   payer?: BasicInfo
   address?: Address
+  conversionRate?: number
+  voucher: string[]
 }
 
 // Shipping-related details
@@ -128,7 +132,8 @@ export interface BasicInfo {
   name: string
   lastName: string
   email?: string
-  phone: string
+  phone?: string
+  ci?: string
   shortAddress?: string
 }
 

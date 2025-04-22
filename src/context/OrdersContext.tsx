@@ -2,14 +2,9 @@ import React, { createContext, useReducer, useContext, useEffect } from "react";
 import { CheckoutState, CheckoutAction, Order } from "@apps/consumer/checkout/interfaces";
 import { orderReducer } from "@apps/consumer/checkout/Reducers/orderReducer";
 import { nanoid } from "nanoid";
-import { Consumer } from "../types/consumer.types";
-import { Prixer } from "../types/prixer.types";
-import { Discount } from "../types/discount.types";
-import { Surcharge } from "../types/surcharge.types";
-import { Organization } from "../types/organization.types";
 
 const initialOrder: Order = {
-  id: nanoid(8),
+  orderId: nanoid(8),
   lines: [],
   createdOn: new Date(),
   createdBy: "",
@@ -33,7 +28,7 @@ const initialOrder: Order = {
     addresses: [],
     type: "Particular",
   },
-  payment: { methods: [] },
+  payment: { methods: [], voucher: [] },
   shipping: {
     basic: {
       name: "",

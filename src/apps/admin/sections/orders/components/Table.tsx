@@ -429,6 +429,7 @@ export default function ReadOrders({
                         style={{
                           display: "flex",
                           flexDirection: "column",
+                          color: "#404e5c",
                         }}
                       >
                         Detalles

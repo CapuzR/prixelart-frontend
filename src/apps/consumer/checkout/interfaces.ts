@@ -46,7 +46,7 @@ export interface DataLists {
 }
 
 export interface Order {
-  _id: string // id  (orderId)
+  _id?: string // id  (orderId)
   orderId: string // a simple id for public display
   lines: OrderLine[] // requests
   createdOn: Date

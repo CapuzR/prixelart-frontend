@@ -27,7 +27,7 @@ interface DetailsProps {
 
 const Details: React.FC<DetailsProps> = ({ productId }) => {
   const navigate = useNavigate();
-  const { loading, setLoading } = useLoading();
+  const { setLoading } = useLoading();
   const { currency } = useCurrency();
   const { conversionRate } = useConversionRate();
   const { id: routeId } = useParams();
@@ -67,11 +67,7 @@ const Details: React.FC<DetailsProps> = ({ productId }) => {
           ([name, value]) => ({ name, value })
         );
 
-        setProduct({
-          ...parsed,
-          id,
-          selection: selectedAttributes,
-        });
+        setProduct(parsed || undefined);
       } catch (error) {
         console.error('Error fetching product attributes:', error);
       } finally {

@@ -37,8 +37,6 @@ export default function Card({ product, currency, conversionRate, handleDetails,
     navigate(`/crear-prix?${queryString}`)
   }
 
-
-
   return (
     <div
       className={`${styles['card-root']}`}

@@ -22,8 +22,6 @@ const CartReview: React.FC<CartReviewProps> = ({ checking }) => {
 
   const handleChangeElement = (type: 'producto' | 'arte', item: Item, lineId?: string) => {
 
-    console.log("2", lineId);
-
     const selectionAsObject: { [key: string]: string } = Array.isArray(item.product?.selection)
       ? item.product.selection.reduce((acc, sel) => {
         acc[sel.name] = sel.value;

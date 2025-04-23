@@ -5,13 +5,9 @@ import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
 
 import InstagramIcon from '@mui/icons-material/Instagram';
-import SimpleDialog from 'components/simpleDialog/simpleDialog';
-import FloatingAddButton from 'components/floatingAddButton/floatingAddButton';
 import Button from '@mui/material/Button';
 import { useNavigate } from 'react-router-dom';
 
-import CreateService from 'components/createService/createService';
-import ArtUploader from 'components/artUploader/artUploader';
 import ReactGA from 'react-ga';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
@@ -27,18 +23,11 @@ import { fetchBestArts, fetchBestSellers, fetchCarouselImages, fetchLatestArts }
 import Copyright from '@components/Copyright/copyright';
 import useStyles from './home.styles';
 import { Grid2 } from '@mui/material';
+import { parseProducts } from './parseApi';
+import { CarouselItem } from '../../../types/preference.types';
 
 ReactGA.initialize('G-0RWP9B33D8');
 ReactGA.pageview('/');
-
-interface CarouselItem {
-  images?: {
-    type: string;
-    url: string;
-  };
-  width?: string;
-  height?: string;
-}
 
 interface FallbackImage {
   url: string;
@@ -54,15 +43,9 @@ const Home: React.FC = () => {
 
   const [imagesDesktop, setImagesDesktop] = useState<{ images: CarouselItem[] }>({ images: [] });
   const [imagesMobile, setImagesMobile] = useState<{ images: CarouselItem[] }>({ images: [] });
-  const [openModal, setOpenModal] = useState<boolean>(false);
-  const [openArts, setOpenArts] = useState<boolean>(true);
   const [bestSellers, setBestSellers] = useState<Product[] | undefined>(undefined);
   const [latestArts, setLatestArts] = useState<Art[] | undefined>(undefined);
   const [mostSelledArts, setMostSelledArts] = useState<Art[] | undefined>(undefined);
-  const [openServiceFormDialog, setOpenServiceFormDialog] = useState<boolean>(false);
-  const [createdService, setCreatedService] = useState<boolean>(false);
-  const [openArtFormDialog, setOpenArtFormDialog] = useState<boolean>(false);
-  const [tabValue, setTabValue] = useState<string>('');
 
   const imgsMobile: FallbackImage[] = [
     {
@@ -89,11 +72,14 @@ const Home: React.FC = () => {
     const normalizedFallback = imgsMobile.map(item => ({
       images: { type: 'mobile', url: item.url }
     }));
-    fetchCarouselImages(normalizedFallback).then(({ desktop, mobile }) => {
-      setImagesDesktop({ images: desktop });
-      setImagesMobile({ images: mobile });
+    fetchCarouselImages().then(({ desktopCarousel, mobileCarousel }) => {
+      setImagesDesktop({ images: desktopCarousel });
+      setImagesMobile({ images: mobileCarousel });
     });
-    fetchBestSellers().then(setBestSellers);
+    (async () => {
+      const bestSellersData = await fetchBestSellers();
+      setBestSellers(parseProducts(bestSellersData));
+    })();
     fetchBestArts().then(setMostSelledArts);
     fetchLatestArts().then(setLatestArts);
   }, []);
@@ -126,23 +112,19 @@ const Home: React.FC = () => {
     navigate('/galeria');
   };
 
-  const desktopImages = imagesDesktop?.images.filter((img) => img?.images?.type === 'desktop');
+  const desktopImages = imagesDesktop?.images.filter((img) => img?.type === 'desktop');
 
   const formattedDesktopImages = desktopImages.map(img => ({
-    url: img.images?.url || '',
-    width: img.width,
-    height: img.height,
+    url: img.imageURL,
   }));
 
 
   const mobileImages = imagesMobile?.images.filter(
-    (img) => !img.images || img?.images?.type === 'mobile'
+    (img) => img?.type === 'mobile'
   );
 
   const formattedMobileImages = mobileImages.map(img => ({
-    url: img.images?.url || '',
-    width: img.width,
-    height: img.height,
+    url: img.imageURL,
   }))
 
   return (
@@ -188,7 +170,7 @@ const Home: React.FC = () => {
                   {desktopImages.map((img, i) => (
 
                     <Image
-                      src={img.images?.url || ''}
+                      src={img.imageURL}
                       roundedCorner={false}
                       fitTo="width"
                       objectFit="fill"
@@ -208,7 +190,7 @@ const Home: React.FC = () => {
                   {mobileImages.map((img, i) => (
                     <Image
                       key={i}
-                      src={img.images?.url || ''}
+                      src={img.imageURL}
                       fitTo="height"
                       roundedCorner={false}
                       objectFit="cover"
@@ -621,36 +603,6 @@ const Home: React.FC = () => {
           <Copyright />
         </footer>
       </div>
-
-      {openArtFormDialog && (
-        <ArtUploader
-          openArtFormDialog={openArtFormDialog}
-          setOpenArtFormDialog={setOpenArtFormDialog}
-        />
-      )}
-
-      {openServiceFormDialog && (
-        <CreateService
-          openArtFormDialog={openServiceFormDialog}
-          setOpenServiceFormDialog={setOpenServiceFormDialog}
-          setCreatedService={setCreatedService}
-        />
-      )}
-
-      <Grid2 className={classes.float}>
-        <FloatingAddButton
-          setOpenArtFormDialog={setOpenArtFormDialog}
-          setOpenServiceFormDialog={setOpenServiceFormDialog}
-        />
-      </Grid2>
-      {openModal && (
-        <SimpleDialog
-          setTabValue={setTabValue}
-          setArts={setOpenArts}
-          open={openModal}
-          setOpen={setOpenModal}
-        />
-      )}
     </>
   );
 };

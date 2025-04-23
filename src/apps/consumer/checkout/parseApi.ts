@@ -91,9 +91,20 @@ export const parsePrixerDetails = (data: PrixerApiResponse): BasicInfo => ({
   email: data.email || "",
 });
 
+interface SourceShippingMethod {
+  _id: string;
+  name: string;
+  price: string;
+}
+
+interface SourceShippingData {
+  info: string;
+  shippingMethods: SourceShippingMethod[];
+}
+
 // Parse shipping methods to the ShippingMethod structure
-export const parseShippingMethods = (data: any[]): ShippingMethod[] =>
-  data.map((method) => ({
+export const parseShippingMethods = (data: SourceShippingData): ShippingMethod[] =>
+  data.shippingMethods.map((method: SourceShippingMethod) => ({
     id: method._id,
     method: method.name,
     price: method.price,
@@ -110,13 +121,12 @@ export const parseBillingMethods = (data: any[]): PaymentMethod[] =>
 
 export const parseOrder = (data: any): any => {
 
-  // Build consumer data (assumed to be fine already)
   const basic = data.basic || {};
   const consumerPayload = {
     _id: basic.id,
     consumerId: basic.id,
     active: true,
-    consumerType: "Particular", // using "Particular" as in your example order
+    consumerType: "Particular",
     firstname: basic.name,
     lastname: basic.lastName,
     ...basic,
@@ -124,7 +134,6 @@ export const parseOrder = (data: any): any => {
 
   const orderData = data.order || {};
 
-  // Compute tax: if tax is an array, sum the amounts; if it's a number, use it directly.
   let taxAmount = 0;
   if (Array.isArray(orderData.tax)) {
     taxAmount = orderData.tax.reduce((sum: number, t: any) => sum + (t.amount || 0), 0);
@@ -141,15 +150,20 @@ export const parseOrder = (data: any): any => {
     }
   }
 
-  // Create the order payload following the OrderSchema
+  const requests = Array.isArray(orderData.lines) ? orderData.lines : [];
+  const totalUnitsCalculated = requests.reduce((sum: number, req: any) => {
+    return sum + (req.quantity || 0);
+  }, 0);
+
   const orderPayload = {
     orderId: orderData.id || uuidv4(),
     orderType: typeof orderData.lines === "string" ? orderData.lines : "Particular",
     createdOn: orderData.createdOn ? new Date(orderData.createdOn) : new Date(),
-    createdBy: createdByValue, // now a string value
+    createdBy: createdByValue,
     subtotal: orderData.subTotal,
     tax: taxAmount,
     total: orderData.total,
+    totalUnits: totalUnitsCalculated,
     basicData: data.basic,
     shippingData: data.shipping,
     shippingCost: orderData.shippingCost,
@@ -169,6 +183,10 @@ export const parseOrder = (data: any): any => {
     payDate: orderData.payDate ? new Date(orderData.payDate) : undefined,
     completionDate: orderData.completionDate ? new Date(orderData.completionDate) : undefined,
     comissions: orderData.comissions || [],
+    payment: {
+      total: orderData.total,
+      method: data.billing?.paymentMethod || "",
+    },
   };
 
   // Return a single order object matching the schema

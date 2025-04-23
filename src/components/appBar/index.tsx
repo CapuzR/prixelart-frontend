@@ -40,7 +40,7 @@ const MenuAppBar: React.FC = () => {
   const { currency, toggleCurrency } = useCurrency();
   const { cart } = useCart();
 
-  const [selectedTab, setSelectedTab] = useState("gallery");
+  const [selectedTab, setSelectedTab] = useState("home");
 
   const tabRoutes: { [key: string]: string } = {
     home: '/',
@@ -56,7 +56,7 @@ const MenuAppBar: React.FC = () => {
     const currentTab = Object.keys(tabRoutes).find(
       (key) => tabRoutes[key] === location.pathname
     );
-    setSelectedTab(currentTab || "/");
+    setSelectedTab(currentTab || "home");
   }, [location.pathname]);
 
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -296,6 +296,7 @@ const MenuAppBar: React.FC = () => {
 
             <div style={{ width: 'fit-content' }}>
               <Tabs value={selectedTab} onChange={handleTabChange}>
+                <Tab className={classes.button} value="home" label="Home" />
                 <Tab className={classes.button} value="gallery" label="Galería" />
                 <Tab className={classes.button} value="products" label="Productos" />
                 <Tab className={classes.button} value="prixers" label="Prixers" />

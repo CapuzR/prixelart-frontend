@@ -49,8 +49,6 @@ const Landscape: React.FC<LandscapeProps> = (props) => {
       ? props.product.selection.some(sel => sel.value !== '')
       : false;
 
-  console.log("producto: ", props.product);
-
   const allAttributesSelected =
     !props.product?.attributes || props.product?.attributes.length === 0
       ? true

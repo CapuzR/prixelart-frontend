@@ -12,7 +12,7 @@ export const fetchConversionRateFromAPI = async (): Promise<number> => {
     if (response?.data?.dollarValue == null) {
       throw new Error('Invalid response: dollarValue is missing');
     }
-
+    
     return response.data.dollarValue;
   } catch (err: unknown) {
     if (err instanceof Error) {

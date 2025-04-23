@@ -14,7 +14,7 @@ export interface PickedProduct
     | 'mockUp'
     | 'priceRange'
     | 'variants'
-  > {}
+  > { }
 
 export interface Product {
   id: string;
@@ -29,9 +29,10 @@ export interface Product {
   thumbUrl: string;
   sources: {
     images: { url: string }[];
+    video?: string;
   };
   productionTime: number;
-  mockUp: any;
+  mockUp: string;
   category?: string;
 }
 
@@ -52,7 +53,7 @@ export interface Selection {
   value: string;
 }
 
-interface PriceRange {
+export interface PriceRange {
   from: number;
   to: number;
 }

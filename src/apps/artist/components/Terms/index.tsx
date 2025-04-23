@@ -1,46 +1,79 @@
-// src/components/TermsModal.tsx
+import { Theme } from "@mui/material"
+import React, { FormEvent, useState, useEffect } from "react"
+import { makeStyles } from "tss-react/mui"
+import MDEditor from "@uiw/react-md-editor"
+import Button from "@mui/material/Button"
 
-import React from 'react';
-import Modal from '@mui/material/Modal';
-import Button from '@mui/material/Button';
-import MDEditor from '@uiw/react-md-editor';
-import styles from './styles.module.scss';
+import { getTerms } from "@apps/artist/api"
+const useStyles = makeStyles()((theme: Theme) => {
+  return {
+    modal: {
+      position: "absolute",
+      display: "flex",
+      flexDirection: "column",
+      width: "80%",
+      maxHeight: "70vh",
+      overflowY: "auto",
+      backgroundColor: "white",
+      padding: 40,
+      top: "50%",
+      left: "50%",
+      transform: "translate(-50%, -50%)",
+      textAlign: "justify",
+      borderRadius: 16,
+    },
+  }
+})
 
-interface TermsModalProps {
-  open: boolean;
-  onClose: () => void;
-  onAccept: () => void;
-  termsText: string;
-}
+export default function InitialTerms({ setIsChecked, setModal }) {
+  const { classes } = useStyles()
+  const [value, setValue] = useState("")
 
-const TermsModal: React.FC<TermsModalProps> = ({ open, onClose, onAccept, termsText }) => (
-  <Modal open={open} onClose={onClose}>
-    <div className={styles['modal-content']}>
-      <h2 className={styles['modal-title']}>
-        Hemos actualizado nuestros términos y condiciones y queremos que estés al tanto.
-      </h2>
-      <div>
-        <div data-color-mode="light">
-          <div className={styles['modal-subtitle']}>
-            CONVENIO DE RELACIÓN ENTRE LOS ARTISTAS Y LA COMPAÑÍA
-          </div>
-          <div data-color-mode="light" className={styles['modal-text']}>
-            <MDEditor.Markdown source={termsText} />
-          </div>
+  const terms = async () => {
+    try {
+      const response = await getTerms()
+      setValue(response.data.terms.termsAndConditions)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  useEffect(() => {
+    terms()
+  }, [])
+
+  return (
+    <div className={classes.modal}>
+      <div data-color-mode="light">
+        <div
+          style={{
+            textAlign: "center",
+            marginBottom: "12px",
+            fontWeight: "bold",
+          }}
+        >
+          CONVENIO DE RELACIÓN ENTRE LOS ARTISTAS Y LA COMPAÑÍA
+        </div>
+        <div>
+          <MDEditor.Markdown source={value} style={{ textAlign: "justify" }} />
         </div>
       </div>
-      <div className={styles['modal-footer']}>
-        <Button
-          onClick={onAccept}
-          variant="contained"
-          color="primary"
-          className={styles['accept-button']}
-        >
-          Acepto los nuevos términos y condiciones
-        </Button>
-      </div>
-    </div>
-  </Modal>
-);
 
-export default TermsModal;
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={() => {
+          setIsChecked(true)
+          setModal(false)
+        }}
+        style={{
+          fontWeight: "bold",
+          margin: "20px auto 0",
+          padding: "6px 30px",
+        }}
+      >
+        De acuerdo
+      </Button>
+    </div>
+  )
+}

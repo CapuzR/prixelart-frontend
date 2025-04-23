@@ -143,7 +143,6 @@ const ArtDetail: React.FC = () => {
   const [visible, setVisible] = useState(true);
   const itemsPerPage = 8;
   const [pageNumber, setPageNumber] = useState(1);
-  const itemsToSkip = (pageNumber - 1) * itemsPerPage;
 
   const tokenString = localStorage.getItem('token');
   const token = tokenString ? JSON.parse(tokenString) : null;
@@ -274,9 +273,9 @@ const ArtDetail: React.FC = () => {
 
   const maxPrintValues = (tile: Art) => {
     const [maxPrintWidthCm, maxPrintHeightCm] = utils.maxPrintCalc(
-      tile.originalPhotoWidth,
-      tile.originalPhotoHeight,
-      tile.originalPhotoPpi,
+      Number(tile.originalPhotoWidth),
+      Number(tile.originalPhotoHeight),
+      Number(tile.originalPhotoPpi),
       tile.originalPhotoIso
     );
 
@@ -418,12 +417,6 @@ const ArtDetail: React.FC = () => {
     }
   }, []);
 
-  const addingToCart = (e: React.MouseEvent<HTMLButtonElement>, tile: Art) => {
-    e.preventDefault();
-    setSelectedArt(tile);
-  };
-
-
   return (
     <>
       <Container component="main" className={classes.paper}>
@@ -533,11 +526,11 @@ const ArtDetail: React.FC = () => {
                           }}
                         >
                           Creado el{' '}
-                          {new Date(art.createdOn).toLocaleDateString('es-ES', {
+                          {art.createdOn ? new Date(art.createdOn).toLocaleDateString('es-ES', {
                             year: 'numeric',
                             month: 'long',
                             day: 'numeric',
-                          })}
+                          }) : ''}
                         </Typography>
                       </CardContent>
                       {/* Additional admin/prixer actions can be enabled here if needed */}

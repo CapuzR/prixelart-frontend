@@ -36,11 +36,11 @@ export interface Order {
   lines: OrderLine[]; // requests
   createdOn: Date;
   createdBy: string;
-  // updates: [Date, string]; // updates when and by whom
+  updates?: [Date, string]; // updates when and by whom
   status: Status; // ship status
 
-  consumerDetails?: ConsumerDetails; // consumer details (consumerData)
-  payment?: PaymentDetails;
+  consumerDetails?: ConsumerDetails; 
+  payment: PaymentDetails;
   shipping: ShippingDetails;
   billing: BillingDetails;
 
@@ -65,7 +65,7 @@ export interface ConsumerDetails {
 }
 
 export interface PaymentDetails {
-  method?: PaymentMethod;
+  method: PaymentMethod;
   payer?: BasicInfo;
   address?: Address;
 }
@@ -115,7 +115,7 @@ export interface BasicInfo {
 export interface ShippingMethod {
   id: string;
   method: string;
-  price: number;
+  price: string;
 }
 
 enum OrderStatus {
@@ -128,7 +128,6 @@ enum OrderStatus {
 }
 
 export interface PaymentMethod {
-  id: string; // Unique identifier for the payment method
   name: string; // Display name (e.g., 'Credit Card', 'PayPal')
   type?: PaymentMethodType; // Type of payment
   provider?: string; // Optional, name of the payment provider (e.g., Visa, PayPal)

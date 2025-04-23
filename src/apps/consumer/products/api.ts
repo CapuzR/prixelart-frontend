@@ -1,15 +1,13 @@
-import { Product } from '../../../types/product.types';
+import { SourceProduct } from '../../../types/api.types';
 import axios from 'axios';
 
 const base_url = import.meta.env.VITE_BACKEND_URL;
 
-export const fetchProductDetails = async (productId: string): Promise<Product> => {
-  const base_url = import.meta.env.VITE_BACKEND_URL + '/product/read_v2';
+export const fetchProductDetails = async (productId: string): Promise<SourceProduct> => {
+  const url = `${import.meta.env.VITE_BACKEND_URL}/product/read/${productId}`;
 
   try {
-    const response = await axios.get<{ info: string, product: Product }>(base_url, {
-      params: { _id: productId },
-    });
+    const response = await axios.get<{ info: string, product: SourceProduct }>(url);
     return response.data.product;
   } catch (error) {
     console.error('Error fetching product details:', error);
@@ -17,12 +15,12 @@ export const fetchProductDetails = async (productId: string): Promise<Product> =
   }
 };
 
-export const fetchVariantPrice = async (variantId: String, artId: String): Promise<string> => {
+export const fetchVariantPrice = async (variantId: String, productId: String): Promise<string> => {
   try {
     const response = await axios.get<{ info: string, price: string }>(
       `${base_url}/product/getVariantPrice`,
       {
-        params: { variantId, artId: artId || null },
+        params: { variantId, productId: productId || null },
       }
     );
     return response.data.price;
@@ -32,23 +30,13 @@ export const fetchVariantPrice = async (variantId: String, artId: String): Promi
   }
 };
 
-interface FetchProductsAPIResponse {
-  info: string;
-  products: Product[];
-  maxLength: number;
-}
-
 interface FetchProductsResponse {
-  products: Product[];
+  products: SourceProduct[];
   maxLength: number;
 }
 
 export const fetchProducts = async (
-  order: string,
-  currentPage: number,
-  productsPerPage: number,
-  search?: string
-): Promise<FetchProductsResponse> => {
+  order: string, currentPage: number, productsPerPage: number, search?: string): Promise<FetchProductsResponse> => {
   const base_url = import.meta.env.VITE_BACKEND_URL + '/product/read-all-v2';
   const params = {
     orderType: order === 'A-Z' || order === 'lowerPrice' ? 'asc' : order === '' ? '' : 'desc',
@@ -57,7 +45,7 @@ export const fetchProducts = async (
     initialPoint: search ? 0 : (currentPage - 1) * productsPerPage,
     productsPerPage: search ? 1000 : productsPerPage,
   };
-  const response = await axios.get<FetchProductsAPIResponse>(base_url, {
+  const response = await axios.get(base_url, {
     params,
   });
 
@@ -67,17 +55,12 @@ export const fetchProducts = async (
   };
 };
 
-interface FetchBestSellersAPIResponse {
-  info: string;
-  products: Product[];
-}
+export const fetchBestSellers = async (): Promise<SourceProduct[]> => {
 
-export const fetchBestSellers = async (): Promise<Product[]> => {
-  const base_url = import.meta.env.VITE_BACKEND_URL + '/getBestSellers';
-
+  const url = import.meta.env.VITE_BACKEND_URL + '/product/bestSellers';
   try {
-    const response = await axios.get<FetchBestSellersAPIResponse>(base_url);
-    return response.data.products;
+    const { data } = await axios.get(url);
+    return data.products;
   } catch (error) {
     console.error('Error fetching best sellers:', error);
     return [];

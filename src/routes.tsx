@@ -1,28 +1,24 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import expire from "./utils/expire";
-import { BrowserRouter as Router, Route } from "react-router-dom";
-import { useLocation, useParams } from "react-router";
 
-// import ArtistRoutes from "apps/artist/artist.routes";
-// import AdminRoutes from "apps/admin/admin.routes";
 import ConsumerRoutes from "apps/consumer/consumer.routes";
-// import MapRoutes from "apps/map/map.routes";
-// import OrgsRoutes from "apps/orgs/orgs.routes";
-{/*
-const Routes = () => {
-  const [valuesConsumerForm, setValuesConsumerForm] = useState<string>("");
-  let location = useLocation();
-  const section = location.pathname.split("/")[1];
-  const hostname = window.location.hostname;
-  console.log(location);
-  console.log(section)
-  const [permissions, setPermissions] = useState<any>(
-    JSON.parse(localStorage.getItem("adminToken") || "{}")?.permissions
-  );
+import AppBar from "@components/appBar";
+import AdminRoutes from "@apps/admin/admin.routes";
+import ArtistRoutes from "@apps/artist/artist.routes";
 
-  document.addEventListener("contextmenu", (event) => {
-    event.preventDefault();
-  });
+
+const Routes = () => {
+  useEffect(() => {
+    const disableRightClick = (event: MouseEvent) => {
+      event.preventDefault();
+    };
+
+    document.addEventListener("contextmenu", disableRightClick);
+
+    return () => {
+      document.removeEventListener("contextmenu", disableRightClick);
+    };
+  }, []);
 
   useEffect(() => {
     if (localStorage.getItem("token")) {
@@ -31,45 +27,20 @@ const Routes = () => {
       expire("adminToken", "adminTokenExpire");
     }
   }, []);
+
+  const adminToken = localStorage.getItem("adminToken");
+  const adminData = adminToken ? JSON.parse(adminToken) : null;
 
   return (
     <>
-      {section.includes("admin") ? (
-        <AdminRoutes
-          valuesConsumerForm={valuesConsumerForm}
-          setValuesConsumerForm={setValuesConsumerForm}
-          permissions={permissions}
-          setPermissions={setPermissions}
-        />
-      ) : hostname.includes("prixer") ? (
+      <AdminRoutes />
+      <>
+        <AppBar />
         <ArtistRoutes />
-      ) : hostname.includes("wip") ? (
-        <MapRoutes />
-      ) : hostname.includes("orgs") ? (
-        <OrgsRoutes />
-      ) : (
-        <ConsumerRoutes permissions={permissions} />
-      )}
+        <ConsumerRoutes />
+      </>
     </>
   );
-};
-
-export default Routes;*/}
-
-const Routes = () => {
-  const [permissions, setPermissions] = useState<any>(
-    JSON.parse(localStorage.getItem("adminToken") || "{}")?.permissions
-  );
-
-  useEffect(() => {
-    if (localStorage.getItem("token")) {
-      expire("token", "tokenExpire");
-    } else if (localStorage.getItem("adminToken")) {
-      expire("adminToken", "adminTokenExpire");
-    }
-  }, []);
-
-  return <ConsumerRoutes/>;
 };
 
 export default Routes;

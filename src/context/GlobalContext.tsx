@@ -39,17 +39,14 @@ interface GlobalProviderProps {
 // Global Provider component
 export const GlobalProvider: React.FC<GlobalProviderProps> = ({ children }) => {
   const [currency, setCurrency] = useState<"Bs" | "USD">("USD");
-  const [conversionRate, setConversionRate] = useState<number>(() => {
-    const storedRate = localStorage.getItem("conversionRate");
-    return storedRate ? parseFloat(storedRate) : 1;
-  });
+  const [conversionRate, setConversionRate] = useState<number>(1);
   const [theme, setTheme] = useState<string>("light");
   const [loadingRate, setLoadingRate] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [snackbarOpen, setSnackbarOpen] = useState<boolean>(false);
   const [snackbarMessage, setSnackbarMessage] = useState<string>("");
-  const [backdropOpen, setBackdropOpen] = useState<boolean>(false); // New state for the backdrop
+  const [backdropOpen, setBackdropOpen] = useState<boolean>(false);
 
   // Function to fetch the conversion rate
   const fetchConversionRate = async () => {
@@ -57,7 +54,6 @@ export const GlobalProvider: React.FC<GlobalProviderProps> = ({ children }) => {
       setLoadingRate(true);
       const newRate = await fetchConversionRateFromAPI();
       setConversionRate(newRate);
-      localStorage.setItem("conversionRate", newRate.toString());
       setLoadingRate(false);
     } catch (err) {
       setError((err as Error).message);

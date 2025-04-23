@@ -17,7 +17,7 @@ import { parsePrice } from 'utils/formats';
 import { useCart } from 'context/CartContext';
 import { getUrlParams } from '@utils/util';
 import { Item } from '../../../types/item.types';
-import { Product, Selection } from '../../../types/product.types';
+import { PickedProduct, Product, Selection } from '../../../types/product.types';
 import { Art } from '../../../types/art.types';
 
 ReactGA.initialize('G-0RWP9B33D8');
@@ -81,11 +81,11 @@ const Flow = () => {
           ...prevItem,
           sku: urlParams.producto,
           product: selectedProduct
-            ? {
+            ? ({
               ...selectedProduct,
               id: urlParams.producto,
               selection: Object.entries(atts).map(([name, value]) => ({ name, value })),
-            }
+            } as unknown as PickedProduct)
             : prevItem.product,
           art: selectedArt || prevItem.art,
         }));

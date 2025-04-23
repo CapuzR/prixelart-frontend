@@ -15,10 +15,7 @@ const ThemedApp: React.FC = () => {
   return (
     <div className={`${theme} app`}>
       <Utility />
-      <div>
-        <AppBar />
-        <Toolbar />
-      </div>
+
       <div>
         <Routes />
       </div>

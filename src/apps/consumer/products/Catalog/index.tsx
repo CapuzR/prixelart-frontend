@@ -6,10 +6,6 @@ import Typography from '@mui/material/Typography';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 
-import FloatingAddButton from 'components/floatingAddButton/floatingAddButton';
-import CreateService from 'components/createService/createService';
-import ArtUploader from 'components/artUploader/artUploader';
-import Grid from 'components/Grid';
 import ProductElement from 'components/ProductElement';
 import { Slider } from 'components/Slider';
 import SortingSelect from 'components/SortingSelect';
@@ -27,6 +23,7 @@ import { useNavigate } from 'react-router-dom';
 import { Grid2, SelectChangeEvent } from '@mui/material';
 import SearchBar from '@components/searchBar/searchBar';
 import { Product } from '../../../../types/product.types';
+import { parseProducts } from '@apps/consumer/home/parseApi';
 
 ReactGA.initialize('G-0RWP9B33D8');
 ReactGA.pageview('/productos');
@@ -53,10 +50,6 @@ const ProductsCatalog: React.FC<ProductsCatalogProps> = ({ onProductSelect }) =>
   const [sort, setSort] = useState('');
 
   const [searchQuery, setSearchQuery] = useState<string>('');
-
-  const [openServiceFormDialog, setOpenServiceFormDialog] = useState(false);
-  const [createdService, setCreatedService] = useState(false);
-  const [openArtFormDialog, setOpenArtFormDialog] = useState(false);
 
   const sortingOptions = [
     { value: 'A-Z', label: 'A-Z' },
@@ -98,7 +91,8 @@ const ProductsCatalog: React.FC<ProductsCatalogProps> = ({ onProductSelect }) =>
   useEffect(() => {
     const getBestSellers = async () => {
       const bestSellers = await fetchBestSellers();
-      setBestSellers(bestSellers);
+      const parsedBestSellers = parseProducts(bestSellers);
+      setBestSellers(parsedBestSellers);
     };
 
     getBestSellers();
@@ -108,7 +102,8 @@ const ProductsCatalog: React.FC<ProductsCatalogProps> = ({ onProductSelect }) =>
     const fetchData = async () => {
       try {
         const response = await fetchProducts(sort, currentPage, productsPerPage, searchQuery);
-        setProducts(response.products);
+        const parsedProducts = parseProducts(response.products);
+        setProducts(parsedProducts);
         setMaxLength(response.maxLength);
       } catch (error) {
         console.error('Error fetching products:', error);
@@ -125,13 +120,7 @@ const ProductsCatalog: React.FC<ProductsCatalogProps> = ({ onProductSelect }) =>
     );
   }, [products, searchQuery]);
 
-  const displayedProducts = useMemo(() => {
-    if (searchQuery) {
-      const startIndex = (currentPage - 1) * productsPerPage;
-      return filteredProducts.slice(startIndex, startIndex + productsPerPage);
-    }
-    return filteredProducts;
-  }, [filteredProducts, currentPage, productsPerPage, searchQuery]);
+  const displayedProducts = filteredProducts;
 
   return (
     <div className={styles['catalog']}>
@@ -236,31 +225,6 @@ const ProductsCatalog: React.FC<ProductsCatalogProps> = ({ onProductSelect }) =>
         itemsPerPage={productsPerPage}
         maxLength={maxLength}
       />
-
-      {/* Utility?, it shouldn't be here. */}
-      {openArtFormDialog && (
-        <ArtUploader
-          openArtFormDialog={openArtFormDialog}
-          setOpenArtFormDialog={setOpenArtFormDialog}
-        />
-      )}
-
-      {/* Utility?, it shouldn't be here. */}
-      {openServiceFormDialog && (
-        <CreateService
-          openArtFormDialog={openServiceFormDialog}
-          setOpenServiceFormDialog={setOpenServiceFormDialog}
-          setCreatedService={setCreatedService}
-        />
-      )}
-
-      {/* Utility, it shouldn't be here. */}
-      <Grid className={styles['float']}>
-        <FloatingAddButton
-          setOpenArtFormDialog={setOpenArtFormDialog}
-          setOpenServiceFormDialog={setOpenServiceFormDialog}
-        />
-      </Grid>
     </div>
   );
 };

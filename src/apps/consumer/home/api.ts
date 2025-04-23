@@ -1,49 +1,37 @@
+import { CarouselItem } from '../../../types/preference.types';
+import { PrixResponse, SourceProduct } from '../../../types/api.types';
 import axios from 'axios';
 import { Art } from 'types/art.types';
-import { Product } from 'types/product.types';
 import { getImageSize } from 'utils/util';
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
-interface CarouselItem {
-    images?: {
-        type: string;
-        url: string;
-    };
-    carouselImages?: CarouselItem[];
-    width?: string;
-    height?: string;
-}
-
-export const fetchCarouselImages = async (fallback: CarouselItem[]): Promise<{
-    desktop: CarouselItem[];
-    mobile: CarouselItem[];
+export const fetchCarouselImages = async (): Promise<{
+    desktopCarousel: CarouselItem[];
+    mobileCarousel: CarouselItem[];
 }> => {
     const URI = `${BACKEND_URL}/carousel`;
     try {
         const res = await fetch(URI);
-        const data = await res.json();
-        const imagesDesktopData = data.imagesCarousels.filter(
-            (result: CarouselItem) =>
-                result.images?.type === 'desktop' || result.carouselImages
-        );
-        const imagesMobileData = data.imagesCarousels.filter(
-            (result: CarouselItem) => result.images?.type === 'mobile'
-        );
-        return {
-            desktop: imagesDesktopData.length > 0 ? imagesDesktopData : data.imagesCarousels,
-            mobile: imagesMobileData.length > 0 ? imagesMobileData : fallback,
-        };
+        const data: PrixResponse = await res.json();
+
+        if (data.success && Array.isArray(data.result)) {
+            const carouselItems = data.result;
+            return {
+                desktopCarousel: carouselItems.filter(item => item.type === 'desktop'),
+                mobileCarousel: carouselItems.filter(item => item.type === 'mobile')
+            };
+        } else {
+            console.error('Failed to fetch carousel data:', data.message);
+            return { desktopCarousel: [], mobileCarousel: [] };
+        }
     } catch (error) {
-        console.error('Error fetching carousel images:', error);
-        return {
-            desktop: [],
-            mobile: fallback,
-        };
+        console.error('Error fetching carousel data:', error);
+        return { desktopCarousel: [], mobileCarousel: [] };
     }
 };
 
-export const fetchBestSellers = async (): Promise<Product[]> => {
+export const fetchBestSellers = async (): Promise<SourceProduct[]> => {
     const url = `${BACKEND_URL}/product/bestSellers`;
     try {
         const { data } = await axios.get(url);

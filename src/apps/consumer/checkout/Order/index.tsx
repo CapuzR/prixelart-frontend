@@ -39,8 +39,6 @@ const Order: React.FC<OrderSummaryProps> = ({ checkoutState }) => {
   //   }
   // };
 
-  console.log("checkoutState", checkoutState)
-
   return (
     <div style={{ width: '500px' }}>
       <form noValidate autoComplete="off">

@@ -101,7 +101,7 @@ export const fetchSellers = async (): Promise<string[]> => {
 
 };
 
-export const createOrderByUser = async (payload: any): Promise<{ status: 'ok' | 'error'; orderId?: string }> => {
+export const createOrderByUser = async (payload: any): Promise<{ success: boolean; info: string }> => {
   try {
     const base_url = import.meta.env.VITE_BACKEND_URL + '/order/createv2';
     const response = await fetch(base_url, {
@@ -117,10 +117,9 @@ export const createOrderByUser = async (payload: any): Promise<{ status: 'ok' | 
     }
 
     const result = await response.json();
-    return { status: 'ok', orderId: result.order.res.orderId };
-
+    return result;
   } catch (error) {
     console.error('Error submitting order:', error);
-    return { status: 'error' };
+    return { success: false, info: "Error" };
   }
 };

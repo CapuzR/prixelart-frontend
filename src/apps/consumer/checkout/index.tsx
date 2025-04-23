@@ -62,13 +62,14 @@ const Checkout: React.FC<CheckoutProps> = ({ setChecking }) => {
     const checkoutData = methods.getValues();
 
     const parsedData = parseOrder(checkoutData);
+
     const response = await createOrderByUser(parsedData);
-    if (response.status === 'ok') {
+    if (response.success) {
       emptyCart();
       <Snackbar
         open={snackBar}
         autoHideDuration={5000}
-        message={"Orden realizada exitosamente! Pronto serás contactado por un miembro del equipo de Prixelart para coordinar la entrega. El Id de tu orden es: " + response.orderId}
+        message={"Orden realizada exitosamente! Pronto serás contactado por un miembro del equipo de Prixelart para coordinar la entrega."}
         onClick={closeAd}
       />
     }
@@ -123,7 +124,7 @@ const Checkout: React.FC<CheckoutProps> = ({ setChecking }) => {
                     return method.method === checkoutState.shipping.method;
                   });
                   if (selectedMethod) {
-                    checkoutState.order.shippingCost = selectedMethod.price as number;
+                    checkoutState.order.shippingCost = parseFloat(selectedMethod.price);
                   }
                 }
 

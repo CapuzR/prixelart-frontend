@@ -1,3 +1,4 @@
+import { ObjectId } from "mongodb";
 
 export interface PickedArt
   extends Pick<
@@ -5,41 +6,44 @@ export interface PickedArt
     'artId' | 'title' | 'squareThumbUrl' | 'largeThumbUrl' | 'prixerUsername' | 'exclusive' | '_id'
   > { }
 
-export interface ReadArtResponse {
-  arts: Art;
+interface Certificate {
+  code?: string;
+  serial?: number;
+  sequence?: number;
 }
 
 export interface Art {
-  crops: Crop[];
-  points: number;
-  tags: string[];
-  visible: boolean;
-  _id: string;
+  _id?: ObjectId;
   artId: string;
-  title: string;
+  artLocation: string;
+  artType: string;
+  category?: string;
+  certificate?: Certificate;
+  comission: number;
+  createdOn?: Date;
+  crops?: Crop[];
   description: string;
-  category: string;
+  disabledReason?: string;
+  exclusive: string;
   imageUrl: string;
   largeThumbUrl: string;
   mediumThumbUrl: string;
-  smallThumbUrl: string;
-  squareThumbUrl: string;
-  userId: string;
-  prixerUsername: string;
-  status: string;
-  artType: string;
-  originalPhotoWidth: number;
-  originalPhotoHeight: number;
+  originalPhotoHeight: string;
   originalPhotoIso: string;
   originalPhotoPpi: string;
-  artLocation: string;
-  __v: number;
-  disabledReason: string;
-  bestSeller: boolean;
-  comission: number;
-  exclusive: string;
-  owner: string;
-  createdOn: string;
+  originalPhotoWidth: string;
+  owner?: string;
+  points?: number;
+  prixerUsername: string;
+  publicId?: string;
+  smallThumbUrl: string;
+  squareThumbUrl: string;
+  status: string;
+  tags: string[];
+  thumbnailUrl?: string;
+  title: string;
+  userId: string;
+  visible: boolean;
 }
 
 export interface Crop {

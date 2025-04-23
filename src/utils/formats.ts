@@ -12,12 +12,7 @@ const parsePrice = (input: string | number): number => {
   return parseFloat(cleanedInput.replace(/\./g, '').replace(',', '.'));
 };
 
-const formatPriceForUI = (
-  from: string | number | undefined,
-  currency: 'Bs' | 'USD',
-  conversionRate: number,
-  to?: string | number
-): string => {
+const formatPriceForUI = (from: string | number | undefined, currency: 'Bs' | 'USD', conversionRate: number, to?: string | number): string => {
   if (!from) {
     return '';
   }

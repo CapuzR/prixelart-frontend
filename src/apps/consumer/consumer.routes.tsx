@@ -12,7 +12,7 @@ import PrixersService from "apps/consumer/prixerServices/prixerService";
 import TestimonialsGrid from "apps/consumer/testimonials/testimonialsGrid";
 import ProductDetails from "apps/consumer/products/Details/Details";
 import Flow from "apps/consumer/flow/Flow";
-import PrixerProfile from "apps/artist/prixerProfile/prixerProfile";
+import PrixerProfile from "apps/artist/profile";
 
 const ConsumerRoutes: React.FC = () => {
 

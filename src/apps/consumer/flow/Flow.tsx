@@ -147,7 +147,7 @@ const Flow = () => {
     const newQueryString = queryCreator(
       urlParams.lineId,
       urlParams.producto,
-      selectedArt._id,
+      selectedArt._id?.toString(),
       existingAttributes
     );
     navigate(`${location.pathname}?${newQueryString}`);
@@ -206,7 +206,7 @@ const Flow = () => {
     const queryString = queryCreator(
       lineId ? lineId : undefined,
       type === 'producto' ? undefined : item.sku,
-      type === 'arte' ? undefined : item.art?._id,
+      type === 'arte' ? undefined : item.art?._id?.toString(),
       selectionAsObject,
     );
 

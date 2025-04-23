@@ -32,7 +32,7 @@ const CartReview: React.FC<CartReviewProps> = ({ checking }) => {
     const queryString = queryCreator(
       lineId ? lineId : undefined,
       type === 'producto' ? undefined : item.product?.id,
-      type === 'arte' ? undefined : item.art?._id,
+      type === 'arte' ? undefined : item.art?._id?.toString(),
       selectionAsObject
     );
     navigate(`/crear-prix?${queryString}`);

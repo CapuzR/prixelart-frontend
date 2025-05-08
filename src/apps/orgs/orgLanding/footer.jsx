@@ -94,8 +94,8 @@ export default function CBFooter() {
               />
             </a>
           </IconButton>
-        </Grid>
-      </Grid>
-    </Grid>
+        </Grid2>
+      </Grid2>
+    </Grid2>
   );
 }

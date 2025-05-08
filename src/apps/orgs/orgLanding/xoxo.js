@@ -280,7 +280,6 @@ const getProducts = () => {
         attributes: {
           color: ['Negro', 'Azul', 'Verde'],
         },
-        productionTime: '3',
       },
       quantity: 1,
     },

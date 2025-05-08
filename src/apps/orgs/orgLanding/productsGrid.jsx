@@ -217,7 +217,7 @@ export default function CBProducts() {
               ))}
             </AccordionDetails>
           </Accordion>
-        </Grid>
+        </Grid2>
       )}
 
       <Grid item xs={12} md={9} style={{ marginRight: !isTab && 30 }}>
@@ -272,7 +272,7 @@ export default function CBProducts() {
                     </div>
                   ))}
                 </Slider>
-              </Grid>
+              </Grid2>
               <div
                 style={{
                   width: '50%',
@@ -341,10 +341,10 @@ export default function CBProducts() {
                   </Button>
                 )}
               </div>
-            </Grid>
+            </Grid2>
           ))}
-        </Grid>
-      </Grid>
-    </Grid>
+        </Grid2>
+      </Grid2>
+    </Grid2>
   );
 }

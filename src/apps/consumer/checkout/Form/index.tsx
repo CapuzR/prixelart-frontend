@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 
-import { fetchConsumer, fetchShippingMethods, fetchBillingMethods, fetchSellers } from "../api";
+import { fetchConsumer } from "../api";
 import { calculateEstimatedDeliveryDate } from "../helpers";
 import FormSection from "@apps/consumer/checkout/Form/FormSection";
 import { getFormConfig } from "./formConfig";
 import { useFormContext } from "react-hook-form";
 import { DataLists, FormConfig } from "../../../../types/order.types";
+import { readAllActivePaymentMethods, fetchActiveShippingMethods } from "@api/order.api";
+import { fetchSellers } from "@api/admin.api";
 
 interface FormProps {
   dataLists: DataLists;
@@ -89,7 +91,7 @@ function Form({ dataLists, setDataLists }: FormProps) {
         setValue("billing.state", stateValue);
       }
     }
-  }, [billingCountry, dataLists.countries, setFormConfig, setValue]);
+  }, [billingCountry, dataLists, setFormConfig, setValue]);
 
   // Si se decide usar los mismos datos para envío o facturación
   useEffect(() => {
@@ -133,7 +135,7 @@ function Form({ dataLists, setDataLists }: FormProps) {
         },
       };
     });
-  }, [shippingMethod]);
+  }, [shippingMethod, dataLists]);
 
   // Fetch data on mount
   useEffect(() => {
@@ -151,37 +153,28 @@ function Form({ dataLists, setDataLists }: FormProps) {
           }
         }
 
-        const shippingMethods = await fetchShippingMethods();
-        const paymentMethods = await fetchBillingMethods();
-        const sellers = await fetchSellers();
+        const shippingMethodsData = await fetchActiveShippingMethods(); // Renamed to avoid conflict
+        const paymentMethodsData = await readAllActivePaymentMethods(); // Renamed to avoid conflict
+        const sellersData = await fetchSellers(); // Renamed to avoid conflict
 
-        setDataLists({ ...dataLists, sellers, shippingMethods, paymentMethods });
+        // Correctly update dataLists with fetched data
+        setDataLists({
+          ...dataLists, // Keep existing dataLists properties
+          sellers: sellersData,
+          shippingMethods: shippingMethodsData, // Use the fetched data
+          paymentMethods: paymentMethodsData, // Use the fetched data
+        });
 
-        // Get computed states if available
-        const shippingStates = shippingCountry
-          ? computeStatesFromCountry(dataLists.countries, shippingCountry)
-          : [];
-        const billingStates = billingCountry
-          ? computeStatesFromCountry(dataLists.countries, billingCountry)
-          : [];
-
-        setFormConfig((prevConfig) => {
+        setFormConfig(() => {
           const newConfig = getFormConfig({
-            ...dataLists,
-            sellers,
-            shippingMethods,
-            paymentMethods,
+            ...dataLists, // Use the potentially updated dataLists
+            sellers: sellersData, // Use fetched data for form config
+            shippingMethods: shippingMethodsData, // Use fetched data for form config
+            paymentMethods: paymentMethodsData, // Use fetched data for form config
           });
-          // Merge in shipping state options
-          newConfig.shipping.fields.state.options =
-            shippingStates.length > 0
-              ? shippingStates
-              : prevConfig.shipping.fields.state.options || [];
-          // Merge in billing state options
-          newConfig.billing.fields.state.options =
-            billingStates.length > 0
-              ? billingStates
-              : prevConfig.billing.fields.state.options || [];
+          // The state options logic here might be redundant if getFormConfig handles it.
+          // Let's rely on getFormConfig to use the correct dataLists.
+
           return newConfig;
         });
 
@@ -198,6 +191,7 @@ function Form({ dataLists, setDataLists }: FormProps) {
     };
 
     fetchData();
+    // Added dataLists to the dependency array to ensure fetchData runs if initial dataLists changes
   }, [lines, setValue, getValues, dataLists, setDataLists, shippingCountry, billingCountry]);
 
   const handleSectionToggle = (sectionKey: string) => {

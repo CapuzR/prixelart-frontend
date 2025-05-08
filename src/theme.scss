@@ -84,12 +84,10 @@ $z-index-tooltip: 1100;
   }
 }
 
-@mixin button(
-  $bg-color,
+@mixin button($bg-color,
   $text-color: $text-light-color,
   $hover-bg-color: color.adjust($bg-color, $lightness: -10%),
-  $hover-text-color: $text-color
-) {
+  $hover-text-color: $text-color) {
   background-color: $bg-color;
   color: $text-color;
   padding: $button-padding;
@@ -128,22 +126,18 @@ $z-index-tooltip: 1100;
   line-height: $line-height;
 }
 
-@mixin text-body(
-  $size: $font-size-base,
+@mixin text-body($size: $font-size-base,
   $weight: $font-weight-normal,
-  $line-height: $line-height-base
-) {
+  $line-height: $line-height-base) {
   font-size: $size;
   font-weight: $weight;
   line-height: $line-height;
 }
 
-@mixin paper(
-  $bg-color: white,
+@mixin paper($bg-color: white,
   $shadow: $box-shadow-medium,
   $radius: $border-radius-lg,
-  $spacing: $spacing-md
-) {
+  $spacing: $spacing-md) {
   background-color: $bg-color;
   box-shadow: $shadow;
   border-radius: $radius;
@@ -181,4 +175,14 @@ p {
   @include respond-below($breakpoint-md) {
     max-width: 100%;
   }
+}
+
+.original-price {
+  text-decoration: line-through;
+  opacity: 0.7;
+  margin-right: 0.4em;
+}
+
+.final-price {
+  font-weight: bold;
 }

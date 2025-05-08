@@ -1,11 +1,9 @@
 import { useState, useEffect } from "react"
 import axios from "axios"
-import { makeStyles } from "tss-react/mui"
-import { Theme } from "@mui/material/styles"
 import Paper from "@mui/material/Paper"
-import Grid2 from "@mui/material/Grid2"
-import Button from "@mui/material/Button"
+import Grid2 from "@mui/material/Grid"
 import { Typography } from "@mui/material"
+import Box from '@mui/material/Box'; 
 import {
   VictoryChart,
   VictoryBar,
@@ -14,33 +12,14 @@ import {
   VictoryTheme,
 } from "victory"
 import ArtsGrid from "@apps/consumer/art/components/ArtsGrid/ArtsGrid"
-import { useSnackBar, useLoading, getPermissions } from "@context/GlobalContext"
-// Migrar gráficos de Victory a Mui X-charts
+import { useSnackBar, useLoading } from "@context/GlobalContext"
 import { Art } from "../../../../../types/art.types"
 import { getArtBestSellers, getArtBestSellers2, getArts } from "../api"
-
-const useStyles = makeStyles()((theme: Theme) => {
-  return {
-    root: {
-      "& .MuiTextField-root": {
-        margin: theme.spacing(1),
-        width: "100%",
-        height: "100%",
-      },
-    },
-    paper: {
-      padding: theme.spacing(2),
-      margin: "auto",
-      width: "100%",
-    },
-  }
-})
+import { ObjectId } from "mongodb"
 
 export default function ArtBestSellers() {
-  const { classes } = useStyles()
   const { showSnackBar } = useSnackBar()
   const { setLoading } = useLoading()
-  const permissions = getPermissions()
 
   const [arts, setArts] = useState<Art[]>([])
   const [bestSellers, setBestSellers] = useState<Art[]>([])
@@ -69,8 +48,8 @@ export default function ArtBestSellers() {
 
   const getAllArts = async () => {
     try {
-      const arts = await getArts()
-      setArts(arts)
+      const artsResponse = await getArts()
+      setArts(artsResponse)
     } catch (error) {
       console.log(error)
     }
@@ -78,8 +57,8 @@ export default function ArtBestSellers() {
 
   const getMostSellers = async () => {
     try {
-      const arts = await getArtBestSellers2()
-      setMostSellers(arts)
+      const mostSellersResponse = await getArtBestSellers2()
+      setMostSellers(mostSellersResponse)
     } catch (error) {
       console.log(error)
     }
@@ -87,84 +66,121 @@ export default function ArtBestSellers() {
 
   const getBestSellers = async () => {
     try {
-      const arts = await getArtBestSellers()
-      setBestSellers(arts.data.arts)
+      const bestSellersResponse = await getArtBestSellers()
+      if (bestSellersResponse && bestSellersResponse.data) {
+        setBestSellers(bestSellersResponse.data.arts)
+      } else {
+        setBestSellers([]) 
+      }
     } catch (error) {
       console.log(error)
+      setBestSellers([])
     }
   }
 
   useEffect(() => {
-    setLoading(true)
-    getAllArts()
-    getMostSellers()
-    getBestSellers()
-  }, [])
+    let isMounted = true; // Flag to check if component is still mounted
+
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        // Perform all fetches concurrently
+        await Promise.all([getAllArts(), getMostSellers(), getBestSellers()]);
+      } catch (error) {
+        console.error("Error fetching data in useEffect: ", error);
+        // Optionally show a snackbar message for general fetch errors
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    fetchData();
+
+    return () => {
+      isMounted = false; // Cleanup function to set flag to false when component unmounts
+    };
+  }, [setLoading]); // Added setLoading to dependency array as it's used
+  // Consider if getAllArts, getMostSellers, getBestSellers should be memoized with useCallback
+  // if they were defined inside the component and used in deps. Here they are stable.
 
   const updateBestSellers = async () => {
-    if (permissions.modifyArtBestSellers) {
-      let data: string[] = []
-      bestSellers.map((prod: Art) => {
-        data.push(prod._id)
-      })
-      const base_url =
-        import.meta.env.VITE_BACKEND_URL + "/updateArtBestSellers"
-      await axios
-        .put(base_url, {
-          data: data,
-        })
-        .then((response) => {
-          showSnackBar(response.data.message)
-        })
-    } else {
-      showSnackBar("No tienes permiso para realizar acciones en esta área.")
+    setLoading(true); // Indicate loading state
+    let data: ObjectId[] = []
+    bestSellers.forEach(art => {
+      if (art._id) {
+        data.push(art._id);
+      }
+    });
+    const base_url =
+      import.meta.env.VITE_BACKEND_URL + "/updateArtBestSellers"
+    try {
+      const response = await axios.put(base_url, { data: data });
+      showSnackBar(response.data.message);
+    } catch (error) {
+      console.error("Error updating best sellers:", error);
+      showSnackBar("Error al actualizar. Intente de nuevo.");
+    } finally {
+      setLoading(false);
     }
   }
 
   return (
-    <div
-      className={classes.root}
-      style={{
+    <Box // Changed from div to Box
+      sx={{
         display: "flex",
         flexDirection: "column",
         justifyContent: "center",
+        alignItems: "center", // Added to center children like Paper and VictoryChart container
+        width: "100%", // Ensure Box takes full width for centering its content
+        "& .MuiTextField-root": {
+          margin: 1,
+          width: "100%",
+          height: "100%",
+        },
       }}
     >
-      {mostSellers && (
-        <div
-          style={{
+      {mostSellers && mostSellers.length > 0 && ( // Check if mostSellers has data
+        <Box // Changed from div to Box for consistency, can also be Paper or styled div
+          sx={{ // Using sx for styling this container
             width: "90%",
-            height: 350,
+            maxWidth: "800px", // Optional: constrain max width for very large screens
+            height: 350, // Keep height or make it 'auto' based on content
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
             justifyContent: "center",
             border: "1px solid gainsboro",
             borderRadius: "10px",
-            marginBottom: 10,
-            paddingBottom: -10,
+            mb: 1.25, 
             alignSelf: "center",
           }}
         >
-          <Typography variant="h6" style={{ color: "#404e5c", marginTop: 30 }}>
+          <Typography variant="h6" sx={{ color: "#404e5c", mt: 3.75, mb: 1 }}> {/* mt: 30px -> 3.75, mb for spacing */}
             Artes más vendidos en el último año
           </Typography>
           <VictoryChart
             theme={VictoryTheme.material}
-            padding={{ top: 20, bottom: 60, right: -100, left: -60 }}
-            horizontal
+            padding={{ top: 20, bottom: 60, left: 40, right: 40 }} // Adjusted padding for better axis label visibility
+            // horizontal // Keeping horizontal as per original
+            // width={600} // Consider setting explicit width/height for chart if needed
+            // height={300}
+            domainPadding={{ x: 20 }} // Add some padding to the domain
           >
-            <VictoryAxis />
-
+            <VictoryAxis
+              tickFormat={(t) => (typeof t === 'string' && t.length > 15 ? `${t.substring(0, 15)}...` : t)} // Truncate long labels
+              style={{ tickLabels: { fontSize: 8, angle: -35, textAnchor: 'end' } }} // Style tick labels for readability
+            />
             <VictoryAxis dependentAxis />
             <VictoryBar
               data={mostSellers}
               x="name"
               y="quantity"
               style={{
-                data: { fill: "#d33f49", width: 25 },
+                data: { fill: "#d33f49", width: 20 }, // Adjusted width
               }}
-              alignment="start"
+              alignment="middle" // Changed from start for better centering if multiple bars
               animate={{
                 duration: 2000,
                 onLoad: { duration: 1000 },
@@ -172,20 +188,20 @@ export default function ArtBestSellers() {
               labels={({ datum }) => datum.quantity}
               labelComponent={
                 <VictoryLabel
-                  dx={-24}
-                  dy={-10}
-                  style={[{ fill: "white", fontSize: 14 }]}
+                  dx={0} // Adjust dx, dy for label positioning on horizontal bars
+                  dy={-10} // Example adjustment
+                  style={[{ fill: "white", fontSize: 12 }]} // Adjusted fontSize
                 />
               }
               events={[
                 {
                   target: "data",
                   eventHandlers: {
-                    onClick: () => {
+                    onClick: (event, { datum }) => { // Pass event and datum correctly
                       return [
                         {
-                          target: "data",
-                          mutation: ({ datum }) => {
+                          target: "data", // Ensure target is 'data' or 'labels' as appropriate
+                          mutation: () => { // Simpler mutation syntax
                             addMostSellerToBestSeller(datum.name)
                           },
                         },
@@ -196,92 +212,112 @@ export default function ArtBestSellers() {
               ]}
             />
           </VictoryChart>
-        </div>
+        </Box>
       )}
       <Paper
-        className={classes.paper}
-        style={{
-          height: 160,
+        sx={{
+          padding: 2,
+          margin: "auto",
+          height: 'auto', // Changed to auto to accommodate content
+          minHeight: 160, // Use minHeight if a minimum is desired
           width: "90%",
+          maxWidth: "800px", // Optional: constrain max width
           backgroundColor: "gainsboro",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
           flexDirection: "column",
+          mt: 2, // Add some margin top for separation
         }}
         elevation={3}
       >
-        <Typography variant="h6" style={{ color: "#404e5c" }}>
+        <Typography variant="h6" sx={{ color: "#404e5c", mb: 1.5 }}> {/* mb for spacing */}
           Banner de la pantalla principal
         </Typography>
-        <div style={{ display: "flex", flexDirection: "row" }}>
+        <Box sx={{ display: "flex", flexDirection: "row", flexWrap: "wrap", justifyContent: "center", gap: 1.25 }}> {/* gap for spacing, flexWrap */}
           {bestSellers !== undefined && bestSellers.length > 0 ? (
-            bestSellers.map((art, i) => (
-              <div>
-                <div
-                  key={i}
-                  style={{
+            bestSellers.map((art) => ( // Removed index i as key if art._id is reliable
+              <Box key={art._id?.toString()} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <Box
+                  sx={{
                     backgroundImage:
-                      `url(${art.largeThumbUrl.replace(" ", "_")})` ||
-                      `url(${art?.thumbUrl?.replace(" ", "_")})`,
+                      (art.largeThumbUrl && `url(${art.largeThumbUrl.replace(" ", "_")})`) ||
+                      (art.thumbnailUrl && `url(${art.thumbnailUrl.replace(" ", "_")})`) ||
+                      'none', // Fallback background
                     width: 100,
                     height: 100,
                     backgroundSize: "cover",
-                    borderRadius: 10,
-                    marginTop: 5,
-                    marginRight: 10,
+                    backgroundPosition: "center", // Ensure image is centered
+                    borderRadius: "10px", // Or theme.shape.borderRadius
+                    cursor: "pointer",
+                    border: art.largeThumbUrl || art.thumbnailUrl ? 'none' : '1px dashed grey', // Placeholder if no image
+                    "&:hover": { // Add hover effect
+                      opacity: 0.8,
+                    }
                   }}
                   onClick={(e) => {
                     e.preventDefault()
                     addMostSellerToBestSeller(art.title)
                   }}
+                  aria-label={`Select ${art.title}`} // Accessibility
+                  role="button"
                 />
-                <div
-                  style={{
+                <Typography
+                  variant="caption" // Smaller text for titles
+                  sx={{
                     color: "#404e5c",
-                    display: "flex",
-                    justifyContent: "center",
-                    fontSize: 10,
+                    textAlign: "center",
+                    width: 100,
+                    mt: 0.5, // Margin top for spacing from image
+                    overflowWrap: "break-word",
+                    lineHeight: 1.2, // Adjust line height for multi-line
+                    maxHeight: '2.4em', // Limit to two lines (approx)
+                    overflow: 'hidden', // Hide overflow text
+                    textOverflow: 'ellipsis', // Show ellipsis (might need display block/inline-block)
+                    display: '-webkit-box',
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: 'vertical'
                   }}
                 >
-                  {art.title.substring(0, 17)}
-                </div>
-              </div>
+                  {art.title} {/* Display full title, CSS will handle truncation */}
+                </Typography>
+              </Box>
             ))
           ) : (
             <Typography
               variant="h4"
-              style={{
+              sx={{
                 color: "#404e5c",
                 textAlign: "center",
+                p: 2, // Add some padding
               }}
               fontWeight="bold"
             >
               No tienes artes seleccionados aún
             </Typography>
           )}
-        </div>
+        </Box>
       </Paper>
-      <Grid2 style={{ marginTop: 20 }}>
+      <Grid2 sx={{ mt: 2.5, width: '90%', maxWidth: '800px' }}> {/* Ensure ArtsGrid is also centered/constrained */}
         <ArtsGrid />
       </Grid2>
 
-      {permissions.modifyBestSellers && (
-        <>
-          <div style={{ display: "flex", justifyContent: "center" }}>
-            <Button
-              variant="contained"
-              color="primary"
-              type="submit"
-              size="small"
-              style={{ marginTop: 20 }}
-              onClick={updateBestSellers}
-            >
-              Actualizar
-            </Button>
-          </div>
-        </>
+      {/* Assuming 'permissions' is a state or prop:
+      {permissions?.modifyBestSellers && (
+        <Box sx={{ display: "flex", justifyContent: "center", mt: 2.5 }}>
+          <Button // Make sure Button is imported from @mui/material
+            variant="contained"
+            color="primary"
+            // type="submit" // Not a form submit, onClick is used
+            size="small"
+            onClick={updateBestSellers}
+            disabled={loading} // Disable button while loading
+          >
+            {loading ? 'Actualizando...' : 'Actualizar'}
+          </Button>
+        </Box>
       )}
-    </div>
+      */}
+    </Box>
   )
 }

@@ -39,7 +39,7 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
   },
   menuButton: {
-    marginRight: theme.spacing(2),
+    marginRight: "16px",
   },
   button: {
     fontFamily: 'Lastik ',
@@ -284,7 +284,7 @@ export default function ChiguireHome() {
       >
         <Grid xs={2} style={{ alignContent: 'center' }}>
           <img src={arrowRight} style={{ width: '90%' }} />
-        </Grid>
+        </Grid2>
         <Grid
           xs={7}
           style={{
@@ -303,7 +303,7 @@ export default function ChiguireHome() {
           >
             ¡Bienvenidos al e-tarantín de <br /> El Chigüire Bipolar!
           </Typography>
-        </Grid>
+        </Grid2>
         <Grid
           xs={2}
           style={{
@@ -313,7 +313,7 @@ export default function ChiguireHome() {
           }}
         >
           <img src={arrowLeft} style={{ width: '90%' }} />
-        </Grid>
+        </Grid2>
         <Grid
           xs={12}
           style={{
@@ -337,8 +337,8 @@ export default function ChiguireHome() {
             subpagado. ¡Una situación ganar-ganar para todos, menos para él! <br />
             <br /> Gracias por formar parte de nuestra comunidad.
           </Typography>
-        </Grid>
-      </Grid>
+        </Grid2>
+      </Grid2>
       <div
         style={{
           marginBottom: 40,

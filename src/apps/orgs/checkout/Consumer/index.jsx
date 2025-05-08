@@ -201,50 +201,6 @@ function ConsumerForm(props) {
     setShippingDataCheck(!shippingDataCheck);
   };
 
-  const handleBillingDataCheck = () => {
-    if (shippingDataCheck) {
-      props.setValues({
-        ...props.values,
-        billingName: '',
-        billingLastName: '',
-        billingPhone: '',
-        billingAddress: '',
-      });
-    } else {
-      props.setValues({
-        ...props.values,
-        billingName: props.values.shippingName,
-        billingLastName: props.values.shippingLastName,
-        billingPhone: props.values.shippingPhone,
-        billingAddress: props.values.shippingAddress,
-      });
-    }
-
-    setShippingDataCheck(!shippingDataCheck);
-  };
-
-  const handleBillingShDataCheck = () => {
-    if (billingShDataCheck) {
-      props.setValues({
-        ...props.values,
-        billingName: '',
-        billingLastName: '',
-        billingPhone: '',
-        billingAddress: '',
-      });
-    } else {
-      props.setValues({
-        ...props.values,
-        shippingName: props.values.shippingName,
-        shippingLastName: props.values.shippingLastName,
-        shippingPhone: props.values.shippingPhone,
-        shippingAddress: props.values.shippingAddress,
-      });
-    }
-
-    setShippingDataCheck(!shippingDataCheck);
-  };
-
   const selectShDate = (value) => {
     // let date = Date(value);
     if (value < stringReadyDate) {
@@ -317,7 +273,7 @@ function ConsumerForm(props) {
                     }
                     margin="normal"
                   />
-                </Grid>
+                </Grid2>
                 <Grid item lg={4} md={4} sm={4} xs={12} className={classes.gridInput}>
                   <TextField
                     variant="outlined"
@@ -341,7 +297,7 @@ function ConsumerForm(props) {
                     }
                     margin="normal"
                   />
-                </Grid>
+                </Grid2>
 
                 <Grid item lg={4} md={4} sm={4} xs={12} className={classes.gridInput}>
                   <TextField
@@ -375,7 +331,7 @@ function ConsumerForm(props) {
                       ),
                     }}
                   />
-                </Grid>
+                </Grid2>
                 <Grid item lg={5} md={5} sm={5} xs={12} className={classes.gridInput}>
                   <TextField
                     variant="outlined"
@@ -424,7 +380,7 @@ function ConsumerForm(props) {
                       ),
                     }}
                   />
-                </Grid>
+                </Grid2>
                 <Grid item lg={7} md={7} sm={7} xs={12} className={classes.gridInput}>
                   <TextField
                     variant="outlined"
@@ -454,7 +410,7 @@ function ConsumerForm(props) {
                       ),
                     }}
                   />
-                </Grid>
+                </Grid2>
                 <Grid item lg={12} md={12} sm={12} xs={12} className={classes.gridInput}>
                   <TextField
                     variant="outlined"
@@ -482,8 +438,8 @@ function ConsumerForm(props) {
                       ),
                     }}
                   />
-                </Grid>
-              </Grid>
+                </Grid2>
+              </Grid2>
             </form>
           </AccordionDetails>
         </Accordion>
@@ -514,7 +470,7 @@ function ConsumerForm(props) {
                     }
                     label="Igual a datos básicos"
                   />
-                </Grid>
+                </Grid2>
                 <Grid item lg={4} md={4} sm={4} xs={12} className={classes.gridInput}>
                   <TextField
                     variant="outlined"
@@ -540,7 +496,7 @@ function ConsumerForm(props) {
                     required
                     margin="normal"
                   />
-                </Grid>
+                </Grid2>
                 <Grid item lg={4} md={4} sm={4} xs={12} className={classes.gridInput}>
                   <TextField
                     variant="outlined"
@@ -566,7 +522,7 @@ function ConsumerForm(props) {
                     margin="normal"
                     error={!isAValidName(props.values?.shippingLastName)}
                   />
-                </Grid>
+                </Grid2>
                 <Grid item lg={4} md={4} sm={4} xs={12} className={classes.gridInput}>
                   <TextField
                     variant="outlined"
@@ -623,7 +579,7 @@ function ConsumerForm(props) {
                       ),
                     }}
                   />
-                </Grid>
+                </Grid2>
                 <Grid item lg={12} md={12} sm={12} xs={12} className={classes.gridInput}>
                   <TextField
                     variant="outlined"
@@ -658,7 +614,7 @@ function ConsumerForm(props) {
                       ),
                     }}
                   />
-                </Grid>
+                </Grid2>
                 <Grid item lg={6} md={6} sm={12} xs={12} className={classes.gridInput}>
                   <FormControl style={{ minWidth: '100%' }} variant="outlined">
                     <InputLabel>Método de entrega</InputLabel>
@@ -680,7 +636,7 @@ function ConsumerForm(props) {
                         shippingList.map((n) => <MenuItem value={n}>{n.name}</MenuItem>)}
                     </Select>
                   </FormControl>
-                </Grid>
+                </Grid2>
                 <Grid item lg={6} md={6} sm={12} xs={12} className={classes.gridInput}>
                   <FormControl style={{ minWidth: '100%' }} variant="outlined">
                     <TextField
@@ -702,7 +658,7 @@ function ConsumerForm(props) {
                       }}
                     />
                   </FormControl>
-                </Grid>
+                </Grid2>
                 <Grid>
                   <div style={{ marginTop: 10, marginLeft: 10 }}>
                     {'Tu pedido estará listo el día ' +
@@ -713,8 +669,8 @@ function ConsumerForm(props) {
                       months[readyDate.getMonth()] +
                       ', si está listo antes te lo notificaremos.'}
                   </div>
-                </Grid>
-              </Grid>
+                </Grid2>
+              </Grid2>
             </form>
           </AccordionDetails>
         </Accordion>
@@ -773,7 +729,7 @@ function ConsumerForm(props) {
                     }
                     label="Igual a datos de envío"
                   />
-                </Grid>
+                </Grid2>
                 <Grid item lg={4} md={4} sm={4} xs={12} className={classes.gridInput}>
                   <TextField
                     variant="outlined"
@@ -803,7 +759,7 @@ function ConsumerForm(props) {
                     margin="normal"
                     error={!isAValidName(props.values?.billingShName)}
                   />
-                </Grid>
+                </Grid2>
                 <Grid item lg={4} md={4} sm={4} xs={12} className={classes.gridInput}>
                   <TextField
                     variant="outlined"
@@ -833,7 +789,7 @@ function ConsumerForm(props) {
                     margin="normal"
                     error={!isAValidName(props.values?.billingShLastName)}
                   />
-                </Grid>
+                </Grid2>
                 <Grid item lg={4} md={4} sm={4} xs={12} className={classes.gridInput}>
                   <TextField
                     variant="outlined"
@@ -882,7 +838,7 @@ function ConsumerForm(props) {
                       ),
                     }}
                   />
-                </Grid>
+                </Grid2>
                 <Grid item lg={8} md={8} sm={8} xs={12} className={classes.gridInput}>
                   <TextField
                     variant="outlined"
@@ -902,7 +858,7 @@ function ConsumerForm(props) {
                     margin="normal"
                     // error={!isAValidName(props.values?.billingShName)}
                   />
-                </Grid>
+                </Grid2>
 
                 <Grid item lg={4} md={4} sm={4} xs={12} className={classes.gridInput}>
                   <TextField
@@ -963,7 +919,7 @@ function ConsumerForm(props) {
                       ),
                     }}
                   />
-                </Grid>
+                </Grid2>
                 <Grid item lg={12} md={12} sm={12} xs={12} className={classes.gridInput}>
                   <TextField
                     variant="outlined"
@@ -1001,8 +957,8 @@ function ConsumerForm(props) {
                       ),
                     }}
                   />
-                </Grid>
-              </Grid>
+                </Grid2>
+              </Grid2>
             </form>
           </AccordionDetails>
         </Accordion>

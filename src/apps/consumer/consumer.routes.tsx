@@ -13,75 +13,34 @@ import TestimonialsGrid from "apps/consumer/testimonials/testimonialsGrid";
 import ProductDetails from "apps/consumer/products/Details/Details";
 import Flow from "apps/consumer/flow/Flow";
 import PrixerProfile from "apps/artist/profile";
+import Login from "@apps/consumer/login";
+import PasswordChange from "@apps/artist/passwordChange/passwordChange";
+import ForgotPassword from "@apps/artist/passwordReset/forgotPassword";
+import SignUp from "@apps/consumer/signup/SignUp";
+import TrackOrder from "./trackOrder/TrackOrder";
+import OrderDetailsPage from "./trackOrder/OrderDetailsPage";
 
 const ConsumerRoutes: React.FC = () => {
 
   return (
     <Routes>
-      <Route
-        path="/productos"
-        element={
-          <Products />
-        } />
-      <Route
-        path="/galeria"
-        element={
-          <Catalog />
-        } />
-      <Route
-        path="/prixers"
-        element={<Prixers />}
-      />
-      <Route
-        path="/organizaciones"
-        element={<OrgGrid />}
-      />
+      <Route path="/iniciar" element={<Login />} />
+      <Route path="/track" element={<TrackOrder />} />
+      <Route path="/track/:id" element={<OrderDetailsPage />} />
+      <Route path="/registrar" element={<SignUp />} />
+      <Route path="/cambio-contraseña" element={<PasswordChange />} />
+      <Route path="/olvido-contraseña" element={<ForgotPassword />} />
+      <Route path="/productos" element={<Products />} />
+      <Route path="/galeria" element={<Catalog />} />
+      <Route path="/prixers" element={<Prixers />} />
+      {/* <Route path="/organizaciones" element={<OrgGrid />} /> */}
       <Route path="/carrito" element={<Cart />} />
-
-      <Route
-        path="/servicios"
-        element={
-          <PrixersService />
-        } />
-
-      {/* 
-      <Route
-        path="/servicio/:serviceId"
-        element={
-          <SoloService
-          />
-        } />
-      */}
-      <Route
-        path="/testimonios"
-        element={<TestimonialsGrid />}
-      />
-      <Route
-        path="/arte/:artId"
-        element={
-          <ArtDetail />
-        } />
-
-      <Route
-        path="/prixer/username"
-        element={
-          <PrixerProfile />
-        } />
-
-      {/*
-      <Route
-        path="/org/:username"
-        element={
-          <PrixerProfile
-            setPrixer={setPrixer}
-            setFullArt={setFullArt}
-            permissions={permissions}
-          />
-        } />
-
-      */}
-
-      {/* TODO : Cómo debería llamarse? Flujo? Selección? */}
+      <Route path="/servicios" element={<PrixersService />} />
+      <Route path="/servicio/:id" element={<PrixersService />} />
+      <Route path="/testimonios" element={<TestimonialsGrid />} />
+      <Route path="/arte/:artId" element={<ArtDetail />} />
+      <Route path="/prixer/:username" element={<PrixerProfile />} />
+      <Route path="/org/:username" element={<PrixerProfile />} />
       <Route path="/crear-prix" element={<Flow />} />
       <Route path="/producto/:id" element={<ProductDetails />} />
       <Route path="/" element={<Home />} />

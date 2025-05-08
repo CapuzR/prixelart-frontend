@@ -1,46 +1,28 @@
+import { ObjectId } from "mongodb";
 
 export interface PickedProduct
   extends Pick<
     Product,
-    | 'id'
+    | '_id'
     | 'name'
-    | 'price'
-    | 'sources'
-    | 'selection'
-    | 'attributes'
-    | 'thumbUrl'
-    | 'price'
     | 'productionTime'
-    | 'mockUp'
-    | 'priceRange'
+    | 'sources'
     | 'variants'
-  > { }
-
-export interface Product {
-  id: string;
-  name: string;
-  price: number;
-  description: string;
-  attributes: Attribute[];
-  selection: Selection[];
-  variants: Array<Variant>;
-  priceRange: PriceRange;
-  observations: string;
-  thumbUrl: string;
-  sources: {
-    images: { url: string }[];
-    video?: string;
-  };
-  productionTime: number;
-  mockUp: string;
-  category?: string;
+    | 'mockUp'
+    | 'sources'
+  > {
+  selection?: VariantAttribute[];
 }
 
 export interface Variant {
-  _id: string;
-  id: string;
+  _id?: string;
   name: string;
+  variantImage?: string;
   attributes: VariantAttribute[];
+  discountId?: string[];
+  publicPrice: string;
+  prixerPrice: string;
+  surchargeId?: string[];
 }
 
 export interface VariantAttribute {
@@ -48,17 +30,23 @@ export interface VariantAttribute {
   value: string;
 }
 
-export interface Selection {
+export interface Product {
+  _id?: ObjectId;
+  active: boolean;
+  autoCertified: boolean;
+  bestSeller: boolean;
+  category: string;
+  coordinates?: string;
+  cost?: string;
+  description: string;
+  hasSpecialVar: boolean;
+  mockUp: string;
   name: string;
-  value: string;
-}
-
-export interface PriceRange {
-  from: number;
-  to: number;
-}
-
-interface Attribute {
-  name: string;
-  value: string[];
+  productionTime?: string;
+  sources: {
+    images: { url: string }[];
+    video?: string;
+  };
+  thumbUrl?: string;
+  variants?: Array<Variant>;
 }

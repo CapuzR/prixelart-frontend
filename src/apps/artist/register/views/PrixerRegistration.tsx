@@ -7,7 +7,7 @@ import CssBaseline from "@mui/material/CssBaseline"
 import TextField from "@mui/material/TextField"
 import FormControlLabel from "@mui/material/FormControlLabel"
 import Checkbox from "@mui/material/Checkbox"
-import Grid2 from "@mui/material/Grid2"
+import Grid2 from "@mui/material/Grid"
 import AddIcon from "@mui/icons-material/AddRounded"
 import Typography from "@mui/material/Typography"
 import Container from "@mui/material/Container"
@@ -41,7 +41,7 @@ const useStyles = makeStyles()((theme: Theme) => {
     avatar: {
       display: "flex",
       "& > *": {
-        margin: theme.spacing(1),
+        margin: "8px",
       },
       borderStyle: "solid",
       borderWidth: 1,
@@ -54,12 +54,15 @@ const useStyles = makeStyles()((theme: Theme) => {
       width: "100%",
     },
     submit: {
-      margin: theme.spacing(3, 0, 2),
+      marginTop: '24px', 
+      marginRight: '0px', 
+      marginBottom: '16px',
+      marginLeft: '0px',
       fontWeight: "bold",
       textTransform: "none",
     },
     formControl: {
-      margin: theme.spacing(1),
+      margin: "8px",
       minWidth: 120,
       maxWidth: 300,
     },
@@ -241,7 +244,7 @@ export default function PrixerRegistration() {
         <form
           onSubmit={handleSubmit}
           className={classes.form}
-          style={{ marginTop: theme.spacing(4) }}
+          style={{ marginTop: "32px" }}
           noValidate
         >
           <Grid2
@@ -262,7 +265,7 @@ export default function PrixerRegistration() {
                   sx={{
                     display: "flex",
                     "& > *": {
-                      margin: theme.spacing(1),
+                      margin: "8px",
                     },
                     borderStyle: "solid",
                     borderWidth: 1,
@@ -299,7 +302,7 @@ export default function PrixerRegistration() {
                   sx={{
                     display: "flex",
                     "& > *": {
-                      margin: theme.spacing(1),
+                      margin: "8px",
                     },
                     cursor: "pointer",
                     borderStyle: "dashed",

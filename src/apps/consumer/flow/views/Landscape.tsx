@@ -2,7 +2,7 @@ import React from 'react';
 
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
-import { MenuItem, FormControl, Select } from '@mui/material';
+import { MenuItem, FormControl, Select, InputLabel } from '@mui/material';
 import { Share as ShareIcon } from '@mui/icons-material';
 
 import Button from 'components/Button';
@@ -18,21 +18,22 @@ import CurrencySwitch from 'components/CurrencySwitch';
 import ArtsGrid from '@apps/consumer/art/components/ArtsGrid/ArtsGrid';
 import Details from '@apps/consumer/products/Details/Details';
 import { CartLine } from '../../../../types/cart.types';
-import { Item } from '../../../../types/item.types';
 import { Art } from '../../../../types/art.types';
 import { Product } from '../../../../types/product.types';
+import { Item } from 'types/order.types';
+import { useUser } from '@context/GlobalContext';
 
 interface LandscapeProps {
   item: Partial<Item>;
   handleCart: (item: Item) => void;
   handleChangeElement: (type: 'producto' | 'arte', item: Item, lineId?: string) => void;
-  getFilteredOptions: (att: { name: string; value: string[] }) => string[];
   handleSelection?: (e: React.ChangeEvent<{ name: string; value: number }>) => void;
   isItemReady: boolean;
   onArtSelect: (selectedArt: Art) => void;
   onProductSelect: (selectedProduct: Product) => void;
   selectedProductId?: string | null;
   isProductAttributesComplete: boolean;
+  allAttributeNames: string[];
 }
 
 const Landscape: React.FC<LandscapeProps> = (props) => {
@@ -53,12 +54,14 @@ const Landscape: React.FC<LandscapeProps> = (props) => {
   const artExists = Boolean(props.item?.art);
   const showRightSide = !props.isItemReady;
 
+  const attributeNames = props.allAttributeNames;
+
   return (
     <div className={styles['prix-product-container']}>
       <div className={styles['first-row']}>
         <div className={styles['first-row-title-container']}>
           <div className={styles['product-title']}>Crea tu Prix ideal</div>
-          <CurrencySwitch />
+ {/*          <CurrencySwitch /> */}
         </div>
         <div className={styles['buttons-container']}>
           <Button
@@ -105,50 +108,17 @@ const Landscape: React.FC<LandscapeProps> = (props) => {
         {/* Right Side - Gallery */}
         {showRightSide && (
           <div className={styles['right-side']}>
-            {(!productExists && artExists) && (
-              <div className={styles['select']}>
-                <div className={(props.item?.product?.attributes?.length || 0) > 1 ? styles['attributes-container'] + ' ' + styles['space-between'] : + ' ' + styles['flex-start']}>
-                  {props.item?.product?.attributes?.map((att, iAtt) => (
-                    <div key={iAtt} style={{ width: '45%' }}>
-                      <FormControl variant="outlined" style={{ width: '100%' }}>
-                        <Select
-                          labelId={att.name}
-                          id={att.name}
-                          name={att.name}
-                          value={
-                            props.item?.product?.selection?.find(
-                              (sel: { name: string; value: string }) => sel.name === att.name
-                            )?.value || ''
-                          }
-                          onChange={(e) =>
-                            props.handleSelection?.(
-                              e as unknown as React.ChangeEvent<{ name: string; value: number }>
-                            )
-                          }
-                          label={att.name}
-                        >
-                          <MenuItem value="">
-                            <em>Selecciona una opción</em>
-                          </MenuItem>
-                          {props.getFilteredOptions(att).map((option) => (
-                            <MenuItem key={option} value={option}>
-                              {option}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                      </FormControl>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
             <div className={styles['right-side-bottom']}>
               <h2>
                 {props.selectedProductId
                   ? 'Detalles del producto:'
                   : (productExists && !artExists
                     ? 'Elige el arte:'
-                    : (!productExists && artExists ? 'Elige el producto:' : ''))}
+                    : (!productExists && artExists
+                      ? 'Elige el producto:'
+                      : (productExists && artExists && !props.isProductAttributesComplete && attributeNames.length > 0
+                        ? 'Selecciona las opciones:' // Title when attribute selectors are shown
+                        : '')))}
               </h2>
               <div className={styles['art-selection-container']}>
                 <div className={styles['art-grid-wrapper']}>
@@ -165,7 +135,7 @@ const Landscape: React.FC<LandscapeProps> = (props) => {
           </div>
         )}
       </div>
-    </div>
+    </div >
   );
 };
 

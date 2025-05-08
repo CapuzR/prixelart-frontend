@@ -233,7 +233,7 @@ export default function OrderForm(props) {
                                           Producto: {item.product.name}
                                           <br />
                                           Arte: {item.art.title}
-                                        </Grid>
+                                        </Grid2>
                                         <Grid
                                           item
                                           xs={12}
@@ -258,8 +258,8 @@ export default function OrderForm(props) {
                                             {props.currency ? ' Bs' : '$'}
                                             {item.product.price * item.quantity}
                                           </div>
-                                        </Grid>
-                                      </Grid>
+                                        </Grid2>
+                                      </Grid2>
                                     }
                                   />
                                 </ListItem>
@@ -350,7 +350,7 @@ export default function OrderForm(props) {
                             </div>
                           </>
                         )} */}
-                      </Grid>
+                      </Grid2>
                       <Grid
                         item
                         lg={6}
@@ -418,7 +418,7 @@ export default function OrderForm(props) {
                           {props.buyState.total}
                         </strong>
                         <br />
-                      </Grid>
+                      </Grid2>
                     </div>
                     <Grid
                       item
@@ -463,7 +463,7 @@ export default function OrderForm(props) {
                           </Select>
                         </FormControl>
                       </div>
-                    </Grid>
+                    </Grid2>
                     <Grid
                       item
                       lg={12}
@@ -480,13 +480,13 @@ export default function OrderForm(props) {
                         value={props.observations}
                         onChange={(e) => props.setObservations(e.target.value)}
                       />
-                    </Grid>
+                    </Grid2>
                   </List>
                 </div>
               </div>
             </div>
-          </Grid>
-        </Grid>
+          </Grid2>
+        </Grid2>
       </form>
     </>
   );

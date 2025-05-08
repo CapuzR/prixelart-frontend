@@ -22,31 +22,34 @@ import TextField from '@mui/material/TextField';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
-    marginTop: theme.spacing(8),
+    marginTop: "64px",
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
   },
   avatar: {
-    margin: theme.spacing(1),
+    margin: "8px",
     backgroundColor: theme.palette.secondary.main,
   },
   form: {
     width: '100%',
-    marginTop: theme.spacing(3),
+    marginTop: "24px",
   },
   submit: {
-    margin: theme.spacing(3, 0, 2),
+    marginTop: '24px', 
+    marginRight: '0px', 
+    marginBottom: '16px',
+    marginLeft: '0px',
   },
   snackbar: {
     [theme.breakpoints.down('xs')]: {
       bottom: 90,
     },
     margin: {
-      margin: theme.spacing(1),
+      margin: "8px",
     },
     withoutLabel: {
-      marginTop: theme.spacing(3),
+      marginTop: "24px",
     },
     textField: {
       width: '25ch',
@@ -114,8 +117,8 @@ export default function ForgotPassword() {
           Solicita el cambio de contraseña
         </Typography>
         <form className={classes.form} onSubmit={handleSubmit} noValidate>
-          <Grid container spacing={2}>
-            <Grid item xs={12}>
+          <Grid2 container spacing={2}>
+            <Grid2 size={{ xs: 12 }}>
               <TextField
                 variant="outlined"
                 required
@@ -128,8 +131,8 @@ export default function ForgotPassword() {
                 value={email}
                 onChange={handleEmailChange}
               />
-            </Grid>
-          </Grid>
+            </Grid2>
+          </Grid2>
           <Button
             type="submit"
             fullWidth

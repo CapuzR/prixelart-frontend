@@ -8,9 +8,9 @@ import LineCard from '../Detail';
 import { useNavigate } from 'react-router-dom';
 import { queryCreator } from '@apps/consumer/flow/helpers';
 import { Button } from '@mui/material';
-import { Item } from '../../../../types/item.types';
 import { CartLine } from '../../../../types/cart.types';
-
+import { Item } from 'types/order.types';
+import Grid2 from '@mui/material/Grid';
 interface CartReviewProps {
   checking: boolean;
 }
@@ -31,8 +31,8 @@ const CartReview: React.FC<CartReviewProps> = ({ checking }) => {
 
     const queryString = queryCreator(
       lineId ? lineId : undefined,
-      type === 'producto' ? undefined : item.product?.id,
-      type === 'arte' ? undefined : item.art?._id?.toString(),
+      type === 'producto' ? undefined : item.product?._id?.toString(),
+      type === 'arte' ? undefined : item.art?.artId?.toString(),
       selectionAsObject
     );
     navigate(`/crear-prix?${queryString}`);
@@ -50,7 +50,7 @@ const CartReview: React.FC<CartReviewProps> = ({ checking }) => {
 
           {cart.lines.length > 0 ? (
             <div className={styles['cart-grid-container']}>
-              <Grid isParent={true}>
+              <Grid2 container>
                 {cart.lines.map((line: CartLine, index: number) => (
                   <LineCard
                     key={index}
@@ -60,7 +60,7 @@ const CartReview: React.FC<CartReviewProps> = ({ checking }) => {
                     checking={checking}
                   />
                 ))}
-              </Grid>
+              </Grid2>
             </div>
           ) : (
             <div className={styles['cart-grid-container']}>

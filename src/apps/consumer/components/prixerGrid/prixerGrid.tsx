@@ -1,101 +1,196 @@
-import { useState, useEffect } from 'react';
-import axios from 'axios';
-import CardActions from '@mui/material/CardActions';
-import CardContent from '@mui/material/CardContent';
-import CardMedia from '@mui/material/CardMedia';
-import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
-import Grid2 from '@mui/material/Grid2';
-import Backdrop from '@mui/material/Backdrop';
-import CircularProgress from '@mui/material/CircularProgress';
-import utils from '../../../../utils/utils';
-import Paper from '@mui/material/Paper';
+import React, { useState, useEffect } from 'react';
+import {
+  Backdrop,
+  Button,
+  CardActions,
+  CardContent,
+  CardMedia,
+  CircularProgress,
+  Paper,
+  Typography,
+  Chip,
+  Box,
+  Alert,
+} from '@mui/material';
+import Grid2 from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
-import useStyles from './prixerGrid.styles';
+import utils from '../../../../utils/utils';
+import { User } from 'types/user.types';
+import { fetchAllPrixersActive } from '@api/prixer.api';
 
-interface Tile {
-  _id: string;
-  avatar: string;
-  title?: string;
-  firstName: string;
-  lastName: string;
-  username: string;
-  specialty?: string;
-  specialtyArt?: string[];
-  status?: boolean;
-}
+// Icons (optional, but enhance UI)
+import ExploreIcon from '@mui/icons-material/Explore';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 
-export default function PrixerGrid(): JSX.Element {
-  const classes = useStyles();
-  const [tiles, setTiles] = useState<Tile[]>([]);
+export default function PrixerGrid(): React.ReactElement {
+  const [tiles, setTiles] = useState<User[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null); // Error state
   const navigate = useNavigate();
-  const [backdrop, setBackdrop] = useState(true);
 
   useEffect(() => {
-    const base_url = import.meta.env.VITE_BACKEND_URL + '/prixer/read-all-full-v2';
-
-    axios.get(base_url).then((response) => {
-      setTiles(utils.shuffle(response.data.prixers));
-      setBackdrop(false);
-    });
+    setLoading(true);
+    setError(null);
+    fetchAllPrixersActive()
+      .then(data => {
+        // Ensure data is an array before shuffling
+        if (Array.isArray(data)) {
+          setTiles(utils.shuffle(data));
+        } else {
+          console.error("Fetched data is not an array:", data);
+          setTiles([]); // Set to empty array if data is not as expected
+          setError("Could not retrieve Prixers due to unexpected data format.");
+        }
+      })
+      .catch(apiError => {
+        console.error("Error fetching prixers:", apiError);
+        setError("We couldn't load the Prixers at this time. Please try again later.");
+      })
+      .finally(() => setLoading(false));
   }, []);
 
+  const activePrixers = tiles.filter(tile => tile.prixer?.avatar && tile.prixer.status);
+
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '400px' }}>
+        <CircularProgress />
+        <Typography sx={{ ml: 2 }}>Cargando Prixers...</Typography>
+      </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Alert
+        severity="error"
+        icon={<ErrorOutlineIcon fontSize="inherit" />}
+        sx={{ width: '100%', justifyContent: 'center', mt: 4, py: 3 }}
+      >
+        {error}
+      </Alert>
+    );
+  }
+
   return (
-    <div className={classes.root}>
-      <Backdrop className={classes.backdrop} open={backdrop}>
+    <Box
+      sx={{
+        display: 'flex',
+        flexWrap: 'wrap',
+        justifyContent: 'center', // Center grid items if they don't fill the row
+        gap: 3, // Spacing between cards
+        p: { xs: 1, sm: 2 }, // Padding around the grid
+        width: '100%',
+      }}
+    >
+      <Backdrop
+        sx={{
+          zIndex: (theme) => theme.zIndex.drawer + 1,
+          color: 'common.white', // Changed color for better contrast with CircularProgress
+        }}
+        open={loading} // This will be very brief now as main loading handled above
+      >
         <CircularProgress color="inherit" />
       </Backdrop>
-      <Grid2 container spacing={2} style={{ padding: 10 }}>
-        {tiles &&
-          tiles
-            .filter((tile) => tile.avatar)
-            .map(
-              (tile) =>
-                tile.status && (
-                  <Grid2 key={tile._id} size={{ md: 5, sm: 6, xs: 12 }}>
-                    <Paper elevation={5} className={classes.card}>
-                      <CardMedia
-                        image={tile.avatar}
-                        className={classes.cardMedia}
-                        title={tile.title || `${tile.firstName} ${tile.lastName}`}
-                      />
-                      <CardContent className={classes.cardContent}>
-                        <Typography gutterBottom variant="h5" component="h2">
-                          {tile.firstName} {tile.lastName}
-                        </Typography>
-                        <Typography
-                          gutterBottom
-                          variant="h6"
-                          component="h6"
-                          style={{ fontSize: 16 }}
-                        >
-                          {tile.username} -{' '}
-                          {tile.specialty ||
-                            tile.specialtyArt?.map(
-                              (specialty, index) =>
-                                specialty !== '' &&
-                                (tile.specialtyArt?.length === index + 1
-                                  ? specialty
-                                  : `${specialty}, `)
-                            )}
-                        </Typography>
-                      </CardContent>
-                      <CardActions>
-                        <Button
-                          size="small"
-                          color="primary"
-                          onClick={() =>
-                            navigate('/prixer=' + tile.username)
-                          }
-                        >
-                          Explorar
-                        </Button>
-                      </CardActions>
-                    </Paper>
-                  </Grid2>
-                )
-            )}
+
+      <Grid2 container spacing={{ xs: 2, md: 3 }} sx={{ width: '100%' }}>
+        {activePrixers.map(tile => (
+          <Grid2 key={tile.prixer!._id!.toString()} size={{ xs: 12, sm: 6, md: 4, lg: 3 }}>
+            <Paper
+              elevation={3}
+              sx={{
+                height: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                backgroundColor: 'background.paper',
+                borderRadius: '12px',
+                overflow: 'hidden',
+                transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out',
+                '&:hover': {
+                  transform: 'translateY(-5px)',
+                  boxShadow: (theme) => theme.shadows[6],
+                },
+              }}
+            >
+              <Box sx={{ position: 'relative' }}>
+                <CardMedia
+                  component="img" // Use img component for better control if needed
+                  image={tile.prixer!.avatar!}
+                  alt={`${tile.firstName} ${tile.lastName}`}
+                  sx={{
+                    height: 300,
+                    objectFit: 'cover',
+                  }}
+                />
+              </Box>
+              <CardContent
+                sx={{
+                  flexGrow: 1,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  p: 2, // Standard padding
+                }}
+              >
+                <Typography
+                  gutterBottom
+                  variant="h6" // Slightly smaller for better fit
+                  component="div"
+                  fontWeight="600"
+                  sx={{ mb: 0.5 }}
+                >
+                  {tile.firstName} {tile.lastName}
+                </Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 1.5 }}>
+                  @{tile.username}
+                </Typography>
+
+                {/* Specialties as Chips */}
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mb: 1.5, minHeight: '32px' /* Reserve space */ }}>
+                  {(tile.prixer!.specialty ?? [])
+                    .filter(s => !!s)
+                    .slice(0, 3) // Show max 3 specialties, add more indicator if needed
+                    .map(specialty => (
+                      <Chip key={specialty} label={specialty} size="small" variant="outlined" />
+                    ))}
+                  {(tile.prixer!.specialty ?? []).length > 3 && (
+                    <Chip label={`+${(tile.prixer!.specialty ?? []).length - 3}`} size="small" />
+                  )}
+                </Box>
+
+                {/* Truncated Description */}
+                {tile.prixer?.description && (
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{
+                      mb: 2,
+                      display: '-webkit-box',
+                      WebkitBoxOrient: 'vertical',
+                      WebkitLineClamp: 2, // Max 2 lines
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      minHeight: '40px', // Approx height for 2 lines to reduce jump
+                    }}
+                  >
+                    {tile.prixer.description}
+                  </Typography>
+                )}
+              </CardContent>
+              <CardActions sx={{ justifyContent: 'flex-end', p: 2, pt: 0 }}>
+                <Button
+                  size="medium" // Slightly larger button
+                  variant="contained" // More prominent CTA
+                  color="primary"
+                  onClick={() => navigate(`/prixer/${tile.username}`)}
+                  startIcon={<ExploreIcon />}
+                >
+                  Ver más
+                </Button>
+              </CardActions>
+            </Paper>
+          </Grid2>
+        ))}
       </Grid2>
-    </div>
+    </Box>
   );
 }

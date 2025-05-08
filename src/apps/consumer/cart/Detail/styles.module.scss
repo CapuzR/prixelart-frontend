@@ -1,17 +1,20 @@
 @use '@/theme.scss' as theme;
+
 .card-root {
   display: flex;
   overflow: hidden;
   align-content: space-between;
   height: auto;
   @include theme.paper(undefined, theme.$box-shadow-heavy, theme.$border-radius-xl, theme.$spacing-md);
-  padding: 0;
+  margin: 25px;
+  width: 100%;
+  margin-bottom: theme.$spacing-lg;
 }
 
 .card-content {
   display: flex;
   flex: 1;
-  padding: theme.$spacing-md;
+
   justify-content: space-between;
 
   &.row {

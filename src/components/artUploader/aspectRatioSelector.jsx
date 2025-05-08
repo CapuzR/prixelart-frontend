@@ -38,7 +38,7 @@ const useStyles = makeStyles((theme) => ({
     overflow: 'visible',
   },
   icon: {
-    marginRight: theme.spacing(2),
+    marginRight: "16px",
   },
   cardGrid: {
     position: 'relative',
@@ -131,7 +131,7 @@ export default function AspectRatioSelector(props) {
                 <img className={classes.img} alt="Uploaded" src={art} />
               </Tooltip>
             </label>
-          </Grid>
+          </Grid2>
         </>
       ) : (
         state.checkedA === true &&
@@ -185,7 +185,7 @@ export default function AspectRatioSelector(props) {
                         src={croppedArtTemp[index].thumb}
                       />
                     </Tooltip>
-                  </Grid>
+                  </Grid2>
                 )}
                 {croppedArt[index].cropped ? (
                   <Grid
@@ -206,7 +206,7 @@ export default function AspectRatioSelector(props) {
                       <Typography>Recortar</Typography>
                       <CropIcon />
                     </IconButton>
-                  </Grid>
+                  </Grid2>
                 ) : (
                   <Grid
                     item
@@ -231,9 +231,9 @@ export default function AspectRatioSelector(props) {
                       <Typography>Listo</Typography>
                       <CheckCircleOutlineIcon />
                     </IconButton>
-                  </Grid>
+                  </Grid2>
                 )}
-              </Grid>
+              </Grid2>
             )
         )
       )}
@@ -280,8 +280,8 @@ export default function AspectRatioSelector(props) {
           <Typography style={{ color: 'gray', fontSize: '0.875rem' }}>
             Quiero seleccionar los cortes de mi arte.
           </Typography>
-        </Grid>
-      </Grid>
+        </Grid2>
+      </Grid2>
     </div>
   );
 }

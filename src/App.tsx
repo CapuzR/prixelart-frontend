@@ -6,7 +6,7 @@ import Utility from '@components/Utility';
 import { CartProvider } from 'context/CartContext';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { Toolbar } from '@mui/material';
+
 
 const ThemedApp: React.FC = () => {
   const { theme } = useTheme();

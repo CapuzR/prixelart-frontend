@@ -19,6 +19,7 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "outDir": "./dist",
+    "typeRoots": ["./node_modules/@types", "./src/types"],
     "rootDir": "./src",
     "types": [
       "node",
@@ -26,7 +27,7 @@
     ]
   },
   "include": [
-    "src"
+    "src", "src/types/global.d.ts"
   ],
   "exclude": [
     "node_modules",

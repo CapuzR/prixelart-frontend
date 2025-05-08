@@ -1,33 +1,36 @@
 import React from 'react';
 import Container from '@mui/material/Container';
 import CssBaseline from '@mui/material/CssBaseline';
-import Grid2 from '@mui/material/Grid2';
+import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import { useTheme } from '@mui/styles';
-import { Theme } from '@mui/material/styles';
-import TestimonialsFeed from '../../admin/TestimonialsCrud/TestimonialsFeed';
-import { useTestimonialsGridStyles } from './TestimonialGrid.styles';
+import TestimonialsFeed from '../home/TestimonialsFeed'; // Assuming this path is correct
 
-
-const TestimonialsGrid: React.FC = (props) => {
-  const classes = useTestimonialsGridStyles();
-
+const TestimonialsGrid: React.FC = () => {
   return (
     <>
-      <Container component="main" maxWidth="sm" className={classes.paper}>
-        <CssBaseline />
-
-        <Grid2 style={{ marginTop: 90, justifyContent: 'center', display: 'flex' }}>
+      <CssBaseline />
+      <Container component="section" maxWidth="lg" sx={{ py: { xs: 4, md: 8 } }}>
+        <Box sx={{ textAlign: 'center', mb: { xs: 4, md: 6 } }}>
           <Typography
-            variant="h4"
-            style={{ color: '#404e5c', marginBottom: 20, fontWeight: 'bold' }}
+            variant="h3"
+            component="h2"
+            sx={{
+              color: 'text.primary',
+              fontWeight: '700',
+            }}
           >
-            <strong>Testimonios</strong>
+            Testimonios
           </Typography>
-        </Grid2>
-        <Grid2>
-          <TestimonialsFeed />
-        </Grid2>
+          <Typography
+            variant="h6"
+            component="p"
+            color="text.secondary"
+            sx={{ maxWidth: '700px', margin: 'auto', mt: 1 }}
+          >
+            Descubre lo que nuestros valiosos clientes y socios opinan sobre su experiencia con nosotros.
+          </Typography>
+        </Box>
+        <TestimonialsFeed />
       </Container>
     </>
   );

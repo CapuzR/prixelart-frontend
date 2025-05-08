@@ -1,5 +1,5 @@
 import {
-  Grid,
+
   TextField,
   Checkbox,
   FormControlLabel,
@@ -15,7 +15,7 @@ import { ExpandMore, Info } from '@mui/icons-material';
 import { useFormContext, Controller, FieldValues, ControllerRenderProps, FieldError } from "react-hook-form";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
-
+import Grid2 from "@mui/material/Grid";
 interface FieldConfig {
   label: string;
   required?: boolean;
@@ -151,22 +151,22 @@ const FormSection: React.FC<FormSectionProps> = ({ sectionConfig, sectionKey, is
 
       case "textWithTooltip":
         return (
-          <Grid container {...commonProps} spacing={1} alignItems="center">
-            <Grid item>
+          <Grid2 container {...commonProps} spacing={1} alignItems="center">
+            <Grid2>
               <TextField />
-            </Grid>
-            <Grid item>
+            </Grid2>
+            <Grid2>
               <Tooltip title={fieldConfig.tooltip}>
                 <Info color="secondary" />
               </Tooltip>
-            </Grid>
-          </Grid>
+            </Grid2>
+          </Grid2>
         );
 
       case "dropdownWithTooltip":
         return (
-          <Grid container spacing={1} alignItems="center" xs={12}> {/* Set width to 6 */}
-            <Grid item xs={10}> {/* TextField takes 10 out of 12 columns */}
+          <Grid2 size={{ xs: 12 }} container spacing={1} alignItems="center"> {/* Set width to 6 */}
+            <Grid2 size={{ xs: 10 }}> {/* TextField takes 10 out of 12 columns */}
               <TextField fullWidth {...commonProps} select>
                 {options?.map((option, idx) => (
                   <MenuItem key={idx} value={option}>
@@ -174,13 +174,13 @@ const FormSection: React.FC<FormSectionProps> = ({ sectionConfig, sectionKey, is
                   </MenuItem>
                 ))}
               </TextField>
-            </Grid>
-            <Grid item xs={2}> {/* Tooltip takes 2 out of 12 columns */}
+            </Grid2>
+            <Grid2 size={{ xs: 2 }}> {/* Tooltip takes 2 out of 12 columns */}
               <Tooltip title={fieldConfig.tooltip}>
                 <Info color="secondary" />
               </Tooltip>
-            </Grid>
-          </Grid>
+            </Grid2>
+          </Grid2>
         );
 
       case "text":
@@ -220,7 +220,7 @@ const FormSection: React.FC<FormSectionProps> = ({ sectionConfig, sectionKey, is
           if (isHidden) return null;
 
           return (
-            <Grid item xs={12} sm={width} key={key}>
+            <Grid2 size={{xs:12, sm: width}} key={key}>
               <Controller
                 name={`${sectionKey}.${key}`}
                 control={control}
@@ -244,7 +244,7 @@ const FormSection: React.FC<FormSectionProps> = ({ sectionConfig, sectionKey, is
                   });
                 }}
               />
-            </Grid>
+            </Grid2>
           );
         })}
       </>
@@ -259,9 +259,9 @@ const FormSection: React.FC<FormSectionProps> = ({ sectionConfig, sectionKey, is
         <Typography>{sectionConfig.title}</Typography>
       </AccordionSummary>
       <AccordionDetails>
-        <Grid container spacing={2}>
+        <Grid2 container spacing={2}>
           {renderFields()}
-        </Grid>
+        </Grid2>
       </AccordionDetails>
     </Accordion>
   );

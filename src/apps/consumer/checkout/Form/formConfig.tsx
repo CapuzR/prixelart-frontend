@@ -66,7 +66,8 @@ export function getFormConfig({ paymentMethods, shippingMethods, countries, sell
           type: "dropdown",
           errorCheck: (value) => value?.length >= 2,
           adornment: <TwoWheelerIcon color="secondary" />,
-          options: shippingMethods?.map((method) => method.method) || [],
+          // Corrected: Use method.name instead of method.method
+          options: shippingMethods?.map((method) => method.name) || [],
           actionType: "SET_SHIPPING_DETAILS",
           renderKey: "shipping",
           width: 5,

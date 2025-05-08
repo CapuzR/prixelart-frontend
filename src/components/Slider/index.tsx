@@ -43,17 +43,17 @@ export const Slider: React.FC<SliderProps> = ({
   const sliderRef = useRef<HTMLDivElement>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  const quatityPerSlide = childConfig.qtyPerSlide > 1 ? childConfig.qtyPerSlide + 1 : 1;
+  const quantityPerSlide = childConfig.qtyPerSlide;
   const dotsPerSlide = childConfig.qtyPerSlide - 1;
 
   const nextSlide =
     images.length > childConfig.qtyPerSlide
-      ? helpers.nextSlide(currentIndex, images, setCurrentIndex, infinite, childConfig.qtyPerSlide)
-      : () => {};
+      ? helpers.nextSlide(currentIndex, images, setCurrentIndex, infinite, quantityPerSlide)
+      : () => { };
   const prevSlide =
     images.length > childConfig.qtyPerSlide
-      ? helpers.prevSlide(currentIndex, images, setCurrentIndex, infinite, childConfig.qtyPerSlide)
-      : () => {};
+      ? helpers.prevSlide(currentIndex, images, setCurrentIndex, infinite, quantityPerSlide)
+      : () => { };
 
   const goToSlide = (index: number) => setCurrentIndex(index);
 
@@ -82,7 +82,7 @@ export const Slider: React.FC<SliderProps> = ({
       <Track
         currentIndex={currentIndex}
         speed={speed}
-        qtyPerSlide={quatityPerSlide}
+        qtyPerSlide={quantityPerSlide}
         spacing={childConfig.spacing}
         dotsPosition={(useIndicators && useIndicators.position) || 'over'}
         trackFormatClass={trackFormatClass}
@@ -100,7 +100,8 @@ export const Slider: React.FC<SliderProps> = ({
               currentIndex={currentIndex}
               goToSlide={goToSlide}
               useIndicators={useIndicators}
-              qtyPerSlide={dotsPerSlide}
+              itemsPerSlide={dotsPerSlide+1}
+              totalImages={images.length}
             />
           )}
         </>

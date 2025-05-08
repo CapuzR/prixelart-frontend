@@ -13,7 +13,10 @@ interface TrackProps {
   useThumbnails?: boolean;
   trackFormatClass?: string;
 }
-//Pending: Check if the user is seeing this to move the slider, if not, the slider will not move.
+
+
+
+
 export const Track: React.FC<TrackProps> = ({
   children,
   currentIndex,
@@ -24,18 +27,28 @@ export const Track: React.FC<TrackProps> = ({
   dots,
   useThumbnails }) => {
   const flattenedChildren = React.Children.toArray(children);
+  const numChildren = flattenedChildren.length;
+
+  //  const isSlidingActive = numChildren > qtyPerSlide;
+  const isSlidingActive = numChildren > qtyPerSlide;
+  const slideWidthPercentage = isSlidingActive
+    ? (100 / qtyPerSlide) // Normal sliding width
+    : numChildren > 0 ? (100 / numChildren) : 100; // Distribute items evenly if not sliding, or 100% if 0 items (edge case)
+  const trackWidthPercentage = isSlidingActive
+    ? (numChildren / qtyPerSlide) * 100 // Normal track width calculation
+    : 100; // Track fills container if not sliding
 
   return (
     <div
-      className={`${styles['slider-container']} ${styles[dotsPosition]}`}
+      className={`${styles['slider-container']}`}
     >
       <div
         className={`${styles['slider-wrapper']} ${styles[`spacing-${spacing}`]}`}
         style={{
-          transform: `translateX(-${currentIndex * (100 / qtyPerSlide)}%)`,
-          transition: `transform ${speed}ms ease-in-out`,
+          transform: isSlidingActive ? `translateX(-${currentIndex * (100 / qtyPerSlide)}%)` : 'translateX(0%)',
+          transition: isSlidingActive ? `transform ${speed}ms ease-in-out` : 'none',
           maxHeight: '100%',
-          width: `${(flattenedChildren.length / qtyPerSlide) * 100}%`, // Adjust width
+          width: `${trackWidthPercentage}%`, // Use new width calculation
           display: 'flex',
         }}
       >
@@ -48,11 +61,10 @@ export const Track: React.FC<TrackProps> = ({
           return (
             <div
               key={index}
-              className={`${styles['slider-slide']} ${dots && dotsPosition === 'below' && styles['dots-below']} ${useThumbnails && dotsPosition === 'below' && styles['thumbnails-below']}`}
+              className={`${styles['slider-slide']}`}
               style={{
-                // flex: `0 0 calc(${100 / qtyPerSlide}%)`,
-                // maxWidth: `${100 / qtyPerSlide}%`,
-                maxWidth: `${100 / qtyPerSlide}%`,
+                flexBasis: `${slideWidthPercentage}%`,
+                maxWidth: `${slideWidthPercentage}%`,
                 maxHeight: '100%',
                 padding:
                   spacing === 'none'
@@ -69,6 +81,6 @@ export const Track: React.FC<TrackProps> = ({
           );
         })}
       </div>
-    </div>
+    </div >
   );
 };

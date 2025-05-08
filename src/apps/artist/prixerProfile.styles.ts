@@ -9,15 +9,18 @@ const useStyles = makeStyles((theme: Theme) => ({
         flexGrow: 1,
     },
     avatar: {
-        margin: theme.spacing(1),
+        margin: "8px",
         backgroundColor: theme.palette.secondary.main,
     },
     form: {
         width: '100%', // Fix IE 11 issue.
-        marginTop: theme.spacing(3),
+        marginTop: "24px",
     },
     submit: {
-        margin: theme.spacing(3, 0, 2),
+        marginTop: '24px', 
+        marginRight: '0px', 
+        marginBottom: '16px',
+        marginLeft: '0px',
     },
     float: {
         position: 'relative',

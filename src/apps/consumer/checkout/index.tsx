@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Stepper, Step, StepLabel, Button, Typography, Box, Container, Snackbar } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import { Stepper, Step, StepLabel, Button, Typography, Box, Container } from '@mui/material';
 import Form from './Form';
 import Order from './Order';
 import { initializeCheckoutState } from './init';
@@ -10,6 +10,7 @@ import { parseOrder } from './parseApi';
 import { useNavigate } from 'react-router-dom';
 import { CartLine } from '../../../types/cart.types';
 import { CheckoutState, DataLists, Tax } from '../../../types/order.types';
+import { useSnackBar } from "context/GlobalContext"
 
 interface CheckoutProps {
   setChecking: React.Dispatch<React.SetStateAction<boolean>>;
@@ -17,14 +18,33 @@ interface CheckoutProps {
 
 const Checkout: React.FC<CheckoutProps> = ({ setChecking }) => {
   const { cart, emptyCart } = useCart();
-  const [snackBar, setSnackBar] = useState(false);
+
+  console.groupCollapsed("💼 CartContext state:");
+  console.log("cart.lines:", cart.lines);
+  console.log("cart.subTotal:", cart.subTotal);
+  console.log("cart.totalUnits:", cart.totalUnits);
+  console.log("cart.totalDiscount:", cart.totalDiscount);
+  console.groupEnd();
+
   const navigate = useNavigate();
+  const { showSnackBar } = useSnackBar()
 
   const methods = useForm<CheckoutState>({
     defaultValues: initializeCheckoutState(cart),
     mode: "onChange",
     shouldUnregister: false,
   });
+
+  useEffect(() => {
+
+    const subscription = methods.watch((currentValues) => {
+      console.log("Form data (potential handleSubmit data) changed:", currentValues);
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [methods.watch]);
 
   const [dataLists, setDataLists] = useState<DataLists>(
     methods.getValues().dataLists || {
@@ -53,25 +73,20 @@ const Checkout: React.FC<CheckoutProps> = ({ setChecking }) => {
     setActiveStep((prev) => prev - 1);
   };
 
-  const closeAd = () => {
-    setSnackBar(false);
-    navigate('/');
-  };
-
   const handleSubmit = async () => {
+
+    console.log("Submitting form data...", methods.getValues());
+
     const checkoutData = methods.getValues();
 
     const parsedData = parseOrder(checkoutData);
 
     const response = await createOrderByUser(parsedData);
-    if (response.success) {
+
+    if (response.success === true) {
       emptyCart();
-      <Snackbar
-        open={snackBar}
-        autoHideDuration={5000}
-        message={"Orden realizada exitosamente! Pronto serás contactado por un miembro del equipo de Prixelart para coordinar la entrega."}
-        onClick={closeAd}
-      />
+      showSnackBar("Orden realizada exitosamente! Pronto serás contactado por un miembro del equipo de Prixelart para coordinar la entrega.");
+      navigate('/');
     }
   };
 
@@ -108,12 +123,12 @@ const Checkout: React.FC<CheckoutProps> = ({ setChecking }) => {
                 // Map cart lines to order lines
                 checkoutState.order.lines = cart.lines.map((line: CartLine) => ({
                   ...line,
-                  pricePerUnit: line.item.price,
+                  pricePerUnit: Number(line.item.price),
                 }));
 
                 // Calculate subtotal from the cart
                 const subtotal = cart.lines.reduce((total: number, line: CartLine) => {
-                  return total + line.item.price * line.quantity;
+                  return total + Number(line.item.price) * line.quantity;
                 }, 0);
 
                 // Perform tax calculations before sending data to the Order component
@@ -121,7 +136,7 @@ const Checkout: React.FC<CheckoutProps> = ({ setChecking }) => {
 
                 if (checkoutState.shipping && dataLists.shippingMethods) {
                   const selectedMethod = dataLists.shippingMethods.find((method) => {
-                    return method.method === checkoutState.shipping.method;
+                    return method.name === checkoutState.shipping.name;
                   });
                   if (selectedMethod) {
                     checkoutState.order.shippingCost = parseFloat(selectedMethod.price);

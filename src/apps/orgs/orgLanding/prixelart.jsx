@@ -20,7 +20,7 @@ ReactGA.initialize('G-0RWP9B33D8');
 const useStyles = makeStyles((theme) => ({
   typography: { fontFamily: 'Lastik' },
   paper: {
-    padding: theme.spacing(2),
+    padding: "16px",
     textAlign: 'center',
   },
 }));
@@ -139,7 +139,7 @@ export default function PrixelartSection() {
         }}
       >
         <img src={yellowArrowRight} style={{ width: '90%' }} />
-      </Grid>
+      </Grid2>
       <Grid item xs={7}>
         <div
           style={{
@@ -155,7 +155,7 @@ export default function PrixelartSection() {
         >
           <img src={logo} alt="Prixelart logo" style={{ height: isTab ? 50 : 70 }} />
         </div>
-      </Grid>
+      </Grid2>
       <Grid
         xs={2}
         style={{
@@ -165,7 +165,7 @@ export default function PrixelartSection() {
         }}
       >
         <img src={yellowArrowLeft} style={{ width: '90%' }} />
-      </Grid>
+      </Grid2>
       <Grid
         item={12}
         style={{
@@ -197,7 +197,7 @@ export default function PrixelartSection() {
           talento nacional y llenamos los hogares venezolanos con piezas únicas que reflejan la
           riqueza cultural del país. Descubre nuestra colección y enamórate del arte venezolano.
         </Typography>
-      </Grid>
+      </Grid2>
       <Grid item xs={12} style={{ marginTop: 40, marginBottom: 60 }}>
         <Grid container spacing={3} style={{ display: 'flex', justifyContent: 'center' }}>
           <Grid
@@ -219,7 +219,7 @@ export default function PrixelartSection() {
             >
               <strong>+{prixers}</strong> <br /> Prixers
             </Typography>
-          </Grid>
+          </Grid2>
           <Grid
             item
             xs={3}
@@ -239,7 +239,7 @@ export default function PrixelartSection() {
             >
               <strong>+{arts}</strong> <br /> Artes
             </Typography>
-          </Grid>
+          </Grid2>
           <Grid
             item
             xs={3}
@@ -259,9 +259,9 @@ export default function PrixelartSection() {
               <strong>+{products}</strong>
               <br /> Productos
             </Typography>
-          </Grid>
-        </Grid>
-      </Grid>
+          </Grid2>
+        </Grid2>
+      </Grid2>
       <Grid
         xs={2}
         style={{
@@ -271,7 +271,7 @@ export default function PrixelartSection() {
         }}
       >
         <img src={blueArrowRight} style={{ width: '90%' }} />
-      </Grid>
+      </Grid2>
       <Grid item xs={6} style={{ display: 'flex', placeContent: 'center' }}>
         <Button
           className={classes.typography}
@@ -287,7 +287,7 @@ export default function PrixelartSection() {
         >
           Conoce a Prixelart
         </Button>
-      </Grid>
+      </Grid2>
       <Grid
         xs={2}
         style={{
@@ -297,7 +297,7 @@ export default function PrixelartSection() {
         }}
       >
         <img src={blueArrowLeft} style={{ width: '90%' }} />
-      </Grid>
-    </Grid>
+      </Grid2>
+    </Grid2>
   );
 }

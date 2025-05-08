@@ -5,7 +5,7 @@ export const useStyles = makeStyles((theme: Theme) => ({
     loading: {
         display: 'flex',
         '& > * + *': {
-            marginLeft: theme.spacing(2),
+            marginLeft: "16px",
         },
         marginLeft: '50vw',
         marginTop: '50vh',
@@ -17,7 +17,7 @@ export const useStyles = makeStyles((theme: Theme) => ({
         display: 'grid',
     },
     paper: {
-        padding: theme.spacing(2),
+        padding: "16px",
         margin: 'auto',
         maxWidth: 616,
     },
@@ -30,10 +30,10 @@ export const useStyles = makeStyles((theme: Theme) => ({
           bottom: 90,
         },
         '& .margin': {
-          margin: theme.spacing(1),
+          margin: "8px",
         },
         '& .withoutLabel': {
-          marginTop: theme.spacing(3),
+          marginTop: "24px",
         },
         '& .textField': {
           width: '25ch',

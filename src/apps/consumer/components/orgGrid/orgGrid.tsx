@@ -1,19 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { makeStyles } from '@mui/styles';
-import axios from 'axios';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import Grid2 from '@mui/material/Grid2';
+import Grid2 from '@mui/material/Grid';
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
 import utils from 'utils/utils';
 import Paper from '@mui/material/Paper';
-import { Container, CssBaseline, Theme } from '@mui/material';
+import { Container, CssBaseline } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import useStyles from './orgGrid.styles';
+import { fetchAllOrgs } from '@api/organization.api';
 
 interface Organization {
   _id: string;
@@ -34,10 +33,8 @@ const OrgGrid: React.FC = () => {
   const [backdrop, setBackdrop] = useState(true);
 
   useEffect(() => {
-    const base_url = import.meta.env.VITE_BACKEND_URL + '/organization/read-all-full-v2';
-
-    axios.get(base_url).then((response) => {
-      setTiles(utils.shuffle(response.data.organizations));
+    fetchAllOrgs().then((response) => {
+      setTiles(utils.shuffle(response));
       setBackdrop(false);
     });
   }, []);
@@ -63,7 +60,7 @@ const OrgGrid: React.FC = () => {
                     .map(
                       (tile) =>
                         tile.status && (
-                          <Grid2 key={tile._id} size={{ md: 12, sm: 6, xs: 4 }}>
+                          <Grid2 key={tile._id} xs={4} sm={6} md={12}>
                             <Paper elevation={5} className={classes.card}>
                               <CardMedia
                                 image={tile.avatar}

@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { Grid, Paper, Button, Typography } from '@mui/material';
+import {  Paper, Button, Typography } from '@mui/material';
 import TextField from '@mui/material/TextField';
-
+import Grid2 from '@mui/material/Grid';
 export function IconsForm({ icons, setIcons }) {
   const [data, setData] = React.useState({
     name: '',
@@ -51,15 +51,15 @@ export function IconsForm({ icons, setIcons }) {
     <>
       <Paper style={{ padding: '8%', width: '80%' }} elevation={1}>
         <form onSubmit={handleSubmit}>
-          <Grid container spacing={5}>
-            <Grid item xs={12}>
+          <Grid2 container spacing={5}>
+            <Grid2 size={{ xs: 12 }}>
               <Typography variant="h5" sx={{ color: 'black', paddingBottom: 3 }}>
                 Incluye íconos en LPG
               </Typography>
-            </Grid>
-          </Grid>
-          <Grid container spacing={2}>
-            <Grid item xs={12}>
+            </Grid2>
+          </Grid2>
+          <Grid2 container spacing={2}>
+            <Grid2 size={{ xs: 12 }}>
               <TextField
                 id="name"
                 label="Nombre"
@@ -67,8 +67,8 @@ export function IconsForm({ icons, setIcons }) {
                 onChange={handleInputChange}
                 fullWidth
               />
-            </Grid>
-            <Grid item xs={12}>
+            </Grid2>
+            <Grid2 size={{ xs: 12 }}>
               <TextField
                 id="description"
                 label="Descripción"
@@ -76,8 +76,8 @@ export function IconsForm({ icons, setIcons }) {
                 onChange={handleInputChange}
                 fullWidth
               />
-            </Grid>
-            <Grid item xs={12}>
+            </Grid2>
+            <Grid2 size={{ xs: 12 }}>
               <TextField
                 id="src"
                 label="URL"
@@ -85,14 +85,14 @@ export function IconsForm({ icons, setIcons }) {
                 onChange={handleInputChange}
                 fullWidth
               />
-            </Grid>
-            <Grid item xs={6}>
+            </Grid2>
+            <Grid2 size={{xs:6}}>
               <TextField id="x" label="Posición X" variant="filled" onChange={handleInputChange} />
-            </Grid>
-            <Grid item xs={6}>
+            </Grid2>
+            <Grid2 size={{xs:6}}>
               <TextField id="y" label="Posición Y" variant="filled" onChange={handleInputChange} />
-            </Grid>
-            <Grid item xs={12}>
+            </Grid2>
+            <Grid2 size={{ xs: 12 }}>
               <Button
                 id="button"
                 variant="contained"
@@ -101,8 +101,8 @@ export function IconsForm({ icons, setIcons }) {
               >
                 Agregar
               </Button>
-            </Grid>
-          </Grid>
+            </Grid2>
+          </Grid2>
         </form>
       </Paper>
     </>

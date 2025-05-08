@@ -3,7 +3,7 @@ import { ObjectId } from "mongodb";
 export interface PickedArt
   extends Pick<
     Art,
-    'artId' | 'title' | 'squareThumbUrl' | 'largeThumbUrl' | 'prixerUsername' | 'exclusive' | '_id'
+    'artId' | 'title' | 'largeThumbUrl' | 'prixerUsername' | 'exclusive' | '_id'
   > { }
 
 interface Certificate {

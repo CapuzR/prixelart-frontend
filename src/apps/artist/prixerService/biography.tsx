@@ -7,7 +7,7 @@ import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
-import Grid from '@mui/material/Grid';
+import Grid2 from '@mui/material/Grid';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import useMediaQuery from '@mui/material/useMediaQuery';
@@ -275,7 +275,7 @@ export default function Biography(props: BiographyProps) {
           <CircularProgress color="inherit" />
         </Backdrop>
       </div>
-      <Grid container style={{ justifyContent: 'center', marginBottom: 20 }}>
+      <Grid2 container style={{ justifyContent: 'center', marginBottom: 20 }}>
         {openEdit ? (
           <div
             style={{
@@ -575,7 +575,7 @@ export default function Biography(props: BiographyProps) {
             Pronto publicaré mi biografía.
           </Typography>
         )}
-      </Grid>
+      </Grid2>
       <Snackbar
         open={snackBar}
         autoHideDuration={5000}

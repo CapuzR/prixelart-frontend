@@ -19,9 +19,9 @@ const Cart = () => {
           terceros
         </Alert>
 
-        <div className={styles['switch-container']}>
+{/*         <div className={styles['switch-container']}>
           <CurrencySwitch />
-        </div>
+        </div> */}
       </div>
       <div className={styles['content-row']} style={checking ? { alignSelf: 'center' } : {}}>
         {!checking && (

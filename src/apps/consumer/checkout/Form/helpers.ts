@@ -13,7 +13,7 @@ export const createMirrorHandler = (
 
     if (conditionValue) {
       // Combine values or use custom logic
-      const combinedValue = baseValues.join(" "); // Adjust this logic if needed
+      const combinedValue = baseValues.join(" "); // Adjust this logic 
       setValue(watchedField, combinedValue); // Set the combined value in the watched field
       return { disabled: true }; // Disable the field when mirroring
     } else {

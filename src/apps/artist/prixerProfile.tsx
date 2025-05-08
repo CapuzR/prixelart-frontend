@@ -4,16 +4,15 @@ import FloatingAddButton from 'components/floatingAddButton/floatingAddButton';
 import CreateService from '@components/createService';
 import UserData from './userData/userData';
 import PrixerOptions from './prixerOptions/prixerOptions';
-import ArtsGrid from '../../consumer/art/components/ArtsGrid/ArtsGrid';
 import Container from '@mui/material/Container';
 import CssBaseline from '@mui/material/CssBaseline';
-import Grid from '@mui/material/Grid';
+import Grid2 from '@mui/material/Grid';
 import ArtUploader from 'components/artUploader/artUploader';
-import ServiceGrid from './grid/serviceGrid';
 import { useTheme } from '@mui/styles';
 import Biography from './grid/biography';
 import useStyles from './prixerProfile.styles';
 import { getUrlParams } from '@utils/util';
+import ArtsGrid from '@apps/consumer/art/components/ArtsGrid/ArtsGrid';
 
 const PrixerProfile: React.FC = () => {
   const classes = useStyles();
@@ -82,12 +81,12 @@ const PrixerProfile: React.FC = () => {
         />
       )}
 
-      <Grid className={classes.float}>
+      <Grid2 className={classes.float}>
         <FloatingAddButton
           setOpenServiceFormDialog={setOpenServiceFormDialog}
           setOpenArtFormDialog={setOpenArtFormDialog}
         />
-      </Grid>
+      </Grid2>
     </Container>
   );
 };

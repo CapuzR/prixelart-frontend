@@ -1,4 +1,4 @@
-import { Item } from "./item.types";
+import { Item } from "./order.types";
 
 export interface Cart {
   lines: CartLine[];

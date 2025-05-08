@@ -1,5 +1,5 @@
 import { useTheme } from '@mui/styles';
-import Grid2 from '@mui/material/Grid2';
+import Grid2 from '@mui/material/Grid';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import List from '@mui/material/List';
@@ -8,12 +8,11 @@ import ListItemText from '@mui/material/ListItemText';
 import Collapse from '@mui/material/Collapse';
 import Divider from '@mui/material/Divider';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import { Theme } from '@mui/material';
 import { useState } from 'react';
 import { useConversionRate, useCurrency } from 'context/GlobalContext';
 
 import useStyles from './order.styles.js';
-import { CheckoutState } from '../../../../types/order.types';
+import { CheckoutState, OrderLine, Tax } from '../../../../types/order.types';
 
 interface OrderSummaryProps {
   checkoutState: CheckoutState;
@@ -23,8 +22,7 @@ const Order: React.FC<OrderSummaryProps> = ({ checkoutState }) => {
   const classes = useStyles();
   const { currency } = useCurrency();
   const { conversionRate } = useConversionRate();
-  const theme = useTheme<Theme>();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const isMobile = useMediaQuery('(max-width:768px)');
   const [balance, setBalance] = useState(0);
 
   // TODO : Debo obtener el saldo del prixer.
@@ -58,7 +56,7 @@ const Order: React.FC<OrderSummaryProps> = ({ checkoutState }) => {
                 <div style={{ fontWeight: 'bold' }}>Items:</div>
                 <div>
                   <List component="div" disablePadding>
-                    {checkoutState.order.lines.map((line, index) => (
+                    {checkoutState.order.lines.map((line: OrderLine, index: number) => (
                       <>
                         {line.item.product && line.item.art && (
                           <>
@@ -73,13 +71,12 @@ const Order: React.FC<OrderSummaryProps> = ({ checkoutState }) => {
                                     style={{ marginLeft: 0, paddingLeft: 0 }}
                                     primary={
                                       <Grid2 container>
-                                        <Grid2 size={{ md: 8, xs: 12 }}>
+                                        <Grid2 size={{ md: 2, xs: 12 }}  >
                                           Producto: {line.item.product.name}
                                           <br />
                                           Arte: {line.item.art.title}
                                         </Grid2>
-                                        <Grid2
-                                          size={{ md: 4, xs: 12 }}
+                                        <Grid2 size={{ md: 4, xs: 12 }}
                                           style={{
                                             display: 'flex',
                                             justifyContent: isMobile ? 'space-between' : '',
@@ -98,10 +95,10 @@ const Order: React.FC<OrderSummaryProps> = ({ checkoutState }) => {
                                             Monto:
                                             <br></br>
                                             {currency === 'Bs' ? 'Bs ' : '$ '}
-                                            {currency === 'Bs' ? (line.item.price * line.quantity * conversionRate).toLocaleString('de-DE', {
+                                            {currency === 'Bs' ? (Number(line.item.price) * line.quantity * conversionRate).toLocaleString('de-DE', {
                                               minimumFractionDigits: 2,
                                               maximumFractionDigits: 2,
-                                            }) : (line.item.price * line.quantity)}
+                                            }) : (Number(line.item.price) * line.quantity)}
                                           </div>
                                         </Grid2>
                                       </Grid2>
@@ -121,9 +118,8 @@ const Order: React.FC<OrderSummaryProps> = ({ checkoutState }) => {
                         justifyContent: 'end',
                       }}
                     >
-                      {/* </Grid> */}
-                      <Grid2
-                        size={{ lg: 6, md: 6, sm: 6, xs: 6 }}
+                      {/* </Grid2> */}
+                      <Grid2 size={{ lg: 8, md: 6, sm: 6, xs: 6 }}
                         style={{
                           display: 'flex',
                           alignItems: 'end',
@@ -169,7 +165,7 @@ const Order: React.FC<OrderSummaryProps> = ({ checkoutState }) => {
                             })}
                         </strong>
                         {checkoutState.order.tax.length > 0 &&
-                          checkoutState.order.tax.map((tax) => (
+                          checkoutState.order.tax.map((tax: Tax) => (
                             <strong key={tax.id}>
                               {`${tax.name} (${tax.value}%) : ${currency === 'Bs'
                                 ? 'Bs ' +

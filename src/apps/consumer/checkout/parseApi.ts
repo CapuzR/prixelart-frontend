@@ -1,5 +1,4 @@
-import { BasicInfo, BillingDetails, ShippingDetails, ShippingMethod, PaymentMethod, ConsumerDetails, Address, } from '../../../types/order.types';
-import { v4 as uuidv4 } from 'uuid';
+import { BasicInfo, BillingDetails, ShippingDetails, ShippingMethod, PaymentMethod, ConsumerDetails, Address, Order, CheckoutState, PaymentDetails, Tax, OrderStatus, } from '../../../types/order.types';
 
 interface ConsumerApiResponse {
   firstname: string;
@@ -15,41 +14,13 @@ interface ConsumerApiResponse {
   expectedDate?: Date;
 }
 
-interface PrixerApiResponse {
-  firstName: string;
-  lastName: string;
-  phone?: string;
-  email?: string;
-  address?: string;
-}
-
 // Parse basic consumer information to the BasicInfo structure
-export const parseBasicInfo = (data: ConsumerApiResponse): BasicInfo => ({
+const parseBasicInfo = (data: ConsumerApiResponse): BasicInfo => ({
   name: data.firstname,
   lastName: data.lastname,
   id: data.ci || undefined,
   phone: data.phone,
   email: data.email,
-});
-
-// Parse shipping details to the ShippingDetails structure
-export const parseShippingDetails = (data: ConsumerApiResponse): ShippingDetails => ({
-  method: data.shippingMethod,
-  address: data.shippingAddress
-    ? parseAddress(data.shippingAddress, data)
-    : parseAddress(data.address, data),
-  preferredDeliveryDate: undefined, // Set default or adjust based on API data
-  estimatedShippingDate: undefined, // Set default or adjust based on API data
-  estimatedDeliveryDate: data.expectedDate || undefined,
-});
-
-// Parse billing details to the BillingDetails structure
-export const parseBillingDetails = (data: ConsumerApiResponse): BillingDetails => ({
-  method: data.paymentMethod?.name,
-  billTo: parseBasicInfo(data),
-  address: data.billingAddress
-    ? parseAddress(data.billingAddress, data)
-    : parseAddress(data.address, data),
 });
 
 // Helper to parse address data into the Address structure
@@ -83,33 +54,6 @@ export const parseConsumerDetails = (data: ConsumerApiResponse): ConsumerDetails
   paymentMethods: data.paymentMethod ? [data.paymentMethod] : [],
 });
 
-// Parse prixer data to the BasicInfo structure
-export const parsePrixerDetails = (data: PrixerApiResponse): BasicInfo => ({
-  name: data.firstName,
-  lastName: data.lastName,
-  phone: data.phone || "",
-  email: data.email || "",
-});
-
-interface SourceShippingMethod {
-  _id: string;
-  name: string;
-  price: string;
-}
-
-interface SourceShippingData {
-  info: string;
-  shippingMethods: SourceShippingMethod[];
-}
-
-// Parse shipping methods to the ShippingMethod structure
-export const parseShippingMethods = (data: SourceShippingData): ShippingMethod[] =>
-  data.shippingMethods.map((method: SourceShippingMethod) => ({
-    id: method._id,
-    method: method.name,
-    price: method.price,
-  }));
-
 // Parse billing methods to the PaymentMethod structure
 export const parseBillingMethods = (data: any[]): PaymentMethod[] =>
   data.map((method) => ({
@@ -117,83 +61,160 @@ export const parseBillingMethods = (data: any[]): PaymentMethod[] =>
     name: method.name,
     type: method.type || undefined,
     provider: method.provider || undefined,
+    active: method.active !== undefined ? method.active : true,
+    createdBy: method.createdBy || 'system',
+    createdOn: method.createdOn ? new Date(method.createdOn) : new Date(),
   }));
 
-export const parseOrder = (data: any): any => {
+export const parseOrder = (data: CheckoutState): Order => {
+  const orderData = data.order || {};
+  const basicState = data.basic || {};
+  const shippingState = data.shipping || {};
+  const billingState = data.billing || {};
+  const generalState = data.general || {};
 
-  const basic = data.basic || {};
-  const consumerPayload = {
-    _id: basic.id,
-    consumerId: basic.id,
-    active: true,
-    consumerType: "Particular",
-    firstname: basic.name,
-    lastname: basic.lastName,
-    ...basic,
+  console.log("orderData", orderData);
+
+  // Use top-level basic info if available, otherwise fall back to nested order data
+  const basicInfo: BasicInfo = {
+    id: basicState.id || orderData.consumerDetails?.basic.id || '',
+    name: basicState.name || orderData.consumerDetails?.basic.name || '',
+    lastName: basicState.lastName || orderData.consumerDetails?.basic.lastName || '',
+    email: basicState.email || orderData.consumerDetails?.basic.email || '',
+    phone: basicState.phone || orderData.consumerDetails?.basic.phone || '',
+    shortAddress: basicState.shortAddress || orderData.consumerDetails?.basic.shortAddress || '',
   };
 
-  const orderData = data.order || {};
+  // Map ConsumerDetails - primarily from order.consumerDetails, using top-level basic info
+  const consumerDetails: ConsumerDetails = {
+    basic: basicInfo, // Use the potentially updated basicInfo
+    selectedAddress: orderData.consumerDetails?.selectedAddress || { line1: '', city: '', state: '', country: '' }, // Fallback
+    addresses: orderData.consumerDetails?.addresses || [], // Use addresses from nested order data
+    paymentMethods: orderData.consumerDetails?.paymentMethods || [], // Use payment methods from nested order data
+  };
 
-  let taxAmount = 0;
-  if (Array.isArray(orderData.tax)) {
-    taxAmount = orderData.tax.reduce((sum: number, t: any) => sum + (t.amount || 0), 0);
-  } else {
-    taxAmount = orderData.tax || 0;
-  }
+  // Map ShippingDetails - prioritize top-level shipping state
+  const shippingDetails: ShippingDetails = {
+    method: shippingState.method ? { // Construct ShippingMethod object
+      name: shippingState.method,
+      price: shippingState.price !== undefined ? String(shippingState.price) : '0', // Convert number to string as per interface
+      active: true, // Assuming active if selected
+      createdOn: new Date(), // Placeholder: actual creation date might be needed
+      createdBy: 'system', // Placeholder: user who created shipping method
+    } as ShippingMethod : { // Provide default ShippingMethod when undefined
+      name: '',
+      price: '0',
+      active: false,
+      createdOn: new Date(),
+      createdBy: '',
+    },
+    country: shippingState.country || orderData.shipping?.address.address.country, // Prefer top-level, fallback to nested
+    address: { // Construct Address object for shipping - prioritize top-level shipping state
+      recepient: { // Construct BasicInfo for shipping recipient - prioritize top-level shipping state
+        id: shippingState.id || orderData.shipping?.address.recepient.id || '',
+        name: shippingState.name || orderData.shipping?.address.recepient.name || '',
+        lastName: shippingState.lastName || orderData.shipping?.address.recepient.lastName || '',
+        email: shippingState.email || orderData.shipping?.address.recepient.email || '',
+        phone: shippingState.phone || orderData.shipping?.address.recepient.phone || '',
+        shortAddress: '', // Not available in top-level shipping state
+      },
+      address: { // Construct BasicAddress for shipping address - prioritize top-level shipping state
+        line1: shippingState.line1 || orderData.shipping?.address.address.line1 || '',
+        line2: shippingState.line2 || orderData.shipping?.address.address.line2 || '',
+        reference: shippingState.reference || orderData.shipping?.address.address.reference || '',
+        city: shippingState.city || orderData.shipping?.address.address.city || '',
+        state: shippingState.state || orderData.shipping?.address.address.state || '',
+        country: shippingState.country || orderData.shipping?.address.address.country || '',
+        zipCode: shippingState.zipCode || orderData.shipping?.address.address.zipCode || '',
+      },
+    },
+    // Mapping date fields - prioritize top-level shipping.date for estimatedDeliveryDate
+    estimatedDeliveryDate: shippingState.date ? new Date(shippingState.date) : (orderData.shipping?.estimatedDeliveryDate ? new Date(orderData.shipping.estimatedDeliveryDate) : undefined),
+    // preferredDeliveryDate and estimatedShippingDate are not clearly present in the input structure
+  };
 
-  let createdByValue = "System";
-  if (orderData.createdBy) {
-    if (typeof orderData.createdBy === "object" && orderData.createdBy.username) {
-      createdByValue = orderData.createdBy.username;
-    } else if (typeof orderData.createdBy === "string" && orderData.createdBy.trim() !== "") {
-      createdByValue = orderData.createdBy;
-    }
-  }
-
-  const requests = Array.isArray(orderData.lines) ? orderData.lines : [];
-  const totalUnitsCalculated = requests.reduce((sum: number, req: any) => {
-    return sum + (req.quantity || 0);
-  }, 0);
-
-  const orderPayload = {
-    orderId: orderData.id || uuidv4(),
-    orderType: typeof orderData.lines === "string" ? orderData.lines : "Particular",
-    createdOn: orderData.createdOn ? new Date(orderData.createdOn) : new Date(),
-    createdBy: createdByValue,
-    subtotal: orderData.subTotal,
-    tax: taxAmount,
-    total: orderData.total,
-    totalUnits: totalUnitsCalculated,
-    basicData: data.basic,
-    shippingData: data.shipping,
-    shippingCost: orderData.shippingCost,
-    billingData: data.billing,
-    requests: orderData.lines,
-    status:
-      orderData.status && typeof orderData.status === "object"
-        ? orderData.status.name
-        : orderData.status || "pending",
-    paymentVoucher: orderData.paymentVoucher,
-    dollarValue: orderData.dollarValue,
-    payStatus: orderData.payStatus,
-    generalProductionStatus: orderData.generalProductionStatus,
-    shippingStatus: orderData.shippingStatus,
-    observations: data.general?.observations || orderData.observations || "",
-    isSaleByPrixer: orderData.isSaleByPrixer || false,
-    payDate: orderData.payDate ? new Date(orderData.payDate) : undefined,
-    completionDate: orderData.completionDate ? new Date(orderData.completionDate) : undefined,
-    comissions: orderData.comissions || [],
-    payment: {
-      total: orderData.total,
-      method: data.billing?.paymentMethod || "",
+  // Map BillingDetails - prioritize top-level billing state
+  const billingDetails: BillingDetails = {
+    billTo: { // Construct BasicInfo for billing recipient - prioritize top-level billing state
+      id: billingState.id || orderData.billing?.billTo?.id || '',
+      name: billingState.name || orderData.billing?.billTo?.name || '',
+      lastName: billingState.lastName || orderData.billing?.billTo?.lastName || '',
+      email: billingState.email || orderData.billing?.billTo?.email || '',
+      phone: billingState.phone || orderData.billing?.billTo?.phone || '',
+      shortAddress: '', // Not available in top-level billing state
+    },
+    address: { // Construct Address object for billing - prioritize top-level billing state
+      recepient: { // Construct BasicInfo for billing address recipient - prioritize top-level billing state
+        id: billingState.id || orderData.billing?.address?.recepient.id || '', // Assuming id might be present here too
+        name: billingState.name || orderData.billing?.address?.recepient.name || '',
+        lastName: billingState.lastName || orderData.billing?.address?.recepient.lastName || '',
+        email: billingState.email || orderData.billing?.address?.recepient.email || '',
+        phone: billingState.phone || orderData.billing?.address?.recepient.phone || '',
+        shortAddress: '', // Not available
+      },
+      address: { // Construct BasicAddress for billing address - prioritize top-level billing state
+        line1: billingState.line1 || orderData.billing?.address?.address.line1 || '',
+        line2: billingState.line2 || orderData.billing?.address?.address.line2 || '',
+        reference: '', // Not available in top-level billing state
+        city: billingState.city || orderData.billing?.address?.address.city || '',
+        state: billingState.state || orderData.billing?.address?.address.state || '',
+        country: billingState.country || orderData.billing?.address?.address.country || '',
+        zipCode: billingState.zipCode || orderData.billing?.address?.address.zipCode || '',
+      },
     },
   };
 
-  // Return a single order object matching the schema
-  const payload = {
-    ...orderPayload,
-    consumerData: consumerPayload,
+  // Map PaymentDetails - Construct based on billing and basic info
+  const paymentDetails: PaymentDetails = {
+    method: billingState.paymentMethod || orderData.billing?.paymentMethod ? [{
+      name: billingState.paymentMethod || orderData.billing?.paymentMethod || '',
+      // type: determine type if possible from name or another field 
+      // other PaymentMethod fields are not available in the input structure
+    } as PaymentMethod] : [],
+    total: 0
   };
 
-  return payload;
-}
+
+  // Calculate totalUnits if not provided in orderData or if lines are available
+  const totalUnits = orderData.totalUnits !== undefined ? orderData.totalUnits : (Array.isArray(orderData.lines) ? orderData.lines.reduce((sum: any, line: { quantity: any; }) => sum + (line.quantity || 0), 0) : 0);
+
+  // Map Tax - Ensure tax is an array and map its properties
+  const taxArray: Tax[] = Array.isArray(orderData.tax) ? orderData.tax.map((t: { id: any; name: any; value: any; amount: any; }) => ({
+    id: t.id || '',
+    name: t.name || '',
+    value: t.value || 0,
+    amount: t.amount || 0,
+  })) : [];
+
+
+  const createdOnDate = orderData.createdOn ? new Date(orderData.createdOn) : new Date();
+
+  const order: Order = {
+    // _id: // No _id in the input object, will be generated by the database
+    lines: orderData.lines || [], // Use lines from nested order data
+    createdOn: createdOnDate,
+    createdBy: orderData.createdBy || 'System', // Default to 'System' if not available
+    // updates: // Not available in the input object
+
+    consumerDetails: consumerDetails,
+    payment: paymentDetails,
+    shipping: shippingDetails,
+    billing: billingDetails,
+
+    totalUnits: totalUnits,
+
+    subTotal: orderData.subTotal || 0,
+    discount: orderData.discount || 0,
+    shippingCost: orderData.shippingCost || 0,
+    tax: taxArray,
+    totalWithoutTax: orderData.totalWithoutTax || 0,
+    total: orderData.total || 0,
+
+    seller: generalState.seller || orderData.seller || '', // Prioritize top-level general seller
+    observations: generalState.observations || orderData.observations || '', // Prioritize top-level general observations
+  };
+
+  console.log("Parsed Order:", order);
+
+  return order;
+};

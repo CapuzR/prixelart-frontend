@@ -1,25 +1,42 @@
 import React from 'react';
 import Container from '@mui/material/Container';
 import CssBaseline from '@mui/material/CssBaseline';
-import Grid2 from '@mui/material/Grid2';
 import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
 import PrixersGrid from 'apps/consumer/components/prixerGrid/prixerGrid';
-import useStyles from './prixersGrid.styles';
 
-const Prixers: React.FC = (props) => {
-  const classes = useStyles();
-
+const Prixers: React.FC = () => {
   return (
-    <Container component="main" maxWidth="sm" className={classes.paper}>
+    <Container
+      component="main"
+      maxWidth="xl"
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        flexGrow: 1,
+        marginTop: { xs: '70px', md: '90px' },
+        paddingBottom: 4,
+      }}
+    >
       <CssBaseline />
-      <Grid2 style={{ justifyContent: 'center', display: 'flex' }}>
-        <Typography variant="h4" style={{ color: '#404e5c' }} fontWeight="bold">
-          <strong>Prixers</strong>
+      <Box sx={{ textAlign: 'center', mb: 4 }}>
+        <Typography
+          variant="h3"
+          component="h1"
+          sx={{
+            color: 'text.primary',
+            fontWeight: 700,
+            letterSpacing: '0.5px',
+          }}
+        >
+          Conoce a nuestros Prixers
         </Typography>
-      </Grid2>
-      <Grid2>
-        <PrixersGrid />
-      </Grid2>
+        <Typography variant="h6" color="text.secondary">
+          Descubre a creadores y artistas talentosos.
+        </Typography>
+      </Box>
+      <PrixersGrid />
     </Container>
   );
 };

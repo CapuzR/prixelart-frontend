@@ -33,7 +33,7 @@ ReactGA.initialize('G-0RWP9B33D8');
 const useStyles = makeStyles((theme) => ({
   typography: { fontFamily: 'Lastik' },
   paper: {
-    padding: theme.spacing(2),
+    padding: "16px",
     textAlign: 'center',
   },
   button: {
@@ -44,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
     fontSize: 18,
   },
   formControl: {
-    marginTop: theme.spacing(6),
+    marginTop: "48px",
     width: 120,
   },
   dotsContainer: {
@@ -419,7 +419,7 @@ export default function ProductDetail(props) {
                   </div>
                 ))}
           </Slider>
-        </Grid>
+        </Grid2>
 
         <Grid
           item
@@ -479,7 +479,7 @@ export default function ProductDetail(props) {
                     </MenuItem>
                   ))}
                 </Select>
-              </Grid>
+              </Grid2>
             )}
             {selectedItem && selectedItem.product.attributes.corte && (
               <Grid item xs={6} md={4} style={{ display: 'flex', flexDirection: 'column' }}>
@@ -507,7 +507,7 @@ export default function ProductDetail(props) {
                     </MenuItem>
                   ))}
                 </Select>
-              </Grid>
+              </Grid2>
             )}
             {selectedItem && selectedItem.product.attributes.color && (
               <Grid
@@ -552,9 +552,9 @@ export default function ProductDetail(props) {
                     }}
                   />
                 </div>
-              </Grid>
+              </Grid2>
             )}
-          </Grid>
+          </Grid2>
           <Button
             className={classes.typography}
             style={{
@@ -595,8 +595,8 @@ export default function ProductDetail(props) {
               />
             </div>
           )}
-        </Grid>
-      </Grid>
+        </Grid2>
+      </Grid2>
       <Snackbar
         open={open}
         autoHideDuration={5000}

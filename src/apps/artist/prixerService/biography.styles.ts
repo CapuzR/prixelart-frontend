@@ -36,7 +36,7 @@ export const useStyles = makeStyles((theme: any) => ({
         color: theme.palette.primary.main,
     },
     paper: {
-        padding: theme.spacing(1),
+        padding: "8px",
         // margin: "auto",
     },
     paper2: {

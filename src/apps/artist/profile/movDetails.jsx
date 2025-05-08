@@ -82,9 +82,9 @@ const useStyles = makeStyles((theme) => ({
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
     }),
-    width: theme.spacing(7),
+    width: "56px",
     [theme.breakpoints.up('sm')]: {
-      width: theme.spacing(9),
+      width: "72px",
     },
   },
   appBarSpacer: theme.mixins.toolbar,
@@ -94,11 +94,11 @@ const useStyles = makeStyles((theme) => ({
     overflow: 'auto',
   },
   container: {
-    paddingTop: theme.spacing(4),
-    paddingBottom: theme.spacing(4),
+    paddingTop: "32px",
+    paddingBottom: "32px",
   },
   paper: {
-    padding: theme.spacing(2),
+    padding: "16px",
     display: 'flex',
     overflow: 'none',
     flexDirection: 'column',
@@ -203,10 +203,10 @@ const useStyles = makeStyles((theme) => ({
       bottom: 90,
     },
     margin: {
-      margin: theme.spacing(1),
+      margin: "8px",
     },
     withoutLabel: {
-      marginTop: theme.spacing(3),
+      marginTop: "24px",
     },
     textField: {
       width: '25ch',
@@ -327,7 +327,7 @@ export default function MovOrder(props) {
           <IconButton onClick={props.handleClose}>
             <CloseIcon />
           </IconButton>
-        </Grid>
+        </Grid2>
         {props.type === 'Depósito' ? (
           order?.requests.map(
             (item, index) =>
@@ -618,10 +618,10 @@ export default function MovOrder(props) {
                     })}
                 </strong>
               </div>
-            </Grid>
+            </Grid2>
           </div>
         )}
-      </Grid>
+      </Grid2>
     </React.Fragment>
   );
 }

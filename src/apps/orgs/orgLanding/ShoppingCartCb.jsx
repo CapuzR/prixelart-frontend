@@ -41,7 +41,7 @@ ReactGA.initialize('G-0RWP9B33D8');
 const useStyles = makeStyles((theme) => ({
   typography: { fontFamily: 'Lastik' },
   paper: {
-    padding: theme.spacing(2),
+    padding: "16px",
     textAlign: 'center',
   },
   button: {
@@ -52,7 +52,7 @@ const useStyles = makeStyles((theme) => ({
     fontSize: 18,
   },
   formControl: {
-    marginTop: theme.spacing(6),
+    marginTop: "48px",
     width: 120,
   },
   dotsContainer: {
@@ -93,8 +93,8 @@ const useStyles = makeStyles((theme) => ({
     width: '100%',
   },
   instructions: {
-    marginTop: theme.spacing(1),
-    marginBottom: theme.spacing(1),
+    marginTop: "8px",
+    marginBottom: "8px",
   },
   stepIcon: {
     color: '#000',
@@ -685,7 +685,7 @@ export default function shoppingCartCb() {
                       </>
                     )}
                   </div>
-                </Grid>
+                </Grid2>
                 {!isMobile && (
                   <Grid
                     item
@@ -743,7 +743,7 @@ export default function shoppingCartCb() {
                         })}
                       </Typography>
                     </div>
-                  </Grid>
+                  </Grid2>
                 )}
                 <Grid item xs={1} style={{ display: 'flex', alignItems: 'center' }}>
                   <IconButton
@@ -757,10 +757,10 @@ export default function shoppingCartCb() {
                   >
                     <DeleteIcon />
                   </IconButton>
-                </Grid>
-              </Grid>
+                </Grid2>
+              </Grid2>
             ))}
-        </Grid>
+        </Grid2>
 
         <Grid item sm={12} md={5} style={{ padding: !isTab && 20, marginRight: isTab && 10 }}>
           <Paper
@@ -787,8 +787,8 @@ export default function shoppingCartCb() {
             </Stepper>
             <div className={classes.instructions}>{getStepContent(activeStep)}</div>
           </Paper>
-        </Grid>
-      </Grid>
+        </Grid2>
+      </Grid2>
 
       <Snackbar
         open={open}
@@ -817,7 +817,7 @@ export default function shoppingCartCb() {
             >
               <CheckIcon style={{ color: 'white', fontSize: 66 }} />
             </div>
-          </Grid>
+          </Grid2>
           <Grid
             item
             style={{
@@ -848,7 +848,7 @@ export default function shoppingCartCb() {
                 <strong>¡Más chigüire que nunca!</strong>
               </Typography>
             </div>
-          </Grid>
+          </Grid2>
 
           <Grid
             item
@@ -864,7 +864,7 @@ export default function shoppingCartCb() {
             <Typography className={classes.typography} style={{ fontSize: 16 }}>
               Te enviaremos un correo con todos los detalles
             </Typography>
-          </Grid>
+          </Grid2>
           <Button
             className={classes.typography}
             style={{
@@ -878,7 +878,7 @@ export default function shoppingCartCb() {
           >
             Volver
           </Button>
-        </Grid>
+        </Grid2>
       </Modal>
     </>
   );

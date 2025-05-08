@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Grid, Button, Typography } from '@mui/material';
+import {  Button, Typography } from '@mui/material';
 
 import { Map } from '../components/map/map.jsx';
 import { IconCard } from '../components/map/card.jsx';
@@ -87,7 +87,7 @@ export const Mobile = () => {
           setSelectedIcon={setSelectedIcon}
           setOpenSelected={setOpenSelected}
         />
-      </Grid>
+      </Grid2>
     </>
   );
 };

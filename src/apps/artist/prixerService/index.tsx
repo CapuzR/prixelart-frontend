@@ -6,7 +6,7 @@ import Paper from "@mui/material/Paper"
 import Button from "@mui/material/Button"
 import Typography from "@mui/material/Typography"
 import IconButton from "@mui/material/IconButton"
-import Grid2 from "@mui/material/Grid2"
+import Grid2 from "@mui/material/Grid"
 import Slider from "react-slick"
 import "slick-carousel/slick/slick.css"
 import "slick-carousel/slick/slick-theme.css"
@@ -32,15 +32,16 @@ import FloatingAddButton from "components/floatingAddButton/floatingAddButton"
 import ArtUploader from "@apps/artist/artUploader"
 import CreateService from "@components/createService"
 import { makeStyles } from "tss-react/mui"
-import { getPermissions, useLoading, useSnackBar } from "@context/GlobalContext"
+import { useLoading, useSnackBar } from "@context/GlobalContext"
 import { getServicesByPrixer } from "./api"
+import { getPermissions } from "@api/admin.api"
 
 const IOSSwitch = withStyles((theme) => ({
   root: {
     width: 42,
     height: 26,
     padding: 0,
-    margin: theme.spacing(1),
+    margin: "8px",
     position: "absolute",
     marginLeft: "-8vh",
   },
@@ -238,7 +239,7 @@ export default function ServiceGrid2(props) {
               .toLowerCase()
               .includes(
                 query.toLowerCase() ||
-                  tile.serviceArea.toLowerCase().includes(query.toLowerCase())
+                tile.serviceArea.toLowerCase().includes(query.toLowerCase())
               ))
         ) {
           result.push(tile)
@@ -257,7 +258,7 @@ export default function ServiceGrid2(props) {
             .toLowerCase()
             .includes(
               query.toLowerCase() ||
-                tile.serviceArea.toLowerCase().includes(query.toLowerCase())
+              tile.serviceArea.toLowerCase().includes(query.toLowerCase())
             )
         ) {
           result.push(tile)
@@ -514,10 +515,10 @@ export default function ServiceGrid2(props) {
                   style={{ display: "flex", flexDirection: "row" }}
                 >
                   {isnDesk &&
-                  JSON.parse(localStorage.getItem("token")) &&
-                  JSON.parse(localStorage.getItem("token")).username ===
+                    JSON.parse(localStorage.getItem("token")) &&
+                    JSON.parse(localStorage.getItem("token")).username ===
                     prixer &&
-                  openEdit === i ? (
+                    openEdit === i ? (
                     <Button
                       style={{
                         backgroundColor: "#d33f49",
@@ -535,7 +536,7 @@ export default function ServiceGrid2(props) {
                   ) : (
                     JSON.parse(localStorage.getItem("token")) &&
                     JSON.parse(localStorage.getItem("token")).username ===
-                      prixer &&
+                    prixer &&
                     isnDesk && (
                       <div
                         style={{
@@ -746,10 +747,10 @@ export default function ServiceGrid2(props) {
                         </Typography>
                       )}
                       {JSON.parse(localStorage.getItem("token")) &&
-                      JSON.parse(localStorage.getItem("token")).username ===
+                        JSON.parse(localStorage.getItem("token")).username ===
                         tile.prixer &&
-                      !isnDesk &&
-                      openEdit === i ? (
+                        !isnDesk &&
+                        openEdit === i ? (
                         <Button
                           style={{
                             backgroundColor: "#d33f49",
@@ -767,7 +768,7 @@ export default function ServiceGrid2(props) {
                       ) : (
                         JSON.parse(localStorage.getItem("token")) &&
                         JSON.parse(localStorage.getItem("token")).username ===
-                          tile.prixer &&
+                        tile.prixer &&
                         !isnDesk && (
                           <div>
                             <IconButton
@@ -1089,7 +1090,7 @@ export default function ServiceGrid2(props) {
                       </Button>
                       {JSON.parse(localStorage.getItem("token")) ? (
                         JSON.parse(localStorage.getItem("token")).username !==
-                          prixer && (
+                        prixer && (
                           <Button
                             style={{
                               backgroundColor: "#d33f49",

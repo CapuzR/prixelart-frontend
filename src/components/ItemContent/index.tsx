@@ -1,4 +1,4 @@
-import { Item } from '../../types/item.types';
+import { Item } from 'types/order.types';
 import styles from './styles.module.scss';
 import Typography from 'components/Typography';
 
@@ -9,7 +9,7 @@ export interface ItemContentProps {
 
 export default function ItemContent({ item, direction = 'row' }: ItemContentProps) {
   const getSelectedAttributes = () => {
-    return item.product?.selection
+    return (item.product?.selection || [])
       .slice(0, 3)
       .filter((attr) => attr.value !== '')
       .map((attr, index) => (

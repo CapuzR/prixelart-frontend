@@ -10,20 +10,19 @@ import ProductElement from 'components/ProductElement';
 import { Slider } from 'components/Slider';
 import SortingSelect from 'components/SortingSelect';
 import PaginationBar from 'components/Pagination/PaginationBar';
-
+import Grid2 from '@mui/material/Grid';
 import Card from 'apps/consumer/products/components/Card';
 
-import { fetchBestSellers, fetchProducts } from '../api';
 import ReactGA from 'react-ga';
 
 import styles from './styles.module.scss';
 import { useConversionRate, useCurrency } from 'context/GlobalContext';
 import CurrencySwitch from 'components/CurrencySwitch';
 import { useNavigate } from 'react-router-dom';
-import { Grid2, SelectChangeEvent } from '@mui/material';
+import { SelectChangeEvent } from '@mui/material';
 import SearchBar from '@components/searchBar/searchBar';
 import { Product } from '../../../../types/product.types';
-import { parseProducts } from '@apps/consumer/home/parseApi';
+import { fetchBestSellers, fetchActiveProducts } from '@api/product.api';
 
 ReactGA.initialize('G-0RWP9B33D8');
 ReactGA.pageview('/productos');
@@ -80,7 +79,7 @@ const ProductsCatalog: React.FC<ProductsCatalogProps> = ({ onProductSelect }) =>
   };
 
   const handleDetails = (product: Product) => {
-    navigate('/producto/' + product.id);
+    navigate('/producto/' + product._id);
     ReactGA.event({
       category: 'Productos',
       action: 'Ver_mas',
@@ -91,8 +90,7 @@ const ProductsCatalog: React.FC<ProductsCatalogProps> = ({ onProductSelect }) =>
   useEffect(() => {
     const getBestSellers = async () => {
       const bestSellers = await fetchBestSellers();
-      const parsedBestSellers = parseProducts(bestSellers);
-      setBestSellers(parsedBestSellers);
+      setBestSellers(bestSellers);
     };
 
     getBestSellers();
@@ -101,10 +99,8 @@ const ProductsCatalog: React.FC<ProductsCatalogProps> = ({ onProductSelect }) =>
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetchProducts(sort, currentPage, productsPerPage, searchQuery);
-        const parsedProducts = parseProducts(response.products);
-        setProducts(parsedProducts);
-        setMaxLength(response.maxLength);
+        const response = await fetchActiveProducts();
+        setProducts(response);
       } catch (error) {
         console.error('Error fetching products:', error);
       }
@@ -149,8 +145,8 @@ const ProductsCatalog: React.FC<ProductsCatalogProps> = ({ onProductSelect }) =>
                 images={bestSellers?.map((product) => ({
                   url:
                     product?.sources?.images.length > 0
-                      ? product.sources.images[0]?.url
-                      : product.thumbUrl,
+                      ? (product.sources.images[0]?.url ?? '')
+                      : (product.thumbUrl ?? ''),
                 }))}
                 useIndicators={{
                   type: 'dots',
@@ -168,8 +164,8 @@ const ProductsCatalog: React.FC<ProductsCatalogProps> = ({ onProductSelect }) =>
                     <ProductElement
                       src={
                         product?.sources?.images.length > 0
-                          ? product.sources.images[0]?.url
-                          : product.thumbUrl
+                          ? product.sources.images[0]?.url || ''
+                          : product.thumbUrl || ''
                       }
                       productName={product.name}
                       buttonLabel="Ver detalles"
@@ -188,19 +184,19 @@ const ProductsCatalog: React.FC<ProductsCatalogProps> = ({ onProductSelect }) =>
       <div className={styles['grid-container']}>
         <div className={styles['search-bar']} >
           <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
-            <SearchBar onSearch={handleSearch} />
+            <SearchBar onSearch={handleSearch} placeholderText='Busca tu producto favorito' />
           </div>
           <div className={styles['sorting-select']}>
             <SortingSelect sort={sort} handleChange={handleChangeSort} options={sortingOptions} />
           </div>
-          <div className={styles['sorting-select']}>
+          {/* <div className={styles['sorting-select']}>
             <CurrencySwitch />
-          </div>
+          </div> */}
         </div>
         <Grid2 container spacing={5} style={{ marginTop: 20 }}>
           {displayedProducts && displayedProducts.length > 0 ? (
             displayedProducts.map((product) => (
-              <Grid2 key={product.id} size={{ xs: 12, sm: 6, md: onProductSelect ? 6 : 4 }}>
+              <Grid2 key={String(product._id)} size={{ xs: 12, sm: 6, md: onProductSelect ? 6 : 4 }}>
                 <Card
                   product={product}
                   currency={currency}

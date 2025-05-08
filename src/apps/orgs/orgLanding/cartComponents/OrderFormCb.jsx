@@ -183,7 +183,7 @@ export default function orderFormCb(props) {
                                           {item.product.name +
                                             ' X ' +
                                             item.art.title.substring(0, 27)}
-                                        </Grid>
+                                        </Grid2>
                                         <Grid
                                           item
                                           xs={12}
@@ -213,8 +213,8 @@ export default function orderFormCb(props) {
                                               maximumFractionDigits: 2,
                                             })}
                                           </div>
-                                        </Grid>
-                                      </Grid>
+                                        </Grid2>
+                                      </Grid2>
                                     }
                                   />
                                 </ListItem>
@@ -305,7 +305,7 @@ export default function orderFormCb(props) {
                             </div>
                           </>
                         )}
-                      </Grid>
+                      </Grid2>
                       <Grid
                         item
                         lg={6}
@@ -372,7 +372,7 @@ export default function orderFormCb(props) {
                           {getTotal(props.buyState)}
                         </strong>
                         <br />
-                      </Grid>
+                      </Grid2>
                     </div>
                     <Grid
                       item
@@ -381,7 +381,7 @@ export default function orderFormCb(props) {
                       sm={12}
                       xs={12}
                       style={{ paddingLeft: 0, marginTop: 30 }}
-                    ></Grid>
+                    ></Grid2>
                     <Grid
                       item
                       lg={12}
@@ -398,13 +398,13 @@ export default function orderFormCb(props) {
                         value={props.observations}
                         onChange={(e) => props.setObservations(e.target.value)}
                       />
-                    </Grid>
+                    </Grid2>
                   </List>
                 </div>
               </div>
             </div>
-          </Grid>
-        </Grid>
+          </Grid2>
+        </Grid2>
       </form>
     </>
   );

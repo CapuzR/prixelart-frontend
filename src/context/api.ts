@@ -15,11 +15,6 @@ export const fetchConversionRateFromAPI = async (): Promise<number> => {
     
     return response.data.dollarValue;
   } catch (err: unknown) {
-    if (err instanceof Error) {
-      console.error('Error fetching conversion rate:', err.message);
-    } else {
-      console.error('Error fetching conversion rate: Unknown error');
-    }
     throw new Error('Failed to fetch conversion rate.');
   }
 };

@@ -23,9 +23,10 @@ export const initializeCheckoutState = (cart: Cart): CheckoutState => {
       id: line.id,
       item: line.item,
       quantity: line.quantity,
-      pricePerUnit: line.item.price || 0,
+      pricePerUnit: typeof line.item.price === 'number' ? line.item.price : Number(line.item.price) || 0,
       discount: line.discount || 0,
       subtotal: line.subtotal,
+      status: [],
       tax: 0, // Default to 0; can be updated later
       total: line.subtotal, // Default to subtotal; can be updated later
     }));
@@ -69,15 +70,20 @@ export const initializeCheckoutState = (cart: Cart): CheckoutState => {
         reference: '',
       },
     },
-    method: undefined,
+    method: {
+      name: "", price: "0",
+      active: false,
+      createdOn: new Date(),
+      createdBy: "client"
+    },
     preferredDeliveryDate: undefined,
     estimatedShippingDate: undefined,
     estimatedDeliveryDate: undefined,
+    country: ''
   };
 
   // Default billing details
   const defaultBillingDetails: BillingDetails = {
-    method: undefined,
     billTo: defaultConsumerDetails,
     address: {
       recepient: defaultConsumerDetails,
@@ -97,7 +103,6 @@ export const initializeCheckoutState = (cart: Cart): CheckoutState => {
   const initialState: CheckoutState = {
     activeStep: parsedState?.activeStep ?? 0,
     order: {
-      id: parsedState?.order?.id || '',
       lines: parsedState?.order?.lines?.length === cart.lines.length
         ? parsedState.order.lines
         : orderLines,
@@ -147,9 +152,13 @@ export const initializeCheckoutState = (cart: Cart): CheckoutState => {
         })),
       sellers: parsedState?.dataLists?.sellers || [],
     },
-    shipping: parsedState?.dataLists?.shippingMethods?.[0] || { id: 0, method: "", price: 0 },
+    shipping: parsedState?.dataLists?.shippingMethods?.[0] || { id: 0, name: "", price: 0 },
     paymentMethods: parsedState?.dataLists?.paymentMethods || [],
-    billing: undefined
+    billing: undefined,
+    basic: undefined,
+    general: undefined,
+    discount: undefined,
+    surcharge: undefined
   };
 
   return initialState;

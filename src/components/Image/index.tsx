@@ -1,32 +1,33 @@
 import React from 'react';
-import styles from './Styles.module.scss';
+import { Box } from '@mui/material';
 
 interface ImageProps {
   src: string;
   alt?: string;
-  objectFit?: 'cover' | 'contain' | 'fill'; // Control how the image fits inside the container
-  className?: string; // For additional custom styling
-  roundedCorner?: boolean; // If true, the image will have rounded corners
-  fitTo?: 'width' | 'height' | 'square' | 'full'; // Control how the image fits inside the container
+  objectFit?: 'cover' | 'contain' | 'fill';
+  roundedCorner?: boolean;
+  width?: string | number;
+  height?: string | number;
 }
 
 export const Image: React.FC<ImageProps> = ({
   src,
-  alt = 'image',
+  alt = '',
   objectFit = 'cover',
-  className = '',
   roundedCorner = true,
-  fitTo = 'square',
-}) => {
-  return (
-    <div
-      className={`${styles['image-wrapper']} ${styles[`fit-to-${fitTo}`]} ${styles[objectFit]} ${styles[className]} ${roundedCorner ? styles['rounded'] : ''}`}
-    >
-      <img
-        src={src}
-        alt={alt}
-        className={`${styles['image']} ${styles[`fit-to-${fitTo}`]} ${styles[objectFit]} ${className} ${roundedCorner ? styles['rounded'] : ''}`}
-      />
-    </div>
-  );
-};
+  width = '100%',
+  height = 'auto',
+}) => (
+  <Box
+    component="img"
+    src={src}
+    alt={alt}
+    sx={{
+      width,
+      height,
+      objectFit,
+      borderRadius: roundedCorner ? 2 : 0,
+      display: 'block',
+    }}
+  />
+);

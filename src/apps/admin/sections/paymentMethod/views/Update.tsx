@@ -1,143 +1,197 @@
-import React, { useState } from "react"
-import { useNavigate } from "react-router-dom"
+// src/apps/admin/sections/payment/views/UpdatePaymentMethod.tsx 
+import React, { useState, useEffect, useCallback, ChangeEvent, FormEvent } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 
-import TextField from "@mui/material/TextField"
-import Button from "@mui/material/Button"
-import Grid2 from "@mui/material/Grid2"
-import FormControl from "@mui/material/FormControl"
-import Checkbox from "@mui/material/Checkbox"
+// Hooks, Types, Context, API
+import { useSnackBar } from 'context/GlobalContext'; 
+import { PaymentMethod } from 'types/order.types'; 
+import { getPaymentMethodById, updatePaymentMethod } from '@api/order.api'; 
 
-import Title from "../../../components/Title"
+// MUI Components
+import {
+  Box, Typography, TextField, Button,  Paper, FormControlLabel, Checkbox,
+  CircularProgress, Alert, Stack, FormHelperText // Added
+} from '@mui/material';
+import Title from '@apps/admin/components/Title'; 
 
-import { useSnackBar, useLoading } from "context/GlobalContext"
-import { updateMethod } from "../api"
-import { PaymentMethod } from "../../../../../types/paymentMethod.types"
+// --- Type Definitions ---
+// Define the initial state structure including instructions
+const initialFormState: Pick<PaymentMethod, 'name' | 'active' | 'instructions'> = {
+  name: "",
+  active: true,
+  instructions: "", // Add instructions
+};
 
-interface UpdateProps {
-  paymentMethod: PaymentMethod
+// Validation Errors Type (same as create)
+interface PaymentMethodValidationErrors {
+  name?: string;
+  instructions?: string;
 }
 
-export default function UpdatePaymentMethod({ paymentMethod }: UpdateProps) {
-  const navigate = useNavigate()
-  const { showSnackBar } = useSnackBar()
-  const { setLoading } = useLoading()
+// --- Component ---
+const UpdatePaymentMethod: React.FC = () => {
+  // --- Hooks ---
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const { showSnackBar } = useSnackBar();
 
-  const [active, setActive] = useState(paymentMethod.active)
-  const [name, setName] = useState(paymentMethod.name)
-  const [instructions, setInstructions] = useState(paymentMethod.instructions)
-  const [paymentData, setPaymentData] = useState(paymentMethod.paymentData)
-  const [buttonState, setButtonState] = useState(false)
+  // --- State ---
+  const [formData, setFormData] = useState(initialFormState);
+  const [originalMethodName, setOriginalMethodName] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [errorFetch, setErrorFetch] = useState<string | null>(null);
+  // Use validationErrors object state
+  const [validationErrors, setValidationErrors] = useState<PaymentMethodValidationErrors | null>(null);
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    if (!instructions || !name) {
-      showSnackBar("Por favor completa todos los campos requeridos.")
-    } else {
-      setLoading(true)
-      setButtonState(true)
+  // --- Fetch Data ---
+  const loadMethod = useCallback(async () => {
+    if (!id) { /* ... error handling ... */ setErrorFetch("ID inválido."); setIsLoading(false); showSnackBar("ID inválido."); navigate("/admin/payment-method/read"); return; }
+    setIsLoading(true); setErrorFetch(null); setValidationErrors(null);
 
-      const data = {
-        _id: paymentMethod._id,
-        active: active,
-        name: name,
-        instructions: instructions,
-        paymentData: paymentData,
-        createdOn: paymentMethod.createdOn,
-        createdBy: paymentMethod.createdBy,
-      }
+    try {
+      const methodData = await getPaymentMethodById(id) as PaymentMethod;
+      if (!methodData) throw new Error("Método de pago no encontrado.");
 
-      const updatedMethod = await updateMethod(data)
-      if (updatedMethod.success === false) {
-        setButtonState(false)
-        showSnackBar(updatedMethod.message)
-      } else {
-        showSnackBar("Actualización del método de pago exitosa.")
-        navigate("/admin/payment-method/read")
-      }
+      // Populate form state including instructions
+      setFormData({
+        name: methodData.name || "",
+        active: methodData.active ?? true,
+        instructions: methodData.instructions || "", // Populate instructions
+      });
+      setOriginalMethodName(methodData.name);
+
+    } catch (err: any) { /* ... error handling ... */
+      console.error("Failed load:", err); const message = err.message || "Error al cargar."; setErrorFetch(message); showSnackBar(message);
+    } finally { setIsLoading(false); }
+  }, [id, navigate, showSnackBar]);
+
+  useEffect(() => { loadMethod(); }, [loadMethod]);
+
+  // --- Handlers ---
+  const handleInputChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    // ... Same logic as refactored CreatePaymentMethod ...
+    const target = event.target as HTMLInputElement;
+    const { name, value, type } = target;
+    const checked = type === "checkbox" ? target.checked : undefined;
+
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: type === "checkbox" ? checked : value,
+    }));
+
+    if (validationErrors && validationErrors[name as keyof PaymentMethodValidationErrors]) {
+      setValidationErrors(prevErrors => {
+        const updatedErrors = { ...prevErrors };
+        delete updatedErrors[name as keyof PaymentMethodValidationErrors];
+        return Object.keys(updatedErrors).length === 0 ? null : updatedErrors;
+      });
     }
-  }
+  };
 
+  // --- Validation (Copied from refactored CreatePaymentMethod) ---
+  const validateForm = (): boolean => {
+    const errors: PaymentMethodValidationErrors = {};
+    if (!formData.name.trim()) { errors.name = "El nombre es obligatorio."; }
+    // Add instructions validation 
+    // if (formData.instructions && formData.instructions.length > 500) { errors.instructions = "Máx 500 caracteres."; }
+
+    setValidationErrors(Object.keys(errors).length > 0 ? errors : null);
+    return Object.keys(errors).length === 0;
+  };
+
+  // --- Submission ---
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!id || !validateForm()) {
+      showSnackBar("Por favor, corrija los errores indicados.");
+      return;
+    }
+    setIsSubmitting(true);
+
+    // Prepare payload including only editable fields
+    const payload: Pick<PaymentMethod, 'name' | 'active' | 'instructions'> = {
+      name: formData.name.trim(),
+      active: formData.active,
+      instructions: formData.instructions?.trim() || undefined, // Clean and add instructions
+    };
+
+    try {
+      console.log("Updating Payment Method Data:", id, payload);
+      const response = await updatePaymentMethod(id, payload as Partial<PaymentMethod>); // Use update API, might need cast
+
+      if (response) {
+        showSnackBar(`Método "${formData.name}" actualizado exitosamente.`);
+        navigate("/admin/payment-method/read"); // Adjust route
+      } else { throw new Error("La actualización no devolvió respuesta."); }
+    } catch (err: any) {
+      console.error("Failed update:", err); const message = err.message || "Error al actualizar.";
+      setValidationErrors(prev => ({ ...(prev || {}), name: message })); // Show general error on name field
+      showSnackBar(message);
+    } finally { setIsSubmitting(false); }
+  };
+
+  const handleCancel = () => navigate("/admin/payment-method/read"); // Adjust route
+
+  // --- Render ---
   return (
-    <React.Fragment>
-      <Title title="Actualización de Método de pago" />
-      <form style={{ height: "auto", padding: "15px" }} onSubmit={handleSubmit}>
-        <Grid2 container spacing={2}>
-          <Grid2 size={{ xs: 12 }}>
-            <Checkbox
-              checked={active}
-              color="primary"
-              inputProps={{ "aria-label": "secondary checkbox" }}
-              onChange={() => {
-                active ? setActive(false) : setActive(true)
-              }}
-            />
-            Habilitado
-          </Grid2>
-          <Grid2 size={{ xs: 12, md: 3 }}>
-            <FormControl variant="outlined" fullWidth={true}>
-              <TextField
-                variant="outlined"
-                required
-                fullWidth
-                id="name"
-                label="Nombre"
-                name="name"
-                autoComplete="name"
-                value={name}
-                onChange={(e) => {
-                  setName(e.target.value)
-                }}
-              />
-            </FormControl>
-          </Grid2>
-          <Grid2 size={{ xs: 12, md: 5 }}>
-            <FormControl variant="outlined" fullWidth={true}>
-              <TextField
-                variant="outlined"
-                multiline
-                fullWidth
-                minRows={5}
-                id="paymentData"
-                label="Datos para el pago:"
-                name="paymentData"
-                autoComplete="paymentData"
-                value={paymentData}
-                onChange={(e) => {
-                  setPaymentData(e.target.value)
-                }}
-              />
-            </FormControl>
-          </Grid2>
-          <Grid2 size={{ xs: 12, md: 4 }}>
-            <FormControl variant="outlined" fullWidth={true}>
-              <TextField
-                variant="outlined"
-                required
-                multiline
-                fullWidth
-                minRows={5}
-                id="instructions"
-                label="Intrucciones"
-                name="instructions"
-                autoComplete="instructions"
-                value={instructions}
-                onChange={(e) => {
-                  setInstructions(e.target.value)
-                }}
-              />
-            </FormControl>
-          </Grid2>
-          <Button
-            variant="contained"
-            color="primary"
-            type="submit"
-            disabled={buttonState}
-            style={{ marginTop: 20 }}
-          >
-            Actualizar
-          </Button>
-        </Grid2>
-      </form>
-    </React.Fragment>
-  )
-}
+    <>
+      <Title title={`Actualizar Método: ${originalMethodName || (id ? 'Cargando...' : 'Inválido')}`} />
+      <Paper elevation={3} sx={{ p: 3, mt: 2 }}>
+        {isLoading && (<Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}><CircularProgress /></Box>)}
+        {errorFetch && !isLoading && (<Alert severity="error" sx={{ mb: 2 }}>{errorFetch}<Button onClick={loadMethod} size="small">Reintentar</Button><Button onClick={handleCancel} size="small" color="secondary">Volver</Button></Alert>)}
+        {!isLoading && !errorFetch && (
+          <form onSubmit={handleSubmit} noValidate> {/* Added noValidate */}
+            <Grid2 container spacing={3}>
+              {/* Name Input */}
+              <Grid2 size={{ xs: 12 }}>
+                <TextField
+                  label="Nombre del Método" name="name" value={formData.name} onChange={handleInputChange}
+                  required fullWidth variant="outlined" disabled={isSubmitting}
+                  error={!!validationErrors?.name} // Use validation state
+                  helperText={validationErrors?.name} // Use validation state
+                />
+              </Grid2>
+
+              {/* Instructions Input */}
+              <Grid2 size={{ xs: 12 }}>
+                <TextField
+                  label="Instrucciones (Opcional)" name="instructions" value={formData.instructions} onChange={handleInputChange}
+                  fullWidth multiline rows={4} variant="outlined" disabled={isSubmitting}
+                  error={!!validationErrors?.instructions} // Use validation state
+                  helperText={validationErrors?.instructions} // Use validation state
+                />
+              </Grid2>
+
+              {/* Active Checkbox */}
+              <Grid2 size={{ xs: 12 }}>
+                <FormControlLabel
+                  control={<Checkbox checked={formData.active} onChange={handleInputChange} name="active" disabled={isSubmitting} />}
+                  label="Activo"
+                />
+              </Grid2>
+
+              {/* Action Buttons */}
+              <Grid2 size={{ xs: 12 }}>
+                <Stack direction="row" justifyContent="flex-end" spacing={2} sx={{ mt: 2 }}>
+                  <Button type="button" variant="outlined" color="secondary" onClick={handleCancel} disabled={isSubmitting}>Cancelar</Button>
+                  <Button type="submit" variant="contained" color="primary" disabled={isSubmitting || isLoading} startIcon={isSubmitting ? <CircularProgress size={20} color="inherit" /> : null}>
+                    {isSubmitting ? "Guardando..." : "Guardar Cambios"}
+                  </Button>
+                </Stack>
+              </Grid2>
+
+              {/* Fallback Error Display */}
+              {validationErrors && validationErrors.name && validationErrors.name !== "El nombre es obligatorio." && (
+                <Grid2 size={{ xs: 12 }}><Alert severity="error" sx={{ mt: 2 }}>{validationErrors.name}</Alert></Grid2>
+              )}
+
+            </Grid2>
+          </form>
+        )}
+      </Paper>
+    </>
+  );
+};
+
+export default UpdatePaymentMethod;

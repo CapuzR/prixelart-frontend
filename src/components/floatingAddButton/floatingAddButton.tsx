@@ -1,105 +1,89 @@
 import React from 'react';
-import { makeStyles } from '@mui/styles';
 import Fab from '@mui/material/Fab';
 import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
 import LocalActivityIcon from '@mui/icons-material/LocalActivity';
 import Tooltip from '@mui/material/Tooltip';
 
+// Interface for the component props
 interface FloatingAddButtonProps {
   setOpenArtFormDialog: React.Dispatch<React.SetStateAction<boolean>>;
   setOpenServiceFormDialog: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
+// Interface for the token data structure
 interface Token {
   username: string;
+  // Add other token properties if they exist
 }
 
-const useStyles = makeStyles((theme: any) => ({
-  root: {
-    '& > *': {
-      margin: theme.spacing(1),
-      top: 'auto',
-      bottom: 20,
-      left: 'auto',
-      position: 'fixed',
-    },
-  },
-  extendedIcon: {
-    marginRight: theme.spacing(1),
-  },
-  uwStyles: {
-    palette: {
-      window: '#ffffff',
-      sourceBg: '#f4f4f5',
-      windowBorder: '#90a0b3',
-      tabIcon: '#000000',
-      inactiveTabIcon: '#d33f49',
-      menuIcons: '#555a5f',
-      link: theme.palette.primary.main,
-      action: '#339933',
-      inProgress: theme.palette.primary.main,
-      complete: '#339933',
-      error: '#cc0000',
-      textDark: '#000000',
-      textLight: '#fcfffd',
-    },
-    fonts: {
-      default: null,
-      'sans-serif': {
-        url: null,
-        active: true,
-      },
-    },
-  },
-}));
+// Define base styles for the Floating Action Buttons (FABs)
+const fabBaseStyle: React.CSSProperties = {
+  position: 'fixed', 
+  right: 10,       
+  margin: "8px", 
+};
+
+// Styles for the "Add Service" FAB
+const serviceFabStyle: React.CSSProperties = {
+  ...fabBaseStyle, // Inherit base FAB styles
+  bottom: 80,      // Specific bottom position for this FAB
+};
+
+// Styles for the "Add Art" FAB
+const artFabStyle: React.CSSProperties = {
+  ...fabBaseStyle, // Inherit base FAB styles
+  bottom: 10,      // Specific bottom position for this FAB
+};
+
 
 const FloatingAddButton: React.FC<FloatingAddButtonProps> = (props) => {
-  const classes = useStyles();
-
+  // Function to open the art dialog
   const openArtDialog = () => {
     props.setOpenArtFormDialog(true);
   };
 
+  // Function to open the service dialog
   const openServiceDialog = () => {
     props.setOpenServiceFormDialog(true);
   };
 
+  // Retrieve and parse the token from localStorage
   const tokenString = localStorage.getItem('token');
   let tokenData: Token | null = null;
   if (tokenString) {
     try {
       tokenData = JSON.parse(tokenString) as Token;
     } catch (error) {
+      // Log an error if token parsing fails
       console.error('Error parsing token:', error);
     }
   }
 
   return (
-    <div className={classes.root}>
+    // This div is a wrapper for the conditionally rendered FABs.
+    // It no longer has specific styles applied to it directly.
+    <div>
+      {/* Conditionally render buttons if tokenData and username exist */}
       {tokenData && tokenData.username && (
         <>
+          {/* Tooltip and Fab for adding a service */}
           <Tooltip title="Agregar Servicio" placement="left">
             <Fab
               color="primary"
-              aria-label="add"
+              aria-label="add service"
               onClick={openServiceDialog}
-              style={{
-                bottom: 80,
-                right: 10,
-              }}
+              style={serviceFabStyle} // Apply specific styles for this Fab
             >
               <LocalActivityIcon />
             </Fab>
           </Tooltip>
+          {/* Tooltip and Fab for adding art */}
           <Tooltip title="Agregar Arte" placement="left">
             <Fab
               color="primary"
-              aria-label="add"
+              aria-label="add art"
               onClick={openArtDialog}
-              style={{
-                bottom: 10,
-                right: 10,
-              }}
+              style={artFabStyle} // Apply specific styles for this Fab
             >
               <AddPhotoAlternateIcon />
             </Fab>

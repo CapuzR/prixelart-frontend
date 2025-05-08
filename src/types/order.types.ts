@@ -1,45 +1,15 @@
-import { Item } from "./item.types";
-
-export interface CheckoutState {
-  shipping: ShippingMethod;
-  billing: any;
-  activeStep: number;
-  order: Order;
-  dataLists: DataLists;
-  paymentMethods: PaymentMethod[];
-}
-
-export interface DataLists {
-  shippingMethods: ShippingMethod[];
-  paymentMethods: PaymentMethod[];
-  countries: {
-    code2: string;
-    code3: string;
-    name: string;
-    capital: string;
-    region: string;
-    active?: boolean;
-    subregion: string;
-    states: {
-      code: string;
-      name: string;
-      subdivision: string;
-    }[]
-  }[];
-  billingStates?: string[];
-  shippingStates?: string[];
-  sellers: string[];
-};
+import { ObjectId } from "mongodb";
+import { PickedArt } from "./art.types";
+import { PickedProduct } from "./product.types";
 
 export interface Order {
-  id: string; // id  (orderId)
+  _id?: ObjectId;
+  number?: number;
   lines: OrderLine[]; // requests
   createdOn: Date;
   createdBy: string;
-  updates?: [Date, string]; // updates when and by whom
-  status: Status; // ship status
-
-  consumerDetails?: ConsumerDetails; 
+  updates?: [Date, string][]; // updates when and by whom
+  consumerDetails?: ConsumerDetails;
   payment: PaymentDetails;
   shipping: ShippingDetails;
   billing: BillingDetails;
@@ -48,6 +18,7 @@ export interface Order {
 
   subTotal: number;
   discount?: number;
+  surcharge?: number;
   shippingCost?: number;
   tax: Tax[];
   totalWithoutTax: number; // Base Imponible
@@ -65,27 +36,23 @@ export interface ConsumerDetails {
 }
 
 export interface PaymentDetails {
-  method: PaymentMethod;
-  payer?: BasicInfo;
-  address?: Address;
+  total: number;
+  method: PaymentMethod[];
 }
 
 // Shipping-related details
 export interface ShippingDetails {
-  method?: ShippingMethod;
-  country?: string;
-  address?: Address;
+  method: ShippingMethod;
+  country: string;
+  address: Address;
   preferredDeliveryDate?: Date;
   estimatedShippingDate?: Date;
   estimatedDeliveryDate?: Date;
 }
 
-//TODO : Estandarizar campos fijos como socialReason, countries, states, cities, etc.
 export interface BillingDetails {
-  method?: string;
   billTo?: BasicInfo;
   address?: Address;
-  paymentMethod?: string;
 }
 
 export interface Address {
@@ -113,47 +80,54 @@ export interface BasicInfo {
 }
 
 export interface ShippingMethod {
-  id: string;
-  method: string;
+  _id?: ObjectId;
+  active: boolean;
+  name: string;
+  createdOn: Date;
+  createdBy: String;
   price: string;
 }
 
-enum OrderStatus {
-  Pending = 1,
-  Processing = 2,
-  Shipped = 3,
-  Delivered = 4,
-  Canceled = 5,
-  Returned = 6,
+export enum OrderStatus {
+  // Initial states (post-order submission)
+  PendingPayment = 0, // Order submitted, awaiting payment confirmation for this item's order
+  PaymentFailed = 1,  // Payment attempt was unsuccessful for this item's order
+
+  // Active processing states
+  PaymentConfirmed = 2, // Payment successful, ready for processing this item
+  Processing = 3,       // This item is being actively worked on (e.g., photo review, printing, painting)
+  ReadyToShip = 4,      // This item is produced, packed, and waiting for carrier pickup
+
+  // Shipping & Delivery states
+  Shipped = 5,          // This item has been handed over to the shipping carrier
+  InTransit = 6,        // Optional: This item is currently with the carrier on its way
+  Delivered = 7,        // Carrier confirmed delivery of this item
+
+  // Exception/Completion states
+  Canceled = 8,         // This item was canceled from the order
+  OnHold = 9,           // Processing for this item is temporarily paused (e.g., stock issue for this item)
+
+  // Return states
+  ReturnRequested = 10, // Customer has requested a return for this item
+  ReturnReceived = 11,  // This returned item has been received back
+  Refunded = 12,        // Refund issued for this returned/canceled item
 }
 
 export interface PaymentMethod {
-  name: string; // Display name (e.g., 'Credit Card', 'PayPal')
-  type?: PaymentMethodType; // Type of payment
-  provider?: string; // Optional, name of the payment provider (e.g., Visa, PayPal)
-  token?: string; // Encrypted token from the payment gateway (instead of card details)
+  _id?: ObjectId;
+  active: boolean;
+  createdBy: string;
+  createdOn: Date;
+  instructions?: string;
+  name: string;
   lastFourDigits?: string; // Optional, last four digits of a card
   voucher?: File; // Optional, voucher for bank transfer or task payment
   metadata?: string;
-}
-
-export enum PaymentMethodType {
-  CreditCard = 'credit_card',
-  PayPal = 'paypal',
-  BankTransfer = 'bank_transfer',
-  Cash = 'cash',
-  Crypto = 'crypto',
-  Cashea = 'cashea',
-  Other = 'other',
-}
-
-interface Status {
-  id: OrderStatus;
-  name: string;
+  amount?: string;
 }
 
 export interface Tax {
-  id: string;
+  id?: string;
   name: string; // Nombre del impuesto (e.g. IVA)
   value: number; // Porcentaje
   amount: number; // Monto en fiat
@@ -164,12 +138,59 @@ export interface OrderLine {
   item: Item; // The purchased item, same as CartLine
   quantity: number; // Quantity purchased
   pricePerUnit: number; // The price of one unit at the time of purchase
-  discount: number; // Discount applied to the line
+  discount?: number; // Discount applied to the line
+  surcharge?: number; // Surcharge applied to the line
   subtotal: number; // Total for the line (quantity * pricePerUnit - discount)
+  status: [OrderStatus, Date][];
 }
 
+export interface Item {
+  sku: string;
+  art?: PickedArt;
+  product: PickedProduct;
+  price: string;
+  discount?: number;
+  surcharge?: number;
+}
+
+export interface CheckoutState {
+  activeStep: number;
+  basic: any;
+  billing: any;
+  dataLists: DataLists;
+  general: any;
+  order: any;
+  discount: any;
+  surcharge: any;
+  paymentMethods: any;
+  shipping: any;
+}
+
+export interface DataLists {
+  shippingMethods: ShippingMethod[];
+  paymentMethods: PaymentMethod[];
+  countries: {
+    code2: string;
+    code3: string;
+    name: string;
+    capital: string;
+    region: string;
+    active?: boolean;
+    subregion: string;
+    states: {
+      code: string;
+      name: string;
+      subdivision: string;
+    }[]
+  }[];
+  billingStates?: string[];
+  shippingStates?: string[];
+  sellers: string[];
+};
+
+
 //Reducer actions
-export type CheckoutAction =
+type CheckoutAction =
   | { type: 'SET_ACTIVE_STEP'; payload: number | 'back' | 'next' }
   | { type: 'SET_LOADING'; payload: boolean }
   | { type: 'SET_SHIPPING_METHODS'; payload: ShippingMethod[] }
@@ -196,7 +217,7 @@ export type CheckoutAction =
 
 
 // Type for the errorCheck function used in form fields
-export type FormFieldErrorCheck = (value: any, data?: any) => boolean;
+type FormFieldErrorCheck = (value: any, data?: any) => boolean;
 
 export type OnConditionChangeHandler = (
   conditionValue: any,
@@ -209,7 +230,7 @@ export type OnConditionChangeHandler = (
   value?: any;
 };
 
-export interface FormFieldConfig {
+interface FormFieldConfig {
   label: string;
   errorCheck?: FormFieldErrorCheck;
   helperText?: string;
@@ -230,14 +251,14 @@ export interface FormFieldConfig {
   onConditionChange?: OnConditionChangeHandler;
 }
 
-export interface CheckboxConfig {
+interface CheckboxConfig {
   label: string;
   type: string;
   activeFields: string[];
   checked?: boolean;
 }
 
-export interface FormSectionConfig {
+interface FormSectionConfig {
   title: string;
   fieldsTitle?: string;
   fields: { [fieldKey: string]: FormFieldConfig };

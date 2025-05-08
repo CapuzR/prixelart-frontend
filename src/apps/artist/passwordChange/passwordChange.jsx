@@ -30,31 +30,34 @@ import clsx from 'clsx';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
-    marginTop: theme.spacing(8),
+    marginTop: "64px",
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
   },
   avatar: {
-    margin: theme.spacing(1),
+    margin: "8px",
     backgroundColor: theme.palette.secondary.main,
   },
   form: {
     width: '100%',
-    marginTop: theme.spacing(3),
+    marginTop: "24px",
   },
   submit: {
-    margin: theme.spacing(3, 0, 2),
+    marginTop: '24px', 
+    marginRight: '0px', 
+    marginBottom: '16px',
+    marginLeft: '0px',
   },
   snackbar: {
     [theme.breakpoints.down('xs')]: {
       bottom: 90,
     },
     margin: {
-      margin: theme.spacing(1),
+      margin: "8px",
     },
     withoutLabel: {
-      marginTop: theme.spacing(3),
+      marginTop: "24px",
     },
     textField: {
       width: '25ch',
@@ -174,8 +177,8 @@ export default function PasswordChange() {
           Cambia tu contraseña
         </Typography>
         <form className={classes.form} onSubmit={handleSubmit} noValidate>
-          <Grid container spacing={2}>
-            <Grid item xs={12}>
+          <Grid2 container spacing={2}>
+            <Grid2 size={{ xs: 12 }}>
               <FormControl
                 className={clsx(classes.margin, classes.textField)}
                 variant="outlined"
@@ -205,8 +208,8 @@ export default function PasswordChange() {
                   labelWidth={100}
                 />
               </FormControl>
-            </Grid>
-            <Grid item xs={12}>
+            </Grid2>
+            <Grid2 size={{ xs: 12 }}>
               <FormControl
                 className={clsx(classes.margin, classes.textField)}
                 variant="outlined"
@@ -236,8 +239,8 @@ export default function PasswordChange() {
                   labelWidth={100}
                 />
               </FormControl>
-            </Grid>
-          </Grid>
+            </Grid2>
+          </Grid2>
           <Button
             type="submit"
             fullWidth

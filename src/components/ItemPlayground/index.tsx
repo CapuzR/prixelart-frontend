@@ -3,8 +3,8 @@ import { Image } from 'components/Image';
 import AddImage from 'components/AddImage';
 import OverlayWithIcon from 'components/OverlayWithIcon';
 import AutorenewIcon from '@mui/icons-material/Autorenew';
-import { Item } from '../../types/item.types';
 import { CartLine } from '../../types/cart.types';
+import { Item } from 'types/order.types';
 
 export interface ItemPlaygroundProps {
   item: Item;
@@ -13,7 +13,7 @@ export interface ItemPlaygroundProps {
 }
 
 export default function ItemPlayground({ item, handleChangeElement, line }: ItemPlaygroundProps) {
-  
+
   return (
     <div className={styles['container']}>
       {item?.product?.mockUp ? (
@@ -30,7 +30,6 @@ export default function ItemPlayground({ item, handleChangeElement, line }: Item
                 <Image
                   src={item?.product?.sources?.images?.[0]?.url}
                   alt={item?.product?.name}
-                  fitTo="width"
                   objectFit="cover"
                 />
               </OverlayWithIcon>
@@ -48,7 +47,6 @@ export default function ItemPlayground({ item, handleChangeElement, line }: Item
                 <Image
                   src={item.art?.largeThumbUrl}
                   alt={item.art?.title}
-                  fitTo="width"
                   objectFit="contain"
                 />
               </OverlayWithIcon>

@@ -25,7 +25,7 @@ import { SelectChangeEvent } from "@mui/material/Select"
 import Copyright from "@components/Copyright/copyright"
 
 //material-ui
-import Grid2 from "@mui/material/Grid2"
+import Grid2 from "@mui/material/Grid"
 import Box from "@mui/material/Box"
 import Container from "@mui/material/Container"
 import Snackbar from "@mui/material/Snackbar"
@@ -49,10 +49,9 @@ const useStyles = makeStyles()((theme: Theme) => {
   return {
     form: {
       width: "100%",
-      marginTop: theme.spacing(0),
     },
     paper: {
-      marginTop: theme.spacing(3),
+      marginTop: "24px",
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
@@ -61,7 +60,7 @@ const useStyles = makeStyles()((theme: Theme) => {
       position: "relative",
     },
     title: {
-      marginLeft: theme.spacing(2),
+      marginLeft: "16px",
       flex: 1,
     },
   }
@@ -263,7 +262,7 @@ export default function ArtUploader({
         originalPhotoWidth,
         originalPhotoHeight,
         originalPhotoPpi,
-        originalPhotoIso
+        String(originalPhotoIso)
       )
       setMaxPrintWidthCm(widthCm)
       setMaxPrintHeightCm(heightCm)

@@ -3,7 +3,7 @@ import axios from 'axios';
 
 import Container from '@mui/material/Container';
 import CssBaseline from '@mui/material/CssBaseline';
-import Grid from '@mui/material/Grid';
+import Grid2 from '@mui/material/Grid';
 import { makeStyles } from '@mui/styles';
 import { useState } from 'react';
 import Typography from '@mui/material/Typography';
@@ -105,8 +105,8 @@ export default function PrixerProfile() {
       <CssBaseline />
       {/* <Grid>
         <AppBar prixerUsername={prixerUsername} />
-      </Grid> */}
-      <Grid className={classes.paper2}>
+      </Grid2> */}
+      <Grid2 className={classes.paper2}>
         <Paper
           style={{
             width: isDeskTop ? '70%' : '100%',
@@ -127,8 +127,8 @@ export default function PrixerProfile() {
           >
             Mi Resumen
           </Typography>
-          <Grid container>
-            <Grid item xs={12} sm={3}>
+          <Grid2 container>
+            <Grid2 size={{ xs: 12, sm: 3 }}>
               <Tabs
                 onChange={handleChange}
                 orientation={isDeskTop ? 'vertical' : 'horizontal'}
@@ -175,7 +175,7 @@ export default function PrixerProfile() {
                   }}
                 />
               </Tabs>
-            </Grid>
+            </Grid2>
 
             <Grid
               item
@@ -230,7 +230,7 @@ export default function PrixerProfile() {
                       Aún no tienes una cuenta asignada, nuestro equipo pronto te asignará una.
                     </Typography>
                   )}
-                </Grid>
+                </Grid2>
               )}
               {tab === 1 && (
                 <Grid>
@@ -248,14 +248,14 @@ export default function PrixerProfile() {
                           alignItems: 'center',
                         }}
                       >
-                        <Grid style={{ fontSize: isDeskTop ? '14px' : '9px' }}>
+                        <Grid2 style={{ fontSize: isDeskTop ? '14px' : '9px' }}>
                           {new Date(order.createdOn)
                             .toLocaleString('en-GB', {
                               timeZone: 'UTC',
                             })
                             .slice(0, 10)}
-                        </Grid>
-                        <Grid style={{ fontSize: isDeskTop ? '14px' : '9px' }}>
+                        </Grid2>
+                        <Grid2 style={{ fontSize: isDeskTop ? '14px' : '9px' }}>
                           <Button
                             style={{
                               textTransform: 'none',
@@ -267,7 +267,7 @@ export default function PrixerProfile() {
                           >
                             {order.orderId}
                           </Button>
-                        </Grid>
+                        </Grid2>
                         <Grid
                           style={{
                             fontWeight: 'bold',
@@ -291,15 +291,15 @@ export default function PrixerProfile() {
                               (order.status === 'Anulado' && 0)
                             }
                           />
-                        </Grid>
-                      </Grid>
+                        </Grid2>
+                      </Grid2>
                     ))
                   ) : (
                     <Typography align="center" variant="h5" color="secondary">
                       Aún no hay pedidos registrados para ti.
                     </Typography>
                   )}
-                </Grid>
+                </Grid2>
               )}
               {tab === 2 && (
                 <Grid>
@@ -317,7 +317,7 @@ export default function PrixerProfile() {
                           alignItems: 'center',
                         }}
                       >
-                        <Grid style={{ fontSize: isDeskTop ? '14px' : '9px' }}>
+                        <Grid2 style={{ fontSize: isDeskTop ? '14px' : '9px' }}>
                           {mov.date
                             ? new Date(mov.date)
                                 .toLocaleString('en-GB', {
@@ -329,8 +329,8 @@ export default function PrixerProfile() {
                                   timeZone: 'UTC',
                                 })
                                 .slice(0, 10)}
-                        </Grid>
-                        <Grid style={{ fontSize: isDeskTop ? '14px' : '9px' }}>
+                        </Grid2>
+                        <Grid2 style={{ fontSize: isDeskTop ? '14px' : '9px' }}>
                           {mov.description.split('#')[0]}{' '}
                           <Button
                             style={{
@@ -347,7 +347,7 @@ export default function PrixerProfile() {
                           >
                             {mov.description.split('#')[1]}
                           </Button>
-                        </Grid>
+                        </Grid2>
                         {mov.type === 'Depósito' ? (
                           <Grid
                             style={{
@@ -360,7 +360,7 @@ export default function PrixerProfile() {
                             {mov.value?.toLocaleString('de-DE', {
                               minimumFractionDigits: 2,
                             })}
-                          </Grid>
+                          </Grid2>
                         ) : (
                           mov.type === 'Retiro' && (
                             <Grid
@@ -374,27 +374,27 @@ export default function PrixerProfile() {
                               {mov.value?.toLocaleString('de-DE', {
                                 minimumFractionDigits: 2,
                               })}
-                            </Grid>
+                            </Grid2>
                           )
                         )}
-                      </Grid>
+                      </Grid2>
                     ))
                   ) : (
                     <Typography align="center" variant="h6" color="secondary">
                       Aún no hay movimientos registrados para ti.
                     </Typography>
                   )}
-                </Grid>
+                </Grid2>
               )}
               {tab === 3 && (
                 <Typography align="center" variant="h4" color="secondary">
                   Próximamente
                 </Typography>
               )}
-            </Grid>
-          </Grid>
+            </Grid2>
+          </Grid2>
         </Paper>
-      </Grid>
+      </Grid2>
       <div style={{ maxWidth: '80%' }}>
         <Modal open={openOrderDetails} onClose={handleClose}>
           {/* <Popper

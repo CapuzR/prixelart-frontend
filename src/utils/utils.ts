@@ -1,6 +1,20 @@
 import { PickedArt } from "../types/art.types";
 import { PickedProduct } from "../types/product.types";
 
+export function debounce<F extends (...args: any[]) => any>(func: F, waitFor: number): (...args: Parameters<F>) => void {
+  let timeout: ReturnType<typeof setTimeout> | null = null;
+
+  const debounced = (...args: Parameters<F>) => {
+    if (timeout !== null) {
+      clearTimeout(timeout);
+      timeout = null;
+    }
+    timeout = setTimeout(() => func(...args), waitFor);
+  };
+
+  return debounced;
+}
+
 export const generateWaMessage = (tile?: any) => {
   // const waNumber = "584126377748";
   const welcomeMessage = 'Holaa, cuéntame más. Quiero asesoría y conocer sus productos.';
@@ -19,20 +33,17 @@ export const generateWaProductMessage = (tile: PickedProduct | PickedArt, url: s
   const waNumber = '584126377748';
   const welcomeMessage = 'Holaa, cuéntame más. Quiero asesoría y conocer sus productos.';
 
-  console.log("el url", url);
-
   const message =
     tile !== null
       ? 'Holaa, este es uno de los Prix que me gustan:' +
-        '%0D%0A' +
-        ' *Modelo:* ' + ('name' in tile ? tile.name : tile.title) +
-        '%0D%0A' +
-        ' *Enlace:* ' + url
+      '%0D%0A' +
+      ' *Modelo:* ' + ('name' in tile ? tile.name : tile.title) +
+      '%0D%0A' +
+      ' *Enlace:* ' + url
       : welcomeMessage;
 
   return 'https://wa.me/' + waNumber + '?text=' + encodeURIComponent(message);
 };
-
 
 const generateServiceMessage = (tile: any, phone: string) => {
   if (phone.startsWith('0')) {
@@ -66,7 +77,7 @@ const generateLikeServiceMessage = (tile: any) => {
     ' *Enlace:* prixelart.com/service=' +
     tile._id;
 
-  const url = 'https://wa.me/' + waNumber +'?text=' + message;
+  const url = 'https://wa.me/' + waNumber + '?text=' + message;
   return url;
 };
 
@@ -91,7 +102,7 @@ const generateArtMessage = (tile: any, type: string) => {
   return artMessage;
 };
 
-export const maxPrintCalc = (width: number, height: number, ppi: any, iso: string) => {
+const maxPrintCalc = (width: number, height: number, ppi: any, iso: string) => {
   let widthCm = 0;
   let heightCm = 0;
   const pxToCmConversionRate = 2.54;

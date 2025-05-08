@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Grid, Typography } from '@mui/material';
+import {  Typography } from '@mui/material';
 import { Map } from '../components/map/map.jsx';
 import { IconCard } from '../components/map/card.jsx';
 import { IconsForm } from '../components/iconsForm/iconsForm.jsx';
@@ -15,13 +15,13 @@ export const Desktop = () => {
   const history = useHistory();
 
   return (
-    <Grid
+    <Grid2
       container
       justifyContent={'center'}
       alignItems={'center'}
       style={{ padding: 0, marginTop: 80 }}
     >
-      <Grid xs={12}>
+      <Grid2 size={{xs:12}}>
         <Typography
           variant="h4"
           style={{
@@ -35,10 +35,9 @@ export const Desktop = () => {
         >
           Murales de los Palos Grandes
         </Typography>
-      </Grid>
-      <Grid
-        item
-        xs={4}
+      </Grid2>
+      <Grid2
+size={{ xs: 4 }}
         style={{
           display: 'flex',
           justifyContent: 'center',
@@ -52,7 +51,7 @@ export const Desktop = () => {
           setOpenSelected={setOpenSelected}
         />
         {/* <IconsForm icons={icons} setIcons={setIcons} /> */}
-      </Grid>
+      </Grid2>
       <Grid
         item
         xs={4}
@@ -89,7 +88,7 @@ export const Desktop = () => {
             onClick={(e) => history.push({ pathname: '/prixer=LPG' })}
           />
         </div>
-      </Grid>
+      </Grid2>
       <Grid
         item
         container
@@ -124,40 +123,7 @@ export const Desktop = () => {
             onClick={(e) => history.push({ pathname: "/LPG" })}
           />
         </div> */}
-      </Grid>
-
-      {/* <Grid item xs={12} id="webapp">
-          <Showcase />
-        </Grid>
-        <Grid item xs={12} id="about">
-          <ProductCarrousel />
-        </Grid>
-        <Grid item xs={12} id="about">
-          <ArtistSign />
-        </Grid>
-        <Grid item xs={12}>
-          <Footer/>
-        </Grid> */}
-    </Grid>
-    // <Grid container sx={{ padding: "3% 8% 0 8%", backgroundImage: "Bg" }}>
-    //   <Grid item xs={12}>
-    //     <TopBar />
-    //   </Grid>
-    //   <Grid item xs={12}>
-    //     <Banner />
-    //   </Grid>
-    //   <Grid item xs={12} id="webapp">
-    //     <Showcase />
-    //   </Grid>
-    //   <Grid item xs={12} id="about">
-    //     <About />
-    //   </Grid>
-    //   <Grid item xs={12}>
-    //     <Prefooter/>
-    //   </Grid>
-    //   <Grid item xs={12}>
-    //     <Footer/>
-    //   </Grid>
-    // </Grid>
+      </Grid2>
+    </Grid2>
   );
 };

@@ -27,7 +27,7 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
-
+import Grid2 from '@mui/material/Grid';
 import { Theme } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useStyles } from './userData.styles';
@@ -211,7 +211,7 @@ const UserData: React.FC<UserDataProps> = (props) => {
                     <EditIcon />
                   </IconButton>
                 )}
-              <Grid
+              <Grid2
                 container
                 spacing={2}
                 style={{
@@ -221,7 +221,7 @@ const UserData: React.FC<UserDataProps> = (props) => {
                     '-46px',
                 }}
               >
-                <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
+                <Grid2 size={{ xs: 12, sm: 4, md: 4, lg: 4, xl: 4 }}>
                   <Box
                     style={{
                       marginBottom: '4px',
@@ -268,8 +268,8 @@ const UserData: React.FC<UserDataProps> = (props) => {
                       )
                     )}
                   </Box>
-                </Grid>
-                <Grid item xs={12} sm={8} md={8} lg={8} xl={8}>
+                </Grid2>
+                <Grid2 size={{ xs: 12, sm: 8, md: 8, lg: 8, xl: 8 }}>
                   <Box
                     style={{
                       display: 'flex',
@@ -369,8 +369,8 @@ const UserData: React.FC<UserDataProps> = (props) => {
                       </IconButton>
                     )}
                   </Box>
-                </Grid>
-              </Grid>
+                </Grid2>
+              </Grid2>
             </Box>
           </>
         )}
@@ -389,8 +389,8 @@ const UserData: React.FC<UserDataProps> = (props) => {
                   </Button>
                 )}
             </Box>
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+            <Grid2 container spacing={2}>
+              <Grid2 size={{ xs: 12, sm: 12, md: 6, lg: 6, xl: 6 }}>
                 <Box>
                   <Box
                     marginBottom={2}
@@ -527,22 +527,22 @@ const UserData: React.FC<UserDataProps> = (props) => {
                     />
                   </Box>
                 </Box>
-              </Grid>
-            </Grid>
+              </Grid2>
+            </Grid2>
           </>
         )}
       </Paper>
-    </div>
+    </div >
   ) : (
     <div className={classes.root}>
       <Paper className={classes.paper}>
         <Backdrop className={classes.backdrop} open={backdrop}>
           <CircularProgress color="inherit" />
         </Backdrop>
-        <Grid container spacing={1}>
-          <Grid item xs={12} container>
-            <Grid item xs container direction="column" spacing={2}>
-              <Grid item xs>
+        <Grid2 container spacing={1}>
+          <Grid2 size={{ xs: 12 }} container>
+            <Grid2 container direction="column" spacing={2}>
+              <Grid2 >
                 <Typography gutterBottom variant="subtitle1">
                   Increíble, pero cierto
                 </Typography>
@@ -552,10 +552,10 @@ const UserData: React.FC<UserDataProps> = (props) => {
                 <Typography variant="body1" color="textSecondary">
                   Inténtalo de nuevo | ig: Wrong
                 </Typography>
-              </Grid>
-            </Grid>
-          </Grid>
-        </Grid>
+              </Grid2>
+            </Grid2>
+          </Grid2>
+        </Grid2>
       </Paper>
     </div>
   );

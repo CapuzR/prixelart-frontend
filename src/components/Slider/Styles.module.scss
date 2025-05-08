@@ -7,8 +7,6 @@
   width: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: space-around;
-  gap: 20px;
 
   .slider-container {
     display: flex;
@@ -16,6 +14,9 @@
     height: 100%;
     flex-grow: 1;
     margin-bottom: 0;
+
+    flex-grow: 1;
+    overflow: hidden;
 
     &.over {
       min-height: 100%;
@@ -47,6 +48,7 @@
     // min-height: 100%;
     transition: transform theme.$transition-normal;
     border-radius: theme.$border-radius-lg;
+    height: 100%;
   }
 
   .indicator {

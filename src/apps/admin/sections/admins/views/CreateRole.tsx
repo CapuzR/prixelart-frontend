@@ -1,974 +1,309 @@
-import React, { useState } from "react"
+import React, { useState, ChangeEvent, FormEvent } from "react";
+import { useNavigate } from "react-router-dom";
 
-import Title from "../../../components/Title"
-import TextField from "@mui/material/TextField"
-import Button from "@mui/material/Button"
-import Grid2 from "@mui/material/Grid2"
-import FormControl from "@mui/material/FormControl"
-import { Switch, Typography } from "@mui/material"
+// Hooks and Context 
+import { useSnackBar } from "context/GlobalContext";
+import { Permissions } from "types/permissions.types";
+import { createRole } from "@api/admin.api";
 
-import { useNavigate } from "react-router-dom"
-import { useSnackBar, useLoading } from "context/GlobalContext"
+// MUI Components
+import {
+  Box, Typography, TextField, Button, Paper, FormControlLabel,
+  Checkbox, CircularProgress, Divider, FormGroup, Alert, Accordion,
+  AccordionSummary, AccordionDetails
+} from "@mui/material";
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'; // Icon for Accordion
 
-import { createRole } from "../api"
+import Title from "@apps/admin/components/Title"; // Optional: Use Title component
+import { permissionGroups, permissionLabels } from "../roles/roles";
+import Grid2 from "@mui/material/Grid";
+// Define the initial state structure
+const initialPermissionsState: Omit<Permissions, '_id'> = {
+  area: "",
+  // Initialize all boolean permission keys from constants (ensures all are present)
+  ...permissionGroups.flatMap(g => g.items).reduce((acc, item) => {
+    acc[item.key] = false;
+    return acc;
+  }, {} as Record<keyof Omit<Permissions, '_id' | 'area'>, boolean>) // Ensure type safety
+};
 
-interface RoleProps {
-  setActiveCrud: (state: string) => void
-}
 
-export default function CreateAdminRole({ setActiveCrud }: RoleProps) {
-  // const classes = useStyles();
-  const navigate = useNavigate()
-  const [area, setArea] = useState<string>()
-  const [detailOrder, setDetailOrder] = useState(false)
-  const [detailPay, setDetailPay] = useState(false)
-  const [orderStatus, setOrderStatus] = useState(false)
-  const [createOrder, setCreateOrder] = useState(false)
-  const [createProduct, setCreateProduct] = useState(false)
-  const [deleteProduct, setDeleteProduct] = useState(false)
-  const [createDiscount, setCreateDiscount] = useState(false)
-  const [deleteDiscount, setDeleteDiscount] = useState(false)
-  const [modifyBanners, setModifyBanners] = useState(false)
-  const [modifyDollar, setModifyDollar] = useState(false)
-  const [modifyTermsAndCo, setModifyTermsAndCo] = useState(false)
-  const [createPaymentMethod, setCreatePaymentMethod] = useState(false)
-  const [deletePaymentMethod, setDeletePaymentMethod] = useState(false)
-  const [createShippingMethod, setCreateShippingMethod] = useState(false)
-  const [deleteShippingMethod, setDeleteShippingMethod] = useState(false)
-  const [prixerBan, setPrixerBan] = useState(false)
-  const [createTestimonial, setCreateTestimonial] = useState(false)
-  const [deleteTestimonial, setDeleteTestimonial] = useState(false)
-  const [modifyAdmins, setModifyAdmins] = useState(false)
-  const [setPrixerBalance, setSetPrixerBalance] = useState(false)
-  const [readMovements, setReadMovements] = useState(false)
-  const [createConsumer, setCreateConsumer] = useState(false)
-  const [readConsumers, setReadConsumers] = useState(false)
-  const [deleteConsumer, setDeleteConsumer] = useState(false)
-  const [artBan, setArtBan] = useState(false)
-  const [modifyBestSellers, setModifyBestSellers] = useState(false)
-  const [modifyArtBestSellers, setModifyArtBestSellers] = useState(false)
+const CreateRole: React.FC = () => {
+  const navigate = useNavigate();
+  const { showSnackBar } = useSnackBar();
 
-  const [buttonState, setButtonState] = useState(false)
+  // --- Local State ---
+  const [formData, setFormData] = useState<Omit<Permissions, '_id'>>(initialPermissionsState);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [errorSubmit, setErrorSubmit] = useState<string | null>(null); // For API/general submit errors
+  const [nameTouched, setNameTouched] = useState<boolean>(false); // Track if name field was touched
+  const [expandedAccordion, setExpandedAccordion] = useState<string | false>(false); // Control accordions
 
-  const { showSnackBar } = useSnackBar()
-  const { setLoading } = useLoading()
+  // --- Handle Accordion Change ---
+  const handleAccordionChange = (panel: string) => (event: React.SyntheticEvent, isExpanded: boolean) => {
+    setExpandedAccordion(isExpanded ? panel : false);
+  };
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    if (!area) {
-      showSnackBar("Por favor indica el área")
-    } else {
-      setLoading(true)
-      setButtonState(true)
-      const data = {
-        area: area,
-        detailOrder: detailOrder,
-        detailPay: detailPay,
-        orderStatus: orderStatus,
-        createOrder: createOrder,
-        createProduct: createProduct,
-        deleteProduct: deleteProduct,
-        createDiscount: createDiscount,
-        deleteDiscount: deleteDiscount,
-        modifyBanners: modifyBanners,
-        modifyDollar: modifyDollar,
-        modifyTermsAndCo: modifyTermsAndCo,
-        createPaymentMethod: createPaymentMethod,
-        deletePaymentMethod: deletePaymentMethod,
-        createShippingMethod: createShippingMethod,
-        deleteShippingMethod: deleteShippingMethod,
-        prixerBan: prixerBan,
-        createTestimonial: createTestimonial,
-        deleteTestimonial: deleteTestimonial,
-        modifyAdmins: modifyAdmins,
-        setPrixerBalance: setPrixerBalance,
-        readMovements: readMovements,
-        createConsumer: createConsumer,
-        readConsumers: readConsumers,
-        deleteConsumer: deleteConsumer,
-        artBan: artBan,
-        modifyBestSellers: modifyBestSellers,
-        modifyArtBestSellers: modifyArtBestSellers,
-      }
+  // --- Handle Individual Checkbox/Input Change ---
+  const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const { name, value, checked, type } = event.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: type === "checkbox" ? checked : value,
+    }));
 
-      const newRole = await createRole(data)
-      if (!newRole) {
-        console.error("La respuesta de createRole es undefined")
-      } else if (newRole.success === false) {
-        setLoading(false)
-        setButtonState(false)
-        showSnackBar(newRole)
-      } else {
-        showSnackBar(`Registro de Rol ${newRole.newRole.area} exitoso.`)
-        navigate({ pathname: "/admin/user/read" })
-        setActiveCrud("read")
-      }
+    // Clear API error if user starts typing/checking
+    if (errorSubmit && errorSubmit !== "El nombre del Área/Rol es obligatorio.") {
+      setErrorSubmit(null);
     }
-  }
+    // Clear name validation error if user types something
+    if (name === 'area' && errorSubmit === "El nombre del Área/Rol es obligatorio." && value.trim()) {
+      setErrorSubmit(null);
+    }
+  };
 
-  const handleChangeDetailOrder = () => {
-    setDetailOrder(!detailOrder)
-  }
+  // --- Handle Name Field Blur ---
+  const handleNameBlur = () => {
+    setNameTouched(true); // Mark field as touched
+  };
 
-  const handleChangeDetailPay = () => {
-    setDetailPay(!detailPay)
-  }
+  // --- Handle Group Toggle (Select/Deselect All in Group) ---
+  const handleGroupToggle = (groupItems: { key: keyof Omit<Permissions, '_id' | 'area'> }[], checked: boolean) => {
+    setFormData(prevData => {
+      const newData = { ...prevData };
+      groupItems.forEach(item => {
+        newData[item.key] = checked;
+      });
+      return newData;
+    });
+    // Clear API error if user interacts
+    if (errorSubmit && errorSubmit !== "El nombre del Área/Rol es obligatorio.") {
+      setErrorSubmit(null);
+    }
+  };
 
-  const handleChangeOrderStatus = () => {
-    setOrderStatus(!orderStatus)
-  }
+  // --- Form Validation ---
+  const validateForm = (): boolean => {
+    if (!formData.area.trim()) {
+      // Don't set errorSubmit here, rely on nameHasError for TextField display
+      return false;
+    }
+    return true;
+  };
 
-  const handleChangeCreateOrder = () => {
-    setCreateOrder(!createOrder)
-  }
 
-  const handleChangeCreateProduct = () => {
-    setCreateProduct(!createProduct)
-  }
+  // --- Handle Submission ---
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setNameTouched(true); // Ensure field is marked touched on submit attempt
 
-  const handleChangeDeleteProduct = () => {
-    setDeleteProduct(!deleteProduct)
-  }
+    if (!validateForm()) {
+      // Validation failed (name empty), TextField will show error based on nameHasError
+      return;
+    }
 
-  const handleChangeCreateDiscount = () => {
-    setCreateDiscount(!createDiscount)
-  }
+    setIsSubmitting(true);
+    setErrorSubmit(null); // Clear previous API errors
 
-  const handleChangeDeleteDiscount = () => {
-    setDeleteDiscount(!deleteDiscount)
-  }
+    try {
+      const response = await createRole(formData);
 
-  const handleChangeModifyBanners = () => {
-    setModifyBanners(!modifyBanners)
-  }
+      // Handle potential variations in API response 
+      // Assuming successful creation implies a valid response object
+      if (response) {
+        showSnackBar(`Área/Rol "${formData.area}" creado exitosamente.`);
+        setFormData(initialPermissionsState); // Reset form on success
+        navigate("/admin/admins/roles/read");
+      } else {
+        // This case might indicate a successful call but unexpected empty response
+        console.warn("Role creation response was empty or unexpected.");
+        // Optionally show a generic success or specific warning
+        showSnackBar(`Área/Rol "${formData.area}" creado, pero la respuesta fue inesperada.`);
+        setFormData(initialPermissionsState);
+        navigate("/admin/admins/roles/read");
+        // Or throw an error if an empty response is truly an error condition:
+        // throw new Error("La creación del rol no devolvió una respuesta esperada.");
+      }
 
-  const handleChangeModifyTermsAndCo = () => {
-    setModifyTermsAndCo(!modifyTermsAndCo)
-  }
+    } catch (err: any) {
+      console.error("Failed to create role:", err);
+      const message = err.response?.data?.message || err.message || "Error al crear el Área/Rol. Intente nuevamente.";
+      setErrorSubmit(message); // Display API error in the Alert
+      showSnackBar(message); // Also show transient snackbar
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
-  const handleChangeModifyDollar = () => {
-    setModifyDollar(!modifyDollar)
-  }
+  // --- Handle Cancel ---
+  const handleCancel = () => {
+    setFormData(initialPermissionsState);
+    setErrorSubmit(null);
+    setNameTouched(false);
+    setExpandedAccordion(false); // Reset accordion state
+    navigate("/admin/admins/roles/read");
+  };
 
-  const handleChangeCreatePaymentMethod = () => {
-    setCreatePaymentMethod(!createPaymentMethod)
-  }
+  // --- Derived State for Validation ---
+  // Determine if the name field should display an error
+  const nameHasError = nameTouched && !formData.area.trim();
 
-  const handleChangeDeletePaymentMethod = () => {
-    setDeletePaymentMethod(!deletePaymentMethod)
-  }
-
-  const handleChangeCreateShippingMethod = () => {
-    setCreateShippingMethod(!createShippingMethod)
-  }
-
-  const handleChangeDeleteShippingMethod = () => {
-    setDeleteShippingMethod(!deleteShippingMethod)
-  }
-
-  const handleChangePrixerBan = () => {
-    setPrixerBan(!prixerBan)
-  }
-
-  const handleChangeCreateTestimonial = () => {
-    setCreateTestimonial(!createTestimonial)
-  }
-
-  const handleChangeDeleteTestimonial = () => {
-    setDeleteTestimonial(!deleteTestimonial)
-  }
-
-  const handleChangeModifyAdmins = () => {
-    setModifyAdmins(!modifyAdmins)
-  }
-
-  const handleChangeSetPrixerBalance = () => {
-    setSetPrixerBalance(!setPrixerBalance)
-  }
-
-  const handleChangeSetReadMovements = () => {
-    setReadMovements(!readMovements)
-  }
-
-  const handleChangeCreateConsumer = () => {
-    setCreateConsumer(!createConsumer)
-  }
-
-  const handleChangeReadConsumers = () => {
-    setReadConsumers(!readConsumers)
-  }
-
-  const handleChangeDeleteConsumer = () => {
-    setDeleteConsumer(!deleteConsumer)
-  }
-
-  const handleChangeArtBan = () => {
-    setArtBan(!artBan)
-  }
-
-  const handleChangeModifyBestSellers = () => {
-    setModifyBestSellers(!modifyBestSellers)
-  }
-
-  const handleChangeModifyArtBestSellers = () => {
-    setModifyArtBestSellers(!modifyArtBestSellers)
-  }
-
+  // --- Render Logic ---
   return (
-    <React.Fragment>
-      <Title title="Crear Rol de Administrador"/>
-      <form noValidate onSubmit={handleSubmit}>
-        <Grid2 size={{ xs: 12, md: 6 }}>
-          <FormControl
-            variant="outlined"
-            style={{ width: "100%", margin: "20px 0px" }}
-          >
-            <TextField
-              variant="outlined"
-              required
-              // fullWidth
-              label="Área"
-              value={area}
-              onChange={(e) => {
-                setArea(e.target.value)
-              }}
-            />
-          </FormControl>
-        </Grid2>
-        <Grid2 container spacing={2}>
-          <Grid2
-            size={{
-              xs: 12,
-              md: 6,
-            }}
-            sx={{
-              border: "2px",
-              borderStyle: "solid",
-              borderColor: "silver",
-              borderRadius: "10px",
-              padding: "10px",
-            }}
-          >
-            <Typography color="secondary" style={{ marginLeft: "20px" }}>
-              Órdenes
-            </Typography>
-            <div>
-              <FormControl
+    <>
+      <Title title="Crear Nueva Área/Rol" />
+      <Paper elevation={3} sx={{ p: { xs: 2, sm: 3 }, mt: 2 }}> {/* Responsive padding */}
+        <form onSubmit={handleSubmit} noValidate> {/* Added noValidate to rely on controlled validation */}
+          <Grid2 container spacing={3}>
+            {/* Area Name Input */}
+            <Grid2 size={{ xs: 12 }}>
+              <TextField
+                label="Nombre del Área/Rol"
+                name="area"
+                value={formData.area}
+                onChange={handleInputChange}
+                onBlur={handleNameBlur} // Validate feedback on blur
+                required // Use for semantics and potential browser hints
+                fullWidth
                 variant="outlined"
-                style={{
-                  width: "100%",
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Typography>Permiso para crear orden de compra</Typography>
-                <Switch
-                  checked={createOrder}
-                  onChange={handleChangeCreateOrder}
-                  name="checkedA"
+                disabled={isSubmitting}
+                error={nameHasError} // Control error display
+                helperText={nameHasError ? "El nombre del Área/Rol es obligatorio." : ""}
+                InputLabelProps={{ shrink: true }} // Keep label shrunk
+              />
+            </Grid2>
+
+            <Grid2 size={{ xs: 12 }}>
+              <Divider sx={{ my: 1 }}><Typography variant="overline">Permisos</Typography></Divider>
+            </Grid2>
+
+            {/* Permissions Accordions */}
+            {permissionGroups.map((group) => {
+              // Determine checked/indeterminate state for the group's master checkbox
+              const groupKeys = group.items.map(item => item.key);
+              const checkedCount = groupKeys.reduce((count, key) => count + (formData[key] ? 1 : 0), 0);
+              const allChecked = groupKeys.length > 0 && checkedCount === groupKeys.length; // Handle empty groups
+              const someChecked = checkedCount > 0 && !allChecked;
+
+              return (
+                <Grid2 size={{ xs: 12, md: 6, lg: 4 }} key={group.title}>
+                  <Accordion
+                    square // Use square variant for better fit in grid? Optional.
+                    elevation={1} // Lower elevation for nested feel
+                    expanded={expandedAccordion === group.title}
+                    onChange={handleAccordionChange(group.title)}
+                    disabled={isSubmitting}
+                    sx={{ '&:before': { display: 'none' } }} // Remove top border duplication
+                  >
+                    <AccordionSummary
+                      expandIcon={<ExpandMoreIcon />}
+                      aria-controls={`${group.title}-content`}
+                      id={`${group.title}-header`}
+                      sx={{
+                        // Better alignment and click handling
+                        flexDirection: 'row-reverse', // Icon on left
+                        '& .MuiAccordionSummary-expandIconWrapper.Mui-expanded': {
+                          transform: 'rotate(180deg)',
+                        },
+                        '& .MuiAccordionSummary-content': {
+                          alignItems: 'center',
+                          marginLeft: 1, // Space between icon and content
+                        },
+                      }}
+                    >
+                      {/* Group Toggle Checkbox and Label */}
+                      <FormControlLabel
+                        onClick={(event) => event.stopPropagation()} // IMPORTANT: Prevent accordion toggle on label/check click
+                        onFocus={(event) => event.stopPropagation()} // Prevent focus triggering toggle
+                        control={
+                          <Checkbox
+                            checked={allChecked}
+                            indeterminate={someChecked}
+                            onChange={(e) => handleGroupToggle(group.items, e.target.checked)}
+                            size="small"
+                            disabled={isSubmitting || groupKeys.length === 0} // Disable if no items
+                          />
+                        }
+                        // Use Typography for better control over label styling
+                        label={<Typography variant="body2" sx={{ fontWeight: 500 }}>{group.title}</Typography>}
+                        sx={{ mr: 'auto' }} // Push to the left
+                      />
+                      {/* Optional: Display count like (3/5) */}
+                      <Typography variant="caption" color="text.secondary" sx={{ mr: 1 }}>
+                        {`(${checkedCount}/${groupKeys.length})`}
+                      </Typography>
+                    </AccordionSummary>
+                    <AccordionDetails sx={{ pt: 0, pb: 1, px: 2 }}>
+                      {/* Indent permissions within the group */}
+                      <FormGroup sx={{ pl: { xs: 1, sm: 2 } }}>
+                        {group.items.map((item) => (
+                          <FormControlLabel
+                            key={item.key}
+                            control={
+                              <Checkbox
+                                checked={formData[item.key]}
+                                onChange={handleInputChange}
+                                name={item.key}
+                                size="small"
+                                disabled={isSubmitting}
+                              />
+                            }
+                            // Use pre-defined label from mapping, fallback to item label
+                            label={permissionLabels[item.key] || item.label}
+                            // Adjust label style for readability
+                            sx={{ '& .MuiFormControlLabel-label': { fontSize: '0.875rem' } }}
+                          />
+                        ))}
+                        {group.items.length === 0 && (
+                          <Typography variant="caption" color="text.secondary" sx={{ pl: 2, fontStyle: 'italic' }}>
+                            (No hay permisos en este grupo)
+                          </Typography>
+                        )}
+                      </FormGroup>
+                    </AccordionDetails>
+                  </Accordion>
+                </Grid2>
+              );
+            })}
+
+            {/* Submission Error Display (Only shows API errors now) */}
+            {errorSubmit && (
+              <Grid2 size={{ xs: 12 }}>
+                <Alert severity="error" sx={{ mt: 2 }}>
+                  {errorSubmit}
+                </Alert>
+              </Grid2>
+            )}
+
+
+            {/* Buttons Section */}
+            <Grid2 size={{ xs: 12 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 2 }}>
+                <Button
+                  type="button"
+                  variant="outlined"
+                  color="secondary" // Or theme default
+                  onClick={handleCancel}
+                  disabled={isSubmitting}
+                >
+                  Cancelar
+                </Button>
+                <Button
+                  type="submit"
+                  variant="contained"
                   color="primary"
-                />
-              </FormControl>
-            </div>
-            <div>
-              <FormControl
-                variant="outlined"
-                style={{
-                  width: "100%",
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Typography>Permiso para ver detalles de la orden</Typography>
-                <Switch
-                  checked={detailOrder}
-                  onChange={handleChangeDetailOrder}
-                  name="checkedA"
-                  color="primary"
-                />
-              </FormControl>
-            </div>
-            <div>
-              <FormControl
-                variant="outlined"
-                style={{
-                  width: "100%",
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Typography>Permiso para modificar status de pago</Typography>
-                <Switch
-                  checked={detailPay}
-                  onChange={handleChangeDetailPay}
-                  name="checkedA"
-                  color="primary"
-                />
-              </FormControl>
-            </div>
-            <div>
-              <FormControl
-                variant="outlined"
-                style={{
-                  width: "100%",
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Typography>
-                  Permiso para modificar status de orden de compra
-                </Typography>
-                <Switch
-                  checked={orderStatus}
-                  onChange={handleChangeOrderStatus}
-                  name="checkedA"
-                  color="primary"
-                />
-              </FormControl>
-            </div>
+                  disabled={isSubmitting}
+                  startIcon={isSubmitting ? <CircularProgress size={20} color="inherit" /> : null}
+                >
+                  {isSubmitting ? "Creando..." : "Crear Área/Rol"}
+                </Button>
+              </Box>
+            </Grid2>
           </Grid2>
-          <Grid2
-            size={{
-              xs: 12,
-              md: 6,
-            }}
-            sx={{
-              border: "2px",
-              borderStyle: "solid",
-              borderColor: "silver",
-              borderRadius: "10px",
-              padding: "10px",
-            }}
-          >
-            <Typography color="secondary" style={{ marginLeft: "20px" }}>
-              Productos
-            </Typography>
-            <div>
-              <FormControl
-                variant="outlined"
-                style={{
-                  width: "100%",
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Typography>Permiso para crear y editar productos</Typography>
-                <Switch
-                  checked={createProduct}
-                  onChange={handleChangeCreateProduct}
-                  name="checkedA"
-                  color="primary"
-                />
-              </FormControl>
-            </div>
-            <div>
-              <FormControl
-                variant="outlined"
-                style={{
-                  width: "100%",
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Typography>Permiso para eliminar productos</Typography>
-                <Switch
-                  checked={deleteProduct}
-                  onChange={handleChangeDeleteProduct}
-                  name="checkedA"
-                  color="primary"
-                />
-              </FormControl>
-            </div>
-            <div>
-              <FormControl
-                variant="outlined"
-                style={{
-                  width: "100%",
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Typography>Permiso para crear descuentos</Typography>
-                <Switch
-                  checked={createDiscount}
-                  onChange={handleChangeCreateDiscount}
-                  name="checkedA"
-                  color="primary"
-                />
-              </FormControl>
-            </div>
-            <div>
-              <FormControl
-                variant="outlined"
-                style={{
-                  width: "100%",
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Typography>Permiso para eliminar descuentos</Typography>
-                <Switch
-                  checked={deleteDiscount}
-                  onChange={handleChangeDeleteDiscount}
-                  name="checkedA"
-                  color="primary"
-                />
-              </FormControl>
-            </div>
-          </Grid2>
-          <Grid2
-            size={{
-              xs: 12,
-              md: 6,
-            }}
-            style={{
-              border: "2px",
-              borderStyle: "solid",
-              borderColor: "silver",
-              borderRadius: "10px",
-              padding: "10px",
-              marginTop: "20px",
-            }}
-          >
-            <Typography color="secondary" style={{ marginLeft: "20px" }}>
-              Preferencias
-            </Typography>
-            <div>
-              <FormControl
-                variant="outlined"
-                style={{
-                  width: "100%",
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Typography>Permiso para actualizar valor del dolar</Typography>
-                <Switch
-                  checked={modifyDollar}
-                  onChange={handleChangeModifyDollar}
-                  name="checkedA"
-                  color="primary"
-                />
-              </FormControl>
-            </div>
-            <div>
-              <FormControl
-                variant="outlined"
-                style={{
-                  width: "100%",
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Typography>Permiso para modificar banners</Typography>
-                <Switch
-                  checked={modifyBanners}
-                  onChange={handleChangeModifyBanners}
-                  name="checkedA"
-                  color="primary"
-                />
-              </FormControl>
-            </div>
-            <div>
-              <FormControl
-                variant="outlined"
-                style={{
-                  width: "100%",
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Typography>
-                  Permiso para modificar productos más vendidos
-                </Typography>
-                <Switch
-                  checked={modifyBestSellers}
-                  onChange={handleChangeModifyBestSellers}
-                  name="checkedA"
-                  color="primary"
-                />
-              </FormControl>
-            </div>
-            <div>
-              <FormControl
-                variant="outlined"
-                style={{
-                  width: "100%",
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Typography>
-                  Permiso para modificar artes más vendidos
-                </Typography>
-                <Switch
-                  checked={modifyArtBestSellers}
-                  onChange={handleChangeModifyArtBestSellers}
-                  name="checkedA"
-                  color="primary"
-                />
-              </FormControl>
-            </div>
-            <div>
-              <FormControl
-                variant="outlined"
-                style={{
-                  width: "100%",
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Typography>
-                  Permiso para modificar términos y condiciones
-                </Typography>
-                <Switch
-                  checked={modifyTermsAndCo}
-                  onChange={handleChangeModifyTermsAndCo}
-                  name="checkedA"
-                  color="primary"
-                />
-              </FormControl>
-            </div>
-          </Grid2>
-          <Grid2
-            size={{
-              xs: 12,
-              md: 6,
-            }}
-            style={{
-              border: "2px",
-              borderStyle: "solid",
-              borderColor: "silver",
-              borderRadius: "10px",
-              padding: "10px",
-              marginTop: "20px",
-            }}
-          >
-            <Typography color="secondary" style={{ marginLeft: "20px" }}>
-              Prixers
-            </Typography>
-            <div>
-              <FormControl
-                variant="outlined"
-                style={{
-                  width: "100%",
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Typography>Permiso para banear Prixer </Typography>
-                <Switch
-                  checked={prixerBan}
-                  onChange={handleChangePrixerBan}
-                  name="checkedA"
-                  color="primary"
-                />
-              </FormControl>
-            </div>
-            <div>
-              <FormControl
-                variant="outlined"
-                style={{
-                  width: "100%",
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Typography>
-                  Permiso para modificar balance de Prixer
-                </Typography>
-                <Switch
-                  checked={setPrixerBalance}
-                  onChange={handleChangeSetPrixerBalance}
-                  name="checkedA"
-                  color="primary"
-                />
-              </FormControl>
-            </div>
-            <div>
-              <FormControl
-                variant="outlined"
-                style={{
-                  width: "100%",
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Typography>Permiso para leer movimientos</Typography>
-                <Switch
-                  checked={readMovements}
-                  onChange={handleChangeSetReadMovements}
-                  name="checkedA"
-                  color="primary"
-                />
-              </FormControl>
-            </div>
-            <div>
-              <FormControl
-                variant="outlined"
-                style={{
-                  width: "100%",
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Typography>Permiso para banear artes</Typography>
-                <Switch
-                  checked={artBan}
-                  onChange={handleChangeArtBan}
-                  name="checkedA"
-                  color="primary"
-                />
-              </FormControl>
-            </div>
-          </Grid2>
-          <Grid2
-            size={{
-              xs: 12,
-              md: 6,
-            }}
-            style={{
-              border: "2px",
-              borderStyle: "solid",
-              borderColor: "silver",
-              borderRadius: "10px",
-              padding: "10px",
-              marginTop: "20px",
-            }}
-          >
-            <Typography color="secondary" style={{ marginLeft: "20px" }}>
-              Métodos de Pago
-            </Typography>
-            <div>
-              <FormControl
-                variant="outlined"
-                style={{
-                  width: "100%",
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Typography>
-                  Permiso para crear y modificar métodos de pago
-                </Typography>
-                <Switch
-                  checked={createPaymentMethod}
-                  onChange={handleChangeCreatePaymentMethod}
-                  name="checkedA"
-                  color="primary"
-                />
-              </FormControl>
-            </div>
-            <div>
-              <FormControl
-                variant="outlined"
-                style={{
-                  width: "100%",
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Typography>Permiso para eliminar métodos de pago</Typography>
-                <Switch
-                  checked={deletePaymentMethod}
-                  onChange={handleChangeDeletePaymentMethod}
-                  name="checkedA"
-                  color="primary"
-                />
-              </FormControl>
-            </div>
-          </Grid2>
-          <Grid2
-            size={{
-              xs: 12,
-              md: 6,
-            }}
-            style={{
-              border: "2px",
-              borderStyle: "solid",
-              borderColor: "silver",
-              borderRadius: "10px",
-              padding: "10px",
-              marginTop: "20px",
-            }}
-          >
-            <Typography color="secondary" style={{ marginLeft: "20px" }}>
-              Métodos de Envío
-            </Typography>
-            <div>
-              <FormControl
-                variant="outlined"
-                style={{
-                  width: "100%",
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Typography>
-                  Permiso para crear y modificar métodos de envío
-                </Typography>
-                <Switch
-                  checked={createShippingMethod}
-                  onChange={handleChangeCreateShippingMethod}
-                  name="checkedA"
-                  color="primary"
-                />
-              </FormControl>
-            </div>
-            <div>
-              <FormControl
-                variant="outlined"
-                style={{
-                  width: "100%",
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Typography>Permiso para eliminar métodos de pago</Typography>
-                <Switch
-                  checked={deleteShippingMethod}
-                  onChange={handleChangeDeleteShippingMethod}
-                  name="checkedA"
-                  color="primary"
-                />
-              </FormControl>
-            </div>
-          </Grid2>
-          <Grid2
-            size={{
-              xs: 12,
-              md: 6,
-            }}
-            style={{
-              border: "2px",
-              borderStyle: "solid",
-              borderColor: "silver",
-              borderRadius: "10px",
-              padding: "10px",
-              marginTop: "20px",
-            }}
-          >
-            <Typography color="secondary" style={{ marginLeft: "20px" }}>
-              Testimonios
-            </Typography>
-            <div>
-              <FormControl
-                variant="outlined"
-                style={{
-                  width: "100%",
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Typography>
-                  Permiso para crear, modificar, mostrar y ordenar testimonios{" "}
-                </Typography>
-                <Switch
-                  checked={createTestimonial}
-                  onChange={handleChangeCreateTestimonial}
-                  name="checkedA"
-                  color="primary"
-                />
-              </FormControl>
-              <FormControl
-                variant="outlined"
-                style={{
-                  width: "100%",
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Typography>Permiso para eliminar testimonios </Typography>
-                <Switch
-                  checked={deleteTestimonial}
-                  onChange={handleChangeDeleteTestimonial}
-                  name="checkedA"
-                  color="primary"
-                />
-              </FormControl>
-            </div>
-          </Grid2>
-          <Grid2
-            size={{
-              xs: 12,
-              md: 6,
-            }}
-            style={{
-              border: "2px",
-              borderStyle: "solid",
-              borderColor: "silver",
-              borderRadius: "10px",
-              padding: "10px",
-              marginTop: "20px",
-            }}
-          >
-            <Typography color="secondary" style={{ marginLeft: "20px" }}>
-              Usuarios{" "}
-            </Typography>
-            <div>
-              <FormControl
-                variant="outlined"
-                style={{
-                  width: "100%",
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Typography>
-                  Permiso para crear, modificar y eliminar Admins{" "}
-                </Typography>
-                <Switch
-                  checked={modifyAdmins}
-                  onChange={handleChangeModifyAdmins}
-                  name="checkedA"
-                  color="primary"
-                />
-              </FormControl>
-            </div>
-          </Grid2>
-          <Grid2
-            size={{
-              xs: 12,
-              md: 6,
-            }}
-            style={{
-              border: "2px",
-              borderStyle: "solid",
-              borderColor: "silver",
-              borderRadius: "10px",
-              padding: "10px",
-              marginTop: "20px",
-            }}
-          >
-            <Typography color="secondary" style={{ marginLeft: "20px" }}>
-              Clientes frecuentes
-            </Typography>
-            <div>
-              <FormControl
-                variant="outlined"
-                style={{
-                  width: "100%",
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Typography>
-                  Permiso para crear y modificar clientes frecuentes
-                </Typography>
-                <Switch
-                  checked={createConsumer}
-                  onChange={handleChangeCreateConsumer}
-                  name="checkedA"
-                  color="primary"
-                />
-              </FormControl>
-              <FormControl
-                variant="outlined"
-                style={{
-                  width: "100%",
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Typography>Permiso para leer clientes frecuentes</Typography>
-                <Switch
-                  checked={readConsumers}
-                  onChange={handleChangeReadConsumers}
-                  name="checkedA"
-                  color="primary"
-                />
-              </FormControl>
-              <FormControl
-                variant="outlined"
-                style={{
-                  width: "100%",
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Typography>
-                  Permiso para eliminar clientes frecuentes
-                </Typography>
-                <Switch
-                  checked={deleteConsumer}
-                  onChange={handleChangeDeleteConsumer}
-                  name="checkedA"
-                  color="primary"
-                />
-              </FormControl>
-            </div>
-          </Grid2>
-          <Grid2
-            size={{
-              xs: 12,
-            }}
-            style={{ display: "flex", justifyContent: "center" }}
-          >
-            <Button
-              variant="contained"
-              color="primary"
-              type="submit"
-              disabled={buttonState}
-            >
-              Crear
-            </Button>
-          </Grid2>
-        </Grid2>
-      </form>
-    </React.Fragment>
-  )
-}
+        </form>
+      </Paper>
+    </>
+  );
+};
+
+export default CreateRole;

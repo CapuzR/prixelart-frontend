@@ -1,23 +1,19 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import React, { useState, useEffect, useMemo } from 'react';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 
 import ReactGA from 'react-ga';
-import { useConversionRate, useCurrency, useLoading } from 'context/GlobalContext';
+import { useLoading, useUser } from 'context/GlobalContext';
 import { getSelectedVariant } from '../services';
-import { fetchVariantPrice } from '../api';
-import { parsePrice } from 'utils/formats';
 import { splitDescription } from '../helpers';
-
-import { fetchProductDetails } from '../api';
 
 import Portrait from './views/Portrait';
 import Landscape from './views/Landscape';
 
 import { queryCreator } from '@apps/consumer/flow/helpers';
 import { SelectChangeEvent } from '@mui/material';
-import { parseProduct } from '../parseApi';
-import { getUrlParams } from '@utils/util';
-import { Product } from '../../../../types/product.types';
+import { Product, Variant, VariantAttribute } from '../../../../types/product.types'; // Import VariantAttribute
+import { fetchActiveProductDetails, fetchVariantPrice } from '@api/product.api';
+import { formatNumberString } from '@utils/formats';
 
 ReactGA.initialize('G-0RWP9B33D8');
 
@@ -25,22 +21,65 @@ interface DetailsProps {
   productId?: string;
 }
 
+export interface DisplayPriceInfo {
+  type: 'single' | 'range' | 'loading' | 'error' | 'none';
+  // If type is 'single'
+  finalPrice?: number;
+  originalPrice?: number; // Store original price if different from final
+  // If type is 'range'
+  baseMin?: number | null;
+  baseMax?: number | null;
+  finalMin?: number | null;
+  finalMax?: number | null;
+  // If type is 'error'
+  errorMessage?: string;
+}
+
 const Details: React.FC<DetailsProps> = ({ productId }) => {
   const navigate = useNavigate();
   const { setLoading } = useLoading();
-  const { currency } = useCurrency();
-  const { conversionRate } = useConversionRate();
+  const { user } = useUser();
   const { id: routeId } = useParams();
-  const id = productId || routeId || '';
-  const [isFetchingVariantPrice, setIsFetchingVariantPrice] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
 
+  const id = productId || routeId || '';
 
   const [product, setProduct] = useState<Product>();
+  const [selectedVariant, setSelectedVariant] = useState<Variant | undefined>(undefined);
+
+  const [calculatedRangeInfo, setCalculatedRangeInfo] = useState<{
+    baseMin: number | null;
+    baseMax: number | null;
+    finalMin: number | null;
+    finalMax: number | null;
+    isLoading: boolean;
+    error: string | null;
+  }>({
+    baseMin: null, baseMax: null, finalMin: null, finalMax: null,
+    isLoading: true, error: null,
+  });
+
+  // State for the specific price of the currently selected variant
+  const [selectedVariantPriceInfo, setSelectedVariantPriceInfo] = useState<{
+    original: number | null;
+    final: number | null;
+    isLoading: boolean;
+    error: string | null;
+  }>({
+    original: null, final: null, isLoading: false, error: null,
+  });
+
   const [isPortrait, setIsPortrait] = useState(window.innerWidth < 768);
   const [windowHeight, setWindowHeight] = useState(window.innerHeight);
   const [expanded, setExpanded] = useState<string | false>('panel1');
 
-  const description = splitDescription(product?.description);
+  const description = useMemo(() => splitDescription(product?.description), [product?.description]);
+
+  // Derive current selection from search params for passing down
+  const currentSelectionParams = useMemo(() => {
+    return Object.fromEntries(searchParams.entries());
+  }, [searchParams]);
+
 
   useEffect(() => {
     const handleResize = () => {
@@ -53,147 +92,274 @@ const Details: React.FC<DetailsProps> = ({ productId }) => {
   }, []);
 
   useEffect(() => {
-
-    if (!id && !productId) {
+    if (!id) {
+      setProduct(undefined);
+      setLoading(false);
       return;
     }
     const fetchProduct = async () => {
       setLoading(true);
+      setProduct(undefined);
+      setSelectedVariant(undefined);
+      setCalculatedRangeInfo({ baseMin: null, baseMax: null, finalMin: null, finalMax: null, isLoading: true, error: null });
+      setSelectedVariantPriceInfo({ original: null, final: null, isLoading: false, error: null });
       try {
-        const fetchedProduct = await fetchProductDetails(productId ? productId : id);
-        const parsed = parseProduct(fetchedProduct);
-
-        const selectedAttributes = Array.from(getUrlParams([]).entries()).map(
-          ([name, value]) => ({ name, value })
-        );
-
-        setProduct(parsed || undefined);
+        const fetchedProduct = await fetchActiveProductDetails(id);
+        setProduct(fetchedProduct || undefined);
+        // Price calculation will trigger in the next effect
       } catch (error) {
-        console.error('Error fetching product attributes:', error);
+        console.error('Error fetching product details:', error);
+        setProduct(undefined);
+        setCalculatedRangeInfo({ baseMin: null, baseMax: null, finalMin: null, finalMax: null, isLoading: false, error: 'Error al cargar producto.' });
       } finally {
         setLoading(false);
       }
     };
-
     fetchProduct();
-  }, [id]);
+  }, [id, setLoading]);
 
   useEffect(() => {
-    const fetchAndSetPrice = async () => {
-      if (product?.selection && product?.selection.some((selection) => selection.value !== '')) {
-        const selectedVariant = getSelectedVariant(product?.selection, product?.variants);
-        if (selectedVariant) {
-          setIsFetchingVariantPrice(true);
-          const updatedPrice = await fetchVariantPrice(selectedVariant.id, id!);
-          const parsedPrice = parsePrice(updatedPrice);
+    if (!product?._id || !product.variants || product.variants.length === 0) {
+      setCalculatedRangeInfo({ baseMin: null, baseMax: null, finalMin: null, finalMax: null, isLoading: false, error: product ? 'Producto sin variantes.' : null });
+      return;
+    }
 
-          setProduct((prevProduct) =>
-            prevProduct
-              ? { ...prevProduct, price: parsedPrice }
-              : prevProduct
-          );
-          setIsFetchingVariantPrice(false);
+    let isMounted = true;
+
+    const calculatePrices = async () => {
+      // Start loading for range calculation
+      setCalculatedRangeInfo(prev => ({ ...prev, isLoading: true, error: null }));
+
+      try {
+        // --- Step 1: Calculate Base Prices ---
+        const isPrixer = user?.prixer;
+        const basePriceField: keyof Variant = isPrixer && 'prixerPrice' in product.variants![0] ? 'prixerPrice' : 'publicPrice';
+
+        const basePrices = product.variants!
+          .map(v => {
+            const priceValue = v[basePriceField];
+            return priceValue != null ? formatNumberString(String(priceValue)) : NaN;
+          })
+          .filter(p => !isNaN(p));
+
+        const currentBaseMin = basePrices.length > 0 ? Math.min(...basePrices) : null;
+        const currentBaseMax = basePrices.length > 0 ? Math.max(...basePrices) : null;
+
+        // --- Step 2: Fetch Final Prices for ALL variants ---
+        const pricePromises = product.variants!.map(variant =>
+          fetchVariantPrice(variant._id!, product._id!.toString()) // Fetch original & final
+        );
+
+        const results = await Promise.all(pricePromises);
+
+        const validPrices = results.filter((result): result is [number, number] => result !== null);
+
+        if (validPrices.length === 0) {
+          throw new Error("No se pudieron determinar los precios finales para el rango.");
+        }
+
+        const finalPrices = validPrices.map(p => p[1]); // index 1 is final price
+        const currentFinalMin = Math.min(...finalPrices);
+        const currentFinalMax = Math.max(...finalPrices);
+
+        if (isMounted) {
+          setCalculatedRangeInfo({
+            baseMin: currentBaseMin,
+            baseMax: currentBaseMax,
+            finalMin: currentFinalMin,
+            finalMax: currentFinalMax,
+            isLoading: false, // Finished loading range
+            error: null,
+          });
+        }
+
+      } catch (err) {
+        console.error("Error calculating product price range:", err);
+        if (isMounted) {
+          setCalculatedRangeInfo({
+            baseMin: null, baseMax: null, finalMin: null, finalMax: null,
+            isLoading: false,
+            error: err instanceof Error ? err.message : 'Error al calcular rango de precios.',
+          });
         }
       }
     };
-    fetchAndSetPrice();
-  }, [product?.selection, currency, conversionRate]);
 
+    calculatePrices();
+    return () => { isMounted = false; };
+  }, [product, user]);
+
+  useEffect(() => {
+    if (!product?.variants || product.variants.length === 0) {
+      setSelectedVariant(undefined);
+      return;
+    }
+    const params = Object.fromEntries(searchParams.entries());
+    const variantAttributes: VariantAttribute[] = Object.entries(params)
+      .filter(([_, value]) => value?.trim() !== '')
+      .map(([name, value]) => ({ name, value }));
+
+    // Assuming getSelectedVariant finds the best match
+    const foundVariant = getSelectedVariant(variantAttributes, product.variants);
+    setSelectedVariant(foundVariant || undefined);
+
+  }, [product?.variants, searchParams]);
+
+  useEffect(() => {
+    // Reset previous selected price info when variant changes or becomes undefined
+    setSelectedVariantPriceInfo({ original: null, final: null, isLoading: false, error: null });
+
+    if (selectedVariant?._id && product?._id) {
+      let isMounted = true;
+      const fetchSpecificPrice = async () => {
+        setSelectedVariantPriceInfo({ original: null, final: null, isLoading: true, error: null });
+        try {
+          const priceResult = await fetchVariantPrice(selectedVariant._id!, product._id!.toString());
+
+          if (isMounted) {
+            if (priceResult) {
+              setSelectedVariantPriceInfo({
+                original: priceResult[0], // Original price
+                final: priceResult[1],    // Final price
+                isLoading: false,
+                error: null,
+              });
+            } else {
+              throw new Error("No se pudo obtener el precio para la variante seleccionada.");
+            }
+          }
+        } catch (error) {
+          console.error('Error fetching selected variant price:', error);
+          if (isMounted) {
+            setSelectedVariantPriceInfo({
+              original: null, final: null, isLoading: false,
+              error: error instanceof Error ? error.message : 'Error al obtener precio.',
+            });
+          }
+        }
+      };
+      fetchSpecificPrice();
+      return () => { isMounted = false; };
+    }
+    // No cleanup needed if no variant is selected
+  }, [selectedVariant?._id, product?._id]);
+
+
+  // --- Event Handlers ---
   const handleSelection = (e: SelectChangeEvent<string>) => {
     const { name, value } = e.target;
-    if (!name || !id) return;
-
-    setProduct((prevProduct) => {
-      if (!prevProduct) return prevProduct;
-
-      const newSelection = Array.isArray(prevProduct.selection)
-        ? prevProduct.selection.map((sel) =>
-          sel.name === name ? { ...sel, value } : sel
-        )
-        : [];
-
-      if (!newSelection.find((sel) => sel.name === name)) {
-        newSelection.push({ name, value });
-      }
-
-      return { ...prevProduct, selection: newSelection };
-    });
-
-    const searchParams = new URLSearchParams(window.location.search);
-    if (product?.selection) {
-      product.selection.forEach((selection) => {
-        searchParams.set(selection.name, selection.value);
-      });
+    if (!name) return;
+    const currentSearchParams = new URLSearchParams(searchParams.toString());
+    if (value && value.trim() !== '') {
+      currentSearchParams.set(name, value);
+    } else {
+      currentSearchParams.delete(name);
     }
-    searchParams.set(name, String(value));
     if (!productId) {
-      if (value) {
-        navigate(`/producto/${id}?${searchParams.toString()}`);
-      } else {
-        navigate(`/producto/${id}`);
-      }
+      navigate(`/producto/${id}?${currentSearchParams.toString()}`);
+    } else {
+      setSearchParams(currentSearchParams);
     }
   };
 
   function handleArtSelection(): void {
-    const selectionAsObject: { [key: string]: string } = Array.isArray(product?.selection)
-      ? product?.selection.reduce(
-        (acc, item) => {
-          acc[item.name] = item.value;
-          return acc;
-        },
-        {} as { [key: string]: string }
-      )
-      : product?.selection || {};
-
+    if (!selectedVariant) {
+      console.error("handleArtSelection called without a selected variant.");
+      return;
+    }
+    const variantAttributesObject: { [key: string]: string } = selectedVariant.attributes.reduce(
+      (acc, attr) => {
+        acc[attr.name] = attr.value;
+        return acc;
+      },
+      {} as { [key: string]: string }
+    );
     let art: string | undefined;
     if (productId) {
       const params = new URLSearchParams(window.location.search);
       art = params.get('arte') || undefined;
     }
-    const queryString = queryCreator(
-      undefined,
-      id,
-      art,
-      selectionAsObject || undefined,
-    );
-
-    navigate(`/crear-prix?${queryString}`)
+    const queryString = queryCreator(undefined, id, art, variantAttributesObject);
+    navigate(`/crear-prix?${queryString}`);
   }
 
-  const handleChange =
-    (panel: string) => (event: React.ChangeEvent<object>, isExpanded: boolean) => {
-      setExpanded(isExpanded ? panel : false);
-    };
+  const handleChange = (panel: string) => (event: React.ChangeEvent<object>, isExpanded: boolean) => {
+    setExpanded(isExpanded ? panel : false);
+  };
+
+  const displayPriceInfo = useMemo((): DisplayPriceInfo => {
+    // Priority 1: Show loading/error for the specific selected variant if applicable
+    if (selectedVariant && selectedVariantPriceInfo.isLoading) {
+      return { type: 'loading' };
+    }
+    if (selectedVariant && selectedVariantPriceInfo.error) {
+      return { type: 'error', errorMessage: selectedVariantPriceInfo.error };
+    }
+    // Priority 2: Show the successfully fetched price for the selected variant
+    if (selectedVariant && selectedVariantPriceInfo.final !== null) {
+      return {
+        type: 'single',
+        finalPrice: selectedVariantPriceInfo.final,
+        // Include original only if it's different
+        originalPrice: (selectedVariantPriceInfo.original !== null && selectedVariantPriceInfo.original !== selectedVariantPriceInfo.final)
+          ? selectedVariantPriceInfo.original
+          : undefined,
+      };
+    }
+
+    // --- If no variant is selected or its price fetch failed ---
+
+    // Priority 3: Show loading/error for the overall range calculation
+    if (calculatedRangeInfo.isLoading) {
+      return { type: 'loading' };
+    }
+    if (calculatedRangeInfo.error) {
+      // Don't show range calculation errors if a variant *is* selected but its *own* price fetch failed (handled above)
+      if (!selectedVariant) {
+        return { type: 'error', errorMessage: calculatedRangeInfo.error };
+      }
+      // If a variant is selected but its price failed, fall back to 'none' or prompt
+      return { type: 'none' }; // Or a specific message like "Selecciona otra opción"
+    }
+    // Priority 4: Show the calculated price range
+    if (calculatedRangeInfo.finalMin !== null) {
+      return {
+        type: 'range',
+        baseMin: calculatedRangeInfo.baseMin,
+        baseMax: calculatedRangeInfo.baseMax,
+        finalMin: calculatedRangeInfo.finalMin,
+        finalMax: calculatedRangeInfo.finalMax,
+      };
+    }
+
+    // Fallback: No price info available
+    return { type: 'none' };
+
+  }, [selectedVariant, selectedVariantPriceInfo, calculatedRangeInfo]);
+
+  const ViewComponent = isPortrait || productId ? Portrait : Landscape;
 
   return (
-    <div style={{ maxHeight: `${windowHeight - 64}px`, overflowY: 'auto' }}>
-      {!isPortrait && !productId ? (
-        product && (
-          <Landscape
-            product={product}
-            handleChange={handleChange}
-            handleSelection={handleSelection}
-            expanded={expanded}
-            description={description}
-            handleArtSelection={handleArtSelection}
-            isFetchingVariantPrice={isFetchingVariantPrice}
-            flowProductId={productId}
-          />
-        )
+    <div style={{ maxHeight: `${windowHeight - (productId ? 0 : 64)}px`, overflowY: 'auto' }}>
+      {product ? (
+        <ViewComponent
+          product={product}
+          handleChange={handleChange}
+          handleSelection={handleSelection}
+          expanded={expanded}
+          description={description}
+          handleArtSelection={handleArtSelection}
+          // Pass down loading status based on relevant context
+          isFetchingVariantPrice={selectedVariantPriceInfo.isLoading} // Use specific loading state
+          flowProductId={productId}
+          selectedVariant={selectedVariant}
+          currentSelectionParams={currentSelectionParams}
+          // Pass the consolidated price info object
+          priceInfo={displayPriceInfo}
+        />
       ) : (
-        product && (
-          <Portrait
-            product={product}
-            handleChange={handleChange}
-            handleSelection={handleSelection}
-            expanded={expanded}
-            description={description}
-            handleArtSelection={handleArtSelection}
-            isFetchingVariantPrice={isFetchingVariantPrice}
-            flowProductId={productId}
-          />
-        )
+        // Show loading indicator or error message while product is fetching
+        calculatedRangeInfo.isLoading || calculatedRangeInfo.error ? null : null // Or a dedicated loading/error view
       )}
     </div>
   );

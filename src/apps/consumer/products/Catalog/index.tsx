@@ -46,7 +46,7 @@ const ProductsCatalog: React.FC<ProductsCatalogProps> = ({ onProductSelect }) =>
   const [currentPage, setCurrentPage] = useState(1);
   const [maxLength, setMaxLength] = useState(0);
   const [productsPerPage] = useState(10);
-  const [sort, setSort] = useState('');
+  const [sort, setSort] = useState('A-Z');
 
   const [searchQuery, setSearchQuery] = useState<string>('');
 
@@ -60,7 +60,7 @@ const ProductsCatalog: React.FC<ProductsCatalogProps> = ({ onProductSelect }) =>
   const scrollToProduct = async (product: Product) => {
     const element = document.getElementById(product.name);
     if (element) {
-      const offset = 100; // offset in pixels
+      const offset = 100;
       const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
       window.scrollTo({
         top: elementPosition - offset,
@@ -99,7 +99,7 @@ const ProductsCatalog: React.FC<ProductsCatalogProps> = ({ onProductSelect }) =>
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetchActiveProducts();
+        const response = await fetchActiveProducts(sort);
         setProducts(response);
       } catch (error) {
         console.error('Error fetching products:', error);

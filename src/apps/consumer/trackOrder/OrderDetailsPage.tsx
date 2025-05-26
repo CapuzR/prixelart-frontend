@@ -190,7 +190,7 @@ const OrderDetailsPage: React.FC = () => {
 
             <Grid2 container spacing={{ xs: 2, md: 4 }}>
                 <Grid2 size={{ xs: 12, lg: 7 }}>
-                    <Typography variant="h5" fontWeight="medium" gutterBottom sx={{ mb: 2 }}>Artículos del Pedido</Typography>
+                    <Typography variant="h5" fontWeight="medium" gutterBottom sx={{ mb: 2 }}>Artículos del Pedido xo</Typography>
                     {order.lines.map((line) => {
                         const currentLineStatusInfo = getCurrentOrderStatus(line.status);
                         const currentLineStatus = currentLineStatusInfo ? currentLineStatusInfo[0] : OrderStatus.PendingPayment;

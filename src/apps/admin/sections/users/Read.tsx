@@ -105,10 +105,10 @@ const ReadUsers: React.FC = () => {
         if (searchQuery) {
             const lowerQuery = searchQuery.toLowerCase();
             filteredUsers = filteredUsers.filter(user =>
-                user.username.toLowerCase().includes(lowerQuery) ||
+                user.username?.toLowerCase().includes(lowerQuery) ||
                 user.firstName?.toLowerCase().includes(lowerQuery) ||
                 user.lastName?.toLowerCase().includes(lowerQuery) ||
-                user.email.toLowerCase().includes(lowerQuery)
+                user.email?.toLowerCase().includes(lowerQuery)
             );
         }
 
@@ -132,7 +132,7 @@ const ReadUsers: React.FC = () => {
     // Calculate total count *after* filtering for pagination
     const totalFilteredCount = useMemo(() => {
         let filteredUsers = [...users];
-        if (searchQuery) { const lowerQuery = searchQuery.toLowerCase(); filteredUsers = filteredUsers.filter(user => user.username.toLowerCase().includes(lowerQuery) || user.firstName?.toLowerCase().includes(lowerQuery) || user.lastName?.toLowerCase().includes(lowerQuery) || user.email.toLowerCase().includes(lowerQuery)); }
+        if (searchQuery) { const lowerQuery = searchQuery.toLowerCase(); filteredUsers = filteredUsers.filter(user => user.username.toLowerCase().includes(lowerQuery) || user.firstName?.toLowerCase().includes(lowerQuery) || user.lastName?.toLowerCase().includes(lowerQuery) || user.email?.toLowerCase().includes(lowerQuery)); }
         filteredUsers = filteredUsers.filter(user => { const statusMatch = filters.status === 'all' || (filters.status === 'active' && user.active) || (filters.status === 'inactive' && !user.active); const typeMatch = filters.type === 'all' || (filters.type === 'prixer' && !!user.prixer) || (filters.type === 'user' && !user.prixer); return statusMatch && typeMatch; });
         return filteredUsers.length;
     }, [users, searchQuery, filters]);

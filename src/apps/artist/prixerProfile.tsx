@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import FloatingAddButton from 'components/floatingAddButton/floatingAddButton';
+import FloatingAddButton from '@components/floatingAddButton';
 import CreateService from '@components/createService';
 import UserData from './userData/userData';
 import PrixerOptions from './prixerOptions/prixerOptions';
 import Container from '@mui/material/Container';
 import CssBaseline from '@mui/material/CssBaseline';
 import Grid2 from '@mui/material/Grid';
-import ArtUploader from 'components/artUploader/artUploader';
+// import ArtUploader from 'components/artUploader/artUploader';
 import { useTheme } from '@mui/styles';
-import Biography from './grid/biography';
+import Biography from './prixerService/biography';
 import useStyles from './prixerProfile.styles';
 import { getUrlParams } from '@utils/util';
 import ArtsGrid from '@apps/consumer/art/components/ArtsGrid/ArtsGrid';
@@ -65,8 +65,7 @@ const PrixerProfile: React.FC = () => {
         <PrixerOptions prixerUsername={username || ''} feed={feed} setFeed={setFeed} />
       )}
       {showPrixerGrid()}
-
-      {openArtFormDialog && (
+      {/* {openArtFormDialog && (
         <ArtUploader
           openArtFormDialog={openArtFormDialog}
           setOpenArtFormDialog={setOpenArtFormDialog}
@@ -86,7 +85,7 @@ const PrixerProfile: React.FC = () => {
           setOpenServiceFormDialog={setOpenServiceFormDialog}
           setOpenArtFormDialog={setOpenArtFormDialog}
         />
-      </Grid2>
+      </Grid2> */}
     </Container>
   );
 };

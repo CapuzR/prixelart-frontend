@@ -29,8 +29,12 @@ interface GlobalContextType {
   backdropOpen: boolean
   showBackdrop: () => void
   closeBackdrop: () => void
-  user: User | null;
-  setUser: Dispatch<SetStateAction<User | null>>;
+  user: User | null
+  setUser: Dispatch<SetStateAction<User | null>>
+  uploadArt: boolean
+  uploadService: boolean
+  setArtModal: (x: boolean) => void
+  setServiceModal: (x: boolean) => void
 }
 
 // Create the context with the type
@@ -55,7 +59,9 @@ export const GlobalProvider: React.FC<GlobalProviderProps> = ({ children }) => {
   const [snackbarOpen, setSnackbarOpen] = useState<boolean>(false)
   const [snackbarMessage, setSnackbarMessage] = useState<string>("")
   const [backdropOpen, setBackdropOpen] = useState<boolean>(false)
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User | null>(null)
+  const [uploadArt, setUploadArt] = useState<boolean>(false)
+  const [uploadService, setUploadService] = useState<boolean>(false)
 
   // Function to fetch the conversion rate
   const fetchConversionRate = async () => {
@@ -108,6 +114,14 @@ export const GlobalProvider: React.FC<GlobalProviderProps> = ({ children }) => {
     setBackdropOpen(false)
   }
 
+  const setArtModal = (value: boolean) => {
+    setUploadArt(value)
+  }
+
+  const setServiceModal = (value: boolean) => {
+    setUploadService(value)
+  }
+
   // Memoize the context value to avoid unnecessary re-renders
   const value = useMemo(
     () => ({
@@ -129,7 +143,11 @@ export const GlobalProvider: React.FC<GlobalProviderProps> = ({ children }) => {
       showBackdrop,
       closeBackdrop,
       user,
-      setUser
+      setUser,
+      uploadArt,
+      uploadService,
+      setArtModal,
+      setServiceModal,
     }),
     [
       currency,
@@ -141,7 +159,9 @@ export const GlobalProvider: React.FC<GlobalProviderProps> = ({ children }) => {
       snackbarOpen,
       snackbarMessage,
       backdropOpen,
-      user
+      user,
+      uploadArt,
+      uploadService,
     ]
   )
 
@@ -213,9 +233,22 @@ export const useBackdrop = () => {
 }
 
 export const useUser = () => {
-  const context = useContext(GlobalContext);
+  const context = useContext(GlobalContext)
   if (!context) {
-    throw new Error("useUser must be used within a GlobalProvider");
+    throw new Error("useUser must be used within a GlobalProvider")
   }
-  return { user: context.user, setUser: context.setUser };
-};
+  return { user: context.user, setUser: context.setUser }
+}
+
+export const usePrixerCreator = () => {
+  const context = useContext(GlobalContext)
+  if (!context) {
+    throw new Error("usePrixerCreator must be used within a GlobalProvider")
+  }
+  return {
+    uploadArt: context.uploadArt,
+    uploadService: context.uploadService,
+    setArtModal: context.setArtModal,
+    setServiceModal: context.setServiceModal,
+  }
+}

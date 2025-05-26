@@ -28,7 +28,7 @@ import { generateServiceMessage } from "../../../utils/utils"
 import ReactQuill from "react-quill"
 import "react-quill/dist/quill.snow.css"
 import ServiceSearchBar from "components/searchBar/serviceSearchBar"
-import FloatingAddButton from "components/floatingAddButton/floatingAddButton"
+import FloatingAddButton from "@components/floatingAddButton"
 import ArtUploader from "@apps/artist/artUploader"
 import CreateService from "@components/createService"
 import { makeStyles } from "tss-react/mui"
@@ -1152,7 +1152,7 @@ export default function ServiceGrid2(props) {
           </Typography>
         )}
       </Grid2>
-      <Grid2 className={classes.float}>
+      {/* <Grid2 className={classes.float}>
         <FloatingAddButton
           setOpenArtFormDialog={setOpenArtFormDialog}
           setOpenShoppingCart={setOpenShoppingCart}
@@ -1173,7 +1173,7 @@ export default function ServiceGrid2(props) {
           setOpenServiceFormDialog={setOpenServiceFormDialog}
           setCreatedService={setCreatedService}
         />
-      )}
+      )} */}
     </>
   )
 }

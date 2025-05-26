@@ -1,49 +1,89 @@
-import React, { useState } from "react"
-import Button from "@mui/material/Button"
-import Dialog from "@mui/material/Dialog"
-import AppBar from "@mui/material/AppBar"
-import Toolbar from "@mui/material/Toolbar"
-import IconButton from "@mui/material/IconButton"
-import Typography from "@mui/material/Typography"
-import CloseIcon from "@mui/icons-material/Close"
-import MenuItem from "@mui/material/MenuItem"
-import Select from "@mui/material/Select"
-import Backdrop from "@mui/material/Backdrop"
-import CircularProgress from "@mui/material/CircularProgress"
-import useMediaQuery from "@mui/material/useMediaQuery"
-
+// src/components/Services/CreateService.tsx (o la ruta correcta)
+import React, {
+  useState,
+  useEffect,
+  // useCallback,
+  ChangeEvent,
+  FormEvent,
+  useRef,
+  forwardRef,
+} from "react"
+import { useNavigate } from "react-router-dom"
 import axios from "axios"
 
-import Copyright from "../Copyright/copyright"
+import { useSnackBar, usePrixerCreator, useUser } from "context/GlobalContext"
+import { Service } from "../../types/service.types"
+import { PrixResponse } from "../../types/prixResponse.types"
 
-//material-ui
-import Grid2 from "@mui/material/Grid"
-import Box from "@mui/material/Box"
-import Container from "@mui/material/Container"
-import Snackbar from "@mui/material/Snackbar"
-import InputLabel from "@mui/material/InputLabel"
-import FormControl from "@mui/material/FormControl"
-import TextField from "@mui/material/TextField"
-import CssBaseline from "@mui/material/CssBaseline"
-import Paper from "@mui/material/Paper"
-import FormControlLabel from "@mui/material/FormControlLabel"
-import Checkbox from "@mui/material/Checkbox"
-import InputAdornment from "@mui/material/InputAdornment"
-import InfoIcon from "@mui/icons-material/Info"
-import HighlightOffOutlinedIcon from "@mui/icons-material/HighlightOffOutlined"
-import EditIcon from "@mui/icons-material/Edit"
-import ReactQuill from "react-quill"
-import "react-quill/dist/quill.snow.css"
+import {
+  Box,
+  Typography,
+  TextField,
+  Button,
+  Paper,
+  CircularProgress,
+  Alert,
+  Stack,
+  Divider,
+  IconButton,
+  Tooltip,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  LinearProgress,
+  FormHelperText,
+  Select,
+  SelectChangeEvent,
+  MenuItem,
+  InputLabel,
+  FormControl,
+  Checkbox,
+  FormControlLabel,
+  InputAdornment,
+  Slide,
+  Container,
+  Snackbar,
+  useMediaQuery,
+  Grid,
+  CssBaseline,
+  Backdrop,
+} from "@mui/material"
+import { TransitionProps } from "@mui/material/transitions"
+import DeleteIcon from "@mui/icons-material/Delete"
+import CloseIcon from "@mui/icons-material/Close"
+import AppBar from "@mui/material/AppBar"
+import Toolbar from "@mui/material/Toolbar"
 import { Theme, useTheme } from "@mui/material"
 import { makeStyles } from "tss-react/mui"
-import Slide from "@mui/material/Slide"
-import { SelectChangeEvent } from "@mui/material/Select"
-import { useSnackBar, useLoading } from "@context/GlobalContext"
 
-interface CSProps {
-  setOpenServiceFormDialog: (x: boolean) => void
-  openServiceFormDialog: boolean
+import * as tus from "tus-js-client"
+import ReactCrop, {
+  centerCrop,
+  makeAspectCrop,
+  Crop,
+  PixelCrop,
+} from "react-image-crop"
+import "react-image-crop/dist/ReactCrop.css"
+import { BACKEND_URL } from "@api/utils.api"
+import PhotoCameraBackIcon from "@mui/icons-material/PhotoCameraBack"
+import BrokenImageIcon from "@mui/icons-material/BrokenImage"
+import InfoIcon from "@mui/icons-material/Info"
+import { v4 as uuidv4 } from "uuid"
+import ReactQuill from "react-quill-new"
+import "react-quill-new/dist/quill.snow.css"
+import Copyright from "@components/Copyright/copyright"
+// import
+interface ImageUploadState {
+  id: string
+  url: string
+  file?: File
+  progress?: number
+  error?: string
 }
+
+const SERVICE_IMAGE_ASPECT = 0
+
 const useStyles = makeStyles()((theme: Theme) => {
   return {
     img: {
@@ -60,8 +100,6 @@ const useStyles = makeStyles()((theme: Theme) => {
     },
     form: {
       width: "100%",
-    },
-    paper: {
       marginTop: "24px",
       display: "flex",
       flexDirection: "column",
@@ -78,195 +116,433 @@ const useStyles = makeStyles()((theme: Theme) => {
       zIndex: theme.zIndex.drawer + 1,
       color: theme.palette.primary.main,
     },
+    imagePreviewItem: {
+      width: { xs: "calc(50% - 8px)", sm: 120, md: 150 },
+      height: { xs: 100, sm: 120, md: 120 },
+      position: "relative",
+      border: "1px solid",
+      borderColor: "divider",
+      borderRadius: 1,
+      overflow: "hidden",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+    },
   }
 })
 
 const serviceAreas = ["Diseño", "Fotografía", "Artes Plásticas", "Otro"]
 
-const Transition = React.forwardRef(function Transition(props: any, ref) {
-  return (
-    <Slide direction="up" ref={ref} {...props}>
-      {props.children}
-    </Slide>
-  )
+const Transition = React.forwardRef(function Transition(
+  props: TransitionProps & { children: React.ReactElement<any, any> },
+  ref: React.Ref<unknown>
+) {
+  return <Slide direction="up" ref={ref} {...props} />
 })
 
-export default function CreateService({
-  setOpenServiceFormDialog,
-  openServiceFormDialog,
-}: CSProps) {
+export default function CreateService() {
   const { classes } = useStyles()
   const theme = useTheme()
-
-  const isMobile = useMediaQuery(theme.breakpoints.down("xs"))
+  const { uploadService, setServiceModal } = usePrixerCreator()
+  const { user } = useUser()
+  const formRef = useRef<HTMLFormElement>(null);
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
 
   const [title, setTitle] = useState("")
   const [description, setDescription] = useState("")
   const [serviceArea, setServiceArea] = useState("")
   const [location, setLocation] = useState("")
-  const [mimeType, setMimeType] = useState("")
-  const [backdrop, setBackdrop] = useState(false)
   const [isLocal, setIsLocal] = useState(false)
   const [isRemote, setIsRemote] = useState(false)
-  const [priceFrom, setPriceFrom] = useState(0)
-  const [priceTo, setPriceTo] = useState(0)
+  const [priceFrom, setPriceFrom] = useState<number | string>("")
+  const [priceTo, setPriceTo] = useState<number | string | undefined>("")
   const [productionTime, setProductionTime] = useState("")
   const [active, setActive] = useState(true)
-  const [imageLoader, setLoadImage] = useState<any>([])
-  const [images, setImages] = useState<File[]>([])
-  //Error states.
-  const [snackBarAction, setSnackBarAction] = useState(false)
-  const [snackBarError, setSnackBarError] = useState(false)
+
+  const [serviceImages, setServiceImages] = useState<ImageUploadState[]>([])
+  const [imageToCropDetails, setImageToCropDetails] = useState<{
+    originalFile: File
+    tempId: string
+  } | null>(null)
+  const [imageSrcForCropper, setImageSrcForCropper] = useState<string | null>(
+    null
+  )
+  const [crop, setCrop] = useState<Crop>()
+  const [completedCrop, setCompletedCrop] = useState<PixelCrop>()
+  const [cropModalOpen, setCropModalOpen] = useState<boolean>(false)
+
+  const imgRef = useRef<HTMLImageElement | null>(null)
+  const previewCanvasRef = useRef<HTMLCanvasElement | null>(null)
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
+
+  const [backdrop, setBackdrop] = useState(false)
   const { showSnackBar } = useSnackBar()
-  const { setLoading } = useLoading()
-  // const prixerUsername = new URLSearchParams(window.location)
-  //   .get("pathname")
-  //   .replace(/[/]/gi, "")
+
+  useEffect(() => {
+    if (uploadService) {
+      setTitle("")
+      setDescription("")
+      setServiceArea("")
+      setLocation("")
+      setIsLocal(false)
+      setIsRemote(false)
+      setPriceFrom("")
+      setPriceTo("")
+      setProductionTime("")
+      setActive(true)
+      setServiceImages([])
+    }
+  }, [uploadService])
+
+  function centerAspectCrop(
+    mediaWidth: number,
+    mediaHeight: number,
+    aspect: number
+  ): Crop {
+    if (aspect <= 0) {
+      return {
+        unit: "%",
+        width: 100,
+        height: 100,
+        x: 0,
+        y: 0,
+      }
+    }
+    return centerCrop(
+      makeAspectCrop(
+        {
+          unit: "%",
+          width: 100,
+        },
+        aspect,
+        mediaWidth,
+        mediaHeight
+      ),
+      mediaWidth,
+      mediaHeight
+    )
+  }
+
+  const onImageLoadInCropper = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    imgRef.current = e.currentTarget
+    const { naturalWidth, naturalHeight } = e.currentTarget
+    if (naturalWidth > 0 && naturalHeight > 0) {
+      setCrop(
+        centerAspectCrop(naturalWidth, naturalHeight, SERVICE_IMAGE_ASPECT)
+      )
+    } else {
+      showSnackBar(
+        "Error al cargar imagen para recorte: dimensiones inválidas."
+      )
+      closeAndResetCropper()
+    }
+  }
+
+  const openCropperWithFile = (file: File, tempId: string) => {
+    setImageToCropDetails({ originalFile: file, tempId })
+    const reader = new FileReader()
+    reader.addEventListener("load", () => {
+      setImageSrcForCropper(reader.result?.toString() || null)
+      setCropModalOpen(true)
+    })
+    reader.readAsDataURL(file)
+  }
+
+  const handleServiceImageSelect = (event: ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files.length > 0) {
+      if (serviceImages.length >= 6) {
+        showSnackBar("Has alcanzado el límite de 6 imágenes permitidas.")
+        return
+      }
+      const file = event.target.files[0]
+      if (file.size > 15 * 1024 * 1024) {
+        showSnackBar("El archivo es muy grande. Máximo 15MB.")
+        if (event.target) (event.target as HTMLInputElement).value = ""
+        return
+      }
+      if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+        showSnackBar("Formato no permitido. Solo JPG, PNG, WEBP.")
+        if (event.target) (event.target as HTMLInputElement).value = ""
+        return
+      }
+      const tempImageId = uuidv4()
+      openCropperWithFile(file, tempImageId)
+    }
+    if (event.target) (event.target as HTMLInputElement).value = ""
+  }
+
+  const closeAndResetCropper = () => {
+    setCropModalOpen(false)
+    setImageSrcForCropper(null)
+    setImageToCropDetails(null)
+    setCrop(undefined)
+    setCompletedCrop(undefined)
+    if (imgRef.current) imgRef.current = null
+  }
+
+  async function canvasPreview(
+    image: HTMLImageElement,
+    canvas: HTMLCanvasElement,
+    crop: PixelCrop,
+    scale = 1,
+    rotate = 0
+  ) {
+    const ctx = canvas.getContext("2d")
+    if (!ctx) {
+      throw new Error("No 2d context")
+    }
+    const scaleX = image.naturalWidth / image.width
+    const scaleY = image.naturalHeight / image.height
+    const pixelRatio = window.devicePixelRatio || 1
+    canvas.width = Math.floor(crop.width * scaleX * pixelRatio)
+    canvas.height = Math.floor(crop.height * scaleY * pixelRatio)
+    ctx.scale(pixelRatio, pixelRatio)
+    ctx.imageSmoothingQuality = "high"
+    const cropX = crop.x * scaleX
+    const cropY = crop.y * scaleY
+    const rotateRads = (rotate * Math.PI) / 180
+    const centerX = image.naturalWidth / 2
+    const centerY = image.naturalHeight / 2
+    ctx.save()
+    ctx.translate(-cropX, -cropY)
+    ctx.translate(centerX, centerY)
+    ctx.rotate(rotateRads)
+    ctx.scale(scale, scale)
+    ctx.translate(-centerX, -centerY)
+    ctx.drawImage(image, 0, 0, image.naturalWidth, image.naturalHeight)
+    ctx.restore()
+  }
+
+  const handleConfirmCropAndUpload = async () => {
+    if (
+      !completedCrop ||
+      !imgRef.current ||
+      !previewCanvasRef.current ||
+      !imageToCropDetails
+    ) {
+      showSnackBar("Error: No se pudo procesar el recorte.")
+      return
+    }
+    await canvasPreview(imgRef.current, previewCanvasRef.current, completedCrop)
+    previewCanvasRef.current.toBlob(
+      (blob) => {
+        if (!blob) {
+          showSnackBar("Error: No se pudo crear el archivo WebP.")
+          return
+        }
+        const { originalFile, tempId } = imageToCropDetails
+        let originalNameWithoutExtension = originalFile.name
+        const lastDotIndex = originalFile.name.lastIndexOf(".")
+        if (lastDotIndex > 0)
+          originalNameWithoutExtension = originalFile.name.substring(
+            0,
+            lastDotIndex
+          )
+        const webpFileName = `service_${originalNameWithoutExtension.replace(/[^a-zA-Z0-9.]/g, "_")}_${Date.now()}.webp`
+        const croppedWebpFile = new File([blob], webpFileName, {
+          type: "image/webp",
+        })
+
+        closeAndResetCropper()
+        setServiceImages((prev) => [
+          ...prev,
+          { id: tempId, url: "", file: croppedWebpFile, progress: 0 },
+        ])
+        startTusUpload(croppedWebpFile, tempId)
+      },
+      "image/webp",
+      0.85
+    )
+  }
+
+  const startTusUpload = (file: File, imageId: string) => {
+    const upload = new tus.Upload(file, {
+      endpoint: `${BACKEND_URL}/files`,
+      retryDelays: [0, 1000, 3000, 5000],
+      metadata: {
+        filename: file.name,
+        filetype: file.type,
+        context: "serviceImage",
+        imageId: imageId,
+      },
+      onProgress: (bytesUploaded, bytesTotal) => {
+        const percentage = Math.floor((bytesUploaded / bytesTotal) * 100)
+        setServiceImages((prev) =>
+          prev.map((img) =>
+            img.id === imageId ? { ...img, progress: percentage } : img
+          )
+        )
+      },
+      onSuccess: async () => {
+        const tusUploadInstance = upload as any
+        let finalS3Url: string | null = null
+        if (tusUploadInstance._req?._xhr?.getResponseHeader) {
+          finalS3Url =
+            tusUploadInstance._req._xhr.getResponseHeader("x-final-url") ||
+            tusUploadInstance._req._xhr.getResponseHeader("X-Final-URL")
+        } else if (tusUploadInstance.xhr?.getResponseHeader) {
+          finalS3Url =
+            tusUploadInstance.xhr.getResponseHeader("x-final-url") ||
+            tusUploadInstance.xhr.getResponseHeader("X-Final-URL")
+        }
+        if (finalS3Url && finalS3Url.startsWith("https://https//")) {
+          finalS3Url = finalS3Url.replace("https://https//", "https://")
+        }
+        const imageUrl = finalS3Url || upload.url
+
+        if (imageUrl) {
+          setServiceImages((prev) =>
+            prev.map((img) =>
+              img.id === imageId
+                ? { ...img, url: imageUrl, progress: 100, file: undefined }
+                : img
+            )
+          )
+          showSnackBar(`Imagen de servicio subida.`)
+        } else {
+          const errorMsg = "Error al obtener URL"
+          setServiceImages((prev) =>
+            prev.map((img) =>
+              img.id === imageId
+                ? { ...img, error: errorMsg, file: undefined }
+                : img
+            )
+          )
+          showSnackBar(`Error al obtener URL para la imagen.`)
+        }
+      },
+      onError: (error) => {
+        const errorMsg = error.message || "Error desconocido"
+        setServiceImages((prev) =>
+          prev.map((img) =>
+            img.id === imageId
+              ? { ...img, error: errorMsg, file: undefined }
+              : img
+          )
+        )
+        showSnackBar(`Error al subir imagen: ${errorMsg}`)
+      },
+    })
+    upload.start()
+  }
+
+  const handleRemoveServiceImage = (idToRemove: string) => {
+    setServiceImages((prev) => prev.filter((img) => img.id !== idToRemove))
+    showSnackBar("Imagen eliminada de la lista.")
+  }
 
   const handleEditorChange = (value: string) => {
     setDescription(value)
   }
-
   const handleServiceAreaChange = (e: SelectChangeEvent<string>) => {
-    if (!e.target.value) {
-      showSnackBar("Por favor indica a qué categoría pertenece el arte.")
-    } else {
-      setServiceArea(e.target.value)
-    }
+    setServiceArea(e.target.value)
   }
-
   const handleClose = () => {
-    setOpenServiceFormDialog(false)
+    setServiceModal(false)
   }
-
-  const handleSubmit = async () => {
-    try {
-      if (title && description && serviceArea && priceFrom > 0) {
-        await newService()
-      } else {
-        showSnackBar("Por favor completa los campos requeridos.")
-      }
-    } catch (err) {
-      console.log(err)
-      setBackdrop(false)
-      setOpenServiceFormDialog(false)
-      showSnackBar(
-        "Ocurrió un error inesperado, por favor valida e inicia sesión."
-      )
-    }
+  const handleActive = () => {
+    setActive(!active)
   }
-
   const handleIsLocal = () => {
     setIsLocal(!isLocal)
   }
-
   const handleIsRemote = () => {
     setIsRemote(!isRemote)
   }
 
-  async function newService() {
-    var formData = new FormData()
-
-    const prixer = localStorage.getItem("token")
-    const prixerData = prixer ? JSON.parse(prixer) : null
-
-    const ID =
-      prixerData.role === "Organization"
-        ? prixerData.orgId
-        : prixerData.prixerId
-
-    formData.append("title", title)
-    formData.append("description", description)
-    formData.append("serviceArea", serviceArea)
-    formData.append("isLocal", isLocal.toString())
-    formData.append("isRemote", isRemote.toString())
-    formData.append("location", location)
-    formData.append("productionTime", productionTime)
-    formData.append("priceFrom", priceFrom.toString())
-    formData.append("priceTo", priceTo.toString())
-    formData.append("userId", prixerData.id)
-    formData.append("prixerUsername", prixerData.username)
-    formData.append("prixer", ID)
-    formData.append("active", active.toString())
-
-    images.map((file) => formData.append("serviceImages", file))
-
-    const base_url = import.meta.env.VITE_BACKEND_URL + "/service/create"
-    const create = await axios.post(base_url, formData)
-    if (create.data.success) {
-      setOpenServiceFormDialog(false)
-      showSnackBar("Servicio creado exitosamente.")
-    } else {
+  const handleSubmit = async (event?: FormEvent<HTMLFormElement>) => {
+    if (event) event.preventDefault()
+    if (
+      !title.trim() ||
+      !description.trim() ||
+      !serviceArea.trim() ||
+      Number(priceFrom) <= 0
+    ) {
       showSnackBar(
-        "Por favor vuelve a intentarlo, puede que exista algún inconveniente de conexión. Si aún no lo has hecho por favor inicia sesión."
+        "Por favor completa todos los campos obligatorios (Título, Descripción, Área, Precio Desde)."
       )
+      return
     }
-  }
-
-  const replaceImage = async (e: any, index: number) => {
-    if (e !== undefined) {
-      const file: File = e.target.files[0]
-      const resizedString = await convertToBase64(file)
-      const prevImg = [...imageLoader]
-      prevImg[index] = resizedString
-      setLoadImage(prevImg)
-
-      const newImgs: File[] = [...images]
-      newImgs.splice(index, 1, file)
-      setImages(newImgs)
+    if (
+      serviceImages.some(
+        (img) =>
+          img.file && typeof img.progress === "number" && img.progress < 100
+      )
+    ) {
+      showSnackBar("Algunas imágenes aún se están subiendo. Por favor espera.")
+      return
     }
-  }
 
-  const convertToBase64 = (blob: any) => {
-    return new Promise((resolve) => {
-      var reader = new FileReader()
-      reader.onload = function () {
-        resolve(reader.result)
+    setBackdrop(true)
+    setIsSubmitting(true)
+
+    const payload: Partial<Service> = {
+      title: title,
+      description: description,
+      serviceArea: serviceArea,
+      isLocal: isLocal,
+      isRemote: isRemote,
+      location: location,
+      productionTime: productionTime,
+      publicPrice: { from: Number(priceFrom), to: Number(priceTo) },
+      userId: user ? user._id?.toString() : undefined, // TODO: add this value on backend
+      prixer: user?.username,
+      sources: { images: serviceImages },
+      active: active,
+    }
+
+    try {
+      console.log("Creating New Service Data:")
+      const base_url = `${import.meta.env.VITE_BACKEND_URL}/service/create`
+      const response = await axios.post<PrixResponse>(base_url, payload, {
+        withCredentials: true,
+      })
+
+      if (response.data.success) {
+        showSnackBar("Servicio creado exitosamente.")
+        onClose()
+      } else {
+        showSnackBar(
+          response.data.message ||
+            "Error al crear el servicio. Intenta de nuevo."
+        )
       }
-      reader.readAsDataURL(blob)
-    })
-  }
-
-  const deleteImage = (X: any, i: number) => {
-    if (imageLoader.length === 1) {
-      setLoadImage([])
-      setImages([])
-    } else if (imageLoader.length > 1) {
-      const newImg = imageLoader.filter((img: any) => img !== X)
-      setLoadImage(newImg)
-      const newImgs = [...images]
-      newImgs.splice(i, 1)
-      setImages(newImgs)
+    } catch (err: any) {
+      console.error("Failed to create service:", err)
+      showSnackBar(
+        err?.response?.data?.message ||
+          err.message ||
+          "Error desconocido al crear el servicio."
+      )
+    } finally {
+      setBackdrop(false)
+      setIsSubmitting(false)
     }
   }
 
-  const loadImage = async (e: any) => {
-    e.preventDefault()
+  const onClose = () => setServiceModal(false)
 
-    const file = e.target.files[0]
-    const resizedString: any = await convertToBase64(file)
-    if (imageLoader.length === 0) {
-      setLoadImage([resizedString])
-      setImages([file])
-    } else if (imageLoader.length === 6) {
-      setSnackBarError(true)
-      showSnackBar("Has alcanzado el límite de imágenes permitidas.")
-    } else {
-      setLoadImage([...imageLoader, resizedString])
-      setImages([...images, file])
-    }
+  if (!uploadService) {
+    return null
   }
 
   return (
     <div>
       <Dialog
-        open={openServiceFormDialog}
+        open={uploadService}
         onClose={handleClose}
         TransitionComponent={Transition}
       >
-        <Backdrop className={classes.backdrop} open={backdrop}>
-          <CircularProgress color="inherit" />
-          <p>Esto puede tardar unos pocos minutos.</p>
+        <Backdrop
+          className={classes.backdrop}
+          open={backdrop}
+          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        >
+          <CircularProgress color="inherit" sx={{ mr: 2 }} />
+          <Typography>
+            Procesando tu servicio... <br />
+            Esto puede tardar, por favor no cierres esta ventana.
+          </Typography>
         </Backdrop>
         <AppBar className={classes.appBar}>
           <Toolbar>
@@ -281,299 +557,454 @@ export default function CreateService({
             <Typography variant="h6" className={classes.title}>
               Comparte tu Servicio
             </Typography>
-            <Button autoFocus color="inherit" onClick={handleSubmit}>
-              Guardar
+            <Button
+              autoFocus
+              color="inherit"
+              type="submit"
+              form="create-service-form"
+              disabled={
+                isSubmitting ||
+                serviceImages.some(
+                  (img) => img.file && !img.error && img.progress !== 100
+                )
+              }
+              startIcon={
+                isSubmitting ? (
+                  <CircularProgress size={20} color="inherit" />
+                ) : null
+              }
+            >
+              {isSubmitting ? "Guardando..." : "Guardar Servicio"}
             </Button>
           </Toolbar>
         </AppBar>
         <Container component="main" maxWidth="md">
           <CssBaseline />
-          <div className={classes.paper}>
-            <form className={classes.form} noValidate>
-              <Grid2 container spacing={2}>
-                <Grid2>
-                  <TextField
-                    variant="outlined"
-                    autoFocus
-                    required
-                    fullWidth
-                    label="Título"
-                    value={title}
-                    placeholder='Ejemplo: "Fotografía de eventos" o "Diseño de logotipos"'
-                    onChange={(e) => {
-                      setTitle(e.target.value)
-                    }}
-                  />
-                </Grid2>
-                <Grid2>
-                  <Paper
-                    variant="outlined"
-                    sx={{
-                      textAlign: "center",
-                      "&:hover": { backgroundColor: "#000000" },
-                    }}
-                  >
-                    <Grid2 style={{ display: "flex" }}>
-                      {imageLoader &&
-                        imageLoader.map((img: string, i: number) => {
-                          return (
-                            <div
-                              style={{
-                                width: "25%",
-                                marginRight: "4px",
-                              }}
-                            >
-                              <div
-                                style={{
-                                  textAlign: "right",
-                                }}
-                              >
-                                <IconButton
-                                  style={{ color: "#d33f49", marginRight: -15 }}
-                                  component="label"
-                                >
-                                  <input
-                                    name="productImages"
-                                    type="file"
-                                    accept="image/*"
-                                    hidden
-                                    onChange={(a) => {
-                                      // const i = imageLoader.indexOf(img);
-                                      replaceImage(a, i)
-                                    }}
-                                  />
-                                  <EditIcon />
-                                </IconButton>
-                                <IconButton
-                                  style={{
-                                    color: "#d33f49",
-                                    marginRight: -5,
-                                  }}
-                                  onClick={() => {
-                                    deleteImage(img, i)
-                                  }}
-                                >
-                                  <HighlightOffOutlinedIcon />
-                                </IconButton>
-                              </div>
 
-                              <img
-                                style={{
-                                  width: "100%",
-                                  // height: "200px",
-                                  objectFit: "contain",
-                                  marginTop: -35,
-                                }}
-                                src={img}
-                                alt="+"
-                              />
-                            </div>
-                          )
-                        })}
-                    </Grid2>
-                    <Grid2
-                      style={{
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        margin: 10,
-                      }}
-                    >
-                      <FormControl variant="outlined">
-                        <Button
-                          variant="contained"
-                          component="label"
-                          color="primary"
-                        >
-                          Subir foto
-                          <input
-                            name="productImages"
-                            type="file"
-                            accept="image/*"
-                            hidden
-                            onChange={(a) => {
-                              a.preventDefault()
-                              loadImage(a)
+          <form
+            onSubmit={handleSubmit}
+            className={classes.form}
+            noValidate
+            ref={formRef}
+            id="create-service-form"
+          >
+            <Grid container spacing={2}>
+              <Grid size={{ sm: 12 }}>
+                <TextField
+                  variant="outlined"
+                  autoFocus
+                  required
+                  fullWidth
+                  label="Título"
+                  value={title}
+                  placeholder='Ejemplo: "Fotografía de eventos" o "Diseño de logotipos"'
+                  onChange={(e) => {
+                    setTitle(e.target.value)
+                  }}
+                />
+              </Grid>
+
+              {/* Sección de Imágenes del Servicio */}
+              {/* <Grid size={{ xs: 12 }}>
+                  <Divider sx={{ my: 2 }}>
+                    <Typography variant="overline">
+                      Imágenes del Servicio (hasta 6)
+                    </Typography>
+                  </Divider>
+                </Grid> */}
+              <Grid size={{ xs: 12 }}>
+                <Paper
+                  variant="outlined"
+                  sx={{
+                    p: serviceImages.length > 0 ? 1 : 2,
+                    minHeight: serviceImages.length > 0 ? "auto" : 100,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent:
+                      serviceImages.length > 0 ? "flex-start" : "center",
+                    flexWrap: "wrap",
+                    gap: 1,
+                  }}
+                >
+                  {serviceImages.length > 0 ? (
+                    serviceImages.map((sImage) => (
+                      <Box key={sImage.id} className={classes.imagePreviewItem}>
+                        {sImage.url ? (
+                          <img
+                            src={sImage.url}
+                            alt="Servicio"
+                            style={{
+                              width: "100%",
+                              height: 150,
+                              maxHeight: 370,
+                              objectFit: "contain",
                             }}
                           />
-                        </Button>
-                      </FormControl>
-                    </Grid2>
-                  </Paper>
-                </Grid2>
-
-                <Grid2>
-                  <FormControl variant="outlined" className={classes.form}>
-                    <InputLabel id="serviceAreaLabel">Tipo</InputLabel>
-                    <Select
-                      labelId="serviceAreaLabel"
-                      id="serviceArea"
-                      value={serviceArea}
-                      onChange={handleServiceAreaChange}
-                      label="serviceArea"
+                        ) : sImage.file ? (
+                          <Box
+                            sx={{
+                              width: "100%",
+                              height: "100%",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              flexDirection: "column",
+                              bgcolor: "grey.100",
+                              p: 0.5,
+                            }}
+                          >
+                            <Typography
+                              variant="caption"
+                              noWrap
+                              sx={{
+                                width: "100%",
+                                fontSize: "0.65rem",
+                                textAlign: "center",
+                                wordBreak: "break-all",
+                              }}
+                            >
+                              {sImage.file.name}
+                            </Typography>
+                            {typeof sImage.progress === "number" &&
+                              sImage.progress < 100 && (
+                                <LinearProgress
+                                  variant="determinate"
+                                  value={sImage.progress}
+                                  sx={{ width: "80%", mt: 0.5 }}
+                                />
+                              )}
+                            {sImage.error && (
+                              <Typography
+                                variant="caption"
+                                color="error"
+                                sx={{
+                                  fontSize: "0.65rem",
+                                  textAlign: "center",
+                                  mt: 0.5,
+                                }}
+                              >
+                                {sImage.error}
+                              </Typography>
+                            )}
+                          </Box>
+                        ) : (
+                          <Box
+                            sx={{
+                              width: "100%",
+                              height: "100%",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              bgcolor: "grey.200",
+                            }}
+                          >
+                            <BrokenImageIcon
+                              sx={{ fontSize: 30, color: "grey.400" }}
+                            />
+                          </Box>
+                        )}
+                        <IconButton
+                          size="small"
+                          onClick={() => handleRemoveServiceImage(sImage.id)}
+                          disabled={
+                            isSubmitting ||
+                            (typeof sImage.progress === "number" &&
+                              sImage.progress < 100 &&
+                              !sImage.error)
+                          }
+                          sx={{
+                            position: "absolute",
+                            top: 2,
+                            right: 2,
+                            backgroundColor: "rgba(255,255,255,0.8)",
+                            "&:hover": {
+                              backgroundColor: "rgba(255,255,255,1)",
+                            },
+                            p: 0.2,
+                          }}
+                          color="error"
+                        >
+                          <DeleteIcon sx={{ fontSize: "1rem" }} />
+                        </IconButton>
+                      </Box>
+                    ))
+                  ) : (
+                    <Typography
+                      sx={{ color: "text.secondary", fontStyle: "italic" }}
                     >
-                      <MenuItem value="">
-                        <em></em>
-                      </MenuItem>
-                      {serviceAreas.map((n) => (
-                        <MenuItem key={n} value={n}>
-                          {n}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                </Grid2>
-
-                <Grid2>
-                  {/* <TextField
-                    autoComplete="description"
-                    required
-                    name="description"
-                    variant="outlined"
-                    fullWidth
-                    id="description"
-                    label="Descripción"
-                    multiline
-                    minRows={3}
-                    maxRows={18}
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                  /> */}
-                  <ReactQuill
-                    style={{ height: 300, marginBottom: 30 }}
-                    modules={{
-                      toolbar: [
-                        [{ header: [1, 2, 3, 4, 5, 6, false] }],
-                        ["bold", "italic", "underline", "strike"],
-                        [{ align: [] }],
-                        [{ list: "ordered" }, { list: "bullet" }],
-                      ],
-                    }}
-                    value={description}
-                    onChange={handleEditorChange}
-                    placeholder="Escribe la descripción aquí..."
-                  />
-                </Grid2>
-
-                <Grid2 style={{ marginTop: isMobile ? 30 : 0 }}>
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={isLocal}
-                        onChange={() => {
-                          handleIsLocal()
-                        }}
-                      />
-                    }
-                    label="¿Trabajas en un sitio específico?"
-                  />
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={isRemote}
-                        onChange={() => {
-                          handleIsRemote()
-                        }}
-                      />
-                    }
-                    label="¿Trabajas a domicilio?"
-                  />
-                </Grid2>
-                <Grid2>
-                  <TextField
-                    variant="outlined"
-                    fullWidth
-                    id="location"
-                    label="Ubicación"
-                    name="location"
-                    autoComplete="location"
-                    value={location}
-                    placeholder="Si trabajas en algún sitio en específico indica aquí la dirección."
-                    onChange={(e) => setLocation(e.target.value)}
-                  />
-                </Grid2>
-                <Grid2>
-                  <TextField
-                    variant="outlined"
-                    fullWidth
-                    label="Tiempo de trabajo aproximado"
-                    value={productionTime}
-                    onChange={(e) => setProductionTime(e.target.value)}
-                  />
-                </Grid2>
-                <Grid2>
-                  <Typography variant="subtitle1">Valor</Typography>
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      marginTop: 10,
-                    }}
+                      Aún no has subido imágenes para tu servicio.
+                    </Typography>
+                  )}
+                  <Typography
+                    variant="overline"
+                    sx={{ textAlign: "end", width: "100%" }}
                   >
-                    <Grid2 size={{ xs: 5 }}>
-                      <TextField
-                        // style={{ marginRight: 45 }}
-                        required
-                        variant="outlined"
-                        label="Desde"
-                        type="Number"
-                        value={priceFrom}
-                        onChange={(e) => setPriceFrom(Number(e.target.value))}
-                        slotProps={{
-                          input: {
-                            startAdornment: (
-                              <InputAdornment position="start">
-                                $
-                              </InputAdornment>
-                            ),
-                          },
-                        }}
-                      />
-                    </Grid2>
-                    <Grid2 size={{ xs: 5 }}>
-                      <TextField
-                        variant="outlined"
-                        label="Hasta"
-                        type="Number"
-                        value={priceTo}
-                        onChange={(e) => setPriceTo(Number(e.target.value))}
-                        InputProps={{
+                    {serviceImages.length + "/6"}
+                  </Typography>
+                </Paper>
+              </Grid>
+              <Grid
+                size={{ xs: 12 }}
+                //  sm={4} md={3} lg={2}
+              >
+                <input
+                  type="file"
+                  accept="image/png, image/jpeg, image/webp"
+                  onChange={handleServiceImageSelect}
+                  style={{ display: "none" }}
+                  id="service-image-input"
+                  disabled={isSubmitting || serviceImages.length >= 6}
+                />
+                <label htmlFor="service-image-input">
+                  <Button
+                    variant="outlined"
+                    component="span"
+                    startIcon={<PhotoCameraBackIcon />}
+                    disabled={isSubmitting || serviceImages.length >= 6}
+                    fullWidth
+                  >
+                    Añadir Imagen
+                  </Button>
+                </label>
+                {serviceImages.length >= 6 && (
+                  <FormHelperText sx={{ textAlign: "center" }}>
+                    Límite alcanzado
+                  </FormHelperText>
+                )}
+              </Grid>
+
+              <Grid size={{ xs: 12 }}>
+                <FormControl variant="outlined" className={classes.form}>
+                  <InputLabel id="serviceAreaLabel">Tipo</InputLabel>
+                  <Select
+                  sx={{width: '100%'}}
+                    labelId="serviceAreaLabel"
+                    id="serviceArea"
+                    value={serviceArea}
+                    onChange={handleServiceAreaChange}
+                    label="serviceArea"
+                  >
+                    <MenuItem value="">
+                      <em></em>
+                    </MenuItem>
+                    {serviceAreas.map((n) => (
+                      <MenuItem key={n} value={n}>
+                        {n}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+
+              <Grid size={{ xs: 12 }}>
+                <ReactQuill
+                  style={{ height: 300, marginBottom: theme.spacing(5) }} // Ajustar altura y margen inferior
+                  modules={{
+                    toolbar: [
+                      [{ header: [1, 2, 3, false] }],
+                      ["bold", "italic", "underline"],
+                      [{ list: "ordered" }, { list: "bullet" }],
+                    ],
+                  }}
+                  value={description}
+                  onChange={handleEditorChange}
+                  placeholder="Describe tu servicio en detalle: qué incluye, cómo es el proceso, qué puede esperar el cliente..."
+                  readOnly={isSubmitting}
+                />
+              </Grid>
+
+              <Grid
+                style={{
+                  marginTop: isMobile ? 30 : 0,
+                  display: "grid",
+                  gridTemplateColumns: "0.5fr 1fr 1fr",
+                  gap: "1rem",
+                }}
+              >
+                <FormControlLabel
+                  sx={{ justifyContent: "center", margin: 0 }}
+                  control={
+                    <Checkbox
+                      checked={active}
+                      onChange={() => {
+                        handleActive()
+                      }}
+                    />
+                  }
+                  label="Activo"
+                />
+                <FormControlLabel
+                  sx={{ justifyContent: "center", margin: 0 }}
+                  control={
+                    <Checkbox
+                      checked={isLocal}
+                      onChange={() => {
+                        handleIsLocal()
+                      }}
+                    />
+                  }
+                  label="¿Trabajas en un sitio específico?"
+                />
+                <FormControlLabel
+                  sx={{ justifyContent: "center", margin: 0 }}
+                  control={
+                    <Checkbox
+                      checked={isRemote}
+                      onChange={() => {
+                        handleIsRemote()
+                      }}
+                    />
+                  }
+                  label="¿Trabajas a domicilio?"
+                />
+              </Grid>
+              <Grid size={{ xs: 6 }}>
+                <TextField
+                  variant="outlined"
+                  fullWidth
+                  id="location"
+                  label="Ubicación"
+                  name="location"
+                  autoComplete="location"
+                  value={location}
+                  placeholder="Si trabajas en algún sitio en específico indica aquí la dirección."
+                  onChange={(e) => setLocation(e.target.value)}
+                />
+              </Grid>
+              <Grid size={{ xs: 6 }}>
+                <TextField
+                  variant="outlined"
+                  fullWidth
+                  label="Tiempo de trabajo aproximado"
+                  value={productionTime}
+                  onChange={(e) => setProductionTime(e.target.value)}
+                />
+              </Grid>
+              <Grid size={{ xs: 12 }}>
+                <Typography variant="subtitle1">Valor</Typography>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    marginTop: 10,
+                  }}
+                >
+                  <Grid size={{ xs: 6 }}>
+                    <TextField
+                      // style={{ marginRight: 45 }}
+                      required
+                      fullWidth
+                      variant="outlined"
+                      label="Desde"
+                      type="Number"
+                      value={priceFrom}
+                      onChange={(e) => setPriceFrom(Number(e.target.value))}
+                      slotProps={{
+                        input: {
                           startAdornment: (
                             <InputAdornment position="start">$</InputAdornment>
                           ),
-                        }}
-                      />
-                    </Grid2>
-                  </div>
-                </Grid2>
-                <Grid2
-                  style={{
-                    display: "flex",
-                    justifyContent: "center",
-                  }}
-                >
-                  <InfoIcon color={"secondary"} />
-                  <Typography color={"secondary"}>
-                    Tu servicio podrá ser encontrado por estos datos.
-                  </Typography>
-                </Grid2>
-              </Grid2>
-            </form>
-          </div>
+                        },
+                      }}
+                    />
+                  </Grid>
+                  <Grid size={{ xs: 6 }}>
+                    <TextField
+                      variant="outlined"
+                      fullWidth
+                      label="Hasta"
+                      type="Number"
+                      value={priceTo}
+                      onChange={(e) => setPriceTo(Number(e.target.value))}
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">$</InputAdornment>
+                        ),
+                      }}
+                    />
+                  </Grid>
+                </div>
+              </Grid>
+              <Grid
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                }}
+              >
+                <InfoIcon color={"secondary"} />
+                <Typography color={"secondary"}>
+                  Tu servicio podrá ser encontrado por estos datos.
+                </Typography>
+              </Grid>
+            </Grid>
+          </form>
           <Box mt={5} mb={4}>
             <Copyright />
           </Box>
-          <Snackbar
-            open={snackBarError}
-            autoHideDuration={5000}
-            // message={errorMessage}
-            action={snackBarAction}
-            onClose={() => {
-              setSnackBarError(false)
-              setSnackBarAction(false)
-            }}
-          />
         </Container>
+
+        {/* Modal de Recorte Global */}
+        {imageSrcForCropper && imageToCropDetails && (
+          <Dialog
+            open={cropModalOpen}
+            onClose={closeAndResetCropper}
+            maxWidth="lg"
+            PaperProps={{
+              sx: { minWidth: { xs: "90vw", sm: "70vw", md: "50vw" } },
+            }}
+          >
+            <DialogTitle>
+              Recortar Imagen del Servicio (Aspecto{" "}
+              {SERVICE_IMAGE_ASPECT === 16 / 9 ? "16:9" : "Personalizado"})
+            </DialogTitle>
+            <DialogContent
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                p: { xs: 1, sm: 2 },
+              }}
+            >
+              <ReactCrop
+                crop={crop}
+                onChange={(_, percentCrop) => setCrop(percentCrop)}
+                onComplete={(c) => setCompletedCrop(c)}
+                aspect={SERVICE_IMAGE_ASPECT}
+                minWidth={100}
+                minHeight={100}
+                keepSelection
+              >
+                <img
+                  alt="Recortar"
+                  src={imageSrcForCropper}
+                  onLoad={onImageLoadInCropper}
+                  style={{
+                    maxHeight: "70vh",
+                    maxWidth: "100%",
+                    objectFit: "contain",
+                  }}
+                />
+              </ReactCrop>
+              <canvas ref={previewCanvasRef} style={{ display: "none" }} />
+            </DialogContent>
+            <DialogActions sx={{ p: { xs: 1, sm: 2 } }}>
+              <Button onClick={closeAndResetCropper} disabled={isSubmitting}>
+                Cancelar
+              </Button>
+              <Button
+                onClick={handleConfirmCropAndUpload}
+                variant="contained"
+                disabled={
+                  !completedCrop?.width ||
+                  !completedCrop?.height ||
+                  isSubmitting
+                }
+              >
+                Confirmar y Subir
+              </Button>
+            </DialogActions>
+          </Dialog>
+        )}
       </Dialog>
     </div>
   )

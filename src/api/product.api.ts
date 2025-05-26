@@ -35,10 +35,14 @@ export const fetchProducts = async (): Promise<Product[]> => {
     return items;
 };
 
-export const fetchActiveProducts = async (): Promise<Product[]> => {
+export const fetchActiveProducts = async (sort: string): Promise<Product[]> => {
     const base_url = import.meta.env.VITE_BACKEND_URL + '/product/read-all-active';
 
-    const res = await axios.get(base_url);
+    const res = await axios.get(base_url, {
+        params: {
+            sort
+        }
+    });
 
     if (!res.data.success || !Array.isArray(res.data.result)) {
         console.error('Failed to fetch:', res.data.message);

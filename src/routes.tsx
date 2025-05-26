@@ -1,42 +1,44 @@
-import { useEffect } from "react";
+import { useEffect } from "react"
 
-import ConsumerRoutes from "apps/consumer/consumer.routes";
-import AppBar from "@components/appBar";
-import ArtistRoutes from "@apps/artist/artist.routes";
-import { Toolbar } from "@mui/material";
-import { Outlet, Route, Routes as RouterRoutes, useLocation } from "react-router-dom";
-import AdminLayout from "@apps/admin/components/AdminLayout";
-import AdminLogin from "@apps/admin/login";
-import AdminNestedRoutes from "@apps/admin/admin.routes";
-import { isAuth } from "@api/utils.api";
-import { useUser } from "@context/GlobalContext";
-import { User } from "types/user.types";
+import ConsumerRoutes from "apps/consumer/consumer.routes"
+import AppBar from "@components/appBar"
+import ArtistRoutes from "@apps/artist/artist.routes"
+import { Toolbar } from "@mui/material"
+import {
+  Outlet,
+  Route,
+  Routes as RouterRoutes,
+  useLocation,
+} from "react-router-dom"
+import AdminLayout from "@apps/admin/components/AdminLayout"
+import AdminLogin from "@apps/admin/login"
+import AdminNestedRoutes from "@apps/admin/admin.routes"
+import { isAuth } from "@api/utils.api"
+import { useUser } from "@context/GlobalContext"
+import { User } from "types/user.types"
 
 const MainLayout = () => {
-
-  const location = useLocation();
-  const { user, setUser } = useUser();
+  const location = useLocation()
+  const { user, setUser } = useUser()
 
   useEffect(() => {
     const checkAuthStatus = async () => {
       try {
-        const user = await isAuth();
+        const user = await isAuth()
 
         if (user.success) {
-          const validUser = user.result as User;
-          setUser(validUser);
+          const validUser = user.result as User
+          setUser(validUser)
         } else {
-          setUser(null);
+          setUser(null)
         }
-
       } catch (error) {
-        console.error("Error checking authentication:", error);
+        console.error("Error checking authentication:", error)
       }
-    };
+    }
 
-    checkAuthStatus();
-
-  }, [location, user]);
+    checkAuthStatus()
+  }, [])
 
   return (
     <>
@@ -46,26 +48,24 @@ const MainLayout = () => {
         <Outlet />
       </main>
     </>
-  );
-};
+  )
+}
 
 const Routes = () => {
   useEffect(() => {
     const disableRightClick = (event: MouseEvent) => {
-      event.preventDefault();
-    };
+      event.preventDefault()
+    }
 
-    document.addEventListener("contextmenu", disableRightClick);
+    document.addEventListener("contextmenu", disableRightClick)
 
     return () => {
-      document.removeEventListener("contextmenu", disableRightClick);
-    };
-  }, []);
+      document.removeEventListener("contextmenu", disableRightClick)
+    }
+  }, [])
 
   return (
     <RouterRoutes>
-
-      {/* Admin Section */}
       <Route path="/admin/inicio" element={<AdminLogin />} />
 
       <Route path="/admin/*" element={<AdminLayout />}>
@@ -73,11 +73,10 @@ const Routes = () => {
       </Route>
 
       <Route path="/*" element={<MainLayout />}>
-        <Route path="artist/*" element={<ArtistRoutes />} />
+        <Route path="prixer/*" element={<ArtistRoutes />} />
         <Route path="*" element={<ConsumerRoutes />} />
       </Route>
-
     </RouterRoutes>
-  );
-};
-export default Routes;
+  )
+}
+export default Routes

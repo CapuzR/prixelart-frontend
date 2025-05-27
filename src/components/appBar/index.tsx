@@ -74,7 +74,7 @@ const MenuAppBar: React.FC = () => {
   const location = useLocation();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const { cart } = useCart();
-  const { user } = useUser();
+  const { user, setUser } = useUser();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [userMenuAnchorEl, setUserMenuAnchorEl] = useState<null | HTMLElement>(null);
   const [avatar, setAvatar] = useState<string>('');
@@ -145,6 +145,8 @@ const MenuAppBar: React.FC = () => {
       setDrawerOpen(false);
       setAvatar('');
       navigate('/');
+      setUser(null)
+
     }
   };
 

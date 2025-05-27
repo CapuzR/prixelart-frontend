@@ -486,7 +486,6 @@ export default function CreateService() {
       productionTime: productionTime,
       publicPrice: { from: Number(priceFrom), to: Number(priceTo) },
       userId: user ? user._id?.toString() : undefined, // TODO: add this value on backend
-      prixer: user?.username,
       sources: { images: serviceImages },
       active: active,
     }

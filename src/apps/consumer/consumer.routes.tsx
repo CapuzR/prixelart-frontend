@@ -24,6 +24,7 @@ import ArtUploader from "@apps/artist/artUploader"
 import CreateService from "@components/createService"
 
 const ConsumerRoutes: React.FC = () => {
+  console.log('xo')
   return (
     <>
       <Routes>
@@ -47,11 +48,11 @@ const ConsumerRoutes: React.FC = () => {
         <Route path="/crear-prix" element={<Flow />} />
         <Route path="/producto/:id" element={<ProductDetails />} />
         <Route path="/" element={<Home />} />
+        <Route path="*" element={<div><h1>404 - No Encontrado</h1></div>} />
       </Routes>
 
       <ConditionalFB />
       <ArtUploader/>
-      {/* Service window is broken */}
       <CreateService/>
     </>
   )

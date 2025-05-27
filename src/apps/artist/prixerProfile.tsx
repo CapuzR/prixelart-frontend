@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import FloatingAddButton from '@components/floatingAddButton';
 import CreateService from '@components/createService';
 import UserData from './userData/userData';
-import PrixerOptions from './prixerOptions/prixerOptions';
+// import PrixerOptions
 import Container from '@mui/material/Container';
 import CssBaseline from '@mui/material/CssBaseline';
 import Grid2 from '@mui/material/Grid';
@@ -61,9 +61,9 @@ const PrixerProfile: React.FC = () => {
     <Container component="main" maxWidth="xl" className={classes.paper}>
       <CssBaseline />
       <UserData prixerUsername={username || ''} setFeed={setFeed} />
-      {feed !== 'Settings' && (
+      {/* {feed !== 'Settings' && (
         <PrixerOptions prixerUsername={username || ''} feed={feed} setFeed={setFeed} />
-      )}
+      )} */}
       {showPrixerGrid()}
       {/* {openArtFormDialog && (
         <ArtUploader

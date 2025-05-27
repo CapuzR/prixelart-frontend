@@ -73,7 +73,7 @@ const Routes = () => {
       </Route>
 
       <Route path="/*" element={<MainLayout />}>
-        <Route path="prixer/*" element={<ArtistRoutes />} />
+        {/* <Route path="prixer/*" element={<ArtistRoutes />} /> */}
         <Route path="*" element={<ConsumerRoutes />} />
       </Route>
     </RouterRoutes>

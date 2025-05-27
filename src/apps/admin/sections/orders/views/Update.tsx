@@ -494,6 +494,18 @@ export default function UpdateOrder() {
           getArts() as Promise<Art[]>,
         ])
       if (!orderData) throw new Error("Orden no encontrada.")
+      if (orderData.payment && !Array.isArray(orderData.payment.installments)) {
+        console.warn(
+          "API devolvió orderData.payment sin un array 'installments' válido. " +
+            "Inicializando como array vacío."
+        )
+        orderData.payment.installments = []
+      } else if (!orderData.payment) {
+        console.warn(
+          "API devolvió orderData sin el objeto 'payment'. " +
+            "Inicializando con valores por defecto. Esto puede indicar un problema."
+        )
+      }
       setOrder(orderData)
       setObservations(orderData.observations || "")
       if (orderData.consumerDetails?.basic) {
@@ -573,13 +585,14 @@ export default function UpdateOrder() {
             : opt.fullMethod.name === orderShip?.name
         ) || null
       setSelectedShippingMethod(currentSelectedShippingMethod)
-      const orderPay = orderData.payment?.method?.[0]
-      const currentSelectedPaymentMethod =
-        paymentOptions.find((opt) =>
-          !!orderPay?._id
-            ? opt.id === orderPay._id.toString()
-            : opt.fullMethod.name === orderPay?.name
-        ) || null
+      const orderPay = orderData.payment?.installments[0].method
+      const currentSelectedPaymentMethod = orderPay
+        ? paymentOptions.find((opt) =>
+            !!orderPay?._id
+              ? opt.id === orderPay._id.toString()
+              : opt.fullMethod.name === orderPay?.name
+          ) || null
+        : null
       setSelectedPaymentMethod(currentSelectedPaymentMethod)
       setEditableShippingAddress(
         orderData.shipping?.address
@@ -615,23 +628,30 @@ export default function UpdateOrder() {
       }
 
       // Cargar comprobantes existentes
+      //   if (
+      //     orderData.payment?.vouchers &&
+      //     Array.isArray(orderData.payment.vouchers)
+      //   ) {
+      const existingVoucherImages: ImageUploadState[] = []
       if (
-        orderData.payment?.vouchers &&
-        Array.isArray(orderData.payment.vouchers)
+        orderData.payment?.installments &&
+        Array.isArray(orderData.payment.installments)
       ) {
-        const existingVouchers = orderData.payment.vouchers.map(
-          (voucher: Payment) => {
-            return {
-              id: uuidv4(),
-              url: voucher.img,
-              isExisting: true,
+        orderData.payment.installments.forEach(
+          (installment: Payment, index: number) => {
+            if (installment.voucher) {
+              // Check if the installment has a voucher URL
+              existingVoucherImages.push({
+                id: `installment-${installment.id || index}-voucher-${uuidv4()}`, // Ensure unique ID for ImageUploadState
+                url: installment.voucher,
+                isExisting: true,
+                // You might want to store installment.id if you need to map back precisely later
+              })
             }
           }
         )
-        setPaymentVouchers(existingVouchers)
-      } else {
-        setPaymentVouchers([])
       }
+      setPaymentVouchers(existingVoucherImages)
     } catch (err: any) {
       console.error("Failed to load data:", err)
       const errorMsg = err.message || "Error al cargar los datos."
@@ -1256,13 +1276,13 @@ export default function UpdateOrder() {
     }
 
     // Recolectar URLs de comprobantes subidos
-    const finalVouchers: Payment[] = paymentVouchers
+    const voucherPaymentObjects: Payment[] = paymentVouchers
       .filter((imgState) => imgState.url && !imgState.error)
       .map((imgState) => {
         let description = `Comprobante`
         if (imgState.file?.name) {
           description = imgState.file.name
-        } else {
+        } else if (imgState.url) {
           try {
             const urlParts = imgState.url.split("/")
             const lastPart = urlParts[urlParts.length - 1]
@@ -1276,12 +1296,31 @@ export default function UpdateOrder() {
           }
         }
 
+        if (!selectedPaymentMethod) {
+          // Handle cases where a payment method (needed for the Payment object) isn't selected.
+          // This might involve an error, a default, or skipping.
+          // For this example, we'll log an error and skip, but you should decide the best approach.
+          console.error(
+            "Cannot create voucher payment entry without a selectedPaymentMethod."
+          )
+          showSnackBar(
+            "Error: Se necesita un método de pago principal para asociar los comprobantes."
+          )
+          return null
+        }
+
         return {
-          id: uuidv4().substring(0, 10),
+          id: imgState.isExisting
+            ? imgState.id.split("-voucher-")[0].replace("installment-", "")
+            : uuidv4(), // Attempt to reuse existing ID or generate new
           description: description,
-          img: imgState.url,
+          voucher: imgState.url, // <<< Key change: property name
+          method: selectedPaymentMethod.fullMethod as PaymentMethod, // Assign the order's selected payment method
+          amount: "0", // Vouchers typically don't have a separate amount here or it's part of the total
+          metadata: `Voucher linked to ${selectedPaymentMethod.label}`, // Optional metadata
         }
       })
+      .filter(Boolean) as Payment[]
 
     const payload: Partial<Order> = {
       observations: observations || undefined,
@@ -1308,7 +1347,6 @@ export default function UpdateOrder() {
           method: [selectedPaymentMethod.fullMethod as PaymentMethod],
         }),
         total: finalTotal,
-        vouchers: finalVouchers,
       },
       billing: billingAddr
         ? {
@@ -1331,6 +1369,50 @@ export default function UpdateOrder() {
           "Order updated via admin panel (v2 UI - with TUS vouchers)",
         ],
       ],
+    }
+
+    let mainInstallments: Payment[] = []
+    if (selectedPaymentMethod) {
+      const existingMainInstallment = order.payment?.installments?.find(
+        (inst) =>
+          !inst.voucher ||
+          !paymentVouchers.some((pv) => pv.url === inst.voucher)
+      )
+
+      if (existingMainInstallment) {
+        mainInstallments.push({
+          ...existingMainInstallment,
+          method: selectedPaymentMethod.fullMethod as PaymentMethod,
+          amount: (
+            displayTotals?.total ??
+            parseFloat(existingMainInstallment.amount || "0")
+          ).toString(),
+        })
+      } else {
+        mainInstallments.push({
+          id: uuidv4(),
+          description: selectedPaymentMethod.label || "Pago Principal",
+          method: selectedPaymentMethod.fullMethod as PaymentMethod,
+          amount: (displayTotals?.total ?? 0).toString(),
+          voucher: undefined,
+        })
+      }
+    } else if (order.payment?.installments) {
+      mainInstallments = order.payment.installments.filter(
+        (inst) =>
+          !inst.voucher ||
+          !paymentVouchers.some(
+            (pv) => pv.url === inst.voucher && pv.isExisting
+          )
+      )
+    }
+
+    const finalInstallments = [...mainInstallments, ...voucherPaymentObjects]
+
+    payload.payment = {
+      ...(order.payment || {}),
+      total: finalTotal,
+      installments: finalInstallments,
     }
 
     try {
@@ -2377,7 +2459,10 @@ export default function UpdateOrder() {
                     </Typography>
                   )}
                 </Paper>
-                <Grid2 size={{ xs: 12, sm: 4, md: 3 }} sx={{margin: '40px auto'}}>
+                <Grid2
+                  size={{ xs: 12, sm: 4, md: 3 }}
+                  sx={{ margin: "40px auto" }}
+                >
                   <input
                     type="file"
                     accept="image/png, image/jpeg, image/webp"

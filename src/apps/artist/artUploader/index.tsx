@@ -737,14 +737,14 @@ export default function ArtUploader() {
         key={fieldName}
         sx={{ display: "flex", flexDirection: "column" }}
       >
-        <Typography
+        {/* <Typography
           variant="subtitle2"
           gutterBottom
           color="secondary"
           style={{ alignSelf: "center" }}
         >
           {config.label}
-        </Typography>
+        </Typography> */}
         <Paper
           variant="outlined"
           sx={{

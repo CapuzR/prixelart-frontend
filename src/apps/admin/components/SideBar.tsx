@@ -392,7 +392,7 @@ const Sidebar: React.FC<SidebarProps> = ({ permissions, drawerWidth }) => {
         )}
 
         {/* Order History Section */}
-        {cancreateOrder && (
+{/*         {cancreateOrder && ( */}
           <>
             <ListItemButton
               component={RouterLink}
@@ -406,7 +406,7 @@ const Sidebar: React.FC<SidebarProps> = ({ permissions, drawerWidth }) => {
             </ListItemButton>
             <Divider sx={{ my: 1 }} />
           </>
-        )}
+{/*         )} */}
 
 
         {/* Shipping Methods Section */}

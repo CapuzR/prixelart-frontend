@@ -51,7 +51,7 @@ const headCells: readonly HeadCell[] = [
     { id: 'orderType', numeric: false, label: 'Tipo', sortable: true, display: { xs: 'none', md: 'table-cell' }, width: '10%' },
     { id: 'status', numeric: false, label: 'Status Orden', sortable: true, width: '15%' },
     { id: 'payStatus', numeric: false, label: 'Status Pago', sortable: true, display: { xs: 'none', lg: 'table-cell' }, width: '10%' },
-    { id: 'total', numeric: true, label: 'Total', sortable: true, width: '10%' },
+    // { id: 'total', numeric: true, label: 'Total', sortable: true, width: '10%' },
     { id: 'actions', numeric: false, label: 'Acciones', sortable: false, width: '10%' },
 ];
 
@@ -514,7 +514,7 @@ const ReadOrderArchives: React.FC = () => {
                                                     <Chip label={orderItem.payStatus} color={getPayStatusColor(orderItem.payStatus)} size="small" />
                                                 ) : '-'}
                                             </TableCell>
-                                            <TableCell align="right">{formatCurrency(orderItem.total)}</TableCell>
+{/*                                             <TableCell align="right">{formatCurrency(orderItem.total)}</TableCell> */}
                                             <TableCell align="right">
                                                 {/* --- Actions Column --- */}
                                                 <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 0.5 }} onClick={(e) => e.stopPropagation()}>

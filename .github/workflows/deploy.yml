@@ -9,13 +9,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
-      - name: Use Node.js 18.19.0
+      - name: Use Node.js 23.6.0
         uses: actions/setup-node@v1
         with:
-          node-version: '18.19.0'
+          node-version: '23.6.0'
       - name: Install npm and run unittest
         run: |
-          npm install
+          npm install --legacy-peer-deps
         env:
           CI: true
       - name: create env file

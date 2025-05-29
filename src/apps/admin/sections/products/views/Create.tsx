@@ -1138,7 +1138,7 @@ const activeDraggedImage = activeDraggedImageId ? productImages.find(img => img.
         parseFloat(variant.prixerPrice) < 0
       ) {
         errors.variants![variant.tempId].prixerPrice =
-          "Precio Prixer debe ser número positivo."
+          "PVM debe ser número positivo."
         hasErrors = true
         variantHasError = true
       }
@@ -1729,7 +1729,7 @@ const activeDraggedImage = activeDraggedImageId ? productImages.find(img => img.
                         </Grid2>
                         <Grid2 size={{ xs: 6, sm: 3, md: 2 }}>
                           <TextField
-                            label="Precio Prixer ($)"
+                            label="PVM ($)"
                             name="prixerPrice"
                             type="number"
                             value={variant.prixerPrice}

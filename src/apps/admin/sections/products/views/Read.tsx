@@ -56,7 +56,7 @@ const VariantDetailsTable: React.FC<{ variants: Variant[] }> = ({ variants }) =>
                             <TableCell sx={{ width: '25%' }}>Nombre Variante</TableCell>
                             <TableCell sx={{ width: '35%' }}>Atributos</TableCell>
                             <TableCell align="right" sx={{ width: '15%' }}>Precio Público</TableCell>
-                            <TableCell align="right" sx={{ width: '15%' }}>Precio Prixer</TableCell>
+                            <TableCell align="right" sx={{ width: '15%' }}>PVM</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>

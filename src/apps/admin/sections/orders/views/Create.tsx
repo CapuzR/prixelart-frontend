@@ -52,6 +52,7 @@ import {
   List,
   ListItem,
   ListItemIcon,
+  InputAdornment,
   ListItemText,
   Container,
 } from "@mui/material"
@@ -82,7 +83,7 @@ import {
   ConsumerDetails,
   BillingDetails,
   ShippingDetails,
-  Payment
+  Payment,
 } from "types/order.types"
 import { Product, Variant } from "types/product.types"
 import { Art, PickedArt } from "types/art.types"
@@ -118,6 +119,11 @@ interface OrderLineFormState extends Partial<OrderLine> {
   availableVariants: VariantOption[]
   quantity: number
   pricePerUnit: number
+}
+
+interface EditablePriceFieldsProps {
+  line: OrderLineFormState
+  updateLine: (tempId: string, values: Partial<OrderLineFormState>) => void
 }
 
 const initialLine: Omit<OrderLineFormState, "tempId"> = {
@@ -366,13 +372,16 @@ const CreateOrder: React.FC = () => {
   // --- Line Handlers ---
   const handleAddLine = () =>
     setOrderLines((prev) => [...prev, { ...initialLine, tempId: uuidv4() }])
+
   const handleRemoveLine = (tempId: string) =>
     setOrderLines((prev) => prev.filter((l) => l.tempId !== tempId))
+
   const updateLine = (tempId: string, values: Partial<OrderLineFormState>) => {
     setOrderLines((prev) =>
       prev.map((l) => (l.tempId === tempId ? { ...l, ...values } : l))
     )
   }
+
   const handleArt = (tempId: string, v: ArtOption | null) =>
     updateLine(tempId, { selectedArt: v })
   const handleProduct = (tempId: string, v: ProductOption | null) => {
@@ -423,6 +432,34 @@ const CreateOrder: React.FC = () => {
       setEditableBillingAddress(editableShippingAddress)
   }
 
+  const handlePricePerUnitChange = (
+    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    line: any
+  ) => {
+    updateLine(line.tempId, { pricePerUnit: parseFloat(event.target.value) })
+  }
+
+  const allowNumericWithDecimal = (
+    event: React.KeyboardEvent<HTMLInputElement>
+  ) => {
+    const target = event.target as HTMLInputElement // Type assertion
+    if (
+      !/[0-9.]/.test(event.key) &&
+      ![
+        "Backspace",
+        "Delete",
+        "ArrowLeft",
+        "ArrowRight",
+        "Tab",
+        "Enter",
+      ].includes(event.key)
+    ) {
+      event.preventDefault()
+    }
+    if (event.key === "." && target.value.includes(".")) {
+      event.preventDefault()
+    }
+  }
   // --- Validation ---
   const validateForm = (): boolean => {
     if (!shippingMethod) {
@@ -794,7 +831,7 @@ const CreateOrder: React.FC = () => {
                           size={{ xs: 6, md: 3 }}
                           sx={{ textAlign: "right" }}
                         >
-                          <Typography variant="body2">
+                          {/* <Typography variant="body2">
                             ${(line.pricePerUnit || 0).toFixed(2)} c/u
                           </Typography>
                           <Typography variant="subtitle2" color="primary.main">
@@ -802,7 +839,50 @@ const CreateOrder: React.FC = () => {
                             {(
                               (line.pricePerUnit || 0) * (line.quantity || 0)
                             ).toFixed(2)}
-                          </Typography>
+                          </Typography> */}
+                          <TextField
+                            variant="outlined"
+                            size="small"
+                            type="text"
+                            // defaultValue={(line.pricePerUnit || 0).toFixed(2)}
+                            value={(line.pricePerUnit || 0).toFixed(2)}
+                            onChange={(e) => handlePricePerUnitChange(e, line)}
+                            onKeyDown={allowNumericWithDecimal}
+                            sx={{
+                              mb: 1,
+                              "& .MuiInputBase-input": { textAlign: "right" },
+                            }}
+                            slotProps={{
+                              input: {
+                                startAdornment: (
+                                  <InputAdornment position="start">
+                                    $
+                                  </InputAdornment>
+                                ),
+                                endAdornment: (
+                                  <InputAdornment position="end">
+                                    c/u
+                                  </InputAdornment>
+                                ),
+                              },
+                            }}
+                            // onBlur={() => {
+                            //   // Opcional: Formatear al perder el foco
+                            //   const numericPrice =
+                            //     parseFloat(line.pricePerUnit) || 0
+                            //   setPricePerUnitStr(numericPrice.toFixed(2))
+                            //   // Si el valor cambió debido al formateo, podrías volver a llamar a updateLine
+                            //   if (
+                            //     numericPrice !==
+                            //     (parseFloat(line.pricePerUnit) || 0)
+                            //   ) {
+                            //     // Compara el valor numérico antes y después del toFixed
+                            //     updateLine(line.tempId, {
+                            //       pricePerUnit: numericPrice,
+                            //     })
+                            //   }
+                            // }}
+                          />
                         </Grid2>
                       </Grid2>
                     </Grid2>

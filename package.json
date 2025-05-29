@@ -27,14 +27,10 @@
     "date-fns": "^4.1.0",
     "dayjs": "^1.11.13",
     "exceljs": "^4.3.0",
-<<<<<<< HEAD
     "firebase": "^9.15.0",
     "html2canvas": "^1.4.1",
-    "jwt-decode": "^3.1.2",
-=======
     "immutable": "^4.1.0",
     "jwt-decode": "^4.0.0",
->>>>>>> prixelart_typescript
     "moment": "^2.30.1",
     "moment-timezone": "^0.5.47",
     "mongodb": "^6.13.1",

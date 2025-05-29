@@ -1,50 +1,60 @@
-import React, { useEffect, useState } from 'react';
-import { Stepper, Step, StepLabel, Button, Typography, Box, Container } from '@mui/material';
-import Form from './Form';
-import Order from './Order';
-import { initializeCheckoutState } from './init';
-import { useForm, FormProvider } from 'react-hook-form';
-import { useCart } from '@context/CartContext';
-import { createOrderByUser } from './api';
-import { parseOrder } from './parseApi';
-import { useNavigate } from 'react-router-dom';
-import { CartLine } from '../../../types/cart.types';
-import { CheckoutState, DataLists, Tax } from '../../../types/order.types';
+import React, { useEffect, useState } from "react"
+import {
+  Stepper,
+  Step,
+  StepLabel,
+  Button,
+  Typography,
+  Box,
+  Container,
+} from "@mui/material"
+import Form from "./Form"
+import Order from "./Order"
+import { initializeCheckoutState } from "./init"
+import { useForm, FormProvider } from "react-hook-form"
+import { useCart } from "@context/CartContext"
+import { createOrderByUser } from "./api"
+import { parseOrder } from "./parseApi"
+import { useNavigate } from "react-router-dom"
+import { CartLine } from "../../../types/cart.types"
+import { CheckoutState, DataLists, Tax } from "../../../types/order.types"
 import { useSnackBar } from "context/GlobalContext"
 
 interface CheckoutProps {
-  setChecking: React.Dispatch<React.SetStateAction<boolean>>;
+  setChecking: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 const Checkout: React.FC<CheckoutProps> = ({ setChecking }) => {
-  const { cart, emptyCart } = useCart();
+  const { cart, emptyCart } = useCart()
 
-  console.groupCollapsed("💼 CartContext state:");
-  console.log("cart.lines:", cart.lines);
-  console.log("cart.subTotal:", cart.subTotal);
-  console.log("cart.totalUnits:", cart.totalUnits);
-  console.log("cart.totalDiscount:", cart.totalDiscount);
-  console.groupEnd();
+  console.groupCollapsed("💼 CartContext state:")
+  console.log("cart.lines:", cart.lines)
+  console.log("cart.subTotal:", cart.subTotal)
+  console.log("cart.totalUnits:", cart.totalUnits)
+  console.log("cart.totalDiscount:", cart.totalDiscount)
+  console.groupEnd()
 
-  const navigate = useNavigate();
+  const navigate = useNavigate()
   const { showSnackBar } = useSnackBar()
 
   const methods = useForm<CheckoutState>({
     defaultValues: initializeCheckoutState(cart),
     mode: "onChange",
     shouldUnregister: false,
-  });
+  })
 
   useEffect(() => {
-
     const subscription = methods.watch((currentValues) => {
-      console.log("Form data (potential handleSubmit data) changed:", currentValues);
-    });
+      console.log(
+        "Form data (potential handleSubmit data) changed:",
+        currentValues
+      )
+    })
 
     return () => {
-      subscription.unsubscribe();
-    };
-  }, [methods.watch]);
+      subscription.unsubscribe()
+    }
+  }, [methods.watch])
 
   const [dataLists, setDataLists] = useState<DataLists>(
     methods.getValues().dataLists || {
@@ -54,46 +64,47 @@ const Checkout: React.FC<CheckoutProps> = ({ setChecking }) => {
       states: [],
       sellers: [],
     }
-  );
+  )
 
-  const steps = [`Tus datos`, `Orden de compra`, `Confirmación`];
-  const [activeStep, setActiveStep] = useState(0);
+  const steps = [`Tus datos`, `Orden de compra`, `Confirmación`]
+  const [activeStep, setActiveStep] = useState(0)
 
   const handleNext = async () => {
-    const isValid = await methods.trigger();
+    const isValid = await methods.trigger()
     if (isValid) {
-      setActiveStep((prev) => prev + 1);
+      setActiveStep((prev) => prev + 1)
     }
-  };
+  }
 
   const handleBack = () => {
     if (activeStep === 1) {
-      setChecking(false);
+      setChecking(false)
     }
-    setActiveStep((prev) => prev - 1);
-  };
+    setActiveStep((prev) => prev - 1)
+  }
 
   const handleSubmit = async () => {
+    console.log("Submitting form data...", methods.getValues())
 
-    console.log("Submitting form data...", methods.getValues());
+    const checkoutData = methods.getValues()
 
-    const checkoutData = methods.getValues();
+    const parsedData = parseOrder(checkoutData)
 
-    const parsedData = parseOrder(checkoutData);
-
-    const response = await createOrderByUser(parsedData);
+    const response = await createOrderByUser(parsedData)
 
     if (response.success === true) {
-      emptyCart();
-      showSnackBar("Orden realizada exitosamente! Pronto serás contactado por un miembro del equipo de Prixelart para coordinar la entrega.");
-      navigate('/');
+      emptyCart()
+      showSnackBar(
+        "Orden realizada exitosamente! Pronto serás contactado por un miembro del equipo de Prixelart para coordinar la entrega."
+      )
+      navigate("/")
     }
-  };
+  }
 
   return (
-    <Container maxWidth="md" style={{ width: '100%' }}>
+    <Container maxWidth="md" style={{ width: "100%" }}>
       <Box sx={{ mt: 4, mb: 4 }}>
-        <Typography variant="h4" align="center" gutterBottom>
+        <Typography variant="h4" align="center" gutterBottom color="secondary">
           Concreta tu compra
         </Typography>
       </Box>
@@ -109,79 +120,85 @@ const Checkout: React.FC<CheckoutProps> = ({ setChecking }) => {
 
       {/* Form Content */}
       <Box sx={{ mt: 4, mb: 2 }}>
-        {
-          activeStep === 0 ? (
-            <FormProvider {...methods}>
-              <Form dataLists={dataLists} setDataLists={setDataLists} />
-            </FormProvider>
-          ) :
-            activeStep === 1 ? (
-              (() => {
-                setChecking(true);
-                const checkoutState = methods.getValues();
+        {activeStep === 0 ? (
+          <FormProvider {...methods}>
+            <Form dataLists={dataLists} setDataLists={setDataLists} />
+          </FormProvider>
+        ) : activeStep === 1 ? (
+          (() => {
+            setChecking(true)
+            const checkoutState = methods.getValues()
 
-                // Map cart lines to order lines
-                checkoutState.order.lines = cart.lines.map((line: CartLine) => ({
-                  ...line,
-                  pricePerUnit: Number(line.item.price),
-                }));
+            // Map cart lines to order lines
+            checkoutState.order.lines = cart.lines.map((line: CartLine) => ({
+              ...line,
+              pricePerUnit: Number(line.item.price),
+            }))
 
-                // Calculate subtotal from the cart
-                const subtotal = cart.lines.reduce((total: number, line: CartLine) => {
-                  return total + Number(line.item.price) * line.quantity;
-                }, 0);
+            // Calculate subtotal from the cart
+            const subtotal = cart.lines.reduce(
+              (total: number, line: CartLine) => {
+                return total + Number(line.item.price) * line.quantity
+              },
+              0
+            )
 
-                // Perform tax calculations before sending data to the Order component
-                checkoutState.order.subTotal = subtotal;
+            // Perform tax calculations before sending data to the Order component
+            checkoutState.order.subTotal = subtotal
 
-                if (checkoutState.shipping && dataLists.shippingMethods) {
-                  const selectedMethod = dataLists.shippingMethods.find((method) => {
-                    return method.name === checkoutState.shipping.name;
-                  });
-                  if (selectedMethod) {
-                    checkoutState.order.shippingCost = parseFloat(selectedMethod.price);
-                  }
+            if (checkoutState.shipping && dataLists.shippingMethods) {
+              const selectedMethod = dataLists.shippingMethods.find(
+                (method) => {
+                  return method.name === checkoutState.shipping.name
                 }
+              )
+              if (selectedMethod) {
+                checkoutState.order.shippingCost = parseFloat(
+                  selectedMethod.price
+                )
+              }
+            }
 
+            const taxes: Tax[] = []
 
-                const taxes: Tax[] = [];
+            // IVA (16%)
+            const ivaValue = 16
+            const ivaAmount = subtotal * (ivaValue / 100)
+            taxes.push({
+              id: "iva",
+              name: "IVA:",
+              value: ivaValue,
+              amount: ivaAmount,
+            })
 
-                // IVA (16%)
-                const ivaValue = 16;
-                const ivaAmount = subtotal * (ivaValue / 100);
-                taxes.push({
-                  id: 'iva',
-                  name: 'IVA:',
-                  value: ivaValue,
-                  amount: ivaAmount,
-                });
+            // Add IGTF (3%) if the payment method is "Efectivo $"
+            if (checkoutState.billing?.paymentMethod === "Efectivo $") {
+              const igtfValue = 3
+              const igtfAmount = subtotal * (igtfValue / 100)
+              taxes.push({
+                id: "igtf",
+                name: "IGTF:",
+                value: igtfValue,
+                amount: igtfAmount,
+              })
+            }
 
-                // Add IGTF (3%) if the payment method is "Efectivo $"
-                if (checkoutState.billing?.paymentMethod === 'Efectivo $') {
-                  const igtfValue = 3;
-                  const igtfAmount = subtotal * (igtfValue / 100);
-                  taxes.push({
-                    id: 'igtf',
-                    name: 'IGTF:',
-                    value: igtfValue,
-                    amount: igtfAmount,
-                  });
-                }
+            checkoutState.order.tax = taxes
+            const totalTaxes = taxes.reduce((sum, tax) => sum + tax.amount, 0)
+            checkoutState.order.total = parseFloat(
+              (subtotal + totalTaxes).toFixed(2)
+            )
 
-                checkoutState.order.tax = taxes;
-                const totalTaxes = taxes.reduce((sum, tax) => sum + tax.amount, 0);
-                checkoutState.order.total = parseFloat((subtotal + totalTaxes).toFixed(2));
-
-                // Now pass the updated checkoutState and subtotal to the Order component
-                return <Order checkoutState={checkoutState} />;
-              })()
-            ) : (
-              <div></div>
-            )}
+            // Now pass the updated checkoutState and subtotal to the Order component
+            return <Order checkoutState={checkoutState} />
+          })()
+        ) : (
+          <div></div>
+        )}
       </Box>
 
       {/* Buttons */}
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
+      <Box sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}>
         <Button
           disabled={activeStep === 0}
           onClick={handleBack}
@@ -194,11 +211,11 @@ const Checkout: React.FC<CheckoutProps> = ({ setChecking }) => {
           color="primary"
           onClick={activeStep === steps.length - 1 ? handleSubmit : handleNext}
         >
-          {activeStep === steps.length - 1 ? 'Ordenar' : 'Siguiente'}
+          {activeStep === steps.length - 1 ? "Ordenar" : "Siguiente"}
         </Button>
       </Box>
     </Container>
-  );
-};
+  )
+}
 
-export default Checkout;
+export default Checkout

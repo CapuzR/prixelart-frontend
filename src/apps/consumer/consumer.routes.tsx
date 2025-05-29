@@ -24,7 +24,6 @@ import ArtUploader from "@apps/artist/artUploader"
 import CreateService from "@components/createService"
 
 const ConsumerRoutes: React.FC = () => {
-  console.log('xo')
   return (
     <>
       <Routes>

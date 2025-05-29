@@ -5,7 +5,7 @@
   overflow: hidden;
   align-content: space-between;
   height: auto;
-  @include theme.paper(undefined, theme.$box-shadow-heavy, theme.$border-radius-xl, theme.$spacing-md);
+  @include theme.paper(undefined, theme.$box-shadow-heavy, theme.$border-radius-xl,undefined);
   margin: 25px;
   width: 100%;
   margin-bottom: theme.$spacing-lg;

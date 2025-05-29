@@ -129,7 +129,7 @@ const UpdateSurcharge: React.FC = () => {
                     if (min === max) return `${prefix}: ${formatPrice(min.toString())}`;
                     return `${prefix}: ${formatPrice(min.toString())} - ${formatPrice(max.toString())}`;
                 };
-                priceRangeStr = `(${formatRange(minPublic, maxPublic, 'Precio Normal')}, ${formatRange(minPrixer, maxPrixer, 'Precio Prixer')})`;
+                priceRangeStr = `(${formatRange(minPublic, maxPublic, 'Precio Normal')}, ${formatRange(minPrixer, maxPrixer, 'PVM')})`;
             }
 
             options.push({
@@ -140,7 +140,7 @@ const UpdateSurcharge: React.FC = () => {
             product.variants.forEach(variant => {
                 if (!variant._id) return;
                 const variantImageUrl = getProductImageUrl(product, variant);
-                const variantPriceStr = `(Precio Normal: ${formatPrice(variant.publicPrice)}, Precio Prixer: ${formatPrice(variant.prixerPrice)})`;
+                const variantPriceStr = `(Precio Normal: ${formatPrice(variant.publicPrice)}, PVM: ${formatPrice(variant.prixerPrice)})`;
                 options.push({
                     id: `${productIdStr}_${variant._id}`, label: `    ↳ ${variant.name || 'Variante sin nombre'} ${variantPriceStr}`,
                     isProduct: false, productId: productIdStr, productName: product.name,

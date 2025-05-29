@@ -27,6 +27,7 @@ import {
     PayStatus as OrderPayStatus, // Renamed to avoid conflict
     Request as OrderRequest,
     ArchiveProduct as OrderProduct,
+    SelectionClass
     // ArchiveArt, // Already imported if needed by OrderItem
 } from 'types/orderArchive.types';
 import { getOrderArchiveById, updateOrderArchive } from '@api/orderArchive.api'; // Added updateOrderArchive
@@ -54,20 +55,55 @@ interface OrderItemProps {
 const OrderItem: React.FC<OrderItemProps> = ({ request }) => {
     const { product, art, quantity } = request;
 
-    const renderAttributes = (attrs: OrderProduct['attributes']) => {
-        if (!attrs) return null;
+    const renderAttributes = (selection: OrderProduct['selection']) => {
+        if (!selection) return null; // O un mensaje como "Sin selección específica"
+    
         let attributesToDisplay: { name: string; value: string }[] = [];
-        if (Array.isArray(attrs)) {
-            attributesToDisplay = attrs.map(attr => ({
-                name: attr.name,
-                value: Array.isArray(attr.value) ? attr.value.join(', ') : String(attr.value)
-            }));
-        } else if (typeof attrs === 'object' && attrs !== null) {
-            if (attrs.color) attributesToDisplay.push({ name: 'Color', value: attrs.color.join(', ') });
-            if (attrs.talla) attributesToDisplay.push({ name: 'Talla', value: attrs.talla.join(', ') });
-            if (attrs.corte) attributesToDisplay.push({ name: 'Corte', value: attrs.corte.join(', ') });
+    
+        if (typeof selection === 'string') {
+            attributesToDisplay.push({ name: "Selección", value: selection });
         }
-        if (attributesToDisplay.length === 0) return <Typography variant="caption" color="text.secondary">Sin atributos específicos</Typography>;
+        else if (Array.isArray(selection)) {
+            const validStrings = selection.filter((s): s is string => typeof s === 'string');
+            if (validStrings.length > 0) {
+                attributesToDisplay.push({ name: "Valores", value: validStrings.join(', ') });
+            }
+        }
+        else if (typeof selection === 'object' && selection !== null) {
+            const selectionObject = selection as SelectionClass;
+                if (selectionObject.name) {
+                attributesToDisplay.push({ name: "Selección", value: selectionObject.name });
+            }
+            if (selectionObject.attributes && Array.isArray(selectionObject.attributes)) {
+                selectionObject.attributes.forEach(attr => {
+                    let attrName = "Atributo";
+                    let attrValue = "";
+    
+                    // Lógica para extraer nombre y valor de 'attr' (SelectionAttribute)
+                    // Esto es una suposición y necesitará ajustarse a tu estructura de SelectionAttribute
+                    // if (attr.name && attr.value) {
+                        attrName = attr.name;
+                        attrValue = attr.value;
+                    // } else if (attr?.name) {
+                    //     attrName = attr.name;
+                    //     if (attr.valueStr && attr.valueStr.length > 0) {
+                    //         attrValue = attr.valueStr.join(', ');
+                    //     } else if (attr.value && attr.value.length > 0) {
+                    //         attrValue = attr.value.map(v => v.name).filter(Boolean).join(', ');
+                    //     }
+                    // }
+                    // // Solo añadir si tenemos un valor
+                    // if (attrValue) {
+                    //    attributesToDisplay.push({ name: attrName, value: attrValue });
+                    // }
+                });
+            }
+        }
+    
+        if (attributesToDisplay.length === 0) {
+            return <Typography variant="caption" color="text.secondary">Sin atributos específicos</Typography>;
+        }
+    
         return (
             <Box component="ul" sx={{ pl: 2, mt: 0.5, mb: 0, listStyle: 'disc' }}>
                 {attributesToDisplay.map((attr, idx) => (
@@ -93,7 +129,7 @@ const OrderItem: React.FC<OrderItemProps> = ({ request }) => {
             {imageUrl && (
                 <CardMedia
                     component="img"
-                    sx={{ width: 80, height: 80, objectFit: 'contain', p: 1, mr: 1, flexShrink: 0 }}
+                    sx={{ width: 120, height: 120, objectFit: 'contain', p: 1, mr: 1, flexShrink: 0 }}
                     image={imageUrl}
                     alt={`${product?.name || 'Producto'} - ${art?.title || 'Arte'}`}
                 />
@@ -110,7 +146,7 @@ const OrderItem: React.FC<OrderItemProps> = ({ request }) => {
                 <Typography variant="body2" color="text.secondary" gutterBottom noWrap>
                     {art?.title || 'Arte no especificada'}
                 </Typography>
-                {renderAttributes(product?.attributes)}
+                {renderAttributes(product?.selection)}
                 <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 0.5 }}>
                     {product?.id && `Prod ID: ${product.id}`}
                     {product?.id && art?.artId && ' / '}

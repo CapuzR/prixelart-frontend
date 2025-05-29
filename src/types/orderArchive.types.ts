@@ -286,7 +286,7 @@ interface PriceRange {
     to?: null | string;
 }
 
-interface SelectionClass {
+ export interface SelectionClass {
     _id?: string;
     thumbUrl?: string;
     active?: boolean;

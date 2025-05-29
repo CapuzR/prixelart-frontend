@@ -1,0 +1,511 @@
+{
+  "array": [
+    {
+      "name": "Coloritmos",
+      "description": "Es un homenaje a uno de los máximos exponentes del cientismo en Venezuela Alejandro Otero, los Coloritmos marcaron un hito en el devenir del arte moderno latinoamericano del siglo XX y es uno de los trabajos seriales más extraordinarios producidos en la historia del arte abstracto y una de las mayores contribuciones conceptuales del artista en el campo de la pintura. En este mural se emplea la abstracción geométrica y se plasmaron tipologías repetitivas rectangulares horizontales, que se despliegan en múltiples variaciones de composición y colores donde se buscaron las resonancias rítmico-cromáticas.",
+      "src": "/LPG/icons/lpg1.png",
+      "type": "text",
+      "text": "1",
+      "shareUrl": "",
+      "mapUrl": "https://maps.app.goo.gl/YTKVJKzKXrk5rMfV8",
+      "originalCoordinates": {
+        "x": 705.2,
+        "y": 4284
+      }
+    },
+    {
+      "name": "Virgen de la Milagrosa",
+      "description": "Es un homenaje a uno de los máximos exponentes del cientismo en Venezuela Alejandro Otero, los Coloritmos marcaron un hito en el devenir del arte moderno latinoamericano del siglo XX y es uno de los trabajos seriales más extraordinarios producidos en la historia del arte abstracto y una de las mayores contribuciones conceptuales del artista en el campo de la pintura. En este mural se emplea la abstracción geométrica y se plasmaron tipologías repetitivas rectangulares horizontales, que se despliegan en múltiples variaciones de composición y colores donde se buscaron las resonancias rítmico-cromáticas.",
+      "src": "/LPG/icons/lpg2.png",
+      "type": "text",
+      "text": "2",
+      "shareUrl": "",
+      "mapUrl": "https://maps.app.goo.gl/YTKVJKzKXrk5rMfV8",
+      "originalCoordinates": {
+        "x": 660,
+        "y": 4250
+      }
+    },
+    {
+      "name": "Ávila en líneas Aditivas",
+      "description": "John Barrios artista plástico cuyo trabajo se ha caracterizado por el uso del cinetismo, nos presenta con mucha alegría y entusiasmo una obra en la que utiliza la técnica de unos de los más grandes artistas cinéticos del mundo; el Venezolanos Carlos Cruz Diez denominada líneas aditivas. Esta técnica consiste en colocar 3 líneas verticales que al unificarse crean una absorción del color logrando así una visión cinética. A esta técnica le incorpora el Ávila como icono natural, fuente de vida y oxígeno de los habitantes de nuestra ciudad de Caracas Venezuela y que para los habitantes de la Urbanización Los Palos Grandes es su principal paisaje natural con sus diferentes colores durante las distintas horas del día y épocas del año.",
+      "src": "/LPG/icons/lpg3.png",
+      "type": "text",
+      "text": "3",
+      "shareUrl": "",
+      "mapUrl": "https://maps.app.goo.gl/YTKVJKzKXrk5rMfV8",
+      "originalCoordinates": {
+        "x": 584,
+        "y": 3756
+      }
+    },
+    {
+      "name": "Mar",
+      "description": "John Barrios artista plástico cuyo trabajo se ha caracterizado por el uso del cinetismo, nos presenta con mucha alegría y entusiasmo una obra en la que utiliza la técnica de unos de los más grandes artistas cinéticos del mundo; el Venezolanos Carlos Cruz Diez denominada líneas aditivas. Esta técnica consiste en colocar 3 líneas verticales que al unificarse crean una absorción del color logrando así una visión cinética. A esta técnica le incorpora el Ávila como icono natural, fuente de vida y oxígeno de los habitantes de nuestra ciudad de Caracas Venezuela y que para los habitantes de la Urbanización Los Palos Grandes es su principal paisaje natural con sus diferentes colores durante las distintas horas del día y épocas del año.",
+      "src": "/LPG/icons/lpg4.png",
+      "type": "text",
+      "text": "4",
+      "shareUrl": "",
+      "mapUrl": "https://maps.app.goo.gl/YTKVJKzKXrk5rMfV8",
+      "originalCoordinates": {
+        "x": 594,
+        "y": 3700
+      }
+    },
+    {
+      "name": "Tenemos alas",
+      "description": "John Barrios artista plástico cuyo trabajo se ha caracterizado por el uso del cinetismo, nos presenta con mucha alegría y entusiasmo una obra en la que utiliza la técnica de unos de los más grandes artistas cinéticos del mundo; el Venezolanos Carlos Cruz Diez denominada líneas aditivas. Esta técnica consiste en colocar 3 líneas verticales que al unificarse crean una absorción del color logrando así una visión cinética. A esta técnica le incorpora el Ávila como icono natural, fuente de vida y oxígeno de los habitantes de nuestra ciudad de Caracas Venezuela y que para los habitantes de la Urbanización Los Palos Grandes es su principal paisaje natural con sus diferentes colores durante las distintas horas del día y épocas del año.",
+      "src": "/LPG/icons/lpg5.png",
+      "type": "text",
+      "text": "5",
+      "shareUrl": "",
+      "mapUrl": "https://maps.app.goo.gl/YTKVJKzKXrk5rMfV8",
+      "originalCoordinates": {
+        "x": 624,
+        "y": 3665
+      }
+    },
+    {
+      "name": "Homenaje a Ravelo",
+      "description": "Este mural es un homenaje a un gran artista cinético de Venezuela, de los grandes maestros del cinetismo que aún viven. El cuál tiene un valor especial para Jeean, ya que fue el primer mural público en la ciudad de Caracas y en él representa una imagen panorámica de la icónica vista del Ávila con edificios emblemáticos de la ciudad junto a un fondo de una obra bastante conocida de Juvenal Ravelo.",
+      "src": "/LPG/icons/lpg6.webp",
+      "type": "text",
+      "text": "6",
+      "shareUrl": "",
+      "mapUrl": "https://maps.app.goo.gl/YTKVJKzKXrk5rMfV8",
+      "originalCoordinates": {
+        "x": 609,
+        "y": 3511.5
+      }
+    },
+    {
+      "name": "Homenaje a Soto",
+      "description": "Salgrero, un artista constructivista, cinético y versátil, quien desarrolló el mural con partes físicas en 3D, además de la bidimensionalidad, representado los 3 periodos del gran maestro Jesús Soto, cuadros vibrantes, escrituras silenciosas y losa de sólidos, como la esfera.",
+      "src": "/LPG/icons/lpg.png",
+      "type": "text",
+      "text": "7",
+      "shareUrl": "",
+      "mapUrl": "https://maps.app.goo.gl/YTKVJKzKXrk5rMfV8",
+      "originalCoordinates": {
+        "x": 708,
+        "y": 3530
+      }
+    },
+    {
+      "name": "Mand-Alas",
+      "description": "Las Mand-Alas multicolores simbolizan la diversidad, están decoradas con figuras de zentangles características de los mandalas, son coronadas por una flor de la vida. Su principal atractivo es invitar al transeúnte a interactuar con la obra. ",
+      "src": "/LPG/icons/lpg.png",
+      "type": "text",
+      "text": "8",
+      "shareUrl": "",
+      "mapUrl": "https://maps.app.goo.gl/YTKVJKzKXrk5rMfV8",
+      "originalCoordinates": {
+        "x": 1506,
+        "y": 3463
+      }
+    },
+    {
+      "name": "Kiosko Mandala",
+      "description": "Las Mand-Alas multicolores simbolizan la diversidad, están decoradas con figuras de zentangles características de los mandalas, son coronadas por una flor de la vida. Su principal atractivo es invitar al transeúnte a interactuar con la obra. ",
+      "src": "/LPG/icons/lpg.png",
+      "type": "text",
+      "text": "9",
+      "shareUrl": "",
+      "mapUrl": "https://maps.app.goo.gl/YTKVJKzKXrk5rMfV8",
+      "originalCoordinates": {
+        "x": 1166,
+        "y": 3082.5
+      }
+    },
+    {
+      "name": "Ccs a Color",
+      "description": "Ccs a Color",
+      "src": "/LPG/icons/lpg.png",
+      "type": "text",
+      "text": "10",
+      "shareUrl": "",
+      "mapUrl": "https://maps.app.goo.gl/YTKVJKzKXrk5rMfV8",
+      "originalCoordinates": {
+        "x": 1151,
+        "y": 3201
+      }
+    },
+    {
+      "name": "Intensa Relación",
+      "description": "Gioia define esta obra, tal y como lo dice su nombre, en ella expresa la relación que existe entre nosotros como ciudadanos y nuestra hermosa ciudad, plasmando allí la parte urbana, donde destacan algunas edificaciones emblemáticas del Municipio Chacao, así como también nuestra parte rural, teniendo en cuenta elementos que nos dan identidad como caraqueños, tales como las guacamayas y nuestro querido Ávila.",
+      "src": "/LPG/icons/lpg.png",
+      "type": "text",
+      "text": "11",
+      "shareUrl": "",
+      "mapUrl": "https://maps.app.goo.gl/YTKVJKzKXrk5rMfV8",
+      "originalCoordinates": {
+        "x": 1118,
+        "y": 3576.5
+      }
+    },
+    {
+      "name": "YO amo LPG",
+      "description": "Este mural busca conectar a todo palograndino conjugando las actividades que realizamos en la plaza y/o la urbanización y el amor que sentimos por nuestra comunidad. Es la segunda de las 3 obras que conforman el proyecto aniversario denominado '   Intensa relación' Un corazón naranja que se identifica con el color de Chacao y contiene las iniciales de la urbanización LPG enmarcado por íconos de nuestra comunidad conjugados con mandalas. Integra el poste lateral creando un portal que da marco a la vista de nuestro querido Ávila.",
+      "src": "/LPG/icons/lpg12.webp",
+      "type": "text",
+      "text": "12",
+      "shareUrl": "",
+      "mapUrl": "https://maps.app.goo.gl/YTKVJKzKXrk5rMfV8",
+      "originalCoordinates": {
+        "x": 1118,
+        "y": 3463
+      }
+    },
+    {
+      "name": "Guacamayas",
+      "description": "Guacamayas",
+      "src": "/LPG/icons/lpg.png",
+      "type": "text",
+      "text": "13",
+      "shareUrl": "",
+      "mapUrl": "https://maps.app.goo.gl/YTKVJKzKXrk5rMfV8",
+      "originalCoordinates": {
+        "x": 934,
+        "y": 3763.5
+      }
+    },
+    {
+      "name": "Metamorfosis",
+      "description": "A partir de la frase que regaló el escritor y vecino Eduardo Liendo a los Palograndinos “Siempre hay mañana” quisimos conjugar diversos elementos que dan connotación de tiempo y metamorfosis. Un yingyang enmarcado en un reloj expresa el cambio que lo envuelve todo, lo que muestra la transición entre lo que ha sido y lo que llegará a ser. Representa una dualidad entre fuerzas complementarias, el equilibrio entre: el bien y el mal, el día y la noche, la luz y la oscuridad… En el reloj se posa una mariposa 88, símbolo de buena fortuna, una especie que solo aparecía en el Santuario de la Virgen de Coromoto (Guanare) y con el tiempo comenzó a aparecer en diferentes partes. Los colores utilizados blanco, negro y rojo representan los símbolos descritos anteriormente.",
+      "src": "/LPG/icons/lpg.png",
+      "type": "text",
+      "text": "14",
+      "shareUrl": "",
+      "mapUrl": "https://maps.app.goo.gl/YTKVJKzKXrk5rMfV8",
+      "originalCoordinates": {
+        "x": 1193,
+        "y": 3796
+      }
+    },
+    {
+      "name": "Reminiscencia",
+      "description": "En las décadas de 50 y 60 en Venezuela imperó la “Abstracción Geométrica” haciéndose sentir en los géneros de la pintura, la escultura y la arquitectura, manteniéndose en el tiempo como un recuerdo impreciso de una imagen del pasado que viene a la memoria, aquellas obras únicas de artistas reconocidos del siglo pasado.",
+      "src": "/LPG/icons/lpg15.webp",
+      "type": "text",
+      "text": "15",
+      "shareUrl": "",
+      "mapUrl": "https://maps.app.goo.gl/YTKVJKzKXrk5rMfV8",
+      "originalCoordinates": {
+        "x": 1193,
+        "y": 3726
+      }
+    },
+    {
+      "name": "La Expresión como Guía",
+      "description": "Con un área de 168 m2 esta  obra  el artista muralista Dagor utilizó los colores del edificio Don Manuel y circundantes, los verdes de los árboles, corales y ladrillos, creando un engranaje entre la esquina y lo que la rodea, que refleja además, el esfuerzo común que la hizo posible; mientras que para el título, tomó como referencia la pintura “La Liberté guidant le peuple” (La Libertad guiando al pueblo) de Eugène Delacroix, como símbolo y bandera de la Revolución de julio de 1830 por la defensa de la libertad de prensa en Francia, según explicaron los directores de Sietealcubo, Gabi Valladares y Marcello Botto.",
+      "src": "/LPG/icons/lpg.png",
+      "type": "text",
+      "text": "16",
+      "shareUrl": "",
+      "mapUrl": "https://maps.app.goo.gl/YTKVJKzKXrk5rMfV8",
+      "originalCoordinates": {
+        "x": 868,
+        "y": 3432.5
+      }
+    },
+    {
+      "name": "Perspectivas Coloreadas",
+      "description": "Las perspectivas se conforman con la proyección de líneas paralelas en un sistema de representación que utiliza los ejes cartesianos, dando dimensiones y proporciones integrándose con el edificio Itaca donde las líneas arquitectónicas de esta construcción son muy distinguidas.",
+      "src": "/LPG/icons/lpg.png",
+      "type": "text",
+      "text": "17",
+      "shareUrl": "",
+      "mapUrl": "https://maps.app.goo.gl/YTKVJKzKXrk5rMfV8",
+      "originalCoordinates": {
+        "x": 1373,
+        "y": 3609
+      }
+    },
+    {
+      "name": "Visiones",
+      "description": "Visiones, es una obra de abstracción geométrica, compuesta con diferentes tipos de Triángulos que convergen en un espacio dando la sensación de unión o separación según la apreciación del espectador.",
+      "src": "/LPG/icons/lpg.png",
+      "type": "text",
+      "text": "19",
+      "shareUrl": "",
+      "mapUrl": "https://maps.app.goo.gl/YTKVJKzKXrk5rMfV8",
+      "originalCoordinates": {
+        "x": 1297,
+        "y": 3479
+      }
+    },
+    {
+      "name": "Ávila de Norte a Sur",
+      "description": "Rosario nos otorga una obra impregnada de pluralidad de colores y energía positiva.",
+      "src": "/LPG/icons/lpg.png",
+      "type": "text",
+      "text": "20",
+      "shareUrl": "",
+      "mapUrl": "https://maps.app.goo.gl/YTKVJKzKXrk5rMfV8",
+      "originalCoordinates": {
+        "x": 931,
+        "y": 3060
+      }
+    },
+    {
+      "name": "Maravillas Cotidianas",
+      "description": "Es una obra Naive (Naif) de gran colorido, donde Marian plasma sus vivencias durante la pandemia, la cuál la enseñó a convertir lo común en extraordinario. A ver con más detenimiento el paisaje, a saborear con más pausa el café, a apreciar una fruta madura lista para hoy. También parte de su inspiración viene de sus caminatas diarias con su perrito, las cuales se convirtieron en una excusa para descubrir una nueva cafetería, un nuevo puesto de flores y sobre todo un nuevo mural, al ver estos últimos soñaba con plasmar esas aventuras plasmadas en su block en uno de ellos y finalmente fue posible, compartiéndonos su visión del mundo a través de esta obra.",
+      "src": "/LPG/icons/lpg.png",
+      "type": "text",
+      "text": "21",
+      "shareUrl": "",
+      "mapUrl": "https://maps.app.goo.gl/YTKVJKzKXrk5rMfV8",
+      "originalCoordinates": {
+        "x": 642,
+        "y": 3190
+      }
+    },
+    {
+      "name": "Iguales y Diferentes",
+      "description": "Dos mandalas a la mitad enmarcados en la pared en posición vertical y horizontal de color blanco sobre un fondo verde pizarra, simbolizan: esperanza, naturaleza pureza y serenidad. Un trazo muy delicado que simula un bordado y que nos lleva a recuerdos de nuestras abuelas o algún ser querido. Lo complementa una pared frontal con la frase: Las diferencias nos enriquecen y el respeto nos une. Un mensaje significativo para el momento que vivimos.",
+      "src": "/LPG/icons/lpg.png",
+      "type": "text",
+      "text": "22",
+      "shareUrl": "",
+      "mapUrl": "https://maps.app.goo.gl/YTKVJKzKXrk5rMfV8",
+      "originalCoordinates": {
+        "x": 619,
+        "y": 3283
+      }
+    },
+    {
+      "name": "Homenaje a Subero",
+      "description": "Subero es un artista óptico y aborda un sistema de signos basados en cualidades de rigurosa geometría y bajo los límites de la estructura repetitiva.",
+      "src": "/LPG/icons/lpg23.webp",
+      "type": "text",
+      "text": "23",
+      "shareUrl": "",
+      "mapUrl": "https://maps.app.goo.gl/YTKVJKzKXrk5rMfV8",
+      "originalCoordinates": {
+        "x": 619,
+        "y": 3398
+      }
+    },
+    {
+      "name": "Un Beato en LPG",
+      "description": "Sin duda el mural con mayor simbolismo por lo significa para Venezuela el personaje representado, el Beato venezolano Doctor Jose Gregorio Hernández, esta réplica es un regalo del artista plástico venezolano Eduardo Sanabria, mejor conocido como Edo, al cual recordamos por sus caricaturas en periódicos nacionales.",
+      "src": "/LPG/icons/lpg.png",
+      "type": "text",
+      "text": "24",
+      "shareUrl": "",
+      "mapUrl": "https://maps.app.goo.gl/YTKVJKzKXrk5rMfV8",
+      "originalCoordinates": {
+        "x": 41,
+        "y": 4389
+      }
+    },
+    {
+      "name": "Excelsior Op",
+      "description": "Este mural esta realizado en abstracción geométrica y compuesta por formas combinadas sobre los espacios. Haciendo un contraste y absorción de las formas en los objetos que allí se ubican plasmado artísticamente. Está obra fue inspirada del artista plástico Víctor Vasarely llamada Gixeh creada en los 50s. Sus colores están inspirados en su arquitectura de los años 50´s.",
+      "src": "/LPG/icons/lpg.png",
+      "type": "text",
+      "text": "25",
+      "shareUrl": "",
+      "mapUrl": "https://maps.app.goo.gl/YTKVJKzKXrk5rMfV8",
+      "originalCoordinates": {
+        "x": 1226,
+        "y": 3465
+      }
+    },
+    {
+      "name": "Bajo El Paragua",
+      "description": "Esta composición se basó en el cromatismo del color y en un acercamiento del artista al cinetismo. Bajo el paragua es una alegoría a la ciudad, a la cotidianidad, a el trajín del día a día, pero cargado con los colores propios de una ciudad compleja, pero a la vez hermosa en su esplendor.",
+      "src": "/LPG/icons/lpg.png",
+      "type": "text",
+      "text": "26",
+      "shareUrl": "",
+      "mapUrl": "https://maps.app.goo.gl/YTKVJKzKXrk5rMfV8",
+      "originalCoordinates": {
+        "x": 1406,
+        "y": 3115
+      }
+    },
+    {
+      "name": "Policromía #79 #80",
+      "description": "Desde el inicio, mi investigación plástica ha girado alrededor del arte textil pero desde una perspectiva de la volumetría del color, en donde he hecho indagaciones con miras a la escultura y los lenguajes pictóricos. Actualmente mi obra se caracteriza por generar espacios visuales",
+      "src": "/LPG/icons/lpg27.webp",
+      "type": "text",
+      "text": "27",
+      "shareUrl": "",
+      "mapUrl": "https://maps.app.goo.gl/YTKVJKzKXrk5rMfV8",
+      "originalCoordinates": {
+        "x": 1383,
+        "y": 3495.5
+      }
+    },
+    {
+      "name": "Watts Colors",
+      "description": "Es una propuesta que parte de la integración artística en los gabinetes de los tableros eléctricos del edificio La Palma, creando un cinetismo con cubos inclinados generando perspectivas, adaptándose a la forma y al comportamiento de las puertas, implantando un juego de degradación con los colores cálidos que van desde el amarillo hasta el rojo.",
+      "src": "/LPG/icons/lpg.png",
+      "type": "text",
+      "text": "28",
+      "shareUrl": "",
+      "mapUrl": "https://maps.app.goo.gl/YTKVJKzKXrk5rMfV8",
+      "originalCoordinates": {
+        "x": 1149,
+        "y": 3338
+      }
+    },
+    {
+      "name": "Perpendicular",
+      "description": "Perpendicular",
+      "src": "/LPG/icons/lpg.png",
+      "type": "text",
+      "text": "29",
+      "shareUrl": "",
+      "mapUrl": "https://maps.app.goo.gl/YTKVJKzKXrk5rMfV8",
+      "originalCoordinates": {
+        "x": 685,
+        "y": 3731
+      }
+    },
+    {
+      "name": "En Reubicación",
+      "description": "En Reubicación",
+      "src": "/LPG/icons/lpg.png",
+      "type": "text",
+      "text": "30",
+      "shareUrl": "",
+      "mapUrl": "https://maps.app.goo.gl/YTKVJKzKXrk5rMfV8",
+      "originalCoordinates": {
+        "x": 549,
+        "y": 3857
+      }
+    },
+    {
+      "name": "Edén",
+      "description": "El edificio Alcoma nos inspiró a crear un jardín lleno de vida, color y contrastes. Buscando un nombre para el mural conseguimos que Alcoma se relaciona con la manzana de Adán, la fruta mística del pecado original. Siendo así, el nombre Edén nos pareció el indicado para evocar lo paradisíaco en un lugar agradable en el que se está a gusto y feliz.",
+      "src": "/LPG/icons/lpg.png",
+      "type": "text",
+      "text": "31",
+      "shareUrl": "",
+      "mapUrl": "https://maps.app.goo.gl/YTKVJKzKXrk5rMfV8",
+      "originalCoordinates": {
+        "x": 1010,
+        "y": 3233.5
+      }
+    },
+    {
+      "name": "Intoku",
+      "description": "Intoku",
+      "src": "/LPG/icons/lpg.png",
+      "type": "text",
+      "text": "32",
+      "shareUrl": "",
+      "mapUrl": "https://maps.app.goo.gl/YTKVJKzKXrk5rMfV8",
+      "originalCoordinates": {
+        "x": 967,
+        "y": 2590
+      }
+    },
+    {
+      "name": "Camino de Recuerdos",
+      "description": "Camino de Recuerdos",
+      "src": "/LPG/icons/lpg.png",
+      "type": "text",
+      "text": "33",
+      "shareUrl": "",
+      "mapUrl": "https://maps.app.goo.gl/YTKVJKzKXrk5rMfV8",
+      "originalCoordinates": {
+        "x": 483,
+        "y": 3070
+      }
+    },
+    {
+      "name": "Cayenas",
+      "description": "Cayenas",
+      "src": "/LPG/icons/lpg.png",
+      "type": "text",
+      "text": "34",
+      "shareUrl": "",
+      "mapUrl": "https://maps.app.goo.gl/YTKVJKzKXrk5rMfV8",
+      "originalCoordinates": {
+        "x": 552.1,
+        "y": 3175
+      }
+    },
+    {
+      "name": "Alas 11va",
+      "description": "Alas 11va",
+      "src": "/LPG/icons/lpg.png",
+      "type": "text",
+      "text": "35",
+      "shareUrl": "",
+      "mapUrl": "https://maps.app.goo.gl/YTKVJKzKXrk5rMfV8",
+      "originalCoordinates": {
+        "x": 1986,
+        "y": 603
+      }
+    },
+    {
+      "name": "Caracat",
+      "description": "Caracat",
+      "src": "/LPG/icons/lpg.png",
+      "type": "text",
+      "text": "36",
+      "shareUrl": "",
+      "mapUrl": "https://maps.app.goo.gl/YTKVJKzKXrk5rMfV8",
+      "originalCoordinates": {
+        "x": 604,
+        "y": 3612
+      }
+    },
+    {
+      "name": "Flora Pixeles",
+      "description": "Flora Pixeles",
+      "src": "/LPG/icons/lpg37.webp",
+      "type": "text",
+      "text": "37",
+      "shareUrl": "",
+      "mapUrl": "https://maps.app.goo.gl/YTKVJKzKXrk5rMfV8",
+      "originalCoordinates": {
+        "x": 1439,
+        "y": 4017
+      }
+    },
+    {
+      "name": "La Bauhaus en LPG",
+      "description": "La Bauhaus en LPG",
+      "src": "/LPG/icons/lpg38.webp",
+      "type": "text",
+      "text": "38",
+      "shareUrl": "",
+      "mapUrl": "https://maps.app.goo.gl/YTKVJKzKXrk5rMfV8",
+      "originalCoordinates": {
+        "x": 941.2,
+        "y": 3899.5
+      }
+    },
+    {
+      "name": "Vibraciones",
+      "description": "Vibraciones",
+      "src": "/LPG/icons/lpg.png",
+      "type": "text",
+      "text": "39",
+      "shareUrl": "",
+      "mapUrl": "https://maps.app.goo.gl/YTKVJKzKXrk5rMfV8",
+      "originalCoordinates": {
+        "x": 1085,
+        "y": 3792
+      }
+    },
+    {
+      "name": "Policromía Cinética",
+      "description": "Policromía Cinética",
+      "src": "/LPG/icons/lpg.png",
+      "type": "text",
+      "text": "40",
+      "shareUrl": "",
+      "mapUrl": "https://maps.app.goo.gl/YTKVJKzKXrk5rMfV8",
+      "originalCoordinates": {
+        "x": 1716,
+        "y": 508
+      }
+    }
+  ]
+}

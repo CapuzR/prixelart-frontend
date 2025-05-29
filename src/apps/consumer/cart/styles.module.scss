@@ -1,0 +1,38 @@
+@use '@/theme.scss' as theme;
+
+.main-container {
+  width: 100%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  padding: theme.$spacing-xl;
+  height: calc(100vh - 69px);
+}
+
+.alert-container {
+  display: flex;
+  justify-content: space-around;
+}
+
+.content-row {
+  display: flex;
+  justify-content: space-between;
+  padding: theme.$spacing-md;
+  max-height: 95%;
+}
+
+.switch-container {
+  display: flex;
+  justify-content: flex-end;
+  padding-right: theme.$spacing-lg;
+}
+
+.cart-review-container {
+  display: flex;
+  justify-content: space-between;
+  min-width: calc(100% - 600px);
+}
+
+.empty-space {
+  width: 40%;
+}

@@ -1,0 +1,46 @@
+@use "@/theme.scss" as theme;
+
+.action-bar {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  width: 60px;
+  background-color: transparent;
+  right: 0;
+}
+
+.icon-wrapper {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition:
+    background-color theme.$transition-normal,
+    color theme.$transition-normal;
+  background-color: transparent;
+  border: 1px solid theme.$border-color;
+
+  &:hover {
+    background-color: theme.$error-color;
+    color: white;
+
+    .icon {
+      color: theme.$text-light-color;
+    }
+  }
+
+  &:nth-child(2):hover {
+    background-color: theme.$warning-color;
+
+    .icon {
+      color: theme.$text-light-color;
+    }
+  }
+}
+
+.icon {
+  color: theme.$secondary-color;
+  transition: color theme.$transition-normal;
+}

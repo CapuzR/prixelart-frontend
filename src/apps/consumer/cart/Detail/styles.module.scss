@@ -1,0 +1,93 @@
+@use '@/theme.scss' as theme;
+
+.card-root {
+  display: flex;
+  overflow: hidden;
+  align-content: space-between;
+  height: auto;
+  @include theme.paper(undefined, theme.$box-shadow-heavy, theme.$border-radius-xl,undefined);
+  margin: 25px;
+  width: 100%;
+  margin-bottom: theme.$spacing-lg;
+}
+
+.card-content {
+  display: flex;
+  flex: 1;
+
+  justify-content: space-between;
+
+  &.row {
+    flex-direction: row;
+  }
+
+  &.column {
+    flex-direction: column;
+  }
+}
+
+.item-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: theme.$spacing-md;
+  justify-content: space-between;
+}
+
+.line-details {
+  display: flex;
+  flex-direction: column;
+  flex: 0;
+  justify-content: space-between;
+}
+
+.item-playground {
+  flex: 1;
+}
+
+.pricing-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: theme.$spacing-md;
+}
+
+.quantity,
+.subtotal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+
+  small {
+    font-size: theme.$font-size-small;
+    color: theme.$text-color;
+    margin-bottom: theme.$spacing-xs;
+  }
+
+  p {
+    font-size: theme.$font-size-medium;
+    font-weight: theme.$font-weight-bold;
+    margin: 0;
+  }
+}
+
+.quantity-input {
+  width: 60px;
+  padding: theme.$spacing-xs;
+  font-size: theme.$font-size-medium;
+  text-align: center;
+  border: 1px solid theme.$border-color;
+  border-radius: theme.$border-radius-sm;
+  outline: none;
+
+  &:focus {
+    border-color: theme.$primary-color;
+  }
+}
+
+.extra-padding {
+  @include theme.paper(undefined, theme.$box-shadow-medium, theme.$border-radius-lg, theme.$spacing-xl);
+  padding: theme.$spacing-xl theme.$spacing-lg * 2;
+}

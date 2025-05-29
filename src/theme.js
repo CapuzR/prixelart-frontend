@@ -1,7 +1,6 @@
-import { red } from "@material-ui/core/colors";
-import { createTheme } from "@material-ui/core/styles";
+import { red } from "@mui/material/colors";
+import { createTheme } from "@mui/material/styles";
 
-// A custom theme for this app
 const theme = createTheme({
   palette: {
     primary: {
@@ -17,6 +16,7 @@ const theme = createTheme({
       default: "#fff",
     },
   },
+  spacing: 8,
 });
 
 export default theme;

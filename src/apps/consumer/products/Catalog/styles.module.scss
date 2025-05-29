@@ -1,0 +1,179 @@
+@use '@/theme.scss' as theme;
+
+.catalog {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: left;
+  flex-grow: 1;
+  max-width: 100%;
+  margin: 0;
+  border-radius: theme.$border-radius-md;
+}
+
+.grid-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  padding: 0 5%;
+}
+
+.search-bar {
+  display: flex;
+  justify-content: right;
+  align-items: center;
+  margin: theme.$spacing-sm 0;
+  padding: 0 theme.$spacing-lg;
+}
+
+.sorting-select {
+  position: relative;
+  width: 200px;
+  display: flex;
+  justify-content: right;
+}
+
+.avatar {
+  margin: theme.$spacing-md;
+  background-color: theme.$secondary-color;
+}
+
+.form {
+  width: 100%;
+  margin-top: theme.$spacing-lg;
+}
+
+.submit {
+  margin: theme.$spacing-lg 0 theme.$spacing-md;
+}
+
+.float {
+  position: relative;
+  margin-left: 95%;
+}
+
+.img {
+  max-height: 480px;
+  width: 100%;
+
+  @include theme.respond-below(theme.$breakpoint-md) {
+    max-height: 200px;
+  }
+
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+.title {
+  color: theme.$secondary-color;
+  font-weight: theme.$font-weight-bold;
+  padding-top: theme.$spacing-lg;
+  align-self: center;
+}
+
+.slider-item {
+  border-radius: theme.$border-radius-lg;
+  display: flex;
+  flex-direction: column;
+  height: 250px;
+  width: 80%;
+  margin-left: 100px;
+
+  @include theme.respond-below(theme.$breakpoint-md) {
+    height: 150px;
+    margin-left: 35px;
+  }
+}
+
+.product-image {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.product-background {
+  background-size: cover;
+  border-radius: theme.$border-radius-md;
+  background-position: back;
+  display: flex;
+  justify-items: end;
+  align-items: end;
+
+  height: 170px;
+
+  @include theme.respond-below(theme.$breakpoint-md) {
+    height: 120px;
+    width: 120px;
+  }
+
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+.search-icon {
+  padding: theme.$spacing-xs;
+  background-color: theme.$primary-color;
+  color: theme.$text-light-color;
+  margin: theme.$spacing-xs;
+}
+
+.product-name {
+  color: theme.$secondary-color;
+  font-weight: theme.$font-weight-bold;
+  font-size: theme.$font-size-small;
+  align-self: center;
+
+  @include theme.respond-below(theme.$breakpoint-md) {
+    font-size: theme.$font-size-small;
+  }
+}
+
+.details-button {
+  @include theme.button(theme.$primary-color);
+  border-radius: theme.$border-radius-lg;
+}
+
+.best-sellers {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+  border-radius: theme.$border-radius-xl;
+  background-color: rgba(0, 0, 0, 0.05);
+  padding: theme.$spacing-md theme.$spacing-xl theme.$spacing-lg theme.$spacing-xl;
+  width: 85%;
+  margin: 20px auto;
+  box-shadow:
+    0px 6px 10px rgba(0, 0, 0, 0.2),
+    0px 1px 5px rgba(0, 0, 0, 0.14),
+    0px 3px 5px rgba(0, 0, 0, 0.12);
+
+  @include theme.respond-below(theme.$breakpoint-md) {
+    width: 96%;
+    height: 240px;
+    border-radius: theme.$border-radius-md;
+    padding: theme.$spacing-sm;
+  }
+}
+
+.title-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 50px;
+}
+
+.slider-wrapper {
+  flex-grow: 1;
+  width: 100%;
+  max-height: calc(100% - 50px);
+  position: relative;
+}
+
+.best-seller-title {
+  color: theme.$secondary-color;
+  font-weight: theme.$font-weight-bold;
+}

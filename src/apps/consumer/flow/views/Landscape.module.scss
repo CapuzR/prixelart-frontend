@@ -1,0 +1,35 @@
+@use '../Flow.module.scss';
+
+.prix-product-container {
+  flex-direction: row;
+
+  .left-side {
+    width: 45%;
+  }
+
+  .right-side {
+    display: flex;
+    width: 45%;
+  }
+
+  .buttons-container {
+    position: relative;
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    align-content: center;
+    gap: $spacing-md;
+
+    @include respond-below($breakpoint-md) {
+      gap: $spacing-sm;
+    }
+  }
+}
+
+.carousel-wrapper {
+  min-height: 500px;
+}
+
+.stepper {
+  justify-content: flex-end;
+}

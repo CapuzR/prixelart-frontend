@@ -1,0 +1,52 @@
+@use '@/theme.scss' as theme;
+@use '../Details.module.scss';
+
+.prix-product-container {
+  padding: 2 * theme.$spacing-xl;
+  display: flex;
+  justify-content: space-around;
+  align-content: center;
+  height: 100%;
+
+  .left-side {
+    display: flex;
+    width: 30%;
+  }
+
+  .right-side {
+    display: flex;
+    width: 60%;
+    max-height: 90%;
+  }
+
+  .buttons-container {
+    position: relative;
+    width: auto;
+    background-color: transparent;
+    justify-content: flex-start;
+  }
+}
+
+.stepper {
+  justify-content: flex-end;
+}
+
+.slider-wrapper {
+  display: flex;
+  min-height: 100%;
+  transition: transform theme.$transition-normal;
+  border-radius: theme.$border-radius-lg;
+}
+
+.right-side {
+  gap: theme.$spacing-xl;
+}
+
+.product-title {
+  font-size: theme.$font-size-large;
+  width: 50%;
+}
+
+.price-selected {
+  width: 100%;
+}

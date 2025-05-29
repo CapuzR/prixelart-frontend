@@ -1,0 +1,66 @@
+@use '@/theme.scss' as theme;
+@use '../Details.module.scss';
+
+.prix-product-container {
+  justify-content: center;
+  padding: theme.$spacing-md theme.$spacing-xl;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.steps-wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  padding: theme.$spacing-md;
+  gap: calc(3 * theme.$spacing-xs);
+}
+
+.flow-stepper-wrapper {
+  display: flex;
+  justify-content: center;
+  gap: theme.$spacing-md;
+  padding: 0 theme.$spacing-md;
+}
+
+.title-price {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  margin-bottom: theme.$spacing-sm;
+
+  .title {
+    font-size: theme.$font-size-extra-large;
+    font-weight: theme.$font-weight-bold;
+    color: theme.$text-color;
+    margin: theme.$spacing-xs;
+  }
+
+  .price {
+    font-size: theme.$font-size-small;
+    font-weight: theme.$font-weight-normal;
+    color: theme.$text-color;
+  }
+}
+
+.carousel-wrapper {
+  width: 50%;
+  min-width: 300px;
+  justify-content: center;
+}
+
+.buttons-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-content: center;
+  margin: theme.$spacing-md 0;
+  gap: theme.$spacing-md;
+  width: 100%;
+}
+
+;

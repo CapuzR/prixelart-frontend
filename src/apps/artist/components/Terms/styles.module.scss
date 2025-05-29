@@ -1,0 +1,43 @@
+@use '@/theme.scss' as theme;
+
+.modal-content {
+  position: absolute;
+  width: 80%;
+  max-height: 450px;
+  overflow-y: auto;
+  background: white;
+  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.2); /* Mimicking theme.shadows[5] */
+  padding: 16px 32px 24px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 8px;
+  text-align: justify;
+  outline: none;
+}
+
+.modal-title {
+  text-align: center;
+  font-weight: normal;
+}
+
+.modal-subtitle {
+  text-align: center;
+  margin-bottom: 12px;
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.modal-text {
+  text-align: justify;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: center;
+}
+
+.accept-button {
+  margin: 24px 0 16px;
+  /* Add more button styling here  */
+}

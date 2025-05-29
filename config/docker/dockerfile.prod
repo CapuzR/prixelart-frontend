@@ -1,6 +1,6 @@
 #produccion
 
-FROM node:15.8.0-alpine as build
+FROM node:20-alpine as build
 
 WORKDIR /frontend
 COPY package*.json ./

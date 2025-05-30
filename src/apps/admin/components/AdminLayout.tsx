@@ -16,10 +16,9 @@ const AdminLayout: React.FC = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        // Skip permission check for the login route itself
         if (location.pathname === "/admin/inicio") {
-            setLoading(false); // Not loading permissions here
-            setPermissions(null); // Ensure no permissions are set for login page
+            setLoading(false);
+            setPermissions(null);
             setError(null);
             return;
         }

@@ -842,7 +842,9 @@ export default function PrixerProfileCard() {
           {((bio && bio.biography && bio.biography.length > 0) ||
             Object.keys(bio || {}).includes("biography")) && (
             <Accordion
-              defaultExpanded={!(bio && bio.images && bio.images.length > 0)}
+              defaultExpanded={false
+                // !(bio && bio.images && bio.images.length > 0)
+                }
               sx={{
                 mb: 1.5,
                 boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
@@ -876,6 +878,11 @@ export default function PrixerProfileCard() {
                         color: "primary.main",
                         textDecoration: "underline",
                       },
+                      "& img": { // Esto apunta a cualquier <img> dentro del Typography
+                        maxWidth: "100%",     // Opción 1: Hacerla responsive, no más ancha que su contenedor
+                        height: "auto",       // Mantiene la proporción de la imagen
+                        display: "block",
+                      }
                     }}
                     dangerouslySetInnerHTML={{ __html: bio.biography[0] }}
                   />

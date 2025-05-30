@@ -519,6 +519,8 @@ export default function Biography(props: BiographyProps) {
                   width: '92%',
                   marginLeft: '4%',
                   marginTop: 20,
+                  maxHeight: 200,
+
                 }}
               >
                 <Slider {...setting2}>
@@ -534,6 +536,8 @@ export default function Biography(props: BiographyProps) {
                             flexDirection: 'column',
                             height: '100%',
                             width: '100%',
+                            maxHeight: 200,
+
                           }}
                         >
                           <div
@@ -541,12 +545,15 @@ export default function Biography(props: BiographyProps) {
                               display: 'flex',
                               flexDirection: 'column',
                               alignItems: 'center',
+                              maxHeight: 200,
+
                             }}
                           >
                             <img
                               style={{
                                 width: '100%',
-                                objectFit: 'cover',
+                                maxHeight: 200,
+                                objectFit: 'contain',
                                 borderRadius: 10,
                               }}
                               src={img}

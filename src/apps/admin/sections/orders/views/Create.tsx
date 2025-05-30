@@ -286,8 +286,7 @@ const CreateOrder: React.FC = () => {
           fullArt: a,
         }))
       )
-
-      // Initialize blank addresses
+      
       setEditableShippingAddress(createBlankAddress())
       setEditableBillingAddress(createBlankAddress())
     } catch (err: any) {

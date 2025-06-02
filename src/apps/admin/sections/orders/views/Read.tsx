@@ -35,7 +35,7 @@ import SearchIcon from "@mui/icons-material/Search"
 
 // Hooks, Types, Context, API
 import { useSnackBar } from "context/GlobalContext"
-import { Order, OrderStatus } from "types/order.types"
+import { Order, OrderStatus, GlobalPaymentStatus } from "types/order.types"
 import Title from "@apps/admin/components/Title"
 import ConfirmationDialog from "@components/ConfirmationDialog/ConfirmationDialog"
 import { deleteOrder, getOrders } from "@api/order.api"
@@ -50,8 +50,10 @@ interface OrderSummary {
   totalUnits: number
   total: number
   primaryStatus?: OrderStatus
+  payStatus?: GlobalPaymentStatus
   shippingMethodName?: string
   paymentMethodName?: string
+  shippingDate?: Date
 }
 
 // Helper to format currency (same as before)
@@ -60,7 +62,6 @@ const formatCurrency = (value: number): string => `$${value.toFixed(2)}`
 const getStatusChipProps = (
   status?: OrderStatus
 ): { label: string; color: any; icon?: React.ReactElement } => {
-  /* ... same as before ... */
   const s = status ?? OrderStatus.Pending
   switch (s) {
     case OrderStatus.Pending:
@@ -86,7 +87,29 @@ const getStatusChipProps = (
     case OrderStatus.Canceled:
       return { label: "Cancelado", color: "info" }
     default:
-      return { label: "Desconocido", color: "default" }
+      return { label: "En espera", color: "warning" }
+  }
+}
+
+const getpayStatusChipProps = (
+  payStatus?: GlobalPaymentStatus
+): { label: string; color: any; icon?: React.ReactElement } => {
+  const s = payStatus ?? GlobalPaymentStatus?.Pending
+  switch (s) {
+    case GlobalPaymentStatus.Pending:
+      return { label: "Pendiente", color: "warning" }
+    case GlobalPaymentStatus.Paid:
+      return { label: "Pagado", color: "default" }
+    case GlobalPaymentStatus.Credited:
+      return { label: "Abonado", color: "info" }
+    case GlobalPaymentStatus.Cancelled:
+      return {
+        label: "Cancelado",
+        color: "error",
+        icon: <CancelIcon />,
+      }
+    default:
+      return { label: "En espera", color: "warning" }
   }
 }
 
@@ -302,9 +325,10 @@ const ReadOrders: React.FC = () => {
             >
               <TableRow>
                 <TableCell sx={{ fontWeight: "bold" }}># Orden</TableCell>
-                <TableCell sx={{ fontWeight: "bold" }}>Fecha</TableCell>
+                <TableCell sx={{ fontWeight: "bold" }}>Fecha de creación</TableCell>
+                <TableCell sx={{ fontWeight: "bold" }}>Fecha de envío</TableCell>
                 <TableCell sx={{ fontWeight: "bold" }}>Cliente</TableCell>
-                <TableCell sx={{ fontWeight: "bold" }}>Items</TableCell>
+                <TableCell sx={{ fontWeight: "bold" }}>Estado de Pago</TableCell>
                 <TableCell sx={{ fontWeight: "bold" }}>Estado</TableCell>
                 <TableCell sx={{ fontWeight: "bold" }}>Envío</TableCell>
                 <TableCell sx={{ fontWeight: "bold" }}>Pago</TableCell>
@@ -323,6 +347,8 @@ const ReadOrders: React.FC = () => {
               )}
               {paginatedOrders.map((order) => {
                 const statusProps = getStatusChipProps(order.primaryStatus)
+                const payStatusProps = getpayStatusChipProps(order.payStatus)
+
                 return (
                   <TableRow
                     hover
@@ -342,14 +368,25 @@ const ReadOrders: React.FC = () => {
                       {new Date(order.createdOn).toLocaleDateString()}
                     </TableCell>
                     <TableCell>
+                      {order.shippingDate ? new Date(order.shippingDate).toLocaleDateString() : ""}
+                    </TableCell>
+                    <TableCell>
                       {order.customerName || "Sin Registrar"}
                       <br />
                       <Typography variant="caption">
                         {order.customerEmail || ""}
                       </Typography>
                     </TableCell>
-                    <TableCell>{order.totalUnits || "N/A"}</TableCell>
-
+                    {/* <TableCell>{order.totalUnits || "N/A"}</TableCell> */}
+                    <TableCell>
+                      <Chip
+                        icon={payStatusProps.icon}
+                        label={payStatusProps.label}
+                        color={payStatusProps.color}
+                        size="small"
+                        variant="outlined"
+                      />
+                    </TableCell>
                     <TableCell>
                       <Chip
                         icon={statusProps.icon}

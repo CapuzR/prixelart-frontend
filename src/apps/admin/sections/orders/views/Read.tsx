@@ -42,16 +42,16 @@ import { deleteOrder, getOrders } from "@api/order.api"
 
 // Interface for Order data from API (assuming more details might be available)
 interface OrderSummary {
-    _id: string;
-    orderNumber?: number;
-    createdOn: Date;
-    customerName?: string;
-    customerEmail?: string;
-    totalUnits: number;
-    total: number;
-    primaryStatus?: OrderStatus;
-    shippingMethodName?: string;
-    paymentMethodName?: string;
+  _id: string
+  orderNumber?: number
+  createdOn: Date
+  customerName?: string
+  customerEmail?: string
+  totalUnits: number
+  total: number
+  primaryStatus?: OrderStatus
+  shippingMethodName?: string
+  paymentMethodName?: string
 }
 
 // Helper to format currency (same as before)
@@ -240,9 +240,7 @@ const ReadOrders: React.FC = () => {
     setIsDeleting(true)
     try {
       await deleteOrder(orderToDelete._id)
-      showSnackBar(
-        `Orden #${orderToDelete._id} eliminada.`
-      )
+      showSnackBar(`Orden #${orderToDelete._id} eliminada.`)
       // Refetch *all* orders after delete to ensure consistency
       await loadOrders(false)
       handleCloseDialog()
@@ -307,9 +305,6 @@ const ReadOrders: React.FC = () => {
                 <TableCell sx={{ fontWeight: "bold" }}>Fecha</TableCell>
                 <TableCell sx={{ fontWeight: "bold" }}>Cliente</TableCell>
                 <TableCell sx={{ fontWeight: "bold" }}>Items</TableCell>
-                <TableCell align="right" sx={{ fontWeight: "bold" }}>
-                  Total
-                </TableCell>
                 <TableCell sx={{ fontWeight: "bold" }}>Estado</TableCell>
                 <TableCell sx={{ fontWeight: "bold" }}>Envío</TableCell>
                 <TableCell sx={{ fontWeight: "bold" }}>Pago</TableCell>
@@ -354,9 +349,7 @@ const ReadOrders: React.FC = () => {
                       </Typography>
                     </TableCell>
                     <TableCell>{order.totalUnits || "N/A"}</TableCell>
-                    <TableCell align="right">
-                      {formatCurrency(order.total || 0)}
-                    </TableCell>
+
                     <TableCell>
                       <Chip
                         icon={statusProps.icon}
@@ -483,10 +476,7 @@ const ReadOrders: React.FC = () => {
         message={
           <>
             ¿Estás seguro de que deseas eliminar la orden{" "}
-            <strong>
-              #{orderToDelete?._id.slice(-6)}
-            </strong>
-            ?
+            <strong>#{orderToDelete?._id.slice(-6)}</strong>?
           </>
         }
         confirmText="Eliminar"

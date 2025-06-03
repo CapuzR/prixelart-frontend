@@ -171,8 +171,8 @@ const ReadUsers: React.FC = () => {
     };
 
     // --- Delete Handling ---
-    const handleOpenDeleteDialog = (user: User) => { /* ... same logic ... */ if (!user._id) { showSnackBar("Falta ID."); return; } setUserToDelete(user); setDialogOpen(true); };
-    const handleCloseDialog = () => { /* ... same logic ... */ if (isDeleting) return; setDialogOpen(false); setUserToDelete(null); };
+    const handleOpenDeleteDialog = (user: User) => {  if (!user._id) { showSnackBar("Falta ID."); return; } setUserToDelete(user); setDialogOpen(true); };
+    const handleCloseDialog = () => {  if (isDeleting) return; setDialogOpen(false); setUserToDelete(null); };
     const handleConfirmDelete = async () => {
         if (!userToDelete?._id || !userToDelete?.username) { /* ... error handling ... */ showSnackBar("Error: Usuario no seleccionado."); setIsDeleting(false); handleCloseDialog(); return; }
         setIsDeleting(true);
@@ -189,8 +189,8 @@ const ReadUsers: React.FC = () => {
     };
 
     // --- Update & Create Handling ---
-    const handleUpdate = (userId: string) => { /* ... same logic ... */ if (!userId) { showSnackBar("Falta ID."); return; } navigate(`/admin/users/update/${userId}`); };
-    const handleCreate = () => { /* ... same logic ... */ navigate('/admin/users/create'); };
+    const handleUpdate = (userId: string) => {  if (!userId) { showSnackBar("Falta ID."); return; } navigate(`/admin/users/update/${userId}`); };
+    const handleCreate = () => {  navigate('/admin/users/create'); };
 
     // --- Table Head Configuration ---
     interface HeadCell { id: UserSortableColumns; label: string; numeric: boolean; disablePadding: boolean; width?: string; }

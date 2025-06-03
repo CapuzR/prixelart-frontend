@@ -12,7 +12,6 @@ import React, {
 } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import { v4 as uuidv4 } from "uuid"
-
 // Hooks, Types, Context, API
 import { useSnackBar, usePrixerCreator, useUser } from "context/GlobalContext" // useLoading no se usa directamente aquí
 import {
@@ -26,6 +25,8 @@ import {
   ShippingMethod,
   Tax,
   Payment,
+  GlobalPaymentStatus,
+  PaymentDetails,
   // Asumiendo que PaymentVoucher es un string (URL) en tu tipo Order
 } from "../../../../../types/order.types" // Ajusta la ruta a tus tipos
 import {
@@ -113,6 +114,8 @@ import {
   PaletteOutlined,
   CollectionsOutlined,
   InfoOutlined,
+  AddCircleOutline,
+  PauseCircleFilled,
 } from "@mui/icons-material"
 import { Theme, useTheme } from "@mui/material"
 import { makeStyles } from "tss-react/mui"
@@ -197,22 +200,26 @@ const useStyles = makeStyles()((theme: Theme) => {
     form: { width: "100%" },
     imagePreviewItem: {
       width: "100%",
-      paddingTop: "75%", // Para un aspect ratio 4:3 (ajusta si VOUCHER_IMAGE_ASPECT cambia)
+      // paddingTop: "75%",
       position: "relative",
-      border: "1px solid",
+      border: "1px solid gainsboro",
       borderColor: "divider",
-      borderRadius: 1,
+      borderRadius: 8,
       overflow: "hidden",
       display: "flex",
+      flexDirection: "column",
       alignItems: "center",
       justifyContent: "center",
+      padding: "16px",
+
       "& img": {
-        position: "absolute",
+        // position: "absolute",
         top: 0,
         left: 0,
         width: "100%",
         height: "100%",
         objectFit: "contain",
+        // marginTop: 16,
       },
     },
     imageGridItem: {
@@ -225,7 +232,6 @@ const useStyles = makeStyles()((theme: Theme) => {
   }
 })
 
-// --- Helper Functions ---
 const getStatusChipProps = (
   status?: OrderStatus
 ): { label: string; color: any; icon?: React.ReactElement } => {
@@ -238,7 +244,7 @@ const getStatusChipProps = (
     case OrderStatus.Production:
       return {
         label: "En producción",
-        color: "secondary",
+        color: "info",
         icon: <CheckCircleIcon />,
       }
     case OrderStatus.ReadyToShip:
@@ -248,15 +254,53 @@ const getStatusChipProps = (
         icon: <LocalShippingOutlined />,
       }
     case OrderStatus.Delivered:
-      return { label: "Entregado", color: "success", icon: <CheckCircleIcon /> }
+      return {
+        label: "Entregado",
+        color: "success",
+        icon: <LocalShippingOutlined />,
+      }
     case OrderStatus.Finished:
-      return { label: "Concretado", color: "default", icon: <InfoIcon /> }
+      return {
+        label: "Concretado",
+        color: "success",
+        icon: <CheckCircleIcon />,
+      }
     case OrderStatus.Paused:
-      return { label: "Detenido", color: "warning" }
+      return {
+        label: "Detenido",
+        color: "warning",
+        icon: <PauseCircleFilled />,
+      }
     case OrderStatus.Canceled:
       return { label: "Anulado", color: "error", icon: <CancelIcon /> }
     default:
       return { label: "Desconocido", color: "default" }
+  }
+}
+
+const getPayStatusChipProps = (
+  status?: GlobalPaymentStatus
+): { label: string; color: any; icon?: React.ReactElement } => {
+  const s = status ?? GlobalPaymentStatus.Pending
+  switch (s) {
+    case GlobalPaymentStatus.Pending:
+      return { label: "Pendiente", color: "secondary" }
+    case GlobalPaymentStatus.Paid:
+      return { label: "Pagado", color: "success", icon: <CheckCircleIcon /> }
+    case GlobalPaymentStatus.Credited:
+      return {
+        label: "Abonado",
+        color: "info",
+        icon: <CheckCircleIcon />,
+      }
+    case GlobalPaymentStatus.Cancelled:
+      return {
+        label: "Cancelado",
+        color: "primary",
+        icon: <CancelIcon />,
+      }
+    default:
+      return { label: "Pendiente", color: "default" }
   }
 }
 
@@ -343,7 +387,7 @@ const Transition = React.forwardRef(function Transition(
 export default function UpdateOrder() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  const { showSnackBar: showSnackBarFromContext } = useSnackBar()
+  const { showSnackBar: showSnackBarFromContext, showSnackBar } = useSnackBar()
   const showSnackBarRef = useRef(showSnackBarFromContext)
   useEffect(() => {
     showSnackBarRef.current = showSnackBarFromContext
@@ -375,6 +419,7 @@ export default function UpdateOrder() {
     MethodOption[]
   >([])
 
+  const [prevPayments, setPrevPayments] = useState<Payment[]>([])
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
   const [errorFetch, setErrorFetch] = useState<string | null>(null)
@@ -388,6 +433,13 @@ export default function UpdateOrder() {
   const [displayTotals, setDisplayTotals] = useState<DisplayTotals | null>(null)
 
   // Estados para imágenes de comprobantes de pago
+  const [currentVoucherImage, setCurrentVoucherImage] =
+    useState<ImageUploadState | null>(null)
+  const [currentDescription, setCurrentDescription] = useState<string>("")
+  const [currentAmount, setCurrentAmount] = useState<Number>(0)
+  const [currentMethod, setCurrentMethod] = useState<
+    string | MethodOption | null
+  >(null)
   const [paymentVouchers, setPaymentVouchers] = useState<ImageUploadState[]>([])
   const [imageToCropDetails, setImageToCropDetails] = useState<{
     originalFile: File
@@ -404,40 +456,20 @@ export default function UpdateOrder() {
   const previewCanvasRef = useRef<HTMLCanvasElement | null>(null)
   const formRef = useRef<HTMLFormElement>(null)
 
-  const steps = ["Detalles de la Orden", "Comprobantes de Pago"] // Actualizado
+  const steps = ["Detalles", "Pagos", "Historial"] // Actualizado
   const [activeStep, setActiveStep] = React.useState(0)
-  const [skipped, setSkipped] = React.useState(new Set<number>())
   // const [completed, setCompleted] = React.useState<{[k: number]: boolean;}>({}); // No se usa actualmente
 
   const handleStep = (step: number) => () => {
     setActiveStep(step)
   }
-  const isStepOptional = (step: number) => step === 1 // Comprobantes son opcionales de ver/editar
-  const isStepSkipped = (step: number) => skipped.has(step)
+
   const handleNext = () => {
-    let newSkipped = skipped
-    if (isStepSkipped(activeStep)) {
-      newSkipped = new Set(newSkipped.values())
-      newSkipped.delete(activeStep)
-    }
     setActiveStep((prevActiveStep) => prevActiveStep + 1)
-    setSkipped(newSkipped)
   }
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1)
   }
-  const handleSkip = () => {
-    if (!isStepOptional(activeStep)) {
-      throw new Error("No puedes saltar un paso no opcional.")
-    }
-    setActiveStep((prevActiveStep) => prevActiveStep + 1)
-    setSkipped((prevSkipped) => {
-      const newSkipped = new Set(prevSkipped.values())
-      newSkipped.add(activeStep)
-      return newSkipped
-    })
-  }
-  // const handleReset = () => { setActiveStep(0); }; // No se usa
 
   const isPickupSelected = useMemo(() => {
     /* ... (sin cambios) ... */ if (
@@ -449,6 +481,7 @@ export default function UpdateOrder() {
     const methodName = method.name?.toLowerCase() || ""
     return methodName.includes("pickup") || methodName.includes("recoger")
   }, [selectedShippingMethod])
+
   const initialOrderLineFormStateForUpdate: Omit<
     OrderLineFormState,
     "id" | "status" | "item" | "tempId"
@@ -462,6 +495,7 @@ export default function UpdateOrder() {
     pricePerUnit: 0,
     subtotal: 0,
   }
+
   const createBlankAddress = useCallback((): Address => {
     return {
       recepient: { name: "", lastName: "", phone: "", email: "" }, // Siempre vacío
@@ -494,12 +528,12 @@ export default function UpdateOrder() {
           getArts() as Promise<Art[]>,
         ])
       if (!orderData) throw new Error("Orden no encontrada.")
-      if (orderData.payment && !Array.isArray(orderData.payment.installments)) {
+      if (orderData.payment && !Array.isArray(orderData.payment.payments)) {
         console.warn(
-          "API devolvió orderData.payment sin un array 'installments' válido. " +
+          "API devolvió orderData.payment sin un array 'Payments' válido. " +
             "Inicializando como array vacío."
         )
-        orderData.payment.installments = []
+        orderData.payment.payments = []
       } else if (!orderData.payment) {
         console.warn(
           "API devolvió orderData sin el objeto 'payment'. " +
@@ -585,7 +619,7 @@ export default function UpdateOrder() {
             : opt.fullMethod.name === orderShip?.name
         ) || null
       setSelectedShippingMethod(currentSelectedShippingMethod)
-      const orderPay = orderData.payment?.installments[0].method
+      const orderPay = orderData.payment?.payments[0]?.method
       const currentSelectedPaymentMethod = orderPay
         ? paymentOptions.find((opt) =>
             !!orderPay?._id
@@ -634,18 +668,19 @@ export default function UpdateOrder() {
       //   ) {
       const existingVoucherImages: ImageUploadState[] = []
       if (
-        orderData.payment?.installments &&
-        Array.isArray(orderData.payment.installments)
+        orderData.payment?.payments &&
+        Array.isArray(orderData.payment.payments)
       ) {
-        orderData.payment.installments.forEach(
-          (installment: Payment, index: number) => {
-            if (installment.voucher) {
-              // Check if the installment has a voucher URL
+        setPrevPayments(orderData.payment.payments)
+        orderData.payment.payments.forEach(
+          (payments: Payment, index: number) => {
+            if (payments.voucher) {
+              // Check if the payments has a voucher URL
               existingVoucherImages.push({
-                id: `installment-${installment.id || index}-voucher-${uuidv4()}`, // Ensure unique ID for ImageUploadState
-                url: installment.voucher,
+                id: `payments-${payments.id || index}-voucher-${uuidv4()}`, // Ensure unique ID for ImageUploadState
+                url: payments.voucher,
                 isExisting: true,
-                // You might want to store installment.id if you need to map back precisely later
+                // You might want to store payments.id if you need to map back precisely later
               })
             }
           }
@@ -664,7 +699,8 @@ export default function UpdateOrder() {
 
   useEffect(() => {
     loadData()
-  }, [loadData])
+  }, [])
+
   useEffect(() => {
     /* ... (lógica de displayTotals sin cambios) ... */ if (!order)
       return setDisplayTotals(null)
@@ -695,10 +731,9 @@ export default function UpdateOrder() {
       totalUnits: editableOrderLines.reduce((u, l) => u + (l.quantity || 0), 0),
     })
   }, [editableOrderLines, selectedShippingMethod, order])
+
   useEffect(() => {
-    /* ... (lógica de isPickupSelected sin cambios) ... */ if (
-      isPickupSelected
-    ) {
+    if (isPickupSelected) {
       setEditableShippingAddress(createBlankAddress())
       setUseShippingForBilling(false)
       if (!editableBillingAddress?.address?.line1) {
@@ -717,6 +752,7 @@ export default function UpdateOrder() {
         const shippingAndBillingWereSameOrBillingEmpty =
           (editableShippingAddress &&
             editableBillingAddress &&
+            !editableBillingAddress?.address.line1 &&
             JSON.stringify(editableShippingAddress) ===
               JSON.stringify(editableBillingAddress)) ||
           !editableBillingAddress?.address?.line1
@@ -732,13 +768,12 @@ export default function UpdateOrder() {
   }, [
     isPickupSelected,
     useShippingForBilling,
-    editableShippingAddress,
+    // editableShippingAddress,
     order,
-    createBlankAddress,
+    // createBlankAddress,
     editableBillingAddress?.address?.line1,
   ])
 
-  // --- Manejadores de Imágenes para Comprobantes ---
   const onVoucherImageLoadInCropper = (
     e: React.SyntheticEvent<HTMLImageElement>
   ) => {
@@ -795,7 +830,6 @@ export default function UpdateOrder() {
       const tempImageId = uuidv4()
       openVoucherCropperWithFile(file, tempImageId)
     }
-    // No resetear aquí para permitir reintento si el cropper se cancela
   }
 
   const closeAndResetCropper = () => {
@@ -847,16 +881,13 @@ export default function UpdateOrder() {
         })
 
         closeAndResetCropper()
-        setPaymentVouchers((prev) => [
-          ...prev,
-          {
-            id: tempId,
-            url: "",
-            file: croppedWebpFile,
-            progress: 0,
-            isExisting: false,
-          },
-        ])
+        setCurrentVoucherImage({
+          id: tempId,
+          url: "",
+          file: croppedWebpFile,
+          progress: 0,
+          isExisting: false,
+        })
         startTusUploadForVoucher(croppedWebpFile, tempId)
       },
       "image/webp",
@@ -914,6 +945,8 @@ export default function UpdateOrder() {
                 : img
             )
           )
+          setCurrentVoucherImage((prev) => ({ ...prev, url: imageUrl }))
+
           showSnackBar(`Comprobante subido.`)
         } else {
           const errorMsg = "Error al obtener URL del comprobante"
@@ -1027,6 +1060,65 @@ export default function UpdateOrder() {
     const quantity = q >= 1 ? q : 1
     updateEditableLine(lineTempIdToUpdate, { quantity })
   }
+
+  const getLatestOrderStatus = (currentOrder: Order): OrderStatus => {
+    if (currentOrder.status && currentOrder.status.length > 0) {
+      return currentOrder.status[currentOrder.status.length - 1][0]
+    }
+    return OrderStatus.Pending
+  }
+
+  const getLatestpayOrderStatus = (
+    currentOrder: Order
+  ): GlobalPaymentStatus => {
+    if (currentOrder.payment.status && currentOrder.payment.status.length > 0) {
+      return currentOrder.payment.status[
+        currentOrder.payment.status.length - 1
+      ][0]
+    }
+    return GlobalPaymentStatus.Pending
+  }
+
+  const handleOrderStatusChange = (
+    event: SelectChangeEvent<OrderStatus>,
+    currentOrder: Order
+  ) => {
+    const newSelectedStatus = event.target.value as OrderStatus
+    const newStatusEntry: [OrderStatus, Date] = [newSelectedStatus, new Date()]
+    const existingStatusHistory = Array.isArray(currentOrder.status)
+      ? currentOrder.status
+      : []
+    const updatedStatusHistory: [OrderStatus, Date][] = [
+      ...existingStatusHistory,
+      newStatusEntry,
+    ]
+
+    setOrder({ ...currentOrder, status: updatedStatusHistory })
+  }
+
+  const handleOrderPayStatusChange = (
+    event: SelectChangeEvent<GlobalPaymentStatus>,
+    currentOrder: Order
+  ) => {
+    const newSelectedStatus = event.target.value as GlobalPaymentStatus
+    const newStatusEntry: [GlobalPaymentStatus, Date] = [
+      newSelectedStatus,
+      new Date(),
+    ]
+    const existingStatusHistory = Array.isArray(currentOrder.payment.status)
+      ? currentOrder.payment.status
+      : []
+    const updatedStatusHistory: [GlobalPaymentStatus, Date][] = [
+      ...existingStatusHistory,
+      newStatusEntry,
+    ]
+
+    setOrder({
+      ...currentOrder,
+      payment: { ...currentOrder.payment, status: updatedStatusHistory },
+    })
+  }
+
   const handleStatusChange = (
     lineTempIdToUpdate: string,
     event: SelectChangeEvent<OrderStatus>
@@ -1052,16 +1144,20 @@ export default function UpdateOrder() {
       })
     )
   }
+
   const handleObservationsChange = (event: ChangeEvent<HTMLTextAreaElement>) =>
     setObservations(event.target.value)
+
   const handleShippingChange = (
     event: SyntheticEvent,
     newValue: MethodOption | null
   ) => setSelectedShippingMethod(newValue)
+
   const handlePaymentChange = (
     event: SyntheticEvent,
     newValue: MethodOption | null
   ) => setSelectedPaymentMethod(newValue)
+
   const handleClientInfoChange = (
     event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -1091,6 +1187,7 @@ export default function UpdateOrder() {
       )
     }
   }
+
   const validateForm = (): boolean => {
     /* ... (sin cambios, pero asegurarse que no valide imágenes de voucher si no es necesario aquí) ... */ const showSnackBar =
       showSnackBarRef.current
@@ -1102,35 +1199,144 @@ export default function UpdateOrder() {
       showSnackBar("Método de pago es requerido.")
       return false
     }
-    if (!isPickupSelected) {
-      if (
-        !editableShippingAddress?.address?.line1 ||
-        !editableShippingAddress?.address?.city ||
-        !editableShippingAddress?.address?.country ||
-        !editableShippingAddress?.recepient?.name
-      ) {
-        showSnackBar(
-          "Dirección de Envío: campos requeridos (Destinatario, Línea 1, Ciudad, País) están incompletos."
-        )
-        return false
-      }
-    }
-    if (
-      !useShippingForBilling &&
-      (!editableBillingAddress?.address?.line1 ||
-        !editableBillingAddress?.address?.city ||
-        !editableBillingAddress?.address?.country ||
-        !editableBillingAddress?.recepient?.name)
-    ) {
-      showSnackBar(
-        "Dirección de Facturación: campos requeridos (Destinatario, Línea 1, Ciudad, País) están incompletos."
-      )
-      return false
-    }
+    // if (!isPickupSelected) {
+    //   if (
+    //     !editableShippingAddress?.address?.line1 ||
+    //     !editableShippingAddress?.address?.city ||
+    //     !editableShippingAddress?.address?.country ||
+    //     !editableShippingAddress?.recepient?.name
+    //   ) {
+    //     showSnackBar(
+    //       "Dirección de Envío: campos requeridos (Destinatario, Línea 1, Ciudad, País) están incompletos."
+    //     )
+    //     return false
+    //   }
+    // }
+    // if (
+    //   !useShippingForBilling &&
+    //   (!editableBillingAddress?.address?.line1 ||
+    //     !editableBillingAddress?.address?.city ||
+    //     !editableBillingAddress?.address?.country ||
+    //     !editableBillingAddress?.recepient?.name)
+    // ) {
+    //   showSnackBar(
+    //     "Dirección de Facturación: campos requeridos (Destinatario, Línea 1, Ciudad, País) están incompletos."
+    //   )
+    //   return false
+    // }
     return true
   }
 
-  // --- Submission ---
+  const handleSelectedMethod = (id: string | MethodOption | null) => {
+    const selectedMethod = paymentMethodOptions.find((el) => el.id === id)
+    if (!selectedMethod) return
+    setCurrentMethod(selectedMethod)
+  }
+
+  const handleAddPaymentVoucher = async () => {
+    if (
+      // !currentVoucherImage ||
+      // !currentDescription ||
+      !currentAmount ||
+      !currentMethod
+    ) {
+      // showSnackBar("Por favor, completa todos los campos del comprobante.")
+      return
+    }
+    if (!currentVoucherImage?.url) return
+    const newPayment: any = {
+      id: uuidv4(),
+      voucher: currentVoucherImage.url,
+      description: currentDescription,
+      createdOn: new Date(),
+      amount: currentAmount,
+      method: currentMethod,
+      metadata: `Voucher linked to ${typeof currentMethod === "object" ? currentMethod.label : currentMethod}`,
+    }
+
+    const updatedPayments: Payment[] = [...prevPayments, newPayment]
+    setPrevPayments(updatedPayments)
+    const updatedPaymentDetails: PaymentDetails = {
+      total: order?.payment?.total || Number(currentAmount) || 0,
+      status: order?.payment?.status || [
+        [GlobalPaymentStatus.Pending, new Date()],
+      ],
+      payments: updatedPayments,
+    }
+
+    const payloadForAPI: Partial<Order> = {
+      ...(order || {}),
+      _id: order?._id,
+      payment: updatedPaymentDetails,
+    }
+
+    setOrder((currentOrder) => {
+      if (!currentOrder) {
+        console.error(
+          "Error: El estado de la orden es null, no se puede actualizar."
+        )
+        return null
+      }
+
+      const newPaymentDetails: PaymentDetails = {
+        ...(currentOrder.payment || {}),
+        total: currentOrder.payment?.total || 0,
+        status: currentOrder.payment?.status,
+        payments: updatedPayments,
+      }
+
+      return {
+        ...currentOrder,
+        payment: newPaymentDetails,
+      }
+    })
+    try {
+      console.log(
+        "Updating Order Data with new vouchers:",
+        id,
+        JSON.stringify(payloadForAPI, null, 2)
+      )
+      const response = await updateOrder(id!, payloadForAPI)
+
+      if (response) {
+        // Asume que 'response' indica éxito
+        showSnackBar(
+          `Orden #${order?.number || id} actualizada con nuevo comprobante.`
+        )
+        setCurrentVoucherImage(null) // Limpia el estado del voucher actual
+        setCurrentDescription("")
+        setCurrentAmount(0)
+        // setCurrentMethod(""); // Comentado si currentMethod no es un estado para el voucher individual
+        // Opcional: Recargar los datos de la orden desde el backend para asegurar consistencia total
+        // loadData();
+      } else {
+        throw new Error(
+          "La actualización de la orden no devolvió una respuesta exitosa."
+        )
+      }
+    } catch (err: any) {
+      console.error("Failed to update order with voucher:", err)
+      showSnackBar(
+        err?.response?.data?.message ||
+          err.message ||
+          "Error al actualizar la orden con el comprobante."
+      )
+      // No reviertas el estado aquí a menos que sea necesario, el usuario podría querer reintentar.
+    } finally {
+      setIsSubmitting(false) // Asegúrate de resetear isSubmitting
+    }
+    // Limpiar los campos del formulario para el siguiente comprobante
+
+    // Revocar el object URL para liberar memoria
+    // if (currentVoucherImage?.preview) {
+    //   URL.revokeObjectURL(currentVoucherImage.preview)
+    // }
+    // const fileInput = document.getElementById("voucher-image-input")
+    // if (fileInput) {
+    //   fileInput.value = ""
+    // }
+  }
+  console.log(order)
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     const showSnackBar = showSnackBarRef.current
@@ -1171,16 +1377,16 @@ export default function UpdateOrder() {
       setIsSubmitting(false)
       return
     }
-    if (!isPickupSelected && !editableShippingAddress?.address?.line1) {
-      setErrorSubmit("Dirección de envío no seleccionada o inválida.")
-      setIsSubmitting(false)
-      return
-    }
-    if (!editableBillingAddress?.address?.line1 && !useShippingForBilling) {
-      setErrorSubmit("Dirección de facturación no seleccionada o inválida.")
-      setIsSubmitting(false)
-      return
-    }
+    // if (!isPickupSelected && !editableShippingAddress?.address?.line1) {
+    //   setErrorSubmit("Dirección de envío no seleccionada o inválida.")
+    //   setIsSubmitting(false)
+    //   return
+    // }
+    // if (!editableBillingAddress?.address?.line1 && !useShippingForBilling) {
+    //   setErrorSubmit("Dirección de facturación no seleccionada o inválida.")
+    //   setIsSubmitting(false)
+    //   return
+    // }
 
     const shippingAddr = isPickupSelected
       ? createBlankAddress()
@@ -1311,7 +1517,7 @@ export default function UpdateOrder() {
 
         return {
           id: imgState.isExisting
-            ? imgState.id.split("-voucher-")[0].replace("installment-", "")
+            ? imgState.id.split("-voucher-")[0].replace("payments-", "")
             : uuidv4(), // Attempt to reuse existing ID or generate new
           description: description,
           voucher: imgState.url, // <<< Key change: property name
@@ -1321,6 +1527,9 @@ export default function UpdateOrder() {
         }
       })
       .filter(Boolean) as Payment[]
+
+    const productionStatus = order.status
+    const paymentStatus = order.payment.status
 
     const payload: Partial<Order> = {
       observations: observations || undefined,
@@ -1345,6 +1554,7 @@ export default function UpdateOrder() {
         ...order.payment,
         ...(selectedPaymentMethod && {
           method: [selectedPaymentMethod.fullMethod as PaymentMethod],
+          status: paymentStatus,
         }),
         total: finalTotal,
       },
@@ -1358,6 +1568,7 @@ export default function UpdateOrder() {
       subTotal: finalSubTotal,
       totalUnits: finalTotalUnits,
       shippingCost: finalShippingCost,
+      status: productionStatus,
       tax: finalTaxes,
       totalWithoutTax: finalSubTotal - orderDiscount,
       total: finalTotal,
@@ -1371,16 +1582,16 @@ export default function UpdateOrder() {
       ],
     }
 
-    let mainInstallments: Payment[] = []
+    let mainPayments: Payment[] = []
     if (selectedPaymentMethod) {
-      const existingMainInstallment = order.payment?.installments?.find(
+      const existingMainInstallment = order.payment?.payments?.find(
         (inst) =>
           !inst.voucher ||
           !paymentVouchers.some((pv) => pv.url === inst.voucher)
       )
 
       if (existingMainInstallment) {
-        mainInstallments.push({
+        mainPayments.push({
           ...existingMainInstallment,
           method: selectedPaymentMethod.fullMethod as PaymentMethod,
           amount: (
@@ -1389,16 +1600,17 @@ export default function UpdateOrder() {
           ).toString(),
         })
       } else {
-        mainInstallments.push({
+        mainPayments.push({
           id: uuidv4(),
+          createdOn: new Date(),
           description: selectedPaymentMethod.label || "Pago Principal",
           method: selectedPaymentMethod.fullMethod as PaymentMethod,
           amount: (displayTotals?.total ?? 0).toString(),
           voucher: undefined,
         })
       }
-    } else if (order.payment?.installments) {
-      mainInstallments = order.payment.installments.filter(
+    } else if (order.payment?.payments) {
+      mainPayments = order.payment.payments.filter(
         (inst) =>
           !inst.voucher ||
           !paymentVouchers.some(
@@ -1407,12 +1619,12 @@ export default function UpdateOrder() {
       )
     }
 
-    const finalInstallments = [...mainInstallments, ...voucherPaymentObjects]
+    const finalPayments = [...mainPayments, ...voucherPaymentObjects]
 
     payload.payment = {
       ...(order.payment || {}),
       total: finalTotal,
-      installments: finalInstallments,
+      payments: finalPayments,
     }
 
     try {
@@ -1435,6 +1647,7 @@ export default function UpdateOrder() {
   }
 
   const handleCancel = () => navigate("/admin/orders/read")
+
   const renderBasicInfoItem = (
     itemKey: React.Key,
     icon: React.ReactNode,
@@ -1560,7 +1773,6 @@ export default function UpdateOrder() {
   return (
     <Container maxWidth="lg" sx={{ py: { xs: 2, md: 3 } }}>
       <form onSubmit={handleSubmit} id="update-order-form">
-        {/* ID añadido al form */}
         <Paper
           elevation={0}
           sx={{
@@ -1570,7 +1782,8 @@ export default function UpdateOrder() {
             backgroundColor: "transparent",
           }}
         >
-          <Box
+          <Grid2
+            container
             sx={{
               display: "flex",
               justifyContent: "space-between",
@@ -1581,8 +1794,13 @@ export default function UpdateOrder() {
             }}
           >
             <Box>
-              <Typography variant="h4" component="h1" fontWeight="bold">
-                Orden #{order.number || order._id?.toString()}
+              <Typography
+                variant="h4"
+                component="h1"
+                fontWeight="bold"
+                color="secondary"
+              >
+                Orden #{order.number || order._id?.toString().slice(-6)}
               </Typography>
               <Typography
                 variant="body2"
@@ -1593,19 +1811,7 @@ export default function UpdateOrder() {
                 el: {formatDate(order.createdOn)}
               </Typography>
             </Box>
-            <Chip
-              icon={overallStatusChipProps.icon}
-              label={overallStatusChipProps.label}
-              color={overallStatusChipProps.color as any}
-              sx={{
-                fontSize: "1rem",
-                py: 2.5,
-                px: 1.5,
-                borderRadius: "8px",
-                fontWeight: "medium",
-              }}
-            />
-          </Box>
+          </Grid2>
           {order.shipping?.estimatedDeliveryDate &&
             getOverallOrderStatus(editableOrderLines) !==
               OrderStatus.Delivered &&
@@ -1625,17 +1831,106 @@ export default function UpdateOrder() {
         </Paper>
         <Stepper nonLinear activeStep={activeStep} sx={{ mb: 3 }}>
           {steps.map((label, index) => (
-            <Step key={label} completed={activeStep > index}>
-              {/* Marcar como completado si ya pasó */}
+            <Step key={label}>
               <StepButton color="inherit" onClick={handleStep(index)}>
                 {label}
               </StepButton>
             </Step>
           ))}
         </Stepper>
-        {/* Contenido del Step 0: Detalles de la Orden */}
         {activeStep === 0 && (
           <Grid2 container spacing={{ xs: 2, md: 3 }}>
+            <Grid2 size={{ xs: 12 }} sx={{ mt: 2 }}>
+              <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
+                <FormControl size="small" disabled={isSubmitting}>
+                  <InputLabel>Estado</InputLabel>
+                  <Select
+                    value={getLatestOrderStatus(order)}
+                    label="Estado"
+                    onChange={(e) =>
+                      handleOrderStatusChange(
+                        e as SelectChangeEvent<OrderStatus>,
+                        order
+                      )
+                    }
+                  >
+                    {Object.values(OrderStatus)
+                      .filter((v) => typeof v === "number")
+                      .map((statusValue) => {
+                        const props = getStatusChipProps(
+                          statusValue as OrderStatus
+                        )
+                        return (
+                          <MenuItem key={statusValue} value={statusValue}>
+                            <Chip
+                              icon={props.icon}
+                              label={props.label}
+                              color={props.color as any}
+                              size="small"
+                              variant="outlined"
+                              sx={{
+                                mr: 1,
+                                borderRadius: "4px",
+                                fontSize: "0.75rem",
+                              }}
+                            />
+                            {/* {props.label} */}
+                          </MenuItem>
+                        )
+                      })}
+                  </Select>
+                  {order.status && order.status.length > 0 && (
+                    <FormHelperText sx={{ textAlign: "right" }}>
+                      Últ. act:
+                      {formatDate(order.status[order.status.length - 1][1])}
+                    </FormHelperText>
+                  )}
+                </FormControl>
+                <FormControl size="small" disabled={isSubmitting}>
+                  <InputLabel>Estado de Pago</InputLabel>
+                  <Select
+                    label="Estado de pago"
+                    value={getLatestpayOrderStatus(order)}
+                    onChange={(e) =>
+                      handleOrderPayStatusChange(
+                        e as SelectChangeEvent<GlobalPaymentStatus>,
+                        order
+                      )
+                    }
+                  >
+                    {Object.values(GlobalPaymentStatus)
+                      .filter((v) => typeof v === "number")
+                      .map((statusValue) => {
+                        const props = getPayStatusChipProps(
+                          statusValue as GlobalPaymentStatus
+                        )
+                        return (
+                          <MenuItem key={statusValue} value={statusValue}>
+                            <Chip
+                              icon={props.icon}
+                              label={props.label}
+                              color={props.color as any}
+                              size="small"
+                              variant="outlined"
+                              sx={{
+                                mr: 1,
+                                borderRadius: "4px",
+                                fontSize: "0.75rem",
+                              }}
+                            />
+                          </MenuItem>
+                        )
+                      })}
+                  </Select>
+                  {order.status && order.status.length > 0 && (
+                    <FormHelperText sx={{ textAlign: "right" }}>
+                      Últ. act:
+                      {formatDate(order.status[order.status.length - 1][1])}
+                    </FormHelperText>
+                  )}
+                </FormControl>
+              </Stack>
+            </Grid2>
             <Grid2 size={{ xs: 12, lg: 7 }}>
               <Typography
                 variant="h5"
@@ -1646,8 +1941,7 @@ export default function UpdateOrder() {
                 Artículos del Pedido
               </Typography>
               {editableOrderLines.map((line, index) => {
-                /* ... (renderizado de líneas de orden sin cambios) ... */ const lineStatus =
-                  getLatestStatus(line.status)
+                const lineStatus = getLatestStatus(line.status)
                 const productImageUrl =
                   line.selectedProduct?.fullProduct.sources?.images?.[0]?.url ||
                   "https://via.placeholder.com/80?text=Img"
@@ -2337,7 +2631,6 @@ export default function UpdateOrder() {
             </Grid2>
           </Grid2>
         )}
-        {/* Contenido del Step 1: Comprobantes de Pago */}
         {activeStep === 1 && (
           <Box sx={{ mt: 3 }}>
             <Grid2 container spacing={2}>
@@ -2345,70 +2638,23 @@ export default function UpdateOrder() {
                 <Paper
                   variant="outlined"
                   sx={{
-                    p: paymentVouchers.length > 0 ? 1 : 2,
-                    minHeight: paymentVouchers.length > 0 ? "auto" : 100,
+                    p: prevPayments.length > 0 ? 1 : 2,
+                    minHeight: prevPayments.length > 0 ? "auto" : 100,
                     display: "flex",
                     alignItems: "center",
                     justifyContent:
-                      paymentVouchers.length > 0 ? "flex-start" : "center",
+                    prevPayments.length > 0 ? "flex-start" : "center",
                     flexWrap: "wrap",
                     gap: 1,
                   }}
                 >
-                  {paymentVouchers.length > 0 ? (
-                    paymentVouchers.map((pImage) => (
-                      <Box key={pImage.id} className={classes.imageGridItem}>
+                  {prevPayments.length > 0 ? (
+                    prevPayments.map((pay) => (
+                      <Box key={pay.id} className={classes.imageGridItem}>
                         {/* Usar clase para tamaño responsivo */}
                         <Box className={classes.imagePreviewItem}>
-                          {pImage.url ? (
-                            <img src={pImage.url} alt="Comprobante" />
-                          ) : pImage.file ? (
-                            <Box
-                              sx={{
-                                width: "100%",
-                                height: "100%",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                flexDirection: "column",
-                                bgcolor: "grey.100",
-                                p: 0.5,
-                              }}
-                            >
-                              <Typography
-                                variant="caption"
-                                noWrap
-                                sx={{
-                                  width: "100%",
-                                  fontSize: "0.65rem",
-                                  textAlign: "center",
-                                  wordBreak: "break-all",
-                                }}
-                              >
-                                {pImage.file.name}
-                              </Typography>
-                              {typeof pImage.progress === "number" &&
-                                pImage.progress < 100 && (
-                                  <LinearProgress
-                                    variant="determinate"
-                                    value={pImage.progress}
-                                    sx={{ width: "80%", mt: 0.5 }}
-                                  />
-                                )}
-                              {pImage.error && (
-                                <Typography
-                                  variant="caption"
-                                  color="error"
-                                  sx={{
-                                    fontSize: "0.65rem",
-                                    textAlign: "center",
-                                    mt: 0.5,
-                                  }}
-                                >
-                                  {pImage.error}
-                                </Typography>
-                              )}
-                            </Box>
+                          {pay.voucher ? (
+                            <img src={pay.voucher} alt="Comprobante" />
                           ) : (
                             <Box
                               sx={{
@@ -2427,17 +2673,14 @@ export default function UpdateOrder() {
                           )}
                           <IconButton
                             size="small"
-                            onClick={() => handleRemoveVoucherImage(pImage.id)}
+                            onClick={() => handleRemoveVoucherImage(pay.id)}
                             disabled={
-                              isSubmitting ||
-                              (typeof pImage.progress === "number" &&
-                                pImage.progress < 100 &&
-                                !pImage.error)
+                              isSubmitting
                             }
                             sx={{
                               position: "absolute",
-                              top: 2,
-                              right: 2,
+                              top: 6,
+                              right: 6,
                               backgroundColor: "rgba(255,255,255,0.8)",
                               "&:hover": {
                                 backgroundColor: "rgba(255,255,255,1)",
@@ -2448,6 +2691,11 @@ export default function UpdateOrder() {
                           >
                             <DeleteIcon sx={{ fontSize: "1rem" }} />
                           </IconButton>
+                          <Grid2 size={{ xs: 12 }}>
+                            <Typography color="secondary">Método de pago: {pay.method?.label}</Typography>
+                            <Typography color="secondary">Monto: {pay.amount}</Typography>
+                            <Typography color="secondary">Descripción: {pay.description}</Typography>
+                          </Grid2>
                         </Box>
                       </Box>
                     ))
@@ -2459,35 +2707,185 @@ export default function UpdateOrder() {
                     </Typography>
                   )}
                 </Paper>
-                <Grid2
-                  size={{ xs: 12, sm: 4, md: 3 }}
-                  sx={{ margin: "40px auto" }}
-                >
-                  <input
-                    type="file"
-                    accept="image/png, image/jpeg, image/webp"
-                    onChange={handleVoucherImageSelect}
-                    style={{ display: "none" }}
-                    id="voucher-image-input"
-                    disabled={isSubmitting || paymentVouchers.length >= 6}
-                  />
-                  <label htmlFor="voucher-image-input">
-                    <Button
-                      variant="outlined"
-                      component="span"
-                      startIcon={<PhotoCameraBackIcon />}
-                      disabled={isSubmitting || paymentVouchers.length >= 6}
-                      fullWidth
+                {paymentVouchers.length < 6 && ( // Solo mostrar si no se ha alcanzado el límite
+                  <Box>
+                    <Typography
+                      variant="h6"
+                      gutterBottom
+                      sx={{ margin: 2 }}
+                      color="secondary"
                     >
-                      Añadir Comprobante
-                    </Button>
-                  </label>
-                  {paymentVouchers.length >= 6 && (
+                      Añadir Nuevo Comprobante
+                    </Typography>
+                    <Grid2 container spacing={3}>
+                      {/* Columna para la carga de imagen */}
+                      <Grid2 size={{ xs: 12, md: 4 }}>
+                        <Paper
+                          variant="outlined"
+                          sx={{
+                            p: 2,
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            height: "100%",
+                            minHeight: 200,
+                          }}
+                        >
+                          {currentVoucherImage ? (
+                            <Box
+                              sx={{ mb: 2, width: "100%", textAlign: "center" }}
+                            >
+                              <img
+                                src={currentVoucherImage.url}
+                                alt="Previsualización"
+                                style={{
+                                  maxWidth: "100%",
+                                  maxHeight: 150,
+                                  objectFit: "contain",
+                                }}
+                              />
+                              <Typography
+                                variant="caption"
+                                display="block"
+                                sx={{ mt: 0.5 }}
+                              >
+                                {currentVoucherImage?.file?.name.slice(12)}
+                              </Typography>
+                            </Box>
+                          ) : (
+                            <Typography
+                              sx={{
+                                color: "text.secondary",
+                                fontStyle: "italic",
+                                mb: 2,
+                              }}
+                            >
+                              Sube una imagen del comprobante.
+                            </Typography>
+                          )}
+                          <Grid2 size={{ xs: 12 }} sx={{ margin: "40px auto" }}>
+                            <input
+                              type="file"
+                              accept="image/png, image/jpeg, image/webp"
+                              onChange={handleVoucherImageSelect}
+                              style={{ display: "none" }}
+                              id="voucher-image-input"
+                              disabled={
+                                isSubmitting || paymentVouchers.length >= 6
+                              }
+                            />
+                            <label htmlFor="voucher-image-input">
+                              <Button
+                                variant="outlined"
+                                component="span"
+                                startIcon={<PhotoCameraBackIcon />}
+                                disabled={
+                                  isSubmitting || paymentVouchers.length >= 6
+                                }
+                                fullWidth
+                              >
+                                Añadir Comprobante
+                              </Button>
+                            </label>
+                            {/* {paymentVouchers.length >= 6 && (
                     <FormHelperText sx={{ textAlign: "center" }}>
                       Límite alcanzado
                     </FormHelperText>
-                  )}
-                </Grid2>
+                  )}*/}
+                          </Grid2>
+                          {/* <input
+                type="file"
+                accept="image/png, image/jpeg, image/webp"
+                onChange={handleNewVoucherImageSelect} // Nueva función para la imagen actual
+                style={{ display: 'none' }}
+                id="new-voucher-image-input"
+                disabled={isSubmitting}
+              />
+              <label htmlFor="new-voucher-image-input">
+                <Button
+                  variant="outlined"
+                  component="span"
+                  startIcon={<PhotoCameraBackIcon />}
+                  disabled={isSubmitting}
+                  fullWidth
+                >
+                  {currentVoucherImage ? 'Cambiar Imagen' : 'Seleccionar Imagen'}
+                </Button>
+              </label> */}
+                        </Paper>
+                      </Grid2>
+
+                      {/* Columna para los inputs de descripción, monto y método */}
+                      <Grid2 size={{ xs: 12, md: 8 }}>
+                        <Stack spacing={2}>
+                          <TextField
+                            label="Descripción"
+                            variant="outlined"
+                            fullWidth
+                            value={currentDescription}
+                            onChange={(e) =>
+                              setCurrentDescription(e.target.value)
+                            }
+                            disabled={isSubmitting}
+                          />
+                          <TextField
+                            label="Monto (ej. 150.00)"
+                            variant="outlined"
+                            fullWidth
+                            type="number"
+                            value={currentAmount}
+                            onChange={(e) =>
+                              setCurrentAmount(Number(e.target.value))
+                            }
+                            disabled={isSubmitting}
+                            // InputProps={{ startAdornment: <InputAdornment position="start">$</InputAdornment> }} // Opcional
+                          />
+                          <FormControl
+                            fullWidth
+                            variant="outlined"
+                            disabled={isSubmitting}
+                          >
+                            <InputLabel id="payment-method-label">
+                              Método de Pago
+                            </InputLabel>
+                            <Select
+                              labelId="payment-method-label"
+                              value={currentMethod}
+                              onChange={(e) =>
+                                handleSelectedMethod(e.target.value)
+                              }
+                              label="Método de Pago"
+                            >
+                              {paymentMethodOptions.map((method) => (
+                                <MenuItem key={method.id} value={method.id}>
+                                  {method.label}
+                                </MenuItem>
+                              ))}
+                            </Select>
+                          </FormControl>
+
+                          <Button
+                            variant="contained"
+                            color="primary"
+                            startIcon={<AddCircleOutline />}
+                            onClick={handleAddPaymentVoucher} // Nueva función para añadir el comprobante actual a la lista paymentVouchers
+                            disabled={
+                              isSubmitting ||
+                              !currentVoucherImage ||
+                              !currentDescription ||
+                              !currentAmount ||
+                              !currentMethod
+                            }
+                            sx={{ alignSelf: "flex-start" }} // Para que el botón no ocupe todo el ancho
+                          >
+                            Añadir este Comprobante
+                          </Button>
+                        </Stack>
+                      </Grid2>
+                    </Grid2>
+                  </Box>
+                )}
                 {paymentVouchers.length > 0 && (
                   <Typography
                     variant="caption"
@@ -2523,16 +2921,6 @@ export default function UpdateOrder() {
             Atrás
           </Button>
           <Box sx={{ flex: "1 1 auto" }} />
-          {isStepOptional(activeStep) && (
-            <Button
-              color="inherit"
-              onClick={handleSkip}
-              sx={{ mr: 1 }}
-              disabled={isSubmitting}
-            >
-              Saltar
-            </Button>
-          )}
           {activeStep === steps.length - 1 ? (
             <Button
               type="submit"
@@ -2575,7 +2963,6 @@ export default function UpdateOrder() {
         )}
       </form>
 
-      {/* Modal de Recorte Global */}
       {imageSrcForCropper &&
         imageToCropDetails &&
         imageToCropDetails.targetType === "paymentVoucher" && (

@@ -5,17 +5,17 @@ import { PickedProduct } from "./product.types"
 export interface Order {
   _id?: ObjectId
   number?: number
-  lines: OrderLine[] // requests
+  lines: OrderLine[]
   createdOn: Date
   createdBy: string
-  updates?: [Date, string][] // updates when and by whom
+  updates?: [Date, string][]
   consumerDetails?: ConsumerDetails
   payment: PaymentDetails
   shipping: ShippingDetails
   billing: BillingDetails
   totalUnits: number
   status: [OrderStatus, Date][]
-  paymentStatus: [GlobalPaymentStatus, Date][]
+  // paymentStatus: [GlobalPaymentStatus, Date][]
   subTotal: number
   discount?: number
   surcharge?: number
@@ -41,15 +41,17 @@ export interface Payment {
   voucher?: string; // IMG ***
   metadata?: string;
   amount?: string;
+  createdOn: Date;
   lastFourDigits?: string;
   method: PaymentMethod;
 }
+
 export interface PaymentDetails {
   total: number;
-  installments: Payment[];
+  payments: Payment[];
+  status: [GlobalPaymentStatus, Date][]
 }
 
-// Shipping-related details
 export interface ShippingDetails {
   method: ShippingMethod
   country: string
@@ -110,11 +112,12 @@ export enum OrderStatus {
 
 export enum GlobalPaymentStatus {
   Pending = 0, // Order submitted, awaiting payment confirmation for this item's order
-  Paid = 1, // Payment attempt was unsuccessful for this item's order
   Credited = 2, // Payment successful, ready for processing this item
+  Paid = 1, // Payment attempt was unsuccessful for this item's order
+
+  Cancelled = 3, // Customer has requested a return for this item
   // Giftcard = 3, // This item is produced, packed, and waiting for carrier pickup
   // Gift = 4, // Carrier confirmed delivery of this item
-  Cancelled = 2, // Customer has requested a return for this item
 }
 
 export interface PaymentMethod {

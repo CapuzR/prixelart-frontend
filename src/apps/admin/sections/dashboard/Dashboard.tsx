@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
     Container,
-    Grid,
     Typography,
     CircularProgress,
     Alert,
@@ -9,6 +8,7 @@ import {
     Paper,
     Button,
 } from '@mui/material';
+import Grid2 from "@mui/material/Grid"
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
@@ -157,40 +157,40 @@ const SellerDashboard: React.FC = () => {
             {stats && ( // Render dashboard sections only if stats are loaded
                 <>
                     {/* Section 1: KPIs */}
-                    <Grid container spacing={3} mb={3}>
-                        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+                    <Grid2 container spacing={3} mb={3}>
+                        <Grid2 size={{ xs: 12, sm: 6, md: 3 }}>
                             <KPICard title="Ingresos" value={`$${stats.totalSales.toFixed(2)}`} icon={MonetizationOnIcon} loading={loading} />
-                        </Grid>
-                        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+                        </Grid2>
+                        <Grid2 size={{ xs: 12, sm: 6, md: 3 }}>
                             <KPICard title="# de Órdenes" value={stats.totalOrders.toString()} icon={ShoppingCartIcon} loading={loading} />
-                        </Grid>
-                        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+                        </Grid2>
+                        <Grid2 size={{ xs: 12, sm: 6, md: 3 }}>
                             <KPICard title="Promedio de $ por órden" value={`$${stats.averageOrderValue.toFixed(2)}`} icon={AssessmentIcon} loading={loading} />
-                        </Grid>
-                        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+                        </Grid2>
+                        <Grid2 size={{ xs: 12, sm: 6, md: 3 }}>
                             <KPICard title="Productos Vendidos" value={stats.unitsSold.toString()} icon={InventoryIcon} loading={loading} />
-                        </Grid>
-                    </Grid>
+                        </Grid2>
+                    </Grid2>
 
                     {/* Section 2: Sales & Order Overview */}
-                    <Grid container spacing={3} mb={3}>
-                        <Grid size={{ xs: 12, md: 7 }}>
+                    <Grid2 container spacing={3} mb={3}>
+                        <Grid2 size={{ xs: 12, md: 7 }}>
                             <SalesTrendChart data={salesTrendChartData} loading={loading} />
-                        </Grid>
-                        <Grid size={{ xs: 12, md: 5 }}>
+                        </Grid2>
+                        <Grid2 size={{ xs: 12, md: 5 }}>
                             <OrderStatusDistributionChart data={orderStatusChartData} loading={loading} />
-                        </Grid>
-                    </Grid>
+                        </Grid2>
+                    </Grid2>
 
                     {/* Section 3: Pending Actions & Recent Orders */}
-                    <Grid container spacing={3} mb={3}>
-                        <Grid size={{ xs: 12, md: 6 }}>
+                    <Grid2 container spacing={3} mb={3}>
+                        <Grid2 size={{ xs: 12, md: 6 }}>
                             <RecentOrdersList orders={orders} loading={loading} onViewOrder={handleViewOrder} />
-                        </Grid>
-                        <Grid size={{ xs: 12, md: 6 }}>
+                        </Grid2>
+                        <Grid2 size={{ xs: 12, md: 6 }}>
                             <TopPerformingItemsList items={topItems} loading={loading} />
-                        </Grid>
-                    </Grid>
+                        </Grid2>
+                    </Grid2>
                 </>
             )}
         </Container>

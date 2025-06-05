@@ -7,7 +7,7 @@ export interface Order {
   number?: number
   lines: OrderLine[]
   createdOn: Date
-  createdBy: string
+  createdBy?: string
   updates?: [Date, string][]
   consumerDetails?: ConsumerDetails
   payment: PaymentDetails

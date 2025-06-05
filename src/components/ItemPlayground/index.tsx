@@ -13,12 +13,11 @@ export interface ItemPlaygroundProps {
 }
 
 export default function ItemPlayground({ item, handleChangeElement, line }: ItemPlaygroundProps) {
-
   return (
     <div className={styles['container']}>
-      {item?.product?.mockUp ? (
+      {/* {item?.product?.mockUp ? (
         <div className={styles['warp-container']}></div>
-      ) : (
+      ) : ( */}
         <div className={styles['sel-container']}>
           <div className={styles['product-area']}>
             {item?.product ? (
@@ -28,7 +27,7 @@ export default function ItemPlayground({ item, handleChangeElement, line }: Item
                 onClickLeft={() => handleChangeElement!('producto', item, line ? line.id : undefined)}
               >
                 <Image
-                  src={item?.product?.sources?.images?.[0]?.url}
+                  src={item?.product?.sources?.images[0]?.url}
                   alt={item?.product?.name}
                   objectFit="cover"
                 />
@@ -55,8 +54,8 @@ export default function ItemPlayground({ item, handleChangeElement, line }: Item
             )}
           </div>
         </div>
-      )
-      }
+      {/* )
+      } */}
     </div >
   );
 }

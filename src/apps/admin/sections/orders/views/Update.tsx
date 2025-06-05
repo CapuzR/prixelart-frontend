@@ -472,7 +472,7 @@ export default function UpdateOrder() {
   }
 
   const isPickupSelected = useMemo(() => {
-    /* ... (sin cambios) ... */ if (
+    if (
       !selectedShippingMethod ||
       !selectedShippingMethod.fullMethod
     )
@@ -896,84 +896,127 @@ export default function UpdateOrder() {
   }
 
   const startTusUploadForVoucher = (file: File, imageId: string) => {
-    const showSnackBar = showSnackBarRef.current
+    const showSnackBar = showSnackBarRef.current;
     const upload = new tus.Upload(file, {
       endpoint: `${BACKEND_URL}/files`,
       retryDelays: [0, 1000, 3000, 5000],
       metadata: {
         filename: file.name,
         filetype: file.type,
-        context: "paymentVoucher",
-        imageId: imageId,
+        context: "paymentVoucher", // Contexto específico para comprobantes
+        imageId: imageId, // El ID único de esta imagen/subida
       },
       onProgress: (bytesUploaded, bytesTotal) => {
-        const percentage = Math.floor((bytesUploaded / bytesTotal) * 100)
-        setPaymentVouchers((prev) =>
-          prev.map((img) =>
+        const percentage = Math.floor((bytesUploaded / bytesTotal) * 100);
+        // Actualizar el progreso en la lista general de comprobantes
+        setPaymentVouchers((prevVouchers) =>
+          prevVouchers.map((img) =>
             img.id === imageId ? { ...img, progress: percentage } : img
           )
-        )
+        );
+        // Opcional: Actualizar el progreso del 'currentVoucherImage' si lo estás usando
+        // para mostrar el progreso de la imagen individual que se está subiendo.
+        setCurrentVoucherImage(prevCurrent => 
+          prevCurrent && prevCurrent.id === imageId 
+            ? { ...prevCurrent, progress: percentage } 
+            : prevCurrent
+        );
       },
       onSuccess: async () => {
-        const tusUploadInstance = upload as any
-        let finalS3Url: string | null = null
+        const tusUploadInstance = upload as any;
+        let finalS3Url: string | null = null;
+        // Lógica para obtener la URL final de S3 (x-final-url)
         if (tusUploadInstance._req?._xhr?.getResponseHeader) {
           finalS3Url =
             tusUploadInstance._req._xhr.getResponseHeader("x-final-url") ||
-            tusUploadInstance._req._xhr.getResponseHeader("X-Final-URL")
+            tusUploadInstance._req._xhr.getResponseHeader("X-Final-URL");
         } else if (tusUploadInstance.xhr?.getResponseHeader) {
           finalS3Url =
             tusUploadInstance.xhr.getResponseHeader("x-final-url") ||
-            tusUploadInstance.xhr.getResponseHeader("X-Final-URL")
+            tusUploadInstance.xhr.getResponseHeader("X-Final-URL");
         }
         if (finalS3Url && finalS3Url.startsWith("https://https//")) {
-          finalS3Url = finalS3Url.replace("https://https//", "https://")
+          finalS3Url = finalS3Url.replace("https://https//", "https://");
         }
-        const imageUrl = finalS3Url || upload.url
-
+        const imageUrl = finalS3Url || upload.url; // Fallback a la URL de TUS
+  
         if (imageUrl) {
-          setPaymentVouchers((prev) =>
-            prev.map((img) =>
+          // Actualizar la lista general de comprobantes
+          setPaymentVouchers((prevVouchers) =>
+            prevVouchers.map((img) =>
               img.id === imageId
                 ? {
                     ...img,
                     url: imageUrl,
                     progress: 100,
-                    file: undefined,
-                    isExisting: true,
+                    file: undefined, // Limpiar el archivo después de la subida
+                    error: undefined,
+                    // isExisting: true, // Si tuvieras esta propiedad en ImageUploadState
                   }
                 : img
             )
-          )
-          setCurrentVoucherImage((prev) => ({ ...prev, url: imageUrl }))
-
-          showSnackBar(`Comprobante subido.`)
+          );
+  
+          // CORRECCIÓN para setCurrentVoucherImage:
+          setCurrentVoucherImage((prevCurrentVoucher) => {
+            if (prevCurrentVoucher && prevCurrentVoucher.id === imageId) {
+              return {
+                ...prevCurrentVoucher,
+                url: imageUrl,
+                progress: 100,
+                file: undefined,
+                error: undefined,
+              };
+            } else if (!prevCurrentVoucher || prevCurrentVoucher.id !== imageId) {
+              console.warn(`[setCurrentVoucherImage onSuccess] 'prevCurrentVoucher' era nulo o su ID no coincidía. Creando/actualizando con imageId: ${imageId}`);
+              return {
+                id: imageId,
+                url: imageUrl,
+                progress: 100,
+                file: undefined,
+                error: undefined,
+              };
+            }
+            return prevCurrentVoucher;
+          });
+  
+          showSnackBar(`Comprobante subido.`);
         } else {
-          const errorMsg = "Error al obtener URL del comprobante"
-          setPaymentVouchers((prev) =>
-            prev.map((img) =>
+          const errorMsg = "Error al obtener URL del comprobante";
+          setPaymentVouchers((prevVouchers) =>
+            prevVouchers.map((img) =>
               img.id === imageId
-                ? { ...img, error: errorMsg, file: undefined }
+                ? { ...img, error: errorMsg, file: undefined, progress: undefined }
                 : img
             )
-          )
-          showSnackBar(errorMsg)
+          );
+          setCurrentVoucherImage(prevCurrentVoucher => 
+              prevCurrentVoucher && prevCurrentVoucher.id === imageId 
+              ? { ...prevCurrentVoucher, error: errorMsg, file: undefined, progress: undefined } 
+              : prevCurrentVoucher
+          );
+          showSnackBar(errorMsg);
         }
       },
       onError: (error) => {
-        const errorMsg = error.message || "Error desconocido"
-        setPaymentVouchers((prev) =>
-          prev.map((img) =>
+        const errorMsg = error.message || "Error desconocido";
+        setPaymentVouchers((prevVouchers) =>
+          prevVouchers.map((img) =>
             img.id === imageId
-              ? { ...img, error: errorMsg, file: undefined }
+              ? { ...img, error: errorMsg, file: undefined, progress: undefined }
               : img
           )
-        )
-        showSnackBar(`Error al subir comprobante: ${errorMsg}`)
+        );
+        setCurrentVoucherImage(prevCurrentVoucher => 
+          prevCurrentVoucher && prevCurrentVoucher.id === imageId 
+          ? { ...prevCurrentVoucher, error: errorMsg, file: undefined, progress: undefined } 
+          : prevCurrentVoucher
+        );
+        showSnackBar(`Error al subir comprobante: ${errorMsg}`);
       },
-    })
-    upload.start()
-  }
+    });
+    upload.start();
+  };
 
   const handleRemoveVoucherImage = (idToRemove: string) => {
     setPaymentVouchers((prev) => prev.filter((img) => img.id !== idToRemove))
@@ -982,9 +1025,8 @@ export default function UpdateOrder() {
     )
   }
 
-  // --- Otros Handlers (sin cambios mayores) ---
   const handleAddOrderLine = () => {
-    /* ... (sin cambios) ... */ setEditableOrderLines((prev) => [
+    setEditableOrderLines((prev) => [
       ...prev,
       {
         ...initialOrderLineFormStateForUpdate,
@@ -995,7 +1037,7 @@ export default function UpdateOrder() {
     ])
   }
   const handleRemoveOrderLine = (lineTempIdToRemove: string) => {
-    /* ... (sin cambios) ... */ setEditableOrderLines((prev) =>
+   setEditableOrderLines((prev) =>
       prev.filter((line) => line.tempId !== lineTempIdToRemove)
     )
   }
@@ -1003,7 +1045,7 @@ export default function UpdateOrder() {
     lineTempIdToUpdate: string,
     newValues: Partial<OrderLineFormState>
   ) => {
-    /* ... (sin cambios) ... */ setEditableOrderLines((prevLines) =>
+    setEditableOrderLines((prevLines) =>
       prevLines.map((line) =>
         line.tempId === lineTempIdToUpdate ? { ...line, ...newValues } : line
       )
@@ -1013,7 +1055,7 @@ export default function UpdateOrder() {
     lineTempIdToUpdate: string,
     newValue: ArtOption | null
   ) => {
-    /* ... (sin cambios) ... */ updateEditableLine(lineTempIdToUpdate, {
+    updateEditableLine(lineTempIdToUpdate, {
       selectedArt: newValue,
     })
   }
@@ -1021,7 +1063,7 @@ export default function UpdateOrder() {
     lineTempIdToUpdate: string,
     newValue: ProductOption | null
   ) => {
-    /* ... (sin cambios) ... */ const variants =
+    const variants =
       newValue?.fullProduct.variants || []
     const variantOptions = variants
       .filter((v) => v._id)
@@ -1038,7 +1080,7 @@ export default function UpdateOrder() {
     lineTempIdToUpdate: string,
     newValue: VariantOption | null
   ) => {
-    /* ... (sin cambios) ... */ const line = editableOrderLines.find(
+    const line = editableOrderLines.find(
       (l) => l.tempId === lineTempIdToUpdate
     )
     const productBasePrice = parseFloat(
@@ -1056,7 +1098,7 @@ export default function UpdateOrder() {
     lineTempIdToUpdate: string,
     event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
-    /* ... (sin cambios) ... */ const q = parseInt(event.target.value, 10)
+    const q = parseInt(event.target.value, 10)
     const quantity = q >= 1 ? q : 1
     updateEditableLine(lineTempIdToUpdate, { quantity })
   }
@@ -1123,7 +1165,7 @@ export default function UpdateOrder() {
     lineTempIdToUpdate: string,
     event: SelectChangeEvent<OrderStatus>
   ) => {
-    /* ... (sin cambios) ... */ const newStatus = event.target
+    const newStatus = event.target
       .value as OrderStatus
     setEditableOrderLines((prevLines) =>
       prevLines.map((line) => {
@@ -1161,19 +1203,19 @@ export default function UpdateOrder() {
   const handleClientInfoChange = (
     event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
-    /* ... (sin cambios) ... */ const { name, value } = event.target
+    const { name, value } = event.target
     setEditableClientInfo((prev) => (prev ? { ...prev, [name]: value } : null))
   }
   const handleShippingAddressChange = (updatedAddress: Address) => {
-    /* ... (sin cambios) ... */ setEditableShippingAddress(updatedAddress)
+    setEditableShippingAddress(updatedAddress)
   }
   const handleBillingAddressChange = (updatedAddress: Address) => {
-    /* ... (sin cambios) ... */ setEditableBillingAddress(updatedAddress)
+    setEditableBillingAddress(updatedAddress)
   }
   const handleUseShippingForBillingChange = (
     event: ChangeEvent<HTMLInputElement>
   ) => {
-    /* ... (sin cambios) ... */ const checked = event.target.checked
+    const checked = event.target.checked
     setUseShippingForBilling(checked)
     if (checked && editableShippingAddress) {
       setEditableBillingAddress(
@@ -1656,7 +1698,7 @@ export default function UpdateOrder() {
     isLink: boolean = false,
     href?: string
   ) =>
-    /* ... (sin cambios) ... */ secondary ? (
+    secondary ? (
       <ListItem key={itemKey} sx={{ py: 0.5, px: 0 }}>
         {icon && (
           <ListItemIcon sx={{ minWidth: "36px", color: "text.secondary" }}>
@@ -1685,7 +1727,7 @@ export default function UpdateOrder() {
   const renderVariantAttributes = (
     selection: VariantAttribute[] | undefined
   ) => {
-    /* ... (sin cambios) ... */ if (!selection || selection.length === 0)
+    if (!selection || selection.length === 0)
       return null
     return (
       <Box sx={{ display: "flex", alignItems: "center", mt: 0.5 }}>
@@ -1701,7 +1743,7 @@ export default function UpdateOrder() {
     )
   }
   const renderArtDetails = (art: PickedArt | undefined) => {
-    /* ... (sin cambios) ... */ if (!art) return null
+    if (!art) return null
     return (
       <Box sx={{ display: "flex", alignItems: "center", mt: 0.5 }}>
         <CollectionsOutlined
@@ -1717,7 +1759,7 @@ export default function UpdateOrder() {
   const getOverallOrderStatus = (
     orderLines: OrderLineFormState[]
   ): OrderStatus => {
-    /* ... (sin cambios) ... */ if (!orderLines || orderLines.length === 0)
+    if (!orderLines || orderLines.length === 0)
       return OrderStatus.Pending
     const statuses = orderLines.map((line) => getLatestStatus(line.status))
     if (statuses.every((s) => s === OrderStatus.Delivered))
@@ -2692,7 +2734,7 @@ export default function UpdateOrder() {
                             <DeleteIcon sx={{ fontSize: "1rem" }} />
                           </IconButton>
                           <Grid2 size={{ xs: 12 }}>
-                            <Typography color="secondary">Método de pago: {pay.method?.label}</Typography>
+                            <Typography color="secondary">Método de pago: {pay.method?.name}</Typography>
                             <Typography color="secondary">Monto: {pay.amount}</Typography>
                             <Typography color="secondary">Descripción: {pay.description}</Typography>
                           </Grid2>

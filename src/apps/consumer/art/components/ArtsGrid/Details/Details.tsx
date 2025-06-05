@@ -24,7 +24,6 @@ import { useLoading } from "context/GlobalContext"
 import utils from "utils/utils.js"
 import { Art } from "../../../../../../types/art.types"
 import { fetchArt } from "@api/art.api"
-import Grid from "@mui/material/Grid"
 
 const ArtDetail: React.FC = () => {
   const { artId } = useParams<{ artId: string }>()

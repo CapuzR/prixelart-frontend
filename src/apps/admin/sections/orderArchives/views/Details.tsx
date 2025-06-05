@@ -198,7 +198,6 @@ const OrderArchiveDetail: React.FC = () => {
     const [newPayStatus, setNewPayStatus] = useState<OrderPayStatus | ''>('');
     const [isUpdatingStatus, setIsUpdatingStatus] = useState<boolean>(false);
 
-
     useEffect(() => {
         if (!id) {
             setError("No se proporcionó ID de orden.");

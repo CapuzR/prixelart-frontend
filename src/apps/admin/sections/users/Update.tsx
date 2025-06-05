@@ -13,15 +13,19 @@ import { PrixResponse } from "types/prixResponse.types"
 // Hooks, Types, Context, API
 import { useSnackBar } from "context/GlobalContext"
 import { User } from "types/user.types"
-import { Prixer } from "types/prixer.types" // Import Prixer type
+import { Prixer } from "types/prixer.types"
+import { Permissions } from "types/permissions.types"
+
 import { getUserById, updateUser } from "@api/user.api"
 import { isAValidEmail } from "utils/validations" // Assuming no username/password validation needed here
 import Grid2 from "@mui/material/Grid"
 // MUI Components
+import { Lock, Visibility, VisibilityOff } from "@mui/icons-material"
 import {
   Box,
   Typography,
   TextField,
+  OutlinedInput,
   Button,
   Paper,
   FormControlLabel,
@@ -36,8 +40,11 @@ import {
   FormHelperText,
   Autocomplete,
   Chip,
+  InputAdornment,
   Divider,
-  Avatar, // Removed Link as it wasn't used
+  Avatar,
+  IconButton,
+  Modal,
 } from "@mui/material"
 // Removed Password specific imports as they are not needed for update
 import Title from "@apps/admin/components/Title"
@@ -49,6 +56,7 @@ import {
   PickerChangeHandlerContext,
   DateValidationError,
 } from "@mui/x-date-pickers" // Import Picker context/types
+import { getPermissions } from "@api/admin.api"
 
 // --- Constants and Options (Copied/Aligned with CreateUser) ---
 const AVAILABLE_ROLES = ["consumer", "prixer", "seller", "admin"] // Adjust  based on permissions
@@ -123,9 +131,7 @@ const initialUserFormState: Partial<User> = {
   account: "",
 }
 
-// Include all editable Prixer fields
 const initialPrixerFormState: Partial<Prixer> = {
-  // Using Partial<Prixer> for flexibility
   specialty: [],
   description: "",
   instagram: "",
@@ -133,18 +139,15 @@ const initialPrixerFormState: Partial<Prixer> = {
   facebook: "",
   phone: "",
   avatar: "",
-  termsAgree: false, // Add other fields
-  // status might be handled separately or default on backend
+  termsAgree: false,
 }
 
-// --- Component ---
 const UpdateUser: React.FC = () => {
-  // --- Hooks ---
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const { showSnackBar } = useSnackBar()
+  const [permissions, setPermissions] = useState<Permissions | null>(null)
 
-  // --- State ---
   const [userFormData, setUserFormData] =
     useState<Partial<User>>(initialUserFormState)
   const [prixerFormData, setPrixerFormData] = useState<Partial<Prixer>>(
@@ -157,11 +160,13 @@ const UpdateUser: React.FC = () => {
   const [errorFetch, setErrorFetch] = useState<string | null>(null)
   const [validationErrors, setValidationErrors] =
     useState<UserValidationErrors | null>(null)
-  const [balance, setBalance] = useState()
-  // Determine if the Prixer role is currently selected in the form
+  const [balance, setBalance] = useState<number>(0)
+  const [modal, setModal] = useState<boolean>(false)
+  const [showNewPassword, setShowNewPassword] = useState(false)
+  const [newPassword, setNewPassword] = useState("")
+
   const isPrixerRoleSelected = userFormData.role?.includes("prixer")
 
-  // --- Fetch User Data ---
   const loadUser = useCallback(async () => {
     if (!id) {
       setErrorFetch("ID de usuario inválido.")
@@ -172,26 +177,24 @@ const UpdateUser: React.FC = () => {
     }
     setIsLoading(true)
     setErrorFetch(null)
-    setValidationErrors(null) // Clear previous validation errors on reload
+    setValidationErrors(null)
 
     try {
-      const userData = await getUserById(id) // No need to cast if API returns User type
+      const userData = await getUserById(id)
       if (!userData) {
         throw new Error("Usuario no encontrado.")
       }
-      console.log(userData)
-      const readBalance = await getBalance(userData?.account)
-
-      // Set original username for display
+      if (userData.account) {
+        const readBalance = await getBalance(userData?.account)
+      }
       setOriginalUsername(userData.username || "N/A")
 
-      // Populate user form state (excluding fields not directly edited like password)
       setUserFormData({
         firstName: userData.firstName || "",
         lastName: userData.lastName || "",
         email: userData.email || "",
         active: userData.active ?? true,
-        role: userData.role || ["consumer"], // Ensure role is an array
+        role: userData.role || ["consumer"],
         avatar: userData.avatar || "",
         phone: userData.phone || "",
         country: userData.country || "",
@@ -200,31 +203,26 @@ const UpdateUser: React.FC = () => {
         address: userData.address || "",
         billingAddress: userData.billingAddress || "",
         shippingAddress: userData.shippingAddress || "",
-        instagram: userData.instagram || "", // User-level social links
+        instagram: userData.instagram || "",
         facebook: userData.facebook || "",
         twitter: userData.twitter || "",
         ci: userData.ci || "",
         account: userData.account || "",
-        // birthdate is handled separately with Dayjs state
       })
 
-      // Set birthdate using Dayjs state
       setBirthdateValue(userData.birthdate ? dayjs(userData.birthdate) : null)
 
-      // Populate Prixer form data ONLY if prixer data exists
       if (userData.prixer) {
         setPrixerFormData({
           specialty: userData.prixer.specialty || [],
           description: userData.prixer.description || "",
-          instagram: userData.prixer.instagram || "", // Prixer-specific social links
+          instagram: userData.prixer.instagram || "",
           twitter: userData.prixer.twitter || "",
           facebook: userData.prixer.facebook || "",
-          phone: userData.prixer.phone || "", // Prixer-specific phone
-          avatar: userData.prixer.avatar || "", // Prixer-specific avatar
+          phone: userData.prixer.phone || "",
+          avatar: userData.prixer.avatar || "",
           termsAgree: userData.prixer.termsAgree ?? false,
-          // status: userData.prixer.status, // Add status if editable
         })
-        // Ensure the role includes 'prixer' if prixer data exists (data consistency check)
         if (!userData.role?.includes("prixer")) {
           setUserFormData((prev) => ({
             ...prev,
@@ -235,9 +233,7 @@ const UpdateUser: React.FC = () => {
           )
         }
       } else {
-        // Reset Prixer form if no prixer data exists on the user
         setPrixerFormData(initialPrixerFormState)
-        // Ensure the role does *not* include 'prixer' if no prixer data exists (consistency)
         if (userData.role?.includes("prixer")) {
           setUserFormData((prev) => ({
             ...prev,
@@ -261,12 +257,17 @@ const UpdateUser: React.FC = () => {
     }
   }, [id, navigate, showSnackBar])
 
+  const checkPermissions = async () => {
+    const response = await getPermissions()
+    setPermissions(response)
+  }
+
   useEffect(() => {
     loadUser()
+    checkPermissions()
   }, [])
 
-  // --- Handlers (Copied/Adapted from CreateUser) ---
-  const getBalance = async (_id: string) => {
+  const getBalance = async (_id: string | undefined) => {
     const base_url = import.meta.env.VITE_BACKEND_URL + "/account/readById"
     try {
       const response = await axios.post<PrixResponse>(base_url, {
@@ -288,6 +289,21 @@ const UpdateUser: React.FC = () => {
     }
   }
 
+  const handleNewPasswordChange = (e: any) => {
+    setNewPassword(e.target.value)
+  }
+
+  const handleClickShowNewPassword = () => {
+    setShowNewPassword(!showNewPassword)
+  }
+
+  const handleMouseDownNewPassword = (event: any) => {
+    event.preventDefault()
+  }
+
+  const openModal = () => {
+    setModal(!modal)
+  }
   // Generic handler for most User text/select/checkbox inputs
   const handleUserInputChange = (
     event: ChangeEvent<
@@ -586,6 +602,34 @@ const UpdateUser: React.FC = () => {
     navigate("/admin/users/read")
   }
 
+  const changePassword = (e: any) => {
+    e.preventDefault()
+    if (!newPassword) {
+      showSnackBar("Por favor completa todos los campos requeridos.")
+    } else {
+      const base_url =
+        import.meta.env.VITE_BACKEND_URL + "/change-prixer-password"
+      const data = {
+        username: originalUsername,
+        newPassword: newPassword,
+      }
+      axios
+        .post(base_url, data)
+        .then((response) => {
+          if (response.data.info === "error_current_password") {
+            showSnackBar(response.data.message)
+          } else if (response.data.info === "error_new_password") {
+            showSnackBar(response.data.message)
+          } else {
+            openModal()
+            showSnackBar("Cambio de clave exitoso.")
+          }
+        })
+        .catch((error) => {
+          console.log(error.response)
+        })
+    }
+  }
   return (
     <>
       <Title
@@ -737,8 +781,7 @@ const UpdateUser: React.FC = () => {
                   label="Usuario Activo"
                 />
               </Grid2>
-              {/* User Avatar */}
-              <Grid2 size={{ xs: 12, sm: 6 }}>
+              {/* <Grid2 size={{ xs: 12, sm: 6 }}>
                 <TextField
                   label="URL Avatar Usuario (Opcional)"
                   name="avatar"
@@ -750,7 +793,6 @@ const UpdateUser: React.FC = () => {
                   error={!!validationErrors?.avatar}
                   helperText={validationErrors?.avatar}
                 />
-                {/* Preview User Avatar */}
                 {userFormData.avatar && !validationErrors?.avatar && (
                   <Box sx={{ mt: 1, display: "flex", alignItems: "center" }}>
                     <Avatar
@@ -762,7 +804,7 @@ const UpdateUser: React.FC = () => {
                     </Typography>
                   </Box>
                 )}
-              </Grid2>
+              </Grid2> */}
               <Grid2 size={{ xs: 12, sm: 6 }}></Grid2> {/* Spacer */}
               {/* --- Additional Optional Info --- */}
               <Grid2 size={{ xs: 12 }}>
@@ -1038,7 +1080,7 @@ const UpdateUser: React.FC = () => {
                         helperText={validationErrors?.prixer?.phone}
                       />
                     </Grid2>
-                    <Grid2 size={{ xs: 12, sm: 6 }}>
+                    {/* <Grid2 size={{ xs: 12, sm: 6 }}>
                       <TextField
                         label="URL Avatar Prixer (Opcional)"
                         name="avatar"
@@ -1050,7 +1092,7 @@ const UpdateUser: React.FC = () => {
                         error={!!validationErrors?.prixer?.avatar}
                         helperText={validationErrors?.prixer?.avatar}
                       />
-                    </Grid2>
+                    </Grid2> */}
 
                     {prixerFormData.avatar &&
                       !validationErrors?.prixer?.avatar && (
@@ -1117,7 +1159,10 @@ const UpdateUser: React.FC = () => {
                         Balance: ${balance?.toFixed(2)}
                       </Typography>
                     </Grid2>
-                    <Grid2 size={{ xs: 12 }}>
+                    <Grid2
+                      size={{ xs: 12 }}
+                      sx={{ display: "flex", justifyContent: "space-between" }}
+                    >
                       <FormControlLabel
                         control={
                           <Checkbox
@@ -1136,6 +1181,17 @@ const UpdateUser: React.FC = () => {
                           {validationErrors.prixer.termsAgree}
                         </FormHelperText>
                       )}
+                      {permissions?.area && (
+                        <Button
+                          variant="outlined"
+                          color="secondary"
+                          disabled={isSubmitting || isLoading}
+                          startIcon={<Lock />}
+                          onClick={openModal}
+                        >
+                          Cambiar contraseña
+                        </Button>
+                      )}
                     </Grid2>
                   </Grid2>
                 </Grid2>
@@ -1147,8 +1203,6 @@ const UpdateUser: React.FC = () => {
                   spacing={2}
                   sx={{ mt: 3 }}
                 >
-                  {" "}
-                  {/* Added margin top */}
                   <Button
                     type="button"
                     variant="outlined"
@@ -1203,6 +1257,71 @@ const UpdateUser: React.FC = () => {
           </form>
         )}
       </Paper>
+
+      <Modal
+        open={modal}
+        onClose={openModal}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: 400,
+            bgcolor: "background.paper",
+            // border: "2px solid #000",
+            boxShadow: 24,
+            borderRadius: 2,
+            pt: 2,
+            px: 4,
+            pb: 3,
+          }}
+        >
+          <Typography id="modal-modal-title" variant="h6" component="h2">
+            ¿Seguro que quieres cambiar esta contraseña?{" "}
+          </Typography>
+          <Typography id="modal-modal-description" sx={{ mt: 2, mb: 2 }}>
+            Asegúrate de informar al Prixer, aún no tenemos medio de
+            comunicación para hacerle saber.
+          </Typography>
+          <Grid2 size={{ xs: 12 }} sx={{ mb: 2 }}>
+            <FormControl variant="outlined" fullWidth>
+              <InputLabel htmlFor="new-password">Contraseña nueva</InputLabel>
+              <OutlinedInput
+                id="new-password"
+                type={showNewPassword ? "text" : "password"}
+                value={newPassword}
+                label="Contraseña nueva"
+                //   error={newPasswordError}
+                onChange={handleNewPasswordChange}
+                endAdornment={
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label="toggle password visibility"
+                      onClick={handleClickShowNewPassword}
+                      onMouseDown={handleMouseDownNewPassword}
+                      edge="end"
+                    >
+                      {showNewPassword ? <Visibility /> : <VisibilityOff />}
+                    </IconButton>
+                  </InputAdornment>
+                }
+              />
+            </FormControl>
+          </Grid2>
+          <Button
+            variant="contained"
+            color="primary"
+            disabled={isSubmitting || isLoading}
+            onClick={(e) => changePassword(e)}
+          >
+            Guardar contraseña
+          </Button>
+        </Box>
+      </Modal>
     </>
   )
 }

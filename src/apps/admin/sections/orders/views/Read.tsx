@@ -54,6 +54,7 @@ interface OrderSummary {
   shippingMethodName?: string
   paymentMethodName?: string
   shippingDate?: Date
+  createdBy?: string
 }
 
 const formatCurrency = (value: number): string => `$${value.toFixed(2)}`
@@ -107,7 +108,6 @@ const getStatusChipProps = (
 const getpayStatusChipProps = (
   status?: GlobalPaymentStatus
 ): { label: string; color: any; icon?: React.ReactElement } => {
-  console.log(status)
   const s = status ?? GlobalPaymentStatus.Pending
   switch (s) {
     case GlobalPaymentStatus.Pending:
@@ -156,9 +156,7 @@ const ReadOrders: React.FC = () => {
       try {
         const orders = (await getOrders()) as Order[] // Obtienes las órdenes completas
 
-        // --- CORRECCIÓN AQUÍ ---
         const fetchedOrders: OrderSummary[] = orders.map((order) => {
-          // Función auxiliar para obtener el último estado
           const getLatestStatus = (
             history: [OrderStatus, Date][] | undefined
           ): OrderStatus | undefined => {
@@ -195,7 +193,7 @@ const ReadOrders: React.FC = () => {
             total: order.total,
             seller: order.seller,
             observations: order.observations,
-
+            createdBy: order.seller,
             // Campos personalizados poblados:
             customerName: customer
               ? `${customer.name} ${customer.lastName}`.trim()
@@ -360,7 +358,7 @@ const ReadOrders: React.FC = () => {
                 </TableCell>
                 <TableCell sx={{ fontWeight: "bold" }}>Estado</TableCell>
                 <TableCell sx={{ fontWeight: "bold" }}>Envío</TableCell>
-                <TableCell sx={{ fontWeight: "bold" }}>Pago</TableCell>
+                <TableCell sx={{ fontWeight: "bold" }}>Asesor</TableCell>
                 <TableCell align="right" sx={{ fontWeight: "bold" }}>
                   Acciones
                 </TableCell>
@@ -428,7 +426,7 @@ const ReadOrders: React.FC = () => {
                       />
                     </TableCell>
                     <TableCell>{order.shippingMethodName || "N/A"}</TableCell>
-                    <TableCell>{order.paymentMethodName || "N/A"}</TableCell>
+                    <TableCell>{order?.createdBy}</TableCell>
                     <TableCell align="right">
                       <Box
                         sx={{

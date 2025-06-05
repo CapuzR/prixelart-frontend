@@ -5,7 +5,7 @@ export interface OrderArchive {
     orderId: string;
     orderType: ErType;
     createdOn: CompletionDate;
-    createdBy: CreatedByCreatedByClass | CreatedByEnum;
+    createdBy: any;
     subtotal: number;
     tax: number;
     total: number;

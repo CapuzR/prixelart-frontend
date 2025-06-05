@@ -1,5 +1,4 @@
 import React from "react"
-import Grid from "components/Grid"
 import { useCart } from "context/CartContext"
 import useMediaQuery from "@mui/material/useMediaQuery"
 import Typography from "components/Typography"

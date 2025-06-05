@@ -51,7 +51,7 @@ export const formatDate = (
     }
 
     // Format the valid date
-    return date.toLocaleDateString() // e.g., "3/18/2025" in en-US locale
+    return date.toLocaleDateString("en-GB") // e.g., "3/18/2025" in en-US locale
   } catch (error) {
     console.error("Error processing date input:", dateInput, error)
     return "Fecha Inválida"
@@ -108,7 +108,7 @@ export const getPayStatusColor = (
 
 export const getCustomerName = (order?: OrderArchive | null): string => {
   if (!order) return "Cliente Desconocido"
-  console.log(order.basicData)
+  // console.log(order.basicData)
   // Prioritize basicData if available
   if (order.basicData?.firstname || order.basicData?.name || order.basicData?.lastname) {
     return `${order.basicData.firstname || order.basicData?.name|| ""} ${order.basicData.lastname || ""}`.trim()

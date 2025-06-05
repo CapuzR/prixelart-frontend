@@ -19,8 +19,8 @@ import {
   Alert,
   Stack,
   FormHelperText,
-  Grid,
 } from "@mui/material"
+import Grid2 from "@mui/material/Grid"
 import Title from "@apps/admin/components/Title"
 
 // --- Type Definitions ---
@@ -146,9 +146,9 @@ const CreatePaymentMethod: React.FC = () => {
         <form onSubmit={handleSubmit} noValidate>
           {" "}
           {/* Added noValidate */}
-          <Grid container spacing={3}>
+          <Grid2 container spacing={3}>
             {/* Name Input */}
-            <Grid size={{ xs: 12 }}>
+            <Grid2 size={{ xs: 12 }}>
               <TextField
                 label="Nombre del Método"
                 name="name"
@@ -161,10 +161,10 @@ const CreatePaymentMethod: React.FC = () => {
                 error={!!validationErrors?.name} // Use validation state
                 helperText={validationErrors?.name} // Use validation state
               />
-            </Grid>
+            </Grid2>
 
             {/* Instructions Input */}
-            <Grid size={{ xs: 12 }}>
+            <Grid2 size={{ xs: 12 }}>
               <TextField
                 label="Instrucciones (Opcional)"
                 name="instructions"
@@ -178,10 +178,10 @@ const CreatePaymentMethod: React.FC = () => {
                 error={!!validationErrors?.instructions} // Use validation state
                 helperText={validationErrors?.instructions} // Use validation state
               />
-            </Grid>
+            </Grid2>
 
             {/* Active Checkbox */}
-            <Grid size={{ xs: 12 }}>
+            <Grid2 size={{ xs: 12 }}>
               <FormControlLabel
                 control={
                   <Checkbox
@@ -193,10 +193,10 @@ const CreatePaymentMethod: React.FC = () => {
                 }
                 label="Activo"
               />
-            </Grid>
+            </Grid2>
 
             {/* Action Buttons */}
-            <Grid size={{ xs: 12 }}>
+            <Grid2 size={{ xs: 12 }}>
               <Stack
                 direction="row"
                 justifyContent="flex-end"
@@ -226,20 +226,20 @@ const CreatePaymentMethod: React.FC = () => {
                   {isSubmitting ? "Creando..." : "Crear Método"}
                 </Button>
               </Stack>
-            </Grid>
+            </Grid2>
 
             {/* General Submission Error Display (Fallback) */}
             {validationErrors &&
               validationErrors.name &&
               validationErrors.name !==
                 "El nombre del método de pago es obligatorio." && (
-                <Grid size={{ xs: 12 }}>
+                <Grid2 size={{ xs: 12 }}>
                   <Alert severity="error" sx={{ mt: 2 }}>
                     {validationErrors.name}
                   </Alert>
-                </Grid>
+                </Grid2>
               )}
-          </Grid>
+          </Grid2>
         </form>
       </Paper>
     </>

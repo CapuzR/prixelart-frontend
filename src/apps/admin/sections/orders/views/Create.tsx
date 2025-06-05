@@ -84,6 +84,7 @@ import {
   BillingDetails,
   ShippingDetails,
   Payment,
+  GlobalPaymentStatus,
 } from "types/order.types"
 import { Product, Variant } from "types/product.types"
 import { Art, PickedArt } from "types/art.types"
@@ -105,6 +106,12 @@ interface ArtOption {
   thumb: string
   fullArt: Art
 }
+interface PrixerOption {
+  id: string
+  label: string
+  username: string
+  // fullData: Prixer
+}
 interface VariantOption {
   id: string
   label: string
@@ -113,6 +120,7 @@ interface VariantOption {
 
 interface OrderLineFormState extends Partial<OrderLine> {
   tempId: string
+  selectedPrixer: PrixerOption | null
   selectedArt: ArtOption | null
   selectedProduct: ProductOption | null
   selectedVariant: VariantOption | null
@@ -127,6 +135,7 @@ interface EditablePriceFieldsProps {
 }
 
 const initialLine: Omit<OrderLineFormState, "tempId"> = {
+  selectedPrixer: null,
   selectedArt: null,
   selectedProduct: null,
   selectedVariant: null,
@@ -191,6 +200,8 @@ const CreateOrder: React.FC = () => {
 
   const [productOptions, setProductOptions] = useState<ProductOption[]>([])
   const [artOptions, setArtOptions] = useState<ArtOption[]>([])
+  const [prixerOptions, setPrixerOptions] = useState<PrixerOption[]>([])
+
   const [orderLines, setOrderLines] = useState<OrderLineFormState[]>([
     { ...initialLine, tempId: uuidv4() },
   ])
@@ -286,7 +297,17 @@ const CreateOrder: React.FC = () => {
           fullArt: a,
         }))
       )
-      
+      const allArtist = arts.map((art) => art.prixerUsername)
+      const onlyPrixers = [...new Set(allArtist)]
+      const onlyPrixersv2: PrixerOption[] = onlyPrixers.map((prixer, i) => {
+        return {
+          id: (1000 + i).toString(),
+          label: prixer,
+          username: prixer,
+        }
+      })
+      setPrixerOptions(onlyPrixersv2)
+
       setEditableShippingAddress(createBlankAddress())
       setEditableBillingAddress(createBlankAddress())
     } catch (err: any) {
@@ -379,6 +400,18 @@ const CreateOrder: React.FC = () => {
     setOrderLines((prev) =>
       prev.map((l) => (l.tempId === tempId ? { ...l, ...values } : l))
     )
+  }
+
+  const handlePrixer = (tempId: string, v: PrixerOption | null) => {
+    updateLine(tempId, { selectedPrixer: v })
+    if (v !== null) filterArts(v.username)
+  }
+
+  const filterArts = (prixer: string) => {
+    const artsV1 = artOptions.filter(
+      (art) => art.fullArt.prixerUsername === prixer
+    )
+    return artsV1
   }
 
   const handleArt = (tempId: string, v: ArtOption | null) =>
@@ -535,34 +568,27 @@ const CreateOrder: React.FC = () => {
     try {
       const consumerDetails: ConsumerDetails = {
         basic: editableClientInfo,
-        // Asegúrate que editableShippingAddress no sea null antes de acceder
         selectedAddress: editableShippingAddress.address,
         addresses: [editableShippingAddress],
         paymentMethods: [paymentMethod.fullMethod as PaymentMethod],
       }
 
-      // --- CORRECCIÓN AQUÍ ---
-      // Crear la cuota (installment) principal
-      const mainInstallment: Payment = {
-        // Importa 'Payment' desde tus tipos si no lo has hecho
-        id: uuidv4(), // ID único para esta cuota
+      const mainPayment: Payment = {
+        id: uuidv4(),
+        createdOn: new Date(),
         description: paymentMethod.label || "Pago Principal",
-        method: paymentMethod.fullMethod as PaymentMethod, // El método seleccionado
-        amount: displayTotals.total.toString(), // El monto total
-        voucher: undefined, // No hay manejo de vouchers en este componente, así que es undefined
+        method: paymentMethod.fullMethod as PaymentMethod,
+        amount: displayTotals.total.toString(),
+        voucher: undefined,
       }
 
-      // Crear los detalles de pago con la cuota
       const paymentDetails: PaymentDetails = {
+        status: [[GlobalPaymentStatus.Pending, new Date()]],
         total: displayTotals.total,
-        installments: [mainInstallment], // Array con la cuota principal
+        payments: [mainPayment],
       }
-      // --- FIN CORRECCIÓN ---
-
-      // Si es pickup, la dirección de envío es la de facturación (o una en blanco si facturación tampoco se usa)
-      // O si no es pickup, es la seleccionada.
       const finalShippingAddress = isPickupSelected
-        ? createBlankAddress() // O usa la dirección de la tienda si la tienes
+        ? createBlankAddress()
         : editableShippingAddress
 
       const shippingDetails: ShippingDetails = {
@@ -634,7 +660,7 @@ const CreateOrder: React.FC = () => {
         createdBy: "Admin Panel", // O el usuario logueado
         totalUnits: displayTotals.totalUnits,
         status: [[OrderStatus.Pending, new Date()]],
-        paymentStatus: [[0, new Date()]], // Asumiendo que GlobalPaymentStatus.Pending es 0
+        // paymentStatus: [[0, new Date()]], // Asumiendo que GlobalPaymentStatus.Pending es 0
         subTotal: displayTotals.subTotal,
         shippingCost: displayTotals.shippingCost,
         tax: displayTotals.taxes,
@@ -708,7 +734,6 @@ const CreateOrder: React.FC = () => {
                 />
                 <CardContent sx={{ p: { xs: 2, md: 2.5 } }}>
                   <Grid2 container spacing={2} alignItems="flex-start">
-                    {/* Avatar column */}
                     <Grid2
                       size={{ xs: 12, sm: "auto" }}
                       sx={{ textAlign: "center", mb: { xs: 1, sm: 0 } }}
@@ -730,20 +755,129 @@ const CreateOrder: React.FC = () => {
                       />
                     </Grid2>
 
-                    {/* Form fields column */}
-                    <Grid2 size={{ xs: 12, sm: 9 }}>
-                      {/* Row 1: Art + Product */}
+                    <Grid2 size={{ xs: 12, sm: 10 }}>
                       <Grid2 container spacing={1.5} alignItems="center">
+                        {/* Product */}
                         <Grid2 size={{ xs: 12, md: 6 }}>
-                          <Autocomplete
-                            fullWidth
-                            options={artOptions}
-                            value={line.selectedArt}
-                            onChange={(e, v) => handleArt(line.tempId, v)}
-                            disabled={isSubmitting}
-                            renderOption={(props, op) => (
-                              <Box component="li" {...props}>
-                                <Avatar
+                          <Grid2 container spacing={1} alignItems="center">
+                            <Autocomplete
+                              fullWidth
+                              options={productOptions}
+                              value={line.selectedProduct}
+                              onChange={(e, v) => handleProduct(line.tempId, v)}
+                              disabled={isSubmitting}
+                              renderInput={(params) => (
+                                <TextField
+                                  {...params}
+                                  size="small"
+                                  label="Producto"
+                                />
+                              )}
+                            />
+                            <Autocomplete
+                              fullWidth
+                              options={line.availableVariants}
+                              value={line.selectedVariant}
+                              onChange={(e, v) => handleVariant(line.tempId, v)}
+                              disabled={
+                                !line.availableVariants.length || isSubmitting
+                              }
+                              renderInput={(params) => (
+                                <TextField
+                                  {...params}
+                                  size="small"
+                                  label="Variante"
+                                  helperText={
+                                    !line.availableVariants.length
+                                      ? "Sin variantes"
+                                      : ""
+                                  }
+                                />
+                              )}
+                            />
+                            <Grid2
+                              size={{ xs: 12 }}
+                              sx={{ display: "flex", flexDirection: "row" }}
+                            >
+                              <Grid2 container spacing={1} alignItems="center">
+                                <Grid2 size={{ xs: 6 }}>
+                                  <TextField
+                                    label="Cant."
+                                    type="number"
+                                    value={line.quantity}
+                                    onChange={(e) => handleQty(line.tempId, e)}
+                                    fullWidth
+                                    size="small"
+                                    disabled={isSubmitting}
+                                    inputProps={{ min: 1 }}
+                                  />
+                                </Grid2>
+                                <Grid2
+                                  size={{ xs: 6 }}
+                                  sx={{ textAlign: "right" }}
+                                >
+                                  <TextField
+                                    fullWidth
+                                    variant="outlined"
+                                    size="small"
+                                    type="text"
+                                    label="Precio unitario"
+                                    // defaultValue={(line.pricePerUnit || 0).toFixed(2)}
+                                    value={(line.pricePerUnit || 0).toFixed(2)}
+                                    onChange={(e) =>
+                                      handlePricePerUnitChange(e, line)
+                                    }
+                                    onKeyDown={allowNumericWithDecimal}
+                                    sx={{
+                                      mb: 1,
+                                      "& .MuiInputBase-input": {
+                                        textAlign: "right",
+                                      },
+                                    }}
+                                    slotProps={{
+                                      input: {
+                                        startAdornment: (
+                                          <InputAdornment position="start">
+                                            $
+                                          </InputAdornment>
+                                        ),
+                                        // endAdornment: (
+                                        //   <InputAdornment position="end">
+                                        //     c/u
+                                        //   </InputAdornment>
+                                        // ),
+                                      },
+                                    }}
+                                  />
+                                </Grid2>
+                              </Grid2>
+                            </Grid2>
+                          </Grid2>
+                        </Grid2>
+                        {/* Arte */}
+                        <Grid2
+                          size={{ xs: 12, md: 6 }}
+                          sx={{ height: "100%" }}
+                        >
+                          <Grid2
+                            container
+                            spacing={1}
+                            alignItems="center"
+                            sx={{
+                              display: "flex",
+                              flexDirection: "column",
+                              height: "100%",
+                            }}
+                          >
+                            <Autocomplete
+                              fullWidth
+                              options={prixerOptions}
+                              value={line.selectedPrixer}
+                              onChange={(e, v) => handlePrixer(line.tempId, v)}
+                              disabled={isSubmitting}
+                              renderOption={(props, op) => (
+                                <Box component="li" {...props}>
+                                  {/* <Avatar
                                   variant="rounded"
                                   src={op.thumb}
                                   sx={{
@@ -752,137 +886,62 @@ const CreateOrder: React.FC = () => {
                                     height: 24,
                                     border: "1px solid lightgrey",
                                   }}
+                                /> */}
+                                  {op.label}
+                                </Box>
+                              )}
+                              renderInput={(params) => (
+                                <TextField
+                                  {...params}
+                                  size="small"
+                                  label="Prixer"
                                 />
-                                {op.label}
-                              </Box>
-                            )}
-                            renderInput={(params) => (
-                              <TextField
-                                {...params}
-                                size="small"
-                                label="Arte"
-                              />
-                            )}
-                          />
-                        </Grid2>
-                        <Grid2 size={{ xs: 12, md: 6 }}>
-                          <Autocomplete
-                            fullWidth
-                            options={productOptions}
-                            value={line.selectedProduct}
-                            onChange={(e, v) => handleProduct(line.tempId, v)}
-                            disabled={isSubmitting}
-                            renderInput={(params) => (
-                              <TextField
-                                {...params}
-                                size="small"
-                                label="Producto *"
-                                required
-                              />
-                            )}
-                          />
+                              )}
+                            />
+                            <Autocomplete
+                              fullWidth
+                              options={
+                                line.selectedPrixer !== null
+                                  ? filterArts(line.selectedPrixer.username)
+                                  : artOptions
+                              }
+                              value={line.selectedArt}
+                              onChange={(e, v) => handleArt(line.tempId, v)}
+                              disabled={isSubmitting}
+                              renderOption={(props, op) => (
+                                <Box component="li" {...props}>
+                                  <Avatar
+                                    variant="rounded"
+                                    src={op.thumb}
+                                    sx={{
+                                      mr: 1,
+                                      width: 24,
+                                      height: 24,
+                                      border: "1px solid lightgrey",
+                                    }}
+                                  />
+                                  {op.label}
+                                </Box>
+                              )}
+                              renderInput={(params) => (
+                                <TextField
+                                  {...params}
+                                  size="small"
+                                  label="Arte"
+                                />
+                              )}
+                            />
+                          </Grid2>
                         </Grid2>
                       </Grid2>
 
-                      {/* Row 2: Variant, Qty, Prices */}
                       <Grid2
                         container
                         spacing={1.5}
                         alignItems="center"
                         sx={{ mt: 1 }}
                       >
-                        <Grid2 size={{ xs: 12, md: 6 }}>
-                          <Autocomplete
-                            fullWidth
-                            options={line.availableVariants}
-                            value={line.selectedVariant}
-                            onChange={(e, v) => handleVariant(line.tempId, v)}
-                            disabled={
-                              !line.availableVariants.length || isSubmitting
-                            }
-                            renderInput={(params) => (
-                              <TextField
-                                {...params}
-                                size="small"
-                                label="Variante"
-                                helperText={
-                                  !line.availableVariants.length
-                                    ? "Sin variantes"
-                                    : ""
-                                }
-                              />
-                            )}
-                          />
-                        </Grid2>
-                        <Grid2 size={{ xs: 6, md: 3 }}>
-                          <TextField
-                            label="Cant."
-                            type="number"
-                            value={line.quantity}
-                            onChange={(e) => handleQty(line.tempId, e)}
-                            fullWidth
-                            size="small"
-                            disabled={isSubmitting}
-                            inputProps={{ min: 1 }}
-                          />
-                        </Grid2>
-                        <Grid2
-                          size={{ xs: 6, md: 3 }}
-                          sx={{ textAlign: "right" }}
-                        >
-                          {/* <Typography variant="body2">
-                            ${(line.pricePerUnit || 0).toFixed(2)} c/u
-                          </Typography>
-                          <Typography variant="subtitle2" color="primary.main">
-                            $
-                            {(
-                              (line.pricePerUnit || 0) * (line.quantity || 0)
-                            ).toFixed(2)}
-                          </Typography> */}
-                          <TextField
-                            variant="outlined"
-                            size="small"
-                            type="text"
-                            // defaultValue={(line.pricePerUnit || 0).toFixed(2)}
-                            value={(line.pricePerUnit || 0).toFixed(2)}
-                            onChange={(e) => handlePricePerUnitChange(e, line)}
-                            onKeyDown={allowNumericWithDecimal}
-                            sx={{
-                              mb: 1,
-                              "& .MuiInputBase-input": { textAlign: "right" },
-                            }}
-                            slotProps={{
-                              input: {
-                                startAdornment: (
-                                  <InputAdornment position="start">
-                                    $
-                                  </InputAdornment>
-                                ),
-                                endAdornment: (
-                                  <InputAdornment position="end">
-                                    c/u
-                                  </InputAdornment>
-                                ),
-                              },
-                            }}
-                            // onBlur={() => {
-                            //   // Opcional: Formatear al perder el foco
-                            //   const numericPrice =
-                            //     parseFloat(line.pricePerUnit) || 0
-                            //   setPricePerUnitStr(numericPrice.toFixed(2))
-                            //   // Si el valor cambió debido al formateo, podrías volver a llamar a updateLine
-                            //   if (
-                            //     numericPrice !==
-                            //     (parseFloat(line.pricePerUnit) || 0)
-                            //   ) {
-                            //     // Compara el valor numérico antes y después del toFixed
-                            //     updateLine(line.tempId, {
-                            //       pricePerUnit: numericPrice,
-                            //     })
-                            //   }
-                            // }}
-                          />
-                        </Grid2>
+                        <Grid2 size={{ xs: 12, md: 6 }}></Grid2>
                       </Grid2>
                     </Grid2>
                   </Grid2>
@@ -934,7 +993,6 @@ const CreateOrder: React.FC = () => {
 
                 <Divider sx={{ my: 1 }} />
 
-                {/* Total */}
                 <ListItem sx={{ px: 0, justifyContent: "space-between" }}>
                   <Typography fontWeight="bold">Total:</Typography>
                   <Typography fontWeight="bold">
@@ -943,7 +1001,79 @@ const CreateOrder: React.FC = () => {
                 </ListItem>
               </List>
             </Paper>
-
+            <Paper sx={{ p: 2.5, mb: 2.5, borderRadius: 2 }} elevation={1}>
+              <Typography
+                variant="h6"
+                gutterBottom
+                sx={{ display: "flex", alignItems: "center", mb: 1.5 }}
+              >
+                <PersonOutline sx={{ mr: 1 }} />
+                Detalles Cliente
+              </Typography>
+              <Stack spacing={2}>
+                {/* TO DO: Facilitar el formulario de clientes autocompletando con data existente */}
+              {/* <Autocomplete
+                  fullWidth
+                  options={productOptions}
+                  value={editableClientInfo.name}
+                  onChange={(e, v) => handleProduct(line.tempId, v)}
+                  disabled={isSubmitting}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      name="name"
+                      label="Nombre"
+                      value={editableClientInfo.name}
+                      onChange={handleClientChange}
+                      size="small"
+                      fullWidth
+                      required
+                      disabled={isSubmitting}
+                    />
+                  )}
+                /> */}
+                <TextField
+                  name="name"
+                  label="Nombre"
+                  value={editableClientInfo.name}
+                  onChange={handleClientChange}
+                  size="small"
+                  fullWidth
+                  required
+                  disabled={isSubmitting}
+                />
+                <TextField
+                  name="lastName"
+                  label="Apellido"
+                  value={editableClientInfo.lastName}
+                  onChange={handleClientChange}
+                  size="small"
+                  fullWidth
+                  required
+                  disabled={isSubmitting}
+                />
+                <TextField
+                  name="email"
+                  label="Email"
+                  type="email"
+                  value={editableClientInfo.email}
+                  onChange={handleClientChange}
+                  size="small"
+                  fullWidth
+                  disabled={isSubmitting}
+                />
+                <TextField
+                  name="phone"
+                  label="Teléfono"
+                  value={editableClientInfo.phone}
+                  onChange={handleClientChange}
+                  size="small"
+                  fullWidth
+                  required
+                  disabled={isSubmitting}
+                />
+              </Stack>
+            </Paper>
             <Paper sx={{ p: 2.5, mb: 2.5, borderRadius: 2 }} elevation={1}>
               <Typography
                 variant="h6"
@@ -1052,58 +1182,7 @@ const CreateOrder: React.FC = () => {
                 sx={{ mb: 1 }}
               />
             </Paper>
-            <Paper sx={{ p: 2.5, mb: 2.5, borderRadius: 2 }} elevation={1}>
-              <Typography
-                variant="h6"
-                gutterBottom
-                sx={{ display: "flex", alignItems: "center", mb: 1.5 }}
-              >
-                <PersonOutline sx={{ mr: 1 }} />
-                Detalles Cliente
-              </Typography>
-              <Stack spacing={2}>
-                <TextField
-                  name="name"
-                  label="Nombre Cliente"
-                  value={editableClientInfo.name}
-                  onChange={handleClientChange}
-                  size="small"
-                  fullWidth
-                  required
-                  disabled={isSubmitting}
-                />
-                <TextField
-                  name="lastName"
-                  label="Apellido Cliente"
-                  value={editableClientInfo.lastName}
-                  onChange={handleClientChange}
-                  size="small"
-                  fullWidth
-                  required
-                  disabled={isSubmitting}
-                />
-                <TextField
-                  name="email"
-                  label="Email Cliente"
-                  type="email"
-                  value={editableClientInfo.email}
-                  onChange={handleClientChange}
-                  size="small"
-                  fullWidth
-                  disabled={isSubmitting}
-                />
-                <TextField
-                  name="phone"
-                  label="Teléfono Cliente"
-                  value={editableClientInfo.phone}
-                  onChange={handleClientChange}
-                  size="small"
-                  fullWidth
-                  required
-                  disabled={isSubmitting}
-                />
-              </Stack>
-            </Paper>
+          
             <Paper sx={{ p: 2.5, borderRadius: 2 }} elevation={1}>
               <Typography
                 variant="h6"

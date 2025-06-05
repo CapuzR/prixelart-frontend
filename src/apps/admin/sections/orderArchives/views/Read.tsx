@@ -36,7 +36,7 @@ const UPDATABLE_TARGET_STATUSES: OrderStatus[] = ALL_STATUSES.filter(s => !FINAL
 
 // --- Sortable Columns ---
 interface HeadCell {
-    id: keyof Pick<OrderArchive, 'orderId' | 'createdOn' | 'orderType' | 'status' | 'payStatus' | 'total'> | 'customerName' | 'actions';
+    id: keyof Pick<OrderArchive, 'orderId' | 'createdOn' | 'shippingData' | 'orderType' | 'status' | 'payStatus' | 'total'> | 'customerName' | 'createdBy' | 'actions';
     label: string;
     numeric: boolean;
     sortable: boolean;
@@ -47,11 +47,12 @@ interface HeadCell {
 const headCells: readonly HeadCell[] = [
     { id: 'orderId', numeric: false, label: 'ID Orden', sortable: true, width: '10%' },
     { id: 'createdOn', numeric: false, label: 'Fecha Creación', sortable: true, width: '15%' },
+    { id: 'shippingData', numeric: false, label: 'Fecha de envío', sortable: true, width: '15%' },
     { id: 'customerName', numeric: false, label: 'Cliente', sortable: false, display: { xs: 'none', sm: 'table-cell' }, width: '20%' },
     { id: 'orderType', numeric: false, label: 'Tipo', sortable: true, display: { xs: 'none', md: 'table-cell' }, width: '10%' },
     { id: 'status', numeric: false, label: 'Status Orden', sortable: true, width: '15%' },
     { id: 'payStatus', numeric: false, label: 'Status Pago', sortable: true, display: { xs: 'none', lg: 'table-cell' }, width: '10%' },
-    // { id: 'total', numeric: true, label: 'Total', sortable: true, width: '10%' },
+    { id: 'createdBy', numeric: true, label: 'Asesor', sortable: true, width: '10%' },
     { id: 'actions', numeric: false, label: 'Acciones', sortable: false, width: '10%' },
 ];
 
@@ -498,6 +499,8 @@ const ReadOrderArchives: React.FC = () => {
                                                 </Link>
                                             </TableCell>
                                             <TableCell>{formatDate(orderItem.createdOn)}</TableCell>
+                                            <TableCell>{formatDate(orderItem?.shippingData?.shippingDate)}</TableCell>
+
                                             <TableCell sx={{ display: headCells.find(h => h.id === 'customerName')?.display, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 150 }}>
                                                 <Tooltip title={getCustomerName(orderItem) || ''} placement="top-start">
                                                     <span>{getCustomerName(orderItem)}</span>
@@ -514,11 +517,9 @@ const ReadOrderArchives: React.FC = () => {
                                                     <Chip label={orderItem.payStatus} color={getPayStatusColor(orderItem.payStatus)} size="small" />
                                                 ) : '-'}
                                             </TableCell>
-{/*                                             <TableCell align="right">{formatCurrency(orderItem.total)}</TableCell> */}
+                                            <TableCell>{orderItem.createdBy.username}</TableCell>
                                             <TableCell align="right">
-                                                {/* --- Actions Column --- */}
                                                 <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 0.5 }} onClick={(e) => e.stopPropagation()}>
-                                                    {/* View Details Button */}
                                                     <Tooltip title="Ver Detalles de Orden">
                                                         <IconButton
                                                             aria-label="view details"
@@ -530,10 +531,7 @@ const ReadOrderArchives: React.FC = () => {
                                                             <VisibilityIcon fontSize="small" />
                                                         </IconButton>
                                                     </Tooltip>
-
-                                                    {/* --- Update Status Button --- */}
                                                     <Tooltip title={isUpdatable ? "Actualizar Status" : `No se puede actualizar (Status: ${orderItem.status})`}>
-                                                        {/* Span needed for tooltip when button is disabled */}
                                                         <span>
                                                             <IconButton
                                                                 aria-label="update status"

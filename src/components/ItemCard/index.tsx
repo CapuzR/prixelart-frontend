@@ -19,32 +19,22 @@ export default function ItemCard({ item, direction = 'row', handleChangeElement,
 
   const { currency } = useCurrency();
   const { conversionRate } = useConversionRate();
-
   let finalPriceStrToFormat: string | null | undefined = item.price;
   let originalPriceStrToFormat: string | null | undefined = undefined;
-
-  // Check if a discount percentage exists and is valid, and if there's a base price
   if (item.discount && item.discount > 0 && item.price && item.price !== 'Error') {
     const originalPriceNum = formatNumberString(item.price);
 
     if (!isNaN(originalPriceNum)) {
-      // Calculate the final price after applying the discount percentage
       const discountMultiplier = 1 - (item.discount / 100);
       const finalPriceNum = originalPriceNum * discountMultiplier;
-
-      // Prepare strings for the formatter
-      // The calculated discounted price is the 'final' price for display
       finalPriceStrToFormat = finalPriceNum.toString();
-      // The price stored in item.price is the 'original' price before discount
       originalPriceStrToFormat = item.price;
     } else {
-      // Handle case where item.price couldn't be parsed
       finalPriceStrToFormat = 'Error';
-      originalPriceStrToFormat = undefined; // Don't show original if final is error
+      originalPriceStrToFormat = undefined;
     }
   }
 
-  // Format the price using the new function (passing undefined for originalPrice)
   const formattedPriceHtml = formatSinglePrice(
     finalPriceStrToFormat,
     currency,
@@ -65,17 +55,11 @@ export default function ItemCard({ item, direction = 'row', handleChangeElement,
         <ItemContent item={item} direction={direction === 'row' ? 'column' : 'row'} />
         {item.product && (
           <div className={`${styles['pricing-info']} ${direction === 'column' && styles['extra-padding']}`} >
-            {/* Content for pricing-info  */}
           </div>
         )}
       </div>
       <div className={`${styles['unit-price']}`}>
-        {/* Use Typography for the label */}
         <Typography level="h6">Unitario</Typography>
-
-        {/* Render the formatted price HTML in a separate span */}
-        {/* You might need to add a className to this span if you want */}
-        {/* to apply similar font styling as Typography level="h6" */}
         <span dangerouslySetInnerHTML={{ __html: formattedPriceHtml }} />
       </div>
     </>

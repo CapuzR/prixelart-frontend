@@ -56,6 +56,7 @@ import {
   ListItemText,
   Container,
 } from "@mui/material"
+import ReceiptLongIcon from "@mui/icons-material/ReceiptLong"
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline"
 import DeleteIcon from "@mui/icons-material/Delete"
 import SaveIcon from "@mui/icons-material/Save"
@@ -188,6 +189,7 @@ const CreateOrder: React.FC = () => {
     null
   )
   const [paymentMethod, setPaymentMethod] = useState<MethodOption | null>(null)
+  const [useBasicForShipping, setUseBasicForShipping] = useState<boolean>(false)
   const [useShippingForBilling, setUseShippingForBilling] =
     useState<boolean>(true)
 
@@ -416,6 +418,7 @@ const CreateOrder: React.FC = () => {
 
   const handleArt = (tempId: string, v: ArtOption | null) =>
     updateLine(tempId, { selectedArt: v })
+
   const handleProduct = (tempId: string, v: ProductOption | null) => {
     const variants = v?.fullProduct.variants || []
     const opts = variants.map((vt) => ({
@@ -462,6 +465,41 @@ const CreateOrder: React.FC = () => {
     setUseShippingForBilling(e.target.checked)
     if (e.target.checked && editableShippingAddress)
       setEditableBillingAddress(editableShippingAddress)
+  }
+  const handleUseBasicShip = (e: ChangeEvent<HTMLInputElement>) => {
+    setUseBasicForShipping(e.target.checked)
+    if (e.target.checked && editableShippingAddress) {
+      setEditableShippingAddress((prevState) =>
+        !prevState
+          ? prevState
+          : {
+              ...prevState,
+              recepient: {
+                ...prevState.recepient,
+                name: editableClientInfo.name,
+                lastName: editableClientInfo.lastName,
+                email: editableClientInfo.email,
+                phone: editableClientInfo.phone,
+              },
+            }
+      )
+    } else if (!e.target.checked) {
+      setEditableShippingAddress((prevState) =>
+        !prevState
+          ? prevState
+          : {
+              ...prevState,
+              recepient: {
+                ...prevState.recepient,
+                name: "",
+                lastName: "",
+                email: "",
+                phone: "",
+              },
+            }
+      )
+
+    }
   }
 
   const handlePricePerUnitChange = (
@@ -855,10 +893,7 @@ const CreateOrder: React.FC = () => {
                           </Grid2>
                         </Grid2>
                         {/* Arte */}
-                        <Grid2
-                          size={{ xs: 12, md: 6 }}
-                          sx={{ height: "100%" }}
-                        >
+                        <Grid2 size={{ xs: 12, md: 6 }} sx={{ height: "100%" }}>
                           <Grid2
                             container
                             spacing={1}
@@ -976,8 +1011,10 @@ const CreateOrder: React.FC = () => {
                 <ListItem sx={{ px: 0 }}>
                   <ListItemText
                     primary="Subtotal:"
-                    secondary={`$${displayTotals?.subTotal.toFixed(2)}`}
                   />
+                    <Typography>
+                    ${displayTotals?.subTotal.toFixed(2)}
+                  </Typography>
                 </ListItem>
 
                 {/* IVA, IGTF, etc. */}
@@ -1012,7 +1049,7 @@ const CreateOrder: React.FC = () => {
               </Typography>
               <Stack spacing={2}>
                 {/* TO DO: Facilitar el formulario de clientes autocompletando con data existente */}
-              {/* <Autocomplete
+                {/* <Autocomplete
                   fullWidth
                   options={productOptions}
                   value={editableClientInfo.name}
@@ -1075,13 +1112,24 @@ const CreateOrder: React.FC = () => {
               </Stack>
             </Paper>
             <Paper sx={{ p: 2.5, mb: 2.5, borderRadius: 2 }} elevation={1}>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={useBasicForShipping}
+                    onChange={handleUseBasicShip}
+                    disabled={isSubmitting}
+                  />
+                }
+                label="Usar Datos Básicos para Envío"
+                sx={{ mt: 1, mb: useShippingForBilling ? 0 : 1 }}
+              />
               <Typography
                 variant="h6"
                 gutterBottom
                 sx={{ display: "flex", alignItems: "center", mb: 1.5 }}
               >
                 <LocalShippingOutlined sx={{ mr: 1 }} />
-                Envío y Facturación
+                Envío
               </Typography>
               <Autocomplete
                 fullWidth
@@ -1096,20 +1144,14 @@ const CreateOrder: React.FC = () => {
               />
               {!isPickupSelected ? (
                 <>
-                  {/* Shipping address */}
-                  <Typography variant="subtitle1" gutterBottom>
-                    Dirección Envío *
-                  </Typography>
                   {editableShippingAddress && (
                     <EditableAddressForm
-                      title="Dirección de Envío"
                       address={editableShippingAddress}
                       onAddressChange={handleShipAddrChange}
                       isDisabled={isSubmitting}
+                      basicDisabled={useBasicForShipping}
                     />
                   )}
-
-                  {/* Billing toggle + billing address */}
                   <FormControlLabel
                     control={
                       <Checkbox
@@ -1118,18 +1160,22 @@ const CreateOrder: React.FC = () => {
                         disabled={isSubmitting}
                       />
                     }
-                    label="Usar para Facturación"
+                    label="Usar Datos de Envío para Facturación"
                     sx={{ mt: 1, mb: useShippingForBilling ? 0 : 1 }}
                   />
 
                   {!useShippingForBilling && (
                     <>
-                      <Typography variant="subtitle1" gutterBottom>
-                        Dirección Facturación *
+                      <Typography
+                        variant="h6"
+                        gutterBottom
+                        sx={{ display: "flex", alignItems: "center", mb: 1.5 }}
+                      >
+                        <ReceiptLongIcon sx={{ mr: 1 }} />
+                        Facturación
                       </Typography>
                       {editableBillingAddress && (
                         <EditableAddressForm
-                          title="Dirección de Facturación"
                           address={editableBillingAddress}
                           onAddressChange={handleBillAddrChange}
                           isDisabled={isSubmitting}
@@ -1144,7 +1190,7 @@ const CreateOrder: React.FC = () => {
                   No se requiere dirección de envío, ni facturación.
                 </Alert>
               )}
-              <FormControlLabel
+              {/* <FormControlLabel
                 control={
                   <Checkbox
                     checked={useShippingForBilling}
@@ -1168,7 +1214,7 @@ const CreateOrder: React.FC = () => {
                     />
                   )}
                 </>
-              )}
+              )} */}
               <Divider sx={{ my: 2 }} />
               <Autocomplete
                 fullWidth
@@ -1182,7 +1228,7 @@ const CreateOrder: React.FC = () => {
                 sx={{ mb: 1 }}
               />
             </Paper>
-          
+
             <Paper sx={{ p: 2.5, borderRadius: 2 }} elevation={1}>
               <Typography
                 variant="h6"

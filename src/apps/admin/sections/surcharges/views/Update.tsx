@@ -4,13 +4,13 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { useSnackBar } from 'context/GlobalContext';
 import { AdjustmentMethod, ApplicableEntity, Surcharge, Entity } from 'types/surcharge.types';
-import { Product, Variant } from 'types/product.types';
+import { Product } from 'types/product.types';
 import { fetchSurchargeById, updateSurcharge } from '@api/surcharge.api';
 import { fetchProducts } from '@api/product.api';
 
 // MUI Components (Copied from CreateDiscount/Refactored CreateSurcharge)
 import {
-    Box, Typography, TextField, Button,  Paper, FormControlLabel, Checkbox,
+    Box, Typography, TextField, Button, Paper, FormControlLabel, Checkbox,
     CircularProgress, Alert, Stack, Select, MenuItem, InputLabel, FormControl,
     FormHelperText, Autocomplete, Chip, Divider, InputAdornment,
     IconButton, Tooltip,
@@ -22,7 +22,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'; // Icon for Accordion
 import WarningAmberIcon from '@mui/icons-material/WarningAmber'; // Icon for Error Summary
 import Title from '@apps/admin/components/Title';
-
+import Grid2 from '@mui/material/Grid';
 import { DatePicker } from '@mui/lab';
 import dayjs, { Dayjs } from 'dayjs'; // Import dayjs
 import { ADJUSTMENT_METHOD_OPTIONS, ENTITY_TYPE_OPTIONS, formatPrice, getProductImageUrl, ProductOrVariantOption } from '@apps/admin/utils/discountSurchargeUtils';
@@ -84,7 +84,7 @@ const UpdateSurcharge: React.FC = () => {
     // --- State ---
     const [formData, setFormData] = useState<SurchargeFormState>(initialFormState); // Use specific form state type
     const [originalSurcharge, setOriginalSurcharge] = useState<Surcharge | null>(null);
-    const [isLoading, setIsLoading] = useState<boolean>(true); // Combined loading state
+
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
     const [errorFetch, setErrorFetch] = useState<string | null>(null);
     const [validationErrors, setValidationErrors] = useState<SurchargeValidationErrors | null>(null); // Use specific validation type
@@ -92,7 +92,6 @@ const UpdateSurcharge: React.FC = () => {
     const [isLoadingProducts, setIsLoadingProducts] = useState<boolean>(true);
     // State for fetched items and options (Adopted from Refactored CreateSurcharge)
     const [allProducts, setAllProducts] = useState<Product[]>([]);
-    const [artOptions, setArtOptions] = useState<ImageItemOption[]>([]);
 
     // State for Autocomplete selections (Adopted from Refactored CreateSurcharge)
     const [selectedProductVariants, setSelectedProductVariants] = useState<ProductOrVariantOption[]>([]);
@@ -593,10 +592,10 @@ const UpdateSurcharge: React.FC = () => {
                                                 <Box key={override.tempId} sx={{ border: 1, borderColor: 'divider', borderRadius: 1, p: 2, mb: 2, position: 'relative' }}>
                                                     <Tooltip title="Eliminar Excepción"><IconButton size="small" onClick={() => handleRemoveOverride(override.tempId)} disabled={isSubmitting} sx={{ position: 'absolute', top: 8, right: 8, color: 'error.main' }} aria-label="Eliminar Excepción"><DeleteIcon fontSize="small" /></IconButton></Tooltip>
                                                     <Grid2 container spacing={2}>
-                                                        <Grid2 size={{xs:12, sm:6, md:3}}><FormControl fullWidth required error={!!overrideErrors.type}><InputLabel id={`ov-t-lbl-${index}`}>Tipo</InputLabel><Select labelId={`ov-t-lbl-${index}`} label="Tipo" name="type" value={override.type} onChange={(e) => handleOverrideChange(override.tempId, 'type', e.target.value as Entity)} disabled={isSubmitting}>{ENTITY_TYPE_OPTIONS.map(opt => (<MenuItem key={opt.value} value={opt.value}>{opt.label}</MenuItem>))}</Select><FormHelperText>{overrideErrors.type}</FormHelperText></FormControl></Grid2>
-                                                        <Grid2 size={{xs:12, sm:6, md:3}}><TextField label="ID (Opc)" name="id" value={override.id || ""} onChange={(e) => handleOverrideChange(override.tempId, 'id', e.target.value)} fullWidth disabled={isSubmitting} error={!!overrideErrors.id} helperText={overrideErrors.id || "Vacío=Todos"} /></Grid2>
-                                                        <Grid2 size={{xs:12, sm:6, md:3}}><FormControl fullWidth required error={!!overrideErrors.adjustmentMethod}><InputLabel id={`ov-m-lbl-${index}`}>Método</InputLabel><Select labelId={`ov-m-lbl-${index}`} label="Método" name="adjustmentMethod" value={override.adjustmentMethod} onChange={(e) => handleOverrideChange(override.tempId, 'adjustmentMethod', e.target.value as AdjustmentMethod)} disabled={isSubmitting}>{ADJUSTMENT_METHOD_OPTIONS.map(opt => (<MenuItem key={opt.value} value={opt.value}>{opt.label}</MenuItem>))}</Select><FormHelperText>{overrideErrors.adjustmentMethod}</FormHelperText></FormControl></Grid2>
-                                                        <Grid2 size={{xs:12, sm:6, md:3}}><TextField label="Valor Excep." name="customValue" type="number" value={override.customValue ?? ''} onChange={(e) => handleOverrideChange(override.tempId, 'customValue', e.target.value)} required fullWidth disabled={isSubmitting} error={!!overrideErrors.customValue} helperText={overrideErrors.customValue || (override.adjustmentMethod === 'percentage' ? "Ej: 0.10" : "Ej: 2.50")} InputProps={{ inputProps: override.adjustmentMethod === 'percentage' ? { step: "0.01", min: "0", max: "1" } : { step: "0.01", min: "0" } }} /></Grid2>
+                                                        <Grid2 size={{ xs: 12, sm: 6, md: 3 }}><FormControl fullWidth required error={!!overrideErrors.type}><InputLabel id={`ov-t-lbl-${index}`}>Tipo</InputLabel><Select labelId={`ov-t-lbl-${index}`} label="Tipo" name="type" value={override.type} onChange={(e) => handleOverrideChange(override.tempId, 'type', e.target.value as Entity)} disabled={isSubmitting}>{ENTITY_TYPE_OPTIONS.map(opt => (<MenuItem key={opt.value} value={opt.value}>{opt.label}</MenuItem>))}</Select><FormHelperText>{overrideErrors.type}</FormHelperText></FormControl></Grid2>
+                                                        <Grid2 size={{ xs: 12, sm: 6, md: 3 }}><TextField label="ID (Opc)" name="id" value={override.id || ""} onChange={(e) => handleOverrideChange(override.tempId, 'id', e.target.value)} fullWidth disabled={isSubmitting} error={!!overrideErrors.id} helperText={overrideErrors.id || "Vacío=Todos"} /></Grid2>
+                                                        <Grid2 size={{ xs: 12, sm: 6, md: 3 }}><FormControl fullWidth required error={!!overrideErrors.adjustmentMethod}><InputLabel id={`ov-m-lbl-${index}`}>Método</InputLabel><Select labelId={`ov-m-lbl-${index}`} label="Método" name="adjustmentMethod" value={override.adjustmentMethod} onChange={(e) => handleOverrideChange(override.tempId, 'adjustmentMethod', e.target.value as AdjustmentMethod)} disabled={isSubmitting}>{ADJUSTMENT_METHOD_OPTIONS.map(opt => (<MenuItem key={opt.value} value={opt.value}>{opt.label}</MenuItem>))}</Select><FormHelperText>{overrideErrors.adjustmentMethod}</FormHelperText></FormControl></Grid2>
+                                                        <Grid2 size={{ xs: 12, sm: 6, md: 3 }}><TextField label="Valor Excep." name="customValue" type="number" value={override.customValue ?? ''} onChange={(e) => handleOverrideChange(override.tempId, 'customValue', e.target.value)} required fullWidth disabled={isSubmitting} error={!!overrideErrors.customValue} helperText={overrideErrors.customValue || (override.adjustmentMethod === 'percentage' ? "Ej: 0.10" : "Ej: 2.50")} InputProps={{ inputProps: override.adjustmentMethod === 'percentage' ? { step: "0.01", min: "0", max: "1" } : { step: "0.01", min: "0" } }} /></Grid2>
                                                     </Grid2>
                                                 </Box>);
                                         })}
@@ -614,10 +613,10 @@ const UpdateSurcharge: React.FC = () => {
                                                 <Box key={recipient.tempId} sx={{ border: 1, borderColor: 'divider', borderRadius: 1, p: 2, mb: 2, position: 'relative' }}>
                                                     <Tooltip title="Eliminar Destinatario"><IconButton size="small" onClick={() => handleRemoveRecipient(recipient.tempId)} disabled={isSubmitting} sx={{ position: 'absolute', top: 8, right: 8, color: 'error.main' }} aria-label="Eliminar Destinatario"><DeleteIcon fontSize="small" /></IconButton></Tooltip>
                                                     <Grid2 container spacing={2}>
-                                                        <Grid2 size={{xs:12, sm:6, md:3}}><FormControl fullWidth required error={!!recipientErrors.type}><InputLabel id={`rec-t-lbl-${index}`}>Tipo</InputLabel><Select labelId={`rec-t-lbl-${index}`} label="Tipo" name="type" value={recipient.type} onChange={(e) => handleRecipientChange(recipient.tempId, 'type', e.target.value as Entity)} disabled={isSubmitting}>{ENTITY_TYPE_OPTIONS.map(opt => (<MenuItem key={opt.value} value={opt.value}>{opt.label}</MenuItem>))}</Select><FormHelperText>{recipientErrors.type}</FormHelperText></FormControl></Grid2>
-                                                        <Grid2 size={{xs:12, sm:6, md:3}}><TextField label="ID Entidad" name="id" value={recipient.id || ""} onChange={(e) => handleRecipientChange(recipient.tempId, 'id', e.target.value)} fullWidth required disabled={isSubmitting} error={!!recipientErrors.id} helperText={recipientErrors.id || "ID requerido"} /></Grid2>
-                                                        <Grid2 size={{xs:12, sm:6, md:3}}><FormControl fullWidth required error={!!recipientErrors.adjustmentMethod}><InputLabel id={`rec-m-lbl-${index}`}>Método</InputLabel><Select labelId={`rec-m-lbl-${index}`} label="Método" name="adjustmentMethod" value={recipient.adjustmentMethod} onChange={(e) => handleRecipientChange(recipient.tempId, 'adjustmentMethod', e.target.value as AdjustmentMethod)} disabled={isSubmitting}>{ADJUSTMENT_METHOD_OPTIONS.map(opt => (<MenuItem key={opt.value} value={opt.value}>{opt.label}</MenuItem>))}</Select><FormHelperText>{recipientErrors.adjustmentMethod}</FormHelperText></FormControl></Grid2>
-                                                        <Grid2 size={{xs:12, sm:6, md:3}}><TextField label="Valor Dest." name="customValue" type="number" value={recipient.customValue ?? ''} onChange={(e) => handleRecipientChange(recipient.tempId, 'customValue', e.target.value)} required fullWidth disabled={isSubmitting} error={!!recipientErrors.customValue} helperText={recipientErrors.customValue || (recipient.adjustmentMethod === 'percentage' ? "Ej: 0.10" : "Ej: 2.50")} InputProps={{ inputProps: recipient.adjustmentMethod === 'percentage' ? { step: "0.01", min: "0", max: "1" } : { step: "0.01", min: "0" } }} /></Grid2>
+                                                        <Grid2 size={{ xs: 12, sm: 6, md: 3 }}><FormControl fullWidth required error={!!recipientErrors.type}><InputLabel id={`rec-t-lbl-${index}`}>Tipo</InputLabel><Select labelId={`rec-t-lbl-${index}`} label="Tipo" name="type" value={recipient.type} onChange={(e) => handleRecipientChange(recipient.tempId, 'type', e.target.value as Entity)} disabled={isSubmitting}>{ENTITY_TYPE_OPTIONS.map(opt => (<MenuItem key={opt.value} value={opt.value}>{opt.label}</MenuItem>))}</Select><FormHelperText>{recipientErrors.type}</FormHelperText></FormControl></Grid2>
+                                                        <Grid2 size={{ xs: 12, sm: 6, md: 3 }}><TextField label="ID Entidad" name="id" value={recipient.id || ""} onChange={(e) => handleRecipientChange(recipient.tempId, 'id', e.target.value)} fullWidth required disabled={isSubmitting} error={!!recipientErrors.id} helperText={recipientErrors.id || "ID requerido"} /></Grid2>
+                                                        <Grid2 size={{ xs: 12, sm: 6, md: 3 }}><FormControl fullWidth required error={!!recipientErrors.adjustmentMethod}><InputLabel id={`rec-m-lbl-${index}`}>Método</InputLabel><Select labelId={`rec-m-lbl-${index}`} label="Método" name="adjustmentMethod" value={recipient.adjustmentMethod} onChange={(e) => handleRecipientChange(recipient.tempId, 'adjustmentMethod', e.target.value as AdjustmentMethod)} disabled={isSubmitting}>{ADJUSTMENT_METHOD_OPTIONS.map(opt => (<MenuItem key={opt.value} value={opt.value}>{opt.label}</MenuItem>))}</Select><FormHelperText>{recipientErrors.adjustmentMethod}</FormHelperText></FormControl></Grid2>
+                                                        <Grid2 size={{ xs: 12, sm: 6, md: 3 }}><TextField label="Valor Dest." name="customValue" type="number" value={recipient.customValue ?? ''} onChange={(e) => handleRecipientChange(recipient.tempId, 'customValue', e.target.value)} required fullWidth disabled={isSubmitting} error={!!recipientErrors.customValue} helperText={recipientErrors.customValue || (recipient.adjustmentMethod === 'percentage' ? "Ej: 0.10" : "Ej: 2.50")} InputProps={{ inputProps: recipient.adjustmentMethod === 'percentage' ? { step: "0.01", min: "0", max: "1" } : { step: "0.01", min: "0" } }} /></Grid2>
                                                     </Grid2>
                                                 </Box>);
                                         })}

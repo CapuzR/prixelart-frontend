@@ -1,14 +1,13 @@
-// src/components/ArtUploader/ArtUploader.tsx
 import React, {
   useState,
   useEffect,
-  useCallback,
   ChangeEvent,
   FormEvent,
   useRef,
   forwardRef,
+  Dispatch,
+  SetStateAction,
 } from "react"
-import { useNavigate } from "react-router-dom"
 
 import { useSnackBar, usePrixerCreator, useUser } from "context/GlobalContext"
 import { Art } from "../../../types/art.types"
@@ -49,8 +48,6 @@ import DeleteIcon from "@mui/icons-material/Delete"
 import Grid2 from "@mui/material/Grid"
 
 import BrokenImageIcon from "@mui/icons-material/BrokenImage"
-import CloudUploadIcon from "@mui/icons-material/CloudUpload"
-import InfoIcon from "@mui/icons-material/Info"
 import CloseIcon from "@mui/icons-material/Close"
 import AppBar from "@mui/material/AppBar"
 import Toolbar from "@mui/material/Toolbar"
@@ -270,11 +267,18 @@ const Transition = forwardRef(function Transition(
   return <Slide direction="up" ref={ref} {...props} />
 })
 
-export default function ArtUploader() {
-  const navigate = useNavigate()
+interface ArtUploaderProps {
+  openArtFormDialog: boolean;
+  setOpenArtFormDialog: Dispatch<SetStateAction<boolean>>;
+}
+
+export default function ArtUploader({
+  openArtFormDialog,
+  setOpenArtFormDialog,
+}: ArtUploaderProps) {
   const { showSnackBar: showSnackBarFromContext } = useSnackBar()
   const showSnackBarRef = useRef(showSnackBarFromContext)
-  const { uploadArt, setArtModal } = usePrixerCreator()
+  const { setArtModal } = usePrixerCreator()
   const { user } = useUser()
 
   useEffect(() => {
@@ -322,14 +326,14 @@ export default function ArtUploader() {
   const previewCanvasRef = useRef<HTMLCanvasElement | null>(null)
 
   useEffect(() => {
-    if (uploadArt) {
+    if (openArtFormDialog) {
       setFormData(initialArtFormDataState)
       setValidationErrors(null)
       setMaxPrintHeightCm("")
       setMaxPrintWidthCm("")
       setRequiredPhotoMeta(false)
     }
-  }, [uploadArt])
+  }, [openArtFormDialog])
 
   useEffect(() => {
     if (formData.artType === "Foto") {
@@ -709,7 +713,7 @@ export default function ArtUploader() {
       })
       if (response && response.data.success) {
         showSnackBar(`Obra "${formData.title}" creada exitosamente.`)
-        onClose()
+        handleClose()
       } else {
         throw new Error(`La creación de la obra falló o no devolvió respuesta.`)
       }
@@ -901,20 +905,24 @@ export default function ArtUploader() {
   }
 
   // --- Render ---
-  if (!open) {
+  const handleClose = () => setOpenArtFormDialog(false)
+
+  if (!openArtFormDialog) {
     return null
   }
 
-  const onClose = () => setArtModal(false)
-
   return (
-    <Dialog open={uploadArt} onClose={onClose} TransitionComponent={Transition}>
+    <Dialog
+      open={openArtFormDialog}
+      onClose={handleClose}
+      TransitionComponent={Transition}
+    >
       <AppBar sx={{ position: "relative" }}>
         <Toolbar>
           <IconButton
             edge="start"
             color="inherit"
-            onClick={onClose}
+            onClick={handleClose}
             aria-label="close"
           >
             <CloseIcon />
@@ -1272,12 +1280,12 @@ export default function ArtUploader() {
               {validationErrors?.title && !formData.title.trim()
                 ? null
                 : validationErrors?.title && (
-                    <Grid2 size={{ xs: 12 }}>
-                      <Alert severity="error" sx={{ mt: 2 }}>
-                        Error General: {validationErrors.title}
-                      </Alert>
-                    </Grid2>
-                  )}
+                  <Grid2 size={{ xs: 12 }}>
+                    <Alert severity="error" sx={{ mt: 2 }}>
+                      Error General: {validationErrors.title}
+                    </Alert>
+                  </Grid2>
+                )}
             </Grid2>
           </form>
         </Paper>

@@ -22,15 +22,12 @@ export const fetchAllPrixers = async (): Promise<User[]> => {
 
 export const fetchAllPrixersActive = async (): Promise<User[]> => {
     const URI = `${import.meta.env.VITE_BACKEND_URL}/prixer/read-all-active`;
-
     try {
         const res = await axios.get(URI);
-
         if (!res.data.success) {
             console.error('No prixers field in response');
             return [];
         }
-
         return res.data.result as User[];
     } catch (error) {
         console.error('Error fetching prixers:', error);

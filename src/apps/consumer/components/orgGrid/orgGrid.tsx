@@ -60,7 +60,7 @@ const OrgGrid: React.FC = () => {
                     .map(
                       (tile) =>
                         tile.status && (
-                          <Grid2 key={tile._id} xs={4} sm={6} md={12}>
+                          <Grid2 key={tile._id} size={{ xs: 4, sm: 6, md: 12 }}>
                             <Paper elevation={5} className={classes.card}>
                               <CardMedia
                                 image={tile.avatar}

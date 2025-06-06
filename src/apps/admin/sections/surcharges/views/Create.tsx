@@ -50,8 +50,9 @@ import {
   AccordionSummary,
   AccordionDetails, // Added Accordion components
   Avatar,
-  Grid,
 } from "@mui/material"
+import Grid2 from "@mui/material/Grid"
+
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline"
 import DeleteIcon from "@mui/icons-material/Delete"
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore" // Icon for Accordion
@@ -966,9 +967,9 @@ const CreateSurcharge: React.FC = () => {
           )}
           {/* --- END Error Summary --- */}
 
-          <Grid container spacing={3}>
+          <Grid2 container spacing={3}>
             {/* Basic Info & Default Adjustment (Always Visible) */}
-            <Grid size={{ xs: 12, sm: 6 }}>
+            <Grid2 size={{ xs: 12, sm: 6 }}>
               <TextField
                 label="Nombre del Recargo"
                 name="name"
@@ -980,8 +981,8 @@ const CreateSurcharge: React.FC = () => {
                 error={!!validationErrors?.name}
                 helperText={validationErrors?.name}
               />
-            </Grid>
-            <Grid size={{ xs: 12, sm: 6 }}>
+            </Grid2>
+            <Grid2 size={{ xs: 12, sm: 6 }}>
               <FormControlLabel
                 control={
                   <Checkbox
@@ -993,8 +994,8 @@ const CreateSurcharge: React.FC = () => {
                 }
                 label="Activo"
               />
-            </Grid>
-            <Grid size={{ xs: 12 }}>
+            </Grid2>
+            <Grid2 size={{ xs: 12 }}>
               <TextField
                 label="Descripción"
                 name="description"
@@ -1008,12 +1009,12 @@ const CreateSurcharge: React.FC = () => {
                 error={!!validationErrors?.description}
                 helperText={validationErrors?.description}
               />
-            </Grid>
-            <Grid size={{ xs: 12 }}>
+            </Grid2>
+            <Grid2 size={{ xs: 12 }}>
               <Divider sx={{ my: 2 }} />
-            </Grid>{" "}
+            </Grid2>{" "}
             {/* Divider */}
-            <Grid size={{ xs: 12, sm: 6 }}>
+            <Grid2 size={{ xs: 12, sm: 6 }}>
               <FormControl
                 fullWidth
                 required
@@ -1040,8 +1041,8 @@ const CreateSurcharge: React.FC = () => {
                   {validationErrors?.adjustmentMethod}
                 </FormHelperText>
               </FormControl>
-            </Grid>
-            <Grid size={{ xs: 12, sm: 6 }}>
+            </Grid2>
+            <Grid2 size={{ xs: 12, sm: 6 }}>
               <TextField
                 label="Valor Base" // Added label here
                 name="defaultValue"
@@ -1075,9 +1076,9 @@ const CreateSurcharge: React.FC = () => {
                       : { step: "0.01", min: "0" },
                 }}
               />
-            </Grid>
+            </Grid2>
             {/* --- Accordion Sections --- */}
-            <Grid size={{ xs: 12 }}>
+            <Grid2 size={{ xs: 12 }}>
               {/* Applicability Accordion (Adopted from CreateDiscount) */}
               <Accordion
                 expanded={expandedAccordion === "applicability"}
@@ -1094,9 +1095,9 @@ const CreateSurcharge: React.FC = () => {
                   </Typography>
                 </AccordionSummary>
                 <AccordionDetails>
-                  <Grid container spacing={2}>
+                  <Grid2 container spacing={2}>
                     {/* Products/Variants Applicability */}
-                    <Grid size={{ xs: 12 }}>
+                    <Grid2 size={{ xs: 12 }}>
                       <Box
                         sx={{
                           border: 1,
@@ -1220,8 +1221,8 @@ const CreateSurcharge: React.FC = () => {
                           />
                         )}
                       </Box>
-                    </Grid>
-                  </Grid>
+                    </Grid2>
+                  </Grid2>
                 </AccordionDetails>
               </Accordion>
 
@@ -1241,8 +1242,8 @@ const CreateSurcharge: React.FC = () => {
                   </Typography>
                 </AccordionSummary>
                 <AccordionDetails>
-                  <Grid container spacing={2}>
-                    <Grid size={{ xs: 12, sm: 6 }}>
+                  <Grid2 container spacing={2}>
+                    <Grid2 size={{ xs: 12, sm: 6 }}>
                       <DatePicker
                         label="Fecha de Inicio"
                         value={startDate}
@@ -1260,8 +1261,8 @@ const CreateSurcharge: React.FC = () => {
                           },
                         }}
                       />
-                    </Grid>
-                    <Grid size={{ xs: 12, sm: 6 }}>
+                    </Grid2>
+                    <Grid2 size={{ xs: 12, sm: 6 }}>
                       <DatePicker
                         label="Fecha de Fin"
                         value={endDate}
@@ -1280,8 +1281,8 @@ const CreateSurcharge: React.FC = () => {
                           },
                         }}
                       />
-                    </Grid>
-                  </Grid>
+                    </Grid2>
+                  </Grid2>
                 </AccordionDetails>
               </Accordion>
 
@@ -1344,8 +1345,8 @@ const CreateSurcharge: React.FC = () => {
                               <DeleteIcon fontSize="small" />
                             </IconButton>
                           </Tooltip>
-                          <Grid container spacing={2}>
-                            <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+                          <Grid2 container spacing={2}>
+                            <Grid2 size={{ xs: 12, sm: 6, md: 3 }}>
                               <FormControl
                                 fullWidth
                                 required
@@ -1378,8 +1379,8 @@ const CreateSurcharge: React.FC = () => {
                                   {overrideErrors.type}
                                 </FormHelperText>
                               </FormControl>
-                            </Grid>
-                            <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+                            </Grid2>
+                            <Grid2 size={{ xs: 12, sm: 6, md: 3 }}>
                               <TextField
                                 label="ID Entidad (Opcional)"
                                 name="id"
@@ -1399,8 +1400,8 @@ const CreateSurcharge: React.FC = () => {
                                   "Dejar vacío si aplica a todo el tipo"
                                 }
                               />
-                            </Grid>
-                            <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+                            </Grid2>
+                            <Grid2 size={{ xs: 12, sm: 6, md: 3 }}>
                               <FormControl
                                 fullWidth
                                 required
@@ -1435,8 +1436,8 @@ const CreateSurcharge: React.FC = () => {
                                   {overrideErrors.adjustmentMethod}
                                 </FormHelperText>
                               </FormControl>
-                            </Grid>
-                            <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+                            </Grid2>
+                            <Grid2 size={{ xs: 12, sm: 6, md: 3 }}>
                               <TextField
                                 label="Valor Excep." // Added label prop
                                 name="customValue"
@@ -1466,8 +1467,8 @@ const CreateSurcharge: React.FC = () => {
                                       : { step: "0.01", min: "0" },
                                 }}
                               />
-                            </Grid>
-                          </Grid>
+                            </Grid2>
+                          </Grid2>
                         </Box>
                       )
                     }
@@ -1545,9 +1546,9 @@ const CreateSurcharge: React.FC = () => {
                               <DeleteIcon fontSize="small" />
                             </IconButton>
                           </Tooltip>
-                          <Grid container spacing={2}>
+                          <Grid2 container spacing={2}>
                             {/* Type */}
-                            <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+                            <Grid2 size={{ xs: 12, sm: 6, md: 3 }}>
                               <FormControl
                                 fullWidth
                                 required
@@ -1582,9 +1583,9 @@ const CreateSurcharge: React.FC = () => {
                                   {recipientErrors.type}
                                 </FormHelperText>
                               </FormControl>
-                            </Grid>
+                            </Grid2>
                             {/* ID (Mandatory for Recipient) */}
-                            <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+                            <Grid2 size={{ xs: 12, sm: 6, md: 3 }}>
                               <TextField
                                 label="ID Entidad"
                                 name="id"
@@ -1605,9 +1606,9 @@ const CreateSurcharge: React.FC = () => {
                                   "ID del destinatario es obligatorio"
                                 }
                               />
-                            </Grid>
+                            </Grid2>
                             {/* Method */}
-                            <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+                            <Grid2 size={{ xs: 12, sm: 6, md: 3 }}>
                               <FormControl
                                 fullWidth
                                 required
@@ -1642,9 +1643,9 @@ const CreateSurcharge: React.FC = () => {
                                   {recipientErrors.adjustmentMethod}
                                 </FormHelperText>
                               </FormControl>
-                            </Grid>
+                            </Grid2>
                             {/* Value */}
-                            <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+                            <Grid2 size={{ xs: 12, sm: 6, md: 3 }}>
                               <TextField
                                 label="Valor Dest." // Added label prop
                                 name="customValue"
@@ -1674,8 +1675,8 @@ const CreateSurcharge: React.FC = () => {
                                       : { step: "0.01", min: "0" },
                                 }}
                               />
-                            </Grid>
-                          </Grid>
+                            </Grid2>
+                          </Grid2>
                         </Box>
                       )
                     }
@@ -1693,10 +1694,10 @@ const CreateSurcharge: React.FC = () => {
                 </AccordionDetails>
               </Accordion>
               {/* --- End Recipients Section --- */}
-            </Grid>
+            </Grid2>
             {/* --- End Accordion Sections --- */}
             {/* Actions */}
-            <Grid size={{ xs: 12 }}>
+            <Grid2 size={{ xs: 12 }}>
               <Stack
                 direction="row"
                 justifyContent="flex-end"
@@ -1728,8 +1729,8 @@ const CreateSurcharge: React.FC = () => {
                 </Button>
                 {/* --- End Button Text Update --- */}
               </Stack>
-            </Grid>
-          </Grid>
+            </Grid2>
+          </Grid2>
         </form>
       </Paper>
     </>

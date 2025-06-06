@@ -12,7 +12,7 @@ import Copyright from 'components/Copyright/copyright';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
-import Grid from '@mui/material/Grid';
+import Grid2 from "@mui/material/Grid"
 import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
@@ -179,8 +179,8 @@ export default function PasswordReset(props) {
           Cambia tu contraseña
         </Typography>
         <form className={classes.form} onSubmit={handleSubmit} noValidate>
-          <Grid2 container spacing={2}>
-            <Grid2 size={{ xs: 12 }}>
+          <Grid22 container spacing={2}>
+            <Grid22 size={{ xs: 12 }}>
               <FormControl
                 className={clsx(classes.margin, classes.textField)}
                 variant="outlined"
@@ -210,8 +210,8 @@ export default function PasswordReset(props) {
                   labelWidth={100}
                 />
               </FormControl>
-            </Grid2>
-          </Grid2>
+            </Grid22>
+          </Grid22>
           <Button
             type="submit"
             fullWidth

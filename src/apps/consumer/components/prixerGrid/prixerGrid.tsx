@@ -18,27 +18,25 @@ import utils from '../../../../utils/utils';
 import { User } from 'types/user.types';
 import { fetchAllPrixersActive } from '@api/prixer.api';
 
-// Icons (optional, but enhance UI)
 import ExploreIcon from '@mui/icons-material/Explore';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 
 export default function PrixerGrid(): React.ReactElement {
   const [tiles, setTiles] = useState<User[]>([]);
+  const navigate = useNavigate()
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null); // Error state
-  const navigate = useNavigate();
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     setLoading(true);
     setError(null);
     fetchAllPrixersActive()
       .then(data => {
-        // Ensure data is an array before shuffling
         if (Array.isArray(data)) {
           setTiles(utils.shuffle(data));
         } else {
           console.error("Fetched data is not an array:", data);
-          setTiles([]); // Set to empty array if data is not as expected
+          setTiles([]); 
           setError("Could not retrieve Prixers due to unexpected data format.");
         }
       })

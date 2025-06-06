@@ -21,8 +21,9 @@ import {
   Stack,
   InputAdornment, // Added
   FormHelperText,
-  Grid,
 } from "@mui/material"
+import Grid2 from "@mui/material/Grid"
+
 import Title from "@apps/admin/components/Title"
 
 // --- Type Definitions ---
@@ -147,9 +148,9 @@ const CreateShippingMethod: React.FC = () => {
       <Paper elevation={3} sx={{ p: 3, mt: 2 }}>
         {/* Use noValidate on form tag when using manual validation */}
         <form onSubmit={handleSubmit} noValidate>
-          <Grid container spacing={3}>
+          <Grid2 container spacing={3}>
             {/* Name Input */}
-            <Grid size={{ xs: 12, sm: 6 }}>
+            <Grid2 size={{ xs: 12, sm: 6 }}>
               <TextField
                 label="Nombre del Método"
                 name="name"
@@ -162,10 +163,10 @@ const CreateShippingMethod: React.FC = () => {
                 error={!!validationErrors?.name} // Use validationErrors state
                 helperText={validationErrors?.name} // Use validationErrors state
               />
-            </Grid>
+            </Grid2>
 
             {/* Price Input */}
-            <Grid size={{ xs: 12, sm: 6 }}>
+            <Grid2 size={{ xs: 12, sm: 6 }}>
               <TextField
                 label="Precio"
                 name="price"
@@ -189,10 +190,10 @@ const CreateShippingMethod: React.FC = () => {
                 error={!!validationErrors?.price} // Use validationErrors state
                 helperText={validationErrors?.price} // Use validationErrors state
               />
-            </Grid>
+            </Grid2>
 
             {/* Active Checkbox */}
-            <Grid size={{ xs: 12 }}>
+            <Grid2 size={{ xs: 12 }}>
               <FormControlLabel
                 control={
                   <Checkbox
@@ -204,10 +205,10 @@ const CreateShippingMethod: React.FC = () => {
                 }
                 label="Activo"
               />
-            </Grid>
+            </Grid2>
 
             {/* Action Buttons */}
-            <Grid size={{ xs: 12 }}>
+            <Grid2 size={{ xs: 12 }}>
               <Stack
                 direction="row"
                 justifyContent="flex-end"
@@ -237,19 +238,19 @@ const CreateShippingMethod: React.FC = () => {
                   {isSubmitting ? "Creando..." : "Crear Método"}
                 </Button>
               </Stack>
-            </Grid>
+            </Grid2>
 
             {/* General Submission Error Display (Optional Fallback) */}
             {/* Could show a general API error here if not attached to a specific field */}
             {validationErrors &&
               validationErrors.name?.includes("Error al crear") && (
-                <Grid size={{ xs: 12 }}>
+                <Grid2 size={{ xs: 12 }}>
                   <Alert severity="error" sx={{ mt: 2 }}>
                     {validationErrors.name}
                   </Alert>
-                </Grid>
+                </Grid2>
               )}
-          </Grid>
+          </Grid2>
         </form>
       </Paper>
     </>

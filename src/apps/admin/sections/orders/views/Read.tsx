@@ -32,64 +32,104 @@ import InfoIcon from "@mui/icons-material/Info"
 import CheckCircleIcon from "@mui/icons-material/CheckCircle"
 import CancelIcon from "@mui/icons-material/Cancel"
 import SearchIcon from "@mui/icons-material/Search"
-
+import { LocalShippingOutlined, PauseCircleFilled } from "@mui/icons-material"
 // Hooks, Types, Context, API
 import { useSnackBar } from "context/GlobalContext"
-import { Order, OrderStatus } from "types/order.types"
+import { Order, OrderStatus, GlobalPaymentStatus } from "types/order.types"
 import Title from "@apps/admin/components/Title"
 import ConfirmationDialog from "@components/ConfirmationDialog/ConfirmationDialog"
 import { deleteOrder, getOrders } from "@api/order.api"
 
 // Interface for Order data from API (assuming more details might be available)
 interface OrderSummary {
-    _id: string;
-    orderNumber?: number;
-    createdOn: Date;
-    customerName?: string;
-    customerEmail?: string;
-    totalUnits: number;
-    total: number;
-    primaryStatus?: OrderStatus;
-    shippingMethodName?: string;
-    paymentMethodName?: string;
+  _id: string
+  orderNumber?: number
+  createdOn: Date
+  customerName?: string
+  customerEmail?: string
+  totalUnits: number
+  total: number
+  primaryStatus?: OrderStatus
+  payStatus?: GlobalPaymentStatus
+  shippingMethodName?: string
+  paymentMethodName?: string
+  shippingDate?: Date
+  createdBy?: string
 }
 
-// Helper to format currency (same as before)
 const formatCurrency = (value: number): string => `$${value.toFixed(2)}`
-// Helper to get Status chip props (same as before)
+
 const getStatusChipProps = (
   status?: OrderStatus
 ): { label: string; color: any; icon?: React.ReactElement } => {
-  /* ... same as before ... */
   const s = status ?? OrderStatus.Pending
   switch (s) {
     case OrderStatus.Pending:
-      return { label: "En espera", color: "warning" }
+      return { label: "Por producir", color: "secondary" }
     case OrderStatus.Impression:
-      return { label: "En impresión", color: "error" }
+      return { label: "En impresión", color: "info", icon: <CheckCircleIcon /> }
     case OrderStatus.Production:
-      return { label: "En producción", color: "info" }
-    case OrderStatus.ReadyToShip:
       return {
-        label: "Listo para envío",
-        color: "secondary",
+        label: "En producción",
+        color: "info",
         icon: <CheckCircleIcon />,
       }
+    case OrderStatus.ReadyToShip:
+      return {
+        label: "Por entregar",
+        color: "primary",
+        icon: <LocalShippingOutlined />,
+      }
     case OrderStatus.Delivered:
-      return { label: "Entregado", color: "success", icon: <CheckCircleIcon /> }
-    case OrderStatus.Canceled:
-      return { label: "Cancelado", color: "error", icon: <CancelIcon /> }
+      return {
+        label: "Entregado",
+        color: "success",
+        icon: <LocalShippingOutlined />,
+      }
     case OrderStatus.Finished:
-      return { label: "Completado", color: "default", icon: <InfoIcon /> }
+      return {
+        label: "Concretado",
+        color: "success",
+        icon: <CheckCircleIcon />,
+      }
     case OrderStatus.Paused:
-      return { label: "Pausado", color: "warning" }
+      return {
+        label: "Detenido",
+        color: "warning",
+        icon: <PauseCircleFilled />,
+      }
     case OrderStatus.Canceled:
-      return { label: "Cancelado", color: "info" }
+      return { label: "Anulado", color: "error", icon: <CancelIcon /> }
     default:
       return { label: "Desconocido", color: "default" }
   }
 }
 
+const getpayStatusChipProps = (
+  status?: GlobalPaymentStatus
+): { label: string; color: any; icon?: React.ReactElement } => {
+  const s = status ?? GlobalPaymentStatus.Pending
+  switch (s) {
+    case GlobalPaymentStatus.Pending:
+      return { label: "Pendiente", color: "secondary" }
+    case GlobalPaymentStatus.Paid:
+      return { label: "Pagado", color: "success", icon: <CheckCircleIcon /> }
+    case GlobalPaymentStatus.Credited:
+      return {
+        label: "Abonado",
+        color: "info",
+        icon: <CheckCircleIcon />,
+      }
+    case GlobalPaymentStatus.Cancelled:
+      return {
+        label: "Cancelado",
+        color: "primary",
+        icon: <CancelIcon />,
+      }
+    default:
+      return { label: "Pendiente", color: "default" }
+  }
+}
 const ReadOrders: React.FC = () => {
   const navigate = useNavigate()
   const { showSnackBar } = useSnackBar()
@@ -116,9 +156,7 @@ const ReadOrders: React.FC = () => {
       try {
         const orders = (await getOrders()) as Order[] // Obtienes las órdenes completas
 
-        // --- CORRECCIÓN AQUÍ ---
         const fetchedOrders: OrderSummary[] = orders.map((order) => {
-          // Función auxiliar para obtener el último estado
           const getLatestStatus = (
             history: [OrderStatus, Date][] | undefined
           ): OrderStatus | undefined => {
@@ -127,19 +165,26 @@ const ReadOrders: React.FC = () => {
               : OrderStatus.Pending // O undefined si lo prefieres
           }
 
+          const getLatestPaymentStatus = (
+            history: [GlobalPaymentStatus, Date][] | undefined
+          ): GlobalPaymentStatus | undefined => {
+            return history && history.length > 0
+              ? history[history.length - 1][0]
+              : GlobalPaymentStatus.Pending
+          }
+
           const customer = order.consumerDetails?.basic
           const shipping = order.shipping
-          const payment = order.payment // Accedes a PaymentDetails
+          const payment = order.payment
 
-          // Construyes el objeto OrderSummary
           return {
-            _id: order._id!.toString(), // Asegúrate que _id siempre exista y sea ObjectId
+            _id: order._id!.toString(),
             orderNumber: order.number,
             createdOn: order.createdOn,
-            updates: order.updates, // Mantén los campos que Omit no quita, si los necesitas
+            updates: order.updates,
             totalUnits: order.totalUnits,
-            status: order.status, // Mantén si lo necesitas, aunque uses primaryStatus
-            paymentStatus: order.paymentStatus, // Mantén si lo necesitas
+            // status: order.status,
+            payStatus: getLatestPaymentStatus(order.payment.status),
             subTotal: order.subTotal,
             discount: order.discount,
             surcharge: order.surcharge,
@@ -148,7 +193,7 @@ const ReadOrders: React.FC = () => {
             total: order.total,
             seller: order.seller,
             observations: order.observations,
-
+            createdBy: order.seller,
             // Campos personalizados poblados:
             customerName: customer
               ? `${customer.name} ${customer.lastName}`.trim()
@@ -157,8 +202,7 @@ const ReadOrders: React.FC = () => {
             primaryStatus: getLatestStatus(order.status),
             shippingMethodName: shipping?.method?.name || "N/A",
             // Accede al nombre del método desde la primera cuota (installment)
-            paymentMethodName:
-              payment?.installments?.[0]?.method?.name || "N/A",
+            paymentMethodName: payment?.payments?.[0]?.method?.name || "N/A",
           }
         })
         // --- FIN CORRECCIÓN ---
@@ -240,9 +284,7 @@ const ReadOrders: React.FC = () => {
     setIsDeleting(true)
     try {
       await deleteOrder(orderToDelete._id)
-      showSnackBar(
-        `Orden #${orderToDelete._id} eliminada.`
-      )
+      showSnackBar(`Orden #${orderToDelete._id} eliminada.`)
       // Refetch *all* orders after delete to ensure consistency
       await loadOrders(false)
       handleCloseDialog()
@@ -304,15 +346,19 @@ const ReadOrders: React.FC = () => {
             >
               <TableRow>
                 <TableCell sx={{ fontWeight: "bold" }}># Orden</TableCell>
-                <TableCell sx={{ fontWeight: "bold" }}>Fecha</TableCell>
+                <TableCell sx={{ fontWeight: "bold" }}>
+                  Fecha de creación
+                </TableCell>
+                <TableCell sx={{ fontWeight: "bold" }}>
+                  Fecha de envío
+                </TableCell>
                 <TableCell sx={{ fontWeight: "bold" }}>Cliente</TableCell>
-                <TableCell sx={{ fontWeight: "bold" }}>Items</TableCell>
-                <TableCell align="right" sx={{ fontWeight: "bold" }}>
-                  Total
+                <TableCell sx={{ fontWeight: "bold" }}>
+                  Estado de Pago
                 </TableCell>
                 <TableCell sx={{ fontWeight: "bold" }}>Estado</TableCell>
                 <TableCell sx={{ fontWeight: "bold" }}>Envío</TableCell>
-                <TableCell sx={{ fontWeight: "bold" }}>Pago</TableCell>
+                <TableCell sx={{ fontWeight: "bold" }}>Asesor</TableCell>
                 <TableCell align="right" sx={{ fontWeight: "bold" }}>
                   Acciones
                 </TableCell>
@@ -328,6 +374,8 @@ const ReadOrders: React.FC = () => {
               )}
               {paginatedOrders.map((order) => {
                 const statusProps = getStatusChipProps(order.primaryStatus)
+                const payStatusProps = getpayStatusChipProps(order.payStatus)
+
                 return (
                   <TableRow
                     hover
@@ -347,15 +395,26 @@ const ReadOrders: React.FC = () => {
                       {new Date(order.createdOn).toLocaleDateString()}
                     </TableCell>
                     <TableCell>
+                      {order.shippingDate
+                        ? new Date(order.shippingDate).toLocaleDateString()
+                        : ""}
+                    </TableCell>
+                    <TableCell>
                       {order.customerName || "Sin Registrar"}
                       <br />
                       <Typography variant="caption">
                         {order.customerEmail || ""}
                       </Typography>
                     </TableCell>
-                    <TableCell>{order.totalUnits || "N/A"}</TableCell>
-                    <TableCell align="right">
-                      {formatCurrency(order.total || 0)}
+                    {/* <TableCell>{order.totalUnits || "N/A"}</TableCell> */}
+                    <TableCell>
+                      <Chip
+                        icon={payStatusProps.icon}
+                        label={payStatusProps.label}
+                        color={payStatusProps.color}
+                        size="small"
+                        variant="outlined"
+                      />
                     </TableCell>
                     <TableCell>
                       <Chip
@@ -367,7 +426,7 @@ const ReadOrders: React.FC = () => {
                       />
                     </TableCell>
                     <TableCell>{order.shippingMethodName || "N/A"}</TableCell>
-                    <TableCell>{order.paymentMethodName || "N/A"}</TableCell>
+                    <TableCell>{order?.createdBy}</TableCell>
                     <TableCell align="right">
                       <Box
                         sx={{
@@ -483,10 +542,7 @@ const ReadOrders: React.FC = () => {
         message={
           <>
             ¿Estás seguro de que deseas eliminar la orden{" "}
-            <strong>
-              #{orderToDelete?._id.slice(-6)}
-            </strong>
-            ?
+            <strong>#{orderToDelete?._id.slice(-6)}</strong>?
           </>
         }
         confirmText="Eliminar"

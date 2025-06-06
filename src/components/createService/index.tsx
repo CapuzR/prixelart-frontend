@@ -1,14 +1,10 @@
-// src/components/Services/CreateService.tsx (o la ruta correcta)
 import React, {
   useState,
   useEffect,
-  // useCallback,
   ChangeEvent,
   FormEvent,
   useRef,
-  forwardRef,
 } from "react"
-import { useNavigate } from "react-router-dom"
 import axios from "axios"
 
 import { useSnackBar, usePrixerCreator, useUser } from "context/GlobalContext"
@@ -45,10 +41,10 @@ import {
   Container,
   Snackbar,
   useMediaQuery,
-  Grid,
   CssBaseline,
   Backdrop,
 } from "@mui/material"
+import Grid2 from '@mui/material/Grid';
 import { TransitionProps } from "@mui/material/transitions"
 import DeleteIcon from "@mui/icons-material/Delete"
 import CloseIcon from "@mui/icons-material/Close"
@@ -73,7 +69,6 @@ import { v4 as uuidv4 } from "uuid"
 import ReactQuill from "react-quill-new"
 import "react-quill-new/dist/quill.snow.css"
 import Copyright from "@components/Copyright/copyright"
-// import
 interface ImageUploadState {
   id: string
   url: string
@@ -83,53 +78,6 @@ interface ImageUploadState {
 }
 
 const SERVICE_IMAGE_ASPECT = 0
-
-const useStyles = makeStyles()((theme: Theme) => {
-  return {
-    img: {
-      maxWidth: "80vw",
-      maxHeight: "300px",
-      width: "100%",
-      height: "100%",
-      objectFit: "cover",
-      objectPosition: "50% 50%",
-    },
-    formControl: {
-      margin: "8px",
-      width: "100%",
-    },
-    form: {
-      width: "100%",
-      marginTop: "24px",
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-    },
-    appBar: {
-      position: "relative",
-    },
-    title: {
-      marginLeft: "16px",
-      flex: 1,
-    },
-    backdrop: {
-      zIndex: theme.zIndex.drawer + 1,
-      color: theme.palette.primary.main,
-    },
-    imagePreviewItem: {
-      width: { xs: "calc(50% - 8px)", sm: 120, md: 150 },
-      height: { xs: 100, sm: 120, md: 120 },
-      position: "relative",
-      border: "1px solid",
-      borderColor: "divider",
-      borderRadius: 1,
-      overflow: "hidden",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-    },
-  }
-})
 
 const serviceAreas = ["Diseño", "Fotografía", "Artes Plásticas", "Otro"]
 
@@ -141,7 +89,6 @@ const Transition = React.forwardRef(function Transition(
 })
 
 export default function CreateService() {
-  const { classes } = useStyles()
   const theme = useTheme()
   const { uploadService, setServiceModal } = usePrixerCreator()
   const { user } = useUser()
@@ -503,15 +450,15 @@ export default function CreateService() {
       } else {
         showSnackBar(
           response.data.message ||
-            "Error al crear el servicio. Intenta de nuevo."
+          "Error al crear el servicio. Intenta de nuevo."
         )
       }
     } catch (err: any) {
       console.error("Failed to create service:", err)
       showSnackBar(
         err?.response?.data?.message ||
-          err.message ||
-          "Error desconocido al crear el servicio."
+        err.message ||
+        "Error desconocido al crear el servicio."
       )
     } finally {
       setBackdrop(false)
@@ -533,9 +480,11 @@ export default function CreateService() {
         TransitionComponent={Transition}
       >
         <Backdrop
-          className={classes.backdrop}
           open={backdrop}
-          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+          sx={{
+            color: "#fff",
+            zIndex: (theme) => theme.zIndex.drawer + 1,
+          }}
         >
           <CircularProgress color="inherit" sx={{ mr: 2 }} />
           <Typography>
@@ -543,7 +492,7 @@ export default function CreateService() {
             Esto puede tardar, por favor no cierres esta ventana.
           </Typography>
         </Backdrop>
-        <AppBar className={classes.appBar}>
+        <AppBar sx={{ position: "relative" }}>
           <Toolbar>
             <IconButton
               edge="start"
@@ -553,7 +502,7 @@ export default function CreateService() {
             >
               <CloseIcon />
             </IconButton>
-            <Typography variant="h6" className={classes.title}>
+            <Typography variant="h6" sx={{ ml: 2, flex: 1 }}>
               Comparte tu Servicio
             </Typography>
             <Button
@@ -582,13 +531,19 @@ export default function CreateService() {
 
           <form
             onSubmit={handleSubmit}
-            className={classes.form}
             noValidate
             ref={formRef}
             id="create-service-form"
+            style={{
+              width: "100%",
+              marginTop: "24px",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+            }}
           >
-            <Grid container spacing={2}>
-              <Grid size={{ sm: 12 }}>
+            <Grid2 container spacing={2}>
+              <Grid2 size={{ sm: 12 }}>
                 <TextField
                   variant="outlined"
                   autoFocus
@@ -601,17 +556,17 @@ export default function CreateService() {
                     setTitle(e.target.value)
                   }}
                 />
-              </Grid>
+              </Grid2>
 
               {/* Sección de Imágenes del Servicio */}
-              {/* <Grid size={{ xs: 12 }}>
+              {/* <Grid2 size={{ xs: 12 }}>
                   <Divider sx={{ my: 2 }}>
                     <Typography variant="overline">
                       Imágenes del Servicio (hasta 6)
                     </Typography>
                   </Divider>
-                </Grid> */}
-              <Grid size={{ xs: 12 }}>
+                </Grid2> */}
+              <Grid2 size={{ xs: 12 }}>
                 <Paper
                   variant="outlined"
                   sx={{
@@ -627,7 +582,21 @@ export default function CreateService() {
                 >
                   {serviceImages.length > 0 ? (
                     serviceImages.map((sImage) => (
-                      <Box key={sImage.id} className={classes.imagePreviewItem}>
+                      <Box
+                        key={sImage.id}
+                        sx={{
+                          width: { xs: "calc(50% - 8px)", sm: 120, md: 150 },
+                          height: { xs: 100, sm: 120, md: 120 },
+                          position: "relative",
+                          border: "1px solid",
+                          borderColor: "divider",
+                          borderRadius: 1,
+                          overflow: "hidden",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
                         {sImage.url ? (
                           <img
                             src={sImage.url}
@@ -741,10 +710,10 @@ export default function CreateService() {
                     {serviceImages.length + "/6"}
                   </Typography>
                 </Paper>
-              </Grid>
-              <Grid
+              </Grid2>
+              <Grid2
                 size={{ xs: 12 }}
-                //  sm={4} md={3} lg={2}
+              //  sm={4} md={3} lg={2}
               >
                 <input
                   type="file"
@@ -770,13 +739,16 @@ export default function CreateService() {
                     Límite alcanzado
                   </FormHelperText>
                 )}
-              </Grid>
+              </Grid2>
 
-              <Grid size={{ xs: 12 }}>
-                <FormControl variant="outlined" className={classes.form}>
+              <Grid2 size={{ xs: 12 }}>
+                <FormControl
+                  variant="outlined"
+                  sx={{ m: 1, width: "100%" }}
+                >
                   <InputLabel id="serviceAreaLabel">Tipo</InputLabel>
                   <Select
-                  sx={{width: '100%'}}
+                    sx={{ width: '100%' }}
                     labelId="serviceAreaLabel"
                     id="serviceArea"
                     value={serviceArea}
@@ -793,9 +765,9 @@ export default function CreateService() {
                     ))}
                   </Select>
                 </FormControl>
-              </Grid>
+              </Grid2>
 
-              <Grid size={{ xs: 12 }}>
+              <Grid2 size={{ xs: 12 }}>
                 <ReactQuill
                   style={{ height: 300, marginBottom: theme.spacing(5) }} // Ajustar altura y margen inferior
                   modules={{
@@ -810,12 +782,12 @@ export default function CreateService() {
                   placeholder="Describe tu servicio en detalle: qué incluye, cómo es el proceso, qué puede esperar el cliente..."
                   readOnly={isSubmitting}
                 />
-              </Grid>
+              </Grid2>
 
-              <Grid
+              <Grid2
                 style={{
                   marginTop: isMobile ? 30 : 0,
-                  display: "grid",
+                  display: "grid2",
                   gridTemplateColumns: "0.5fr 1fr 1fr",
                   gap: "1rem",
                 }}
@@ -856,8 +828,8 @@ export default function CreateService() {
                   }
                   label="¿Trabajas a domicilio?"
                 />
-              </Grid>
-              <Grid size={{ xs: 6 }}>
+              </Grid2>
+              <Grid2 size={{ xs: 6 }}>
                 <TextField
                   variant="outlined"
                   fullWidth
@@ -869,8 +841,8 @@ export default function CreateService() {
                   placeholder="Si trabajas en algún sitio en específico indica aquí la dirección."
                   onChange={(e) => setLocation(e.target.value)}
                 />
-              </Grid>
-              <Grid size={{ xs: 6 }}>
+              </Grid2>
+              <Grid2 size={{ xs: 6 }}>
                 <TextField
                   variant="outlined"
                   fullWidth
@@ -878,8 +850,8 @@ export default function CreateService() {
                   value={productionTime}
                   onChange={(e) => setProductionTime(e.target.value)}
                 />
-              </Grid>
-              <Grid size={{ xs: 12 }}>
+              </Grid2>
+              <Grid2 size={{ xs: 12 }}>
                 <Typography variant="subtitle1">Valor</Typography>
                 <div
                   style={{
@@ -888,7 +860,7 @@ export default function CreateService() {
                     marginTop: 10,
                   }}
                 >
-                  <Grid size={{ xs: 6 }}>
+                  <Grid2 size={{ xs: 6 }}>
                     <TextField
                       // style={{ marginRight: 45 }}
                       required
@@ -906,8 +878,8 @@ export default function CreateService() {
                         },
                       }}
                     />
-                  </Grid>
-                  <Grid size={{ xs: 6 }}>
+                  </Grid2>
+                  <Grid2 size={{ xs: 6 }}>
                     <TextField
                       variant="outlined"
                       fullWidth
@@ -921,10 +893,10 @@ export default function CreateService() {
                         ),
                       }}
                     />
-                  </Grid>
+                  </Grid2>
                 </div>
-              </Grid>
-              <Grid
+              </Grid2>
+              <Grid2
                 style={{
                   display: "flex",
                   justifyContent: "center",
@@ -934,8 +906,8 @@ export default function CreateService() {
                 <Typography color={"secondary"}>
                   Tu servicio podrá ser encontrado por estos datos.
                 </Typography>
-              </Grid>
-            </Grid>
+              </Grid2>
+            </Grid2>
           </form>
           <Box mt={5} mb={4}>
             <Copyright />

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Grid from '@mui/material/Grid';
+import Grid2 from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
 import { makeStyles } from '@mui/styles';
 import { Typography } from '@mui/material';
@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
   form: {
     height: 'auto',
   },
-  gridInput: {
+  grid2Input: {
     display: 'flex',
     width: '100%',
     marginBottom: '12px',
@@ -311,12 +311,12 @@ export default function MovOrder(props) {
         <CircularProgress />
       </Backdrop> */}
 
-      <Grid
+      <Grid2
         container
         className={classes.paper2}
         style={{ width: !isDeskTop && '100%', padding: !isDeskTop && 10 }}
       >
-        <Grid
+        <Grid2
           item
           style={{
             width: '100%',
@@ -327,7 +327,7 @@ export default function MovOrder(props) {
           <IconButton onClick={props.handleClose}>
             <CloseIcon />
           </IconButton>
-        </Grid2>
+        </Grid22>
         {props.type === 'Depósito' ? (
           order?.requests.map(
             (item, index) =>
@@ -570,7 +570,7 @@ export default function MovOrder(props) {
                 </div>
               </>
             ))}
-            <Grid
+            <Grid2
               item
               xs={12}
               sm={12}
@@ -618,10 +618,10 @@ export default function MovOrder(props) {
                     })}
                 </strong>
               </div>
-            </Grid2>
+            </Grid22>
           </div>
         )}
-      </Grid2>
+      </Grid22>
     </React.Fragment>
   );
 }

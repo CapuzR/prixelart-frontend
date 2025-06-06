@@ -151,43 +151,37 @@ const Flow = () => {
 
       const selectedVariant = getSelectedVariant(item.product.selection, item.product.variants);
 
-      if (selectedVariant?._id) { // Ensure variant and its ID exist
+      if (selectedVariant?._id) {
         try {
           const priceResult = await fetchVariantPrice(selectedVariant._id, item.sku);
           const originalPriceStr = priceResult[1].toString(); // Assuming result format is [?, priceString]
 
           let discountValue: number | undefined = undefined;
 
-          // *** ADDED DISCOUNT LOGIC ***
-          // Check if art exists, user exists, and prixerUsername matches user's username
           if (item.art?.prixerUsername && user?.username && item.art.prixerUsername === user.username) {
-            discountValue = 15; // Apply 15% discount
+            discountValue = 15;
           }
-          // *** END ADDED DISCOUNT LOGIC ***
-
-          // Update item state with the fetched ORIGINAL price and potential discount
           setItem((prevItem) => ({
             ...prevItem,
-            price: originalPriceStr,   // Store the ORIGINAL price
-            discount: discountValue,   // Store discount percentage (15 or undefined)
+            price: originalPriceStr,
+            discount: discountValue,
           }));
 
         } catch (error) {
           console.error('Error fetching variant price:', error);
-          showSnackBar('Error obteniendo el prix.'); // Corrected snackbar message typo
+          showSnackBar('Error obteniendo el prix.');
           setItem((prevItem) => ({
             ...prevItem,
-            price: 'Error', // Indicate price error state better
-            discount: undefined, // Clear discount on error
+            price: 'Error',
+            discount: undefined,
           }));
         }
       } else {
-        // If no matching variant found clear price and discount
         if (item.price !== undefined || item.discount !== undefined) {
           setItem((prevItem) => ({
             ...prevItem,
             price: undefined,
-            discount: undefined, // Clear discount
+            discount: undefined,
           }));
         }
       }
@@ -196,16 +190,14 @@ const Flow = () => {
     fetchAndSetPrice();
   }, [
     item.product?.variants,
-    JSON.stringify(item.product?.selection), // Deep comparison
+    JSON.stringify(item.product?.selection),
     item.sku,
-    item.art?.prixerUsername, // Add dependency for art's owner
-    user?.username, // Add dependency for logged-in user
+    item.art?.prixerUsername, 
+    user?.username,
     isProductAttributesComplete,
-    // Removed showSnackBar, setLoading dependencies as they don't directly influence price calculation logic
   ]);
 
   const handleArtSelect = (selectedArt: Art) => {
-    // Keep existing product attribute selections from URL params
     const excludedKeys = new Set(['producto', 'arte', 'lineId', 'itemId']); // Exclude core identifiers
     const existingAttributes = Object.entries(urlParams).reduce((acc, [key, value]) => {
       if (!excludedKeys.has(key)) {
@@ -214,32 +206,30 @@ const Flow = () => {
       return acc;
     }, {} as Record<string, string>);
 
-    // Generate new query string
     const newQueryString = queryCreator(
       urlParams.lineId,
-      urlParams.producto, // Keep current product ID
-      selectedArt.artId?.toString(), // Use the new Art's ID (ensure _id exists and handle type)
-      existingAttributes // Keep current attribute selections
+      urlParams.producto,
+      selectedArt.artId?.toString(),
+      existingAttributes
     );
     navigate(`${location.pathname}?${newQueryString}`);
     showSnackBar('¡Arte seleccionado! Puedes agregar el item al carrito');
   };
 
-  // Handler for selecting a different Product (e.g., from a list)
-  const handleProductSelect = (selectedProduct: Product) => { // Base Product type here initially
-    const attributes = {}; // Start with empty attributes for the new product
+  const handleProductSelect = (selectedProduct: Product) => {
+    const attributes = {};
 
     const newQueryString = queryCreator(
       urlParams.lineId,
-      selectedProduct._id?.toString(), // Use the new Product's ID
-      urlParams.arte, // Keep current art ID
-      attributes // Pass empty attributes, let user select again
+      selectedProduct._id?.toString(),
+      urlParams.arte,
+      attributes
     );
     navigate(`${location.pathname}?${newQueryString}`);
-    showSnackBar('¡Producto seleccionado! Elige las opciones.'); // Updated message
+    showSnackBar('¡Producto seleccionado! Elige las opciones.');
   };
 
-  const handleCart = (itemToAdd: Item) => { // Expects the fully configured Item object
+  const handleCart = (itemToAdd: Item) => {
     if (!isItemReady || !itemToAdd.price) {
       showSnackBar('Por favor completa la selección antes de añadir al carrito.');
       return;
@@ -252,28 +242,25 @@ const Flow = () => {
 
   const handleChangeElement = (type: 'producto' | 'arte', currentItem: Item, lineId?: string) => {
     let newProductId: string | undefined = currentItem.sku;
-    let newArtId: string | undefined = currentItem.art?.artId; // Use _id
+    let newArtId: string | undefined = currentItem.art?.artId;
     let selectionAsObject: Record<string, string> = {};
 
     if (type === 'arte') {
-      newArtId = undefined; // Clear art
-      // Keep product and its current selections
+      newArtId = undefined;
       selectionAsObject = (currentItem.product?.selection || []).reduce((acc, sel) => {
         acc[sel.name] = sel.value;
         return acc;
       }, {} as Record<string, string>);
-      // Clear art state locally immediately for responsiveness
       setItem(prev => ({ ...prev, art: undefined, price: undefined }));
 
     } else if (type === 'producto') {
-      newProductId = undefined; // Clear product
-      selectionAsObject = {}; // Clear attributes
-      // Clear product state locally immediately
+      newProductId = undefined;
+      selectionAsObject = {}; 
       setItem(prev => ({ ...prev, product: undefined, sku: undefined, price: undefined, selection: undefined }));
     }
 
     const queryString = queryCreator(
-      lineId ? lineId : urlParams.lineId, // Use provided lineId or from URL
+      lineId ? lineId : urlParams.lineId,
       newProductId,
       newArtId,
       selectionAsObject,
@@ -282,15 +269,12 @@ const Flow = () => {
     navigate({ pathname: location.pathname, search: queryString });
   };
 
-  // Handler for selecting a specific attribute value (e.g., from dropdown)
   const handleSelection = (e: React.ChangeEvent<{ name: string; value: number }>) => { // Now value is a number
     const { name, value } = e.target;
-    // Update the selection in the local state optimistically
 
     const currentSelection = item.product?.selection || [];
     const selectionAsObject = currentSelection.reduce(
       (acc, sel) => {
-        // Keep existing selections
         if (sel.name !== name) {
           acc[sel.name] = sel.value;
         }
@@ -299,15 +283,13 @@ const Flow = () => {
       {} as Record<string, string>
     );
 
-    // Regenerate query string with the updated selection
     const queryString = queryCreator(
       urlParams.lineId,
-      item.sku, // Keep current product sku
-      item.art?.artId?.toString(), // Keep current art id (use _id)
-      selectionAsObject, // Pass the updated selections
+      item.sku,
+      item.art?.artId?.toString(),
+      selectionAsObject,
     );
 
-    // Update URL without full page reload
     navigate(`${location.pathname}?${queryString}`, { replace: true }); // Use replace to avoid history spam
   };
 

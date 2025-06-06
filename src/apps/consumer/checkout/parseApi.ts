@@ -73,8 +73,6 @@ export const parseOrder = (data: CheckoutState): Order => {
   const billingState = data.billing || {};
   const generalState = data.general || {};
 
-  console.log("orderData", orderData);
-
   // Use top-level basic info if available, otherwise fall back to nested order data
   const basicInfo: BasicInfo = {
     id: basicState.id || orderData.consumerDetails?.basic.id || '',
@@ -166,12 +164,21 @@ export const parseOrder = (data: CheckoutState): Order => {
 
   // Map PaymentDetails - Construct based on billing and basic info
   const paymentDetails: PaymentDetails = {
-    method: billingState.paymentMethod || orderData.billing?.paymentMethod ? [{
-      name: billingState.paymentMethod || orderData.billing?.paymentMethod || '',
-      // type: determine type if possible from name or another field 
-      // other PaymentMethod fields are not available in the input structure
-    } as PaymentMethod] : [],
-    total: 0
+    total: orderData.total || 0, // Assuming total is available here
+    // The 'payment' property is an array of Payment objects
+    payment: billingState.paymentMethod ? [{
+      id: '', // Add required fields for a Payment object
+      description: 'Initial Payment',
+      createdOn: new Date(),
+      method: { // The method object itself
+        name: billingState.paymentMethod,
+        active: true,
+        createdBy: 'system',
+        createdOn: new Date()
+      }
+    }] : [],
+    // The 'status' property is required
+    status: [[0, new Date()]] // 0 = GlobalPaymentStatus.Pending
   };
 
 
@@ -212,6 +219,7 @@ export const parseOrder = (data: CheckoutState): Order => {
 
     seller: generalState.seller || orderData.seller || '', // Prioritize top-level general seller
     observations: generalState.observations || orderData.observations || '', // Prioritize top-level general observations
+    status: [[OrderStatus.Pending, new Date()]],
   };
 
   console.log("Parsed Order:", order);

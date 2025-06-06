@@ -1,5 +1,5 @@
 import { Box, Button } from '@mui/material';
-import { useMemo } from 'react';
+import { JSX, useMemo } from 'react';
 
 interface PaginationBarProps {
   setPageNumber: (page: number) => void;

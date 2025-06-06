@@ -84,7 +84,7 @@ const UpdateSurcharge: React.FC = () => {
     // --- State ---
     const [formData, setFormData] = useState<SurchargeFormState>(initialFormState); // Use specific form state type
     const [originalSurcharge, setOriginalSurcharge] = useState<Surcharge | null>(null);
-
+    const [isLoading, setIsLoading] = useState<boolean>(true); // Combined loading state
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
     const [errorFetch, setErrorFetch] = useState<string | null>(null);
     const [validationErrors, setValidationErrors] = useState<SurchargeValidationErrors | null>(null); // Use specific validation type
@@ -95,7 +95,6 @@ const UpdateSurcharge: React.FC = () => {
 
     // State for Autocomplete selections (Adopted from Refactored CreateSurcharge)
     const [selectedProductVariants, setSelectedProductVariants] = useState<ProductOrVariantOption[]>([]);
-    const [selectedArts, setSelectedArts] = useState<ImageItemOption[]>([]);
 
     // State for Date Pickers (Adopted from Refactored CreateSurcharge)
     const [startDate, setStartDate] = useState<Dayjs | null>(null);

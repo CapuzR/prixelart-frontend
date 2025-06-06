@@ -1,49 +1,61 @@
 import {
-    HourglassEmpty, CreditCardOff, PriceCheck, Cached, Inventory,
-    LocalShipping, PublishedWithChanges, CheckCircleOutline, HighlightOff,
-    SyncProblem, Undo, AssignmentReturn, HelpOutline
+    HourglassEmpty,
+    Print, // Added for Impression
+    Cached,
+    Inventory,
+    LocalShipping, // Re-purposed for Delivered
+    CheckCircleOutline, // Re-purposed for Finished
+    PauseCircleOutline, // Added for Paused
+    HighlightOff,
+    HelpOutline
 } from '@mui/icons-material';
-import { OrderStatus } from 'types/order.types';
-import React from 'react'; // Import React for JSX.Element
+import { OrderStatus } from 'types/order.types'; // Assuming this path is correct
+import React from 'react';
 
+/**
+ * Gets the Spanish label for a given OrderStatus.
+ * @param status The OrderStatus enum value.
+ * @returns A user-friendly string label.
+ */
 export const getOrderStatusLabel = (status: OrderStatus): string => {
     switch (status) {
-        case OrderStatus.PendingPayment: return "Pendiente de Pago";
-        case OrderStatus.PaymentFailed: return "Pago Fallido";
-        case OrderStatus.PaymentConfirmed: return "Pago Confirmado";
-        case OrderStatus.Processing: return "Procesando";
+        case OrderStatus.Pending: return "Pendiente";
+        case OrderStatus.Impression: return "Impresión";
+        case OrderStatus.Production: return "Producción";
         case OrderStatus.ReadyToShip: return "Listo para Enviar";
-        case OrderStatus.Shipped: return "Enviado";
-        case OrderStatus.InTransit: return "En Tránsito";
         case OrderStatus.Delivered: return "Entregado";
+        case OrderStatus.Finished: return "Finalizado";
+        case OrderStatus.Paused: return "En Pausa";
         case OrderStatus.Canceled: return "Cancelado";
-        case OrderStatus.OnHold: return "En Espera";
-        case OrderStatus.ReturnRequested: return "Devolución Solicitada";
-        case OrderStatus.ReturnReceived: return "Devolución Recibida";
-        case OrderStatus.Refunded: return "Reembolsado";
         default: return "Estado Desconocido";
     }
 };
 
+/**
+ * Gets a Material-UI icon for a given OrderStatus.
+ * @param status The OrderStatus enum value.
+ * @returns A ReactElement representing the icon.
+ */
 export const getOrderStatusIcon = (status: OrderStatus): React.ReactElement => {
     switch (status) {
-        case OrderStatus.PendingPayment: return <HourglassEmpty color="warning" />;
-        case OrderStatus.PaymentFailed: return <CreditCardOff color="error" />;
-        case OrderStatus.PaymentConfirmed: return <PriceCheck color="success" />;
-        case OrderStatus.Processing: return <Cached color="info" />;
-        case OrderStatus.ReadyToShip: return <Inventory color="info" />;
-        case OrderStatus.Shipped: return <LocalShipping color="primary" />;
-        case OrderStatus.InTransit: return <PublishedWithChanges color="primary" />;
-        case OrderStatus.Delivered: return <CheckCircleOutline color="success" />;
+        case OrderStatus.Pending: return <HourglassEmpty color="warning" />;
+        case OrderStatus.Impression: return <Print color="info" />;
+        case OrderStatus.Production: return <Cached color="info" />;
+        case OrderStatus.ReadyToShip: return <Inventory color="primary" />;
+        case OrderStatus.Delivered: return <LocalShipping sx={{ color: 'purple' }} />;
+        case OrderStatus.Finished: return <CheckCircleOutline color="success" />;
+        case OrderStatus.Paused: return <PauseCircleOutline color="warning" />;
         case OrderStatus.Canceled: return <HighlightOff sx={{ color: 'grey.700' }} />;
-        case OrderStatus.OnHold: return <SyncProblem color="warning" />;
-        case OrderStatus.ReturnRequested: return <Undo sx={{ color: 'grey.700' }} />;
-        case OrderStatus.ReturnReceived: return <AssignmentReturn color="info" />;
-        case OrderStatus.Refunded: return <PriceCheck color="success" />;
         default: return <HelpOutline color="disabled" />;
     }
 };
 
+/**
+ * Gets the most recent status from a history array.
+ * This function does not need changes as its logic is based on the array structure, not the enum values.
+ * @param statusHistory An array of [OrderStatus, Date] tuples.
+ * @returns The most recent [OrderStatus, Date] tuple or null if the history is empty.
+ */
 export const getCurrentOrderStatus = (statusHistory: [OrderStatus, Date][]): [OrderStatus, Date] | null => {
     if (!statusHistory || statusHistory.length === 0) {
         return null;

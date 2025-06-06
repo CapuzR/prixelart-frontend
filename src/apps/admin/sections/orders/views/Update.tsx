@@ -528,12 +528,12 @@ export default function UpdateOrder() {
           getArts() as Promise<Art[]>,
         ])
       if (!orderData) throw new Error("Orden no encontrada.")
-      if (orderData.payment && !Array.isArray(orderData.payment.payments)) {
+      if (orderData.payment && !Array.isArray(orderData.payment.payment)) {
         console.warn(
           "API devolvió orderData.payment sin un array 'Payments' válido. " +
             "Inicializando como array vacío."
         )
-        orderData.payment.payments = []
+        orderData.payment.payment = []
       } else if (!orderData.payment) {
         console.warn(
           "API devolvió orderData sin el objeto 'payment'. " +
@@ -619,7 +619,7 @@ export default function UpdateOrder() {
             : opt.fullMethod.name === orderShip?.name
         ) || null
       setSelectedShippingMethod(currentSelectedShippingMethod)
-      const orderPay = orderData.payment?.payments[0]?.method
+      const orderPay = orderData.payment?.payment[0]?.method
       const currentSelectedPaymentMethod = orderPay
         ? paymentOptions.find((opt) =>
             !!orderPay?._id
@@ -668,11 +668,11 @@ export default function UpdateOrder() {
       //   ) {
       const existingVoucherImages: ImageUploadState[] = []
       if (
-        orderData.payment?.payments &&
-        Array.isArray(orderData.payment.payments)
+        orderData.payment?.payment &&
+        Array.isArray(orderData.payment.payment)
       ) {
-        setPrevPayments(orderData.payment.payments)
-        orderData.payment.payments.forEach(
+        setPrevPayments(orderData.payment.payment)
+        orderData.payment.payment.forEach(
           (payments: Payment, index: number) => {
             if (payments.voucher) {
               // Check if the payments has a voucher URL
@@ -1303,7 +1303,7 @@ export default function UpdateOrder() {
       status: order?.payment?.status || [
         [GlobalPaymentStatus.Pending, new Date()],
       ],
-      payments: updatedPayments,
+      payment: updatedPayments,
     }
 
     const payloadForAPI: Partial<Order> = {
@@ -1324,7 +1324,7 @@ export default function UpdateOrder() {
         ...(currentOrder.payment || {}),
         total: currentOrder.payment?.total || 0,
         status: currentOrder.payment?.status,
-        payments: updatedPayments,
+        payment: updatedPayments,
       }
 
       return {
@@ -1626,7 +1626,7 @@ export default function UpdateOrder() {
 
     let mainPayments: Payment[] = []
     if (selectedPaymentMethod) {
-      const existingMainInstallment = order.payment?.payments?.find(
+      const existingMainInstallment = order.payment?.payment?.find(
         (inst) =>
           !inst.voucher ||
           !paymentVouchers.some((pv) => pv.url === inst.voucher)
@@ -1651,8 +1651,8 @@ export default function UpdateOrder() {
           voucher: undefined,
         })
       }
-    } else if (order.payment?.payments) {
-      mainPayments = order.payment.payments.filter(
+    } else if (order.payment?.payment) {
+      mainPayments = order.payment.payment.filter(
         (inst) =>
           !inst.voucher ||
           !paymentVouchers.some(
@@ -1666,7 +1666,7 @@ export default function UpdateOrder() {
     payload.payment = {
       ...(order.payment || {}),
       total: finalTotal,
-      payments: finalPayments,
+      payment: finalPayments,
     }
 
     try {

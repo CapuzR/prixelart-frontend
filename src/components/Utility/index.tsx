@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import { useLoading, useSnackBar, useBackdrop } from 'context/GlobalContext';
-import LoadingScreen from 'components/LoadingScreen/LoadingScreen';
+import LoadingScreen from '@components/LoadingScreen/LoadingScreen';
 import Snackbar from 'components/SnackBar/SnackBar';
 import Backdrop from 'components/Backdrop';
 

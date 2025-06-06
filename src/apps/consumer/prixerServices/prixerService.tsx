@@ -68,7 +68,7 @@ const AllServicesDisplay: React.FC = () => {
         const isActiveAndVisible = service.active && (service.visible === true || service.visible === undefined);
         if (!isActiveAndVisible) return false;
 
-        const prixerIdString = typeof service.prixer === 'string' ? service.prixer : (service.prixer as any)?._id?.toString();
+        const prixerIdString = typeof service.userId === 'string' ? service.userId : (service.userId as any)?._id?.toString();
 
         return prixerIdString ? newPrixerDetailsMap.has(prixerIdString) : false;
       });
@@ -112,7 +112,7 @@ const AllServicesDisplay: React.FC = () => {
   }
 
   const servicesToDisplay = rawServices.map(service => {
-    const prixerIdString = typeof service.prixer === 'string' ? service.prixer : (service.prixer as any)?._id?.toString();
+    const prixerIdString = typeof service.userId === 'string' ? service.userId : (service.userId as any)?._id?.toString();
     const prixerDetails = prixerIdString ? prixerDetailsMap.get(prixerIdString) : undefined;
 
     if (!prixerDetails) {
@@ -148,11 +148,11 @@ const AllServicesDisplay: React.FC = () => {
     );
   }
 
-  const selectedPrixerDetails = selectedServiceForModal?.prixer
+  const selectedPrixerDetails = selectedServiceForModal?.userId
     ? prixerDetailsMap.get(
-      typeof selectedServiceForModal.prixer === 'string'
-        ? selectedServiceForModal.prixer
-        : (selectedServiceForModal.prixer as any)?._id?.toString()
+      typeof selectedServiceForModal.userId === 'string'
+        ? selectedServiceForModal.userId
+        : (selectedServiceForModal.userId as any)?._id?.toString()
     )
     : undefined;
 

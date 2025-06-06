@@ -61,21 +61,22 @@ const OrderDetailsPage: React.FC = () => {
     };
 
     const getOverallOrderStatus = (orderLines: OrderLine[]): OrderStatus => {
-        if (!orderLines || orderLines.length === 0) return OrderStatus.OnHold;
+        if (!orderLines || orderLines.length === 0) return OrderStatus.Paused;
 
         const statuses = orderLines.map(line => getCurrentOrderStatus(line.status)?.[0]);
 
+        if (statuses.every(s => s === OrderStatus.Finished)) return OrderStatus.Finished;
         if (statuses.every(s => s === OrderStatus.Delivered)) return OrderStatus.Delivered;
         if (statuses.every(s => s === OrderStatus.Canceled)) return OrderStatus.Canceled;
-        if (statuses.some(s => s === OrderStatus.Shipped || s === OrderStatus.InTransit)) return OrderStatus.Shipped;
+        // Check for statuses in reverse order of progression
         if (statuses.some(s => s === OrderStatus.ReadyToShip)) return OrderStatus.ReadyToShip;
-        if (statuses.some(s => s === OrderStatus.Processing)) return OrderStatus.Processing;
-        if (statuses.some(s => s === OrderStatus.PaymentConfirmed)) return OrderStatus.PaymentConfirmed;
-        if (statuses.some(s => s === OrderStatus.PaymentFailed)) return OrderStatus.PaymentFailed;
-        return OrderStatus.PendingPayment;
+        if (statuses.some(s => s === OrderStatus.Production)) return OrderStatus.Production;
+        if (statuses.some(s => s === OrderStatus.Impression)) return OrderStatus.Impression;
+        if (statuses.some(s => s === OrderStatus.Paused)) return OrderStatus.Paused;
+        return OrderStatus.Pending; // Default status
     };
 
-    const overallStatus = order ? getOverallOrderStatus(order.lines) : OrderStatus.OnHold;
+    const overallStatus = order ? getOverallOrderStatus(order.lines) : OrderStatus.Paused;
 
     const renderInfoItem = (icon: React.ReactNode, primary: string, secondary: string | React.ReactNode | undefined) => (
         secondary ? (
@@ -172,11 +173,12 @@ const OrderDetailsPage: React.FC = () => {
                         icon={getOrderStatusIcon(overallStatus)}
                         label={getOrderStatusLabel(overallStatus)}
                         color={
-                            overallStatus === OrderStatus.Delivered ? "success" :
-                                overallStatus === OrderStatus.Canceled || overallStatus === OrderStatus.PaymentFailed ? "error" :
-                                    overallStatus === OrderStatus.Shipped || overallStatus === OrderStatus.Processing || overallStatus === OrderStatus.ReadyToShip || overallStatus === OrderStatus.InTransit ? "info" :
-                                        overallStatus === OrderStatus.PaymentConfirmed ? "secondary" :
-                                            "default"
+                            overallStatus === OrderStatus.Finished || overallStatus === OrderStatus.Delivered ? "success" :
+                                overallStatus === OrderStatus.Canceled ? "error" :
+                                    overallStatus === OrderStatus.Paused ? "warning" :
+                                        overallStatus === OrderStatus.ReadyToShip ? "primary" :
+                                            overallStatus === OrderStatus.Production || overallStatus === OrderStatus.Impression ? "info" :
+                                                "default" // for Pending
                         }
                         sx={{ fontSize: '1rem', py: 2.5, px: 1.5, borderRadius: '8px', fontWeight: 'medium' }}
                     />
@@ -193,7 +195,7 @@ const OrderDetailsPage: React.FC = () => {
                     <Typography variant="h5" fontWeight="medium" gutterBottom sx={{ mb: 2 }}>Artículos del Pedido</Typography>
                     {order.lines.map((line) => {
                         const currentLineStatusInfo = getCurrentOrderStatus(line.status);
-                        const currentLineStatus = currentLineStatusInfo ? currentLineStatusInfo[0] : OrderStatus.PendingPayment;
+                        const currentLineStatus = currentLineStatusInfo ? currentLineStatusInfo[0] : OrderStatus.Pending;
                         const currentLineStatusDate = currentLineStatusInfo ? currentLineStatusInfo[1] : new Date();
 
                         return (
@@ -223,12 +225,14 @@ const OrderDetailsPage: React.FC = () => {
                                                 label={getOrderStatusLabel(currentLineStatus)}
                                                 size="small"
                                                 sx={{ mb: 1 }}
+                                                // CHANGE 2: Update Chip color logic
                                                 color={
-                                                    currentLineStatus === OrderStatus.Delivered ? "success" :
-                                                        currentLineStatus === OrderStatus.Canceled || currentLineStatus === OrderStatus.PaymentFailed ? "error" :
-                                                            currentLineStatus === OrderStatus.Shipped || currentLineStatus === OrderStatus.Processing || currentLineStatus === OrderStatus.ReadyToShip || currentLineStatus === OrderStatus.InTransit ? "info" :
-                                                                currentLineStatus === OrderStatus.PaymentConfirmed ? "secondary" :
-                                                                    "default"
+                                                    currentLineStatus === OrderStatus.Finished || currentLineStatus === OrderStatus.Delivered ? "success" :
+                                                        currentLineStatus === OrderStatus.Canceled ? "error" :
+                                                            currentLineStatus === OrderStatus.Paused ? "warning" :
+                                                                currentLineStatus === OrderStatus.ReadyToShip ? "primary" :
+                                                                    currentLineStatus === OrderStatus.Production || currentLineStatus === OrderStatus.Impression ? "info" :
+                                                                        "default" // for Pending
                                                 }
                                             />
                                             <Typography variant="caption" display="block" color="text.secondary">
@@ -250,11 +254,12 @@ const OrderDetailsPage: React.FC = () => {
                                                         </TimelineOppositeContent>
                                                         <TimelineSeparator>
                                                             <TimelineDot variant="outlined" color={
-                                                                statusEnum === OrderStatus.Delivered ? "success" :
-                                                                    statusEnum === OrderStatus.Canceled || statusEnum === OrderStatus.PaymentFailed ? "error" :
-                                                                        statusEnum === OrderStatus.Shipped || statusEnum === OrderStatus.Processing || statusEnum === OrderStatus.ReadyToShip || statusEnum === OrderStatus.InTransit ? "info" :
-                                                                            statusEnum === OrderStatus.PaymentConfirmed ? "secondary" :
-                                                                                "primary" /* Default to primary or another appropriate color */
+                                                                statusEnum === OrderStatus.Finished || statusEnum === OrderStatus.Delivered ? "success" :
+                                                                    statusEnum === OrderStatus.Canceled ? "error" :
+                                                                        statusEnum === OrderStatus.Paused ? "warning" :
+                                                                            statusEnum === OrderStatus.ReadyToShip ? "primary" :
+                                                                                statusEnum === OrderStatus.Production || statusEnum === OrderStatus.Impression ? "info" :
+                                                                                    "grey" // for Pending
                                                             }>
                                                                 {getOrderStatusIcon(statusEnum)}
                                                             </TimelineDot>

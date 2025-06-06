@@ -48,7 +48,7 @@ export interface Payment {
 
 export interface PaymentDetails {
   total: number;
-  payments: Payment[];
+  payment: Payment[];
   status: [GlobalPaymentStatus, Date][]
 }
 

@@ -623,7 +623,7 @@ const CreateOrder: React.FC = () => {
       const paymentDetails: PaymentDetails = {
         status: [[GlobalPaymentStatus.Pending, new Date()]],
         total: displayTotals.total,
-        payments: [mainPayment],
+        payment: [mainPayment],
       }
       const finalShippingAddress = isPickupSelected
         ? createBlankAddress()

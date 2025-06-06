@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState } from "react"
 import { Route, Routes } from "react-router-dom"
 
 import ArtDetail from "@apps/consumer/art/components/ArtsGrid/Details/Details"
@@ -24,6 +24,9 @@ import ArtUploader from "@apps/artist/artUploader"
 import CreateService from "@components/createService"
 
 const ConsumerRoutes: React.FC = () => {
+
+  const [openArtFormDialog, setOpenArtFormDialog] = useState(false)
+
   return (
     <>
       <Routes>
@@ -51,8 +54,11 @@ const ConsumerRoutes: React.FC = () => {
       </Routes>
 
       <ConditionalFB />
-      <ArtUploader/>
-      <CreateService/>
+      <ArtUploader
+        openArtFormDialog={openArtFormDialog}
+        setOpenArtFormDialog={setOpenArtFormDialog}
+      />
+      <CreateService />
     </>
   )
 }

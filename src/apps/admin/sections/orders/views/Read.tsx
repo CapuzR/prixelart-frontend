@@ -24,7 +24,9 @@ import {
   TablePagination,
   TextField,
   InputAdornment,
+  Fab,
 } from "@mui/material"
+import Grid2 from "@mui/material/Grid" // Assuming this is Material UI's Unstable_Grid2 or similar
 import EditIcon from "@mui/icons-material/Edit"
 import DeleteIcon from "@mui/icons-material/Delete"
 import AddIcon from "@mui/icons-material/Add"
@@ -32,15 +34,21 @@ import InfoIcon from "@mui/icons-material/Info"
 import CheckCircleIcon from "@mui/icons-material/CheckCircle"
 import CancelIcon from "@mui/icons-material/Cancel"
 import SearchIcon from "@mui/icons-material/Search"
-import { LocalShippingOutlined, PauseCircleFilled } from "@mui/icons-material"
-// Hooks, Types, Context, API
+import {
+  LocalShippingOutlined,
+  PauseCircleFilled,
+  GetApp,
+} from "@mui/icons-material"
+
 import { useSnackBar } from "context/GlobalContext"
 import { Order, OrderStatus, GlobalPaymentStatus } from "types/order.types"
 import Title from "@apps/admin/components/Title"
 import ConfirmationDialog from "@components/ConfirmationDialog/ConfirmationDialog"
 import { deleteOrder, getOrders } from "@api/order.api"
-
-// Interface for Order data from API (assuming more details might be available)
+import excelJS from "exceljs"
+import moment from "moment"
+import "moment/locale/es"
+import { format } from "date-fns"
 interface OrderSummary {
   _id: string
   orderNumber?: number
@@ -134,7 +142,7 @@ const ReadOrders: React.FC = () => {
   const navigate = useNavigate()
   const { showSnackBar } = useSnackBar()
 
-  // --- State ---
+  const [rawOrders, setRawOrders] = useState<Order[]>([])
   const [allOrders, setAllOrders] = useState<OrderSummary[]>([]) // Store all fetched orders
   const [filteredOrders, setFilteredOrders] = useState<OrderSummary[]>([]) // Orders after filtering
   const [isLoading, setIsLoading] = useState<boolean>(true)
@@ -142,13 +150,10 @@ const ReadOrders: React.FC = () => {
   const [isDeleting, setIsDeleting] = useState<boolean>(false)
   const [dialogOpen, setDialogOpen] = useState<boolean>(false)
   const [orderToDelete, setOrderToDelete] = useState<OrderSummary | null>(null)
-  // --- Pagination State ---
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(10)
-  // --- Filtering State ---
   const [searchTerm, setSearchTerm] = useState("")
 
-  // --- Fetch Data ---
   const loadOrders = useCallback(
     async (showLoading = true) => {
       if (showLoading) setIsLoading(true)
@@ -194,18 +199,15 @@ const ReadOrders: React.FC = () => {
             seller: order.seller,
             observations: order.observations,
             createdBy: order.seller,
-            // Campos personalizados poblados:
             customerName: customer
               ? `${customer.name} ${customer.lastName}`.trim()
               : "Sin Registrar",
             customerEmail: customer?.email || "",
             primaryStatus: getLatestStatus(order.status),
             shippingMethodName: shipping?.method?.name || "N/A",
-            // Accede al nombre del método desde la primera cuota (installment)
-            paymentMethodName: payment?.payments?.[0]?.method?.name || "N/A",
+            paymentMethodName: payment?.payment?.[0]?.method?.name || "N/A",
           }
         })
-        // --- FIN CORRECCIÓN ---
 
         if (fetchedOrders.some((o) => !o._id))
           console.error("Some orders missing '_id'.")
@@ -214,6 +216,7 @@ const ReadOrders: React.FC = () => {
             new Date(b.createdOn).getTime() - new Date(a.createdOn).getTime()
         )
         setAllOrders(fetchedOrders)
+        setRawOrders(orders)
         setFilteredOrders(fetchedOrders)
       } catch (err: any) {
         const message = err.message || "Error al cargar las órdenes."
@@ -231,7 +234,6 @@ const ReadOrders: React.FC = () => {
     loadOrders()
   }, [loadOrders])
 
-  // --- Filtering Logic ---
   useEffect(() => {
     const lowerSearchTerm = searchTerm.toLowerCase()
     const filtered = allOrders.filter((order) => {
@@ -252,29 +254,27 @@ const ReadOrders: React.FC = () => {
     setPage(0) // Reset page when filter changes
   }, [searchTerm, allOrders])
 
-  // --- Pagination Handlers ---
   const handleChangePage = (event: unknown, newPage: number) => setPage(newPage)
   const handleChangeRowsPerPage = (event: ChangeEvent<HTMLInputElement>) => {
     setRowsPerPage(parseInt(event.target.value, 10))
     setPage(0)
   }
 
-  // --- Delete Handling (same as before) ---
   const handleOpenDeleteDialog = (order: OrderSummary) => {
-    /* ... */ if (!order._id) {
+    if (!order._id) {
       showSnackBar("Falta ID.")
       return
     }
     setOrderToDelete(order)
     setDialogOpen(true)
   }
+
   const handleCloseDialog = () => {
-    /* ... */ if (isDeleting) return
+    if (isDeleting) return
     setDialogOpen(false)
     setOrderToDelete(null)
   }
   const handleConfirmDelete = async () => {
-    /* ... */
     if (!orderToDelete?._id) {
       showSnackBar("Error.")
       setIsDeleting(false)
@@ -297,19 +297,17 @@ const ReadOrders: React.FC = () => {
     }
   }
 
-  // --- Update & Create Handling (same as before) ---
   const handleUpdate = (orderId: string) => {
-    /* ... */ if (!orderId) {
+    if (!orderId) {
       showSnackBar("Falta ID.")
       return
     }
     navigate(`/admin/orders/update/${orderId}`)
   }
   const handleCreate = () => {
-    /* ... */ navigate("/admin/orders/create")
+    navigate("/admin/orders/create")
   }
 
-  // --- Render Logic ---
   const renderContent = () => {
     // ... (Loading, Empty, Error states handled above table) ...
     if (isLoading) return null
@@ -483,10 +481,138 @@ const ReadOrders: React.FC = () => {
     )
   }
 
+  const getLatestStatus = <T,>(
+    statusHistory: [T, Date][] | undefined
+  ): T | undefined | any => {
+    if (!statusHistory || statusHistory.length === 0) {
+      return undefined
+    }
+    return statusHistory[statusHistory.length - 1][0]
+  }
+
+  const formatDate = (date: Date | undefined): string => {
+    return date ? format(new Date(date), "dd/MM/yyyy") : ""
+  }
+
+  const formatPrice = (price: number | undefined): string => {
+    return price !== undefined ? `$${price.toFixed(2)}` : "$0.00"
+  }
+
+  const stripHtml = (html?: string): string => {
+    return html ? html.replace(/<[^>]+>/g, "") : ""
+  }
+
+  const downloadOrders = async (orders: Order[]): Promise<void> => {
+    const workbook = new excelJS.Workbook()
+    const worksheet = workbook.addWorksheet(`Pedidos Detallados`)
+
+    worksheet.columns = [
+      { header: "status", key: "status", width: 16 },
+      { header: "ID", key: "orderId", width: 10 },
+      { header: "Fecha de solicitud", key: "createdOn", width: 12 },
+      { header: "Nombre del cliente", key: "customerName", width: 24 },
+      { header: "Tipo de cliente", key: "customerType", width: 12 }, // Dato a revisar
+      { header: "Prixer", key: "prixer", width: 18 },
+      { header: "Arte", key: "art", width: 24 },
+      { header: "Producto", key: "product", width: 20 },
+      { header: "Atributo", key: "attributes", width: 20 },
+      { header: "Cantidad", key: "quantity", width: 10 },
+      { header: "Costo unitario", key: "unitPrice", width: 12 },
+      { header: "Observación", key: "observations", width: 18 },
+      { header: "Vendedor", key: "seller", width: 16 },
+      { header: "Método de pago", key: "paymentMethod", width: 14 },
+      { header: "Validación del pago", key: "paymentStatus", width: 12 },
+      { header: "Fecha de pago", key: "paymentDate", width: 11 },
+      { header: "Método de entrega", key: "shippingMethod", width: 14 },
+      { header: "Fecha de entrega", key: "deliveryDate", width: 11 },
+    ]
+
+    worksheet.getRow(1).eachCell((cell: any) => {
+      cell.font = { bold: true }
+      cell.border = {
+        top: { style: "thin" },
+        left: { style: "thin" },
+        bottom: { style: "thin" },
+        right: { style: "thin" },
+      }
+      cell.alignment = {
+        vertical: "middle",
+        horizontal: "center",
+        wrapText: true,
+      }
+    })
+
+    for (const order of orders) {
+      for (const line of order.lines) {
+        const rowData = {
+          status:
+            OrderStatus[getLatestStatus(order.status) ?? OrderStatus.Pending],
+          orderId: order.number,
+          createdOn: formatDate(order.createdOn),
+          customerName: `${order.consumerDetails?.basic.name || ""} ${order.consumerDetails?.basic.lastName || ""}`,
+          customerType: "N/A", // NOTA: 'consumerType' no está en la nueva interfaz. Necesitarías agregarlo a ConsumerDetails si lo requieres.
+          observations: stripHtml(order.observations),
+          seller: order.seller || order.createdBy,
+          paymentMethod: order.payment?.payment
+            ? order.payment?.payment[0]?.method.name
+            : "N/A",
+          paymentStatus:
+            GlobalPaymentStatus[
+              getLatestStatus(order.payment.status) ??
+                GlobalPaymentStatus.Pending
+            ],
+          paymentDate: formatDate(
+            getLatestStatus(order.payment.status)
+              ? order.payment.status[order.payment.status.length - 1][1]
+              : undefined
+          ), // Antigua: order.payDate
+          shippingMethod: order.shipping.method?.name,
+          deliveryDate: formatDate(order.shipping.estimatedDeliveryDate),
+          prixer: line.item.art?.prixerUsername || "N/A",
+          art: line.item.art?.title || "N/A",
+          product: line.item.product?.name || "N/A",
+          attributes:
+            typeof line.item.product?.selection === "string"
+              ? line.item.product.selection
+              : line.item.product?.selection
+                  ?.map((attr: any) => attr.value)
+                  .join(", ") || "",
+          quantity: line.quantity,
+          unitPrice: formatPrice(line.pricePerUnit),
+        }
+
+        const row = worksheet.addRow(rowData)
+        row.eachCell({ includeEmpty: true }, (cell: any) => {
+          cell.font = { bold: true }
+          cell.border = {
+            top: { style: "thin" },
+            left: { style: "thin" },
+            bottom: { style: "thin" },
+            right: { style: "thin" },
+          }
+          cell.alignment = {
+            vertical: "middle",
+            horizontal: "center",
+            wrapText: true,
+          }
+        })
+      }
+    }
+
+    const buffer = await workbook.xlsx.writeBuffer()
+    const blob = new Blob([buffer], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    })
+    const link = document.createElement("a")
+    link.href = URL.createObjectURL(blob)
+    const date = format(new Date(), "dd-MM-yyyy")
+    link.download = `Pedidos ${date}.xlsx`
+    link.click()
+  }
+
   return (
     <>
       <Title title="Gestionar Órdenes" />
-      {/* Header with Create Button and Search Bar */}
       <Stack
         direction={{ xs: "column", sm: "row" }}
         justifyContent="space-between"
@@ -510,15 +636,29 @@ const ReadOrders: React.FC = () => {
           }}
           sx={{ width: { xs: "100%", sm: 350 } }} // Responsive width
         />
-        <Button
-          variant="contained"
-          startIcon={<AddIcon />}
-          onClick={handleCreate}
-          disabled={isLoading || isDeleting}
-          sx={{ width: { xs: "100%", sm: "auto" } }}
-        >
-          Crear Orden
-        </Button>
+        {/* TO DO: Check if works succesfully */}
+        <Grid2 sx={{ display: "flex" }}>
+          <Tooltip title="Descargar listado" style={{ height: 40, width: 40 }}>
+            <Fab
+              color="secondary"
+              size="small"
+              onClick={() => downloadOrders(rawOrders)}
+              style={{ marginRight: 10 }}
+            >
+              <GetApp />
+            </Fab>
+          </Tooltip>
+          <Tooltip title="Crear pedido" style={{ height: 40, width: 40 }}>
+            <Fab
+              color="primary"
+              size="small"
+              onClick={handleCreate}
+              disabled={isLoading || isDeleting}
+            >
+              <AddIcon />
+            </Fab>
+          </Tooltip>
+        </Grid2>
       </Stack>
 
       {isLoading && (

@@ -705,7 +705,7 @@ export default function UpdateOrder() {
     /* ... (lógica de displayTotals sin cambios) ... */ if (!order)
       return setDisplayTotals(null)
     const newSubTotal = editableOrderLines.reduce(
-      (sum, line) => sum + (line.pricePerUnit || 0) * (line.quantity || 1),
+      (sum, line) => sum + (line?.item?.price ? Number(line?.item?.price) : 0) * (line.quantity || 1),
       0
     )
     const newShippingCost = selectedShippingMethod
@@ -2153,17 +2153,16 @@ export default function UpdateOrder() {
                                 variant="body2"
                                 sx={{ fontWeight: "medium" }}
                               >
-                                ${(line.pricePerUnit || 0).toFixed(2)} c/u
+                                ${(line?.item?.price ? Number(line?.item?.price) : 0).toFixed(2)} c/u
                               </Typography>
                               <Typography
                                 variant="subtitle2"
                                 color="primary.main"
                               >
                                 $
-                                {(
-                                  (line.quantity || 0) *
-                                  (line.pricePerUnit || 0)
-                                ).toFixed(2)}
+                                {
+                                  ((line.quantity || 0) *
+                                  (line?.item?.price ? Number(line?.item?.price) : 0)).toFixed(2)}
                               </Typography>
                             </Grid2>
                           </Grid2>
@@ -2450,7 +2449,6 @@ export default function UpdateOrder() {
                     </Typography>
                     {editableShippingAddress && (
                       <EditableAddressForm
-                        title=""
                         address={editableShippingAddress}
                         onAddressChange={handleShippingAddressChange}
                         isDisabled={isSubmitting}
@@ -2498,7 +2496,6 @@ export default function UpdateOrder() {
                     </Typography>
                     {editableBillingAddress && (
                       <EditableAddressForm
-                        title=""
                         address={editableBillingAddress}
                         onAddressChange={handleBillingAddressChange}
                         isDisabled={isSubmitting}

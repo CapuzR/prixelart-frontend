@@ -1025,11 +1025,15 @@ const ReadOrderArchives: React.FC = () => {
           art: line.art?.title || "N/A",
           product: line.product?.name || "N/A",
           attributes:
-            typeof line.product?.selection === "object"
-              ? line.product?.selection?.attributes?.map(
+            Array.isArray(line.product?.selection)
+              ? line.product?.selection.join(", ")
+              : typeof line.product?.selection === "object" && line.product?.selection.attributes
+              ? line.product?.selection.attributes.map(
                   (attr: any) => `${attr.name}: ${attr.value}`
-                )
-              : line.product.selection,
+                ).join(", ")
+              : typeof line.product?.selection === "string"
+              ? line.product?.selection
+              : "",
           quantity: line.quantity,
           unitPrice: line.product.finalPrice,
         }

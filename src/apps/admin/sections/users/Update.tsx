@@ -282,7 +282,7 @@ const UpdateUser: React.FC = () => {
         )
         throw new Error(response.data.message || "Authentication failed")
       }
-      setBalance(response?.data?.result?.balance)
+      setBalance((response?.data?.result as { balance: number }).balance)
     } catch (e) {
       console.log(e)
       throw e

@@ -33,6 +33,7 @@ export interface ConsumerDetails {
   selectedAddress: BasicAddress
   addresses: Address[]
   paymentMethods: PaymentMethod[]
+  // add consumerType
 }
 
 export interface Payment {

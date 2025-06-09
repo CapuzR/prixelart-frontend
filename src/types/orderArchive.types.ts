@@ -241,7 +241,7 @@ export interface AttributesAttribute {
     value: string[];
 }
 
-type AttributeName = "Material" | "Tipo" | "Medida" | "Cantidad" | "Talla" | "Color" | "Opciones" | "Piezas";
+export type AttributeName = "Material" | "Tipo" | "Medida" | "Cantidad" | "Talla" | "Color" | "Opciones" | "Piezas";
 
 export interface AttributesClass {
     color: Color[];
@@ -296,7 +296,7 @@ interface PriceRange {
     considerations?: string;
     publicPrice?: SelectionPrixerPrice;
     prixerPrice?: SelectionPrixerPrice;
-    attributes: SelectionAttribute[];
+    attributes?: SelectionAttribute[];
     variantImage?: VariantImageElement[];
 }
 

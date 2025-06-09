@@ -2450,7 +2450,6 @@ export default function UpdateOrder() {
                     </Typography>
                     {editableShippingAddress && (
                       <EditableAddressForm
-                        title=""
                         address={editableShippingAddress}
                         onAddressChange={handleShippingAddressChange}
                         isDisabled={isSubmitting}
@@ -2498,7 +2497,6 @@ export default function UpdateOrder() {
                     </Typography>
                     {editableBillingAddress && (
                       <EditableAddressForm
-                        title=""
                         address={editableBillingAddress}
                         onAddressChange={handleBillingAddressChange}
                         isDisabled={isSubmitting}

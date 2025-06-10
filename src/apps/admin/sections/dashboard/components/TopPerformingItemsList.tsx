@@ -25,7 +25,7 @@ export const TopPerformingItemsList: React.FC<TopPerformingItemsListProps> = ({ 
                         </ListItemAvatar>
                         <ListItemText
                             primary={item.name}
-                            secondary={`${item.quantity} unidades vendidas - Ganancia: $${item.revenue.toFixed(2)}`}
+                            secondary={`${item.quantity} unidades vendidas`}
                         />
                     </ListItem>
                 ))}

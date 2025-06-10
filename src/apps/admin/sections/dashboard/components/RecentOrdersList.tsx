@@ -21,7 +21,7 @@ export const RecentOrdersList: React.FC<RecentOrdersListProps> = ({ orders, load
                             }
                         >
                             <ListItemText
-                                primary={`Órden #${order.number || order._id?.toString().slice(-6)} - $${order.total.toFixed(2)}`}
+                                primary={`Órden #${order.number || order._id?.toString().slice(-6)}`}
                                 secondary={`On: ${new Date(order.createdOn).toLocaleDateString()} - Status: ${order.lines.length > 0 ? OrderStatus[order.lines[0].status[order.lines[0].status.length - 1][0]] : 'N/A'}`}
                             />
                         </ListItem>

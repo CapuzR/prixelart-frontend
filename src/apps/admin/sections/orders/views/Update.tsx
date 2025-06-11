@@ -140,6 +140,9 @@ import BrokenImageIcon from "@mui/icons-material/BrokenImage"
 import { getCurrentOrderStatus } from "@apps/consumer/trackOrder/utils"
 import EditableAddressForm from "./components/EditableAddressForm"
 
+import { getPermissions } from "@api/admin.api"
+import { Permissions } from "types/permissions.types"
+
 // --- Type Enhancements ---
 interface MethodOption {
   id: string
@@ -188,9 +191,8 @@ interface ImageUploadState {
   isExisting?: boolean // Para diferenciar imágenes cargadas vs. nuevas
 }
 
-const VOUCHER_IMAGE_ASPECT = 0 // 0 para recorte libre, o un aspect ratio específico ej. 2/3 o 4/5
+const VOUCHER_IMAGE_ASPECT = 0
 
-// --- Estilos ---
 const useStyles = makeStyles()((theme: Theme) => {
   return {
     appBar: { position: "relative" },
@@ -390,11 +392,13 @@ const Transition = React.forwardRef(function Transition(
 export default function UpdateOrder() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
+  const [permissions, setPermissions] = useState<Permissions | null>(null)
   const { showSnackBar: showSnackBarFromContext, showSnackBar } = useSnackBar()
   const showSnackBarRef = useRef(showSnackBarFromContext)
   useEffect(() => {
     showSnackBarRef.current = showSnackBarFromContext
   }, [showSnackBarFromContext])
+console.log(permissions)
 
   const theme = useTheme()
   const { classes } = useStyles()
@@ -510,6 +514,11 @@ export default function UpdateOrder() {
       },
     }
   }, [])
+
+    const readPermissions = async () => {
+      const response = await getPermissions()
+      setPermissions(response)
+    }
 
   const loadData = useCallback(async () => {
     const showSnackBar = showSnackBarRef.current
@@ -753,6 +762,7 @@ export default function UpdateOrder() {
 
   useEffect(() => {
     loadData()
+    readPermissions()
   }, [])
 
   useEffect(() => {
@@ -2021,6 +2031,7 @@ export default function UpdateOrder() {
                   <InputLabel>Estado de Pago</InputLabel>
                   <Select
                     label="Estado de pago"
+                    disabled={!permissions?.detailPay}
                     value={getLatestpayOrderStatus(order)}
                     onChange={(e) =>
                       handleOrderPayStatusChange(

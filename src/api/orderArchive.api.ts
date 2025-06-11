@@ -57,7 +57,7 @@ export const getOrderArchives = async (options: GetOrdersOptions): Promise<Pagin
 
     // Construct the full API endpoint URL
     const url = `${BACKEND_URL}/orderArchive/read-all?${params.toString()}`;
-    console.log("Fetching orders from:", url); // Optional: log the URL for debugging
+    // console.log("Fetching orders from:", url); // Optional: log the URL for debugging
 
     try {
         // Make the GET request

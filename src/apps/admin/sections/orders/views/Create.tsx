@@ -11,7 +11,7 @@ import React, {
 import { useNavigate } from "react-router-dom"
 import Grid2 from "@mui/material/Grid"
 import { v4 as uuidv4 } from "uuid"
-
+import favicon from "../../../../../../public/favicon.png"
 // Hooks, Types, Context, API
 import { useSnackBar } from "context/GlobalContext"
 import {
@@ -86,6 +86,7 @@ import {
   ShippingDetails,
   Payment,
   GlobalPaymentStatus,
+  CustomImage,
 } from "types/order.types"
 import { Product, Variant } from "types/product.types"
 import { Art, PickedArt } from "types/art.types"
@@ -105,7 +106,7 @@ interface ArtOption {
   id: string
   label: string
   thumb: string
-  fullArt: Art
+  fullArt: Art | CustomImage
 }
 interface PrixerOption {
   id: string
@@ -207,7 +208,7 @@ const CreateOrder: React.FC = () => {
   const [orderLines, setOrderLines] = useState<OrderLineFormState[]>([
     { ...initialLine, tempId: uuidv4() },
   ])
-
+  console.log(orderLines[0]?.selectedArt)
   const [editableShippingAddress, setEditableShippingAddress] =
     useState<Address | null>(null)
   const [editableBillingAddress, setEditableBillingAddress] =
@@ -291,16 +292,47 @@ const CreateOrder: React.FC = () => {
           fullProduct: p,
         }))
       )
-      setArtOptions(
-        arts.map((a) => ({
-          id: a._id!.toString(),
-          label: a.title,
-          thumb: a.squareThumbUrl || a.smallThumbUrl || "",
-          fullArt: a,
-        }))
-      )
+
+      const existingArts = arts.map((a) => ({
+        id: a._id!.toString(),
+        label: a.title,
+        thumb: a.squareThumbUrl || a.smallThumbUrl || "",
+        fullArt: a,
+      }))
+
       const allArtist = arts.map((art) => art.prixerUsername)
       const onlyPrixers = [...new Set(allArtist)]
+
+      const customImageOptions = onlyPrixers.map((prixerUsername) => {
+        const customArtPlaceholder: CustomImage = {
+          id: `custom-image-${prixerUsername}`,
+          title: `Personalizado de ${prixerUsername}`,
+          prixerUsername: prixerUsername,
+          url: "",
+        }
+
+        return {
+          id: customArtPlaceholder.id,
+          label: customArtPlaceholder.title,
+          thumb: favicon,
+          fullArt: customArtPlaceholder,
+        }
+      })
+
+      const genericCustom = {
+        id: "0000000",
+        label: `Personalizado`,
+        thumb: favicon,
+        fullArt: {
+          id: `custom-image-without-prixer`,
+          title: `Personalizado`,
+          prixerUsername: "",
+          url: "",
+        },
+      }
+      customImageOptions.unshift(genericCustom)
+      setArtOptions([...existingArts, ...customImageOptions])
+
       const onlyPrixersv2: PrixerOption[] = onlyPrixers.map((prixer, i) => {
         return {
           id: (1000 + i).toString(),
@@ -498,7 +530,6 @@ const CreateOrder: React.FC = () => {
               },
             }
       )
-
     }
   }
 
@@ -647,7 +678,6 @@ const CreateOrder: React.FC = () => {
       }
 
       const lines: OrderLine[] = orderLines.map((l) => {
-        // Validar que el producto está seleccionado (ya hecho en validateForm, pero es bueno ser seguro)
         if (!l.selectedProduct) {
           throw new Error(
             "Error interno: Producto no seleccionado en una línea."
@@ -659,14 +689,21 @@ const CreateOrder: React.FC = () => {
           item: {
             sku: `${l.selectedProduct.id}-${l.selectedVariant?.id || "novar"}-${l.selectedArt?.id || "noart"}`,
             art: l.selectedArt
-              ? {
-                  _id: l.selectedArt.fullArt._id,
-                  artId: l.selectedArt.fullArt.artId,
-                  title: l.selectedArt.fullArt.title,
-                  largeThumbUrl: l.selectedArt.fullArt.largeThumbUrl,
-                  prixerUsername: l.selectedArt.fullArt.prixerUsername,
-                  exclusive: l.selectedArt.fullArt.exclusive,
-                }
+              ? (() => {
+                  const fullArt = l.selectedArt.fullArt
+                  if ("_id" in fullArt) {
+                    return {
+                      _id: fullArt._id,
+                      artId: fullArt.artId,
+                      title: fullArt.title,
+                      largeThumbUrl: fullArt.largeThumbUrl,
+                      prixerUsername: fullArt.prixerUsername,
+                      exclusive: fullArt.exclusive,
+                    }
+                  } else {
+                    return fullArt
+                  }
+                })()
               : undefined,
             product: {
               _id: l.selectedProduct.fullProduct._id,
@@ -686,9 +723,7 @@ const CreateOrder: React.FC = () => {
         }
       })
 
-      // Crear el objeto payload completo
       const payload: Order = {
-        // Es mejor tiparlo como Order si vas a enviar casi todo
         lines,
         consumerDetails,
         payment: paymentDetails,
@@ -702,17 +737,16 @@ const CreateOrder: React.FC = () => {
         subTotal: displayTotals.subTotal,
         shippingCost: displayTotals.shippingCost,
         tax: displayTotals.taxes,
-        totalWithoutTax: displayTotals.subTotal, // O base imponible si es diferente
+        totalWithoutTax: displayTotals.subTotal,
         total: displayTotals.total,
         observations: observations || undefined,
-        // Agrega cualquier otro campo obligatorio o deseado de la interfaz Order
       }
 
       console.log(
         "Creando orden con payload:",
         JSON.stringify(payload, null, 2)
-      ) // Para depuración
-      await createOrder(payload as Order) // Asegúrate que el payload cumpla con Order o usa Partial<Order> si es necesario
+      )
+      await createOrder(payload as Order)
       showSnackBar("Orden creada exitosamente.")
       navigate("/admin/orders/read")
     } catch (err: any) {
@@ -780,7 +814,7 @@ const CreateOrder: React.FC = () => {
                         variant="rounded"
                         src={
                           line.selectedProduct?.fullProduct.sources?.images?.[0]
-                            ?.url || "https://via.placeholder.com/80"
+                            ?.url
                         }
                         alt={line.selectedProduct?.label || "Producto"}
                         sx={{
@@ -795,7 +829,6 @@ const CreateOrder: React.FC = () => {
 
                     <Grid2 size={{ xs: 12, sm: 10 }}>
                       <Grid2 container spacing={1.5} alignItems="center">
-                        {/* Product */}
                         <Grid2 size={{ xs: 12, md: 6 }}>
                           <Grid2 container spacing={1} alignItems="center">
                             <Autocomplete
@@ -879,11 +912,6 @@ const CreateOrder: React.FC = () => {
                                             $
                                           </InputAdornment>
                                         ),
-                                        // endAdornment: (
-                                        //   <InputAdornment position="end">
-                                        //     c/u
-                                        //   </InputAdornment>
-                                        // ),
                                       },
                                     }}
                                   />
@@ -944,7 +972,7 @@ const CreateOrder: React.FC = () => {
                               onChange={(e, v) => handleArt(line.tempId, v)}
                               disabled={isSubmitting}
                               renderOption={(props, op) => (
-                                <Box component="li" {...props}>
+                                <Box component="li" {...props} key={op.id}>
                                   <Avatar
                                     variant="rounded"
                                     src={op.thumb}
@@ -1009,12 +1037,8 @@ const CreateOrder: React.FC = () => {
               <List dense disablePadding>
                 {/* Subtotal */}
                 <ListItem sx={{ px: 0 }}>
-                  <ListItemText
-                    primary="Subtotal:"
-                  />
-                    <Typography>
-                    ${displayTotals?.subTotal.toFixed(2)}
-                  </Typography>
+                  <ListItemText primary="Subtotal:" />
+                  <Typography>${displayTotals?.subTotal.toFixed(2)}</Typography>
                 </ListItem>
 
                 {/* IVA, IGTF, etc. */}

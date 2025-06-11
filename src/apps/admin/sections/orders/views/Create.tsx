@@ -11,8 +11,8 @@ import React, {
 import { useNavigate } from "react-router-dom"
 import Grid2 from "@mui/material/Grid"
 import { v4 as uuidv4 } from "uuid"
-import favicon from "../../../../../../public/favicon.png"
-// Hooks, Types, Context, API
+import favicon from "../../../../../images/favicon.png"
+
 import { useSnackBar } from "context/GlobalContext"
 import {
   fetchShippingMethods,
@@ -22,7 +22,6 @@ import {
 import { fetchActiveProducts } from "@api/product.api"
 import { getArts } from "@api/art.api"
 
-// MUI Components
 import {
   Box,
   Typography,

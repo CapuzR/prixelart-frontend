@@ -22,6 +22,7 @@ import OrderDetailsPage from "./trackOrder/OrderDetailsPage"
 import ConditionalFB from "@components/floatingAddButton/Conditional"
 import ArtUploader from "@apps/artist/artUploader"
 import CreateService from "@components/createService"
+import ResetPassword from "apps/artist/passwordReset/passwordReset"
 
 const ConsumerRoutes: React.FC = () => {
 
@@ -36,6 +37,8 @@ const ConsumerRoutes: React.FC = () => {
         <Route path="/registrar" element={<SignUp />} />
         <Route path="/cambio-contraseña" element={<PasswordChange />} />
         <Route path="/olvido-contraseña" element={<ForgotPassword />} />
+        <Route path="/recuperar/:token" element={<ResetPassword />} />
+
         <Route path="/productos" element={<Products />} />
         <Route path="/galeria" element={<Catalog />} />
         <Route path="/prixers" element={<Prixers />} />

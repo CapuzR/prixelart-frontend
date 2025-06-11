@@ -12,7 +12,7 @@ import React, {
 } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import { v4 as uuidv4 } from "uuid"
-import favicon from "../../../../../../public/favicon.png"
+import favicon from "../../../../../images/favicon.png"
 
 // Hooks, Types, Context, API
 import { useSnackBar, usePrixerCreator, useUser } from "context/GlobalContext" // useLoading no se usa directamente aquí

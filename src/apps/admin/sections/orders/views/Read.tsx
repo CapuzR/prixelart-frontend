@@ -1,6 +1,12 @@
 // src/apps/admin/sections/orders/views/ReadOrders.tsx
-import React, { useState, useEffect, useCallback, ChangeEvent } from "react"
-import { useNavigate } from "react-router-dom"
+import React, {
+  useRef,
+  useState,
+  useEffect,
+  useCallback,
+  ChangeEvent,
+} from "react"
+import { useNavigate, useSearchParams } from "react-router-dom"
 
 // MUI Components
 import {
@@ -25,6 +31,12 @@ import {
   TextField,
   InputAdornment,
   Fab,
+  InputLabel,
+  ToggleButton,
+  FormControl,
+  Select,
+  MenuItem,
+  SelectChangeEvent,
 } from "@mui/material"
 import Grid2 from "@mui/material/Grid" // Assuming this is Material UI's Unstable_Grid2 or similar
 import EditIcon from "@mui/icons-material/Edit"
@@ -34,11 +46,17 @@ import InfoIcon from "@mui/icons-material/Info"
 import CheckCircleIcon from "@mui/icons-material/CheckCircle"
 import CancelIcon from "@mui/icons-material/Cancel"
 import SearchIcon from "@mui/icons-material/Search"
+import FilterListOffIcon from "@mui/icons-material/FilterListOff"
 import {
   LocalShippingOutlined,
   PauseCircleFilled,
   GetApp,
 } from "@mui/icons-material"
+import {
+  PickerChangeHandlerContext,
+  DateValidationError,
+} from "@mui/x-date-pickers"
+import { DatePicker } from "@mui/x-date-pickers/DatePicker"
 
 import { useSnackBar } from "context/GlobalContext"
 import { Order, OrderStatus, GlobalPaymentStatus } from "types/order.types"
@@ -48,7 +66,10 @@ import { deleteOrder, getOrders } from "@api/order.api"
 import excelJS from "exceljs"
 import moment from "moment"
 import "moment/locale/es"
-import { format } from "date-fns"
+import { format, parseISO, isValid } from "date-fns"
+import { Permissions } from "types/permissions.types"
+import { getPermissions } from "@api/admin.api"
+
 interface OrderSummary {
   _id: string
   orderNumber?: number
@@ -64,8 +85,6 @@ interface OrderSummary {
   shippingDate?: Date
   createdBy?: string
 }
-
-const formatCurrency = (value: number): string => `$${value.toFixed(2)}`
 
 const getStatusChipProps = (
   status?: OrderStatus
@@ -141,10 +160,12 @@ const getpayStatusChipProps = (
 const ReadOrders: React.FC = () => {
   const navigate = useNavigate()
   const { showSnackBar } = useSnackBar()
+  const [searchParams, setSearchParams] = useSearchParams()
+  const [permissions, setPermissions] = useState<Permissions | null>(null)
 
   const [rawOrders, setRawOrders] = useState<Order[]>([])
-  const [allOrders, setAllOrders] = useState<OrderSummary[]>([]) // Store all fetched orders
-  const [filteredOrders, setFilteredOrders] = useState<OrderSummary[]>([]) // Orders after filtering
+  const [allOrders, setAllOrders] = useState<OrderSummary[]>([])
+  const [filteredOrders, setFilteredOrders] = useState<OrderSummary[]>([])
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
   const [isDeleting, setIsDeleting] = useState<boolean>(false)
@@ -153,13 +174,40 @@ const ReadOrders: React.FC = () => {
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(10)
   const [searchTerm, setSearchTerm] = useState("")
+  const [isFilteringLoading, setIsFilteringLoading] = useState<boolean>(false)
+
+  const parseDateParam = (param: string | null): Date | null => {
+    if (!param) return null
+    const date = parseISO(param)
+    return isValid(date) ? date : null
+  }
+
+  const [searchQuery, setSearchQuery] = useState<string>(
+    () => searchParams.get("search") || ""
+  )
+  const [filterStatus, setFilterStatus] = useState<string>(
+    () => searchParams.get("status") || ""
+  )
+  const [filterPayStatus, setFilterPayStatus] = useState<string>(
+    () => searchParams.get("payStatus") || ""
+  )
+  const [startDate, setStartDate] = useState<Date | null>(() =>
+    parseDateParam(searchParams.get("startDate"))
+  )
+  const [endDate, setEndDate] = useState<Date | null>(() =>
+    parseDateParam(searchParams.get("endDate"))
+  )
+  const [filterIsNotConcretado, setFilterIsNotConcretado] = useState<boolean>(
+    () => searchParams.get("excludeStatus") === "Concretado"
+  )
+  const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   const loadOrders = useCallback(
     async (showLoading = true) => {
       if (showLoading) setIsLoading(true)
       setError(null)
       try {
-        const orders = (await getOrders()) as Order[] // Obtienes las órdenes completas
+        const orders = (await getOrders()) as Order[]
 
         const fetchedOrders: OrderSummary[] = orders.map((order) => {
           const getLatestStatus = (
@@ -230,29 +278,115 @@ const ReadOrders: React.FC = () => {
     [showSnackBar]
   )
 
+  const readPermissions = async () => {
+    const response = await getPermissions()
+    setPermissions(response)
+  }
+  const ALL_STATUSES = [
+    "Por producir",
+    "En impresión",
+    "En producción",
+    "Por entregar",
+    "Entregado",
+    "Concretado",
+    "Detenido",
+    "Anulado",
+  ]
+
+  const ALL_PAY_STATUSES = ["Pendiente", "Pagado", "Abonado", "Anulado"]
+
   useEffect(() => {
     loadOrders()
+    readPermissions()
   }, [loadOrders])
 
   useEffect(() => {
     const lowerSearchTerm = searchTerm.toLowerCase()
+    let adjustedEndDate: Date | null = null
+    if (endDate) {
+      adjustedEndDate = new Date(endDate)
+      adjustedEndDate.setHours(23, 59, 59, 999)
+    }
     const filtered = allOrders.filter((order) => {
-      const orderNumMatch = order.orderNumber
-        ?.toString()
-        .includes(lowerSearchTerm)
-      const customerMatch = order.customerName
-        ?.toLowerCase()
-        .includes(lowerSearchTerm)
-      const emailMatch = order.customerEmail
-        ?.toLowerCase()
-        .includes(lowerSearchTerm)
-      const idMatch = order._id?.toLowerCase().includes(lowerSearchTerm)
-      // Add more fields to search  (status, etc.)
-      return orderNumMatch || customerMatch || emailMatch || idMatch
+      const textMatch =
+        !searchTerm ||
+        order._id?.toString().toLowerCase().includes(lowerSearchTerm) ||
+        order.customerName?.toLowerCase().includes(lowerSearchTerm) ||
+        order.customerEmail?.toLowerCase().includes(lowerSearchTerm)
+
+      const statusMatch =
+        filterStatus === "" ||
+        order?.primaryStatus?.toString() ===
+          ALL_STATUSES.indexOf(filterStatus).toString()
+
+      const payStatusMatch =
+        filterPayStatus === "" ||
+        order?.payStatus?.toString() ===
+          ALL_PAY_STATUSES.indexOf(filterPayStatus).toString()
+
+      const dateMatch =
+        (!startDate || new Date(order.createdOn) >= startDate) &&
+        (!adjustedEndDate || new Date(order.createdOn) <= adjustedEndDate)
+
+      return textMatch && statusMatch && payStatusMatch && dateMatch
     })
     setFilteredOrders(filtered)
-    setPage(0) // Reset page when filter changes
-  }, [searchTerm, allOrders])
+    setPage(0)
+    console.log(filtered)
+  }, [searchTerm, filterStatus, filterPayStatus, allOrders, startDate, endDate])
+
+  const handleSearchChange = (
+    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const value = event.target.value
+    setSearchTerm(value)
+
+    if (debounceTimeoutRef.current) {
+      clearTimeout(debounceTimeoutRef.current)
+    }
+
+    debounceTimeoutRef.current = setTimeout(() => {
+      triggerSearchOrFilter()
+    }, 500)
+  }
+
+  const triggerSearchOrFilter = useCallback(() => {
+    setPage(0)
+  }, [])
+
+  const handleSelectFilterChange =
+    (setter: React.Dispatch<React.SetStateAction<any>>) =>
+    (event: SelectChangeEvent<any>) => {
+      const value = event.target.value
+      setter(value)
+      if (setter === setFilterStatus && value !== "") {
+        setFilterIsNotConcretado(false)
+      }
+      triggerSearchOrFilter()
+    }
+
+  const handleDateFilterChange =
+    (setter: React.Dispatch<React.SetStateAction<Date | null>>) =>
+    (
+      value: unknown,
+      context: PickerChangeHandlerContext<DateValidationError>
+    ) => {
+      setter(value as Date | null)
+      triggerSearchOrFilter()
+    }
+
+  const handleClearFilters = () => {
+    setSearchQuery("")
+    setFilterStatus("")
+    setFilterPayStatus("")
+    setStartDate(null)
+    setEndDate(null)
+    setFilterIsNotConcretado(false)
+    setPage(0)
+    if (debounceTimeoutRef.current) {
+      clearTimeout(debounceTimeoutRef.current)
+    }
+  }
 
   const handleChangePage = (event: unknown, newPage: number) => setPage(newPage)
   const handleChangeRowsPerPage = (event: ChangeEvent<HTMLInputElement>) => {
@@ -285,7 +419,6 @@ const ReadOrders: React.FC = () => {
     try {
       await deleteOrder(orderToDelete._id)
       showSnackBar(`Orden #${orderToDelete._id} eliminada.`)
-      // Refetch *all* orders after delete to ensure consistency
       await loadOrders(false)
       handleCloseDialog()
     } catch (err: any) {
@@ -309,7 +442,6 @@ const ReadOrders: React.FC = () => {
   }
 
   const renderContent = () => {
-    // ... (Loading, Empty, Error states handled above table) ...
     if (isLoading) return null
     if (error && allOrders.length === 0) {
       return (
@@ -329,7 +461,6 @@ const ReadOrders: React.FC = () => {
       )
     }
 
-    // Paginate the filtered orders
     const paginatedOrders = filteredOrders.slice(
       page * rowsPerPage,
       page * rowsPerPage + rowsPerPage
@@ -351,10 +482,10 @@ const ReadOrders: React.FC = () => {
                   Fecha de entrega estimada
                 </TableCell>
                 <TableCell sx={{ fontWeight: "bold" }}>Cliente</TableCell>
+                <TableCell sx={{ fontWeight: "bold" }}>Estado</TableCell>
                 <TableCell sx={{ fontWeight: "bold" }}>
                   Estado de Pago
                 </TableCell>
-                <TableCell sx={{ fontWeight: "bold" }}>Estado</TableCell>
                 <TableCell sx={{ fontWeight: "bold" }}>Envío</TableCell>
                 <TableCell sx={{ fontWeight: "bold" }}>Asesor</TableCell>
                 <TableCell align="right" sx={{ fontWeight: "bold" }}>
@@ -404,21 +535,20 @@ const ReadOrders: React.FC = () => {
                         {order.customerEmail || ""}
                       </Typography>
                     </TableCell>
-                    {/* <TableCell>{order.totalUnits || "N/A"}</TableCell> */}
-                    <TableCell>
-                      <Chip
-                        icon={payStatusProps.icon}
-                        label={payStatusProps.label}
-                        color={payStatusProps.color}
-                        size="small"
-                        variant="outlined"
-                      />
-                    </TableCell>
                     <TableCell>
                       <Chip
                         icon={statusProps.icon}
                         label={statusProps.label}
                         color={statusProps.color}
+                        size="small"
+                        variant="outlined"
+                      />
+                    </TableCell>{" "}
+                    <TableCell>
+                      <Chip
+                        icon={payStatusProps.icon}
+                        label={payStatusProps.label}
+                        color={payStatusProps.color}
                         size="small"
                         variant="outlined"
                       />
@@ -503,6 +633,10 @@ const ReadOrders: React.FC = () => {
   }
 
   const downloadOrders = async (orders: Order[]): Promise<void> => {
+    if (permissions?.area !== "Master") {
+      showSnackBar("No tienes autorización para acceder a esta información.")
+      return
+    }
     const workbook = new excelJS.Workbook()
     const worksheet = workbook.addWorksheet(`Pedidos Detallados`)
 
@@ -613,53 +747,143 @@ const ReadOrders: React.FC = () => {
   return (
     <>
       <Title title="Gestionar Órdenes" />
-      <Stack
-        direction={{ xs: "column", sm: "row" }}
-        justifyContent="space-between"
-        alignItems="center"
-        spacing={2}
-        mb={2}
-        mt={1}
-      >
-        <TextField
-          variant="outlined"
-          size="small"
-          placeholder="Buscar por #, cliente, email..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchIcon />
-              </InputAdornment>
-            ),
-          }}
-          sx={{ width: { xs: "100%", sm: 350 } }} // Responsive width
-        />
-        {/* TO DO: Check if works succesfully */}
-        <Grid2 sx={{ display: "flex" }}>
-          <Tooltip title="Descargar listado" style={{ height: 40, width: 40 }}>
-            <Fab
-              color="secondary"
+      <Paper sx={{ p: 2, mb: 2 }}>
+        <Grid2 container spacing={2} alignItems="center">
+          <Grid2 size={{ xs: 12, sm: 6, md: 4, lg: 2 }}>
+            <TextField
+              label="Buscar (ID, Cliente, Email, CI...)"
+              variant="outlined"
+              fullWidth
               size="small"
-              onClick={() => downloadOrders(rawOrders)}
-              style={{ marginRight: 10 }}
-            >
-              <GetApp />
-            </Fab>
-          </Tooltip>
-          <Tooltip title="Crear pedido" style={{ height: 40, width: 40 }}>
-            <Fab
-              color="primary"
+              value={searchTerm}
+              onChange={(e) => handleSearchChange(e)}
+              disabled={isFilteringLoading}
+              slotProps={{
+                input: {
+                  endAdornment: isFilteringLoading ? (
+                    <InputAdornment position="end">
+                      <CircularProgress size={20} />
+                    </InputAdornment>
+                  ) : null,
+                },
+              }}
+            />
+          </Grid2>
+          <Grid2 size={{ xs: 6, sm: 3, md: 2, lg: 1.5 }}>
+            <FormControl
+              fullWidth
               size="small"
-              onClick={handleCreate}
-              disabled={isLoading || isDeleting}
+              disabled={isFilteringLoading || filterIsNotConcretado}
             >
-              <AddIcon />
-            </Fab>
-          </Tooltip>
+              <InputLabel>Status Orden</InputLabel>
+              <Select
+                value={filterStatus}
+                label="Status Orden"
+                onChange={handleSelectFilterChange(setFilterStatus)}
+              >
+                <MenuItem value="">
+                  <em>Todos</em>
+                </MenuItem>
+                {ALL_STATUSES.map((s) => (
+                  <MenuItem key={s} value={s} disabled={filterIsNotConcretado}>
+                    {s}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid2>
+          <Grid2 size={{ xs: 6, sm: 4, md: 2, lg: 1.5 }}>
+            <FormControl fullWidth size="small" disabled={isFilteringLoading}>
+              <InputLabel>Status Pago</InputLabel>
+              <Select
+                value={filterPayStatus}
+                label="Status Pago"
+                onChange={handleSelectFilterChange(setFilterPayStatus)}
+              >
+                <MenuItem value="">
+                  <em>Todos</em>
+                </MenuItem>
+                {ALL_PAY_STATUSES.map((s) => (
+                  <MenuItem key={s} value={s}>
+                    {s}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid2>
+          <Grid2 size={{ xs: 6, sm: 4, md: 2, lg: 1.75 }}>
+            <DatePicker
+              label="Fecha Desde"
+              value={startDate}
+              onChange={handleDateFilterChange(setStartDate)}
+              slotProps={{ textField: { size: "small", fullWidth: true } }}
+              maxDate={endDate || undefined}
+              disabled={isFilteringLoading}
+            />
+          </Grid2>
+          <Grid2 size={{ xs: 6, sm: 4, md: 2, lg: 1.75 }}>
+            <DatePicker
+              label="Fecha Hasta"
+              value={endDate}
+              onChange={handleDateFilterChange(setEndDate)}
+              slotProps={{ textField: { size: "small", fullWidth: true } }}
+              minDate={startDate || undefined}
+              disabled={isFilteringLoading}
+            />
+          </Grid2>
+          <Grid2
+            size={{ xs: 12, sm: 12, md: 12, lg: 1 }}
+            container
+            justifyContent="flex-end"
+            alignItems="center"
+          ></Grid2>
+          <Grid2 sx={{ display: "flex", marginLeft: "auto" }}>
+            <Tooltip title="Limpiar Filtros" style={{ height: 40, width: 40 }}>
+              <Fab
+                onClick={handleClearFilters}
+                disabled={
+                  (!searchQuery &&
+                    !filterStatus &&
+                    !filterPayStatus &&
+                    !startDate &&
+                    !endDate &&
+                    !filterIsNotConcretado) ||
+                  isFilteringLoading
+                }
+                color="default"
+                size="small"
+                style={{ marginRight: 10 }}
+              >
+                <FilterListOffIcon />
+              </Fab>
+            </Tooltip>
+            <Tooltip
+              title="Descargar listado"
+              style={{ height: 40, width: 40 }}
+            >
+              <Fab
+                disabled={permissions?.area !== "Master"}
+                color="secondary"
+                size="small"
+                onClick={() => downloadOrders(rawOrders)}
+                style={{ marginRight: 10 }}
+              >
+                <GetApp />
+              </Fab>
+            </Tooltip>
+            <Tooltip title="Crear pedido" style={{ height: 40, width: 40 }}>
+              <Fab
+                color="primary"
+                size="small"
+                onClick={handleCreate}
+                disabled={isLoading || isDeleting}
+              >
+                <AddIcon />
+              </Fab>
+            </Tooltip>
+          </Grid2>
         </Grid2>
-      </Stack>
+      </Paper>
 
       {isLoading && (
         <Box sx={{ display: "flex", justifyContent: "center", p: 3 }}>

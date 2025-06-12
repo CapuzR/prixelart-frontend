@@ -398,7 +398,6 @@ export default function UpdateOrder() {
   useEffect(() => {
     showSnackBarRef.current = showSnackBarFromContext
   }, [showSnackBarFromContext])
-console.log(permissions)
 
   const theme = useTheme()
   const { classes } = useStyles()
@@ -1771,7 +1770,6 @@ console.log(permissions)
     }
 
     try {
-      console.log("Updating Order Data:", id, JSON.stringify(payload, null, 2))
       const response = await updateOrder(id!, payload)
       if (response) {
         showSnackBar(`Orden #${order?.number || id} actualizada.`)

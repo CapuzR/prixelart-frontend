@@ -132,7 +132,7 @@ const headCells: readonly HeadCell[] = [
   {
     id: "shippingData",
     numeric: false,
-    label: "Fecha de envío",
+    label: "Fecha de entrega estimada",
     sortable: true,
     width: "15%",
   },

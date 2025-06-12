@@ -348,7 +348,7 @@ const ReadOrders: React.FC = () => {
                   Fecha de creación
                 </TableCell>
                 <TableCell sx={{ fontWeight: "bold" }}>
-                  Fecha de envío
+                  Fecha de entrega estimada
                 </TableCell>
                 <TableCell sx={{ fontWeight: "bold" }}>Cliente</TableCell>
                 <TableCell sx={{ fontWeight: "bold" }}>

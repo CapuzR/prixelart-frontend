@@ -1,3 +1,4 @@
+import { CustomImage } from "../types/order.types"
 import { PickedArt } from "../types/art.types"
 import { PickedProduct } from "../types/product.types"
 
@@ -34,7 +35,7 @@ export const generateWaMessage = (tile?: any) => {
 }
 
 export const generateWaProductMessage = (
-  tile: PickedProduct | PickedArt,
+  tile: PickedProduct | PickedArt | CustomImage,
   url: string
 ) => {
   const waNumber = "584126377748"

@@ -100,8 +100,7 @@ export const permissionGroups: PermissionGroup[] = [
 // Also ensure permissionLabels includes keys for all items defined above
 export const permissionLabels: { [key in keyof Omit<Permissions, '_id' | 'area'>]: string } = {
     detailOrder: "Ver detalles de pedido",
-    detailPay: "Modificar detalles de pago",
-    // ... include ALL labels corresponding to keys in permissionGroups.items[*].key
+    detailPay: "Modificar status de pago",
     createOrder: "Crear y modificar pedido",
     createProduct: "Crear y modificar productos",
     deleteProduct: "Eliminar productos",

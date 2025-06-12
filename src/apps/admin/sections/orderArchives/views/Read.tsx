@@ -69,7 +69,7 @@ import {
 } from "@mui/x-date-pickers"
 import Grid2 from "@mui/material/Grid"
 import excelJS from "exceljs"
-// --- Constants ---
+
 const ALL_STATUSES: OrderStatus[] = [
   "Anulado",
   "Concretado",
@@ -132,7 +132,7 @@ const headCells: readonly HeadCell[] = [
   {
     id: "shippingData",
     numeric: false,
-    label: "Fecha de envío",
+    label: "Fecha de entrega estimada",
     sortable: true,
     width: "15%",
   },
@@ -143,14 +143,6 @@ const headCells: readonly HeadCell[] = [
     sortable: false,
     display: { xs: "none", sm: "table-cell" },
     width: "20%",
-  },
-  {
-    id: "orderType",
-    numeric: false,
-    label: "Tipo",
-    sortable: true,
-    display: { xs: "none", md: "table-cell" },
-    width: "10%",
   },
   {
     id: "status",
@@ -169,7 +161,7 @@ const headCells: readonly HeadCell[] = [
   },
   {
     id: "createdBy",
-    numeric: true,
+    numeric: false,
     label: "Asesor",
     sortable: true,
     width: "10%",
@@ -254,7 +246,6 @@ const ReadOrderArchives: React.FC = () => {
   const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const isInitialMount = useRef(true)
 
-  // --- Data Fetching ---
   const loadOrders = useCallback(
     async (showInitialLoadingIndicator = true) => {
       const loadingStateSetter = showInitialLoadingIndicator
@@ -732,7 +723,6 @@ const ReadOrderArchives: React.FC = () => {
       <Paper
         sx={{ width: "100%", mb: 2, overflow: "hidden", position: "relative" }}
       >
-        {/* Overlay for filtering loading state */}
         {isFilteringLoading && (
           <Box
             sx={{
@@ -745,13 +735,12 @@ const ReadOrderArchives: React.FC = () => {
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
-              zIndex: 10, // Ensure it's above the table but below modal
+              zIndex: 10,
             }}
           >
             <CircularProgress />
           </Box>
         )}
-        {/* Display Active Filters */}
         {renderActiveFilters()}
         <TableContainer sx={{ maxHeight: 600 }}>
           <Table
@@ -839,14 +828,6 @@ const ReadOrderArchives: React.FC = () => {
                           >
                             <span>{getCustomerName(orderItem)}</span>
                           </Tooltip>
-                        </TableCell>
-                        <TableCell
-                          sx={{
-                            display: headCells.find((h) => h.id === "orderType")
-                              ?.display,
-                          }}
-                        >
-                          {orderItem.orderType || "-"}
                         </TableCell>
                         <TableCell>
                           {orderItem.status ? (
@@ -1224,7 +1205,6 @@ const ReadOrderArchives: React.FC = () => {
           </Grid2>
         </Paper>
 
-        {/* --- Loading / Error / Content --- */}
         {error && !isLoading && !isFilteringLoading && orders.length > 0 && (
           <Alert severity="warning" sx={{ mb: 2 }}>
             No se pudo actualizar la lista: {error}
@@ -1239,7 +1219,6 @@ const ReadOrderArchives: React.FC = () => {
         )}
         {renderContent()}
 
-        {/* --- Update Status Modal --- */}
         <Dialog
           open={isUpdateModalOpen}
           onClose={handleCloseUpdateModal}

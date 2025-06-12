@@ -12,7 +12,7 @@ import {
     PaletteOutlined,
     CollectionsOutlined
 } from '@mui/icons-material';
-import { BasicAddress, Order, OrderLine, OrderStatus } from 'types/order.types';
+import { BasicAddress, CustomImage, Order, OrderLine, OrderStatus } from 'types/order.types';
 import { getCurrentOrderStatus, getOrderStatusIcon, getOrderStatusLabel } from './utils';
 import { getOrderById } from '@api/order.api';
 import { Timeline, TimelineConnector, TimelineContent, TimelineDot, TimelineItem, TimelineOppositeContent, TimelineSeparator } from '@mui/lab';
@@ -138,7 +138,7 @@ const OrderDetailsPage: React.FC = () => {
         );
     };
 
-    const renderArtDetails = (art: PickedArt | undefined) => {
+    const renderArtDetails = (art: PickedArt | CustomImage | undefined) => {
         if (!art) {
             return null;
         }

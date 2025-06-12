@@ -152,9 +152,17 @@ export interface OrderLine {
   status: [OrderStatus, Date][]
 }
 
+export interface CustomImage {
+  artId: string
+  url: string
+  title: string
+  description?: string
+  prixerUsername: string
+}
+
 export interface Item {
   sku: string
-  art?: PickedArt
+  art?: PickedArt | CustomImage
   product: PickedProduct
   price: string
   discount?: number

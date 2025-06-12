@@ -187,8 +187,6 @@ export default function AdminMain(props) {
   const handleDrawerClose = () => {
     setOpen(false)
   }
-
-  console.log(props)
   
   useEffect(() => {
     location.pathname.split("/").length === 7

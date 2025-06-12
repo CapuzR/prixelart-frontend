@@ -12,29 +12,29 @@ import { User } from "types/user.types"
 
 // Define the shape of the context
 interface GlobalContextType {
-  currency: "Bs" | "USD"
+  backdropOpen: boolean
+  closeBackdrop: () => void
+  closeSnackBar: () => void
   conversionRate: number
-  theme: string
-  toggleCurrency: () => void
-  updateConversionRate: (newRate: number) => void
-  loadingRate: boolean
-  toggleTheme: () => void
+  currency: "Bs" | "USD"
   error: string | null
   loading: boolean
+  loadingRate: boolean
+  setArtModal: (x: boolean) => void
   setLoading: (loading: boolean) => void
-  snackbarOpen: boolean
-  snackbarMessage: string
-  showSnackBar: (message: string) => void
-  closeSnackBar: () => void
-  backdropOpen: boolean
-  showBackdrop: () => void
-  closeBackdrop: () => void
-  user: User | null
+  setServiceModal: (x: boolean) => void
   setUser: Dispatch<SetStateAction<User | null>>
+  showBackdrop: () => void
+  showSnackBar: (message: string) => void
+  snackbarMessage: string
+  snackbarOpen: boolean
+  theme: string
+  toggleCurrency: () => void
+  toggleTheme: () => void
+  updateConversionRate: (newRate: number) => void
   uploadArt: boolean
   uploadService: boolean
-  setArtModal: (x: boolean) => void
-  setServiceModal: (x: boolean) => void
+  user: User | null
 }
 
 // Create the context with the type

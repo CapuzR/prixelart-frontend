@@ -11,8 +11,8 @@ import React, {
 import { useNavigate } from "react-router-dom"
 import Grid2 from "@mui/material/Grid"
 import { v4 as uuidv4 } from "uuid"
+import favicon from "../../../../../images/favicon.png"
 
-// Hooks, Types, Context, API
 import { useSnackBar } from "context/GlobalContext"
 import {
   fetchShippingMethods,
@@ -22,7 +22,6 @@ import {
 import { fetchActiveProducts } from "@api/product.api"
 import { getArts } from "@api/art.api"
 
-// MUI Components
 import {
   Box,
   Typography,
@@ -86,6 +85,7 @@ import {
   ShippingDetails,
   Payment,
   GlobalPaymentStatus,
+  CustomImage,
 } from "types/order.types"
 import { Product, Variant } from "types/product.types"
 import { Art, PickedArt } from "types/art.types"
@@ -105,7 +105,7 @@ interface ArtOption {
   id: string
   label: string
   thumb: string
-  fullArt: Art
+  fullArt: Art | CustomImage
 }
 interface PrixerOption {
   id: string
@@ -291,16 +291,47 @@ const CreateOrder: React.FC = () => {
           fullProduct: p,
         }))
       )
-      setArtOptions(
-        arts.map((a) => ({
-          id: a._id!.toString(),
-          label: a.title,
-          thumb: a.squareThumbUrl || a.smallThumbUrl || "",
-          fullArt: a,
-        }))
-      )
+
+      const existingArts = arts.map((a) => ({
+        id: a._id!.toString(),
+        label: a.title,
+        thumb: a.squareThumbUrl || a.smallThumbUrl || "",
+        fullArt: a,
+      }))
+
       const allArtist = arts.map((art) => art.prixerUsername)
       const onlyPrixers = [...new Set(allArtist)]
+
+      const customImageOptions: ArtOption[] = onlyPrixers.map((prixerUsername) => {
+        const customArtPlaceholder: CustomImage = {
+          artId: `custom-image-${prixerUsername}`,
+          title: `Personalizado de ${prixerUsername}`,
+          prixerUsername: prixerUsername,
+          url: "",
+        };
+
+        return {
+          id: customArtPlaceholder.artId, // <-- CHANGE 'artId' to 'id' here
+          label: customArtPlaceholder.title,
+          thumb: favicon,
+          fullArt: customArtPlaceholder,
+        };
+      });
+
+    const genericCustom: ArtOption = { // Explicitly type it for clarity
+        id: "custom-image-without-prixer", // Use the artId from fullArt here
+        label: `Personalizado`,
+        thumb: favicon,
+        fullArt: {
+          artId: `custom-image-without-prixer`,
+          title: `Personalizado`,
+          prixerUsername: "",
+          url: "",
+        },
+      }
+      customImageOptions.unshift(genericCustom)
+      setArtOptions([...existingArts, ...customImageOptions])
+
       const onlyPrixersv2: PrixerOption[] = onlyPrixers.map((prixer, i) => {
         return {
           id: (1000 + i).toString(),
@@ -473,32 +504,31 @@ const CreateOrder: React.FC = () => {
         !prevState
           ? prevState
           : {
-              ...prevState,
-              recepient: {
-                ...prevState.recepient,
-                name: editableClientInfo.name,
-                lastName: editableClientInfo.lastName,
-                email: editableClientInfo.email,
-                phone: editableClientInfo.phone,
-              },
-            }
+            ...prevState,
+            recepient: {
+              ...prevState.recepient,
+              name: editableClientInfo.name,
+              lastName: editableClientInfo.lastName,
+              email: editableClientInfo.email,
+              phone: editableClientInfo.phone,
+            },
+          }
       )
     } else if (!e.target.checked) {
       setEditableShippingAddress((prevState) =>
         !prevState
           ? prevState
           : {
-              ...prevState,
-              recepient: {
-                ...prevState.recepient,
-                name: "",
-                lastName: "",
-                email: "",
-                phone: "",
-              },
-            }
+            ...prevState,
+            recepient: {
+              ...prevState.recepient,
+              name: "",
+              lastName: "",
+              email: "",
+              phone: "",
+            },
+          }
       )
-
     }
   }
 
@@ -647,7 +677,6 @@ const CreateOrder: React.FC = () => {
       }
 
       const lines: OrderLine[] = orderLines.map((l) => {
-        // Validar que el producto está seleccionado (ya hecho en validateForm, pero es bueno ser seguro)
         if (!l.selectedProduct) {
           throw new Error(
             "Error interno: Producto no seleccionado en una línea."
@@ -659,14 +688,21 @@ const CreateOrder: React.FC = () => {
           item: {
             sku: `${l.selectedProduct.id}-${l.selectedVariant?.id || "novar"}-${l.selectedArt?.id || "noart"}`,
             art: l.selectedArt
-              ? {
-                  _id: l.selectedArt.fullArt._id,
-                  artId: l.selectedArt.fullArt.artId,
-                  title: l.selectedArt.fullArt.title,
-                  largeThumbUrl: l.selectedArt.fullArt.largeThumbUrl,
-                  prixerUsername: l.selectedArt.fullArt.prixerUsername,
-                  exclusive: l.selectedArt.fullArt.exclusive,
+              ? (() => {
+                const fullArt = l.selectedArt.fullArt
+                if ("_id" in fullArt) {
+                  return {
+                    _id: fullArt._id,
+                    artId: fullArt.artId,
+                    title: fullArt.title,
+                    largeThumbUrl: fullArt.largeThumbUrl,
+                    prixerUsername: fullArt.prixerUsername,
+                    exclusive: fullArt.exclusive,
+                  }
+                } else {
+                  return fullArt
                 }
+              })()
               : undefined,
             product: {
               _id: l.selectedProduct.fullProduct._id,
@@ -686,9 +722,7 @@ const CreateOrder: React.FC = () => {
         }
       })
 
-      // Crear el objeto payload completo
       const payload: Order = {
-        // Es mejor tiparlo como Order si vas a enviar casi todo
         lines,
         consumerDetails,
         payment: paymentDetails,
@@ -702,17 +736,16 @@ const CreateOrder: React.FC = () => {
         subTotal: displayTotals.subTotal,
         shippingCost: displayTotals.shippingCost,
         tax: displayTotals.taxes,
-        totalWithoutTax: displayTotals.subTotal, // O base imponible si es diferente
+        totalWithoutTax: displayTotals.subTotal,
         total: displayTotals.total,
         observations: observations || undefined,
-        // Agrega cualquier otro campo obligatorio o deseado de la interfaz Order
       }
 
       console.log(
         "Creando orden con payload:",
         JSON.stringify(payload, null, 2)
-      ) // Para depuración
-      await createOrder(payload as Order) // Asegúrate que el payload cumpla con Order o usa Partial<Order> si es necesario
+      )
+      await createOrder(payload as Order)
       showSnackBar("Orden creada exitosamente.")
       navigate("/admin/orders/read")
     } catch (err: any) {
@@ -780,7 +813,7 @@ const CreateOrder: React.FC = () => {
                         variant="rounded"
                         src={
                           line.selectedProduct?.fullProduct.sources?.images?.[0]
-                            ?.url || "https://via.placeholder.com/80"
+                            ?.url
                         }
                         alt={line.selectedProduct?.label || "Producto"}
                         sx={{
@@ -795,11 +828,18 @@ const CreateOrder: React.FC = () => {
 
                     <Grid2 size={{ xs: 12, sm: 10 }}>
                       <Grid2 container spacing={1.5} alignItems="center">
-                        {/* Product */}
-                        <Grid2 size={{ xs: 12, md: 6 }}>
-                          <Grid2 container spacing={1} alignItems="center">
+                        <Grid2 size={{ xs: 12 }}>
+                          <Grid2
+                            container
+                            spacing={1}
+                            alignItems="center"
+                            sx={{
+                              display: "grid",
+                              gridTemplateColumns: "1fr 1fr",
+                              alignItems: "top",
+                            }}
+                          >
                             <Autocomplete
-                              fullWidth
                               options={productOptions}
                               value={line.selectedProduct}
                               onChange={(e, v) => handleProduct(line.tempId, v)}
@@ -813,7 +853,6 @@ const CreateOrder: React.FC = () => {
                               )}
                             />
                             <Autocomplete
-                              fullWidth
                               options={line.availableVariants}
                               value={line.selectedVariant}
                               onChange={(e, v) => handleVariant(line.tempId, v)}
@@ -833,75 +872,17 @@ const CreateOrder: React.FC = () => {
                                 />
                               )}
                             />
-                            <Grid2
-                              size={{ xs: 12 }}
-                              sx={{ display: "flex", flexDirection: "row" }}
-                            >
-                              <Grid2 container spacing={1} alignItems="center">
-                                <Grid2 size={{ xs: 6 }}>
-                                  <TextField
-                                    label="Cant."
-                                    type="number"
-                                    value={line.quantity}
-                                    onChange={(e) => handleQty(line.tempId, e)}
-                                    fullWidth
-                                    size="small"
-                                    disabled={isSubmitting}
-                                    inputProps={{ min: 1 }}
-                                  />
-                                </Grid2>
-                                <Grid2
-                                  size={{ xs: 6 }}
-                                  sx={{ textAlign: "right" }}
-                                >
-                                  <TextField
-                                    fullWidth
-                                    variant="outlined"
-                                    size="small"
-                                    type="text"
-                                    label="Precio unitario"
-                                    // defaultValue={(line.pricePerUnit || 0).toFixed(2)}
-                                    value={(line.pricePerUnit || 0).toFixed(2)}
-                                    onChange={(e) =>
-                                      handlePricePerUnitChange(e, line)
-                                    }
-                                    onKeyDown={allowNumericWithDecimal}
-                                    sx={{
-                                      mb: 1,
-                                      "& .MuiInputBase-input": {
-                                        textAlign: "right",
-                                      },
-                                    }}
-                                    slotProps={{
-                                      input: {
-                                        startAdornment: (
-                                          <InputAdornment position="start">
-                                            $
-                                          </InputAdornment>
-                                        ),
-                                        // endAdornment: (
-                                        //   <InputAdornment position="end">
-                                        //     c/u
-                                        //   </InputAdornment>
-                                        // ),
-                                      },
-                                    }}
-                                  />
-                                </Grid2>
-                              </Grid2>
-                            </Grid2>
                           </Grid2>
                         </Grid2>
                         {/* Arte */}
-                        <Grid2 size={{ xs: 12, md: 6 }} sx={{ height: "100%" }}>
+                        <Grid2 size={{ xs: 12 }}>
                           <Grid2
                             container
                             spacing={1}
-                            alignItems="center"
                             sx={{
-                              display: "flex",
-                              flexDirection: "column",
-                              height: "100%",
+                              display: "grid",
+                              gridTemplateColumns: "1fr 1fr",
+                              alignItems: "top",
                             }}
                           >
                             <Autocomplete
@@ -912,16 +893,16 @@ const CreateOrder: React.FC = () => {
                               disabled={isSubmitting}
                               renderOption={(props, op) => (
                                 <Box component="li" {...props}>
-                                  {/* <Avatar
-                                  variant="rounded"
-                                  src={op.thumb}
-                                  sx={{
-                                    mr: 1,
-                                    width: 24,
-                                    height: 24,
-                                    border: "1px solid lightgrey",
-                                  }}
-                                /> */}
+                                  <Avatar
+                                    variant="rounded"
+                                    src={line?.selectedArt?.thumb}
+                                    sx={{
+                                      mr: 1,
+                                      width: 24,
+                                      height: 24,
+                                      border: "1px solid lightgrey",
+                                    }}
+                                  />
                                   {op.label}
                                 </Box>
                               )}
@@ -944,7 +925,7 @@ const CreateOrder: React.FC = () => {
                               onChange={(e, v) => handleArt(line.tempId, v)}
                               disabled={isSubmitting}
                               renderOption={(props, op) => (
-                                <Box component="li" {...props}>
+                                <Box component="li" {...props} key={op.id}>
                                   <Avatar
                                     variant="rounded"
                                     src={op.thumb}
@@ -968,15 +949,59 @@ const CreateOrder: React.FC = () => {
                             />
                           </Grid2>
                         </Grid2>
-                      </Grid2>
-
-                      <Grid2
-                        container
-                        spacing={1.5}
-                        alignItems="center"
-                        sx={{ mt: 1 }}
-                      >
-                        <Grid2 size={{ xs: 12, md: 6 }}></Grid2>
+                        <Grid2
+                          size={{ xs: 6 }}
+                          sx={{ display: "flex", flexDirection: "row" }}
+                        >
+                          <Grid2
+                            container
+                            spacing={1}
+                            sx={{
+                              display: "grid",
+                              gridTemplateColumns: "1fr 1fr",
+                              alignItems: "top",
+                            }}
+                          >
+                            <TextField
+                              label="Cant."
+                              type="number"
+                              value={line.quantity}
+                              onChange={(e) => handleQty(line.tempId, e)}
+                              fullWidth
+                              size="small"
+                              disabled={isSubmitting}
+                              inputProps={{ min: 1 }}
+                            />
+                            <TextField
+                              fullWidth
+                              variant="outlined"
+                              size="small"
+                              type="text"
+                              label="Precio unitario"
+                              // defaultValue={(line.pricePerUnit || 0).toFixed(2)}
+                              value={(line.pricePerUnit || 0).toFixed(2)}
+                              onChange={(e) =>
+                                handlePricePerUnitChange(e, line)
+                              }
+                              onKeyDown={allowNumericWithDecimal}
+                              sx={{
+                                mb: 1,
+                                "& .MuiInputBase-input": {
+                                  textAlign: "right",
+                                },
+                              }}
+                              slotProps={{
+                                input: {
+                                  startAdornment: (
+                                    <InputAdornment position="start">
+                                      $
+                                    </InputAdornment>
+                                  ),
+                                },
+                              }}
+                            />
+                          </Grid2>
+                        </Grid2>
                       </Grid2>
                     </Grid2>
                   </Grid2>
@@ -1009,12 +1034,8 @@ const CreateOrder: React.FC = () => {
               <List dense disablePadding>
                 {/* Subtotal */}
                 <ListItem sx={{ px: 0 }}>
-                  <ListItemText
-                    primary="Subtotal:"
-                  />
-                    <Typography>
-                    ${displayTotals?.subTotal.toFixed(2)}
-                  </Typography>
+                  <ListItemText primary="Subtotal:" />
+                  <Typography>${displayTotals?.subTotal.toFixed(2)}</Typography>
                 </ListItem>
 
                 {/* IVA, IGTF, etc. */}

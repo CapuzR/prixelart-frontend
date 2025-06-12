@@ -15,13 +15,14 @@ import Flow from "apps/consumer/flow/Flow"
 import PrixerProfile from "apps/artist/profile"
 import Login from "@apps/consumer/login"
 import PasswordChange from "@apps/artist/passwordChange/passwordChange"
-import ForgotPassword from "@apps/artist/passwordReset/forgotPassword"
+
 import SignUp from "@apps/consumer/signup/SignUp"
 import TrackOrder from "./trackOrder/TrackOrder"
 import OrderDetailsPage from "./trackOrder/OrderDetailsPage"
 import ConditionalFB from "@components/floatingAddButton/Conditional"
 import ArtUploader from "@apps/artist/artUploader"
 import CreateService from "@components/createService"
+
 
 const ConsumerRoutes: React.FC = () => {
 
@@ -35,7 +36,9 @@ const ConsumerRoutes: React.FC = () => {
         <Route path="/track/:id" element={<OrderDetailsPage />} />
         <Route path="/registrar" element={<SignUp />} />
         <Route path="/cambio-contraseña" element={<PasswordChange />} />
-        <Route path="/olvido-contraseña" element={<ForgotPassword />} />
+{/*         <Route path="/olvido-contraseña" element={<ForgotPassword />} />
+        <Route path="/recuperar/:token" element={<ResetPassword />} /> */}
+
         <Route path="/productos" element={<Products />} />
         <Route path="/galeria" element={<Catalog />} />
         <Route path="/prixers" element={<Prixers />} />

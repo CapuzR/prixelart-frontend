@@ -153,7 +153,7 @@ export interface OrderLine {
 }
 
 export interface CustomImage {
-  id: string
+  artId: string
   url: string
   title: string
   description?: string

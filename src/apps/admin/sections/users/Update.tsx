@@ -45,6 +45,9 @@ import {
   Avatar,
   IconButton,
   Modal,
+  Tabs,
+  Tab,
+  SelectChangeEvent,
 } from "@mui/material"
 // Removed Password specific imports as they are not needed for update
 import Title from "@apps/admin/components/Title"
@@ -57,6 +60,8 @@ import {
   DateValidationError,
 } from "@mui/x-date-pickers" // Import Picker context/types
 import { getPermissions } from "@api/admin.api"
+import { Movement } from "types/movement.types"
+import { createMovement } from "@api/movement.api"
 
 // --- Constants and Options (Copied/Aligned with CreateUser) ---
 const AVAILABLE_ROLES = ["consumer", "prixer", "seller", "admin"] // Adjust  based on permissions
@@ -142,6 +147,46 @@ const initialPrixerFormState: Partial<Prixer> = {
   termsAgree: false,
 }
 
+const initialFormState: Pick<
+  Movement,
+  "description" | "type" | "value" | "destinatary" | "order"
+> = {
+  description: "",
+  type: "Depósito",
+  value: 0,
+  destinatary: undefined,
+  order: undefined,
+}
+
+interface TabPanelProps {
+  children?: React.ReactNode
+  index: number
+  value: number
+}
+
+function CustomTabPanel(props: TabPanelProps) {
+  const { children, value, index, ...other } = props
+
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`simple-tabpanel-${index}`}
+      aria-labelledby={`simple-tab-${index}`}
+      {...other}
+    >
+      {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
+    </div>
+  )
+}
+
+function a11yProps(index: number) {
+  return {
+    id: `simple-tab-${index}`,
+    "aria-controls": `simple-tabpanel-${index}`,
+  }
+}
+
 const UpdateUser: React.FC = () => {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
@@ -164,7 +209,17 @@ const UpdateUser: React.FC = () => {
   const [modal, setModal] = useState<boolean>(false)
   const [showNewPassword, setShowNewPassword] = useState(false)
   const [newPassword, setNewPassword] = useState("")
+  const [value, setValue] = useState(0)
+  type MovementType = "Depósito" | "Retiro"
+  const movementTypeOptions: MovementType[] = ["Depósito", "Retiro"]
 
+  const [formData, setFormData] = useState(initialFormState)
+  const [amount, setAmount] = useState("")
+  const [errorSubmit, setErrorSubmit] = useState<string | null>(null)
+
+  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+    setValue(newValue)
+  }
   const isPrixerRoleSelected = userFormData.role?.includes("prixer")
 
   const loadUser = useCallback(async () => {
@@ -503,7 +558,6 @@ const UpdateUser: React.FC = () => {
     return Object.keys(errors).length === 0 // Return true if no errors
   }
 
-  // --- Submission ---
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     if (!id || !validateForm()) {
@@ -598,6 +652,44 @@ const UpdateUser: React.FC = () => {
     }
   }
 
+  const handleSubmitMovement = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    if (!validateForm()) return
+
+    setIsSubmitting(true)
+    setErrorSubmit(null)
+
+    const payload: Partial<Movement> = {
+      description: formData.description,
+      type: formData.type,
+      value: formData.value,
+      destinatary: userFormData.account,
+      order: formData.order || undefined,
+    }
+
+    try {
+      const response = await createMovement(payload)
+
+      if (response) {
+        showSnackBar(
+          `Movimiento "${formData.description.substring(0, 20)}..." creado exitosamente.`
+        )
+        // navigate("/admin/movements/read")
+      } else {
+        throw new Error(
+          "La creación del movimiento no devolvió una respuesta esperada."
+        )
+      }
+    } catch (err: any) {
+      console.error("Failed to create movement:", err)
+      const message = err.message || "Error al crear el movimiento."
+      setErrorSubmit(message)
+      showSnackBar(message)
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
   const handleCancel = () => {
     navigate("/admin/users/read")
   }
@@ -630,6 +722,36 @@ const UpdateUser: React.FC = () => {
         })
     }
   }
+
+  const handleTypeChange = (event: SelectChangeEvent<MovementType>) => {
+    const value = event.target.value as MovementType
+    setFormData((prevData) => ({
+      ...prevData,
+      type: value,
+    }))
+    if (errorSubmit) setErrorSubmit(null)
+  }
+
+  const handleInputChange = (
+    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = event.target
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }))
+    if (errorSubmit) setErrorSubmit(null)
+  }
+
+  const handleBlur = () => {
+    const inputValue = amount
+    const numericValue = parseFloat(inputValue)
+    setFormData((prevData) => ({
+      ...prevData,
+      value: isNaN(numericValue) ? 0 : numericValue,
+    }))
+  }
+
   return (
     <>
       <Title
@@ -669,119 +791,131 @@ const UpdateUser: React.FC = () => {
             {errorFetch}
           </Alert>
         )}
-
+        <Tabs
+          value={value}
+          onChange={handleChange}
+          aria-label="basic tabs example"
+        >
+          <Tab label="Info" {...a11yProps(0)} />
+          <Tab label="Balance" {...a11yProps(1)} />
+        </Tabs>
         {!isLoading && !errorFetch && (
-          <form onSubmit={handleSubmit} noValidate>
-            <Grid2 container spacing={3}>
-              {/* --- User Fields --- */}
-              <Grid2 size={{ xs: 12 }}>
-                <Typography variant="h6">Información del Usuario</Typography>
-              </Grid2>
-              {/* Username (Read Only) */}
-              <Grid2 size={{ xs: 12, sm: 6 }}>
-                <TextField
-                  label="Nombre de Usuario"
-                  value={originalUsername}
-                  fullWidth
-                  disabled // Make it non-editable
-                  InputLabelProps={{ shrink: true }} // Keep label floated
-                  variant="filled" // Indicate it's read-only visually
-                />
-              </Grid2>
-              <Grid2 size={{ xs: 12, sm: 6 }}></Grid2> {/* Spacer */}
-              {/* Name/Email */}
-              <Grid2 size={{ xs: 12, sm: 6 }}>
-                <TextField
-                  label="Nombre"
-                  name="firstName"
-                  value={userFormData.firstName}
-                  onChange={handleUserInputChange}
-                  required
-                  fullWidth
-                  disabled={isSubmitting}
-                  error={!!validationErrors?.firstName}
-                  helperText={validationErrors?.firstName}
-                />
-              </Grid2>
-              <Grid2 size={{ xs: 12, sm: 6 }}>
-                <TextField
-                  label="Apellido"
-                  name="lastName"
-                  value={userFormData.lastName}
-                  onChange={handleUserInputChange}
-                  required
-                  fullWidth
-                  disabled={isSubmitting}
-                  error={!!validationErrors?.lastName}
-                  helperText={validationErrors?.lastName}
-                />
-              </Grid2>
-              <Grid2 size={{ xs: 12, sm: 6 }}>
-                <TextField
-                  label="Email"
-                  name="email"
-                  type="email"
-                  value={userFormData.email}
-                  onChange={handleUserInputChange}
-                  required
-                  fullWidth
-                  disabled={isSubmitting}
-                  error={!!validationErrors?.email}
-                  helperText={validationErrors?.email}
-                />
-              </Grid2>
-              {/* Roles Autocomplete */}
-              <Grid2 size={{ xs: 12, sm: 6 }}>
-                <Autocomplete
-                  multiple
-                  id="user-roles-select"
-                  options={AVAILABLE_ROLES}
-                  value={userFormData.role || []} // Ensure value is always an array
-                  onChange={handleRolesChange}
-                  disableCloseOnSelect
-                  getOptionLabel={(option) =>
-                    option.charAt(0).toUpperCase() + option.slice(1)
-                  } // Capitalize display
-                  renderTags={(value: readonly string[], getTagProps) =>
-                    value.map((option: string, index: number) => (
-                      <Chip
-                        label={option.charAt(0).toUpperCase() + option.slice(1)}
-                        size="small"
-                        {...getTagProps({ index })}
-                      />
-                    ))
-                  }
-                  renderInput={(params) => (
+          <>
+            <CustomTabPanel value={value} index={0}>
+              <form onSubmit={handleSubmit} noValidate>
+                <Grid2 container spacing={3}>
+                  <Grid2 size={{ xs: 12 }}>
+                    <Typography variant="h6">
+                      Información del Usuario
+                    </Typography>
+                  </Grid2>
+                  <Grid2 size={{ xs: 12, sm: 6 }}>
                     <TextField
-                      {...params}
-                      label="Rol(es)"
-                      required // Make roles field required visually/semantically
-                      error={!!validationErrors?.role}
-                      helperText={validationErrors?.role}
+                      label="Nombre de Usuario"
+                      value={originalUsername}
+                      fullWidth
+                      disabled // Make it non-editable
+                      InputLabelProps={{ shrink: true }} // Keep label floated
+                      variant="filled" // Indicate it's read-only visually
                     />
-                  )}
-                  disabled={isSubmitting}
-                  isOptionEqualToValue={(option, value) => option === value} // Important for object/string comparison
-                />
-              </Grid2>
-              {/* Active Status */}
-              <Grid2
-                size={{ xs: 12, sm: 6 }}
-                sx={{ display: "flex", alignItems: "center" }}
-              >
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={userFormData.active ?? true}
-                      onChange={handleUserInputChange}
-                      name="active"
+                  </Grid2>
+                  <Grid2 size={{ xs: 12, sm: 6 }}></Grid2> {/* Spacer */}
+                  {/* Name/Email */}
+                  <Grid2 size={{ xs: 12, sm: 6 }}>
+                    <TextField
+                      label="Nombre"
+                      name="firstName"
+                      value={userFormData.firstName}
+                      // onChange={handleUserInputChange}
+                      onChange={(e) => {
+                        setUserFormData(prev => ({ ...prev, firstName: e.target.value }));
+                      }}
+                      required
+                      fullWidth
                       disabled={isSubmitting}
+                      error={!!validationErrors?.firstName}
+                      helperText={validationErrors?.firstName}
                     />
-                  }
-                  label="Usuario Activo"
-                />
-              </Grid2>
-              {/* <Grid2 size={{ xs: 12, sm: 6 }}>
+                  </Grid2>
+                  <Grid2 size={{ xs: 12, sm: 6 }}>
+                    <TextField
+                      label="Apellido"
+                      name="lastName"
+                      value={userFormData.lastName}
+                      onChange={handleUserInputChange}
+                      required
+                      fullWidth
+                      disabled={isSubmitting}
+                      error={!!validationErrors?.lastName}
+                      helperText={validationErrors?.lastName}
+                    />
+                  </Grid2>
+                  <Grid2 size={{ xs: 12, sm: 6 }}>
+                    <TextField
+                      label="Email"
+                      name="email"
+                      type="email"
+                      value={userFormData.email}
+                      onChange={handleUserInputChange}
+                      required
+                      fullWidth
+                      disabled={isSubmitting}
+                      error={!!validationErrors?.email}
+                      helperText={validationErrors?.email}
+                    />
+                  </Grid2>
+                  <Grid2 size={{ xs: 12, sm: 6 }}>
+                    <Autocomplete
+                      multiple
+                      id="user-roles-select"
+                      options={AVAILABLE_ROLES}
+                      value={userFormData.role || []} // Ensure value is always an array
+                      onChange={handleRolesChange}
+                      disableCloseOnSelect
+                      getOptionLabel={(option) =>
+                        option.charAt(0).toUpperCase() + option.slice(1)
+                      } // Capitalize display
+                      renderTags={(value: readonly string[], getTagProps) =>
+                        value.map((option: string, index: number) => (
+                          <Chip
+                            label={
+                              option.charAt(0).toUpperCase() + option.slice(1)
+                            }
+                            size="small"
+                            {...getTagProps({ index })}
+                          />
+                        ))
+                      }
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="Rol(es)"
+                          required // Make roles field required visually/semantically
+                          error={!!validationErrors?.role}
+                          helperText={validationErrors?.role}
+                        />
+                      )}
+                      disabled={isSubmitting}
+                      isOptionEqualToValue={(option, value) => option === value} // Important for object/string comparison
+                    />
+                  </Grid2>
+                  <Grid2
+                    size={{ xs: 12, sm: 6 }}
+                    sx={{ display: "flex", alignItems: "center" }}
+                  >
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={userFormData.active ?? true}
+                          onChange={handleUserInputChange}
+                          name="active"
+                          disabled={isSubmitting}
+                        />
+                      }
+                      label="Usuario Activo"
+                    />
+                  </Grid2>
+                  {/* <Grid2 size={{ xs: 12, sm: 6 }}>
                 <TextField
                   label="URL Avatar Usuario (Opcional)"
                   name="avatar"
@@ -805,282 +939,285 @@ const UpdateUser: React.FC = () => {
                   </Box>
                 )}
               </Grid2> */}
-              <Grid2 size={{ xs: 12, sm: 6 }}></Grid2> {/* Spacer */}
-              {/* --- Additional Optional Info --- */}
-              <Grid2 size={{ xs: 12 }}>
-                <Divider sx={{ my: 2 }}>
-                  <Typography variant="overline">
-                    Información Adicional (Opcional)
-                  </Typography>
-                </Divider>
-              </Grid2>
-              {/* Contact Info */}
-              <Grid2 size={{ xs: 12, sm: 6 }}>
-                <TextField
-                  label="Teléfono Usuario"
-                  name="phone"
-                  value={userFormData.phone}
-                  onChange={handleUserInputChange}
-                  fullWidth
-                  disabled={isSubmitting}
-                  error={!!validationErrors?.phone}
-                  helperText={validationErrors?.phone}
-                />
-              </Grid2>
-              {/* Optional CI / Account */}
-              <Grid2 size={{ xs: 12, sm: 3 }}>
-                <TextField
-                  label="CI / Identificación"
-                  name="ci"
-                  value={userFormData.ci}
-                  onChange={handleUserInputChange}
-                  fullWidth
-                  disabled={isSubmitting}
-                  error={!!validationErrors?.ci}
-                  helperText={validationErrors?.ci}
-                />
-              </Grid2>
-              <Grid2 size={{ xs: 12, sm: 3 }}>
-                <TextField
-                  label="Nro Cuenta (si aplica)"
-                  name="account"
-                  value={userFormData.account}
-                  onChange={handleUserInputChange}
-                  fullWidth
-                  disabled={isSubmitting}
-                  error={!!validationErrors?.account}
-                  helperText={validationErrors?.account}
-                />
-              </Grid2>
-              {/* Address Info */}
-              <Grid2 size={{ xs: 12 }}>
-                <TextField
-                  label="Dirección Principal"
-                  name="address"
-                  value={userFormData.address}
-                  onChange={handleUserInputChange}
-                  fullWidth
-                  multiline
-                  rows={2}
-                  disabled={isSubmitting}
-                  error={!!validationErrors?.address}
-                  helperText={validationErrors?.address}
-                />
-              </Grid2>
-              <Grid2 size={{ xs: 12, sm: 6 }}>
-                <TextField
-                  label="Dirección de Facturación"
-                  name="billingAddress"
-                  value={userFormData.billingAddress}
-                  onChange={handleUserInputChange}
-                  fullWidth
-                  multiline
-                  rows={2}
-                  disabled={isSubmitting}
-                  error={!!validationErrors?.billingAddress}
-                  helperText={
-                    validationErrors?.billingAddress ||
-                    "Opcional, si es diferente a la principal"
-                  }
-                />
-              </Grid2>
-              <Grid2 size={{ xs: 12, sm: 6 }}>
-                <TextField
-                  label="Dirección de Envío"
-                  name="shippingAddress"
-                  value={userFormData.shippingAddress}
-                  onChange={handleUserInputChange}
-                  fullWidth
-                  multiline
-                  rows={2}
-                  disabled={isSubmitting}
-                  error={!!validationErrors?.shippingAddress}
-                  helperText={
-                    validationErrors?.shippingAddress ||
-                    "Opcional, si es diferente a la principal"
-                  }
-                />
-              </Grid2>
-              <Grid2 size={{ xs: 12, sm: 4 }}>
-                <TextField
-                  label="País"
-                  name="country"
-                  value={userFormData.country}
-                  onChange={handleUserInputChange}
-                  fullWidth
-                  disabled={isSubmitting}
-                  error={!!validationErrors?.country}
-                  helperText={validationErrors?.country}
-                />
-              </Grid2>
-              <Grid2 size={{ xs: 12, sm: 4 }}>
-                <TextField
-                  label="Ciudad"
-                  name="city"
-                  value={userFormData.city}
-                  onChange={handleUserInputChange}
-                  fullWidth
-                  disabled={isSubmitting}
-                  error={!!validationErrors?.city}
-                  helperText={validationErrors?.city}
-                />
-              </Grid2>
-              <Grid2 size={{ xs: 12, sm: 4 }}>
-                <DatePicker
-                  label="Fecha de Nacimiento"
-                  value={birthdateValue}
-                  onChange={handleBirthdateChange} // Use the updated handler
-                  disabled={isSubmitting}
-                  slotProps={{
-                    textField: {
-                      fullWidth: true,
-                      error: !!validationErrors?.birthdate,
-                      helperText: validationErrors?.birthdate,
-                    },
-                  }}
-                />
-              </Grid2>
-              <Grid2 size={{ xs: 12, sm: 4 }}>
-                <FormControl fullWidth error={!!validationErrors?.gender}>
-                  <InputLabel>Género</InputLabel>
-                  <Select
-                    name="gender"
-                    value={userFormData.gender || ""} // Ensure controlled component
-                    label="Género"
-                    onChange={handleUserInputChange as any} // Cast needed for Select onChange
-                    disabled={isSubmitting}
-                  >
-                    <MenuItem value="">
-                      <em>Ninguno</em>
-                    </MenuItem>
-                    {AVAILABLE_GENDERS.map((g) => (
-                      <MenuItem key={g} value={g}>
-                        {g}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                  <FormHelperText>{validationErrors?.gender}</FormHelperText>
-                </FormControl>
-              </Grid2>
-              <Grid2 size={{ xs: 12, sm: 4 }}>
-                <TextField
-                  label="Instagram (Usuario)"
-                  name="instagram"
-                  value={userFormData.instagram}
-                  onChange={handleUserInputChange}
-                  fullWidth
-                  disabled={isSubmitting}
-                  error={!!validationErrors?.instagram}
-                  helperText={validationErrors?.instagram}
-                />
-              </Grid2>
-              <Grid2 size={{ xs: 12, sm: 4 }}>
-                <TextField
-                  label="Twitter (Usuario)"
-                  name="twitter"
-                  value={userFormData.twitter}
-                  onChange={handleUserInputChange}
-                  fullWidth
-                  disabled={isSubmitting}
-                  error={!!validationErrors?.twitter}
-                  helperText={validationErrors?.twitter}
-                />
-              </Grid2>
-              <Grid2 size={{ xs: 12, sm: 4 }}>
-                <TextField
-                  label="Facebook (Usuario)"
-                  name="facebook"
-                  value={userFormData.facebook}
-                  onChange={handleUserInputChange}
-                  fullWidth
-                  disabled={isSubmitting}
-                  error={!!validationErrors?.facebook}
-                  helperText={validationErrors?.facebook}
-                />
-              </Grid2>
-              {isPrixerRoleSelected && (
-                <Grid2
-                  size={{ xs: 12 }}
-                  component={Paper}
-                  variant="outlined"
-                  sx={{ p: 2, mt: 3, mb: 1, borderStyle: "dashed" }}
-                >
-                  {" "}
-                  {/* Visually group Prixer fields */}
-                  <Grid2 container spacing={3}>
-                    <Grid2 size={{ xs: 12 }}>
-                      <Typography variant="h6">Detalles del Prixer</Typography>
-                    </Grid2>
-
-                    <Grid2 size={{ xs: 12 }}>
-                      <TextField
-                        label="Descripción / Bio Prixer"
-                        name="description"
-                        value={prixerFormData.description}
-                        onChange={handlePrixerInputChange}
-                        required={isPrixerRoleSelected} // Mark as required based on role selection
-                        fullWidth
-                        multiline
-                        rows={4}
+                  <Grid2 size={{ xs: 12, sm: 6 }}></Grid2> {/* Spacer */}
+                  <Grid2 size={{ xs: 12 }}>
+                    <Divider sx={{ my: 2 }}>
+                      <Typography variant="overline">
+                        Información Adicional (Opcional)
+                      </Typography>
+                    </Divider>
+                  </Grid2>
+                  <Grid2 size={{ xs: 12, sm: 3 }}>
+                    <TextField
+                      label="Teléfono Usuario"
+                      name="phone"
+                      value={userFormData.phone}
+                      onChange={handleUserInputChange}
+                      fullWidth
+                      disabled={isSubmitting}
+                      error={!!validationErrors?.phone}
+                      helperText={validationErrors?.phone}
+                    />
+                  </Grid2>
+                  <Grid2 size={{ xs: 12, sm: 3 }}>
+                    <TextField
+                      label="CI / Identificación"
+                      name="ci"
+                      value={userFormData.ci}
+                      onChange={handleUserInputChange}
+                      fullWidth
+                      disabled={isSubmitting}
+                      error={!!validationErrors?.ci}
+                      helperText={validationErrors?.ci}
+                    />
+                  </Grid2>
+                  {/* <Grid2 size={{ xs: 12, sm: 3 }}>
+                    <TextField
+                      label="Nro Cuenta (si aplica)"
+                      name="account"
+                      value={userFormData.account}
+                      onChange={handleUserInputChange}
+                      fullWidth
+                      disabled={isSubmitting}
+                      error={!!validationErrors?.account}
+                      helperText={validationErrors?.account}
+                    />
+                  </Grid2> */}
+                  <Grid2 size={{ xs: 12, sm: 6 }}>
+                    <TextField
+                      label="Dirección Principal"
+                      name="address"
+                      value={userFormData.address}
+                      onChange={handleUserInputChange}
+                      fullWidth
+                      multiline
+                      rows={2}
+                      disabled={isSubmitting}
+                      error={!!validationErrors?.address}
+                      helperText={validationErrors?.address}
+                    />
+                  </Grid2>
+                  <Grid2 size={{ xs: 12, sm: 6 }}>
+                    <TextField
+                      label="Dirección de Facturación"
+                      name="billingAddress"
+                      value={userFormData.billingAddress}
+                      onChange={handleUserInputChange}
+                      fullWidth
+                      multiline
+                      rows={2}
+                      disabled={isSubmitting}
+                      error={!!validationErrors?.billingAddress}
+                      helperText={
+                        validationErrors?.billingAddress ||
+                        "Opcional, si es diferente a la principal"
+                      }
+                    />
+                  </Grid2>
+                  <Grid2 size={{ xs: 12, sm: 6 }}>
+                    <TextField
+                      label="Dirección de Envío"
+                      name="shippingAddress"
+                      value={userFormData.shippingAddress}
+                      onChange={handleUserInputChange}
+                      fullWidth
+                      multiline
+                      rows={2}
+                      disabled={isSubmitting}
+                      error={!!validationErrors?.shippingAddress}
+                      helperText={
+                        validationErrors?.shippingAddress ||
+                        "Opcional, si es diferente a la principal"
+                      }
+                    />
+                  </Grid2>
+                  <Grid2 size={{ xs: 12, sm: 4 }}>
+                    <TextField
+                      label="País"
+                      name="country"
+                      value={userFormData.country}
+                      onChange={handleUserInputChange}
+                      fullWidth
+                      disabled={isSubmitting}
+                      error={!!validationErrors?.country}
+                      helperText={validationErrors?.country}
+                    />
+                  </Grid2>
+                  <Grid2 size={{ xs: 12, sm: 4 }}>
+                    <TextField
+                      label="Ciudad"
+                      name="city"
+                      value={userFormData.city}
+                      onChange={handleUserInputChange}
+                      fullWidth
+                      disabled={isSubmitting}
+                      error={!!validationErrors?.city}
+                      helperText={validationErrors?.city}
+                    />
+                  </Grid2>
+                  <Grid2 size={{ xs: 12, sm: 2 }}>
+                    <DatePicker
+                      label="Fecha de Nacimiento"
+                      value={birthdateValue}
+                      onChange={handleBirthdateChange} // Use the updated handler
+                      disabled={isSubmitting}
+                      slotProps={{
+                        textField: {
+                          fullWidth: true,
+                          error: !!validationErrors?.birthdate,
+                          helperText: validationErrors?.birthdate,
+                        },
+                      }}
+                    />
+                  </Grid2>
+                  <Grid2 size={{ xs: 12, sm: 2 }}>
+                    <FormControl fullWidth error={!!validationErrors?.gender}>
+                      <InputLabel>Género</InputLabel>
+                      <Select
+                        name="gender"
+                        value={userFormData.gender || ""} // Ensure controlled component
+                        label="Género"
+                        onChange={handleUserInputChange as any} // Cast needed for Select onChange
                         disabled={isSubmitting}
-                        error={!!validationErrors?.prixer?.description}
-                        helperText={validationErrors?.prixer?.description}
-                      />
-                    </Grid2>
+                      >
+                        <MenuItem value="">
+                          <em>Ninguno</em>
+                        </MenuItem>
+                        {AVAILABLE_GENDERS.map((g) => (
+                          <MenuItem key={g} value={g}>
+                            {g}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                      <FormHelperText>
+                        {validationErrors?.gender}
+                      </FormHelperText>
+                    </FormControl>
+                  </Grid2>
+                  <Grid2 size={{ xs: 12, sm: 4 }}>
+                    <TextField
+                      label="Instagram (Usuario)"
+                      name="instagram"
+                      value={userFormData.instagram}
+                      onChange={handleUserInputChange}
+                      fullWidth
+                      disabled={isSubmitting}
+                      error={!!validationErrors?.instagram}
+                      helperText={validationErrors?.instagram}
+                    />
+                  </Grid2>
+                  <Grid2 size={{ xs: 12, sm: 4 }}>
+                    <TextField
+                      label="Twitter (Usuario)"
+                      name="twitter"
+                      value={userFormData.twitter}
+                      onChange={handleUserInputChange}
+                      fullWidth
+                      disabled={isSubmitting}
+                      error={!!validationErrors?.twitter}
+                      helperText={validationErrors?.twitter}
+                    />
+                  </Grid2>
+                  <Grid2 size={{ xs: 12, sm: 4 }}>
+                    <TextField
+                      label="Facebook (Usuario)"
+                      name="facebook"
+                      value={userFormData.facebook}
+                      onChange={handleUserInputChange}
+                      fullWidth
+                      disabled={isSubmitting}
+                      error={!!validationErrors?.facebook}
+                      helperText={validationErrors?.facebook}
+                    />
+                  </Grid2>
+                  {isPrixerRoleSelected && (
+                    <Grid2
+                      size={{ xs: 12 }}
+                      component={Paper}
+                      variant="outlined"
+                      sx={{ p: 2, mt: 3, mb: 1, borderStyle: "dashed" }}
+                    >
+                      {" "}
+                      {/* Visually group Prixer fields */}
+                      <Grid2 container spacing={3}>
+                        <Grid2 size={{ xs: 12 }}>
+                          <Typography variant="h6">
+                            Detalles del Prixer
+                          </Typography>
+                        </Grid2>
 
-                    <Grid2 size={{ xs: 12 }}>
-                      <Autocomplete
-                        multiple
-                        id="prixer-specialties"
-                        options={AVAILABLE_SPECIALTIES}
-                        value={prixerFormData.specialty || []} // Ensure array
-                        onChange={handleSpecialtyChange}
-                        disableCloseOnSelect
-                        freeSolo={false} // Set true if users can add custom specialties
-                        getOptionLabel={(option) => option} // Simple string labels
-                        renderTags={(value: readonly string[], getTagProps) =>
-                          value.map((option: string, index: number) => (
-                            <Chip
-                              label={option}
-                              size="small"
-                              {...getTagProps({ index })}
-                            />
-                          ))
-                        }
-                        renderInput={(params) => (
+                        <Grid2 size={{ xs: 12 }}>
                           <TextField
-                            {...params}
-                            label="Especialidades Prixer"
-                            required={isPrixerRoleSelected} // Mark as required based on role
-                            error={!!validationErrors?.prixer?.specialty}
-                            helperText={
-                              validationErrors?.prixer?.specialty ||
-                              (isPrixerRoleSelected
-                                ? "Seleccione al menos una"
-                                : "")
+                            label="Descripción / Bio Prixer"
+                            name="description"
+                            value={prixerFormData.description}
+                            onChange={handlePrixerInputChange}
+                            required={isPrixerRoleSelected} // Mark as required based on role selection
+                            fullWidth
+                            multiline
+                            rows={4}
+                            disabled={isSubmitting}
+                            error={!!validationErrors?.prixer?.description}
+                            helperText={validationErrors?.prixer?.description}
+                          />
+                        </Grid2>
+
+                        <Grid2 size={{ xs: 12 }}>
+                          <Autocomplete
+                            multiple
+                            id="prixer-specialties"
+                            options={AVAILABLE_SPECIALTIES}
+                            value={prixerFormData.specialty || []} // Ensure array
+                            onChange={handleSpecialtyChange}
+                            disableCloseOnSelect
+                            freeSolo={false} // Set true if users can add custom specialties
+                            getOptionLabel={(option) => option} // Simple string labels
+                            renderTags={(
+                              value: readonly string[],
+                              getTagProps
+                            ) =>
+                              value.map((option: string, index: number) => (
+                                <Chip
+                                  label={option}
+                                  size="small"
+                                  {...getTagProps({ index })}
+                                />
+                              ))
+                            }
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                label="Especialidades Prixer"
+                                required={isPrixerRoleSelected} // Mark as required based on role
+                                error={!!validationErrors?.prixer?.specialty}
+                                helperText={
+                                  validationErrors?.prixer?.specialty ||
+                                  (isPrixerRoleSelected
+                                    ? "Seleccione al menos una"
+                                    : "")
+                                }
+                              />
+                            )}
+                            disabled={isSubmitting}
+                            isOptionEqualToValue={(option, value) =>
+                              option === value
                             }
                           />
-                        )}
-                        disabled={isSubmitting}
-                        isOptionEqualToValue={(option, value) =>
-                          option === value
-                        }
-                      />
-                    </Grid2>
+                        </Grid2>
 
-                    <Grid2 size={{ xs: 12, sm: 6 }}>
-                      <TextField
-                        label="Teléfono Prixer (Opcional)"
-                        name="phone"
-                        value={prixerFormData.phone}
-                        onChange={handlePrixerInputChange}
-                        fullWidth
-                        disabled={isSubmitting}
-                        error={!!validationErrors?.prixer?.phone}
-                        helperText={validationErrors?.prixer?.phone}
-                      />
-                    </Grid2>
-                    {/* <Grid2 size={{ xs: 12, sm: 6 }}>
+                        <Grid2 size={{ xs: 12, sm: 6 }}>
+                          <TextField
+                            label="Teléfono Prixer (Opcional)"
+                            name="phone"
+                            value={prixerFormData.phone}
+                            onChange={handlePrixerInputChange}
+                            fullWidth
+                            disabled={isSubmitting}
+                            error={!!validationErrors?.prixer?.phone}
+                            helperText={validationErrors?.prixer?.phone}
+                          />
+                        </Grid2>
+                        {/* <Grid2 size={{ xs: 12, sm: 6 }}>
                       <TextField
                         label="URL Avatar Prixer (Opcional)"
                         name="avatar"
@@ -1094,167 +1231,309 @@ const UpdateUser: React.FC = () => {
                       />
                     </Grid2> */}
 
-                    {prixerFormData.avatar &&
-                      !validationErrors?.prixer?.avatar && (
-                        <Grid2 size={{ xs: 12 }}>
-                          <Box
-                            sx={{
-                              mt: -2,
-                              mb: 1,
-                              display: "flex",
-                              alignItems: "center",
-                            }}
-                          >
-                            {" "}
-                            {/* Adjust spacing */}
-                            <Avatar
-                              src={prixerFormData.avatar}
-                              sx={{ width: 60, height: 60, mr: 1 }}
-                            />
-                            <Typography variant="caption">
-                              Vista Previa (Prixer)
-                            </Typography>
-                          </Box>
-                        </Grid2>
-                      )}
+                        {prixerFormData.avatar &&
+                          !validationErrors?.prixer?.avatar && (
+                            <Grid2 size={{ xs: 12 }}>
+                              <Box
+                                sx={{
+                                  mt: -2,
+                                  mb: 1,
+                                  display: "flex",
+                                  alignItems: "center",
+                                }}
+                              >
+                                {" "}
+                                {/* Adjust spacing */}
+                                <Avatar
+                                  src={prixerFormData.avatar}
+                                  sx={{ width: 60, height: 60, mr: 1 }}
+                                />
+                                <Typography variant="caption">
+                                  Vista Previa (Prixer)
+                                </Typography>
+                              </Box>
+                            </Grid2>
+                          )}
 
-                    <Grid2 size={{ xs: 12, sm: 4 }}>
-                      <TextField
-                        label="Instagram (Prixer)"
-                        name="instagram"
-                        value={prixerFormData.instagram}
-                        onChange={handlePrixerInputChange}
-                        fullWidth
-                        disabled={isSubmitting}
-                        error={!!validationErrors?.prixer?.instagram}
-                        helperText={validationErrors?.prixer?.instagram}
-                      />
-                    </Grid2>
-                    <Grid2 size={{ xs: 12, sm: 4 }}>
-                      <TextField
-                        label="Twitter (Prixer)"
-                        name="twitter"
-                        value={prixerFormData.twitter}
-                        onChange={handlePrixerInputChange}
-                        fullWidth
-                        disabled={isSubmitting}
-                        error={!!validationErrors?.prixer?.twitter}
-                        helperText={validationErrors?.prixer?.twitter}
-                      />
-                    </Grid2>
-                    <Grid2 size={{ xs: 12, sm: 4 }}>
-                      <TextField
-                        label="Facebook (Prixer)"
-                        name="facebook"
-                        value={prixerFormData.facebook}
-                        onChange={handlePrixerInputChange}
-                        fullWidth
-                        disabled={isSubmitting}
-                        error={!!validationErrors?.prixer?.facebook}
-                        helperText={validationErrors?.prixer?.facebook}
-                      />
-                    </Grid2>
-                    <Grid2 size={{ xs: 12 }}>
-                      <Typography color="secondary" variant="h5">
-                        Balance: ${balance?.toFixed(2)}
-                      </Typography>
-                    </Grid2>
-                    <Grid2
-                      size={{ xs: 12 }}
-                      sx={{ display: "flex", justifyContent: "space-between" }}
-                    >
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            checked={prixerFormData.termsAgree ?? false}
+                        <Grid2 size={{ xs: 12, sm: 4 }}>
+                          <TextField
+                            label="Instagram (Prixer)"
+                            name="instagram"
+                            value={prixerFormData.instagram}
                             onChange={handlePrixerInputChange}
-                            name="termsAgree"
-                            disabled={
-                              isSubmitting /* Or always disabled if not editable here */
+                            fullWidth
+                            disabled={isSubmitting}
+                            error={!!validationErrors?.prixer?.instagram}
+                            helperText={validationErrors?.prixer?.instagram}
+                          />
+                        </Grid2>
+                        <Grid2 size={{ xs: 12, sm: 4 }}>
+                          <TextField
+                            label="Twitter (Prixer)"
+                            name="twitter"
+                            value={prixerFormData.twitter}
+                            onChange={handlePrixerInputChange}
+                            fullWidth
+                            disabled={isSubmitting}
+                            error={!!validationErrors?.prixer?.twitter}
+                            helperText={validationErrors?.prixer?.twitter}
+                          />
+                        </Grid2>
+                        <Grid2 size={{ xs: 12, sm: 4 }}>
+                          <TextField
+                            label="Facebook (Prixer)"
+                            name="facebook"
+                            value={prixerFormData.facebook}
+                            onChange={handlePrixerInputChange}
+                            fullWidth
+                            disabled={isSubmitting}
+                            error={!!validationErrors?.prixer?.facebook}
+                            helperText={validationErrors?.prixer?.facebook}
+                          />
+                        </Grid2>
+
+                        <Grid2
+                          size={{ xs: 12 }}
+                          sx={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                          }}
+                        >
+                          <FormControlLabel
+                            control={
+                              <Checkbox
+                                checked={prixerFormData.termsAgree ?? false}
+                                onChange={handlePrixerInputChange}
+                                name="termsAgree"
+                                disabled={
+                                  isSubmitting /* Or always disabled if not editable here */
+                                }
+                              />
+                            }
+                            label="Términos y Condiciones de Prixer Aceptados"
+                          />
+                          {validationErrors?.prixer?.termsAgree && (
+                            <FormHelperText error>
+                              {validationErrors.prixer.termsAgree}
+                            </FormHelperText>
+                          )}
+                          {permissions?.area && (
+                            <Button
+                              variant="outlined"
+                              color="secondary"
+                              disabled={isSubmitting || isLoading}
+                              startIcon={<Lock />}
+                              onClick={openModal}
+                            >
+                              Cambiar contraseña
+                            </Button>
+                          )}
+                        </Grid2>
+                      </Grid2>
+                    </Grid2>
+                  )}
+                  <Grid2 size={{ xs: 12 }}>
+                    <Stack
+                      direction="row"
+                      justifyContent="flex-end"
+                      spacing={2}
+                      sx={{ mt: 3 }}
+                    >
+                      <Button
+                        type="button"
+                        variant="outlined"
+                        color="secondary"
+                        onClick={handleCancel}
+                        disabled={isSubmitting}
+                      >
+                        Cancelar
+                      </Button>
+                      <Button
+                        type="submit"
+                        variant="contained"
+                        color="primary"
+                        disabled={isSubmitting || isLoading}
+                        startIcon={
+                          isSubmitting ? (
+                            <CircularProgress size={20} color="inherit" />
+                          ) : null
+                        }
+                      >
+                        {isSubmitting ? "Guardando..." : "Guardar Cambios"}
+                      </Button>
+                    </Stack>
+                  </Grid2>
+                  {validationErrors &&
+                    !Object.keys(validationErrors).some((key) =>
+                      [
+                        "firstName",
+                        "lastName",
+                        "email",
+                        "role",
+                        "prixer",
+                      ].includes(key)
+                    ) && (
+                      <Grid2 size={{ xs: 12 }}>
+                        <Alert severity="warning" sx={{ mt: 2 }}>
+                          Se encontraron errores de validación generales no
+                          asociados a un campo específico. Por favor revise el
+                          formulario.
+                        </Alert>
+                      </Grid2>
+                    )}
+                  {validationErrors &&
+                    validationErrors.firstName &&
+                    !validationErrors.lastName /* ... more specific checks maybe ... */ &&
+                    !["Nombre obligatorio."].includes(
+                      validationErrors.firstName
+                    ) && (
+                      <Grid2 size={{ xs: 12 }}>
+                        <Alert severity="error" sx={{ mt: 2 }}>
+                          Error de la API: {validationErrors.firstName}
+                        </Alert>
+                      </Grid2>
+                    )}
+                </Grid2>
+              </form>
+            </CustomTabPanel>
+
+            <CustomTabPanel value={value} index={1}>
+              <Grid2 size={{ xs: 12 }}>
+                <Typography
+                  color="secondary"
+                  variant="h5"
+                  sx={{ textAlign: "center" }}
+                >
+                  Balance: $
+                  {balance?.toLocaleString("de-DE", {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}
+                </Typography>
+              </Grid2>
+              <Grid2 size={{ xs: 12 }}>
+                <Paper elevation={3} sx={{ p: 3, mt: 2 }}>
+                  {userFormData.account ? (
+                    <form onSubmit={handleSubmitMovement}>
+                      <Grid2 container spacing={3}>
+                        <Grid2 size={{ xs: 12, sm: 6 }}>
+                          <FormControl
+                            fullWidth
+                            required
+                            error={!!errorSubmit && !formData.type}
+                            disabled={isSubmitting}
+                          >
+                            <InputLabel id="movement-type-select-label">
+                              Tipo de Movimiento
+                            </InputLabel>
+                            <Select<MovementType> // Specify the type for better type safety
+                              labelId="movement-type-select-label"
+                              id="movement-type-select"
+                              value={formData.type}
+                              label="Tipo de Movimiento" // Important for label positioning
+                              onChange={handleTypeChange} // Use the dedicated handler
+                            >
+                              {movementTypeOptions.map((typeOption) => (
+                                <MenuItem key={typeOption} value={typeOption}>
+                                  {typeOption}
+                                </MenuItem>
+                              ))}
+                            </Select>
+                          </FormControl>
+                        </Grid2>
+
+                        <Grid2 size={{ xs: 12, sm: 6 }}>
+                          <TextField
+                            label="Valor"
+                            name="value"
+                            type="number"
+                            value={amount}
+                            onChange={(e) => setAmount(e.target.value)}
+                            onBlur={handleBlur}
+                            required
+                            fullWidth
+                            disabled={isSubmitting}
+                            inputProps={{ step: "0.01" }}
+                            error={!!errorSubmit && isNaN(formData.value)}
+                          />
+                        </Grid2>
+
+                        <Grid2 size={{ xs: 12 }}>
+                          <TextField
+                            label="Descripción"
+                            name="description"
+                            value={formData.description}
+                            onChange={handleInputChange}
+                            required
+                            fullWidth
+                            multiline
+                            rows={3}
+                            disabled={isSubmitting}
+                            error={
+                              !!errorSubmit && !formData.description.trim()
                             }
                           />
-                        }
-                        label="Términos y Condiciones de Prixer Aceptados"
-                      />
-                      {validationErrors?.prixer?.termsAgree && (
-                        <FormHelperText error>
-                          {validationErrors.prixer.termsAgree}
-                        </FormHelperText>
-                      )}
-                      {permissions?.area && (
-                        <Button
-                          variant="outlined"
-                          color="secondary"
-                          disabled={isSubmitting || isLoading}
-                          startIcon={<Lock />}
-                          onClick={openModal}
-                        >
-                          Cambiar contraseña
-                        </Button>
-                      )}
-                    </Grid2>
-                  </Grid2>
-                </Grid2>
-              )}
-              <Grid2 size={{ xs: 12 }}>
-                <Stack
-                  direction="row"
-                  justifyContent="flex-end"
-                  spacing={2}
-                  sx={{ mt: 3 }}
-                >
-                  <Button
-                    type="button"
-                    variant="outlined"
-                    color="secondary"
-                    onClick={handleCancel}
-                    disabled={isSubmitting}
-                  >
-                    Cancelar
-                  </Button>
-                  <Button
-                    type="submit"
-                    variant="contained"
-                    color="primary"
-                    disabled={isSubmitting || isLoading}
-                    startIcon={
-                      isSubmitting ? (
-                        <CircularProgress size={20} color="inherit" />
-                      ) : null
-                    }
-                  >
-                    {isSubmitting ? "Guardando..." : "Guardar Cambios"}
-                  </Button>
-                </Stack>
+                        </Grid2>
+                        <Grid2 size={{ xs: 12, sm: 6 }}>
+                          <TextField
+                            label="ID de Orden (Opcional)"
+                            name="order"
+                            value={formData.order || ""}
+                            onChange={handleInputChange}
+                            fullWidth
+                            disabled={isSubmitting}
+                            helperText="Asociar este movimiento a una orden específica"
+                          />
+                        </Grid2>
+
+                        <Grid2 size={{ xs: 12 }}>
+                          <Stack
+                            direction="row"
+                            justifyContent="flex-end"
+                            spacing={2}
+                            sx={{ mt: 2 }}
+                          >
+                            <Button
+                              type="button"
+                              variant="outlined"
+                              color="secondary"
+                              onClick={handleCancel}
+                              disabled={isSubmitting}
+                            >
+                              Cancelar
+                            </Button>
+                            <Button
+                              type="submit"
+                              variant="contained"
+                              color="primary"
+                              disabled={isSubmitting}
+                              startIcon={
+                                isSubmitting ? (
+                                  <CircularProgress size={20} color="inherit" />
+                                ) : null
+                              }
+                            >
+                              {isSubmitting ? "Creando..." : "Crear Movimiento"}
+                            </Button>
+                          </Stack>
+                        </Grid2>
+
+                        {errorSubmit && (
+                          <Grid2 size={{ xs: 12 }}>
+                            <Alert severity="error" sx={{ mt: 2 }}>
+                              {errorSubmit}
+                            </Alert>
+                          </Grid2>
+                        )}
+                      </Grid2>
+                    </form>
+                  ) : (
+                    <Typography>Este prixer no tiene cartera aún.</Typography>
+                  )}
+                </Paper>
               </Grid2>
-              {validationErrors &&
-                !Object.keys(validationErrors).some((key) =>
-                  ["firstName", "lastName", "email", "role", "prixer"].includes(
-                    key
-                  )
-                ) && (
-                  <Grid2 size={{ xs: 12 }}>
-                    <Alert severity="warning" sx={{ mt: 2 }}>
-                      Se encontraron errores de validación generales no
-                      asociados a un campo específico. Por favor revise el
-                      formulario.
-                    </Alert>
-                  </Grid2>
-                )}
-              {validationErrors &&
-                validationErrors.firstName &&
-                !validationErrors.lastName /* ... more specific checks maybe ... */ &&
-                !["Nombre obligatorio."].includes(
-                  validationErrors.firstName
-                ) && (
-                  <Grid2 size={{ xs: 12 }}>
-                    <Alert severity="error" sx={{ mt: 2 }}>
-                      Error de la API: {validationErrors.firstName}
-                    </Alert>
-                  </Grid2>
-                )}
-            </Grid2>
-          </form>
+            </CustomTabPanel>
+          </>
         )}
       </Paper>
 

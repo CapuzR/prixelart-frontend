@@ -514,10 +514,10 @@ export default function UpdateOrder() {
     }
   }, [])
 
-    const readPermissions = async () => {
-      const response = await getPermissions()
-      setPermissions(response)
-    }
+  const readPermissions = async () => {
+    const response = await getPermissions()
+    setPermissions(response)
+  }
 
   const loadData = useCallback(async () => {
     const showSnackBar = showSnackBarRef.current
@@ -539,13 +539,13 @@ export default function UpdateOrder() {
       if (orderData.payment && !Array.isArray(orderData.payment.payment)) {
         console.warn(
           "API devolvió orderData.payment sin un array 'Payments' válido. " +
-            "Inicializando como array vacío."
+          "Inicializando como array vacío."
         )
         orderData.payment.payment = []
       } else if (!orderData.payment) {
         console.warn(
           "API devolvió orderData sin el objeto 'payment'. " +
-            "Inicializando con valores por defecto. Esto puede indicar un problema."
+          "Inicializando con valores por defecto. Esto puede indicar un problema."
         )
       }
       setOrder(orderData)
@@ -573,28 +573,28 @@ export default function UpdateOrder() {
       const allArtist = arts.map((art) => art.prixerUsername)
       const onlyPrixers = [...new Set(allArtist)]
 
-      const customImageOptions = onlyPrixers.map((prixerUsername) => {
+      const customImageOptions: ArtOption[] = onlyPrixers.map((prixerUsername) => {
         const customArtPlaceholder: CustomImage = {
-          id: `custom-image-${prixerUsername}`,
+          artId: `custom-image-${prixerUsername}`,
           title: `Personalizado de ${prixerUsername}`,
           prixerUsername: prixerUsername,
           url: "",
-        }
+        };
 
         return {
-          id: customArtPlaceholder.id,
+          id: customArtPlaceholder.artId,
           label: customArtPlaceholder.title,
           thumb: favicon,
           fullArt: customArtPlaceholder,
-        }
-      })
+        };
+      });
 
-      const genericCustom = {
-        id: "0000000",
+      const genericCustom: ArtOption = { // Explicitly type it for clarity
+        id: "custom-image-without-prixer", // Use the artId from fullArt here
         label: `Personalizado`,
         thumb: favicon,
         fullArt: {
-          id: `custom-image-without-prixer`,
+          artId: `custom-image-without-prixer`,
           title: `Personalizado`,
           prixerUsername: "",
           url: "",
@@ -618,7 +618,7 @@ export default function UpdateOrder() {
             variantOptions.find(
               (vo) =>
                 vo.fullVariant.attributes.length ===
-                  (line.item?.product?.selection?.length || 0) &&
+                (line.item?.product?.selection?.length || 0) &&
                 vo.fullVariant.attributes.every((attr) =>
                   line.item?.product?.selection?.find(
                     (selAttr) =>
@@ -679,10 +679,10 @@ export default function UpdateOrder() {
 
       const currentSelectedPaymentMethod = orderPay
         ? paymentOptions.find((opt) =>
-            !!orderPay?._id
-              ? opt.id === orderPay._id.toString()
-              : opt.fullMethod.name === orderPay?.name
-          ) || null
+          !!orderPay?._id
+            ? opt.id === orderPay._id.toString()
+            : opt.fullMethod.name === orderPay?.name
+        ) || null
         : null
 
       setSelectedPaymentMethod(currentSelectedPaymentMethod)
@@ -717,9 +717,9 @@ export default function UpdateOrder() {
       } else {
         setUseShippingForBilling(
           !!orderData.shipping?.address &&
-            !!orderData.billing?.address &&
-            JSON.stringify(orderData.shipping.address) ===
-              JSON.stringify(orderData.billing.address)
+          !!orderData.billing?.address &&
+          JSON.stringify(orderData.shipping.address) ===
+          JSON.stringify(orderData.billing.address)
         )
       }
 
@@ -771,13 +771,13 @@ export default function UpdateOrder() {
       (sum, line) =>
         sum +
         (line?.item?.price ? Number(line?.item?.price) : 0) *
-          (line.quantity || 1),
+        (line.quantity || 1),
       0
     )
     const newShippingCost = selectedShippingMethod
       ? parseFloat(
-          (selectedShippingMethod.fullMethod as ShippingMethod).price || "0"
-        )
+        (selectedShippingMethod.fullMethod as ShippingMethod).price || "0"
+      )
       : order.shippingCost || 0
     const base = newSubTotal - (order.discount || 0) + newShippingCost
     const newTaxes: Tax[] = (order.tax || []).map((taxRule) => ({
@@ -820,7 +820,7 @@ export default function UpdateOrder() {
             editableBillingAddress &&
             !editableBillingAddress?.address.line1 &&
             JSON.stringify(editableShippingAddress) ===
-              JSON.stringify(editableBillingAddress)) ||
+            JSON.stringify(editableBillingAddress)) ||
           !editableBillingAddress?.address?.line1
         if (shippingAndBillingWereSameOrBillingEmpty) {
           setEditableBillingAddress(
@@ -1012,13 +1012,13 @@ export default function UpdateOrder() {
             prevVouchers.map((img) =>
               img.id === imageId
                 ? {
-                    ...img,
-                    url: imageUrl,
-                    progress: 100,
-                    file: undefined, // Limpiar el archivo después de la subida
-                    error: undefined,
-                    // isExisting: true, // Si tuvieras esta propiedad en ImageUploadState
-                  }
+                  ...img,
+                  url: imageUrl,
+                  progress: 100,
+                  file: undefined, // Limpiar el archivo después de la subida
+                  error: undefined,
+                  // isExisting: true, // Si tuvieras esta propiedad en ImageUploadState
+                }
                 : img
             )
           )
@@ -1058,22 +1058,22 @@ export default function UpdateOrder() {
             prevVouchers.map((img) =>
               img.id === imageId
                 ? {
-                    ...img,
-                    error: errorMsg,
-                    file: undefined,
-                    progress: undefined,
-                  }
+                  ...img,
+                  error: errorMsg,
+                  file: undefined,
+                  progress: undefined,
+                }
                 : img
             )
           )
           setCurrentVoucherImage((prevCurrentVoucher) =>
             prevCurrentVoucher && prevCurrentVoucher.id === imageId
               ? {
-                  ...prevCurrentVoucher,
-                  error: errorMsg,
-                  file: undefined,
-                  progress: undefined,
-                }
+                ...prevCurrentVoucher,
+                error: errorMsg,
+                file: undefined,
+                progress: undefined,
+              }
               : prevCurrentVoucher
           )
           showSnackBar(errorMsg)
@@ -1085,22 +1085,22 @@ export default function UpdateOrder() {
           prevVouchers.map((img) =>
             img.id === imageId
               ? {
-                  ...img,
-                  error: errorMsg,
-                  file: undefined,
-                  progress: undefined,
-                }
+                ...img,
+                error: errorMsg,
+                file: undefined,
+                progress: undefined,
+              }
               : img
           )
         )
         setCurrentVoucherImage((prevCurrentVoucher) =>
           prevCurrentVoucher && prevCurrentVoucher.id === imageId
             ? {
-                ...prevCurrentVoucher,
-                error: errorMsg,
-                file: undefined,
-                progress: undefined,
-              }
+              ...prevCurrentVoucher,
+              error: errorMsg,
+              file: undefined,
+              progress: undefined,
+            }
             : prevCurrentVoucher
         )
         showSnackBar(`Error al subir comprobante: ${errorMsg}`)
@@ -1453,8 +1453,8 @@ export default function UpdateOrder() {
       console.error("Failed to update order with voucher:", err)
       showSnackBar(
         err?.response?.data?.message ||
-          err.message ||
-          "Error al actualizar la orden con el comprobante."
+        err.message ||
+        "Error al actualizar la orden con el comprobante."
       )
       // No reviertas el estado aquí a menos que sea necesario, el usuario podría querer reintentar.
     } finally {
@@ -1536,28 +1536,28 @@ export default function UpdateOrder() {
         throw new Error("Producto no seleccionado en una línea.")
       const pricePerUnit = parseFloat(
         lineState.selectedVariant?.fullVariant.publicPrice ||
-          lineState.pricePerUnit?.toString() ||
-          lineState.selectedProduct.fullProduct.cost ||
-          "0"
+        lineState.pricePerUnit?.toString() ||
+        lineState.selectedProduct.fullProduct.cost ||
+        "0"
       )
       const item: Item = {
         sku: `${lineState.selectedProduct.id}-${lineState.selectedVariant?.id || "novar"}-${lineState.selectedArt?.id || "noart"}`,
         art: lineState.selectedArt
           ? (() => {
-              const fullArt = lineState?.selectedArt?.fullArt
-              if ("_id" in fullArt) {
-                return {
-                  _id: fullArt._id,
-                  artId: fullArt.artId,
-                  title: fullArt.title,
-                  largeThumbUrl: fullArt.largeThumbUrl,
-                  prixerUsername: fullArt.prixerUsername,
-                  exclusive: fullArt.exclusive,
-                }
-              } else {
-                return fullArt
+            const fullArt = lineState?.selectedArt?.fullArt
+            if ("_id" in fullArt) {
+              return {
+                _id: fullArt._id,
+                artId: fullArt.artId,
+                title: fullArt.title,
+                largeThumbUrl: fullArt.largeThumbUrl,
+                prixerUsername: fullArt.prixerUsername,
+                exclusive: fullArt.exclusive,
               }
-            })()
+            } else {
+              return fullArt
+            }
+          })()
           : undefined,
         product: {
           _id: lineState.selectedProduct.fullProduct._id,
@@ -1594,8 +1594,8 @@ export default function UpdateOrder() {
     )
     const finalShippingCost = selectedShippingMethod
       ? parseFloat(
-          (selectedShippingMethod.fullMethod as ShippingMethod).price || "0"
-        )
+        (selectedShippingMethod.fullMethod as ShippingMethod).price || "0"
+      )
       : 0
     const orderDiscount = order.discount || 0
     const finalTaxes: Tax[] = (order.tax || []).map((taxRule) => {
@@ -1678,19 +1678,19 @@ export default function UpdateOrder() {
       lines: finalOrderLines,
       consumerDetails: order.consumerDetails
         ? {
-            ...order.consumerDetails,
-            basic: editableClientInfo || order.consumerDetails.basic,
-          }
+          ...order.consumerDetails,
+          basic: editableClientInfo || order.consumerDetails.basic,
+        }
         : undefined,
       shipping: selectedShippingMethod
         ? {
-            ...(order?.shipping || {}),
-            method: selectedShippingMethod.fullMethod as ShippingMethod,
-            address: isPickupSelected ? createBlankAddress() : shippingAddr,
-            country: isPickupSelected
-              ? createBlankAddress().address.country
-              : shippingAddr.address.country || "",
-          }
+          ...(order?.shipping || {}),
+          method: selectedShippingMethod.fullMethod as ShippingMethod,
+          address: isPickupSelected ? createBlankAddress() : shippingAddr,
+          country: isPickupSelected
+            ? createBlankAddress().address.country
+            : shippingAddr.address.country || "",
+        }
         : undefined,
       payment: {
         ...order.payment,
@@ -1702,10 +1702,10 @@ export default function UpdateOrder() {
       },
       billing: billingAddr
         ? {
-            ...(order?.billing || {}),
-            address: billingAddr,
-            billTo: finalBillToInfo,
-          }
+          ...(order?.billing || {}),
+          address: billingAddr,
+          billTo: finalBillToInfo,
+        }
         : undefined,
       subTotal: finalSubTotal,
       totalUnits: finalTotalUnits,
@@ -1953,9 +1953,9 @@ export default function UpdateOrder() {
           </Grid2>
           {order.shipping?.estimatedDeliveryDate &&
             getOverallOrderStatus(editableOrderLines) !==
-              OrderStatus.Delivered &&
+            OrderStatus.Delivered &&
             getOverallOrderStatus(editableOrderLines) !==
-              OrderStatus.Canceled && (
+            OrderStatus.Canceled && (
               <Alert
                 severity="info"
                 icon={<LocalShippingOutlined />}
@@ -2237,7 +2237,7 @@ export default function UpdateOrder() {
                                     }
                                     helperText={
                                       line.availableVariants.length === 0 &&
-                                      line.selectedProduct
+                                        line.selectedProduct
                                         ? "Sin variantes"
                                         : ""
                                     }
@@ -2472,24 +2472,24 @@ export default function UpdateOrder() {
                   )}
                   {(displayTotals?.discount ?? order.discount)
                     ? renderBasicInfoItem(
-                        "summary-discount",
-                        null,
-                        "Descuento:",
-                        <Typography color="error.main">
-                          -$
-                          {(displayTotals?.discount ?? order.discount)?.toFixed(
-                            2
-                          )}
-                        </Typography>
-                      )
+                      "summary-discount",
+                      null,
+                      "Descuento:",
+                      <Typography color="error.main">
+                        -$
+                        {(displayTotals?.discount ?? order.discount)?.toFixed(
+                          2
+                        )}
+                      </Typography>
+                    )
                     : null}
                   {(displayTotals?.shippingCost ?? order.shippingCost)
                     ? renderBasicInfoItem(
-                        "summary-shipping",
-                        null,
-                        "Costo de Envío:",
-                        `$${(displayTotals?.shippingCost ?? order.shippingCost)?.toFixed(2)}`
-                      )
+                      "summary-shipping",
+                      null,
+                      "Costo de Envío:",
+                      `$${(displayTotals?.shippingCost ?? order.shippingCost)?.toFixed(2)}`
+                    )
                     : null}
                   {(displayTotals?.taxes ?? order.tax).map((t, idx) =>
                     renderBasicInfoItem(
@@ -3005,7 +3005,7 @@ export default function UpdateOrder() {
                               setCurrentAmount(Number(e.target.value))
                             }
                             disabled={isSubmitting}
-                            // InputProps={{ startAdornment: <InputAdornment position="start">$</InputAdornment> }} // Opcional
+                          // InputProps={{ startAdornment: <InputAdornment position="start">$</InputAdornment> }} // Opcional
                           />
                           <FormControl
                             fullWidth

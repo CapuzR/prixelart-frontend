@@ -44,7 +44,7 @@ export default function ItemPlayground({ item, handleChangeElement, line }: Item
                 onClickLeft={() => handleChangeElement!('arte', item, line ? line.id : undefined)}
               >
                 <Image
-                  src={item.art?.largeThumbUrl}
+                  src={'largeThumbUrl' in item.art ? item.art.largeThumbUrl : item.art.url}
                   alt={item.art?.title}
                   objectFit="contain"
                 />

@@ -302,28 +302,28 @@ const CreateOrder: React.FC = () => {
       const allArtist = arts.map((art) => art.prixerUsername)
       const onlyPrixers = [...new Set(allArtist)]
 
-      const customImageOptions = onlyPrixers.map((prixerUsername) => {
+      const customImageOptions: ArtOption[] = onlyPrixers.map((prixerUsername) => {
         const customArtPlaceholder: CustomImage = {
-          id: `custom-image-${prixerUsername}`,
+          artId: `custom-image-${prixerUsername}`,
           title: `Personalizado de ${prixerUsername}`,
           prixerUsername: prixerUsername,
           url: "",
-        }
+        };
 
         return {
-          id: customArtPlaceholder.id,
+          id: customArtPlaceholder.artId, // <-- CHANGE 'artId' to 'id' here
           label: customArtPlaceholder.title,
           thumb: favicon,
           fullArt: customArtPlaceholder,
-        }
-      })
+        };
+      });
 
-      const genericCustom = {
-        id: "0000000",
+    const genericCustom: ArtOption = { // Explicitly type it for clarity
+        id: "custom-image-without-prixer", // Use the artId from fullArt here
         label: `Personalizado`,
         thumb: favicon,
         fullArt: {
-          id: `custom-image-without-prixer`,
+          artId: `custom-image-without-prixer`,
           title: `Personalizado`,
           prixerUsername: "",
           url: "",
@@ -504,30 +504,30 @@ const CreateOrder: React.FC = () => {
         !prevState
           ? prevState
           : {
-              ...prevState,
-              recepient: {
-                ...prevState.recepient,
-                name: editableClientInfo.name,
-                lastName: editableClientInfo.lastName,
-                email: editableClientInfo.email,
-                phone: editableClientInfo.phone,
-              },
-            }
+            ...prevState,
+            recepient: {
+              ...prevState.recepient,
+              name: editableClientInfo.name,
+              lastName: editableClientInfo.lastName,
+              email: editableClientInfo.email,
+              phone: editableClientInfo.phone,
+            },
+          }
       )
     } else if (!e.target.checked) {
       setEditableShippingAddress((prevState) =>
         !prevState
           ? prevState
           : {
-              ...prevState,
-              recepient: {
-                ...prevState.recepient,
-                name: "",
-                lastName: "",
-                email: "",
-                phone: "",
-              },
-            }
+            ...prevState,
+            recepient: {
+              ...prevState.recepient,
+              name: "",
+              lastName: "",
+              email: "",
+              phone: "",
+            },
+          }
       )
     }
   }
@@ -689,20 +689,20 @@ const CreateOrder: React.FC = () => {
             sku: `${l.selectedProduct.id}-${l.selectedVariant?.id || "novar"}-${l.selectedArt?.id || "noart"}`,
             art: l.selectedArt
               ? (() => {
-                  const fullArt = l.selectedArt.fullArt
-                  if ("_id" in fullArt) {
-                    return {
-                      _id: fullArt._id,
-                      artId: fullArt.artId,
-                      title: fullArt.title,
-                      largeThumbUrl: fullArt.largeThumbUrl,
-                      prixerUsername: fullArt.prixerUsername,
-                      exclusive: fullArt.exclusive,
-                    }
-                  } else {
-                    return fullArt
+                const fullArt = l.selectedArt.fullArt
+                if ("_id" in fullArt) {
+                  return {
+                    _id: fullArt._id,
+                    artId: fullArt.artId,
+                    title: fullArt.title,
+                    largeThumbUrl: fullArt.largeThumbUrl,
+                    prixerUsername: fullArt.prixerUsername,
+                    exclusive: fullArt.exclusive,
                   }
-                })()
+                } else {
+                  return fullArt
+                }
+              })()
               : undefined,
             product: {
               _id: l.selectedProduct.fullProduct._id,
@@ -962,44 +962,44 @@ const CreateOrder: React.FC = () => {
                               alignItems: "top",
                             }}
                           >
-                              <TextField
-                                label="Cant."
-                                type="number"
-                                value={line.quantity}
-                                onChange={(e) => handleQty(line.tempId, e)}
-                                fullWidth
-                                size="small"
-                                disabled={isSubmitting}
-                                inputProps={{ min: 1 }}
-                              />
-                              <TextField
-                                fullWidth
-                                variant="outlined"
-                                size="small"
-                                type="text"
-                                label="Precio unitario"
-                                // defaultValue={(line.pricePerUnit || 0).toFixed(2)}
-                                value={(line.pricePerUnit || 0).toFixed(2)}
-                                onChange={(e) =>
-                                  handlePricePerUnitChange(e, line)
-                                }
-                                onKeyDown={allowNumericWithDecimal}
-                                sx={{
-                                  mb: 1,
-                                  "& .MuiInputBase-input": {
-                                    textAlign: "right",
-                                  },
-                                }}
-                                slotProps={{
-                                  input: {
-                                    startAdornment: (
-                                      <InputAdornment position="start">
-                                        $
-                                      </InputAdornment>
-                                    ),
-                                  },
-                                }}
-                              />
+                            <TextField
+                              label="Cant."
+                              type="number"
+                              value={line.quantity}
+                              onChange={(e) => handleQty(line.tempId, e)}
+                              fullWidth
+                              size="small"
+                              disabled={isSubmitting}
+                              inputProps={{ min: 1 }}
+                            />
+                            <TextField
+                              fullWidth
+                              variant="outlined"
+                              size="small"
+                              type="text"
+                              label="Precio unitario"
+                              // defaultValue={(line.pricePerUnit || 0).toFixed(2)}
+                              value={(line.pricePerUnit || 0).toFixed(2)}
+                              onChange={(e) =>
+                                handlePricePerUnitChange(e, line)
+                              }
+                              onKeyDown={allowNumericWithDecimal}
+                              sx={{
+                                mb: 1,
+                                "& .MuiInputBase-input": {
+                                  textAlign: "right",
+                                },
+                              }}
+                              slotProps={{
+                                input: {
+                                  startAdornment: (
+                                    <InputAdornment position="start">
+                                      $
+                                    </InputAdornment>
+                                  ),
+                                },
+                              }}
+                            />
                           </Grid2>
                         </Grid2>
                       </Grid2>

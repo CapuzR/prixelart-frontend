@@ -207,7 +207,7 @@ const CreateOrder: React.FC = () => {
   const [orderLines, setOrderLines] = useState<OrderLineFormState[]>([
     { ...initialLine, tempId: uuidv4() },
   ])
-  console.log(orderLines[0]?.selectedArt)
+
   const [editableShippingAddress, setEditableShippingAddress] =
     useState<Address | null>(null)
   const [editableBillingAddress, setEditableBillingAddress] =
@@ -828,10 +828,18 @@ const CreateOrder: React.FC = () => {
 
                     <Grid2 size={{ xs: 12, sm: 10 }}>
                       <Grid2 container spacing={1.5} alignItems="center">
-                        <Grid2 size={{ xs: 12, md: 6 }}>
-                          <Grid2 container spacing={1} alignItems="center">
+                        <Grid2 size={{ xs: 12 }}>
+                          <Grid2
+                            container
+                            spacing={1}
+                            alignItems="center"
+                            sx={{
+                              display: "grid",
+                              gridTemplateColumns: "1fr 1fr",
+                              alignItems: "top",
+                            }}
+                          >
                             <Autocomplete
-                              fullWidth
                               options={productOptions}
                               value={line.selectedProduct}
                               onChange={(e, v) => handleProduct(line.tempId, v)}
@@ -845,7 +853,6 @@ const CreateOrder: React.FC = () => {
                               )}
                             />
                             <Autocomplete
-                              fullWidth
                               options={line.availableVariants}
                               value={line.selectedVariant}
                               onChange={(e, v) => handleVariant(line.tempId, v)}
@@ -865,70 +872,17 @@ const CreateOrder: React.FC = () => {
                                 />
                               )}
                             />
-                            <Grid2
-                              size={{ xs: 12 }}
-                              sx={{ display: "flex", flexDirection: "row" }}
-                            >
-                              <Grid2 container spacing={1} alignItems="center">
-                                <Grid2 size={{ xs: 6 }}>
-                                  <TextField
-                                    label="Cant."
-                                    type="number"
-                                    value={line.quantity}
-                                    onChange={(e) => handleQty(line.tempId, e)}
-                                    fullWidth
-                                    size="small"
-                                    disabled={isSubmitting}
-                                    inputProps={{ min: 1 }}
-                                  />
-                                </Grid2>
-                                <Grid2
-                                  size={{ xs: 6 }}
-                                  sx={{ textAlign: "right" }}
-                                >
-                                  <TextField
-                                    fullWidth
-                                    variant="outlined"
-                                    size="small"
-                                    type="text"
-                                    label="Precio unitario"
-                                    // defaultValue={(line.pricePerUnit || 0).toFixed(2)}
-                                    value={(line.pricePerUnit || 0).toFixed(2)}
-                                    onChange={(e) =>
-                                      handlePricePerUnitChange(e, line)
-                                    }
-                                    onKeyDown={allowNumericWithDecimal}
-                                    sx={{
-                                      mb: 1,
-                                      "& .MuiInputBase-input": {
-                                        textAlign: "right",
-                                      },
-                                    }}
-                                    slotProps={{
-                                      input: {
-                                        startAdornment: (
-                                          <InputAdornment position="start">
-                                            $
-                                          </InputAdornment>
-                                        ),
-                                      },
-                                    }}
-                                  />
-                                </Grid2>
-                              </Grid2>
-                            </Grid2>
                           </Grid2>
                         </Grid2>
                         {/* Arte */}
-                        <Grid2 size={{ xs: 12, md: 6 }} sx={{ height: "100%" }}>
+                        <Grid2 size={{ xs: 12 }}>
                           <Grid2
                             container
                             spacing={1}
-                            alignItems="center"
                             sx={{
-                              display: "flex",
-                              flexDirection: "column",
-                              height: "100%",
+                              display: "grid",
+                              gridTemplateColumns: "1fr 1fr",
+                              alignItems: "top",
                             }}
                           >
                             <Autocomplete
@@ -939,16 +893,16 @@ const CreateOrder: React.FC = () => {
                               disabled={isSubmitting}
                               renderOption={(props, op) => (
                                 <Box component="li" {...props}>
-                                  {/* <Avatar
-                                  variant="rounded"
-                                  src={op.thumb}
-                                  sx={{
-                                    mr: 1,
-                                    width: 24,
-                                    height: 24,
-                                    border: "1px solid lightgrey",
-                                  }}
-                                /> */}
+                                  <Avatar
+                                    variant="rounded"
+                                    src={line?.selectedArt?.thumb}
+                                    sx={{
+                                      mr: 1,
+                                      width: 24,
+                                      height: 24,
+                                      border: "1px solid lightgrey",
+                                    }}
+                                  />
                                   {op.label}
                                 </Box>
                               )}
@@ -995,15 +949,59 @@ const CreateOrder: React.FC = () => {
                             />
                           </Grid2>
                         </Grid2>
-                      </Grid2>
-
-                      <Grid2
-                        container
-                        spacing={1.5}
-                        alignItems="center"
-                        sx={{ mt: 1 }}
-                      >
-                        <Grid2 size={{ xs: 12, md: 6 }}></Grid2>
+                        <Grid2
+                          size={{ xs: 6 }}
+                          sx={{ display: "flex", flexDirection: "row" }}
+                        >
+                          <Grid2
+                            container
+                            spacing={1}
+                            sx={{
+                              display: "grid",
+                              gridTemplateColumns: "1fr 1fr",
+                              alignItems: "top",
+                            }}
+                          >
+                              <TextField
+                                label="Cant."
+                                type="number"
+                                value={line.quantity}
+                                onChange={(e) => handleQty(line.tempId, e)}
+                                fullWidth
+                                size="small"
+                                disabled={isSubmitting}
+                                inputProps={{ min: 1 }}
+                              />
+                              <TextField
+                                fullWidth
+                                variant="outlined"
+                                size="small"
+                                type="text"
+                                label="Precio unitario"
+                                // defaultValue={(line.pricePerUnit || 0).toFixed(2)}
+                                value={(line.pricePerUnit || 0).toFixed(2)}
+                                onChange={(e) =>
+                                  handlePricePerUnitChange(e, line)
+                                }
+                                onKeyDown={allowNumericWithDecimal}
+                                sx={{
+                                  mb: 1,
+                                  "& .MuiInputBase-input": {
+                                    textAlign: "right",
+                                  },
+                                }}
+                                slotProps={{
+                                  input: {
+                                    startAdornment: (
+                                      <InputAdornment position="start">
+                                        $
+                                      </InputAdornment>
+                                    ),
+                                  },
+                                }}
+                              />
+                          </Grid2>
+                        </Grid2>
                       </Grid2>
                     </Grid2>
                   </Grid2>

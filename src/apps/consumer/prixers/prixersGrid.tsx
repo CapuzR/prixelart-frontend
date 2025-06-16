@@ -4,8 +4,13 @@ import CssBaseline from '@mui/material/CssBaseline';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import PrixersGrid from 'apps/consumer/components/prixerGrid/prixerGrid';
+import useMediaQuery from "@mui/material/useMediaQuery"
+import { useTheme } from "@mui/material/styles"
 
 const Prixers: React.FC = () => {
+  const theme = useTheme()
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
+
   return (
     <Container
       component="main"
@@ -22,7 +27,7 @@ const Prixers: React.FC = () => {
       <CssBaseline />
       <Box sx={{ textAlign: 'center', mb: 4 }}>
         <Typography
-          variant="h3"
+          variant={isMobile ? "h4" : "h3"}
           component="h1"
           sx={{
             color: 'text.primary',
@@ -32,7 +37,7 @@ const Prixers: React.FC = () => {
         >
           Conoce a nuestros Prixers
         </Typography>
-        <Typography variant="h6" color="text.secondary">
+        <Typography variant={isMobile ? "body2" :"h6"} color="text.secondary">
           Descubre a creadores y artistas talentosos.
         </Typography>
       </Box>

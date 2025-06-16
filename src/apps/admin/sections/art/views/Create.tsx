@@ -240,8 +240,8 @@ const CreateArt: React.FC = () => {
             console.log("Submitting Art Data:", payload);
             const response = await createArt(payload);
             if (response) {
-                showSnackBar(`Arte "${formData.title}" creado exitosamente.`);
                 navigate("/admin/art/read");
+                showSnackBar(`Arte "${formData.title}" creado exitosamente.`);
             } else { throw new Error("La creación del arte no devolvió una respuesta esperada."); }
         } catch (err: any) {
             console.error("Failed to create art:", err);

@@ -1,5 +1,5 @@
-@use '@/theme.scss' as theme;
-@use '../Details.module.scss';
+@use "@/theme.scss" as theme;
+@use "../Details.module.scss";
 
 .prix-product-container {
   justify-content: center;
@@ -33,16 +33,10 @@
   margin-bottom: theme.$spacing-sm;
 
   .title {
-    font-size: theme.$font-size-extra-large;
+    // font-size: theme.$font-size-extra-large;
     font-weight: theme.$font-weight-bold;
     color: theme.$text-color;
-    margin: theme.$spacing-xs;
-  }
-
-  .price {
-    font-size: theme.$font-size-small;
-    font-weight: theme.$font-weight-normal;
-    color: theme.$text-color;
+    line-height: 100%;
   }
 }
 
@@ -63,4 +57,26 @@
   width: 100%;
 }
 
-;
+.select {
+  margin-top: 2rem;
+  .attributes-container {
+    flex-direction: column;
+    .attribute-select-wrapper {
+      width: 100%;
+    }
+  }
+}
+
+.price-container {
+  display: flex;
+  margin-top: 1rem;
+  flex-direction: row;
+  width: 100%;
+  align-items: center;
+  .price {
+    margin: 0 auto;
+  }
+  .share-button {
+    width: fit-content;
+  }
+}

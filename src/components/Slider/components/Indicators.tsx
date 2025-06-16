@@ -29,7 +29,7 @@ export const Indicators: React.FC<IndicatorsProps> = ({
   return (
     <div
       className={`${isBelow ? styles['below-indicator'] : styles['over-indicator']}`}
-      style={{ minHeight: '20px' }} // Keep styling 
+      style={{ minHeight: '20px', position: 'initial', transform: 'none', marginTop: '1rem' }} // Keep styling 
     >
       {/* Only render indicators if there's more than one page */}
       {numPages > 1 && useIndicators && useIndicators.type === 'dots' ? (

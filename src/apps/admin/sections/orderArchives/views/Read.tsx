@@ -967,6 +967,7 @@ const ReadOrderArchives: React.FC = () => {
       { header: "Fecha de pago", key: "paymentDate", width: 11 },
       { header: "Método de entrega", key: "shippingMethod", width: 14 },
       { header: "Fecha de entrega", key: "deliveryDate", width: 11 },
+      { header: "Fecha de completado", key: "completionDate", width: 11 },
     ]
 
     worksheet.getRow(1).eachCell((cell: any) => {
@@ -990,13 +991,14 @@ const ReadOrderArchives: React.FC = () => {
           status: order.status as Status,
           orderId: order.orderId,
           createdOn: formatDate(order.createdOn),
-          customerName: `${order?.basicData?.firstname || ""} ${order?.basicData?.lastname || ""}`,
+          customerName: `${order?.basicData?.firstname || order?.basicData?.name} ${order?.basicData?.lastname || ""}`,
           customerType: order?.consumerData?.consumerType,
           observations: stripHtml(order.observations),
           seller: order.createdBy.username,
           paymentMethod: order.billingData?.orderPaymentMethod,
           paymentStatus: order.payStatus,
-          paymentDate: order.payDate || "No registrado",
+          paymentDate: formatDate(order.payDate) || "No registrado",
+          completionDate: formatDate(order.completionDate) || "No registrado",
           shippingMethod:
             typeof order?.shippingData?.shippingMethod === "object"
               ? order?.shippingData?.shippingMethod?.name

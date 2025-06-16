@@ -332,7 +332,6 @@ const ReadOrders: React.FC = () => {
     })
     setFilteredOrders(filtered)
     setPage(0)
-    console.log(filtered)
   }, [searchTerm, filterStatus, filterPayStatus, allOrders, startDate, endDate])
 
   const handleSearchChange = (
@@ -620,6 +619,42 @@ const ReadOrders: React.FC = () => {
     return statusHistory[statusHistory.length - 1][0]
   }
 
+  const getStringLatestStatus = <T,>(
+    statusHistory: [T, Date][] | undefined
+  ): T | undefined | any => {
+    if (!statusHistory || statusHistory.length === 0) {
+      return undefined
+    }
+    const st1 = statusHistory[statusHistory.length - 1][0]
+    const st = OrderStatus[st1 as OrderStatus]
+    if (st === "Pending") return "Pendiente"
+    else if (st === "Impression") return "En impresión"
+    else if (st === "Production") return "En producción"
+    else if (st === "ReadyToShip") return "Listo para enviar"
+    else if (st === "Delivered") return "Entregado"
+    else if (st === "Finished") return "Completado"
+    else if (st === "Paused") return "Detenido"
+    else if (st === "Canceled") return "Cancelado"
+    else return "Pendiente"
+  }
+
+  const getStringLatestPayStatus = <T,>(
+    statusHistory: [T, Date][] | undefined
+  ): T | undefined | any => {
+    if (!statusHistory || statusHistory.length === 0) {
+      return undefined
+    }
+    const st1 = statusHistory[statusHistory.length - 1][0]
+    const st = GlobalPaymentStatus[st1 as GlobalPaymentStatus]
+    console.log(st)
+
+    if (st === "Pending") return "Pendiente"
+    else if (st === "Credited") return "Abonado"
+    else if (st === "Paid") return "Pagado"
+    else if (st === "Canceled") return "Cancelado"
+    else return "Pendiente"
+  }
+
   const formatDate = (date: Date | undefined): string => {
     return date ? format(new Date(date), "dd/MM/yyyy") : ""
   }
@@ -659,6 +694,7 @@ const ReadOrders: React.FC = () => {
       { header: "Fecha de pago", key: "paymentDate", width: 11 },
       { header: "Método de entrega", key: "shippingMethod", width: 14 },
       { header: "Fecha de entrega", key: "deliveryDate", width: 11 },
+      { header: "Fecha de completado", key: "completionDate", width: 11 },
     ]
 
     worksheet.getRow(1).eachCell((cell: any) => {
@@ -679,9 +715,9 @@ const ReadOrders: React.FC = () => {
     for (const order of orders) {
       for (const line of order.lines) {
         const rowData = {
-          status:
-            OrderStatus[getLatestStatus(order.status) ?? OrderStatus.Pending],
-          orderId: order.number,
+          status: getStringLatestStatus(order.status),
+          // OrderStatus[getLatestStatus(order.status) ?? OrderStatus.Pending],
+          orderId: order._id?.toString().slice(-6),
           createdOn: formatDate(order.createdOn),
           customerName: `${order.consumerDetails?.basic.name || ""} ${order.consumerDetails?.basic.lastName || ""}`,
           customerType: "N/A", // NOTA: 'consumerType' no está en la nueva interfaz. Necesitarías agregarlo a ConsumerDetails si lo requieres.
@@ -690,16 +726,21 @@ const ReadOrders: React.FC = () => {
           paymentMethod: order.payment?.payment
             ? order.payment?.payment[0]?.method.name
             : "N/A",
-          paymentStatus:
-            GlobalPaymentStatus[
-              getLatestStatus(order.payment.status) ??
-                GlobalPaymentStatus.Pending
-            ],
+          paymentStatus: getStringLatestPayStatus(order.payment.status),
+          // GlobalPaymentStatus[
+          //   getLatestStatus(order.payment.status) ??
+          //     GlobalPaymentStatus.Pending
+          // ],
           paymentDate: formatDate(
             getLatestStatus(order.payment.status)
               ? order.payment.status[order.payment.status.length - 1][1]
               : undefined
-          ), // Antigua: order.payDate
+          ),
+          completionDate: formatDate(
+            getLatestStatus(order.status)
+              ? order.status[order.status.length - 1][1]
+              : undefined
+          ),
           shippingMethod: order.shipping.method?.name,
           deliveryDate: formatDate(order.shipping.estimatedDeliveryDate),
           prixer: line.item.art?.prixerUsername || "N/A",

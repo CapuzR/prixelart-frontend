@@ -80,14 +80,14 @@ import {
   ListItemIcon,
   ListItem,
   CardHeader,
-  Stepper,
-  Step,
-  StepLabel,
+
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
   LinearProgress,
+  Tab,
+  Tabs,
   Slide,
   useMediaQuery,
 } from "@mui/material"
@@ -123,7 +123,6 @@ import {
 import { Theme, useTheme } from "@mui/material"
 import { makeStyles } from "tss-react/mui"
 
-// Image Upload Imports
 import * as tus from "tus-js-client"
 import ReactCrop, {
   centerCrop,
@@ -136,14 +135,12 @@ import { BACKEND_URL } from "@api/utils.api"
 import PhotoCameraBackIcon from "@mui/icons-material/PhotoCameraBack"
 import BrokenImageIcon from "@mui/icons-material/BrokenImage"
 
-// Utils
 import { getCurrentOrderStatus } from "@apps/consumer/trackOrder/utils"
 import EditableAddressForm from "./components/EditableAddressForm"
 
 import { getPermissions } from "@api/admin.api"
 import { Permissions } from "types/permissions.types"
 
-// --- Type Enhancements ---
 interface MethodOption {
   id: string
   label: string
@@ -381,14 +378,35 @@ function centerAspectCrop(
   )
 }
 
-const Transition = React.forwardRef(function Transition(
-  props: TransitionProps & { children: React.ReactElement<any, any> },
-  ref: React.Ref<unknown>
-) {
-  return <Slide direction="up" ref={ref} {...props} />
-})
+function a11yProps(index: number) {
+  return {
+    id: `simple-tab-${index}`,
+    "aria-controls": `simple-tabpanel-${index}`,
+  }
+}
 
-// --- Component ---
+interface TabPanelProps {
+  children?: React.ReactNode
+  index: number
+  value: number
+}
+
+function CustomTabPanel(props: TabPanelProps) {
+  const { children, value, index, ...other } = props
+
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`simple-tabpanel-${index}`}
+      aria-labelledby={`simple-tab-${index}`}
+      {...other}
+    >
+      {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
+    </div>
+  )
+}
+
 export default function UpdateOrder() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
@@ -438,7 +456,6 @@ export default function UpdateOrder() {
   >([])
   const [displayTotals, setDisplayTotals] = useState<DisplayTotals | null>(null)
 
-  // Estados para imágenes de comprobantes de pago
   const [currentVoucherImage, setCurrentVoucherImage] =
     useState<ImageUploadState | null>(null)
   const [currentDescription, setCurrentDescription] = useState<string>("")
@@ -449,7 +466,7 @@ export default function UpdateOrder() {
   const [paymentVouchers, setPaymentVouchers] = useState<ImageUploadState[]>([])
   const [imageToCropDetails, setImageToCropDetails] = useState<{
     originalFile: File
-    targetType: "paymentVoucher" // Tipo específico para comprobantes
+    targetType: "paymentVoucher"
     tempId: string
   } | null>(null)
   const [imageSrcForCropper, setImageSrcForCropper] = useState<string | null>(
@@ -462,20 +479,7 @@ export default function UpdateOrder() {
   const previewCanvasRef = useRef<HTMLCanvasElement | null>(null)
   const formRef = useRef<HTMLFormElement>(null)
 
-  const steps = ["Detalles", "Pagos", "Historial"] // Actualizado
   const [activeStep, setActiveStep] = React.useState(0)
-  // const [completed, setCompleted] = React.useState<{[k: number]: boolean;}>({}); // No se usa actualmente
-
-  const handleStep = (step: number) => () => {
-    setActiveStep(step)
-  }
-
-  const handleNext = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep + 1)
-  }
-  const handleBack = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep - 1)
-  }
 
   const isPickupSelected = useMemo(() => {
     if (!selectedShippingMethod || !selectedShippingMethod.fullMethod)
@@ -539,13 +543,13 @@ export default function UpdateOrder() {
       if (orderData.payment && !Array.isArray(orderData.payment.payment)) {
         console.warn(
           "API devolvió orderData.payment sin un array 'Payments' válido. " +
-          "Inicializando como array vacío."
+            "Inicializando como array vacío."
         )
         orderData.payment.payment = []
       } else if (!orderData.payment) {
         console.warn(
           "API devolvió orderData sin el objeto 'payment'. " +
-          "Inicializando con valores por defecto. Esto puede indicar un problema."
+            "Inicializando con valores por defecto. Esto puede indicar un problema."
         )
       }
       setOrder(orderData)
@@ -573,24 +577,26 @@ export default function UpdateOrder() {
       const allArtist = arts.map((art) => art.prixerUsername)
       const onlyPrixers = [...new Set(allArtist)]
 
-      const customImageOptions: ArtOption[] = onlyPrixers.map((prixerUsername) => {
-        const customArtPlaceholder: CustomImage = {
-          artId: `custom-image-${prixerUsername}`,
-          title: `Personalizado de ${prixerUsername}`,
-          prixerUsername: prixerUsername,
-          url: "",
-        };
+      const customImageOptions: ArtOption[] = onlyPrixers.map(
+        (prixerUsername) => {
+          const customArtPlaceholder: CustomImage = {
+            artId: `custom-image-${prixerUsername}`,
+            title: `Personalizado de ${prixerUsername}`,
+            prixerUsername: prixerUsername,
+            url: "",
+          }
 
-        return {
-          id: customArtPlaceholder.artId,
-          label: customArtPlaceholder.title,
-          thumb: favicon,
-          fullArt: customArtPlaceholder,
-        };
-      });
+          return {
+            id: customArtPlaceholder.artId,
+            label: customArtPlaceholder.title,
+            thumb: favicon,
+            fullArt: customArtPlaceholder,
+          }
+        }
+      )
 
-      const genericCustom: ArtOption = { // Explicitly type it for clarity
-        id: "custom-image-without-prixer", // Use the artId from fullArt here
+      const genericCustom: ArtOption = {
+        id: "custom-image-without-prixer",
         label: `Personalizado`,
         thumb: favicon,
         fullArt: {
@@ -618,7 +624,7 @@ export default function UpdateOrder() {
             variantOptions.find(
               (vo) =>
                 vo.fullVariant.attributes.length ===
-                (line.item?.product?.selection?.length || 0) &&
+                  (line.item?.product?.selection?.length || 0) &&
                 vo.fullVariant.attributes.every((attr) =>
                   line.item?.product?.selection?.find(
                     (selAttr) =>
@@ -679,10 +685,10 @@ export default function UpdateOrder() {
 
       const currentSelectedPaymentMethod = orderPay
         ? paymentOptions.find((opt) =>
-          !!orderPay?._id
-            ? opt.id === orderPay._id.toString()
-            : opt.fullMethod.name === orderPay?.name
-        ) || null
+            !!orderPay?._id
+              ? opt.id === orderPay._id.toString()
+              : opt.fullMethod.name === orderPay?.name
+          ) || null
         : null
 
       setSelectedPaymentMethod(currentSelectedPaymentMethod)
@@ -717,17 +723,12 @@ export default function UpdateOrder() {
       } else {
         setUseShippingForBilling(
           !!orderData.shipping?.address &&
-          !!orderData.billing?.address &&
-          JSON.stringify(orderData.shipping.address) ===
-          JSON.stringify(orderData.billing.address)
+            !!orderData.billing?.address &&
+            JSON.stringify(orderData.shipping.address) ===
+              JSON.stringify(orderData.billing.address)
         )
       }
 
-      // Cargar comprobantes existentes
-      //   if (
-      //     orderData.payment?.vouchers &&
-      //     Array.isArray(orderData.payment.vouchers)
-      //   ) {
       const existingVoucherImages: ImageUploadState[] = []
       if (
         orderData.payment?.payment &&
@@ -737,12 +738,10 @@ export default function UpdateOrder() {
         orderData.payment.payment.forEach(
           (payments: Payment, index: number) => {
             if (payments.voucher) {
-              // Check if the payments has a voucher URL
               existingVoucherImages.push({
                 id: `payments-${payments.id || index}-voucher-${uuidv4()}`, // Ensure unique ID for ImageUploadState
                 url: payments.voucher,
                 isExisting: true,
-                // You might want to store payments.id if you need to map back precisely later
               })
             }
           }
@@ -765,19 +764,19 @@ export default function UpdateOrder() {
   }, [])
 
   useEffect(() => {
-    /* ... (lógica de displayTotals sin cambios) ... */ if (!order)
+   if (!order)
       return setDisplayTotals(null)
     const newSubTotal = editableOrderLines.reduce(
       (sum, line) =>
         sum +
         (line?.item?.price ? Number(line?.item?.price) : 0) *
-        (line.quantity || 1),
+          (line.quantity || 1),
       0
     )
     const newShippingCost = selectedShippingMethod
       ? parseFloat(
-        (selectedShippingMethod.fullMethod as ShippingMethod).price || "0"
-      )
+          (selectedShippingMethod.fullMethod as ShippingMethod).price || "0"
+        )
       : order.shippingCost || 0
     const base = newSubTotal - (order.discount || 0) + newShippingCost
     const newTaxes: Tax[] = (order.tax || []).map((taxRule) => ({
@@ -820,7 +819,7 @@ export default function UpdateOrder() {
             editableBillingAddress &&
             !editableBillingAddress?.address.line1 &&
             JSON.stringify(editableShippingAddress) ===
-            JSON.stringify(editableBillingAddress)) ||
+              JSON.stringify(editableBillingAddress)) ||
           !editableBillingAddress?.address?.line1
         if (shippingAndBillingWereSameOrBillingEmpty) {
           setEditableBillingAddress(
@@ -834,9 +833,7 @@ export default function UpdateOrder() {
   }, [
     isPickupSelected,
     useShippingForBilling,
-    // editableShippingAddress,
     order,
-    // createBlankAddress,
     editableBillingAddress?.address?.line1,
   ])
 
@@ -905,7 +902,6 @@ export default function UpdateOrder() {
     setCrop(undefined)
     setCompletedCrop(undefined)
     if (imgRef.current) imgRef.current = null
-    // Resetear el input file si se cancela el recorte
     const fileInput = document.getElementById(
       "voucher-image-input"
     ) as HTMLInputElement
@@ -969,12 +965,11 @@ export default function UpdateOrder() {
       metadata: {
         filename: file.name,
         filetype: file.type,
-        context: "paymentVoucher", // Contexto específico para comprobantes
-        imageId: imageId, // El ID único de esta imagen/subida
+        context: "paymentVoucher",
+        imageId: imageId,
       },
       onProgress: (bytesUploaded, bytesTotal) => {
         const percentage = Math.floor((bytesUploaded / bytesTotal) * 100)
-        // Actualizar el progreso en la lista general de comprobantes
         setPaymentVouchers((prevVouchers) =>
           prevVouchers.map((img) =>
             img.id === imageId ? { ...img, progress: percentage } : img
@@ -991,7 +986,6 @@ export default function UpdateOrder() {
       onSuccess: async () => {
         const tusUploadInstance = upload as any
         let finalS3Url: string | null = null
-        // Lógica para obtener la URL final de S3 (x-final-url)
         if (tusUploadInstance._req?._xhr?.getResponseHeader) {
           finalS3Url =
             tusUploadInstance._req._xhr.getResponseHeader("x-final-url") ||
@@ -1007,23 +1001,20 @@ export default function UpdateOrder() {
         const imageUrl = finalS3Url || upload.url // Fallback a la URL de TUS
 
         if (imageUrl) {
-          // Actualizar la lista general de comprobantes
           setPaymentVouchers((prevVouchers) =>
             prevVouchers.map((img) =>
               img.id === imageId
                 ? {
-                  ...img,
-                  url: imageUrl,
-                  progress: 100,
-                  file: undefined, // Limpiar el archivo después de la subida
-                  error: undefined,
-                  // isExisting: true, // Si tuvieras esta propiedad en ImageUploadState
-                }
+                    ...img,
+                    url: imageUrl,
+                    progress: 100,
+                    file: undefined,
+                    error: undefined,
+                  }
                 : img
             )
           )
 
-          // CORRECCIÓN para setCurrentVoucherImage:
           setCurrentVoucherImage((prevCurrentVoucher) => {
             if (prevCurrentVoucher && prevCurrentVoucher.id === imageId) {
               return {
@@ -1058,22 +1049,22 @@ export default function UpdateOrder() {
             prevVouchers.map((img) =>
               img.id === imageId
                 ? {
-                  ...img,
-                  error: errorMsg,
-                  file: undefined,
-                  progress: undefined,
-                }
+                    ...img,
+                    error: errorMsg,
+                    file: undefined,
+                    progress: undefined,
+                  }
                 : img
             )
           )
           setCurrentVoucherImage((prevCurrentVoucher) =>
             prevCurrentVoucher && prevCurrentVoucher.id === imageId
               ? {
-                ...prevCurrentVoucher,
-                error: errorMsg,
-                file: undefined,
-                progress: undefined,
-              }
+                  ...prevCurrentVoucher,
+                  error: errorMsg,
+                  file: undefined,
+                  progress: undefined,
+                }
               : prevCurrentVoucher
           )
           showSnackBar(errorMsg)
@@ -1085,22 +1076,22 @@ export default function UpdateOrder() {
           prevVouchers.map((img) =>
             img.id === imageId
               ? {
-                ...img,
-                error: errorMsg,
-                file: undefined,
-                progress: undefined,
-              }
+                  ...img,
+                  error: errorMsg,
+                  file: undefined,
+                  progress: undefined,
+                }
               : img
           )
         )
         setCurrentVoucherImage((prevCurrentVoucher) =>
           prevCurrentVoucher && prevCurrentVoucher.id === imageId
             ? {
-              ...prevCurrentVoucher,
-              error: errorMsg,
-              file: undefined,
-              progress: undefined,
-            }
+                ...prevCurrentVoucher,
+                error: errorMsg,
+                file: undefined,
+                progress: undefined,
+              }
             : prevCurrentVoucher
         )
         showSnackBar(`Error al subir comprobante: ${errorMsg}`)
@@ -1114,6 +1105,10 @@ export default function UpdateOrder() {
     showSnackBarRef.current(
       "Comprobante eliminado de la lista (se guardará al actualizar)."
     )
+  }
+
+  const handleChangeTab = (event: React.SyntheticEvent, newValue: number) => {
+    setActiveStep(newValue)
   }
 
   const handleAddOrderLine = () => {
@@ -1230,6 +1225,7 @@ export default function UpdateOrder() {
     ]
 
     setOrder({ ...currentOrder, status: updatedStatusHistory })
+    showSnackBar("¡Recuerda guardar los cambios en el botón rojo!")
   }
 
   const handleOrderPayStatusChange = (
@@ -1253,6 +1249,7 @@ export default function UpdateOrder() {
       ...currentOrder,
       payment: { ...currentOrder.payment, status: updatedStatusHistory },
     })
+    showSnackBar("¡Recuerda guardar los cambios en el botón rojo!")
   }
 
   const handleStatusChange = (
@@ -1453,8 +1450,8 @@ export default function UpdateOrder() {
       console.error("Failed to update order with voucher:", err)
       showSnackBar(
         err?.response?.data?.message ||
-        err.message ||
-        "Error al actualizar la orden con el comprobante."
+          err.message ||
+          "Error al actualizar la orden con el comprobante."
       )
       // No reviertas el estado aquí a menos que sea necesario, el usuario podría querer reintentar.
     } finally {
@@ -1536,28 +1533,28 @@ export default function UpdateOrder() {
         throw new Error("Producto no seleccionado en una línea.")
       const pricePerUnit = parseFloat(
         lineState.selectedVariant?.fullVariant.publicPrice ||
-        lineState.pricePerUnit?.toString() ||
-        lineState.selectedProduct.fullProduct.cost ||
-        "0"
+          lineState.pricePerUnit?.toString() ||
+          lineState.selectedProduct.fullProduct.cost ||
+          "0"
       )
       const item: Item = {
         sku: `${lineState.selectedProduct.id}-${lineState.selectedVariant?.id || "novar"}-${lineState.selectedArt?.id || "noart"}`,
         art: lineState.selectedArt
           ? (() => {
-            const fullArt = lineState?.selectedArt?.fullArt
-            if ("_id" in fullArt) {
-              return {
-                _id: fullArt._id,
-                artId: fullArt.artId,
-                title: fullArt.title,
-                largeThumbUrl: fullArt.largeThumbUrl,
-                prixerUsername: fullArt.prixerUsername,
-                exclusive: fullArt.exclusive,
+              const fullArt = lineState?.selectedArt?.fullArt
+              if ("_id" in fullArt) {
+                return {
+                  _id: fullArt._id,
+                  artId: fullArt.artId,
+                  title: fullArt.title,
+                  largeThumbUrl: fullArt.largeThumbUrl,
+                  prixerUsername: fullArt.prixerUsername,
+                  exclusive: fullArt.exclusive,
+                }
+              } else {
+                return fullArt
               }
-            } else {
-              return fullArt
-            }
-          })()
+            })()
           : undefined,
         product: {
           _id: lineState.selectedProduct.fullProduct._id,
@@ -1594,8 +1591,8 @@ export default function UpdateOrder() {
     )
     const finalShippingCost = selectedShippingMethod
       ? parseFloat(
-        (selectedShippingMethod.fullMethod as ShippingMethod).price || "0"
-      )
+          (selectedShippingMethod.fullMethod as ShippingMethod).price || "0"
+        )
       : 0
     const orderDiscount = order.discount || 0
     const finalTaxes: Tax[] = (order.tax || []).map((taxRule) => {
@@ -1678,19 +1675,19 @@ export default function UpdateOrder() {
       lines: finalOrderLines,
       consumerDetails: order.consumerDetails
         ? {
-          ...order.consumerDetails,
-          basic: editableClientInfo || order.consumerDetails.basic,
-        }
+            ...order.consumerDetails,
+            basic: editableClientInfo || order.consumerDetails.basic,
+          }
         : undefined,
       shipping: selectedShippingMethod
         ? {
-          ...(order?.shipping || {}),
-          method: selectedShippingMethod.fullMethod as ShippingMethod,
-          address: isPickupSelected ? createBlankAddress() : shippingAddr,
-          country: isPickupSelected
-            ? createBlankAddress().address.country
-            : shippingAddr.address.country || "",
-        }
+            ...(order?.shipping || {}),
+            method: selectedShippingMethod.fullMethod as ShippingMethod,
+            address: isPickupSelected ? createBlankAddress() : shippingAddr,
+            country: isPickupSelected
+              ? createBlankAddress().address.country
+              : shippingAddr.address.country || "",
+          }
         : undefined,
       payment: {
         ...order.payment,
@@ -1702,10 +1699,10 @@ export default function UpdateOrder() {
       },
       billing: billingAddr
         ? {
-          ...(order?.billing || {}),
-          address: billingAddr,
-          billTo: finalBillToInfo,
-        }
+            ...(order?.billing || {}),
+            address: billingAddr,
+            billTo: finalBillToInfo,
+          }
         : undefined,
       subTotal: finalSubTotal,
       totalUnits: finalTotalUnits,
@@ -1787,8 +1784,6 @@ export default function UpdateOrder() {
     }
   }
 
-  const handleCancel = () => navigate("/admin/orders/read")
-
   const renderBasicInfoItem = (
     itemKey: React.Key,
     icon: React.ReactNode,
@@ -1823,7 +1818,8 @@ export default function UpdateOrder() {
         />
       </ListItem>
     ) : null
-  const renderVariantAttributes = (
+  
+    const renderVariantAttributes = (
     selection: VariantAttribute[] | undefined
   ) => {
     if (!selection || selection.length === 0) return null
@@ -1840,6 +1836,7 @@ export default function UpdateOrder() {
       </Box>
     )
   }
+
   const renderArtDetails = (art: PickedArt | undefined) => {
     if (!art) return null
     return (
@@ -1854,6 +1851,7 @@ export default function UpdateOrder() {
       </Box>
     )
   }
+
   const getOverallOrderStatus = (
     orderLines: OrderLineFormState[]
   ): OrderStatus => {
@@ -1909,6 +1907,7 @@ export default function UpdateOrder() {
     getOverallOrderStatus(editableOrderLines)
   )
 
+  console.log(order)
   return (
     <Container maxWidth="lg" sx={{ py: { xs: 2, md: 3 } }}>
       <form onSubmit={handleSubmit} id="update-order-form">
@@ -1917,7 +1916,7 @@ export default function UpdateOrder() {
           sx={{
             p: { xs: 2, md: 3 },
             borderRadius: 2,
-            mb: 3,
+            // mb: 3,
             backgroundColor: "transparent",
           }}
         >
@@ -1927,7 +1926,7 @@ export default function UpdateOrder() {
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
-              mb: 2,
+              // mb: 2,
               flexWrap: "wrap",
               gap: 2,
             }}
@@ -1950,16 +1949,40 @@ export default function UpdateOrder() {
                 el: {formatDate(order.createdOn)}
               </Typography>
             </Box>
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              disabled={
+                isSubmitting ||
+                isLoading ||
+                paymentVouchers.some(
+                  (img) =>
+                    img.file &&
+                    typeof img.progress === "number" &&
+                    img.progress < 100
+                )
+              }
+              startIcon={
+                isSubmitting ? (
+                  <CircularProgress size={20} color="inherit" />
+                ) : (
+                  <SaveIcon />
+                )
+              }
+            >
+              {isSubmitting ? "Guardando..." : "Guardar Cambios"}
+            </Button>
           </Grid2>
           {order.shipping?.estimatedDeliveryDate &&
             getOverallOrderStatus(editableOrderLines) !==
-            OrderStatus.Delivered &&
+              OrderStatus.Delivered &&
             getOverallOrderStatus(editableOrderLines) !==
-            OrderStatus.Canceled && (
+              OrderStatus.Canceled && (
               <Alert
                 severity="info"
                 icon={<LocalShippingOutlined />}
-                sx={{ mb: 2, borderRadius: 2 }}
+                sx={{ borderRadius: 2 }}
               >
                 Fecha estimada de entrega original:
                 <strong>
@@ -1968,16 +1991,18 @@ export default function UpdateOrder() {
               </Alert>
             )}
         </Paper>
-        <Stepper nonLinear activeStep={activeStep} sx={{ mb: 3 }}>
-          {steps.map((label, index) => (
-            <Step key={label}>
-              <StepButton color="inherit" onClick={handleStep(index)}>
-                {label}
-              </StepButton>
-            </Step>
-          ))}
-        </Stepper>
-        {activeStep === 0 && (
+        <Tabs
+          centered
+          value={activeStep}
+          onChange={handleChangeTab}
+          aria-label="basic tabs example"
+        >
+          <Tab label="Detalles" {...a11yProps(0)} />
+          <Tab label="Pago" {...a11yProps(1)} />
+          <Tab label="Historial" {...a11yProps(2)} />
+        </Tabs>
+
+        <CustomTabPanel value={activeStep} index={0}>
           <Grid2 container spacing={{ xs: 2, md: 3 }}>
             <Grid2 size={{ xs: 12 }} sx={{ mt: 2 }}>
               <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
@@ -2237,7 +2262,7 @@ export default function UpdateOrder() {
                                     }
                                     helperText={
                                       line.availableVariants.length === 0 &&
-                                        line.selectedProduct
+                                      line.selectedProduct
                                         ? "Sin variantes"
                                         : ""
                                     }
@@ -2472,24 +2497,24 @@ export default function UpdateOrder() {
                   )}
                   {(displayTotals?.discount ?? order.discount)
                     ? renderBasicInfoItem(
-                      "summary-discount",
-                      null,
-                      "Descuento:",
-                      <Typography color="error.main">
-                        -$
-                        {(displayTotals?.discount ?? order.discount)?.toFixed(
-                          2
-                        )}
-                      </Typography>
-                    )
+                        "summary-discount",
+                        null,
+                        "Descuento:",
+                        <Typography color="error.main">
+                          -$
+                          {(displayTotals?.discount ?? order.discount)?.toFixed(
+                            2
+                          )}
+                        </Typography>
+                      )
                     : null}
                   {(displayTotals?.shippingCost ?? order.shippingCost)
                     ? renderBasicInfoItem(
-                      "summary-shipping",
-                      null,
-                      "Costo de Envío:",
-                      `$${(displayTotals?.shippingCost ?? order.shippingCost)?.toFixed(2)}`
-                    )
+                        "summary-shipping",
+                        null,
+                        "Costo de Envío:",
+                        `$${(displayTotals?.shippingCost ?? order.shippingCost)?.toFixed(2)}`
+                      )
                     : null}
                   {(displayTotals?.taxes ?? order.tax).map((t, idx) =>
                     renderBasicInfoItem(
@@ -2792,8 +2817,8 @@ export default function UpdateOrder() {
               )}
             </Grid2>
           </Grid2>
-        )}
-        {activeStep === 1 && (
+        </CustomTabPanel>
+        <CustomTabPanel value={activeStep} index={0}>
           <Box sx={{ mt: 3 }}>
             <Grid2 container spacing={2}>
               <Grid2 size={{ xs: 12 }}>
@@ -3005,7 +3030,7 @@ export default function UpdateOrder() {
                               setCurrentAmount(Number(e.target.value))
                             }
                             disabled={isSubmitting}
-                          // InputProps={{ startAdornment: <InputAdornment position="start">$</InputAdornment> }} // Opcional
+                            // InputProps={{ startAdornment: <InputAdornment position="start">$</InputAdornment> }} // Opcional
                           />
                           <FormControl
                             fullWidth
@@ -3068,60 +3093,8 @@ export default function UpdateOrder() {
                 )}
               </Grid2>
             </Grid2>
-            {/* Typography original que pediste mantener como referencia */}
-            {/* <Typography>XO</Typography>  */}
           </Box>
-        )}
-        <Stack
-          direction="row"
-          justifyContent="space-between"
-          spacing={2}
-          sx={{ mt: 4, mb: 2 }}
-        >
-          <Button
-            color="inherit"
-            disabled={activeStep === 0 || isSubmitting}
-            onClick={handleBack}
-            sx={{ mr: 1 }}
-          >
-            Atrás
-          </Button>
-          <Box sx={{ flex: "1 1 auto" }} />
-          {activeStep === steps.length - 1 ? (
-            <Button
-              type="submit"
-              variant="contained"
-              color="primary"
-              disabled={
-                isSubmitting ||
-                isLoading ||
-                paymentVouchers.some(
-                  (img) =>
-                    img.file &&
-                    typeof img.progress === "number" &&
-                    img.progress < 100
-                )
-              }
-              startIcon={
-                isSubmitting ? (
-                  <CircularProgress size={20} color="inherit" />
-                ) : (
-                  <SaveIcon />
-                )
-              }
-            >
-              {isSubmitting ? "Guardando..." : "Guardar Cambios en Orden"}
-            </Button>
-          ) : (
-            <Button
-              onClick={handleNext}
-              variant="contained"
-              disabled={isSubmitting}
-            >
-              Siguiente
-            </Button>
-          )}
-        </Stack>
+        </CustomTabPanel>
         {errorSubmit && (
           <Alert severity="error" sx={{ mt: 1 }}>
             {errorSubmit}

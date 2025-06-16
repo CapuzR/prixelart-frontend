@@ -5,8 +5,8 @@ export interface Service {
   title: string;
   active: boolean;
   description: string;
-  // prixer: string;
-  userId: string;
+  prixer: string;
+  // userId: string;
   isLocal: boolean;
   isRemote: boolean;
   location?: string;

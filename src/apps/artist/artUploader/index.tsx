@@ -268,8 +268,8 @@ const Transition = forwardRef(function Transition(
 })
 
 interface ArtUploaderProps {
-  openArtFormDialog: boolean;
-  setOpenArtFormDialog: Dispatch<SetStateAction<boolean>>;
+  openArtFormDialog: boolean
+  setOpenArtFormDialog: (x: boolean) => void
 }
 
 export default function ArtUploader({
@@ -278,7 +278,7 @@ export default function ArtUploader({
 }: ArtUploaderProps) {
   const { showSnackBar: showSnackBarFromContext } = useSnackBar()
   const showSnackBarRef = useRef(showSnackBarFromContext)
-  const { setArtModal } = usePrixerCreator()
+  // const { setArtModal, uploadArt } = usePrixerCreator()
   const { user } = useUser()
 
   useEffect(() => {
@@ -1280,12 +1280,12 @@ export default function ArtUploader({
               {validationErrors?.title && !formData.title.trim()
                 ? null
                 : validationErrors?.title && (
-                  <Grid2 size={{ xs: 12 }}>
-                    <Alert severity="error" sx={{ mt: 2 }}>
-                      Error General: {validationErrors.title}
-                    </Alert>
-                  </Grid2>
-                )}
+                    <Grid2 size={{ xs: 12 }}>
+                      <Alert severity="error" sx={{ mt: 2 }}>
+                        Error General: {validationErrors.title}
+                      </Alert>
+                    </Grid2>
+                  )}
             </Grid2>
           </form>
         </Paper>

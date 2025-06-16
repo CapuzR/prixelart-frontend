@@ -145,6 +145,7 @@ const initialPrixerFormState: Partial<Prixer> = {
   phone: "",
   avatar: "",
   termsAgree: false,
+  status: true
 }
 
 const initialFormState: Pick<
@@ -567,16 +568,13 @@ const UpdateUser: React.FC = () => {
 
     setIsSubmitting(true)
 
-    // Prepare payload - ONLY include fields that are meant to be updated
     const payload: Partial<User> = {
-      // --- User Fields ---
       firstName: userFormData.firstName,
       lastName: userFormData.lastName,
       email: userFormData.email?.toLowerCase(), // Standardize email
-      active: userFormData.active,
+      active: prixerFormData.status, //TODO: use as Prixer prop, not a User one
       role: userFormData.role, // Send the current role selection
 
-      // Optional User fields - send undefined if empty to potentially clear them, or omit the key
       avatar: userFormData.avatar?.trim() || undefined,
       phone: userFormData.phone?.trim() || undefined,
       country: userFormData.country?.trim() || undefined,
@@ -590,6 +588,7 @@ const UpdateUser: React.FC = () => {
       facebook: userFormData.facebook?.trim() || undefined,
       twitter: userFormData.twitter?.trim() || undefined,
       ci: userFormData.ci?.trim() || undefined,
+      // status: prixerFormData.status, //TODO: about the line 575
       account: userFormData.account?.trim() || undefined,
       // DO NOT SEND username or password
     }
@@ -610,7 +609,7 @@ const UpdateUser: React.FC = () => {
         facebook: prixerFormData.facebook?.trim() || undefined,
         phone: prixerFormData.phone?.trim() || undefined,
         avatar: prixerFormData.avatar?.trim() || undefined,
-        // status: prixerFormData.status ?? true, // Include status if managed here
+        status: prixerFormData.status ?? true, // Include status if managed here
       }
       // Decision: Should user-level phone/avatar/socials be overridden by Prixer ones if both exist?
       // Example: If Prixer phone exists, prioritize it for the user record?
@@ -906,8 +905,8 @@ const UpdateUser: React.FC = () => {
                     <FormControlLabel
                       control={
                         <Checkbox
-                          checked={userFormData.active ?? true}
-                          onChange={handleUserInputChange}
+                          checked={prixerFormData.status ?? true}
+                          onChange={handlePrixerInputChange}
                           name="active"
                           disabled={isSubmitting}
                         />

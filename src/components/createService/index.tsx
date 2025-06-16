@@ -432,7 +432,7 @@ export default function CreateService() {
       location: location,
       productionTime: productionTime,
       publicPrice: { from: Number(priceFrom), to: Number(priceTo) },
-      prixer: user ? user._id?.toString() : undefined,
+      userId: user ? user._id?.toString() : undefined,
       sources: { images: serviceImages },
       active: active,
     }

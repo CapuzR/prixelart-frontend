@@ -22,12 +22,14 @@ import OrderDetailsPage from "./trackOrder/OrderDetailsPage"
 import ConditionalFB from "@components/floatingAddButton/Conditional"
 import ArtUploader from "@apps/artist/artUploader"
 import CreateService from "@components/createService"
+import ForgotPassword from "@apps/artist/passwordReset/ForgotPassword"
+import PasswordReset from "@apps/artist/passwordReset/PasswordReset" 
 
+import { usePrixerCreator } from "@context/GlobalContext"
 
 const ConsumerRoutes: React.FC = () => {
 
-  const [openArtFormDialog, setOpenArtFormDialog] = useState(false)
-
+const {uploadArt, setArtModal} = usePrixerCreator()
   return (
     <>
       <Routes>
@@ -36,8 +38,8 @@ const ConsumerRoutes: React.FC = () => {
         <Route path="/track/:id" element={<OrderDetailsPage />} />
         <Route path="/registrar" element={<SignUp />} />
         <Route path="/cambio-contraseña" element={<PasswordChange />} />
-{/*         <Route path="/olvido-contraseña" element={<ForgotPassword />} />
-        <Route path="/recuperar/:token" element={<ResetPassword />} /> */}
+        <Route path="/olvido-contraseña" element={<ForgotPassword />} />
+        <Route path="/recuperar/:token" element={<PasswordReset />} />
 
         <Route path="/productos" element={<Products />} />
         <Route path="/galeria" element={<Catalog />} />
@@ -58,8 +60,8 @@ const ConsumerRoutes: React.FC = () => {
 
       <ConditionalFB />
       <ArtUploader
-        openArtFormDialog={openArtFormDialog}
-        setOpenArtFormDialog={setOpenArtFormDialog}
+        openArtFormDialog={uploadArt}
+        setOpenArtFormDialog={setArtModal}
       />
       <CreateService />
     </>

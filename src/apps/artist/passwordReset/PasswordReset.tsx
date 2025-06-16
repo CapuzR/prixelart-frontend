@@ -55,7 +55,6 @@ export default function PasswordReset() {
   const { classes } = useStyles()
   const navigate = useNavigate()
   const { token } = useParams<{ token: string }>() // Get username from URL
-  console.log(token)
   const [newPassword, setNewPassword] = useState("")
   const [showNewPassword, setShowNewPassword] = useState(false)
   // const token = props.match.params.token

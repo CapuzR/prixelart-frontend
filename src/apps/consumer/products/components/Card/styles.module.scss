@@ -1,4 +1,5 @@
 @use '../../../../../theme.scss' as theme;
+$breakpoint-mobile: 480px;
 
 .card-root {
   display: flex;
@@ -33,6 +34,9 @@
   flex-direction: column;
   gap: 2.5rem;
   padding: theme.$spacing-md;
+  @include respond-below( $breakpoint-mobile) {
+    padding: theme.$spacing-sm
+  }
 }
 
 .main-content {

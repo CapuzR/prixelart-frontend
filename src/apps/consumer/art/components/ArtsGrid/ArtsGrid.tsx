@@ -224,7 +224,7 @@ const ArtsGrid: React.FC<ArtsGridProps> = ({ onArtSelect }) => {
           marginBottom: '15px',
         }}
       >
-        <div style={{ width: '100%', display: 'flex', justifyContent: 'center', marginBottom: '16px' }}>
+        <div style={{ width: '100%', display: 'flex', justifyContent: 'center', marginBottom: '16px', padding: 0 }}>
           <SearchBar
             onSearch={handleSearch}
             placeholderText='Busca tu arte favorito'

@@ -49,6 +49,7 @@
     transition: transform theme.$transition-normal;
     border-radius: theme.$border-radius-lg;
     height: 100%;
+    align-items: center;
   }
 
   .indicator {

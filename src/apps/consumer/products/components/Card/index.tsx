@@ -21,6 +21,7 @@ interface CardProps {
   handleDetails: (product: Product) => void
   isCart?: boolean
   onProductSelect?: (product: Product) => void
+  isMobile: boolean
 }
 export default function Card({
   product,
@@ -29,6 +30,7 @@ export default function Card({
   handleDetails,
   isCart,
   onProductSelect,
+  isMobile,
 }: CardProps) {
   const navigate = useNavigate()
   const { user } = useUser()
@@ -228,7 +230,11 @@ export default function Card({
     <div
       className={`${styles["card-root"]}`}
       id={product.name}
-      style={isCart ? { flexDirection: "column", alignItems: "center" } : {}}
+      style={
+        isCart
+          ? { flexDirection: "column", alignItems: "center" }
+          : { flexDirection: isMobile ? "column" : "row" }
+      }
     >
       <div className={styles["slider-container"]}>
         <Slider images={product?.sources?.images}>
@@ -248,12 +254,20 @@ export default function Card({
           >
             {product.name.split("\r\n")[0]}
           </Typography>
-          <p style={isCart ? { margin: 0 } : {}}>
+          {/* <p style={isCart ? { margin: 0 } : {}}>
             {product.description.split("\r\n")[0].length > 60
               ? `${product.description.split("\r\n")[0].slice(0, 65)}...`
               : `${product.description.split("\r\n")[0]}`}
-          </p>
-          {/* Price Display Area */}
+          </p> */}
+          <div
+            className="ql-editor"
+            dangerouslySetInnerHTML={{
+              __html:
+                product.description.split("\r\n")[0].length > 60
+                  ? `${product.description.split("\r\n")[0].slice(0, 65)}...`
+                  : `${product.description.split("\r\n")[0]}`,
+            }}
+          />
           <Typography
             gutterBottom
             component="div"

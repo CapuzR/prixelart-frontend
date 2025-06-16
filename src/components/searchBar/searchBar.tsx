@@ -10,6 +10,8 @@ import Tooltip from '@mui/material/Tooltip';
 import InputAdornment from '@mui/material/InputAdornment';
 import { SelectChangeEvent } from '@mui/material/Select';
 import { debounce } from '@utils/utils';
+import useMediaQuery from "@mui/material/useMediaQuery"
+import { useTheme } from "@mui/material/styles"
 
 interface SearchBarProps {
   onSearch: (queryValue: string | null, category: string | null) => void;
@@ -27,6 +29,8 @@ const CustomizedInputBase: React.FC<SearchBarProps> = ({
   categoriesList,
 }) => {
   const params = new URLSearchParams(window.location.search);
+  const theme = useTheme()
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
 
   const defaultCategories: string[] = [
     'Abstracto', 'Animales', 'Arquitectura', 'Atardecer', 'Cacao', 'Café',
@@ -107,7 +111,7 @@ const CustomizedInputBase: React.FC<SearchBarProps> = ({
   return (
     <div
       style={{
-        width: '85%',
+        width: isMobile ? '100%' : '85%',
         margin: 'auto',
         maxWidth: 700,
       }}

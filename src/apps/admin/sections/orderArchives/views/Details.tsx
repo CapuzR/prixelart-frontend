@@ -327,6 +327,7 @@ const OrderArchiveDetail: React.FC = () => {
 
     const canUpdateOrderStatus = orderData ? !FINAL_ORDER_STATUSES_MODAL.includes(orderData.status) || orderData.status === "Concretado" : false;
 
+    console.log(orderData)
 
     return (
         <Box sx={{ p: { xs: 1, sm: 2, md: 3 } }}>

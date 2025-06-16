@@ -17,10 +17,6 @@ const Cart = () => {
           <strong>Importante:</strong> tus datos son 100% confidenciales y no
           serán compartidos con terceros
         </Alert>
-
-        {/*         <div className={styles['switch-container']}>
-          <CurrencySwitch />
-        </div> */}
       </div>
       <div
         className={styles["content-row"]}

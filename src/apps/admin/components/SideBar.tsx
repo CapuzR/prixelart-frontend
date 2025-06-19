@@ -43,10 +43,16 @@ import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 interface SidebarProps {
   permissions: Permissions | null;
   drawerWidth: number;
+  collapsedWidth: number;
+  isOpen: boolean;
+  onOpen: () => void;
+  onClose: () => void;
+  openSections: SectionState;
+  onSectionClick: (section: keyof SectionState) => void;
 }
 
 // --- Updated Section State ---
-interface SectionState {
+export interface SectionState {
   dashboard: boolean;
   admins: boolean;
   products: boolean;
@@ -61,32 +67,20 @@ interface SectionState {
   preferences: boolean;
   discounts: boolean; // Added
   surcharges: boolean; // Added
-  // Order History is not collapsible, so no state needed
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ permissions, drawerWidth }) => {
+const Sidebar: React.FC<SidebarProps> = ({
+  permissions,
+  drawerWidth,
+  collapsedWidth,
+  isOpen,
+  onOpen,
+  onClose,
+  openSections,
+  onSectionClick,
+}) => {
   const theme = useTheme();
   const location = useLocation();
-  const [openSections, setOpenSections] = useState<SectionState>({
-    dashboard: false,
-    admins: false,
-    products: false,
-    art: false,
-    consumers: false,
-    orders: false,
-    shipping: false,
-    payments: false,
-    movements: false, // Default closed
-    prixers: false,
-    testimonials: false,
-    preferences: false,
-    discounts: false, // Default closed
-    surcharges: false, // Default closed
-  });
-
-  const handleSectionClick = (section: keyof SectionState) => {
-    setOpenSections((prev) => ({ ...prev, [section]: !prev[section] }));
-  };
 
   const isSelected = (path: string): boolean => {
     // Check for exact match or if the current path starts with the item's path
@@ -96,20 +90,25 @@ const Sidebar: React.FC<SidebarProps> = ({ permissions, drawerWidth }) => {
   // --- Styling Functions (unchanged) ---
   const listItemStyle = (path: string): SxProps<Theme> => ({
     pl: 4, // Indent nested items
+    whiteSpace: 'nowrap', // Prevent text wrapping on sub-items during animation
     backgroundColor: isSelected(path)
       ? theme.palette.action.selected
       : "inherit",
     '&:hover': {
       backgroundColor: theme.palette.action.hover,
     },
-    color: theme.palette.text.secondary, // Default color
-    ...(isSelected(path) && { // Styles when selected
+    color: theme.palette.text.secondary,
+    ...(isSelected(path) && {
       color: theme.palette.primary.main,
       fontWeight: 'bold',
     }),
   });
 
   const sectionHeaderStyle = (pathPrefix: string): SxProps<Theme> => ({
+    // Add these two properties to prevent layout shift during collapse animation
+    overflow: 'hidden',
+    whiteSpace: 'nowrap',
+
     backgroundColor: location.pathname.startsWith(pathPrefix)
       ? theme.palette.action.selected // Highlight section if child active
       : "inherit",
@@ -118,7 +117,6 @@ const Sidebar: React.FC<SidebarProps> = ({ permissions, drawerWidth }) => {
     },
     color: theme.palette.text.primary, // Section headers slightly more prominent
     ...(location.pathname.startsWith(pathPrefix) && { // Styles when selected
-      // color: theme.palette.primary.main, // Or keep default primary text
       fontWeight: 'medium',
     }),
   });
@@ -135,7 +133,6 @@ const Sidebar: React.FC<SidebarProps> = ({ permissions, drawerWidth }) => {
   const canViewArt = permissions.createProduct || permissions.deleteProduct;
   const canViewConsumers = permissions.createConsumer || permissions.readConsumers || permissions.deleteConsumer;
   const canViewOrders = permissions.createOrder || permissions.detailOrder || permissions.orderStatus;
-  const cancreateOrder = permissions.createOrder;
   const canViewShipping = permissions.createShippingMethod || permissions.deleteShippingMethod;
   const canViewPayments = permissions.createPaymentMethod || permissions.deletePaymentMethod;
   const canViewMovements = permissions.readMovements;
@@ -146,26 +143,27 @@ const Sidebar: React.FC<SidebarProps> = ({ permissions, drawerWidth }) => {
 
   return (
     <Box
+      onMouseEnter={onOpen}
+      onMouseLeave={onClose}
       sx={{
-        width: drawerWidth,
+        width: isOpen ? drawerWidth : collapsedWidth,
+        transition: theme.transitions.create('width', {
+          easing: theme.transitions.easing.sharp,
+          duration: theme.transitions.duration.enteringScreen,
+        }),
         flexShrink: 0,
-        height: "100vh", // Make sidebar full height
-        overflowY: "auto", // Allow scrolling if content overflows
+        height: "100vh",
+        overflowY: "auto",
+        overflowX: "hidden",
         borderRight: `1px solid ${theme.palette.divider}`,
         bgcolor: theme.palette.background.paper,
       }}
     >
       <List component="nav" aria-labelledby="admin-sidebar-nav">
         {/* Dashboard */}
-        <ListItemButton
-          component={RouterLink}
-          to="/admin/dashboard"
-          sx={sectionHeaderStyle('/admin/dashboard')}
-        >
-          <ListItemIcon>
-            <DashboardIcon />
-          </ListItemIcon>
-          <ListItemText primary="Dashboard" />
+        <ListItemButton component={RouterLink} to="/admin/dashboard" sx={sectionHeaderStyle('/admin/dashboard')}>
+          <ListItemIcon><DashboardIcon /></ListItemIcon>
+          {isOpen && <ListItemText primary="Dashboard" />}
         </ListItemButton>
         <Divider sx={{ my: 1 }} />
 
@@ -173,7 +171,7 @@ const Sidebar: React.FC<SidebarProps> = ({ permissions, drawerWidth }) => {
         {canViewAdmins && (
           <>
             <ListItemButton
-              onClick={() => handleSectionClick("admins")}
+              onClick={() => onSectionClick("admins")}
               sx={sectionHeaderStyle('/admin/admins')}
             >
               <ListItemIcon>
@@ -210,11 +208,11 @@ const Sidebar: React.FC<SidebarProps> = ({ permissions, drawerWidth }) => {
           </>
         )}
 
-        {/* Products Section (Discounts/Surcharges removed) */}
+        {/* Products Section */}
         {canViewProducts && (
           <>
             <ListItemButton
-              onClick={() => handleSectionClick("products")}
+              onClick={() => onSectionClick("products")}
               sx={sectionHeaderStyle('/admin/product')}
             >
               <ListItemIcon>
@@ -237,7 +235,6 @@ const Sidebar: React.FC<SidebarProps> = ({ permissions, drawerWidth }) => {
                     <ListItemText primary="Ver Productos" />
                   </ListItemButton>
                 )}
-                {/* Discounts and Surcharges are now separate sections */}
               </List>
             </Collapse>
             <Divider sx={{ my: 1 }} />
@@ -245,22 +242,22 @@ const Sidebar: React.FC<SidebarProps> = ({ permissions, drawerWidth }) => {
         )}
 
         {/* Art Section */}
-        {canViewArt && ( // Using a separate check, adjust 
+        {canViewArt && (
           <>
-            <ListItemButton onClick={() => handleSectionClick("art")} sx={sectionHeaderStyle('/admin/art')}>
+            <ListItemButton onClick={() => onSectionClick("art")} sx={sectionHeaderStyle('/admin/art')}>
               <ListItemIcon><BrushIcon /></ListItemIcon>
               <ListItemText primary="Artes" />
               {openSections.art ? <ExpandLess /> : <ExpandMore />}
             </ListItemButton>
             <Collapse in={openSections.art} timeout="auto" unmountOnExit>
               <List component="div" disablePadding>
-                {(permissions.createProduct) && ( // Example permission check
+                {(permissions.createProduct) && (
                   <ListItemButton component={RouterLink} to="/admin/art/create" sx={listItemStyle('/admin/art/create')}>
                     <ListItemIcon><AddIcon fontSize="small" /></ListItemIcon>
                     <ListItemText primary="Crear Artes" />
                   </ListItemButton>
                 )}
-                {(permissions.deleteProduct || permissions.createProduct) && ( // Example permission check
+                {(permissions.deleteProduct || permissions.createProduct) && (
                   <ListItemButton component={RouterLink} to="/admin/art/read" sx={listItemStyle('/admin/art/read')}>
                     <ListItemIcon><ListAltIcon fontSize="small" /></ListItemIcon>
                     <ListItemText primary="Ver Artes" />
@@ -275,7 +272,7 @@ const Sidebar: React.FC<SidebarProps> = ({ permissions, drawerWidth }) => {
         {/* Discounts Section */}
         {canViewDiscounts && (
           <>
-            <ListItemButton onClick={() => handleSectionClick("discounts")} sx={sectionHeaderStyle('/admin/discount')}>
+            <ListItemButton onClick={() => onSectionClick("discounts")} sx={sectionHeaderStyle('/admin/discount')}>
               <ListItemIcon><DiscountIcon /></ListItemIcon>
               <ListItemText primary="Descuentos" />
               {openSections.discounts ? <ExpandLess /> : <ExpandMore />}
@@ -304,7 +301,7 @@ const Sidebar: React.FC<SidebarProps> = ({ permissions, drawerWidth }) => {
         {/* Surcharges Section */}
         {canViewSurcharges && (
           <>
-            <ListItemButton onClick={() => handleSectionClick("surcharges")} sx={sectionHeaderStyle('/admin/surcharges')}>
+            <ListItemButton onClick={() => onSectionClick("surcharges")} sx={sectionHeaderStyle('/admin/surcharges')}>
               <ListItemIcon><PriceChangeIcon /></ListItemIcon>
               <ListItemText primary="Recargos" />
               {openSections.surcharges ? <ExpandLess /> : <ExpandMore />}
@@ -318,7 +315,7 @@ const Sidebar: React.FC<SidebarProps> = ({ permissions, drawerWidth }) => {
                     <ListItemText primary="Crear Recargo" />
                   </ListItemButton>
                 )}
-                {permissions.createDiscount && ( // Use a specific read permission if available
+                {permissions.createDiscount && (
                   <ListItemButton component={RouterLink} to="/admin/surcharges/read" sx={listItemStyle('/admin/surcharges/read')}>
                     <ListItemIcon><ListAltIcon fontSize="small" /></ListItemIcon>
                     <ListItemText primary="Ver Recargos" />
@@ -334,7 +331,7 @@ const Sidebar: React.FC<SidebarProps> = ({ permissions, drawerWidth }) => {
         {canViewConsumers && (
           <>
             <ListItemButton
-              onClick={() => handleSectionClick("consumers")}
+              onClick={() => onSectionClick("consumers")}
               sx={sectionHeaderStyle('/admin/users')}
             >
               <ListItemIcon>
@@ -366,7 +363,7 @@ const Sidebar: React.FC<SidebarProps> = ({ permissions, drawerWidth }) => {
         {/* Orders Section */}
         {canViewOrders && (
           <>
-            <ListItemButton onClick={() => handleSectionClick("orders")} sx={sectionHeaderStyle('/admin/orders')}>
+            <ListItemButton onClick={() => onSectionClick("orders")} sx={sectionHeaderStyle('/admin/orders')}>
               <ListItemIcon><ReceiptIcon /></ListItemIcon>
               <ListItemText primary="Órdenes" />
               {openSections.orders ? <ExpandLess /> : <ExpandMore />}
@@ -392,27 +389,27 @@ const Sidebar: React.FC<SidebarProps> = ({ permissions, drawerWidth }) => {
         )}
 
         {/* Order History Section */}
-{/*         {cancreateOrder && ( */}
-          <>
-            <ListItemButton
-              component={RouterLink}
-              to="/admin/orderArchives/read"  
-              sx={sectionHeaderStyle('/admin/orderArchives/*')} // Use path prefix for highlighting
-            >
-              <ListItemIcon>
-                <ManageSearchIcon /> {/* Icon for searching/history */}
-              </ListItemIcon>
-              <ListItemText primary="Órdenes Archivadas" />
-            </ListItemButton>
-            <Divider sx={{ my: 1 }} />
-          </>
-{/*         )} */}
+        {/*         {cancreateOrder && ( */}
+        <>
+          <ListItemButton
+            component={RouterLink}
+            to="/admin/orderArchives/read"
+            sx={sectionHeaderStyle('/admin/orderArchives/*')} // Use path prefix for highlighting
+          >
+            <ListItemIcon>
+              <ManageSearchIcon /> {/* Icon for searching/history */}
+            </ListItemIcon>
+            <ListItemText primary="Órdenes Archivadas" />
+          </ListItemButton>
+          <Divider sx={{ my: 1 }} />
+        </>
+        {/*         )} */}
 
 
         {/* Shipping Methods Section */}
         {canViewShipping && (
           <>
-            <ListItemButton onClick={() => handleSectionClick("shipping")} sx={sectionHeaderStyle('/admin/shipping-method')}>
+            <ListItemButton onClick={() => onSectionClick("shipping")} sx={sectionHeaderStyle('/admin/shipping-method')}>
               <ListItemIcon><LocalShippingIcon /></ListItemIcon>
               <ListItemText primary="Métodos de envío" />
               {openSections.shipping ? <ExpandLess /> : <ExpandMore />}
@@ -440,7 +437,7 @@ const Sidebar: React.FC<SidebarProps> = ({ permissions, drawerWidth }) => {
         {/* Payment Methods Section */}
         {canViewPayments && (
           <>
-            <ListItemButton onClick={() => handleSectionClick("payments")} sx={sectionHeaderStyle('/admin/payment-method')}>
+            <ListItemButton onClick={() => onSectionClick("payments")} sx={sectionHeaderStyle('/admin/payment-method')}>
               <ListItemIcon><PaymentIcon /></ListItemIcon>
               <ListItemText primary="Métodos de Pago" />
               {openSections.payments ? <ExpandLess /> : <ExpandMore />}
@@ -468,7 +465,7 @@ const Sidebar: React.FC<SidebarProps> = ({ permissions, drawerWidth }) => {
         {/* Movements Section */}
         {canViewMovements && (
           <>
-            <ListItemButton onClick={() => handleSectionClick("movements")} sx={sectionHeaderStyle('/admin/movements')}>
+            <ListItemButton onClick={() => onSectionClick("movements")} sx={sectionHeaderStyle('/admin/movements')}>
               <ListItemIcon><AccountBalanceIcon /></ListItemIcon>
               <ListItemText primary="Movimientos" />
               {openSections.movements ? <ExpandLess /> : <ExpandMore />}
@@ -497,7 +494,7 @@ const Sidebar: React.FC<SidebarProps> = ({ permissions, drawerWidth }) => {
         {/* Testimonials Section */}
         {canViewTestimonials && (
           <>
-            <ListItemButton onClick={() => handleSectionClick("testimonials")} sx={sectionHeaderStyle('/admin/testimonials')}>
+            <ListItemButton onClick={() => onSectionClick("testimonials")} sx={sectionHeaderStyle('/admin/testimonials')}>
               <ListItemIcon><InsertEmoticonIcon /></ListItemIcon>
               <ListItemText primary="Testimonios" />
               {openSections.testimonials ? <ExpandLess /> : <ExpandMore />}
@@ -525,7 +522,7 @@ const Sidebar: React.FC<SidebarProps> = ({ permissions, drawerWidth }) => {
         {/* Preferences Section */}
         {canViewPreferencesSection && (
           <>
-            <ListItemButton onClick={() => handleSectionClick("preferences")} sx={sectionHeaderStyle('/admin/preferences')}>
+            <ListItemButton onClick={() => onSectionClick("preferences")} sx={sectionHeaderStyle('/admin/preferences')}>
               <ListItemIcon><SettingsIcon /></ListItemIcon>
               <ListItemText primary="Preferencias" />
               {openSections.preferences ? <ExpandLess /> : <ExpandMore />}

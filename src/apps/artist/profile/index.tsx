@@ -30,6 +30,8 @@ import {
   MenuItem,
   FormControl,
   InputLabel,
+  Tabs,
+  Tab,
 } from "@mui/material"
 import Grid2 from "@mui/material/Grid"
 import {
@@ -38,7 +40,6 @@ import {
   Facebook,
   Phone,
   InfoOutlined,
-  ArtTrack,
   ExpandMore as ExpandMoreIcon,
   AccountCircle,
   Link as LinkIcon,
@@ -51,6 +52,8 @@ import {
   SortByAlpha as SortByAlphaIcon,
   NewReleases as NewReleasesIcon,
   Category as CategoryIcon,
+  Person as PersonIcon,
+  DesignServices as DesignServicesIcon,
 } from "@mui/icons-material"
 import { Prixer } from "types/prixer.types"
 import { useParams, useNavigate } from "react-router-dom"
@@ -58,6 +61,8 @@ import { getPrixerByUsername } from "@api/prixer.api"
 import { User } from "types/user.types"
 import { getArtsByPrixer, PaginatedArtsResult } from "@api/art.api"
 import { Art } from "types/art.types"
+import { Service } from "types/service.types"
+import { fetchServicesByUser } from "@api/service.api"
 
 const ARTS_PER_PAGE = 12
 const DESCRIPTION_MAX_LINES_DEFAULT = 3
@@ -117,7 +122,6 @@ const PrixerProfileSkeleton: React.FC = () => {
   const isSmall = useMediaQuery(theme.breakpoints.down("sm"))
   const isMedium = useMediaQuery(theme.breakpoints.down("md"))
   const artCols = isSmall ? 2 : isMedium ? 3 : 4
-  console.log("xo")
   return (
     <Card
       sx={{
@@ -256,7 +260,13 @@ export default function PrixerProfileCard() {
   const [artsError, setArtsError] = useState<string | null>(null)
   const [hasNextPage, setHasNextPage] = useState<boolean>(true)
 
-  const [showFullDescription, setShowFullDescription] = useState<boolean>(false)
+  const [currentTab, setCurrentTab] = useState("portfolio")
+  const [services, setServices] = useState<Service[]>([])
+  const [servicesLoading, setServicesLoading] = useState<boolean>(true)
+  const [servicesError, setServicesError] = useState<string | null>(null)
+
+  const [showFullDescription, setShowFullDescription] =
+    useState<boolean>(false)
   const [isDescriptionClamped, setIsDescriptionClamped] = useState(false)
 
   const [lightboxOpen, setLightboxOpen] = useState<boolean>(false)
@@ -267,7 +277,6 @@ export default function PrixerProfileCard() {
   const [availableCategories, setAvailableCategories] = useState<string[]>([])
 
   const { username: routeUsername } = useParams<{ username: string }>()
-  // console.log(username)
   const navigate = useNavigate()
 
   const theme = useTheme()
@@ -277,6 +286,10 @@ export default function PrixerProfileCard() {
   const observerRef = useRef<IntersectionObserver | null>(null)
   const loadMoreTriggerRef = useRef<HTMLDivElement | null>(null)
   const descriptionRef = useRef<HTMLParagraphElement | null>(null)
+
+  const handleTabChange = (event: React.SyntheticEvent, newValue: string) => {
+    setCurrentTab(newValue)
+  }
 
   useEffect(() => {
     const checkClamping = () => {
@@ -371,16 +384,18 @@ export default function PrixerProfileCard() {
       return
     }
 
-    const loadProfileAndInitialArts = async () => {
+    const loadProfileAndData = async () => {
       setLoading(true)
       setError(null)
       setPrixer(null)
       setPrixerUser(null)
       setUserName(undefined)
       setArts([])
+      setServices([])
       setCurrentPage(1)
       setHasNextPage(true)
       setArtsError(null)
+      setServicesError(null)
       setShowFullDescription(false)
       setIsDescriptionClamped(false)
 
@@ -388,41 +403,55 @@ export default function PrixerProfileCard() {
         const userDataResponse: User | null =
           await getPrixerByUsername(routeUsername)
 
-        console.log("Prixer data:", userDataResponse)
-
-        if (userDataResponse) {
+        if (userDataResponse?.prixer?._id) {
           setPrixerUser(userDataResponse)
-          if (userDataResponse.prixer) {
-            setPrixer(userDataResponse.prixer)
-            setUserName(userDataResponse.username)
-            await loadPrixerArts(
+          setPrixer(userDataResponse.prixer)
+          setUserName(userDataResponse.username)
+          const prixerId = userDataResponse.prixer._id.toString()
+
+          setServicesLoading(true)
+          await Promise.all([
+            loadPrixerArts(
               userDataResponse.username,
               1,
               sortOption,
               filterCategory,
               true
-            )
-          } else {
-            setError(`User '${userDataResponse.username}' is not a Prixer.`)
-            setHasNextPage(false)
-            setAvailableCategories([])
-          }
+            ),
+            (async () => {
+              try {
+                const servicesData = await fetchServicesByUser(prixerId)
+                setServices(
+                  servicesData.filter(
+                    (s: Service) =>
+                      s.active && (s.visible === true || s.visible === undefined)
+                  ) || []
+                )
+              } catch (err) {
+                console.error("Failed to fetch services:", err)
+                setServicesError("Could not retrieve services for this Prixer.")
+              } finally {
+                setServicesLoading(false)
+              }
+            })(),
+          ])
+        } else if (userDataResponse) {
+          setError(`User '${userDataResponse.username}' is not a Prixer.`)
+          setHasNextPage(false)
         } else {
           setError(`Prixer profile for '${routeUsername}' not found.`)
           setHasNextPage(false)
-          setAvailableCategories([])
         }
       } catch (err) {
         setError(
           err instanceof Error ? err.message : "An unknown error occurred."
         )
         setHasNextPage(false)
-        setAvailableCategories([])
       } finally {
         setLoading(false)
       }
     }
-    loadProfileAndInitialArts()
+    loadProfileAndData()
   }, [routeUsername, sortOption, filterCategory, loadPrixerArts])
 
   useEffect(() => {
@@ -497,9 +526,7 @@ export default function PrixerProfileCard() {
           text: `Discover ${userName}'s artwork and bio!`,
           url: shareUrl,
         })
-        console.log("Profile shared successfully")
       } catch (error) {
-        console.error("Error sharing profile:", error)
         if ((error as DOMException).name !== "AbortError") {
           copyToClipboard(shareUrl, shareTitle)
         }
@@ -541,9 +568,9 @@ export default function PrixerProfileCard() {
         icon={<SentimentVeryDissatisfied fontSize="inherit" />}
         sx={{ m: { xs: 1, sm: 2 }, p: 2 }}
       >
-        <Typography fontWeight="bold">Profile Unavailable</Typography>
+        <Typography fontWeight="bold">Perfil No Disponible</Typography>
         <Typography variant="body2">
-          The Prixer profile could not be loaded.
+          El perfil de Prixer no pudo ser cargado.
         </Typography>
       </Alert>
     )
@@ -605,21 +632,14 @@ export default function PrixerProfileCard() {
             {!avatar && <AccountCircle sx={{ fontSize: { xs: 60, sm: 80 } }} />}
           </Avatar>
           <Box sx={{ flexGrow: 1 }}>
-            <Stack
-              direction="row"
-              spacing={1}
-              alignItems="center"
-              sx={{ justifyContent: { xs: "center", sm: "flex-start" } }}
+            <Typography
+              variant="h4"
+              component="div"
+              fontWeight="bold"
+              sx={{ textShadow: "1px 1px 2px rgba(0,0,0,0.3)" }}
             >
-              <Typography
-                variant="h4"
-                component="div"
-                fontWeight="bold"
-                sx={{ textShadow: "1px 1px 2px rgba(0,0,0,0.3)" }}
-              >
-                {userName || "Prixer Profile"}
-              </Typography>
-            </Stack>
+              {userName || "Prixer Profile"}
+            </Typography>
             {specialty && specialty.length > 0 && (
               <Stack
                 direction="row"
@@ -655,7 +675,6 @@ export default function PrixerProfileCard() {
                     whiteSpace: "pre-wrap",
                     opacity: 0.9,
                     fontSize: "0.95rem",
-                    color: "white",
                     fontWeight: "400",
                     display: "-webkit-box",
                     WebkitBoxOrient: "vertical",
@@ -664,9 +683,6 @@ export default function PrixerProfileCard() {
                       : DESCRIPTION_MAX_LINES_DEFAULT,
                     overflow: "hidden",
                     textOverflow: "ellipsis",
-                    maxHeight: showFullDescription
-                      ? "none"
-                      : `${DESCRIPTION_MAX_LINES_DEFAULT * 1.6}em`,
                   }}
                 >
                   {description}
@@ -683,7 +699,7 @@ export default function PrixerProfileCard() {
                       "&:hover": { backgroundColor: "rgba(255,255,255,0.1)" },
                     }}
                   >
-                    Read More
+                    Ver Más
                   </Button>
                 )}
                 {showFullDescription && (
@@ -698,294 +714,48 @@ export default function PrixerProfileCard() {
                       "&:hover": { backgroundColor: "rgba(255,255,255,0.1)" },
                     }}
                   >
-                    Read Less
+                    Ver Menos
                   </Button>
                 )}
               </Box>
             )}
           </Box>
         </Box>
-        {/* CONTENT */}
-        <Box sx={{ p: { xs: 2, sm: 3 } }}>
-          <Stack
-            direction={{ xs: "column", sm: "row" }}
-            spacing={{ xs: 2, sm: 1 }}
-            justifyContent="space-between"
-            my={2.5}
-            alignItems={{ xs: "stretch", sm: "center" }}
-          >
-            {
-              prixerLocation ? (
-                <Chip
-                  icon={<InfoOutlined />}
-                  label={prixerLocation}
-                  variant="outlined"
-                  size="small"
-                  sx={{ alignSelf: { xs: "center", sm: "flex-start" } }}
-                />
-              ) : (
-                <Box sx={{ flexGrow: { sm: 1 } }} />
-              ) /* Spacer */
-            }
-            <Stack
-              direction="row"
-              spacing={1}
-              justifyContent={{ xs: "center", sm: "flex-end" }}
-              alignItems="center"
-            >
-              <Tooltip title="Share Profile">
-                <IconButton onClick={handleShare}>
-                  <ShareIcon />
-                </IconButton>
-              </Tooltip>
-            </Stack>
-          </Stack>
-          <Divider sx={{ mb: 3 }} />
-          <Grid2 container spacing={3} mb={3}>
-            {phone && (
-              <Grid2 size={{ xs: 12, md: 6 }}>
-                <Typography
-                  variant="subtitle1"
-                  fontWeight="bold"
-                  gutterBottom
-                  sx={{ display: "flex", alignItems: "center" }}
-                >
-                  <Phone sx={{ mr: 1, color: "primary.main" }} /> Teléfono:
-                </Typography>
-                <Link
-                  href={`tel:${phone}`}
-                  underline="hover"
-                  color="text.primary"
-                  sx={{ ml: 3.5, display: "block" }}
-                >
-                  <Typography variant="body1">{phone}</Typography>
-                </Link>
-              </Grid2>
-            )}
-            {(instagram || twitter || facebook) && (
-              <Grid2 size={{ xs: 12, md: phone ? 6 : 12 }}>
-                <Typography
-                  variant="subtitle1"
-                  fontWeight="bold"
-                  gutterBottom
-                  sx={{ display: "flex", alignItems: "center" }}
-                >
-                  <LinkIcon sx={{ mr: 1, color: "secondary.main" }} /> Redes:
-                </Typography>
-                <Stack
-                  direction="row"
-                  spacing={1}
-                  alignItems="center"
-                  sx={{ ml: 3.5 }}
-                >
-                  {instagram && getSocialLink("instagram", instagram) && (
-                    <Tooltip
-                      title={`Instagram: @${instagram.replace("@", "")}`}
-                    >
-                      <IconButton
-                        component="a"
-                        href={getSocialLink("instagram", instagram) as string}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        sx={{
-                          color: "#E1306C",
-                          "&:hover": {
-                            backgroundColor: "rgba(225, 48, 108, 0.1)",
-                          },
-                        }}
-                      >
-                        <Instagram />
-                      </IconButton>
-                    </Tooltip>
-                  )}
-                  {twitter && getSocialLink("twitter", twitter) && (
-                    <Tooltip title={`Twitter: @${twitter.replace("@", "")}`}>
-                      <IconButton
-                        component="a"
-                        href={getSocialLink("twitter", twitter) as string}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        sx={{
-                          color: "#1DA1F2",
-                          "&:hover": {
-                            backgroundColor: "rgba(29, 161, 242, 0.1)",
-                          },
-                        }}
-                      >
-                        <Twitter />
-                      </IconButton>
-                    </Tooltip>
-                  )}
-                  {facebook && getSocialLink("facebook", facebook) && (
-                    <Tooltip title={`Facebook: ${facebook.replace("@", "")}`}>
-                      <IconButton
-                        component="a"
-                        href={getSocialLink("facebook", facebook) as string}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        sx={{
-                          color: "#1877F2",
-                          "&:hover": {
-                            backgroundColor: "rgba(24, 119, 242, 0.1)",
-                          },
-                        }}
-                      >
-                        <Facebook />
-                      </IconButton>
-                    </Tooltip>
-                  )}
-                </Stack>
-              </Grid2>
-            )}
-          </Grid2>
-          {/* BIO SECTIONS */}
-          {((bio && bio.biography && bio.biography.length > 0) ||
-            Object.keys(bio || {}).includes("biography")) && (
-            <Accordion
-              defaultExpanded={false
-                // !(bio && bio.images && bio.images.length > 0)
-                }
-              sx={{
-                mb: 1.5,
-                boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
-                "&:before": { display: "none" },
-              }}
-            >
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                sx={{
-                  backgroundColor: "grey.100",
-                  "&:hover": { backgroundColor: "grey.200" },
-                }}
-              >
-                <Typography variant="subtitle1" fontWeight="medium">
-                  Bio
-                </Typography>
-              </AccordionSummary>
-              <AccordionDetails
-                sx={{ p: { xs: 1.5, sm: 2 }, backgroundColor: "white" }}
-              >
-                {bio && bio.biography && bio.biography[0] ? (
-                  <Typography
-                    component="div"
-                    sx={{
-                      whiteSpace: "pre-wrap",
-                      color: "text.secondary",
-                      mb: 0,
-                      "& p:first-of-type": { mt: 0 },
-                      "& p:last-of-type": { mb: 0 },
-                      "& a": {
-                        color: "primary.main",
-                        textDecoration: "underline",
-                      },
-                      "& img": { // Esto apunta a cualquier <img> dentro del Typography
-                        maxWidth: "100%",     // Opción 1: Hacerla responsive, no más ancha que su contenedor
-                        height: "auto",       // Mantiene la proporción de la imagen
-                        display: "block",
-                      }
-                    }}
-                    dangerouslySetInnerHTML={{ __html: bio.biography[0] }}
-                  />
-                ) : (
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    sx={{ display: "flex", alignItems: "center", gap: 1 }}
-                  >
-                    <VisibilityOffIcon fontSize="small" /> No se encontró la
-                    bio.
-                  </Typography>
-                )}
-              </AccordionDetails>
-            </Accordion>
-          )}
 
-          {((bio && bio.images && bio.images.length > 0) ||
-            Object.keys(bio || []).includes("images")) && (
-            <Accordion
-              sx={{
-                mb: 1.5,
-                boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
-                "&:before": { display: "none" },
-              }}
-            >
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                sx={{
-                  backgroundColor: "grey.100",
-                  "&:hover": { backgroundColor: "grey.200" },
-                }}
-              >
-                <Typography variant="subtitle1" fontWeight="medium">
-                  Imágenes Destacadas
-                </Typography>
-              </AccordionSummary>
-              <AccordionDetails
-                sx={{ p: { xs: 1.5, sm: 2 }, backgroundColor: "white" }}
-              >
-                {bio && bio.images && bio.images.length > 0 ? (
-                  <ImageList
-                    variant="masonry"
-                    cols={isSmallScreen ? 2 : 3}
-                    gap={8}
-                  >
-                    {bio &&
-                      bio.images.map((imgUrl, imgIndex) => (
-                        <ImageListItem
-                          key={imgIndex}
-                          sx={{
-                            borderRadius: 1,
-                            overflow: "hidden",
-                            cursor: "pointer",
-                            "&:hover img": { transform: "scale(1.05)" },
-                          }}
-                          onClick={() => handleOpenLightbox(imgUrl)}
-                        >
-                          <img
-                            src={`${imgUrl}${imgUrl.includes("unsplash") ? "&w=248&fit=crop&auto=format" : ""}`}
-                            srcSet={`${imgUrl}${imgUrl.includes("unsplash") ? "&w=248&fit=crop&auto=format&dpr=2 2x" : ""}`}
-                            alt={`Imagen Destacada ${imgIndex + 1}`}
-                            loading="lazy"
-                            style={{
-                              borderRadius: "4px",
-                              display: "block",
-                              width: "100%",
-                              transition: "transform 0.3s ease-in-out",
-                              backgroundColor: "grey.200",
-                            }}
-                          />
-                        </ImageListItem>
-                      ))}
-                  </ImageList>
-                ) : (
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    sx={{ display: "flex", alignItems: "center", gap: 1 }}
-                  >
-                    <VisibilityOffIcon fontSize="small" /> No featured images
-                    available.
-                  </Typography>
-                )}
-              </AccordionDetails>
-            </Accordion>
-          )}
-          {/* ARTWORK SECTION */}
-          <Box mt={4}>
-            <Typography
-              variant="h5"
-              color="primary.dark"
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                borderBottom: "2px solid",
-                borderColor: "primary.light",
-                pb: 0.5,
-                mb: 2,
-              }}
-            >
-              <CollectionsBookmark sx={{ mr: 1.5 }} /> Artes
-            </Typography>
+        {/* --- TABS --- */}
+        <Box sx={{ borderBottom: 1, borderColor: "divider", bgcolor: 'action.hover' }}>
+          <Tabs
+            value={currentTab}
+            onChange={handleTabChange}
+            aria-label="Prixer Profile Tabs"
+            variant="fullWidth"
+            indicatorColor="primary"
+            textColor="primary"
+          >
+            <Tab
+              icon={<CollectionsBookmark />}
+              iconPosition="start"
+              label="Portfolio"
+              value="portfolio"
+            />
+            <Tab
+              icon={<DesignServicesIcon />}
+              iconPosition="start"
+              label="Servicios"
+              value="services"
+            />
+            <Tab
+              icon={<PersonIcon />}
+              iconPosition="start"
+              label="Acerca de"
+              value="about"
+            />
+          </Tabs>
+        </Box>
+
+        {/* --- TAB PANELS --- */}
+        {currentTab === "portfolio" && (
+          <Box sx={{ p: { xs: 2, sm: 3 } }}>
             <Grid2 container spacing={isSmallScreen ? 1 : 2} sx={{ mb: 2.5 }}>
               <Grid2
                 size={{
@@ -1001,7 +771,6 @@ export default function PrixerProfileCard() {
                     value={sortOption}
                     label="Ordenar Por"
                     onChange={handleSortChange}
-                    MenuProps={{ PaperProps: { sx: { maxHeight: 250 } } }}
                   >
                     {sortOptions.map((option) => (
                       <MenuItem key={option.value} value={option.value}>
@@ -1023,15 +792,12 @@ export default function PrixerProfileCard() {
                   }}
                 >
                   <FormControl fullWidth size="small" variant="outlined">
-                    <InputLabel id="filter-category-label">
-                      Categoría
-                    </InputLabel>
+                    <InputLabel id="filter-category-label">Categoría</InputLabel>
                     <Select
                       labelId="filter-category-label"
                       value={filterCategory}
                       label="Categoría"
                       onChange={handleFilterCategoryChange}
-                      MenuProps={{ PaperProps: { sx: { maxHeight: 250 } } }}
                     >
                       <MenuItem value="">
                         <Stack direction="row" alignItems="center" spacing={1}>
@@ -1048,7 +814,6 @@ export default function PrixerProfileCard() {
                   </FormControl>
                 </Grid2>
               )}
-              {/* Clear Filters Button - shown conditionally */}
               {(filterCategory || sortOption !== sortOptions[0].value) &&
                 availableCategories.length > 0 && (
                   <Grid2
@@ -1068,7 +833,7 @@ export default function PrixerProfileCard() {
                       }}
                       sx={{ mt: { xs: 1, md: 0 } }}
                     >
-                      Clear All
+                      Limpiar Filtros
                     </Button>
                   </Grid2>
                 )}
@@ -1084,7 +849,7 @@ export default function PrixerProfileCard() {
               >
                 <CircularProgress />
                 <Typography variant="body1" sx={{ mt: 2 }}>
-                  Loading artworks...
+                  Cargando artes...
                 </Typography>
               </Box>
             )}
@@ -1097,44 +862,17 @@ export default function PrixerProfileCard() {
             {!artsLoading && !artsError && arts.length === 0 && (
               <Paper
                 elevation={0}
-                sx={{
-                  p: { xs: 2, sm: 3 },
-                  textAlign: "center",
-                  backgroundColor: "grey.100",
-                  borderRadius: 1,
-                  mt: 2,
-                  minHeight: "200px",
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
+                sx={{ p: 3, textAlign: "center", backgroundColor: "grey.100" }}
               >
                 <InfoOutlined
-                  sx={{
-                    fontSize: { xs: 32, sm: 40 },
-                    color: "text.secondary",
-                    mb: 1,
-                  }}
+                  sx={{ fontSize: 40, color: "text.secondary", mb: 1 }}
                 />
-                <Typography variant="h6" color="text.secondary" gutterBottom>
+                <Typography variant="h6" color="text.secondary">
                   No se encontraron artes
                 </Typography>
                 <Typography variant="body1" color="text.secondary">
                   Este Prixer no dispone de artes en este momento
                 </Typography>
-                {(filterCategory || sortOption !== sortOptions[0].value) && (
-                  <Button
-                    variant="text"
-                    onClick={() => {
-                      setFilterCategory("")
-                      setSortOption(sortOptions[0].value)
-                    }}
-                    sx={{ mt: 1.5 }}
-                  >
-                    Clear selection
-                  </Button>
-                )}
               </Paper>
             )}
             {arts.length > 0 && (
@@ -1142,7 +880,6 @@ export default function PrixerProfileCard() {
                 variant="quilted"
                 cols={getImageListCols()}
                 gap={12}
-                rowHeight="auto"
               >
                 {arts.map((art) => (
                   <ImageListItem
@@ -1151,21 +888,13 @@ export default function PrixerProfileCard() {
                     sx={{
                       borderRadius: 1.5,
                       overflow: "hidden",
-                      boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
                       cursor: "pointer",
                       "&:hover .MuiImageListItemBar-root": { opacity: 1 },
                       "&:hover img": { transform: "scale(1.03)" },
-                      transition:
-                        "box-shadow 0.3s ease-in-out, transform 0.3s ease-in-out",
-                      "&:hover": {
-                        boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
-                        transform: "translateY(-2px)",
-                      },
                     }}
                   >
                     <img
-                      src={`${art.mediumThumbUrl || art.imageUrl}${art.imageUrl?.includes("unsplash") ? "&w=300&h=300&fit=crop&auto=format" : ""}`}
-                      srcSet={`${art.largeThumbUrl || art.imageUrl}${art.imageUrl?.includes("unsplash") ? "&w=300&h=300&fit=crop&auto=format&dpr=2 2x" : ""}`}
+                      src={`${art.mediumThumbUrl || art.imageUrl}`}
                       alt={art.title}
                       loading="lazy"
                       style={{
@@ -1173,7 +902,6 @@ export default function PrixerProfileCard() {
                         width: "100%",
                         height: "100%",
                         objectFit: "cover",
-                        transition: "transform 0.3s ease-in-out",
                         backgroundColor: "grey.200",
                       }}
                     />
@@ -1183,61 +911,274 @@ export default function PrixerProfileCard() {
                       position="bottom"
                       sx={{
                         background:
-                          "linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.5) 70%, rgba(0,0,0,0) 100%)",
-                        opacity: 0.85,
-                        transition: "opacity 0.3s ease-in-out",
-                        "& .MuiImageListItemBar-title": {
-                          fontWeight: "500",
-                          mb: 0.25,
-                        },
+                          "linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0) 100%)",
                       }}
                     />
                   </ImageListItem>
                 ))}
               </ImageList>
             )}
-            {
-              hasNextPage && (
-                <div
-                  ref={loadMoreTriggerRef}
-                  style={{ height: "1px", margin: "30px 0 10px" }}
-                />
-              ) /* Trigger for more */
-            }
+            {hasNextPage && (
+              <div
+                ref={loadMoreTriggerRef}
+                style={{ height: "1px", margin: "30px 0 10px" }}
+              />
+            )}
             {moreArtsLoading && (
+              <Box display="flex" justifyContent="center" my={2}>
+                <CircularProgress size={30} />
+              </Box>
+            )}
+          </Box>
+        )}
+
+        {currentTab === "services" && (
+          <Box sx={{ p: { xs: 2, sm: 3 } }}>
+            {servicesLoading && (
               <Box
                 display="flex"
                 justifyContent="center"
                 alignItems="center"
-                my={2}
+                my={4}
+                sx={{ minHeight: "200px" }}
               >
-                <CircularProgress size={30} />
-                <Typography variant="body2" sx={{ ml: 1 }}>
-                  Loading more artworks...
+                <CircularProgress />
+                <Typography variant="body1" sx={{ ml: 2 }}>
+                  Cargando servicios...
                 </Typography>
               </Box>
             )}
-            {!hasNextPage &&
-              arts.length > 0 &&
-              !moreArtsLoading &&
-              !artsLoading &&
-              !artsError && (
-                <Typography
-                  variant="caption"
-                  display="block"
-                  textAlign="center"
-                  sx={{ my: 2, color: "text.secondary" }}
-                >
-                  All artworks loaded.
+            {servicesError && !servicesLoading && (
+              <Alert severity="warning" sx={{ my: 2 }}>
+                {servicesError}
+              </Alert>
+            )}
+            {!servicesLoading && !servicesError && services.length === 0 && (
+              <Paper
+                elevation={0}
+                sx={{ p: 3, textAlign: "center", backgroundColor: "grey.100" }}
+              >
+                <InfoOutlined
+                  sx={{ fontSize: 40, color: "text.secondary", mb: 1 }}
+                />
+                <Typography variant="h6" color="text.secondary">
+                  No se encontraron servicios
                 </Typography>
+                <Typography variant="body1" color="text.secondary">
+                  Este prixer no tiene servicios listados actualmente.
+                </Typography>
+              </Paper>
+            )}
+            {services.length > 0 && (
+              <Grid2 container spacing={3}>
+                {services.map((service) => (
+                  <Grid2
+                    size={{ xs: 12, sm: 6 }}
+                    key={service._id?.toString()}
+                  >
+                    <Card
+                      sx={{
+                        height: "100%",
+                        display: "flex",
+                        flexDirection: "column",
+                        transition: "box-shadow 0.3s, transform 0.3s",
+                        "&:hover": {
+                          transform: "translateY(-4px)",
+                          boxShadow: 6,
+                        }
+                      }}
+                    >
+                      <img
+                        src={
+                          service.sources.images[0]?.url ||
+                          "https://via.placeholder.com/300x200.png?text=No+Image"
+                        }
+                        alt={service.title}
+                        style={{
+                          width: "100%",
+                          height: "180px",
+                          objectFit: "cover",
+                        }}
+                      />
+                      <CardContent sx={{ flexGrow: 1 }}>
+                        <Typography variant="h6" gutterBottom>
+                          {service.title}
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                          sx={{
+                            display: "-webkit-box",
+                            WebkitBoxOrient: "vertical",
+                            WebkitLineClamp: 3,
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                          }}
+                        >
+                          {service.description}
+                        </Typography>
+                      </CardContent>
+                      <Box sx={{ p: 2, pt: 0 }}>
+                        <Button
+                          fullWidth
+                          variant="contained"
+                          onClick={() =>
+                            navigate(`/servicio/${service._id?.toString()}`)
+                          }
+                        >
+                          Ver Servicio
+                        </Button>
+                      </Box>
+                    </Card>
+                  </Grid2>
+                ))}
+              </Grid2>
+            )}
+          </Box>
+        )}
+
+        {currentTab === "about" && (
+          <Box sx={{ p: { xs: 2, sm: 3 } }}>
+            <Stack
+              direction="row"
+              spacing={1}
+              justifyContent="space-between"
+              my={2.5}
+              alignItems="center"
+            >
+              {prixerLocation ? (
+                <Chip
+                  icon={<InfoOutlined />}
+                  label={prixerLocation}
+                  variant="outlined"
+                  size="small"
+                />
+              ) : <Box />}
+              <Tooltip title="Share Profile">
+                <IconButton onClick={handleShare}>
+                  <ShareIcon />
+                </IconButton>
+              </Tooltip>
+            </Stack>
+            <Divider sx={{ mb: 3 }} />
+            <Grid2 container spacing={3} mb={3}>
+              {phone && (
+                <Grid2 size={{ xs: 12, md: 6 }}>
+                  <Typography variant="subtitle1" fontWeight="bold">
+                    Teléfono:
+                  </Typography>
+                  <Link href={`tel:${phone}`} color="text.primary">
+                    <Typography variant="body1">{phone}</Typography>
+                  </Link>
+                </Grid2>
+              )}
+              {(instagram || twitter || facebook) && (
+                <Grid2 size={{ xs: 12, md: phone ? 6 : 12 }}>
+                  <Typography variant="subtitle1" fontWeight="bold">
+                    Redes:
+                  </Typography>
+                  <Stack direction="row" spacing={1} alignItems="center">
+                    {instagram && getSocialLink("instagram", instagram) && (
+                      <IconButton
+                        component="a"
+                        href={getSocialLink("instagram", instagram) as string}
+                        target="_blank"
+                      >
+                        <Instagram sx={{ color: "#E1306C" }} />
+                      </IconButton>
+                    )}
+                    {twitter && getSocialLink("twitter", twitter) && (
+                      <IconButton
+                        component="a"
+                        href={getSocialLink("twitter", twitter) as string}
+                        target="_blank"
+                      >
+                        <Twitter sx={{ color: "#1DA1F2" }} />
+                      </IconButton>
+                    )}
+                    {facebook && getSocialLink("facebook", facebook) && (
+                      <IconButton
+                        component="a"
+                        href={getSocialLink("facebook", facebook) as string}
+                        target="_blank"
+                      >
+                        <Facebook sx={{ color: "#1877F2" }} />
+                      </IconButton>
+                    )}
+                  </Stack>
+                </Grid2>
+              )}
+            </Grid2>
+
+            {((bio && bio.biography && bio.biography.length > 0) ||
+              Object.keys(bio || {}).includes("biography")) && (
+                <Accordion
+                  sx={{ mb: 1.5, "&:before": { display: "none" } }}
+                >
+                  <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                    <Typography variant="subtitle1" fontWeight="medium">
+                      Bio
+                    </Typography>
+                  </AccordionSummary>
+                  <AccordionDetails>
+                    {bio?.biography?.[0] ? (
+                      <Typography
+                        component="div"
+                        dangerouslySetInnerHTML={{ __html: bio.biography[0] }}
+                      />
+                    ) : (
+                      <Typography variant="body2" color="text.secondary">
+                        No se encontró la bio.
+                      </Typography>
+                    )}
+                  </AccordionDetails>
+                </Accordion>
+              )}
+
+            {((bio && bio.images && bio.images.length > 0) ||
+              Object.keys(bio || []).includes("images")) && (
+                <Accordion sx={{ "&:before": { display: "none" } }}>
+                  <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                    <Typography variant="subtitle1" fontWeight="medium">
+                      Imágenes Destacadas
+                    </Typography>
+                  </AccordionSummary>
+                  <AccordionDetails>
+                    {(bio?.images?.length ?? 0) > 0 ? (
+                      <ImageList
+                        variant="masonry"
+                        cols={isSmallScreen ? 2 : 3}
+                        gap={8}
+                      >
+                        {(bio?.images ?? []).map((imgUrl, imgIndex) => (
+                          <ImageListItem
+                            key={imgIndex}
+                            sx={{ cursor: "pointer" }}
+                            onClick={() => handleOpenLightbox(imgUrl)}
+                          >
+                            <img
+                              src={imgUrl}
+                              alt={`Imagen Destacada ${imgIndex + 1}`}
+                              loading="lazy"
+                              style={{ borderRadius: "4px" }}
+                            />
+                          </ImageListItem>
+                        ))}
+                      </ImageList>
+                    ) : (
+                      <Typography variant="body2" color="text.secondary">
+                        Este prixer no posee imágenes destacadas.
+                      </Typography>
+                    )}
+                  </AccordionDetails>
+                </Accordion>
               )}
           </Box>
-        </Box>
+        )}
       </CardContent>
       <Modal
         open={lightboxOpen}
         onClose={handleCloseLightbox}
-        aria-labelledby="lightbox-image"
         closeAfterTransition
       >
         <Box sx={lightboxModalStyle}>
@@ -1245,17 +1186,13 @@ export default function PrixerProfileCard() {
             onClick={handleCloseLightbox}
             sx={{
               position: "absolute",
-              top: { xs: 4, sm: 8 },
-              right: { xs: 4, sm: 8 },
+              top: 8,
+              right: 8,
               color: "grey.700",
               backgroundColor: "rgba(255,255,255,0.7)",
-              "&:hover": { backgroundColor: "rgba(255,255,255,0.9)" },
-              zIndex: 1,
-              p: 0.5,
             }}
-            size="small"
           >
-            <CloseIcon fontSize="small" />
+            <CloseIcon />
           </IconButton>
           <img
             src={lightboxImage}
@@ -1265,7 +1202,6 @@ export default function PrixerProfileCard() {
               maxWidth: "100%",
               maxHeight: "100%",
               objectFit: "contain",
-              borderRadius: "4px",
             }}
           />
         </Box>

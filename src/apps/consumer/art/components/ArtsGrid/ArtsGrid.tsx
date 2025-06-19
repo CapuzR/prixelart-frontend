@@ -3,7 +3,7 @@ import Masonry, { ResponsiveMasonry } from 'react-responsive-masonry';
 import SearchBar from 'components/searchBar/searchBar';
 import ArtThumbnail from '../ArtThumbnail';
 import { useLoading } from 'context/GlobalContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Art } from '../../../../../types/art.types';
 import { fetchGallery } from '@api/art.api';
 import { Typography, Box, CircularProgress, Button, useTheme, Theme } from '@mui/material';
@@ -24,8 +24,10 @@ interface ArtsGridProps {
 const ArtsGrid: React.FC<ArtsGridProps> = ({ onArtSelect }) => {
   const { loading, setLoading } = useLoading();
   const navigate = useNavigate();
+  const location = useLocation();
+
   const globalParams = new URLSearchParams(window.location.search);
-  const theme = useTheme<Theme>(); // Use theme for breakpoint access if needed
+  const theme = useTheme<Theme>();
 
   const [tiles, setTiles] = useState<Art[]>([]);
   const [searchValue, setSearchValue] = useState<string | null>(
@@ -72,7 +74,7 @@ const ArtsGrid: React.FC<ArtsGridProps> = ({ onArtSelect }) => {
     }
 
     setLoading(true);
-    if (fetchMoreError) setFetchMoreError(null); // Clear previous error before new attempt
+    if (fetchMoreError) setFetchMoreError(null);
 
     const fetchData = async () => {
       try {
@@ -86,7 +88,7 @@ const ArtsGrid: React.FC<ArtsGridProps> = ({ onArtSelect }) => {
 
         setTiles(prevTiles => {
           if (pageNumber === 1) {
-            return response.arts; // New search or first load
+            return response.arts;
           } else {
             const existingArtIds = new Set(prevTiles.map(art => art.artId));
             const uniqueNewArts = response.arts.filter(art => !existingArtIds.has(art.artId));
@@ -102,7 +104,7 @@ const ArtsGrid: React.FC<ArtsGridProps> = ({ onArtSelect }) => {
         if (tiles.length > 0) {
           setFetchMoreError(error.message || 'Ocurrió un error al cargar más arte.');
         } else {
-          setHasMore(false); // Prevent infinite loops if initial load fails
+          setHasMore(false);
         }
       } finally {
         setLoading(false);
@@ -110,13 +112,26 @@ const ArtsGrid: React.FC<ArtsGridProps> = ({ onArtSelect }) => {
     };
 
     fetchData();
-  }, [pageNumber, searchValue, categoryValue, itemsPerPage, setLoading, setHasMore, fetchMoreError, tiles.length]); // Added tiles.length to dependencies for the error handling case
+  }, [pageNumber, searchValue, categoryValue, itemsPerPage, setLoading, setHasMore, fetchMoreError, tiles.length]);
 
   const handleSearch = (queryValue: string | null, categories: string | null) => {
-    console.log('handleSearch called with:', { queryValue, categories });
-    const newParams = new URLSearchParams(window.location.search);
-    if (queryValue) newParams.set('name', queryValue); else newParams.delete('name');
-    if (categories) newParams.set('category', categories); else newParams.delete('category');
+    if (location.pathname === '/galeria') {
+      const newParams = new URLSearchParams(location.search);
+      if (queryValue) {
+        newParams.set('name', queryValue);
+      } else {
+        newParams.delete('name');
+      }
+
+      if (categories) {
+        newParams.set('category', categories);
+      } else {
+        newParams.delete('category');
+      }
+
+      navigate({ search: newParams.toString() }, { replace: true });
+    }
+
     setSearchValue(queryValue);
     setCategoryValue(categories);
   };
@@ -130,7 +145,6 @@ const ArtsGrid: React.FC<ArtsGridProps> = ({ onArtSelect }) => {
   };
 
   const renderStatusMessages = () => {
-    // Case 1: Initial load skeleton
     if (loading && tiles.length === 0 && pageNumber === 1 && !fetchMoreError) {
       const skeletonCount = itemsPerPage / 2 > 10 ? 10 : itemsPerPage / 2;
       return (
@@ -145,7 +159,6 @@ const ArtsGrid: React.FC<ArtsGridProps> = ({ onArtSelect }) => {
         </ResponsiveMasonry>
       );
     }
-    // Case 2: No results found after loading
     if (!loading && tiles.length === 0 && !fetchMoreError) {
       return (
         <Box textAlign="center" p={3}>
@@ -155,11 +168,9 @@ const ArtsGrid: React.FC<ArtsGridProps> = ({ onArtSelect }) => {
           <Typography variant="body1" color="textSecondary">
             Prueba con otros términos de búsqueda o ajusta las categorías.
           </Typography>
-          {/* <Button onClick={() => handleSearch(null, null)}>Ver todo el arte</Button> */}
         </Box>
       );
     }
-    // Case 3: Loading more items
     if (loading && tiles.length > 0) {
       return (
         <Box display="flex" justifyContent="center" alignItems="center" p={2}>
@@ -168,7 +179,6 @@ const ArtsGrid: React.FC<ArtsGridProps> = ({ onArtSelect }) => {
         </Box>
       );
     }
-    // Case 4: Error fetching more items
     if (fetchMoreError && tiles.length > 0) {
       return (
         <Box textAlign="center" p={3}>
@@ -181,7 +191,6 @@ const ArtsGrid: React.FC<ArtsGridProps> = ({ onArtSelect }) => {
         </Box>
       );
     }
-    // Case 5: No more items to load
     if (!loading && !hasMore && tiles.length > 0 && !fetchMoreError) {
       return (
         <Typography variant="caption" display="block" textAlign="center" p={2} color="textSecondary">
@@ -189,7 +198,6 @@ const ArtsGrid: React.FC<ArtsGridProps> = ({ onArtSelect }) => {
         </Typography>
       );
     }
-    // Case 6: Error on initial load
     if (!loading && tiles.length === 0 && fetchMoreError) {
       return (
         <Box textAlign="center" p={3}>
@@ -203,7 +211,6 @@ const ArtsGrid: React.FC<ArtsGridProps> = ({ onArtSelect }) => {
             setFetchMoreError(null);
             setPageNumber(1);
             setHasMore(true);
-            // Data fetching useEffect will trigger
           }}>
             Reintentar Carga Inicial
           </Button>
@@ -215,12 +222,12 @@ const ArtsGrid: React.FC<ArtsGridProps> = ({ onArtSelect }) => {
 
   return (
     <div style={{ width: '100%' }}>
-      <Box // Replaces the old classes.root div
+      <Box
         sx={{
           display: 'flex',
           flexWrap: 'wrap',
           justifyContent: 'space-around',
-          backgroundColor: theme.palette.background.paper, // Access theme for palette
+          backgroundColor: theme.palette.background.paper,
           marginBottom: '15px',
         }}
       >

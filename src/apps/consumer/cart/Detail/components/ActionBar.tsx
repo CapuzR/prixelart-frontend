@@ -1,28 +1,29 @@
-import React from 'react';
-import styles from './ActionBar.module.scss';
+import React from "react"
+import styles from "./ActionBar.module.scss"
+import Grid2 from "@mui/material/Grid"
 
 type OnlyUpperProps = {
-  onUpperAction: (() => void) | undefined;
-  upperIcon: React.ReactNode;
-  onLowerAction?: never;
-  lowerIcon?: never;
-};
+  onUpperAction: (() => void) | undefined
+  upperIcon: React.ReactNode
+  onLowerAction?: never
+  lowerIcon?: never
+}
 
 type OnlyLowerProps = {
-  onLowerAction: (() => void) | undefined;
-  lowerIcon: React.ReactNode;
-  onUpperAction?: never;
-  upperIcon?: never;
-};
+  onLowerAction: (() => void) | undefined
+  lowerIcon: React.ReactNode
+  onUpperAction?: never
+  upperIcon?: never
+}
 
 type BothActionsProps = {
-  onUpperAction: () => void;
-  upperIcon: React.ReactNode;
-  onLowerAction: () => void;
-  lowerIcon: React.ReactNode;
-};
+  onUpperAction: () => void
+  upperIcon: React.ReactNode
+  onLowerAction: () => void
+  lowerIcon: React.ReactNode
+}
 
-type ActionBarProps = OnlyUpperProps | OnlyLowerProps | BothActionsProps;
+type ActionBarProps = OnlyUpperProps | OnlyLowerProps | BothActionsProps
 
 const ActionBar: React.FC<ActionBarProps> = ({
   onUpperAction,
@@ -31,19 +32,29 @@ const ActionBar: React.FC<ActionBarProps> = ({
   lowerIcon,
 }) => {
   return (
-    <div className={styles['action-bar']}>
+    <Grid2
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
+        // height: "100%",
+        width: "60px",
+        backgroundColor: "transparent",
+        right: 0,
+      }}
+    >
       {onUpperAction && upperIcon && (
-        <div className={styles['icon-wrapper']} onClick={onUpperAction}>
+        <Grid2 className={styles["icon-wrapper"]} onClick={onUpperAction}>
           {upperIcon}
-        </div>
+        </Grid2>
       )}
       {onLowerAction && lowerIcon && (
-        <div className={styles['icon-wrapper']} onClick={onLowerAction}>
+        <Grid2 className={styles["icon-wrapper"]} onClick={onLowerAction}>
           {lowerIcon}
-        </div>
+        </Grid2>
       )}
-    </div>
-  );
-};
+    </Grid2>
+  )
+}
 
-export default ActionBar;
+export default ActionBar

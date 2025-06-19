@@ -9,6 +9,9 @@
   margin: 25px;
   width: 100%;
   margin-bottom: theme.$spacing-lg;
+  @media (max-width: 720px) {
+    margin: 0.8rem;
+  }
 }
 
 .card-content {

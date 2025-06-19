@@ -5,6 +5,7 @@
   width: 100%;
   height: auto;
   position: relative;
+  padding: 0;
 }
 
 .sel-container {
@@ -23,16 +24,17 @@
   display: inline-flex;
   flex-direction: column;
   align-items: stretch;
-  width: 47%;
+  width: 50%;
   @include theme.paper(undefined, theme.$box-shadow-medium, theme.$border-radius-lg, theme.$spacing-md);
   padding: 0;
   height: auto;
+  // min-height: 9rem;
 }
 
 @media screen and (max-width: 1600px) {
   .sel-container {
-    flex-direction: column;
-    width: 150px;
+    flex-direction: row;
+    width: 100%;
     gap: 10px;
   }
 

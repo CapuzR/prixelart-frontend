@@ -46,38 +46,81 @@ const CartReview: React.FC<CartReviewProps> = ({ checking }) => {
   }
 
   return (
-    <div className={styles["cart-container"]}>
+    <Grid2 className={styles["cart-container"]}>
       {!checking && (
         <>
-          <div className={styles["cart-title-container"]}>
-            <Typography level="h3" align="center" color="secondary">
-              {isMobile ? "Carrito" : "Carrito de compras"}
-            </Typography>
-          </div>
+          {!isMobile && (
+            <Grid2 className={styles["cart-title-container"]}>
+              <Typography level="h3" align="center" color="secondary">
+                Carrito de compras
+              </Typography>
+            </Grid2>
+          )}
 
           {cart.lines.length > 0 ? (
-            <div className={styles["cart-grid-container"]}>
-              <Grid2 container>
-                {cart.lines.map((line: CartLine, index: number) => (
-                  <LineCard
-                    key={index}
-                    direction="row"
-                    line={line}
-                    handleChangeElement={handleChangeElement}
-                    checking={checking}
-                  />
-                ))}
+            <Grid2
+              // className={styles["cart-grid-container"]}
+              container
+              sx={{ flexDirection: "column" }}
+            >
+              {cart.lines.map((line: CartLine, index: number) => (
+                <LineCard
+                  key={index}
+                  direction="row"
+                  line={line}
+                  handleChangeElement={handleChangeElement}
+                  checking={checking}
+                />
+              ))}
+              <Grid2 className={styles["cart-add-more"]}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  style={{
+                    color: "white",
+                    borderRadius: "8px",
+                    padding: "10px 20px",
+                    width: "80%",
+                    marginLeft: "10%",
+                    marginTop: "33px",
+                  }}
+                  onClick={() => navigate("/productos")}
+                >
+                  {cart.lines.length > 0
+                    ? "Añadir Más Productos"
+                    : "Añadir Productos"}
+                </Button>
               </Grid2>
-            </div>
+            </Grid2>
           ) : (
-            <div className={styles["cart-grid-container"]}>
+            <Grid2 className={styles["cart-grid-container"]}>
               <Typography level="h5" align="center">
                 Tu carrito está vacío!
               </Typography>
-            </div>
+              <Grid2 className={styles["cart-add-more"]}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  style={{
+                    color: "white",
+                    borderRadius: "8px",
+                    padding: "10px 20px",
+                    width: "80%",
+                    marginLeft: "10%",
+                    marginTop: "33px",
+                  }}
+                  onClick={() => navigate("/productos")}
+                >
+                  {cart.lines.length > 0
+                    ? "Añadir Más Productos"
+                    : "Añadir Productos"}
+                </Button>
+              </Grid2>
+            </Grid2>
           )}
-
-          <div className={styles["cart-add-more"]}>
+          {/* <Grid2
+            className={styles["cart-add-more"]}
+          >
             <Button
               variant="contained"
               color="primary"
@@ -95,10 +138,10 @@ const CartReview: React.FC<CartReviewProps> = ({ checking }) => {
                 ? "Añadir Más Productos"
                 : "Añadir Productos"}
             </Button>
-          </div>
+          </Grid2> */}
         </>
       )}
-    </div>
+    </Grid2>
   )
 }
 

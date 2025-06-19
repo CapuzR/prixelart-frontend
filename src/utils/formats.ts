@@ -71,6 +71,6 @@ export const formatSinglePrice = (finalPriceStr: string | null | undefined, curr
       `;
   } else {
     // Just return the formatted final price
-    return `<span class="final-price">${currency} ${formattedFinal}</span>`;
+    return `${currency} ${formattedFinal}`;
   }
 };

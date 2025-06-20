@@ -63,6 +63,7 @@ import {
   MenuItem,
   InputLabel,
   FormControl,
+  InputAdornment,
   Avatar,
   Chip,
   List,
@@ -164,6 +165,7 @@ interface OrderLineFormState extends Partial<OrderLine> {
   selectedProduct: ProductOption | null
   selectedVariant: VariantOption | null
   availableVariants: VariantOption[]
+  quantity?: number
 }
 interface DisplayTotals {
   subTotal: number
@@ -764,7 +766,7 @@ export default function UpdateOrder() {
     const newSubTotal = editableOrderLines.reduce(
       (sum, line) =>
         sum +
-        (line?.item?.price ? Number(line?.item?.price) : 0) *
+        (line?.pricePerUnit ? Number(line?.pricePerUnit) : 0) *
           (line.quantity || 1),
       0
     )
@@ -1899,6 +1901,97 @@ export default function UpdateOrder() {
     getOverallOrderStatus(editableOrderLines)
   )
 
+  const handlePricePerUnitChange = (
+    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    line: OrderLineFormState
+  ) => {
+    const newPrice = parseFloat(event.target.value)
+    if (!isNaN(newPrice)) {
+      const newSubtotal = (line.quantity || 1) * newPrice - (line.discount || 0)
+      updateLine(line.tempId, { pricePerUnit: newPrice, subtotal: newSubtotal })
+      updateEditableLine(line.tempId, {
+        pricePerUnit: newPrice,
+      })
+    }
+  }
+
+  const updateLine = (lineId: string, values: Partial<OrderLine>) => {
+    setOrder((prevOrder) => {
+      if (!prevOrder) return null
+      const updatedLines = prevOrder.lines.map((line) => {
+        if (line.id === lineId) {
+          return { ...line, ...values }
+        }
+        return line
+      })
+
+      const updatedOrder = {
+        ...prevOrder,
+        lines: updatedLines,
+      }
+
+      return recalculateOrderTotals(updatedOrder)
+    })
+  }
+
+  const recalculateOrderTotals = (order: Order): Order => {
+    const subTotal = order.lines.reduce(
+      (sum, line) =>
+        sum + (line.quantity * line.pricePerUnit - (line.discount || 0)),
+      0
+    )
+
+    const totalUnits = order.lines.reduce((sum, line) => sum + line.quantity, 0)
+
+    const orderDiscount = order.discount || 0
+    const shippingCost = order.shippingCost || 0
+
+    const finalTaxes = (order.tax || []).map((taxRule) => {
+      const taxableAmount = subTotal - orderDiscount
+      const amount =
+        (taxableAmount > 0 ? taxableAmount : 0) * (taxRule.value / 100)
+      return { ...taxRule, amount }
+    })
+
+    const finalTotalTaxAmount = finalTaxes.reduce(
+      (sum, t) => sum + (t.amount || 0),
+      0
+    )
+
+    const total = subTotal - orderDiscount + shippingCost + finalTotalTaxAmount
+
+    return {
+      ...order,
+      subTotal,
+      totalUnits,
+      tax: finalTaxes,
+      totalWithoutTax: subTotal - orderDiscount,
+      total,
+    }
+  }
+
+  const allowNumericWithDecimal = (
+    event: React.KeyboardEvent<HTMLInputElement>
+  ) => {
+    const target = event.target as HTMLInputElement // Type assertion
+    if (
+      !/[0-9.]/.test(event.key) &&
+      ![
+        "Backspace",
+        "Delete",
+        "ArrowLeft",
+        "ArrowRight",
+        "Tab",
+        "Enter",
+      ].includes(event.key)
+    ) {
+      event.preventDefault()
+    }
+    if (event.key === "." && target.value.includes(".")) {
+      event.preventDefault()
+    }
+  }
+
   console.log(order)
 
   return (
@@ -2282,17 +2375,48 @@ export default function UpdateOrder() {
                               size={{ xs: 6, md: 3 }}
                               sx={{ textAlign: "right" }}
                             >
-                              <Typography
-                                variant="body2"
-                                sx={{ fontWeight: "medium" }}
-                              >
-                                $
-                                {(line?.item?.price
-                                  ? Number(line?.item?.price)
-                                  : 0
-                                ).toFixed(2)}{" "}
-                                c/u
-                              </Typography>
+                              {permissions?.area === "Master" ? (
+                                <TextField
+                                  fullWidth
+                                  variant="outlined"
+                                  size="small"
+                                  type="text"
+                                  label="Precio unitario"
+                                  // defaultValue={(line.pricePerUnit || 0).toFixed(2)}
+                                  value={(line.pricePerUnit || 0).toFixed(2)}
+                                  onChange={(e) =>
+                                    handlePricePerUnitChange(e, line)
+                                  }
+                                  onKeyDown={allowNumericWithDecimal}
+                                  sx={{
+                                    mb: 1,
+                                    "& .MuiInputBase-input": {
+                                      textAlign: "right",
+                                    },
+                                  }}
+                                  slotProps={{
+                                    input: {
+                                      startAdornment: (
+                                        <InputAdornment position="start">
+                                          $
+                                        </InputAdornment>
+                                      ),
+                                    },
+                                  }}
+                                />
+                              ) : (
+                                <Typography
+                                  variant="body2"
+                                  sx={{ fontWeight: "medium" }}
+                                >
+                                  $
+                                  {(line?.item?.price
+                                    ? Number(line?.item?.price)
+                                    : 0
+                                  ).toFixed(2)}{" "}
+                                  c/u
+                                </Typography>
+                              )}
                               <Typography
                                 variant="subtitle2"
                                 color="primary.main"
@@ -2300,8 +2424,8 @@ export default function UpdateOrder() {
                                 $
                                 {(
                                   (line.quantity || 0) *
-                                  (line?.item?.price
-                                    ? Number(line?.item?.price)
+                                  (line?.pricePerUnit
+                                    ? Number(line?.pricePerUnit)
                                     : 0)
                                 ).toFixed(2)}
                               </Typography>

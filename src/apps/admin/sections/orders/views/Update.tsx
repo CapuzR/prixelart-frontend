@@ -68,7 +68,6 @@ import {
   List,
   Autocomplete,
   FormHelperText,
-  StepButton,
   FormControlLabel,
   Checkbox,
   Tooltip,
@@ -77,17 +76,15 @@ import {
   Container,
   Card,
   CardContent,
+  CardHeader,
   ListItemIcon,
   ListItem,
-  CardHeader,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
-  LinearProgress,
   Tab,
   Tabs,
-  Slide,
   useMediaQuery,
 } from "@mui/material"
 import Grid2 from "@mui/material/Grid"
@@ -1903,6 +1900,7 @@ export default function UpdateOrder() {
   )
 
   console.log(order)
+
   return (
     <Container maxWidth="lg" sx={{ py: { xs: 2, md: 3 } }}>
       <form onSubmit={handleSubmit} id="update-order-form">

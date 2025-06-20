@@ -80,7 +80,6 @@ import {
   ListItemIcon,
   ListItem,
   CardHeader,
-
   Dialog,
   DialogTitle,
   DialogContent,
@@ -764,8 +763,7 @@ export default function UpdateOrder() {
   }, [])
 
   useEffect(() => {
-   if (!order)
-      return setDisplayTotals(null)
+    if (!order) return setDisplayTotals(null)
     const newSubTotal = editableOrderLines.reduce(
       (sum, line) =>
         sum +
@@ -1527,13 +1525,11 @@ export default function UpdateOrder() {
       ? shippingAddr
       : editableBillingAddress || createBlankAddress()
     const finalOrderLines: OrderLine[] = editableOrderLines.map((lineState) => {
-      /* ... (lógica de mapeo de líneas sin cambios) ... */ if (
-        !lineState.selectedProduct
-      )
+      if (!lineState.selectedProduct)
         throw new Error("Producto no seleccionado en una línea.")
       const pricePerUnit = parseFloat(
-        lineState.selectedVariant?.fullVariant.publicPrice ||
-          lineState.pricePerUnit?.toString() ||
+        lineState.pricePerUnit?.toString() ||
+          lineState.selectedVariant?.fullVariant.publicPrice ||
           lineState.selectedProduct.fullProduct.cost ||
           "0"
       )
@@ -1720,7 +1716,6 @@ export default function UpdateOrder() {
         ],
       ],
     }
-
     let mainPayments: Payment[] = []
     if (selectedPaymentMethod) {
       const existingMainInstallment = order.payment?.payment?.find(
@@ -1818,8 +1813,8 @@ export default function UpdateOrder() {
         />
       </ListItem>
     ) : null
-  
-    const renderVariantAttributes = (
+
+  const renderVariantAttributes = (
     selection: VariantAttribute[] | undefined
   ) => {
     if (!selection || selection.length === 0) return null

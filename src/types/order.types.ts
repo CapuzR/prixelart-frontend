@@ -101,24 +101,24 @@ export interface ShippingMethod {
 }
 
 export enum OrderStatus {
-  Pending = 0, // Order submitted, awaiting payment confirmation for this item's order
-  Impression = 1, // Payment attempt was unsuccessful for this item's order
-  Production = 2, // Payment successful, ready for processing this item
-  ReadyToShip = 3, // This item is produced, packed, and waiting for carrier pickup
-  Delivered = 4, // Carrier confirmed delivery of this item
-  Finished = 5, // This item was canceled from the order
-  Paused = 6, // Processing for this item is temporarily paused (e.g., stock issue for this item)
-  Canceled = 7, // Customer has requested a return for this item
+  Pending = 0,
+  Impression = 1,
+  Production = 2,
+  ReadyToShip = 3,
+  Delivered = 4,
+  Finished = 5,
+  Paused = 6,
+  Canceled = 7,
 }
 
 export enum GlobalPaymentStatus {
-  Pending = 0, // Order submitted, awaiting payment confirmation for this item's order
-  Credited = 2, // Payment successful, ready for processing this item
-  Paid = 1, // Payment attempt was unsuccessful for this item's order
+  Pending = 0,
+  Credited = 2,
+  Paid = 1,
 
-  Cancelled = 3, // Customer has requested a return for this item
-  // Giftcard = 3, // This item is produced, packed, and waiting for carrier pickup
-  // Gift = 4, // Carrier confirmed delivery of this item
+  Cancelled = 3,
+  // Giftcard = 3,
+  // Gift = 4,
 }
 
 export interface PaymentMethod {

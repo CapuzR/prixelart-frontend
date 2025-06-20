@@ -1,10 +1,19 @@
-@use '@/theme.scss' as theme;
+@use "@/theme.scss" as theme;
 
 .item-playground {
   flex: 1;
   display: flex;
   align-items: center;
+  height: fit-content;
+  // margin: auto 0;
 }
+
+// @media screen and (max-width: 1600px) {
+//   .item-playground {
+//     max-width: 200px;
+//     min-height: 120px;
+//   }
+// }
 
 .pricing-info {
   display: flex;
@@ -56,13 +65,17 @@
   flex-direction: column;
   justify-content: center;
   align-items: flex-start;
+
+ span .final-price {
+    font-size: 0.875rem !important;
+  }
 }
 
 .item-content {
   display: flex;
   flex-direction: column;
   flex: 1;
-  padding: theme.$spacing-md;
+  // padding: theme.$spacing-md;
   justify-content: center;
 }
 
@@ -72,8 +85,13 @@
   align-content: space-between;
   // width: 100%;
   height: auto;
-  @include theme.paper(undefined, theme.$box-shadow-heavy, theme.$border-radius-xl, theme.$spacing-md);
-  padding: 0;
+  @include theme.paper(
+    undefined,
+    theme.$box-shadow-heavy,
+    theme.$border-radius-xl,
+    theme.$spacing-md
+  );
+  // padding: 0;
 }
 
 .card-content {
@@ -91,8 +109,4 @@
   }
 }
 
-@media screen and (max-width: 1600px) {
-  .item-playground {
-    max-width: 200px;
-  }
-}
+

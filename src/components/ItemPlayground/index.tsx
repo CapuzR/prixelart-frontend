@@ -5,6 +5,7 @@ import OverlayWithIcon from 'components/OverlayWithIcon';
 import AutorenewIcon from '@mui/icons-material/Autorenew';
 import { CartLine } from '../../types/cart.types';
 import { Item } from 'types/order.types';
+import Grid2 from "@mui/material/Grid"
 
 export interface ItemPlaygroundProps {
   item: Item;
@@ -14,12 +15,12 @@ export interface ItemPlaygroundProps {
 
 export default function ItemPlayground({ item, handleChangeElement, line }: ItemPlaygroundProps) {
   return (
-    <div className={styles['container']}>
+    <Grid2 className={styles['container']} sx={{alignItems: 'center'}}>
       {/* {item?.product?.mockUp ? (
-        <div className={styles['warp-container']}></div>
+        <Grid2 className={styles['warp-container']}></Grid2>
       ) : ( */}
-        <div className={styles['sel-container']}>
-          <div className={styles['product-area']}>
+        <Grid2 className={styles['sel-container']} sx={{gap: "1rem"}}>
+          <Grid2 className={styles['product-area']}>
             {item?.product ? (
               <OverlayWithIcon
                 iconLeft={<AutorenewIcon />}
@@ -35,8 +36,8 @@ export default function ItemPlayground({ item, handleChangeElement, line }: Item
             ) : (
               <AddImage />
             )}
-          </div>
-          <div className={styles['art-area']}>
+          </Grid2>
+          <Grid2 className={styles['art-area']}>
             {item?.art ? (
               <OverlayWithIcon
                 iconLeft={<AutorenewIcon />}
@@ -52,10 +53,10 @@ export default function ItemPlayground({ item, handleChangeElement, line }: Item
             ) : (
               <AddImage />
             )}
-          </div>
-        </div>
+          </Grid2>
+        </Grid2>
       {/* )
       } */}
-    </div >
+    </Grid2 >
   );
 }

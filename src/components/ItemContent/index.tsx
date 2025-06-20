@@ -1,43 +1,63 @@
-import { Item } from 'types/order.types';
-import styles from './styles.module.scss';
-import Typography from 'components/Typography';
+import { Item } from "types/order.types"
+import styles from "./styles.module.scss"
+import { Typography } from "@mui/material"
+import Grid2 from "@mui/material/Grid"
+import useMediaQuery from "@mui/material/useMediaQuery"
+import { useTheme } from "@mui/material/styles"
 
 export interface ItemContentProps {
-  item: Item;
-  direction?: 'row' | 'column';
+  item: Item
+  direction?: "row" | "column"
 }
 
-export default function ItemContent({ item, direction = 'row' }: ItemContentProps) {
+export default function ItemContent({
+  item,
+  direction = "row",
+}: ItemContentProps) {
+  const theme = useTheme()
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
+
   const getSelectedAttributes = () => {
     return (item.product?.selection || [])
       .slice(0, 3)
-      .filter((attr) => attr.value !== '')
+      .filter((attr) => attr.value !== "")
       .map((attr, index) => (
-        <Typography key={index} level="p" color="textSecondary" leading="normal">
+        <Typography key={index} variant={isMobile ? "subtitle2" : "h5"}>
           <strong>{attr.name}</strong>: {attr.value}
         </Typography>
-      ));
-  };
+      ))
+  }
 
   return (
-    <div className={`${styles['content-section']} ${styles[direction]}`}>
-      <div className={`${styles['product-section']} ${direction === 'row' && styles['paper']}`}>
-        <Typography level="h5" leading="normal" color="inherit">
-          <strong>Producto:</strong> {item.product?.name || 'Elígelo'}
+    <Grid2
+      container
+      className={`${styles["content-section"]} ${styles[direction]}`}
+      spacing={5}
+      sx={{ flexDirection: isMobile ? "column" : "row", gap: '1rem' }}
+    >
+      <Grid2
+        size={{ xs: 12}}
+        className={`${styles["product-section"]} ${direction === "row" && styles["paper"]}`}
+      >
+        <Typography variant={isMobile ? "subtitle2" : "h5"} color="inherit">
+          <strong>Producto:</strong> {item.product?.name || "Elígelo"}
         </Typography>
         {getSelectedAttributes()}
-      </div>
+      </Grid2>
 
-      <div className={`${styles['art-section']} ${direction === 'row' && styles['paper']}`}>
-        <Typography level="h5" leading="normal" color="inherit">
-          <strong>Arte:</strong> {item.art?.title || 'Selecciónalo'}
+      <Grid2
+        size={{ xs: 12 }}
+        className={`${styles["art-section"]} ${direction === "row" && styles["paper"]}`}
+      >
+        <Typography variant={isMobile ? "subtitle2" : "h5"} color="inherit">
+          <strong>Arte:</strong> {item.art?.title || "Selecciónalo"}
         </Typography>
         {item.art?.title && item.art?.prixerUsername && (
-          <Typography level="p" color="textSecondary" leading="normal">
+          <Typography variant={isMobile ? "subtitle2" : "h5"}>
             <strong>Prixer:</strong> {item.art?.prixerUsername}
           </Typography>
         )}
-      </div>
-    </div>
-  );
+      </Grid2>
+    </Grid2>
+  )
 }

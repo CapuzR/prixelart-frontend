@@ -33,7 +33,6 @@ import {
   GlobalDashboardStatsData,
 } from "@api/order.api"
 import { useNavigate } from "react-router-dom"
-import { permission } from "process"
 import { getPermissions } from "@api/admin.api"
 import { Permissions } from "types/permissions.types"
 

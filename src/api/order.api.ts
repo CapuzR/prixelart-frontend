@@ -477,7 +477,7 @@ export const fetchGlobalOrdersList = async (filters: DashboardFilters): Promise<
             console.error(`Backend error fetching global orders:`, response.data.message);
             throw new Error(response.data.message || `Failed to fetch global orders`);
         }
-        return response.data.result;
+        return response.data.result as Order[];
     } catch (error) {
         console.error(`API Client Error in fetchGlobalOrdersList:`, error);
         if (axios.isAxiosError(error) && error.response) {
@@ -506,7 +506,7 @@ export const fetchGlobalDashboardStats = async (filters: DashboardFilters): Prom
             console.error(`Backend error fetching global dashboard stats:`, response.data.message);
             throw new Error(response.data.message || `Failed to fetch global dashboard stats`);
         }
-        return response.data.result;
+        return response.data.result as GlobalDashboardStatsData;
     } catch (error) {
         console.error(`API Client Error in fetchGlobalDashboardStats:`, error);
         if (axios.isAxiosError(error) && error.response) {
@@ -539,7 +539,7 @@ export const fetchGlobalTopPerformingItems = async (
             console.error(`Backend error fetching global top items:`, response.data.message);
             throw new Error(response.data.message || `Failed to fetch global top items`);
         }
-        return response.data.result;
+        return response.data.result as unknown as GlobalTopPerformingItemData[];
     } catch (error) {
         console.error(`API Client Error in fetchGlobalTopPerformingItems:`, error);
         if (axios.isAxiosError(error) && error.response) {

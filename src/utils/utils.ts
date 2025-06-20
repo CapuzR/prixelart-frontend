@@ -81,10 +81,11 @@ const generateLikeServiceMessage = (tile: any) => {
     tile.title +
     lineBreak +
     " *Prixer:* " +
-    tile.prixer +
-    lineBreak +
-    " *Enlace:* prixelart.com/service=" +
-    tile._id
+    tile.prixer
+    //  +
+    // lineBreak +
+    // " *Enlace:* prixelart.com/service=" +
+    // tile._id
 
   const url = "https://wa.me/" + waNumber + "?text=" + message
   return url

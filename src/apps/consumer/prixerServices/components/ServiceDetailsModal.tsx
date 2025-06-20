@@ -27,7 +27,7 @@ import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos"
 import { useEffect, useState } from "react"
 import useMediaQuery from "@mui/material/useMediaQuery"
 import { useTheme } from "@mui/material/styles"
-
+import util from "@utils/utils"
 interface ServiceDetailsModalProps {
   open: boolean
   onClose: () => void
@@ -101,7 +101,7 @@ const ServiceDetailsModal: React.FC<ServiceDetailsModalProps> = ({
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
-          fontWeight: 600
+          fontWeight: 600,
         }}
       >
         {service.title}
@@ -340,13 +340,15 @@ const ServiceDetailsModal: React.FC<ServiceDetailsModalProps> = ({
         </Grid2>
       </DialogContent>
       <DialogActions sx={{ p: 2, justifyContent: "flex-end" }}>
-        <Button
-          onClick={onClose}
+        <Button 
+          onClick={() => {
+            window.open(util.generateLikeServiceMessage(service), "_blank")
+          }}
           color="primary"
           variant="contained"
           size="small"
         >
-          Cerrar
+          Contactar
         </Button>
       </DialogActions>
     </Dialog>

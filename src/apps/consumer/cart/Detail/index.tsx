@@ -5,10 +5,14 @@ import { useCart } from "context/CartContext"
 import ActionBar from "./components/ActionBar"
 import Typography from "components/Typography"
 import ItemCard from "components/ItemCard"
+import Grid2 from "@mui/material/Grid"
+
 import { formatNumberString, formatSinglePrice } from "utils/formats"
 import { useConversionRate, useCurrency } from "context/GlobalContext"
 import { CartLine } from "../../../../types/cart.types"
 import { Item } from "types/order.types"
+import useMediaQuery from "@mui/material/useMediaQuery"
+import { useTheme } from "@mui/material/styles"
 
 interface LineCardProps {
   line: CartLine
@@ -31,6 +35,8 @@ export default function LineCard({
   const { currency } = useCurrency()
   const { conversionRate } = useConversionRate()
   const [quantity, setQuantity] = useState<string | number>(line.quantity)
+  const theme = useTheme()
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
 
   const handleDelete = () => {
     deleteLineInCart(line)
@@ -71,8 +77,13 @@ export default function LineCard({
   return (
     <div className={`${styles["card-root"]}`} id={line.id}>
       <div
-        className={`${styles["card-content"]} ${styles[direction]}`}
-        style={{ padding: 16 }}
+        // className={`${styles["card-content"]} ${styles[direction]}`}
+        style={{
+          padding: 16,
+          flexDirection: isMobile ? "column" : "row",
+          width: "100%",
+          display: "flex",
+        }}
       >
         <ItemCard
           item={line.item}
@@ -81,8 +92,18 @@ export default function LineCard({
           line={line}
         />
         {line.item.product && line.quantity !== undefined && (
-          <div className={styles["line-details"]}>
-            <div className={styles["quantity"]}>
+          <Grid2
+            container
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "1rem",
+              alignItems: "center",
+              justifyContent: 'center',
+              minWidth: 200
+            }}
+          >
+            <Grid2 size={{ sm: 6, md: 12 }} className={styles["quantity"]}>
               <Typography level="h6">Cantidad</Typography>
               <input
                 type="number"
@@ -93,9 +114,9 @@ export default function LineCard({
                 min="1" // HTML5 validation attribute
                 disabled={checking}
               />
-            </div>
+            </Grid2>
 
-            <div className={styles["subtotal"]}>
+            <Grid2 size={{ sm: 6, md: 12 }} className={styles["subtotal"]}>
               <Typography level="h6">Subtotal</Typography>
               {/* Render the formatted HTML subtotal in a span */}
               <span
@@ -103,8 +124,8 @@ export default function LineCard({
                   __html: getFormattedSubtotal() || "",
                 }}
               />
-            </div>
-          </div>
+            </Grid2>
+          </Grid2>
         )}
       </div>
 

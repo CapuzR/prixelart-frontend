@@ -3,13 +3,9 @@
 .prix-product-container {
   flex-direction: row;
 
-  .left-side {
-    width: 45%;
-  }
-
   .right-side {
     display: flex;
-    width: 45%;
+    // width: 45%;
   }
 
   .buttons-container {

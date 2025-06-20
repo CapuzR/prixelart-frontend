@@ -23,7 +23,6 @@ import ServiceDetailsModal from "./components/ServiceDetailsModal"
 import useMediaQuery from "@mui/material/useMediaQuery"
 import { useTheme } from "@mui/material/styles"
 
-
 const AllServicesDisplay: React.FC = () => {
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
@@ -71,17 +70,15 @@ const AllServicesDisplay: React.FC = () => {
         }
       })
       setPrixerDetailsMap(newPrixerDetailsMap)
-
       const displayableServices = fetchedServices.filter((service) => {
         const isActiveAndVisible =
           service.active &&
           (service.visible === true || service.visible === undefined)
         if (!isActiveAndVisible) return false
-
         const prixerIdString =
-          typeof service.prixer === "string"
-            ? service.prixer
-            : (service.prixer as any)?._id?.toString()
+          typeof service.userid === "string"
+            ? service.userid
+            : typeof service.prixer === "string" && service.prixer
 
         return prixerIdString ? newPrixerDetailsMap.has(prixerIdString) : false
       })
@@ -139,9 +136,11 @@ const AllServicesDisplay: React.FC = () => {
   const servicesToDisplay = rawServices
     .map((service) => {
       const prixerIdString =
-        typeof service.prixer === "string"
-          ? service.prixer
-          : (service.prixer as any)?._id?.toString()
+        typeof service.userid === "string"
+          ? service.userid
+          : typeof service.prixer === "string" &&
+            service.prixer?.toString()
+
       const prixerDetails = prixerIdString
         ? prixerDetailsMap.get(prixerIdString)
         : undefined
@@ -223,7 +222,6 @@ const AllServicesDisplay: React.FC = () => {
         {servicesToDisplay}
       </Grid2>
 
-      {/* Render the Modal */}
       <ServiceDetailsModal
         open={isModalOpen}
         onClose={handleCloseModal}

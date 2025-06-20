@@ -3,7 +3,8 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  gap: theme.$spacing-xl;
+  gap: 1rem;
+  // padding-top: 3rem;
   align-items: flex-start;
 
   &.row {
@@ -23,7 +24,6 @@
   display: flex;
   flex-direction: column;
   gap: theme.$spacing-xs;
-  width: 50%;
 
   p {
     font-size: theme.$font-size-medium;
@@ -42,7 +42,7 @@
   display: flex;
   flex-direction: column;
   gap: theme.$spacing-xs;
-  width: 50%;
+  // width: 50%;
 
   p {
     font-size: theme.$font-size-medium;

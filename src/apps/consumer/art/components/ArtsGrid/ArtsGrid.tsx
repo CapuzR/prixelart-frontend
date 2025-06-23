@@ -84,7 +84,7 @@ const ArtsGrid: React.FC<ArtsGridProps> = ({ onArtSelect }) => {
         };
         if (searchValue) filters.text = searchValue;
         if (categoryValue) filters.category = categoryValue;
-        const response: { arts: Art[]; length: number } = await fetchGallery(filters);
+        const response = await fetchGallery(filters);
 
         setTiles(prevTiles => {
           if (pageNumber === 1) {
@@ -96,8 +96,8 @@ const ArtsGrid: React.FC<ArtsGridProps> = ({ onArtSelect }) => {
           }
         });
 
-        const totalFetchedSoFar = pageNumber === 1 ? response.arts.length : tiles.length + response.arts.length;
-        setHasMore(totalFetchedSoFar < response.length && response.arts.length > 0);
+        const totalFetchedSoFar = (pageNumber === 1 ? 0 : tiles.length) + response.arts.length;
+        setHasMore(response.hasMore);
 
       } catch (error: any) {
         console.error('Error fetching arts:', error);
@@ -112,7 +112,7 @@ const ArtsGrid: React.FC<ArtsGridProps> = ({ onArtSelect }) => {
     };
 
     fetchData();
-  }, [pageNumber, searchValue, categoryValue, itemsPerPage, setLoading, setHasMore, fetchMoreError, tiles.length]);
+  }, [pageNumber, searchValue, categoryValue]);
 
   const handleSearch = (queryValue: string | null, categories: string | null) => {
     if (location.pathname === '/galeria') {
@@ -274,6 +274,9 @@ const ArtsGrid: React.FC<ArtsGridProps> = ({ onArtSelect }) => {
                       }
                     }}
                     onArtSelect={onArtSelect}
+                    // Pass the props here!
+                    originalPhotoWidth={tile.originalPhotoWidth}
+                    originalPhotoHeight={tile.originalPhotoHeight}
                   />
                 </div>
               ))}

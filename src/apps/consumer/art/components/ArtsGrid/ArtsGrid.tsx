@@ -8,6 +8,7 @@ import { Art } from '../../../../../types/art.types';
 import { fetchGallery } from '@api/art.api';
 import { Typography, Box, CircularProgress, Button, useTheme, Theme } from '@mui/material';
 import SkeletonArtCard from '@apps/admin/components/SkeletonArtCard/SkeletonArtCard';
+import { debounce } from '@utils/utils';
 
 interface GalleryFilters {
   text?: string | null;
@@ -25,25 +26,100 @@ const ArtsGrid: React.FC<ArtsGridProps> = ({ onArtSelect }) => {
   const { loading, setLoading } = useLoading();
   const navigate = useNavigate();
   const location = useLocation();
-
-  const globalParams = new URLSearchParams(window.location.search);
   const theme = useTheme<Theme>();
 
-  const [tiles, setTiles] = useState<Art[]>([]);
-  const [searchValue, setSearchValue] = useState<string | null>(
-    globalParams.get('name') || null
-  );
-  const [categoryValue, setCategoryValue] = useState<string | null>(
-    globalParams.get('category') || null
-  );
+  const getParams = useCallback(() => new URLSearchParams(location.search), [location.search]);
 
+  const [searchValue, setSearchValue] = useState<string>(getParams().get('name') || '');
+  const [categoryValue, setCategoryValue] = useState<string>(getParams().get('category') || '');
+  
+  const [tiles, setTiles] = useState<Art[]>([]);
   const [pageNumber, setPageNumber] = useState<number>(1);
   const [hasMore, setHasMore] = useState<boolean>(true);
   const [fetchMoreError, setFetchMoreError] = useState<string | null>(null);
   const itemsPerPage: number = 30;
 
-  const observer = useRef<IntersectionObserver | null>(null);
+  const performSearch = (query: string, category: string) => {
+    const newParams = new URLSearchParams();
+    if (query) newParams.set('name', query);
+    if (category) newParams.set('category', category);
+    
+    navigate({ search: newParams.toString() }, { replace: true });
+  };
+  
+  const debouncedSearch = useCallback(debounce(performSearch, 500), []);
 
+  // Handler for text input changes from the SearchBar
+  const handleQueryChange = (newQuery: string) => {
+    setSearchValue(newQuery);
+    debouncedSearch(newQuery, categoryValue);
+  };
+
+  // Handler for category changes from the SearchBar
+  const handleCategoryChange = (newCategory: string) => {
+    setCategoryValue(newCategory);
+    performSearch(searchValue, newCategory);
+  };
+
+  // Effect to reset state when primary filters (URL search params) change
+  useEffect(() => {
+    setTiles([]);
+    setPageNumber(1);
+    setHasMore(true);
+    setFetchMoreError(null);
+  }, [location.search]);
+
+  // Effect for fetching data
+  useEffect(() => {
+    setLoading(true);
+    if (fetchMoreError) setFetchMoreError(null);
+
+    const fetchData = async () => {
+      try {
+        const params = getParams();
+        const currentSearch = params.get('name') || '';
+        const currentCategory = params.get('category') || '';
+
+        const filters: GalleryFilters = {
+          initialPoint: (pageNumber - 1) * itemsPerPage,
+          itemsPerPage: itemsPerPage,
+        };
+        if (currentSearch) filters.text = currentSearch;
+        if (currentCategory) filters.category = currentCategory;
+        const response = await fetchGallery(filters);
+
+        setTiles(prevTiles => {
+          if (pageNumber === 1) {
+            return response.arts;
+          } else {
+            const existingArtIds = new Set(prevTiles.map(art => art.artId));
+            const uniqueNewArts = response.arts.filter(art => !existingArtIds.has(art.artId));
+            return [...prevTiles, ...uniqueNewArts];
+          }
+        });
+        
+        setHasMore(response.hasMore);
+
+      } catch (error: any) {
+        console.error('Error fetching arts:', error);
+        if (tiles.length > 0 && pageNumber > 1) {
+          setFetchMoreError(error.message || 'Ocurrió un error al cargar más arte.');
+        } else {
+          setHasMore(false);
+          if(pageNumber === 1) {
+            setFetchMoreError(error.message || 'Ocurrió un error al cargar el arte.');
+          }
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [pageNumber, location.search]);
+
+  // Infinite scroll observer logic
+  const observer = useRef<IntersectionObserver | null>(null);
   const lastArtElementRef = useCallback((node: HTMLElement | null) => {
     if (loading) return;
     if (observer.current) observer.current.disconnect();
@@ -57,95 +133,25 @@ const ArtsGrid: React.FC<ArtsGridProps> = ({ onArtSelect }) => {
     if (node) observer.current.observe(node);
   }, [loading, hasMore, fetchMoreError]);
 
-  // Effect to reset state when primary filters change
-  useEffect(() => {
-    setTiles([]);
-    setPageNumber(1);
-    setHasMore(true);
-    setFetchMoreError(null);
-  }, [searchValue, categoryValue]);
-
-  // Effect for fetching data
-  useEffect(() => {
-    if (!hasMore && pageNumber > 1 && !fetchMoreError) return;
-
-    if (!fetchMoreError && !hasMore && pageNumber > 1) {
-      return;
-    }
-
-    setLoading(true);
-    if (fetchMoreError) setFetchMoreError(null);
-
-    const fetchData = async () => {
-      try {
-        const filters: GalleryFilters = {
-          initialPoint: (pageNumber - 1) * itemsPerPage,
-          itemsPerPage: itemsPerPage,
-        };
-        if (searchValue) filters.text = searchValue;
-        if (categoryValue) filters.category = categoryValue;
-        const response = await fetchGallery(filters);
-
-        setTiles(prevTiles => {
-          if (pageNumber === 1) {
-            return response.arts;
-          } else {
-            const existingArtIds = new Set(prevTiles.map(art => art.artId));
-            const uniqueNewArts = response.arts.filter(art => !existingArtIds.has(art.artId));
-            return [...prevTiles, ...uniqueNewArts];
-          }
-        });
-
-        const totalFetchedSoFar = (pageNumber === 1 ? 0 : tiles.length) + response.arts.length;
-        setHasMore(response.hasMore);
-
-      } catch (error: any) {
-        console.error('Error fetching arts:', error);
-        if (tiles.length > 0) {
-          setFetchMoreError(error.message || 'Ocurrió un error al cargar más arte.');
-        } else {
-          setHasMore(false);
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [pageNumber, searchValue, categoryValue]);
-
-  const handleSearch = (queryValue: string | null, categories: string | null) => {
-    if (location.pathname === '/galeria') {
-      const newParams = new URLSearchParams(location.search);
-      if (queryValue) {
-        newParams.set('name', queryValue);
-      } else {
-        newParams.delete('name');
-      }
-
-      if (categories) {
-        newParams.set('category', categories);
-      } else {
-        newParams.delete('category');
-      }
-
-      navigate({ search: newParams.toString() }, { replace: true });
-    }
-
-    setSearchValue(queryValue);
-    setCategoryValue(categories);
-  };
-
   const handleFullImageClickEvent = (e: MouseEvent<HTMLElement>, tile: Art) => {
     navigate('/arte/' + tile.artId);
   };
 
   const handleRetryFetchMore = () => {
     setFetchMoreError(null);
+    setPageNumber(p => p); 
+  };
+  
+  const handleRetryInitialLoad = () => {
+    setFetchMoreError(null);
+    setHasMore(true);
+    setPageNumber(1);
+    setTiles([]);
   };
 
   const renderStatusMessages = () => {
-    if (loading && tiles.length === 0 && pageNumber === 1 && !fetchMoreError) {
+    // Skeletons for initial load
+    if (loading && pageNumber === 1 && tiles.length === 0) {
       const skeletonCount = itemsPerPage / 2 > 10 ? 10 : itemsPerPage / 2;
       return (
         <ResponsiveMasonry
@@ -159,6 +165,23 @@ const ArtsGrid: React.FC<ArtsGridProps> = ({ onArtSelect }) => {
         </ResponsiveMasonry>
       );
     }
+    // Initial load failed
+    if (!loading && pageNumber === 1 && tiles.length === 0 && fetchMoreError) {
+       return (
+        <Box textAlign="center" p={3}>
+          <Typography variant="h6" color="error" gutterBottom>
+            Error al cargar el arte.
+          </Typography>
+          <Typography variant="body1" color="textSecondary" gutterBottom>
+            {fetchMoreError}
+          </Typography>
+          <Button variant="outlined" onClick={handleRetryInitialLoad}>
+            Reintentar
+          </Button>
+        </Box>
+      );
+    }
+    // No results found
     if (!loading && tiles.length === 0 && !fetchMoreError) {
       return (
         <Box textAlign="center" p={3}>
@@ -171,6 +194,7 @@ const ArtsGrid: React.FC<ArtsGridProps> = ({ onArtSelect }) => {
         </Box>
       );
     }
+    // Loading more items
     if (loading && tiles.length > 0) {
       return (
         <Box display="flex" justifyContent="center" alignItems="center" p={2}>
@@ -179,6 +203,7 @@ const ArtsGrid: React.FC<ArtsGridProps> = ({ onArtSelect }) => {
         </Box>
       );
     }
+    // Error fetching more items
     if (fetchMoreError && tiles.length > 0) {
       return (
         <Box textAlign="center" p={3}>
@@ -191,30 +216,12 @@ const ArtsGrid: React.FC<ArtsGridProps> = ({ onArtSelect }) => {
         </Box>
       );
     }
+    // End of gallery
     if (!loading && !hasMore && tiles.length > 0 && !fetchMoreError) {
       return (
         <Typography variant="caption" display="block" textAlign="center" p={2} color="textSecondary">
           Has llegado al final de la galería.
         </Typography>
-      );
-    }
-    if (!loading && tiles.length === 0 && fetchMoreError) {
-      return (
-        <Box textAlign="center" p={3}>
-          <Typography variant="h6" color="error" gutterBottom>
-            Error al cargar el arte.
-          </Typography>
-          <Typography variant="body1" color="textSecondary" gutterBottom>
-            {fetchMoreError}
-          </Typography>
-          <Button variant="outlined" onClick={() => {
-            setFetchMoreError(null);
-            setPageNumber(1);
-            setHasMore(true);
-          }}>
-            Reintentar Carga Inicial
-          </Button>
-        </Box>
       );
     }
     return null;
@@ -233,7 +240,11 @@ const ArtsGrid: React.FC<ArtsGridProps> = ({ onArtSelect }) => {
       >
         <div style={{ width: '100%', display: 'flex', justifyContent: 'center', marginBottom: '16px', padding: 0 }}>
           <SearchBar
-            onSearch={handleSearch}
+            queryValue={searchValue}
+            categoryValue={categoryValue}
+            onQueryChange={handleQueryChange}
+            onCategoryChange={handleCategoryChange}
+            onSearchSubmit={() => performSearch(searchValue, categoryValue)}
             placeholderText='Busca tu arte favorito'
             categoriesList={[
               'Abstracto', 'Animales', 'Arquitectura', 'Atardecer', 'Cacao', 'Café',
@@ -274,7 +285,6 @@ const ArtsGrid: React.FC<ArtsGridProps> = ({ onArtSelect }) => {
                       }
                     }}
                     onArtSelect={onArtSelect}
-                    // Pass the props here!
                     originalPhotoWidth={tile.originalPhotoWidth}
                     originalPhotoHeight={tile.originalPhotoHeight}
                   />

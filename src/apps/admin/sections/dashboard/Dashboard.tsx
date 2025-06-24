@@ -201,7 +201,12 @@ const SellerDashboard: React.FC = () => {
   if (loading && !stats) {
     return (
       <Container maxWidth={false} sx={{ py: 3, backgroundColor: '#f4f6f8' }}>
-        <DashboardFiltersComponent filters={filters} onFiltersChange={handleFilterChange} />
+        <DashboardFiltersComponent
+          filters={filters}
+          onFiltersChange={handleFilterChange}
+          onReload={loadDashboardData}
+          loading={loading}
+        />
         <DashboardSkeleton />
       </Container>
     );
@@ -214,7 +219,12 @@ const SellerDashboard: React.FC = () => {
         <Typography variant="subtitle1">Bienvenido, {permissions?.area || "Admin"}!</Typography>
       </Box>
 
-      <DashboardFiltersComponent filters={filters} onFiltersChange={handleFilterChange} />
+      <DashboardFiltersComponent
+        filters={filters}
+        onFiltersChange={handleFilterChange}
+        onReload={loadDashboardData}
+        loading={loading}
+      />
 
       {!isRefetching && !stats && !error && (
         <Paper sx={{ mt: 3, borderRadius: 2 }}>

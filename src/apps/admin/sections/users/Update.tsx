@@ -192,7 +192,7 @@ const UpdateUser: React.FC = () => {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const { showSnackBar } = useSnackBar()
-  const [permissions, setPermissions] = useState<Permissions | null>(null)
+  // const [permissions, setPermissions] = useState<Permissions | null>(null)
 
   const [userFormData, setUserFormData] =
     useState<Partial<User>>(initialUserFormState)
@@ -313,14 +313,14 @@ const UpdateUser: React.FC = () => {
     }
   }, [id, navigate, showSnackBar])
 
-  const checkPermissions = async () => {
-    const response = await getPermissions()
-    setPermissions(response)
-  }
+  // const checkPermissions = async () => {
+  //   const response = await getPermissions()
+  //   setPermissions(response)
+  // }
 
   useEffect(() => {
     loadUser()
-    checkPermissions()
+    // checkPermissions()
   }, [])
 
   const getBalance = async (_id: string | undefined) => {
@@ -1315,17 +1315,6 @@ const UpdateUser: React.FC = () => {
                             <FormHelperText error>
                               {validationErrors.prixer.termsAgree}
                             </FormHelperText>
-                          )}
-                          {permissions?.area && (
-                            <Button
-                              variant="outlined"
-                              color="secondary"
-                              disabled={isSubmitting || isLoading}
-                              startIcon={<Lock />}
-                              onClick={openModal}
-                            >
-                              Cambiar contraseña
-                            </Button>
                           )}
                         </Grid2>
                       </Grid2>

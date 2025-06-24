@@ -1,7 +1,7 @@
 import Login from "@apps/consumer/login"
 
 import { Route, Routes } from "react-router-dom"
-import PrixerStats from "@apps/artist/profile/prixerStats"
+import PrixerStats from "@apps/artist/profile/Stats"
 import Profile from "@apps/artist/profile"
 import PrixersService from "apps/consumer/prixerServices/prixerService"
 import Register from "@apps/consumer/signup/SignUp"

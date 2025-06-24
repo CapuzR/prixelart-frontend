@@ -284,6 +284,7 @@ const ReadMovements: React.FC = () => {
           ),
         ] as string[]
 
+        
         // 3. Fetch User Details *only* for users on the current page
         if (accountIds.length > 0) {
           const idsToFetch = accountIds.filter((id) => !ownerInfoMap[id])

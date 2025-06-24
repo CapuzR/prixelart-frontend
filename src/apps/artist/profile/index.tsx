@@ -605,7 +605,6 @@ export default function PrixerProfileCard() {
       }}
     >
       <CardContent sx={{ p: 0 }}>
-        {/* HEADER */}
         <Box
           sx={{
             p: { xs: 2, sm: 3 },
@@ -735,7 +734,7 @@ export default function PrixerProfileCard() {
             <Tab
               icon={<CollectionsBookmark />}
               iconPosition="start"
-              label="Portfolio"
+              label="Artes"
               value="portfolio"
             />
             <Tab
@@ -747,7 +746,7 @@ export default function PrixerProfileCard() {
             <Tab
               icon={<PersonIcon />}
               iconPosition="start"
-              label="Acerca de"
+              label="Bio"
               value="about"
             />
           </Tabs>

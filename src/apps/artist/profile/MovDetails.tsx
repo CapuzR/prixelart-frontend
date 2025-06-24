@@ -14,7 +14,7 @@ import { ObjectId } from "mongodb"
 import { Order } from "types/order.types"
 import { useUser } from "@context/GlobalContext"
 
-import favicon from "../../../../../images/favicon.png"
+import favicon from "../../../images/favicon.png"
 
 const useStyles = makeStyles()((theme: Theme) => {
   return {

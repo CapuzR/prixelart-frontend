@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react"
 import axios from "axios"
-
+import { useNavigate, useLocation } from "react-router-dom"
 import Container from "@mui/material/Container"
 import CssBaseline from "@mui/material/CssBaseline"
 import Grid2 from "@mui/material/Grid"
@@ -44,6 +44,8 @@ export default function PrixerProfile() {
   const theme = useTheme()
   const isDeskTop = useMediaQuery(theme.breakpoints.up("sm"))
   const { user } = useUser()
+  const navigate = useNavigate()
+  const location = useLocation()
 
   const [balance, setBalance] = useState(0)
   const [movements, setMovements] = useState<Movement[]>([])
@@ -91,12 +93,25 @@ export default function PrixerProfile() {
   }
 
   useEffect(() => {
-    if (user?.account !== undefined) {
-      getBalance()
-      getMovements()
+    if (user) {
+      if (user?.account !== undefined) {
+        getBalance()
+        getMovements()
+      }
+      getOrders()
     }
-    getOrders()
-  }, [user])
+
+    const redirectTimer = setTimeout(() => {
+      if (!user) {
+        const pathname = location.pathname
+        navigate(pathname.slice(0, -5))
+      }
+    }, 1500)
+
+    return () => {
+      clearTimeout(redirectTimer)
+    }
+  }, [user, navigate, location])
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setTab(newValue)

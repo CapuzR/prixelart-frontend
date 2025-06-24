@@ -215,11 +215,6 @@ const MenuAppBar: React.FC = () => {
       label: "Mi Perfil",
       onClick: () => handleNavigate(`/prixer/${user!.username}`),
     },
-    {
-      label: "Mi Cuenta",
-      onClick: () => handleNavigate(`/prixer/${user!.username}`),
-    },
-    // { label: 'Cambiar contraseña', onClick: () => handleNavigate(`/prixer/${user!.username}`) },
 
     { label: "Cerrar Sesión", onClick: handleLogout },
   ]

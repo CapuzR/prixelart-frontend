@@ -17,7 +17,6 @@ import ReactGA from "react-ga"
 
 import styles from "./styles.module.scss"
 import { useConversionRate, useCurrency } from "context/GlobalContext"
-import CurrencySwitch from "components/CurrencySwitch"
 import { useNavigate } from "react-router-dom"
 import { SelectChangeEvent } from "@mui/material"
 import SearchBar from "@components/searchBar/searchBar"
@@ -53,6 +52,7 @@ const ProductsCatalog: React.FC<ProductsCatalogProps> = ({
   const [sort, setSort] = useState("A-Z")
 
   const [searchQuery, setSearchQuery] = useState<string>("")
+  const [categoryValue, setCategoryValue] = useState<string>("")
 
   const sortingOptions = [
     { value: "A-Z", label: "A-Z" },
@@ -62,7 +62,7 @@ const ProductsCatalog: React.FC<ProductsCatalogProps> = ({
   ]
 
   const scrollToProduct = (product: Product) => {
-      navigate("/producto/" + product._id)
+    navigate("/producto/" + product._id)
   }
 
   const handleChangeSort = (
@@ -72,10 +72,23 @@ const ProductsCatalog: React.FC<ProductsCatalogProps> = ({
     setSort(event.target.value)
   }
 
-  const handleSearch = (queryValue: string | null) => {
-    setSearchQuery(queryValue ? queryValue.trim() : "")
-    setCurrentPage(1)
+  // --- New handlers for the updated SearchBar ---
+  const handleQueryChange = (newQuery: string) => {
+    setSearchQuery(newQuery)
+    setCurrentPage(1) // Reset to the first page on a new search
   }
+
+  // This is a placeholder. Products don't have a category filter in this view.
+  const handleCategoryChange = (newCategory: string) => {
+    setCategoryValue(newCategory)
+  }
+
+  // This is a placeholder. We are filtering as the user types.
+  const handleSearchSubmit = () => {
+    // This could be used to trigger a search if you don't want to filter on every keystroke.
+    // For now, it's not needed.
+  }
+  // --- End of new handlers ---
 
   const handleDetails = (product: Product) => {
     navigate("/producto/" + product._id)
@@ -144,8 +157,8 @@ const ProductsCatalog: React.FC<ProductsCatalogProps> = ({
                 images={bestSellers?.map((product) => ({
                   url:
                     product?.sources?.images.length > 0
-                      ? (product.sources.images[0]?.url ?? "")
-                      : (product.thumbUrl ?? ""),
+                      ? product.sources.images[0]?.url ?? ""
+                      : product.thumbUrl ?? "",
                 }))}
                 useIndicators={{
                   type: "dots",
@@ -188,9 +201,15 @@ const ProductsCatalog: React.FC<ProductsCatalogProps> = ({
           <div
             style={{ width: "100%", display: "flex", justifyContent: "center" }}
           >
+            {/* --- Updated SearchBar component props --- */}
             <SearchBar
-              onSearch={handleSearch}
+              queryValue={searchQuery}
+              categoryValue={categoryValue}
+              onQueryChange={handleQueryChange}
+              onCategoryChange={handleCategoryChange}
+              onSearchSubmit={handleSearchSubmit}
               placeholderText="Busca tu producto favorito"
+            // We don't pass `categoriesList` because products don't use it here.
             />
           </div>
           <div className={styles["sorting-select"]}>

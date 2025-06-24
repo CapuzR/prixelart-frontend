@@ -444,7 +444,9 @@ export interface GlobalDashboardStatsData {
     totalOrders: number;
     averageOrderValue: number;
     unitsSold: number;
-    orderStatusCounts: Record<string, number>; // Keyed by OrderStatus string name
+    orderStatusCounts: Record<string, number>;
+    prevPeriodTotalSales: number;
+    prevPeriodTotalOrders: number;
 }
 
 export interface GlobalTopPerformingItemData {
@@ -568,60 +570,152 @@ const apiClient = axios.create({
 });
 
 export const fetchSellerPerformance = async (
-  filters: DashboardFilters
+    filters: DashboardFilters
 ): Promise<PerformanceData[]> => {
-  // we know the backend returns PrixResponse<PerformanceData[]>
-  const { data } = await apiClient.get<PrixResponse>(
-    '/stats/performance/sellers',
-    {
-      params: {
-        startDate: formatDateForQuery(filters.startDate),
-        endDate:   formatDateForQuery(filters.endDate),
-      },
-    }
-  );
+    // we know the backend returns PrixResponse<PerformanceData[]>
+    const { data } = await apiClient.get<PrixResponse>(
+        '/stats/performance/sellers',
+        {
+            params: {
+                startDate: formatDateForQuery(filters.startDate),
+                endDate: formatDateForQuery(filters.endDate),
+            },
+        }
+    );
 
-  if (data.success && Array.isArray(data.result)) {
-    return data.result as unknown as PerformanceData[];
-  } else {
-    throw new Error(data.message || 'Failed to fetch seller performance');
-  }
+    if (data.success && Array.isArray(data.result)) {
+        return data.result as unknown as PerformanceData[];
+    } else {
+        throw new Error(data.message || 'Failed to fetch seller performance');
+    }
 };
 
 export const fetchPrixerPerformance = async (
-  filters: DashboardFilters
+    filters: DashboardFilters
 ): Promise<PerformanceData[]> => {
-  const { data } = await apiClient.get<PrixResponse>(
-    '/stats/performance/prixers',
-    { params: {
-        startDate: formatDateForQuery(filters.startDate),
-        endDate:   formatDateForQuery(filters.endDate),
-      }
-    }
-  );
+    const { data } = await apiClient.get<PrixResponse>(
+        '/stats/performance/prixers',
+        {
+            params: {
+                startDate: formatDateForQuery(filters.startDate),
+                endDate: formatDateForQuery(filters.endDate),
+            }
+        }
+    );
 
-  if (data.success && Array.isArray(data.result)) {
-    return data.result as unknown as PerformanceData[];
-  } else {
-    throw new Error(data.message || 'Failed to fetch prixer performance');
-  }
+    if (data.success && Array.isArray(data.result)) {
+        return data.result as unknown as PerformanceData[];
+    } else {
+        throw new Error(data.message || 'Failed to fetch prixer performance');
+    }
 };
 
 export const fetchProductPerformance = async (
-  filters: DashboardFilters
+    filters: DashboardFilters
 ): Promise<PerformanceData[]> => {
-  const { data } = await apiClient.get<PrixResponse>(
-    '/stats/performance/products',
-    { params: {
-        startDate: formatDateForQuery(filters.startDate),
-        endDate:   formatDateForQuery(filters.endDate),
-      }
-    }
-  );
+    const { data } = await apiClient.get<PrixResponse>(
+        '/stats/performance/products',
+        {
+            params: {
+                startDate: formatDateForQuery(filters.startDate),
+                endDate: formatDateForQuery(filters.endDate),
+            }
+        }
+    );
 
-  if (data.success && Array.isArray(data.result)) {
-    return data.result as unknown as PerformanceData[];
-  } else {
-    throw new Error(data.message || 'Failed to fetch product performance');
-  }
+    if (data.success && Array.isArray(data.result)) {
+        return data.result as unknown as PerformanceData[];
+    } else {
+        throw new Error(data.message || 'Failed to fetch product performance');
+    }
+};
+
+export const fetchProductionLinePerformance = async (
+    filters: DashboardFilters
+): Promise<PerformanceData[]> => {
+    const { data } = await apiClient.get<PrixResponse>(
+        '/stats/performance/production-lines',
+        {
+            params: {
+                startDate: formatDateForQuery(filters.startDate),
+                endDate: formatDateForQuery(filters.endDate),
+            },
+        }
+    );
+
+    if (data.success && Array.isArray(data.result)) {
+        return data.result as unknown as PerformanceData[];
+    } else {
+        throw new Error(data.message || 'Failed to fetch production line performance');
+    }
+};
+
+export const fetchArtPerformance = async (
+    filters: DashboardFilters
+): Promise<PerformanceData[]> => {
+    const { data } = await apiClient.get<PrixResponse>(
+        '/stats/performance/arts',
+        {
+            params: {
+                startDate: formatDateForQuery(filters.startDate),
+                endDate: formatDateForQuery(filters.endDate),
+            },
+        }
+    );
+
+    if (data.success && Array.isArray(data.result)) {
+        return data.result as unknown as PerformanceData[];
+    } else {
+        throw new Error(data.message || 'Failed to fetch art performance');
+    }
+};
+
+export interface CustomerAnalyticsData {
+    newCustomers: { count: number; totalSales: number };
+    returningCustomers: { count: number; totalSales: number };
+}
+
+export const fetchCustomerAnalytics = async (
+    filters: DashboardFilters
+): Promise<CustomerAnalyticsData> => {
+    const { data } = await apiClient.get<PrixResponse>(
+        '/stats/analytics/customers',
+        {
+            params: {
+                startDate: formatDateForQuery(filters.startDate),
+                endDate: formatDateForQuery(filters.endDate),
+            },
+        }
+    );
+
+    if (data.success && data.result) {
+        return data.result as unknown as CustomerAnalyticsData;
+    } else {
+        throw new Error(data.message || 'Failed to fetch customer analytics');
+    }
+};
+
+export interface CycleTimeData {
+    status: string;
+    averageDays: number;
+}
+
+export const fetchCycleTimeAnalytics = async (
+    filters: DashboardFilters
+): Promise<CycleTimeData[]> => {
+    const { data } = await apiClient.get<PrixResponse>(
+        '/stats/analytics/cycle-time',
+        {
+            params: {
+                startDate: formatDateForQuery(filters.startDate),
+                endDate: formatDateForQuery(filters.endDate),
+            },
+        }
+    );
+
+    if (data.success && Array.isArray(data.result)) {
+        return data.result as unknown as CycleTimeData[];
+    } else {
+        throw new Error(data.message || 'Failed to fetch cycle time analytics');
+    }
 };
